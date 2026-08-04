@@ -140,6 +140,146 @@ export class AssetTools {
     }
 
     @utcpTool(
+        'assetResolvePath',
+        'Resolve filesystem path and db:// url for an asset by its uuid. Lighter than query-asset-info when you only need locations (e.g. to read the file directly).',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema
+            },
+            required: ['reference']
+        },
+        { type: 'object', properties: { filesystemPath: { type: 'string' }, url: { type: 'string' } }, required: ['filesystemPath'] }, "GET", ['asset', 'resolve', 'path', 'url', 'filesystem', 'uuid']
+    )
+    async assetResolvePath(args: { reference: IInstanceReference }): Promise<{ filesystemPath: string, url?: string }> {
+        if (!args.reference || !args.reference.id) {
+            throw new Error('assetResolvePath requires reference.id (asset uuid)');
+        }
+        const filesystemPath = await Editor.Message.request('asset-db', 'query-path', args.reference.id);
+        if (!filesystemPath) {
+            throw new Error(`No filesystem path found for asset ${args.reference.id}`);
+        }
+        const url = await Editor.Message.request('asset-db', 'query-url', filesystemPath);
+        return { filesystemPath, url: url || undefined };
+    }
+
+    @utcpTool(
+        'assetQuery',
+        'Search the asset database with filters: glob pattern, asset type (ccType), importer, extension or bundle flag. Returns a slim list of matching assets. Use for asset discovery (e.g. all prefabs under a folder, all spine skeletons of a game). At least one filter is required.',
+        {
+            type: 'object',
+            properties: {
+                pattern: { type: 'string', description: 'Glob path pattern, e.g. "games/1234/**" or "db://assets/prefabs/**/*.prefab"' },
+                ccType: { type: 'string', description: 'Asset type filter, e.g. cc.Prefab, cc.SpriteFrame, sp.SkeletonData, cc.AnimationClip' },
+                importer: { type: 'string', description: 'Importer name filter, e.g. image, spine, fbx, gltf, typescript, scene' },
+                extname: { type: 'string', description: 'Extension filter, e.g. .prefab, .ts' },
+                isBundle: { type: 'boolean', description: 'Only list asset bundles' },
+                limit: { type: 'number', description: 'Max number of results to return', default: 200 }
+            }
+        },
+        {
+            type: 'object',
+            properties: {
+                assets: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            uuid: { type: 'string' },
+                            name: { type: 'string' },
+                            url: { type: 'string' },
+                            type: { type: 'string' },
+                            importer: { type: 'string' },
+                            isDirectory: { type: 'boolean' }
+                        }
+                    }
+                },
+                total: { type: 'number' },
+                truncated: { type: 'boolean' }
+            },
+            required: ['assets', 'total', 'truncated']
+        }, "GET", ['asset', 'query', 'search', 'find', 'filter', 'list', 'discover', 'bundle', 'spine', 'prefab']
+    )
+    async assetQuery(args: { pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean, limit?: number }):
+        Promise<{ assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean }> {
+        const options: { pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean } = {};
+        if (args.pattern) {
+            options.pattern = normalizePath(args.pattern);
+        }
+        if (args.ccType) {
+            options.ccType = args.ccType;
+        }
+        if (args.importer) {
+            options.importer = args.importer;
+        }
+        if (args.extname) {
+            options.extname = args.extname;
+        }
+        if (args.isBundle !== undefined) {
+            options.isBundle = args.isBundle;
+        }
+        if (Object.keys(options).length === 0) {
+            throw new Error('assetQuery requires at least one filter (pattern, ccType, importer, extname or isBundle)');
+        }
+
+        const results = await Editor.Message.request('asset-db', 'query-assets', options);
+        if (!Array.isArray(results)) {
+            throw new Error('Unexpected result from asset-db query-assets');
+        }
+
+        const limit = args.limit && args.limit > 0 ? args.limit : 200;
+        const sliced = results.slice(0, limit);
+        return {
+            assets: sliced.map((a: any) => ({
+                uuid: a.uuid,
+                name: a.name,
+                url: a.url,
+                type: a.isDirectory ? 'folder' : a.type,
+                importer: a.importer,
+                isDirectory: !!a.isDirectory
+            })),
+            total: results.length,
+            truncated: results.length > limit
+        };
+    }
+
+    @utcpTool(
+        'assetSaveContent',
+        'Overwrite the content of an existing text-based asset (TypeScript script, JSON, effect, txt...). Identify the asset by db:// path or uuid. Use for generated/templated files (e.g. rewriting GameInit<ID>.ts during new-game setup). Binary assets are not supported.',
+        {
+            type: 'object',
+            properties: {
+                assetPath: { type: 'string', description: 'db:// or project-relative path of the asset' },
+                reference: InstanceReferenceSchema,
+                content: { type: 'string', description: 'New text content of the asset' }
+            },
+            required: ['content']
+        },
+        { type: 'object', properties: { reference: InstanceReferenceSchema, filesystemPath: { type: 'string' } }, required: ['reference'] }, "POST", ['asset', 'save', 'write', 'content', 'script', 'text', 'edit', 'generate']
+    )
+    async assetSaveContent(args: { assetPath?: string, reference?: IInstanceReference, content: string }): Promise<{ reference: IInstanceReference, filesystemPath?: string }> {
+        let url: string | null = null;
+        if (args.reference && args.reference.id) {
+            const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
+            if (!info) {
+                throw new Error(`Asset ${args.reference.id} not found`);
+            }
+            url = info.url;
+        } else if (args.assetPath) {
+            url = normalizePath(args.assetPath);
+        }
+        if (!url) {
+            throw new Error('assetSaveContent requires assetPath or reference.id');
+        }
+
+        const result = await Editor.Message.request('asset-db', 'save-asset', url, args.content ?? '');
+        if (!result) {
+            throw new Error(`Failed to save content to ${url}`);
+        }
+        return { reference: { id: result.uuid, type: result.type }, filesystemPath: result.file || undefined };
+    }
+
+    @utcpTool(
         'assetCreate',
         'Create empty asset or folder of given type. Automatically handles folders creation along the path. Returns reference to the new asset.',
         {

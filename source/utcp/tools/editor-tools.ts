@@ -2,9 +2,83 @@ import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Base64ImageSchema, IBase64Image, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
+import { Base64ImageSchema, IBase64Image, ISuccessIndicator, SuccessIndicatorSchema, InstanceReferenceSchema, IInstanceReference } from '../schemas';
 
 export class EditorTools {
+
+    @utcpTool(
+        'editorEnvInfo',
+        'Get info about the current editor environment: editor version, engine version and paths, native engine info, current project filesystem path.',
+        { type: 'object', properties: {} },
+        {
+            type: 'object',
+            properties: {
+                editor: { type: 'string', description: 'Editor (Creator) version' },
+                engineVersion: { type: 'string' },
+                enginePath: { type: 'string' },
+                nativeVersion: { type: 'string' },
+                nativePath: { type: 'string' },
+                projectPath: { type: 'string', description: 'Filesystem path of the currently opened project' }
+            },
+            required: ['editor', 'engineVersion', 'projectPath']
+        }, "GET", ['editor', 'env', 'info', 'version', 'engine', 'project']
+    )
+    async editorEnvInfo(): Promise<{ editor: string, engineVersion: string, enginePath?: string, nativeVersion?: string, nativePath?: string, projectPath: string }> {
+        const info = await Editor.Message.request('engine', 'query-info');
+        if (!info) {
+            throw new Error('Failed to query engine info');
+        }
+        return {
+            editor: info.editor,
+            engineVersion: info.version,
+            enginePath: info.path,
+            nativeVersion: info.nativeVersion,
+            nativePath: info.nativePath,
+            projectPath: Editor.Project.path
+        };
+    }
+
+    @utcpTool(
+        'editorViewport',
+        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, set gizmo tool. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_gizmo_tool'] },
+                references: { type: 'array', items: InstanceReferenceSchema, description: 'For focus: nodes to focus the camera on' },
+                enabled: { type: 'boolean', description: 'For set_2d_mode / set_grid_visible' },
+                gizmoTool: { type: 'string', enum: ['move', 'rotate', 'scale', 'rect'], description: 'For set_gizmo_tool' }
+            },
+            required: ['operation']
+        },
+        SuccessIndicatorSchema, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'frame']
+    )
+    async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, gizmoTool?: string }): Promise<ISuccessIndicator> {
+        switch (args.operation) {
+            case 'focus': {
+                const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
+                if (uuids.length === 0) {
+                    throw new Error('references required for focus');
+                }
+                await Editor.Message.request('scene', 'focus-camera', uuids);
+                return { success: true };
+            }
+            case 'set_2d_mode':
+                await Editor.Message.request('scene', 'change-is2D', !!args.enabled);
+                return { success: true };
+            case 'set_grid_visible':
+                await Editor.Message.request('scene', 'set-grid-visible', !!args.enabled);
+                return { success: true };
+            case 'set_gizmo_tool':
+                if (!args.gizmoTool) {
+                    throw new Error('gizmoTool required for set_gizmo_tool');
+                }
+                await Editor.Message.request('scene', 'change-gizmo-tool', args.gizmoTool);
+                return { success: true };
+            default:
+                throw new Error(`Unknown viewport operation: ${args.operation}`);
+        }
+    }
 
     @utcpTool(
         'editorOperate',

@@ -84,6 +84,22 @@ declare namespace CocosEditor {
     /** Get asset reference by given local path and name. */
     function assetGetAtPath(args: { assetPath: string }): { reference: InstanceReference };
 
+    /** Resolve filesystem path and db:// url for an asset by its uuid. Lighter than query-asset-info when you only need locations. */
+    function assetResolvePath(args: { reference: InstanceReference }): { filesystemPath: string, url?: string };
+
+    /** Search the asset database with filters (glob pattern, ccType, importer, extname, isBundle). At least one filter required. */
+    function assetQuery(args: {
+        pattern?: string,
+        ccType?: string,
+        importer?: string,
+        extname?: string,
+        isBundle?: boolean,
+        limit?: number
+    }): { assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean };
+
+    /** Overwrite the content of an existing text-based asset (TypeScript, JSON, effect, txt...). Identify by db:// path or uuid. Binary not supported. */
+    function assetSaveContent(args: { assetPath?: string, reference?: InstanceReference, content: string }): { reference: InstanceReference, filesystemPath?: string };
+
     /** Create empty asset or folder of given type. */
     function assetCreate(args: {
         assetPath: string,
@@ -139,6 +155,27 @@ declare namespace CocosEditor {
     /** Open a scene by its uuid. Complements editorOperate save/close (no open). Resolve uuid via assetGetAtPath if you only have the path. */
     function sceneOpen(args: { reference: InstanceReference }): { success: boolean, error?: string };
 
+    /** Get info about the current scene: its bounds (canvas/scene size) and whether it has unsaved changes (dirty). */
+    function sceneGetInfo(): { bounds: { x: number, y: number, width: number, height: number }, dirty: boolean };
+
+    /** Find all nodes in the current scene that reference the given asset uuid (reverse-reference / impact analysis). */
+    function findNodesByAsset(args: { reference: InstanceReference }): { references: InstanceReference[] };
+
+    /** Execute a method on a component by its uuid. Arguments and return value must be JSON-serializable. Get the component uuid via nodeComponentsGet. */
+    function callComponentMethod(args: { reference: InstanceReference, methodName: string, methodArgs?: any[] }): { result: any };
+
+    /** List classes known to the editor, optionally filtered by base class (e.g. "cc.Component"). Helps resolve valid class names before nodeComponentAdd. */
+    function listComponentClasses(args: { extends?: string, excludeSelf?: boolean, filter?: string }): { classes: string[] };
+
+    /** Copy/cut/paste nodes. For paste pass targetReference plus the copied references. Returns references of pasted nodes for paste. */
+    function nodeClipboard(args: {
+        operation: "copy" | "cut" | "paste",
+        references: InstanceReference[],
+        targetReference?: InstanceReference,
+        keepWorldTransform?: boolean,
+        pasteAsChild?: boolean
+    }): { success: boolean, references?: InstanceReference[] };
+
     /** Get the hierarchy tree of specific node or scene root. */
     function nodeGetTree(args: { reference?: InstanceReference }): IHierarchyTree;
 
@@ -172,6 +209,17 @@ declare namespace CocosEditor {
         updatedNodeReference?: InstanceReference,
         copiedNodeReference?: InstanceReference
     };
+
+    /** Get info about the current editor environment: editor version, engine version and paths, native engine info, current project path. */
+    function editorEnvInfo(): { editor: string, engineVersion: string, enginePath?: string, nativeVersion?: string, nativePath?: string, projectPath: string };
+
+    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool. Frame nodes before editorGetScenePreview. */
+    function editorViewport(args: {
+        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_gizmo_tool",
+        references?: InstanceReference[],
+        enabled?: boolean,
+        gizmoTool?: "move" | "rotate" | "scale" | "rect"
+    }): { success: boolean, error?: string };
 
     /** Common editor operations for scene and prefab view. */
     function editorOperate(args: {

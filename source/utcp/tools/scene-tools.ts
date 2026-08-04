@@ -25,6 +25,179 @@ export class SceneTools {
     }
 
     @utcpTool(
+        'sceneGetInfo',
+        'Get info about the current scene: its bounds (canvas/scene size) and whether it has unsaved changes (dirty).',
+        { type: 'object', properties: {} },
+        {
+            type: 'object',
+            properties: {
+                bounds: {
+                    type: 'object',
+                    properties: { x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number' }, height: { type: 'number' } },
+                    required: ['x', 'y', 'width', 'height']
+                },
+                dirty: { type: 'boolean' }
+            },
+            required: ['bounds', 'dirty']
+        }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved']
+    )
+    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean }> {
+        const bounds = await Editor.Message.request('scene', 'query-scene-bounds');
+        if (!bounds) {
+            throw new Error('Failed to query scene bounds');
+        }
+        const dirty = await Editor.Message.request('scene', 'query-dirty');
+        return { bounds, dirty: !!dirty };
+    }
+
+    @utcpTool(
+        'findNodesByAsset',
+        'Find all nodes in the current scene that reference the given asset uuid (prefab instances, nodes using a material/texture/sprite/animation clip...). Reverse-reference / impact analysis.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema
+            },
+            required: ['reference']
+        },
+        { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET", ['scene', 'node', 'find', 'asset', 'reference', 'usage', 'impact']
+    )
+    async findNodesByAsset(args: { reference: IInstanceReference }): Promise<{ references: IInstanceReference[] }> {
+        if (!args.reference || !args.reference.id) {
+            throw new Error('findNodesByAsset requires reference.id (asset uuid)');
+        }
+        const nodeUuids = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', args.reference.id);
+        if (!Array.isArray(nodeUuids)) {
+            throw new Error(`Unexpected result querying nodes for asset ${args.reference.id}`);
+        }
+        return { references: nodeUuids.map((uuid: string) => ({ id: uuid, type: 'cc.Node' })) };
+    }
+
+    @utcpTool(
+        'callComponentMethod',
+        'Execute a method on a specific component by its uuid. Arguments and return value must be JSON-serializable. Get the component uuid via nodeComponentsGet.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                methodName: { type: 'string', description: 'Name of the method to call' },
+                methodArgs: { type: 'array', items: {}, description: 'Arguments to pass to the method (JSON-serializable)' }
+            },
+            required: ['reference', 'methodName']
+        },
+        { type: 'object', properties: { result: {} } }, "POST", ['scene', 'component', 'call', 'execute', 'method', 'invoke', 'script']
+    )
+    async callComponentMethod(args: { reference: IInstanceReference, methodName: string, methodArgs?: any[] }): Promise<{ result: any }> {
+        if (!args.reference || !args.reference.id) {
+            throw new Error('callComponentMethod requires reference.id (component uuid)');
+        }
+        const result = await Editor.Message.request('scene', 'execute-component-method', {
+            uuid: args.reference.id,
+            name: args.methodName,
+            args: args.methodArgs || []
+        });
+        // The method may mutate scene state; snapshot so undo covers it
+        await Editor.Message.request('scene', 'snapshot');
+        return { result: result === undefined ? null : result };
+    }
+
+    @utcpTool(
+        'listComponentClasses',
+        'List classes known to the editor, optionally filtered by base class (e.g. "cc.Component"). Helps resolve valid class names before nodeComponentAdd.',
+        {
+            type: 'object',
+            properties: {
+                extends: { type: 'string', description: 'Base class name to filter by, e.g. cc.Component' },
+                excludeSelf: { type: 'boolean', description: 'Exclude the base class itself from results', default: false },
+                filter: { type: 'string', description: 'Case-insensitive substring match on class name' }
+            }
+        },
+        { type: 'object', properties: { classes: { type: 'array', items: { type: 'string' } } }, required: ['classes'] }, "GET", ['scene', 'class', 'component', 'list', 'types', 'script']
+    )
+    async listComponentClasses(args: { extends?: string, excludeSelf?: boolean, filter?: string }): Promise<{ classes: string[] }> {
+        const options: { extends?: string, excludeSelf?: boolean } = {};
+        if (args.extends) {
+            options.extends = args.extends;
+        }
+        if (args.excludeSelf) {
+            options.excludeSelf = true;
+        }
+        const classes = await Editor.Message.request('scene', 'query-classes', options);
+        if (!Array.isArray(classes)) {
+            throw new Error('Failed to query classes');
+        }
+        const lowerFilter = args.filter ? args.filter.toLowerCase() : null;
+        const names = classes
+            .map((c: any) => (c && c.name) as string)
+            .filter((name: any) => typeof name === 'string' && (!lowerFilter || name.toLowerCase().includes(lowerFilter)));
+        return { classes: names };
+    }
+
+    @utcpTool(
+        'nodeClipboard',
+        'Copy/cut/paste nodes. copy: store nodes in the editor clipboard; cut: remove nodes and store them; paste: paste previously copied nodes into a target node (returns references of the pasted nodes).',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['copy', 'cut', 'paste'] },
+                references: { type: 'array', items: InstanceReferenceSchema, description: 'For copy/cut: the nodes to copy/cut. For paste: the copied node references to paste.' },
+                targetReference: InstanceReferenceSchema,
+                keepWorldTransform: { type: 'boolean', description: 'For paste: keep world transform of pasted nodes', default: true },
+                pasteAsChild: { type: 'boolean', description: 'For paste: paste as child of the target node', default: false }
+            },
+            required: ['operation', 'references']
+        },
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                references: { type: 'array', items: InstanceReferenceSchema }
+            },
+            required: ['success']
+        }, "POST", ['scene', 'node', 'copy', 'cut', 'paste', 'clipboard']
+    )
+    async nodeClipboard(args: { operation: string, references: IInstanceReference[], targetReference?: IInstanceReference, keepWorldTransform?: boolean, pasteAsChild?: boolean }):
+        Promise<{ success: boolean, references?: IInstanceReference[] }> {
+        const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
+        if (uuids.length === 0) {
+            throw new Error('nodeClipboard requires non-empty references');
+        }
+
+        switch (args.operation) {
+            case 'copy': {
+                const copied = await Editor.Message.request('scene', 'copy-node', uuids);
+                if (!Array.isArray(copied)) {
+                    throw new Error(`Copy failed for nodes ${uuids.join(', ')}`);
+                }
+                return { success: true, references: copied.map((id: string) => ({ id, type: 'cc.Node' })) };
+            }
+            case 'cut': {
+                await Editor.Message.request('scene', 'cut-node', uuids);
+                await Editor.Message.request('scene', 'snapshot');
+                return { success: true, references: uuids.map((id: string) => ({ id, type: 'cc.Node' })) };
+            }
+            case 'paste': {
+                if (!args.targetReference || !args.targetReference.id) {
+                    throw new Error('targetReference required for paste');
+                }
+                const pasted = await Editor.Message.request('scene', 'paste-node', {
+                    target: args.targetReference.id,
+                    uuids: uuids,
+                    keepWorldTransform: args.keepWorldTransform ?? true,
+                    pasteAsChild: args.pasteAsChild ?? false
+                });
+                if (!Array.isArray(pasted) || pasted.length === 0) {
+                    throw new Error('Paste returned no nodes');
+                }
+                await Editor.Message.request('scene', 'snapshot');
+                return { success: true, references: pasted.map((id: string) => ({ id, type: 'cc.Node' })) };
+            }
+            default:
+                throw new Error(`Unknown clipboard operation: ${args.operation}`);
+        }
+    }
+
+    @utcpTool(
         'nodeGetTree',
         'Get the hierarchy tree of specific node or scene root if no reference is provided. Children have recursive structure.',
         {
