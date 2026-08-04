@@ -136,6 +136,9 @@ declare namespace CocosEditor {
         componentType: string
     }): { reference: InstanceReference };
 
+    /** Open a scene by its uuid. Complements editorOperate save/close (no open). Resolve uuid via assetGetAtPath if you only have the path. */
+    function sceneOpen(args: { reference: InstanceReference }): { success: boolean, error?: string };
+
     /** Get the hierarchy tree of specific node or scene root. */
     function nodeGetTree(args: { reference?: InstanceReference }): IHierarchyTree;
 

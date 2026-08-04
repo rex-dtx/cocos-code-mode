@@ -1,8 +1,28 @@
 import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
-import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference } from '../schemas';
+import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
 
 export class SceneTools {
+
+    @utcpTool(
+        'sceneOpen',
+        'Open a scene by its uuid. Complements editorOperate save/close (which lack an open). If you only have the scene path, resolve its uuid first via assetGetAtPath/assetGetTree.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema
+            },
+            required: ['reference']
+        },
+        SuccessIndicatorSchema, "POST", ['scene', 'open', 'load', 'uuid', 'level']
+    )
+    async sceneOpen(args: { reference: IInstanceReference }): Promise<ISuccessIndicator> {
+        if (!args.reference || !args.reference.id) {
+            throw new Error('sceneOpen requires reference.id (scene uuid)');
+        }
+        await Editor.Message.request('scene', 'open-scene', args.reference.id);
+        return { success: true };
+    }
 
     @utcpTool(
         'nodeGetTree',
