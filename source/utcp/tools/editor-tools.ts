@@ -40,18 +40,18 @@ export class EditorTools {
 
     @utcpTool(
         'editorViewport',
-        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, set gizmo tool. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
+        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, set gizmo tool, align view or nodes. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_gizmo_tool'] },
+                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_gizmo_tool', 'align_view_to_selected_node', 'align_selected_node_to_view'] },
                 references: { type: 'array', items: InstanceReferenceSchema, description: 'For focus: nodes to focus the camera on' },
                 enabled: { type: 'boolean', description: 'For set_2d_mode / set_grid_visible' },
                 gizmoTool: { type: 'string', enum: ['move', 'rotate', 'scale', 'rect'], description: 'For set_gizmo_tool' }
             },
             required: ['operation']
         },
-        SuccessIndicatorSchema, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'frame']
+        SuccessIndicatorSchema, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'frame', 'align']
     )
     async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, gizmoTool?: string }): Promise<ISuccessIndicator> {
         switch (args.operation) {
@@ -75,8 +75,72 @@ export class EditorTools {
                 }
                 await Editor.Message.request('scene', 'change-gizmo-tool', args.gizmoTool);
                 return { success: true };
+            case 'align_view_to_selected_node':
+                // Moves the camera to frame the currently selected node(s) - select first via editorSelect
+                await Editor.Message.request('scene', 'align-view-with-node');
+                return { success: true };
+            case 'align_selected_node_to_view':
+                // Aligns the currently selected node(s) to the current camera view - select first via editorSelect
+                await Editor.Message.request('scene', 'align-with-view');
+                return { success: true };
             default:
                 throw new Error(`Unknown viewport operation: ${args.operation}`);
+        }
+    }
+
+    @utcpTool(
+        'editorSelect',
+        'Select, deselect, clear or query the editor selection for nodes or assets. Selecting a node reveals it in the hierarchy/inspector and enables align operations in editorViewport.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['select', 'unselect', 'clear', 'query'] },
+                selectionType: { type: 'string', enum: ['node', 'asset'], description: 'Selection domain', default: 'node' },
+                references: { type: 'array', items: InstanceReferenceSchema, description: 'For select/unselect: the items to select or deselect' }
+            },
+            required: ['operation']
+        },
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                selected: { type: 'array', items: { type: 'string' }, description: 'Currently selected uuids after the operation' },
+                lastSelected: { type: 'string' }
+            },
+            required: ['success']
+        }, "POST", ['editor', 'select', 'selection', 'hierarchy', 'inspector', 'highlight']
+    )
+    async editorSelect(args: { operation: string, selectionType?: string, references?: IInstanceReference[] }):
+        Promise<{ success: boolean, selected?: string[], lastSelected?: string }> {
+        const type = args.selectionType === 'asset' ? 'asset' : 'node';
+        const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
+
+        switch (args.operation) {
+            case 'select': {
+                if (uuids.length === 0) {
+                    throw new Error('references required for select');
+                }
+                Editor.Selection.select(type, uuids.length === 1 ? uuids[0] : uuids);
+                return { success: true, selected: Editor.Selection.getSelected(type) };
+            }
+            case 'unselect': {
+                if (uuids.length === 0) {
+                    throw new Error('references required for unselect');
+                }
+                Editor.Selection.unselect(type, uuids.length === 1 ? uuids[0] : uuids);
+                return { success: true, selected: Editor.Selection.getSelected(type) };
+            }
+            case 'clear':
+                Editor.Selection.clear(type);
+                return { success: true, selected: [] };
+            case 'query':
+                return {
+                    success: true,
+                    selected: Editor.Selection.getSelected(type),
+                    lastSelected: Editor.Selection.getLastSelected(type) || undefined
+                };
+            default:
+                throw new Error(`Unknown selection operation: ${args.operation}`);
         }
     }
 

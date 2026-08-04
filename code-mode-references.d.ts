@@ -213,13 +213,20 @@ declare namespace CocosEditor {
     /** Get info about the current editor environment: editor version, engine version and paths, native engine info, current project path. */
     function editorEnvInfo(): { editor: string, engineVersion: string, enginePath?: string, nativeVersion?: string, nativePath?: string, projectPath: string };
 
-    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool. Frame nodes before editorGetScenePreview. */
+    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool, align view/node (align ops act on the current selection). Frame nodes before editorGetScenePreview. */
     function editorViewport(args: {
-        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_gizmo_tool",
+        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_gizmo_tool" | "align_view_to_selected_node" | "align_selected_node_to_view",
         references?: InstanceReference[],
         enabled?: boolean,
         gizmoTool?: "move" | "rotate" | "scale" | "rect"
     }): { success: boolean, error?: string };
+
+    /** Select, deselect, clear or query the editor selection for nodes or assets. Enables align operations in editorViewport. */
+    function editorSelect(args: {
+        operation: "select" | "unselect" | "clear" | "query",
+        selectionType?: "node" | "asset",
+        references?: InstanceReference[]
+    }): { success: boolean, selected?: string[], lastSelected?: string };
 
     /** Common editor operations for scene and prefab view. */
     function editorOperate(args: {
