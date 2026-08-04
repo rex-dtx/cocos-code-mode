@@ -228,6 +228,27 @@ declare namespace CocosEditor {
         references?: InstanceReference[]
     }): { success: boolean, selected?: string[], lastSelected?: string };
 
+    /** Get info about a program registered with the editor (path and default command arguments). */
+    function programGetInfo(args: { programName: string }): { path: string, commandArgument?: string };
+
+    /** Launch a program registered with the editor (only registered programs, not arbitrary executables). */
+    function programOpen(args: { programName: string, commandArguments?: Record<string, any> }): { success: boolean, error?: string };
+
+    /** Open a URL in the system default browser. */
+    function urlOpen(args: { url: string }): { success: boolean, error?: string };
+
+    /** Read project settings: no args = all, type = one category (general, physics, sorting-layer...), type+key = one value. */
+    function projectGetConfig(args: { type?: string, key?: string }): { config: any };
+
+    /** Write project settings. Path = category name or dotted path (e.g. "general", "layer.3"). Caution: affects the whole project. */
+    function projectSetConfig(args: { path: string, value: any }): { success: boolean };
+
+    /** Get the URL of the editor game preview server. */
+    function previewGetUrl(): { url: string };
+
+    /** Open the current scene/game preview in the system default browser. */
+    function previewOpenInBrowser(): { success: boolean, error?: string };
+
     /** Common editor operations for scene and prefab view. */
     function editorOperate(args: {
         operation: "save_scene_or_prefab" | "close_scene_or_prefab" | "play_preview" | "pause" | "step" | "stop" | "refresh"
