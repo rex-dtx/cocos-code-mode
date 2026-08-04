@@ -8,6 +8,7 @@ import './tools/asset-tools';
 import './tools/component-tools';
 import './tools/scene-tools';
 import './tools/editor-tools';
+import './tools/build-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';

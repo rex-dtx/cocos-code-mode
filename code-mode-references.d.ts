@@ -233,6 +233,18 @@ declare namespace CocosEditor {
         order: "newest-to-oldest" | "oldest-to-newest"
     }): { logLines: string[] };
 
+    /** Open the editor build panel ('default' or 'build-bundle'). */
+    function buildPanelOpen(args: { panel?: "default" | "build-bundle" }): { success: boolean, error?: string };
+
+    /** Get build pipeline status: worker ready, queue free, and summary of all build tasks. */
+    function buildGetTasksInfo(): { workerReady: boolean, free: boolean, tasks: { id: string, progress: number, state: string, message?: string, time?: string, stage?: string, dirty?: boolean, name?: string, platform?: string, buildPath?: string }[] };
+
+    /** Get one build task by id: summary plus its FULL options object (clone + modify to trigger new builds). */
+    function buildGetTask(args: { taskId: string }): { task: { id: string, progress: number, state: string, message?: string, name?: string, platform?: string }, options?: any };
+
+    /** Enqueue a build task. Copy options from buildGetTask and modify instead of crafting from scratch. Poll status with buildGetTasksInfo. */
+    function buildTrigger(args: { options: any }): { success: boolean, taskId?: string };
+
     /** Returns preview image of scene view. */
     function editorGetScenePreview(args: {
         imageSize?: { width?: number, height?: number },
