@@ -100,6 +100,9 @@ declare namespace CocosEditor {
     /** Overwrite the content of an existing text-based asset (TypeScript, JSON, effect, txt...). Identify by db:// path or uuid. Binary not supported. */
     function assetSaveContent(args: { assetPath?: string, reference?: InstanceReference, content: string }): { reference: InstanceReference, filesystemPath?: string };
 
+    /** Returns an available (non-colliding) db:// url for a desired path - appends suffix if an asset exists there. */
+    function assetGetAvailableUrl(args: { assetPath: string }): { url: string };
+
     /** Create empty asset or folder of given type. */
     function assetCreate(args: {
         assetPath: string,
@@ -155,11 +158,17 @@ declare namespace CocosEditor {
     /** Open a scene by its uuid. Complements editorOperate save/close (no open). Resolve uuid via assetGetAtPath if you only have the path. */
     function sceneOpen(args: { reference: InstanceReference }): { success: boolean, error?: string };
 
-    /** Get info about the current scene: its bounds (canvas/scene size) and whether it has unsaved changes (dirty). */
-    function sceneGetInfo(): { bounds: { x: number, y: number, width: number, height: number }, dirty: boolean };
+    /** Get info about the current scene: bounds (canvas/scene size), unsaved changes (dirty), and which scene asset is open. */
+    function sceneGetInfo(): { bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, currentScene?: { uuid?: string, url?: string, name?: string } };
 
     /** Find all nodes in the current scene that reference the given asset uuid (reverse-reference / impact analysis). */
     function findNodesByAsset(args: { reference: InstanceReference }): { references: InstanceReference[] };
+
+    /** Find all nodes whose asset references are missing/broken. QA/health check for scene integrity. */
+    function findNodesWithMissingAssets(): { references: InstanceReference[] };
+
+    /** Reset nodes or one component back to default property values. operation "node" (uuids) or "component" (single uuid). */
+    function nodeReset(args: { operation: "node" | "component", references: InstanceReference[] }): { success: boolean, error?: string };
 
     /** Execute a method on a component by its uuid. Arguments and return value must be JSON-serializable. Get the component uuid via nodeComponentsGet. */
     function callComponentMethod(args: { reference: InstanceReference, methodName: string, methodArgs?: any[] }): { result: any };
@@ -212,6 +221,9 @@ declare namespace CocosEditor {
 
     /** Get info about the current editor environment: editor version, engine version and paths, native engine info, current project path. */
     function editorEnvInfo(): { editor: string, engineVersion: string, enginePath?: string, nativeVersion?: string, nativePath?: string, projectPath: string };
+
+    /** Undo or redo the last editor operation in the scene view. Use undo to roll back a failed or unwanted mutation. */
+    function editorHistory(args: { operation: "undo" | "redo" }): { success: boolean, error?: string };
 
     /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool, align view/node (align ops act on the current selection). Frame nodes before editorGetScenePreview. */
     function editorViewport(args: {

@@ -185,6 +185,29 @@ export class EditorTools {
     }
 
     @utcpTool(
+        'editorHistory',
+        'Undo or redo the last editor operation in the scene view (node/component/property changes recorded via snapshot). Use undo to roll back a failed or unwanted mutation.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['undo', 'redo'] }
+            },
+            required: ['operation']
+        },
+        SuccessIndicatorSchema, "POST", ['editor', 'undo', 'redo', 'history', 'rollback', 'revert']
+    )
+    async editorHistory(args: { operation: string }): Promise<ISuccessIndicator> {
+        if (args.operation === 'undo') {
+            await Editor.Message.request('scene', 'undo');
+        } else if (args.operation === 'redo') {
+            await Editor.Message.request('scene', 'redo');
+        } else {
+            throw new Error(`Unknown history operation: ${args.operation}`);
+        }
+        return { success: true };
+    }
+
+    @utcpTool(
         'editorGetLogs',
         'Get last N editor log entries',
         {

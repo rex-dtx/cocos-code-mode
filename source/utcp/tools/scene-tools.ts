@@ -26,7 +26,7 @@ export class SceneTools {
 
     @utcpTool(
         'sceneGetInfo',
-        'Get info about the current scene: its bounds (canvas/scene size) and whether it has unsaved changes (dirty).',
+        'Get info about the current scene: its bounds (canvas/scene size), whether it has unsaved changes (dirty), and which scene asset is currently open.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -36,18 +36,37 @@ export class SceneTools {
                     properties: { x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number' }, height: { type: 'number' } },
                     required: ['x', 'y', 'width', 'height']
                 },
-                dirty: { type: 'boolean' }
+                dirty: { type: 'boolean' },
+                currentScene: {
+                    type: 'object',
+                    properties: { uuid: { type: 'string' }, url: { type: 'string' }, name: { type: 'string' } }
+                }
             },
             required: ['bounds', 'dirty']
-        }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved']
+        }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved', 'current']
     )
-    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean }> {
+    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, currentScene?: { uuid?: string, url?: string, name?: string } }> {
         const bounds = await Editor.Message.request('scene', 'query-scene-bounds');
         if (!bounds) {
             throw new Error('Failed to query scene bounds');
         }
         const dirty = await Editor.Message.request('scene', 'query-dirty');
-        return { bounds, dirty: !!dirty };
+
+        // query-current-scene result shape varies by version (uuid string or info object)
+        let currentScene: { uuid?: string, url?: string, name?: string } | undefined;
+        try {
+            const current = await Editor.Message.request('scene', 'query-current-scene');
+            if (typeof current === 'string' && current) {
+                currentScene = { uuid: current };
+            } else if (current && typeof current === 'object') {
+                currentScene = current as any;
+            }
+        } catch (e) {
+            // No scene open or message unavailable - bounds/dirty still valid
+            currentScene = undefined;
+        }
+
+        return { bounds, dirty: !!dirty, currentScene };
     }
 
     @utcpTool(
@@ -71,6 +90,66 @@ export class SceneTools {
             throw new Error(`Unexpected result querying nodes for asset ${args.reference.id}`);
         }
         return { references: nodeUuids.map((uuid: string) => ({ id: uuid, type: 'cc.Node' })) };
+    }
+
+    @utcpTool(
+        'findNodesWithMissingAssets',
+        'Find all nodes in the current scene whose asset references are missing/broken (deleted or moved assets, unlinked prefabs). QA/health check for scene integrity.',
+        { type: 'object', properties: {} },
+        { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET", ['scene', 'node', 'missing', 'broken', 'asset', 'qa', 'health', 'integrity']
+    )
+    async findNodesWithMissingAssets(): Promise<{ references: IInstanceReference[] }> {
+        const result = await Editor.Message.request('scene', 'query-nodes-miss-assets');
+        if (!result) {
+            return { references: [] };
+        }
+        if (!Array.isArray(result)) {
+            throw new Error('Unexpected result from query-nodes-miss-assets');
+        }
+        // Items may be uuid strings or objects with uuid/name depending on version
+        return {
+            references: result.map((item: any) => ({
+                id: typeof item === 'string' ? item : (item.uuid || item.id),
+                type: 'cc.Node'
+            })).filter((ref: IInstanceReference) => !!ref.id)
+        };
+    }
+
+    @utcpTool(
+        'nodeReset',
+        'Reset nodes or one component back to their default property values. operation "node" resets all given nodes; operation "component" resets a single component.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['node', 'component'] },
+                references: { type: 'array', items: InstanceReferenceSchema, description: 'For node: node uuids to reset. For component: exactly one component uuid.' }
+            },
+            required: ['operation', 'references']
+        },
+        SuccessIndicatorSchema, "POST", ['scene', 'node', 'component', 'reset', 'default', 'revert']
+    )
+    async nodeReset(args: { operation: string, references: IInstanceReference[] }): Promise<ISuccessIndicator> {
+        const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
+        if (uuids.length === 0) {
+            throw new Error('nodeReset requires non-empty references');
+        }
+
+        if (args.operation === 'node') {
+            const ok = await Editor.Message.request('scene', 'reset-node', { uuid: uuids.length === 1 ? uuids[0] : uuids });
+            if (!ok) {
+                throw new Error(`Failed to reset nodes ${uuids.join(', ')}`);
+            }
+        } else if (args.operation === 'component') {
+            if (uuids.length !== 1) {
+                throw new Error('nodeReset operation "component" requires exactly one component uuid');
+            }
+            await Editor.Message.request('scene', 'reset-component', { uuid: uuids[0] });
+        } else {
+            throw new Error(`Unknown reset operation: ${args.operation}`);
+        }
+
+        await Editor.Message.request('scene', 'snapshot');
+        return { success: true };
     }
 
     @utcpTool(

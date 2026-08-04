@@ -280,6 +280,29 @@ export class AssetTools {
     }
 
     @utcpTool(
+        'assetGetAvailableUrl',
+        'Given a desired db:// path, returns an available (non-colliding) url - appends a suffix if an asset already exists at that path. Use before assetCreate/assetImport when overwriting is not wanted.',
+        {
+            type: 'object',
+            properties: {
+                assetPath: { type: 'string', description: 'Desired db:// or project-relative path' }
+            },
+            required: ['assetPath']
+        },
+        { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] }, "GET", ['asset', 'available', 'url', 'collision', 'unique', 'name']
+    )
+    async assetGetAvailableUrl(args: { assetPath: string }): Promise<{ url: string }> {
+        if (!args.assetPath) {
+            throw new Error('assetGetAvailableUrl requires assetPath');
+        }
+        const url = await Editor.Message.request('asset-db', 'generate-available-url', normalizePath(args.assetPath));
+        if (!url) {
+            throw new Error(`Failed to generate available url for ${args.assetPath}`);
+        }
+        return { url };
+    }
+
+    @utcpTool(
         'assetCreate',
         'Create empty asset or folder of given type. Automatically handles folders creation along the path. Returns reference to the new asset.',
         {
