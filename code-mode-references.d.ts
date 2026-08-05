@@ -240,6 +240,27 @@ declare namespace CocosEditor {
         references?: InstanceReference[]
     }): { success: boolean, selected?: string[], lastSelected?: string };
 
+    /** Read animation data. Start with root_info on any node. clip_dump returns a track summary unless includeCurves is set. */
+    function animationQuery(args: {
+        operation: "root_info" | "root" | "edit_info" | "clips_info" | "clip_dump" | "properties" | "state" | "current_info" | "clip_time" | "value_at_frame",
+        nodeReference?: InstanceReference,
+        clipReference?: InstanceReference,
+        includeCurves?: boolean,
+        nodePath?: string,
+        propKey?: string,
+        frame?: number
+    }): { result: any };
+
+    /** Edit animation clips. Flow: record_start (root node + clip) -> operate -> save_clip -> record_stop. */
+    function animationEdit(args: {
+        operation: "record_start" | "record_stop" | "change_root" | "set_edit_clip" | "set_edit_time" | "clip_state" | "save_clip" | "operate",
+        nodeReference?: InstanceReference,
+        clipReference?: InstanceReference,
+        time?: number,
+        clipState?: "play" | "pause" | "resume" | "stop",
+        operations?: { funcName: string, args: any[] }[]
+    }): { success: boolean, error?: string, result?: any };
+
     /** Get info about a program registered with the editor (path and default command arguments). */
     function programGetInfo(args: { programName: string }): { path: string, commandArgument?: string };
 

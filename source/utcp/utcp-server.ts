@@ -12,6 +12,7 @@ import './tools/build-tools';
 import './tools/program-tools';
 import './tools/project-tools';
 import './tools/preview-tools';
+import './tools/animation-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
