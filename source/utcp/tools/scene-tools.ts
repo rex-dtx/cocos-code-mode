@@ -490,29 +490,30 @@ export class SceneTools {
 
     @utcpTool(
         'nodeOperate',
-        'Perform operation on referenced node, including prefab operations and hierarchy locking (a locked node cannot be edited or selected in the scene view).',
+        'Perform operation on referenced node, including prefab operations and hierarchy locking (a locked node cannot be edited or selected in the scene view). "link_prefab" binds an existing plain node to a prefab asset (the inverse of unwrap_prefab); "create_prefab" instead saves the node AS a new prefab asset.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['move', 'copy', 'delete', 'lock', 'unlock', 'create_prefab', 'revert_prefab', 'apply_prefab', 'unwrap_prefab', 'unwrap_prefab_completely', 'open_prefab'] },
+                operation: { type: 'string', enum: ['move', 'copy', 'delete', 'lock', 'unlock', 'create_prefab', 'link_prefab', 'revert_prefab', 'apply_prefab', 'unwrap_prefab', 'unwrap_prefab_completely', 'open_prefab'] },
                 reference: InstanceReferenceSchema,
                 newParentReference: InstanceReferenceSchema,
                 newPrefabPath: { type: 'string', description: 'For create_prefab: target db:// path', nullable: true },
+                prefabAssetReference: InstanceReferenceSchema,
                 siblingIndex: { type: 'integer', description: 'For move/copy: target index in parent children array', nullable: true },
                 recursive: { type: 'boolean', description: 'For lock/unlock: also apply to all descendants', default: false }
             },
             required: ['operation', 'reference']
         },
-        { type: 'object', 
+        { type: 'object',
             properties: {
                 success: { type: 'boolean' },
                 createdPrefabAssetReference: InstanceReferenceSchema,
                 updatedNodeReference: InstanceReferenceSchema,
                 copiedNodeReference: InstanceReferenceSchema
             }
-        }, "POST",  ['scene', 'node', 'remove', 'move', 'copy', 'delete', 'lock', 'unlock', 'prefab', 'apply', 'revert', 'unwrap', 'create']
+        }, "POST",  ['scene', 'node', 'remove', 'move', 'copy', 'delete', 'lock', 'unlock', 'prefab', 'apply', 'revert', 'unwrap', 'create', 'link', 'bind']
     )
-    async nodeOperate(args: { operation: string, reference: IInstanceReference, newParentReference?: IInstanceReference, newPrefabPath?: string, siblingIndex?: number, recursive?: boolean }):
+    async nodeOperate(args: { operation: string, reference: IInstanceReference, newParentReference?: IInstanceReference, newPrefabPath?: string, prefabAssetReference?: IInstanceReference, siblingIndex?: number, recursive?: boolean }):
         Promise<{ success?: boolean, createdPrefabAssetReference?: IInstanceReference, updatedNodeReference?: IInstanceReference, copiedNodeReference?: IInstanceReference }> {
         if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
             throw new Error(`Target node ${args.reference.id} not found`);
@@ -604,7 +605,20 @@ export class SceneTools {
                 await Editor.Message.request('scene', 'snapshot');
 
                 return { success: true, createdPrefabAssetReference: { id: createdPrefabUuid, type: 'cc.Prefab' }, updatedNodeReference: { id: updatedNodeId, type: 'cc.Node' } };
-                 
+
+            case 'link_prefab': {
+                if (!args.prefabAssetReference || !args.prefabAssetReference.id) {
+                    throw new Error('prefabAssetReference required for link_prefab');
+                }
+                const prefabInfo = await Editor.Message.request('asset-db', 'query-asset-info', args.prefabAssetReference.id);
+                if (!prefabInfo) {
+                    throw new Error(`Prefab asset ${args.prefabAssetReference.id} not found`);
+                }
+                await Editor.Message.request('scene', 'link-prefab', args.reference.id, args.prefabAssetReference.id);
+                await Editor.Message.request('scene', 'snapshot');
+                return { success: true };
+            }
+
             case 'revert_prefab':
                 const revertSuccess = await Editor.Message.request('scene', 'restore-prefab', { uuid: args.reference.id });
 

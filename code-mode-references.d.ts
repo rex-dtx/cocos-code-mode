@@ -75,6 +75,15 @@ declare namespace CocosEditor {
         values: any[]
     }): { success: boolean, error?: string };
 
+    /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSetInstanceProperties, which replaces the whole array and loses object references. */
+    function propertyArrayElement(args: {
+        operation: "remove" | "move",
+        reference: InstanceReference,
+        propertyPath: string,
+        index: number,
+        toIndex?: number
+    }): { success: boolean, error?: string };
+
     /** Get the asset and subAsset hierarchy tree. */
     function assetGetTree(args: {
         reference?: InstanceReference,
@@ -86,6 +95,14 @@ declare namespace CocosEditor {
 
     /** Resolve filesystem path and db:// url for an asset by its uuid. Lighter than query-asset-info when you only need locations. */
     function assetResolvePath(args: { reference: InstanceReference }): { filesystemPath: string, url?: string };
+
+    /** Asset-level dependency analysis: used_by = assets/scripts referencing this asset (who breaks if deleted), depends_on = assets it references. Wider than findNodesByAsset, which only scans the open scene. */
+    function assetFindReferences(args: {
+        direction: "used_by" | "depends_on",
+        reference: InstanceReference,
+        assetKind?: "asset" | "script" | "all",
+        resolveUrls?: boolean
+    }): { references: InstanceReference[], assets?: { uuid: string, url?: string, type?: string }[], total: number };
 
     /** Search the asset database with filters (glob pattern, ccType, importer, extname, isBundle). At least one filter required. */
     function assetQuery(args: {
@@ -205,12 +222,13 @@ declare namespace CocosEditor {
         assetReference?: InstanceReference
     }): { reference: InstanceReference };
 
-    /** Perform operation on referenced node, including prefab operations and hierarchy lock/unlock. */
+    /** Perform operation on referenced node, including prefab operations and hierarchy lock/unlock. link_prefab binds an existing node to a prefab asset (inverse of unwrap_prefab). */
     function nodeOperate(args: {
-        operation: "move" | "copy" | "delete" | "lock" | "unlock" | "create_prefab" | "revert_prefab" | "apply_prefab" | "unwrap_prefab" | "unwrap_prefab_completely" | "open_prefab",
+        operation: "move" | "copy" | "delete" | "lock" | "unlock" | "create_prefab" | "link_prefab" | "revert_prefab" | "apply_prefab" | "unwrap_prefab" | "unwrap_prefab_completely" | "open_prefab",
         reference: InstanceReference,
         newParentReference?: InstanceReference,
         newPrefabPath?: string,
+        prefabAssetReference?: InstanceReference,
         siblingIndex?: number,
         recursive?: boolean
     }): {
@@ -245,6 +263,19 @@ declare namespace CocosEditor {
 
     /** Enumerate editor type vocabularies: assetCreate presets, cc.* asset types, or registered importers (the latter two are valid assetQuery filters). */
     function editorListTypes(args: { category: "creatable_assets" | "asset_types" | "importers" }): { types: string[] };
+
+    /** Introspect editor/scene state: scene_mode (scene vs prefab vs animation - check before mutating), ready (scene loaded), enum_values (legal values of an enum property), layers / sorting_layers, script_info (class name + cid of a script asset). */
+    function editorIntrospect(args: {
+        category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info",
+        enumPath?: string,
+        reference?: InstanceReference
+    }): {
+        sceneMode?: string,
+        ready?: boolean,
+        values?: { name?: string, value?: any }[],
+        scriptName?: string,
+        scriptCid?: string
+    };
 
     /** Read animation data. Start with root_info on any node. clip_dump returns a track summary unless includeCurves is set. */
     function animationQuery(args: {
@@ -288,10 +319,10 @@ declare namespace CocosEditor {
     /** Open the current scene/game preview in the system default browser. */
     function previewOpenInBrowser(): { success: boolean, error?: string };
 
-    /** Common editor operations for scene and prefab view. */
+    /** Common editor operations for scene and prefab view. save_as returns the new scene asset reference; soft_reload reloads the scene in place after scripts changed. */
     function editorOperate(args: {
-        operation: "save_scene_or_prefab" | "close_scene_or_prefab" | "play_preview" | "pause" | "step" | "stop" | "refresh"
-    }): { success: boolean, error?: string };
+        operation: "save_scene_or_prefab" | "save_as" | "close_scene_or_prefab" | "soft_reload" | "play_preview" | "pause" | "step" | "stop" | "refresh"
+    }): { success: boolean, error?: string, reference?: InstanceReference };
 
     /** Get last N editor log entries. */
     function editorGetLogs(args: {

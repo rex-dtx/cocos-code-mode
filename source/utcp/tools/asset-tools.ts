@@ -164,6 +164,85 @@ export class AssetTools {
     }
 
     @utcpTool(
+        'assetFindReferences',
+        'Asset-level dependency analysis. "used_by" lists the assets/scripts that reference the given asset (who breaks if it is deleted); "depends_on" lists the assets it references itself. Complements findNodesByAsset, which only looks inside the currently open scene.',
+        {
+            type: 'object',
+            properties: {
+                direction: { type: 'string', enum: ['used_by', 'depends_on'] },
+                reference: InstanceReferenceSchema,
+                assetKind: { type: 'string', enum: ['asset', 'script', 'all'], description: 'Which kind of referrer/dependency to include', default: 'all' },
+                resolveUrls: { type: 'boolean', description: 'Also resolve the db:// url and type of each result (one extra query per uuid)', default: false }
+            },
+            required: ['direction', 'reference']
+        },
+        {
+            type: 'object',
+            properties: {
+                references: { type: 'array', items: InstanceReferenceSchema },
+                assets: {
+                    type: 'array',
+                    items: { type: 'object', properties: { uuid: { type: 'string' }, url: { type: 'string' }, type: { type: 'string' } } },
+                    description: 'Only present when resolveUrls is true'
+                },
+                total: { type: 'number' }
+            },
+            required: ['references', 'total']
+        }, "GET", ['asset', 'reference', 'dependency', 'dependencies', 'used', 'usage', 'impact', 'who', 'delete', 'safe']
+    )
+    async assetFindReferences(args: { direction: string, reference: IInstanceReference, assetKind?: string, resolveUrls?: boolean }):
+        Promise<{ references: IInstanceReference[], assets?: Array<{ uuid: string, url?: string, type?: string }>, total: number }> {
+        if (!args.reference || !args.reference.id) {
+            throw new Error('assetFindReferences requires reference.id (asset uuid or db:// url)');
+        }
+        const kind = args.assetKind || 'all';
+
+        // Message names were renamed between editor versions: 3.8.x uses the corrected
+        // spelling, 3.7.x shipped 'query-asset-used' / 'query-asset-dependinces' (sic).
+        const candidates = args.direction === 'used_by'
+            ? ['query-asset-users', 'query-asset-used']
+            : args.direction === 'depends_on'
+                ? ['query-asset-dependencies', 'query-asset-dependinces']
+                : [];
+        if (candidates.length === 0) {
+            throw new Error(`Unknown direction: ${args.direction}`);
+        }
+
+        let raw: any;
+        let lastError: any;
+        for (const message of candidates) {
+            try {
+                raw = await Editor.Message.request('asset-db', message, args.reference.id, kind);
+                lastError = undefined;
+                break;
+            } catch (error) {
+                lastError = error;
+            }
+        }
+        if (lastError) {
+            throw new Error(`Failed to query asset ${args.direction} for ${args.reference.id}. Tried ${candidates.join(', ')}. Reason: ${(lastError as any)?.message || lastError}`);
+        }
+
+        // Result is documented as string[] but be tolerant of info objects
+        const list: any[] = Array.isArray(raw) ? raw : [];
+        const uuids = list
+            .map((item: any) => typeof item === 'string' ? item : (item?.uuid || item?.id))
+            .filter((uuid: any): uuid is string => typeof uuid === 'string' && !!uuid);
+
+        const references: IInstanceReference[] = uuids.map((uuid) => ({ id: uuid }));
+        if (!args.resolveUrls) {
+            return { references, total: references.length };
+        }
+
+        const assets: Array<{ uuid: string, url?: string, type?: string }> = [];
+        for (const uuid of uuids) {
+            const info: AssetInfo | null = await Editor.Message.request('asset-db', 'query-asset-info', uuid);
+            assets.push({ uuid, url: info?.url, type: info?.type });
+        }
+        return { references, assets, total: references.length };
+    }
+
+    @utcpTool(
         'assetQuery',
         'Search the asset database with filters: glob pattern, asset type (ccType), importer, extension or bundle flag. Returns a slim list of matching assets. Use for asset discovery (e.g. all prefabs under a folder, all spine skeletons of a game). At least one filter is required.',
         {

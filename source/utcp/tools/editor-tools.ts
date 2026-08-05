@@ -228,24 +228,125 @@ export class EditorTools {
     }
 
     @utcpTool(
-        'editorOperate',
-        'Common editor operations for scene and prefab view, game preview controls and asset database refresh',
+        'editorIntrospect',
+        'Introspect the editor/scene state that is not visible from node data. "scene_mode" tells whether the scene view currently edits a scene, a prefab, an animation or a preview - CRITICAL before mutating, because edits in prefab mode go into the prefab asset, not the scene. "ready" reports whether the scene is done loading (poll after sceneOpen). "enum_values" lists the legal values of an enum property (pass the enum path from the property dump) so a setter cannot be called with an invalid number. "layers" / "sorting_layers" list the project-defined layer vocabularies. "script_info" resolves a script asset uuid to its class name and cid.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['save_scene_or_prefab', 'close_scene_or_prefab', 'play_preview', 'pause', 'step', 'stop', 'refresh'] }
+                category: { type: 'string', enum: ['scene_mode', 'ready', 'enum_values', 'layers', 'sorting_layers', 'script_info'] },
+                enumPath: { type: 'string', description: 'For enum_values: the enum path reported by the property dump, e.g. "cc.Sprite.SizeMode"' },
+                reference: InstanceReferenceSchema
+            },
+            required: ['category']
+        },
+        {
+            type: 'object',
+            properties: {
+                sceneMode: { type: 'string', description: 'general | prefab | animation | preview | "" (nothing open)' },
+                ready: { type: 'boolean' },
+                values: {
+                    type: 'array',
+                    items: { type: 'object', properties: { name: { type: 'string' }, value: {} } },
+                    description: 'For enum_values / layers / sorting_layers'
+                },
+                scriptName: { type: 'string' },
+                scriptCid: { type: 'string' }
+            }
+        }, "GET", ['editor', 'introspect', 'mode', 'prefab', 'ready', 'enum', 'layer', 'sorting', 'script', 'cid', 'validation']
+    )
+    async editorIntrospect(args: { category: string, enumPath?: string, reference?: IInstanceReference }):
+        Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string }> {
+        // Enumerator / layer results are {name, value} lists but the exact item shape is
+        // not guaranteed across versions - normalize defensively instead of asserting.
+        const normalizeList = (raw: any): Array<{ name?: string, value?: any }> => {
+            if (!raw) {
+                return [];
+            }
+            const items: any[] = Array.isArray(raw) ? raw : Object.entries(raw).map(([name, value]) => ({ name, value }));
+            return items.map((item: any) => typeof item === 'object' && item !== null
+                ? { name: item.name ?? item.key, value: item.value }
+                : { name: String(item), value: item });
+        };
+
+        switch (args.category) {
+            case 'scene_mode': {
+                const mode = await Editor.Message.request('scene', 'query-scene-mode');
+                return { sceneMode: typeof mode === 'string' ? mode : String(mode ?? '') };
+            }
+            case 'ready':
+                return { ready: !!(await Editor.Message.request('scene', 'query-is-ready')) };
+
+            case 'enum_values': {
+                if (!args.enumPath) {
+                    throw new Error('editorIntrospect category "enum_values" requires enumPath');
+                }
+                const raw = await Editor.Message.request('scene', 'query-enum-list-with-path', args.enumPath);
+                if (raw === null || raw === undefined) {
+                    throw new Error(`No enum found at path "${args.enumPath}"`);
+                }
+                return { values: normalizeList(raw) };
+            }
+            case 'layers':
+                return { values: normalizeList(await Editor.Message.request('scene', 'query-layer-builtin')) };
+
+            case 'sorting_layers':
+                return { values: normalizeList(await Editor.Message.request('scene', 'query-sorting-layer-builtin')) };
+
+            case 'script_info': {
+                if (!args.reference || !args.reference.id) {
+                    throw new Error('editorIntrospect category "script_info" requires reference.id (script asset uuid)');
+                }
+                const name = await Editor.Message.request('scene', 'query-script-name', args.reference.id);
+                const cid = await Editor.Message.request('scene', 'query-script-cid', args.reference.id);
+                return {
+                    scriptName: typeof name === 'string' ? name : undefined,
+                    scriptCid: typeof cid === 'string' ? cid : undefined
+                };
+            }
+            default:
+                throw new Error(`Unknown introspect category: ${args.category}`);
+        }
+    }
+
+    @utcpTool(
+        'editorOperate',
+        'Common editor operations for scene and prefab view, game preview controls and asset database refresh. "save_as" saves the current scene to a new asset (the editor opens a file dialog and returns the new uuid). "soft_reload" reloads the scene in place - use it after scripts were recompiled so the scene picks up changed component classes.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['save_scene_or_prefab', 'save_as', 'close_scene_or_prefab', 'soft_reload', 'play_preview', 'pause', 'step', 'stop', 'refresh'] }
             },
             required: ['operation']
         },
-        SuccessIndicatorSchema, "POST",  ['operation', 'editor', 'scene', 'prefab', 'preview', 'asset', 'refresh']
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                error: { type: 'string' },
+                reference: InstanceReferenceSchema
+            },
+            required: ['success']
+        }, "POST",  ['operation', 'editor', 'scene', 'prefab', 'preview', 'asset', 'refresh', 'save', 'reload', 'recompile']
     )
-    async editorOperate(args: { operation: string }): Promise<ISuccessIndicator> {
+    async editorOperate(args: { operation: string }): Promise<ISuccessIndicator & { reference?: IInstanceReference }> {
         switch (args.operation) {
             case 'save_scene_or_prefab':
                 await Editor.Message.request('scene', 'save-scene');
                 return { success: true };
+            case 'save_as': {
+                // Opens a save dialog in the editor; resolves to the new scene uuid or
+                // undefined when the user cancels.
+                const uuid = await Editor.Message.request('scene', 'save-as-scene');
+                if (!uuid) {
+                    throw new Error('Save as was cancelled or failed - no new scene asset was created');
+                }
+                return { success: true, reference: { id: uuid, type: 'cc.SceneAsset' } };
+            }
             case 'close_scene_or_prefab':
                 await Editor.Message.request('scene', 'close-scene');
+                return { success: true };
+            case 'soft_reload':
+                await Editor.Message.request('scene', 'soft-reload');
                 return { success: true };
             case 'play_preview':
                 await Editor.Message.request('scene', 'editor-preview-set-play', true);
