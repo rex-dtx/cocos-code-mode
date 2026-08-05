@@ -205,13 +205,14 @@ declare namespace CocosEditor {
         assetReference?: InstanceReference
     }): { reference: InstanceReference };
 
-    /** Perform operation on referenced node, including prefab operations. */
+    /** Perform operation on referenced node, including prefab operations and hierarchy lock/unlock. */
     function nodeOperate(args: {
-        operation: "move" | "copy" | "delete" | "create_prefab" | "revert_prefab" | "apply_prefab" | "unwrap_prefab" | "unwrap_prefab_completely" | "open_prefab",
+        operation: "move" | "copy" | "delete" | "lock" | "unlock" | "create_prefab" | "revert_prefab" | "apply_prefab" | "unwrap_prefab" | "unwrap_prefab_completely" | "open_prefab",
         reference: InstanceReference,
         newParentReference?: InstanceReference,
         newPrefabPath?: string,
-        siblingIndex?: number
+        siblingIndex?: number,
+        recursive?: boolean
     }): {
         success?: boolean,
         createdPrefabAssetReference?: InstanceReference,
@@ -225,20 +226,25 @@ declare namespace CocosEditor {
     /** Undo or redo the last editor operation in the scene view. Use undo to roll back a failed or unwanted mutation. */
     function editorHistory(args: { operation: "undo" | "redo" }): { success: boolean, error?: string };
 
-    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool, align view/node (align ops act on the current selection). Frame nodes before editorGetScenePreview. */
+    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool/pivot/coordinate, align view/node (align ops act on the current selection). Frame nodes before editorGetScenePreview. */
     function editorViewport(args: {
-        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_gizmo_tool" | "align_view_to_selected_node" | "align_selected_node_to_view",
+        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_gizmo_tool" | "set_gizmo_pivot" | "set_gizmo_coordinate" | "query_gizmo" | "align_view_to_selected_node" | "align_selected_node_to_view",
         references?: InstanceReference[],
         enabled?: boolean,
-        gizmoTool?: "move" | "rotate" | "scale" | "rect"
-    }): { success: boolean, error?: string };
+        gizmoTool?: "move" | "rotate" | "scale" | "rect",
+        gizmoPivot?: "center" | "pivot",
+        gizmoCoordinate?: "local" | "global"
+    }): { success: boolean, error?: string, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string };
 
-    /** Select, deselect, clear or query the editor selection for nodes or assets. Enables align operations in editorViewport. */
+    /** Select, deselect, clear or query the editor selection for nodes or assets. select_all selects every node of the scene. Enables align operations in editorViewport. */
     function editorSelect(args: {
-        operation: "select" | "unselect" | "clear" | "query",
+        operation: "select" | "unselect" | "clear" | "query" | "select_all",
         selectionType?: "node" | "asset",
         references?: InstanceReference[]
     }): { success: boolean, selected?: string[], lastSelected?: string };
+
+    /** Enumerate editor type vocabularies: assetCreate presets, cc.* asset types, or registered importers (the latter two are valid assetQuery filters). */
+    function editorListTypes(args: { category: "creatable_assets" | "asset_types" | "importers" }): { types: string[] };
 
     /** Read animation data. Start with root_info on any node. clip_dump returns a track summary unless includeCurves is set. */
     function animationQuery(args: {
@@ -305,6 +311,9 @@ declare namespace CocosEditor {
 
     /** Enqueue a build task. Copy options from buildGetTask and modify instead of crafting from scratch. Poll status with buildGetTasksInfo. */
     function buildTrigger(args: { options: any }): { success: boolean, taskId?: string };
+
+    /** Manage an existing build task: break (abort running), remove (delete from queue), recompile (scripts only, faster than full rebuild). */
+    function buildTaskControl(args: { operation: "break" | "remove" | "recompile", taskId: string }): { success: boolean, error?: string };
 
     /** Returns preview image of scene view. */
     function editorGetScenePreview(args: {

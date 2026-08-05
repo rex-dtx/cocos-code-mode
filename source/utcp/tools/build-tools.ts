@@ -150,4 +150,34 @@ export class BuildTools {
         const taskId = typeof result === 'string' ? result : ((result && (result as any).id) || args.options.taskId || undefined);
         return { success: true, taskId };
     }
+
+    @utcpTool(
+        'buildTaskControl',
+        'Manage an existing build task: "break" aborts a running build, "remove" deletes the task from the queue, "recompile" rebuilds only the scripts of an already-built task (much faster than a full rebuild). Get task ids from buildGetTasksInfo.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['break', 'remove', 'recompile'] },
+                taskId: { type: 'string', description: 'Build task id (from buildGetTasksInfo)' }
+            },
+            required: ['operation', 'taskId']
+        },
+        SuccessIndicatorSchema, "POST", ['build', 'task', 'break', 'abort', 'cancel', 'remove', 'delete', 'recompile', 'scripts']
+    )
+    async buildTaskControl(args: { operation: string, taskId: string }): Promise<ISuccessIndicator> {
+        if (!args.taskId) {
+            throw new Error('buildTaskControl requires taskId');
+        }
+        const messageByOperation: Record<string, string> = {
+            break: 'break-task',
+            remove: 'remove-task',
+            recompile: 'recompile-task'
+        };
+        const message = messageByOperation[args.operation];
+        if (!message) {
+            throw new Error(`Unknown build task operation: ${args.operation}`);
+        }
+        await Editor.Message.request('builder', message, args.taskId);
+        return { success: true };
+    }
 }

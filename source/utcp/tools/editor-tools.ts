@@ -40,20 +40,33 @@ export class EditorTools {
 
     @utcpTool(
         'editorViewport',
-        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, set gizmo tool, align view or nodes. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
+        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, set gizmo tool/pivot/coordinate space, align view or nodes. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_gizmo_tool', 'align_view_to_selected_node', 'align_selected_node_to_view'] },
+                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_gizmo_tool', 'set_gizmo_pivot', 'set_gizmo_coordinate', 'query_gizmo', 'align_view_to_selected_node', 'align_selected_node_to_view'] },
                 references: { type: 'array', items: InstanceReferenceSchema, description: 'For focus: nodes to focus the camera on' },
                 enabled: { type: 'boolean', description: 'For set_2d_mode / set_grid_visible' },
-                gizmoTool: { type: 'string', enum: ['move', 'rotate', 'scale', 'rect'], description: 'For set_gizmo_tool' }
+                gizmoTool: { type: 'string', enum: ['move', 'rotate', 'scale', 'rect'], description: 'For set_gizmo_tool' },
+                gizmoPivot: { type: 'string', enum: ['center', 'pivot'], description: 'For set_gizmo_pivot: transform around the bounding-box center or the node pivot' },
+                gizmoCoordinate: { type: 'string', enum: ['local', 'global'], description: 'For set_gizmo_coordinate: gizmo axes in node-local or world space' }
             },
             required: ['operation']
         },
-        SuccessIndicatorSchema, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'frame', 'align']
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                error: { type: 'string' },
+                gizmoTool: { type: 'string' },
+                gizmoPivot: { type: 'string' },
+                gizmoCoordinate: { type: 'string' }
+            },
+            required: ['success']
+        }, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'pivot', 'coordinate', 'frame', 'align']
     )
-    async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, gizmoTool?: string }): Promise<ISuccessIndicator> {
+    async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }):
+        Promise<ISuccessIndicator & { gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }> {
         switch (args.operation) {
             case 'focus': {
                 const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
@@ -75,6 +88,25 @@ export class EditorTools {
                 }
                 await Editor.Message.request('scene', 'change-gizmo-tool', args.gizmoTool);
                 return { success: true };
+            case 'set_gizmo_pivot':
+                if (!args.gizmoPivot) {
+                    throw new Error('gizmoPivot required for set_gizmo_pivot');
+                }
+                await Editor.Message.request('scene', 'change-gizmo-pivot', args.gizmoPivot);
+                return { success: true };
+            case 'set_gizmo_coordinate':
+                if (!args.gizmoCoordinate) {
+                    throw new Error('gizmoCoordinate required for set_gizmo_coordinate');
+                }
+                await Editor.Message.request('scene', 'change-gizmo-coordinate', args.gizmoCoordinate);
+                return { success: true };
+            case 'query_gizmo':
+                return {
+                    success: true,
+                    gizmoTool: await Editor.Message.request('scene', 'query-gizmo-tool-name'),
+                    gizmoPivot: await Editor.Message.request('scene', 'query-gizmo-pivot'),
+                    gizmoCoordinate: await Editor.Message.request('scene', 'query-gizmo-coordinate')
+                };
             case 'align_view_to_selected_node':
                 // Moves the camera to frame the currently selected node(s) - select first via editorSelect
                 await Editor.Message.request('scene', 'align-view-with-node');
@@ -90,11 +122,11 @@ export class EditorTools {
 
     @utcpTool(
         'editorSelect',
-        'Select, deselect, clear or query the editor selection for nodes or assets. Selecting a node reveals it in the hierarchy/inspector and enables align operations in editorViewport.',
+        'Select, deselect, clear or query the editor selection for nodes or assets. Selecting a node reveals it in the hierarchy/inspector and enables align operations in editorViewport. "select_all" selects every node of the current scene (nodes only).',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['select', 'unselect', 'clear', 'query'] },
+                operation: { type: 'string', enum: ['select', 'unselect', 'clear', 'query', 'select_all'] },
                 selectionType: { type: 'string', enum: ['node', 'asset'], description: 'Selection domain', default: 'node' },
                 references: { type: 'array', items: InstanceReferenceSchema, description: 'For select/unselect: the items to select or deselect' }
             },
@@ -108,7 +140,7 @@ export class EditorTools {
                 lastSelected: { type: 'string' }
             },
             required: ['success']
-        }, "POST", ['editor', 'select', 'selection', 'hierarchy', 'inspector', 'highlight']
+        }, "POST", ['editor', 'select', 'selection', 'all', 'hierarchy', 'inspector', 'highlight']
     )
     async editorSelect(args: { operation: string, selectionType?: string, references?: IInstanceReference[] }):
         Promise<{ success: boolean, selected?: string[], lastSelected?: string }> {
@@ -133,6 +165,12 @@ export class EditorTools {
             case 'clear':
                 Editor.Selection.clear(type);
                 return { success: true, selected: [] };
+            case 'select_all':
+                if (type !== 'node') {
+                    throw new Error('select_all only supports selectionType "node"');
+                }
+                await Editor.Message.request('scene', 'select-all-nodes');
+                return { success: true, selected: Editor.Selection.getSelected('node') };
             case 'query':
                 return {
                     success: true,
@@ -142,6 +180,51 @@ export class EditorTools {
             default:
                 throw new Error(`Unknown selection operation: ${args.operation}`);
         }
+    }
+
+    @utcpTool(
+        'editorListTypes',
+        'Enumerate the type vocabularies of the editor: "creatable_assets" (preset names accepted by assetCreate in THIS editor version - check before creating an unusual asset type), "asset_types" (all cc.* asset class names known to the asset database, e.g. cc.Prefab, cc.SpriteFrame - use as ccType filter in assetQuery), "importers" (all registered importer names - use as importer filter in assetQuery).',
+        {
+            type: 'object',
+            properties: {
+                category: { type: 'string', enum: ['creatable_assets', 'asset_types', 'importers'] }
+            },
+            required: ['category']
+        },
+        { type: 'object', properties: { types: { type: 'array', items: { type: 'string' } } }, required: ['types'] }, "GET",
+        ['editor', 'types', 'list', 'enumerate', 'asset', 'importer', 'creatable', 'validation']
+    )
+    async editorListTypes(args: { category: string }): Promise<{ types: string[] }> {
+        let raw: any;
+        switch (args.category) {
+            case 'creatable_assets':
+                raw = await Editor.Message.request('scene', 'query-creatable-asset-types');
+                break;
+            case 'asset_types':
+                raw = await Editor.Message.request('asset-db', 'query-all-asset-types');
+                break;
+            case 'importers':
+                raw = await Editor.Message.request('asset-db', 'query-all-importer');
+                break;
+            default:
+                throw new Error(`Unknown type category: ${args.category}`);
+        }
+        if (!raw) {
+            return { types: [] };
+        }
+        // Result shape of these runtime messages is not typed: string[], object[],
+        // or a record (which may be name-keyed OR id-keyed with the name in the value).
+        const pickName = (item: any): string | undefined =>
+            typeof item === 'string' ? item : (item?.name || item?.type || item?.extname);
+        let list: any[];
+        if (Array.isArray(raw)) {
+            list = raw;
+        } else {
+            const fromValues = Object.values(raw).map(pickName).filter((n): n is string => !!n);
+            list = fromValues.length > 0 ? fromValues : Object.keys(raw);
+        }
+        return { types: list.map(pickName).filter((name): name is string => !!name) };
     }
 
     @utcpTool(

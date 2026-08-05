@@ -490,15 +490,16 @@ export class SceneTools {
 
     @utcpTool(
         'nodeOperate',
-        'Perform operation on referenced node, including prefab operations.',
+        'Perform operation on referenced node, including prefab operations and hierarchy locking (a locked node cannot be edited or selected in the scene view).',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['move', 'copy', 'delete', 'create_prefab', 'revert_prefab', 'apply_prefab', 'unwrap_prefab', 'unwrap_prefab_completely', 'open_prefab'] },
+                operation: { type: 'string', enum: ['move', 'copy', 'delete', 'lock', 'unlock', 'create_prefab', 'revert_prefab', 'apply_prefab', 'unwrap_prefab', 'unwrap_prefab_completely', 'open_prefab'] },
                 reference: InstanceReferenceSchema,
                 newParentReference: InstanceReferenceSchema,
                 newPrefabPath: { type: 'string', description: 'For create_prefab: target db:// path', nullable: true },
-                siblingIndex: { type: 'integer', description: 'For move/copy: target index in parent children array', nullable: true }
+                siblingIndex: { type: 'integer', description: 'For move/copy: target index in parent children array', nullable: true },
+                recursive: { type: 'boolean', description: 'For lock/unlock: also apply to all descendants', default: false }
             },
             required: ['operation', 'reference']
         },
@@ -509,9 +510,9 @@ export class SceneTools {
                 updatedNodeReference: InstanceReferenceSchema,
                 copiedNodeReference: InstanceReferenceSchema
             }
-        }, "POST",  ['scene', 'node', 'remove', 'move', 'copy', 'delete', 'prefab', 'apply', 'revert', 'unwrap', 'create']
+        }, "POST",  ['scene', 'node', 'remove', 'move', 'copy', 'delete', 'lock', 'unlock', 'prefab', 'apply', 'revert', 'unwrap', 'create']
     )
-    async nodeOperate(args: { operation: string, reference: IInstanceReference, newParentReference?: IInstanceReference, newPrefabPath?: string, siblingIndex?: number }): 
+    async nodeOperate(args: { operation: string, reference: IInstanceReference, newParentReference?: IInstanceReference, newPrefabPath?: string, siblingIndex?: number, recursive?: boolean }):
         Promise<{ success?: boolean, createdPrefabAssetReference?: IInstanceReference, updatedNodeReference?: IInstanceReference, copiedNodeReference?: IInstanceReference }> {
         if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
             throw new Error(`Target node ${args.reference.id} not found`);
@@ -574,6 +575,13 @@ export class SceneTools {
 
                 await Editor.Message.request('scene', 'snapshot');
 
+                return { success: true };
+
+            case 'lock':
+            case 'unlock':
+                await Editor.Message.request('scene', 'change-node-lock',
+                    args.reference.id, args.operation === 'lock', !!args.recursive);
+                await Editor.Message.request('scene', 'snapshot');
                 return { success: true };
 
             case 'create_prefab':
