@@ -193,6 +193,11 @@ declare namespace CocosEditor {
     /** List classes known to the editor, optionally filtered by base class (e.g. "cc.Component"). Helps resolve valid class names before nodeComponentAdd. */
     function listComponentClasses(args: { extends?: string, excludeSelf?: boolean, filter?: string }): { classes: string[] };
 
+    /** List callable method names of every component on a node - discovery step for callComponentMethod (otherwise the method name must be guessed). */
+    function listComponentMethods(args: { reference: InstanceReference }): {
+        components: { reference: InstanceReference, methods: string[] }[]
+    };
+
     /** Copy/cut/paste nodes. For paste pass targetReference plus the copied references. Returns references of pasted nodes for paste. */
     function nodeClipboard(args: {
         operation: "copy" | "cut" | "paste",
@@ -244,15 +249,26 @@ declare namespace CocosEditor {
     /** Undo or redo the last editor operation in the scene view. Use undo to roll back a failed or unwanted mutation. */
     function editorHistory(args: { operation: "undo" | "redo" }): { success: boolean, error?: string };
 
-    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, gizmo tool/pivot/coordinate, align view/node (align ops act on the current selection). Frame nodes before editorGetScenePreview. */
+    /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, icon gizmo 3D/size, gizmo tool/pivot/coordinate, align view/node (align ops act on the current selection). query_viewport reads 2D/grid/icon state, query_gizmo reads gizmo state. Frame nodes before editorGetScenePreview. */
     function editorViewport(args: {
-        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_gizmo_tool" | "set_gizmo_pivot" | "set_gizmo_coordinate" | "query_gizmo" | "align_view_to_selected_node" | "align_selected_node_to_view",
+        operation: "focus" | "set_2d_mode" | "set_grid_visible" | "set_icon_gizmo_3d" | "set_icon_gizmo_size" | "set_gizmo_tool" | "set_gizmo_pivot" | "set_gizmo_coordinate" | "query_gizmo" | "query_viewport" | "align_view_to_selected_node" | "align_selected_node_to_view",
         references?: InstanceReference[],
         enabled?: boolean,
+        size?: number,
         gizmoTool?: "move" | "rotate" | "scale" | "rect",
         gizmoPivot?: "center" | "pivot",
         gizmoCoordinate?: "local" | "global"
-    }): { success: boolean, error?: string, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string };
+    }): {
+        success: boolean,
+        error?: string,
+        gizmoTool?: string,
+        gizmoPivot?: string,
+        gizmoCoordinate?: string,
+        is2D?: boolean,
+        gridVisible?: boolean,
+        iconGizmo3D?: boolean,
+        iconGizmoSize?: number
+    };
 
     /** Select, deselect, clear or query the editor selection for nodes or assets. select_all selects every node of the scene. Enables align operations in editorViewport. */
     function editorSelect(args: {

@@ -181,6 +181,75 @@ export class SceneTools {
     }
 
     @utcpTool(
+        'listComponentMethods',
+        'List the callable method names of every component on a node - the discovery step for callComponentMethod, which otherwise requires guessing a method name. Returns methods grouped per component (component uuid + type), so the uuid can be passed straight to callComponentMethod.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema
+            },
+            required: ['reference']
+        },
+        {
+            type: 'object',
+            properties: {
+                components: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            reference: InstanceReferenceSchema,
+                            methods: { type: 'array', items: { type: 'string' } }
+                        }
+                    }
+                }
+            },
+            required: ['components']
+        }, "GET", ['scene', 'node', 'component', 'method', 'function', 'list', 'discover', 'callable', 'invoke', 'script']
+    )
+    async listComponentMethods(args: { reference: IInstanceReference }): Promise<{ components: Array<{ reference: IInstanceReference, methods: string[] }> }> {
+        if (!args.reference || !args.reference.id) {
+            throw new Error('listComponentMethods requires reference.id (node uuid)');
+        }
+        if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
+            throw new Error(`Node ${args.reference.id} not found`);
+        }
+
+        const raw = await Editor.Message.request('scene', 'query-component-function-of-node', args.reference.id);
+        if (!raw) {
+            return { components: [] };
+        }
+
+        // Result is untyped (facade returns `any`). Observed shape is a record keyed by
+        // component uuid whose value lists the method names, but tolerate an array of
+        // {uuid, functions} entries and plain string lists too.
+        const toMethods = (value: any): string[] => {
+            const source = Array.isArray(value)
+                ? value
+                : (value?.functions || value?.methods || (value && typeof value === 'object' ? Object.keys(value) : []));
+            return (Array.isArray(source) ? source : [])
+                .map((item: any) => typeof item === 'string' ? item : (item?.name || item?.functionName))
+                .filter((name: any): name is string => typeof name === 'string' && !!name);
+        };
+
+        const components: Array<{ reference: IInstanceReference, methods: string[] }> = [];
+        if (Array.isArray(raw)) {
+            for (const entry of raw) {
+                const id = typeof entry === 'object' ? (entry?.uuid || entry?.id) : undefined;
+                if (id) {
+                    components.push({ reference: { id, type: entry?.type || entry?.cid }, methods: toMethods(entry) });
+                }
+            }
+        } else if (typeof raw === 'object') {
+            for (const [id, value] of Object.entries(raw)) {
+                components.push({ reference: { id }, methods: toMethods(value) });
+            }
+        }
+
+        return { components };
+    }
+
+    @utcpTool(
         'listComponentClasses',
         'List classes known to the editor, optionally filtered by base class (e.g. "cc.Component"). Helps resolve valid class names before nodeComponentAdd.',
         {

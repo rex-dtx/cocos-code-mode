@@ -40,13 +40,14 @@ export class EditorTools {
 
     @utcpTool(
         'editorViewport',
-        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, set gizmo tool/pivot/coordinate space, align view or nodes. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
+        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, size component icon gizmos, set gizmo tool/pivot/coordinate space, align view or nodes. "query_viewport" reads back the 2D-mode, grid and icon-gizmo state; "query_gizmo" reads the gizmo tool/pivot/coordinate. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_gizmo_tool', 'set_gizmo_pivot', 'set_gizmo_coordinate', 'query_gizmo', 'align_view_to_selected_node', 'align_selected_node_to_view'] },
+                operation: { type: 'string', enum: ['focus', 'set_2d_mode', 'set_grid_visible', 'set_icon_gizmo_3d', 'set_icon_gizmo_size', 'set_gizmo_tool', 'set_gizmo_pivot', 'set_gizmo_coordinate', 'query_gizmo', 'query_viewport', 'align_view_to_selected_node', 'align_selected_node_to_view'] },
                 references: { type: 'array', items: InstanceReferenceSchema, description: 'For focus: nodes to focus the camera on' },
-                enabled: { type: 'boolean', description: 'For set_2d_mode / set_grid_visible' },
+                enabled: { type: 'boolean', description: 'For set_2d_mode / set_grid_visible / set_icon_gizmo_3d' },
+                size: { type: 'number', description: 'For set_icon_gizmo_size: on-screen size of component icon gizmos' },
                 gizmoTool: { type: 'string', enum: ['move', 'rotate', 'scale', 'rect'], description: 'For set_gizmo_tool' },
                 gizmoPivot: { type: 'string', enum: ['center', 'pivot'], description: 'For set_gizmo_pivot: transform around the bounding-box center or the node pivot' },
                 gizmoCoordinate: { type: 'string', enum: ['local', 'global'], description: 'For set_gizmo_coordinate: gizmo axes in node-local or world space' }
@@ -60,13 +61,17 @@ export class EditorTools {
                 error: { type: 'string' },
                 gizmoTool: { type: 'string' },
                 gizmoPivot: { type: 'string' },
-                gizmoCoordinate: { type: 'string' }
+                gizmoCoordinate: { type: 'string' },
+                is2D: { type: 'boolean' },
+                gridVisible: { type: 'boolean' },
+                iconGizmo3D: { type: 'boolean' },
+                iconGizmoSize: { type: 'number' }
             },
             required: ['success']
-        }, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'pivot', 'coordinate', 'frame', 'align']
+        }, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'pivot', 'coordinate', 'frame', 'align', 'icon', 'query', 'state']
     )
-    async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }):
-        Promise<ISuccessIndicator & { gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }> {
+    async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, size?: number, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }):
+        Promise<ISuccessIndicator & { gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string, is2D?: boolean, gridVisible?: boolean, iconGizmo3D?: boolean, iconGizmoSize?: number }> {
         switch (args.operation) {
             case 'focus': {
                 const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
@@ -81,6 +86,15 @@ export class EditorTools {
                 return { success: true };
             case 'set_grid_visible':
                 await Editor.Message.request('scene', 'set-grid-visible', !!args.enabled);
+                return { success: true };
+            case 'set_icon_gizmo_3d':
+                await Editor.Message.request('scene', 'set-icon-gizmo-3d', !!args.enabled);
+                return { success: true };
+            case 'set_icon_gizmo_size':
+                if (typeof args.size !== 'number') {
+                    throw new Error('size required for set_icon_gizmo_size');
+                }
+                await Editor.Message.request('scene', 'set-icon-gizmo-size', args.size);
                 return { success: true };
             case 'set_gizmo_tool':
                 if (!args.gizmoTool) {
@@ -106,6 +120,14 @@ export class EditorTools {
                     gizmoTool: await Editor.Message.request('scene', 'query-gizmo-tool-name'),
                     gizmoPivot: await Editor.Message.request('scene', 'query-gizmo-pivot'),
                     gizmoCoordinate: await Editor.Message.request('scene', 'query-gizmo-coordinate')
+                };
+            case 'query_viewport':
+                return {
+                    success: true,
+                    is2D: !!(await Editor.Message.request('scene', 'query-is2D')),
+                    gridVisible: !!(await Editor.Message.request('scene', 'query-is-grid-visible')),
+                    iconGizmo3D: !!(await Editor.Message.request('scene', 'query-is-icon-gizmo-3d')),
+                    iconGizmoSize: await Editor.Message.request('scene', 'query-icon-gizmo-size')
                 };
             case 'align_view_to_selected_node':
                 // Moves the camera to frame the currently selected node(s) - select first via editorSelect
