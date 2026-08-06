@@ -1,5 +1,5 @@
 import { utcpTool } from '../decorators';
-import { sceneIpc } from '../utils/ipc-promise';
+import { sceneIpc, sceneScript } from '../utils/ipc-promise';
 
 const DEFAULT_TREE_DEPTH = 6;
 
@@ -33,14 +33,15 @@ export class SceneReadTools {
 
     @utcpTool(
         'nodeQuery',
-        'Read the open scene: node hierarchy tree, a single node property dump, node info, callable node functions, or find nodes by component class name.',
+        'Read the open scene: node hierarchy tree, a single node property dump, node info, callable node functions, find nodes by component class name, or fetch one node by its path.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['tree', 'dump', 'info', 'functions', 'by_component'], description: 'Which query to run' },
+                operation: { type: 'string', enum: ['tree', 'dump', 'info', 'functions', 'by_component', 'at_path'], description: 'Which query to run' },
                 uuid: { type: 'string', description: 'Node uuid — required for dump / info / functions' },
+                path: { type: 'string', description: 'Node path for at_path, e.g. Canvas/background' },
                 componentName: { type: 'string', description: 'Component class name for by_component, e.g. cc.Sprite' },
-                maxDepth: { type: 'number', description: `Max hierarchy depth for tree, default ${DEFAULT_TREE_DEPTH}` },
+                maxDepth: { type: 'number', description: `Max depth — hierarchy tree default ${DEFAULT_TREE_DEPTH}, at_path default 3` },
             },
             required: ['operation'],
         },
@@ -54,7 +55,7 @@ export class SceneReadTools {
         },
         'GET', ['scene', 'node', 'hierarchy', 'tree', 'dump', 'inspect']
     )
-    async nodeQuery(args: { operation: string, uuid?: string, componentName?: string, maxDepth?: number }): Promise<{ result: any, sceneId?: string }> {
+    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number }): Promise<{ result: any, sceneId?: string }> {
         switch (args.operation) {
             case 'tree': {
                 // callback nhan (err, sceneID, hierarchy) — sceneIpc tra array khi >1 gia tri.
@@ -81,6 +82,11 @@ export class SceneReadTools {
                 return { result: await sceneIpc<any>('scene:query-node-info', requireUuid(args, 'info'), 'cc.Node') };
             case 'functions':
                 return { result: await sceneIpc<any>('scene:query-node-functions', requireUuid(args, 'functions')) };
+            case 'at_path': {
+                // Nguon khac 4 op tren: scene-script (cc.find), khong phai scene panel IPC.
+                if (!args.path) { throw new Error('path is required for operation at_path'); }
+                return { result: await sceneScript<any>('node-at-path', { path: args.path, maxDepth: args.maxDepth || 3 }) };
+            }
             case 'by_component':
                 if (!args.componentName) { throw new Error('componentName is required for operation by_component'); }
                 return { result: await sceneIpc<any>('scene:query-nodes-by-comp-name', args.componentName) };

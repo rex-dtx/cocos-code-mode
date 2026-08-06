@@ -24,6 +24,71 @@
         return typeof v;
     }
 
+    // --- helper cho handler read (phase 6) ---
+
+    // BAY 2 (probe phase 3): scene root co 2 node cua editor (objFlags 1096) khong hien
+    // o Hierarchy panel. Chi filter O ROOT — con cua chung khong co flag nay.
+    function isEditorNode(node: any): boolean {
+        const flags = cc.Object && cc.Object.Flags;
+        return !!(flags && (node._objFlags & flags.HideInHierarchy));
+    }
+
+    function className(obj: any): string | null {
+        if (cc.js && cc.js.getClassName) { return cc.js.getClassName(obj); }
+        return (obj.constructor && obj.constructor.name) || null;
+    }
+
+    // BAY 1 (probe phase 3): cc.view.getDesignResolutionSize() tra size VIEWPORT EDITOR,
+    // doi theo keo cua so. Design resolution that nam o component cc.Canvas.
+    function designResolution(): any {
+        const canvasNode = cc.find('Canvas');
+        if (!canvasNode) { return null; }
+        const canvas = canvasNode.getComponent('cc.Canvas');
+        if (!canvas || !canvas.designResolution) { return null; }
+        return { width: canvas.designResolution.width, height: canvas.designResolution.height };
+    }
+
+    // Asset/Node -> ref thay vi serialize (se circular). cc.SpriteFrame.uuid la getter
+    // ke thua, khong phai own-property -> phai check instanceof, khong check `.uuid`.
+    function asRef(v: any): any {
+        return { __ref: v.uuid || v._uuid || null, __type: className(v), __name: v.name || null };
+    }
+
+    function isRefLike(v: any): boolean {
+        return (cc.Asset && v instanceof cc.Asset)
+            || (cc.Node && v instanceof cc.Node)
+            || (cc.Component && v instanceof cc.Component);
+    }
+
+    // Field liet ke TUONG MINH: node.uuid/name/x/y la getter, Object.keys khong thay
+    // (probe phase 3). Enumerate se mat het field public.
+    function nodeBrief(node: any, depth: number, maxDepth: number): any {
+        const out: any = {
+            name: node.name,
+            uuid: node.uuid,
+            active: node.active,
+            activeInHierarchy: node.activeInHierarchy,
+            is3D: node._is3DNode,
+            position: { x: node.x, y: node.y },
+            scale: { x: node.scaleX, y: node.scaleY },
+            angle: node.angle,
+            size: { width: node.width, height: node.height },
+            anchor: { x: node.anchorX, y: node.anchorY },
+            components: (node._components || []).map(function (c: any) {
+                return { type: className(c), uuid: c.uuid, enabled: c.enabled };
+            }),
+        };
+        const children = node.children || [];
+        out.childrenCount = children.length;
+        if (children.length === 0) { return out; }
+        if (depth >= maxDepth) {
+            out.truncated = true;
+            return out;
+        }
+        out.children = children.map(function (c: any) { return nodeBrief(c, depth + 1, maxDepth); });
+        return out;
+    }
+
     module.exports = {
 
         'probe': function (event: any) {
@@ -235,6 +300,86 @@
             });
 
             if (event.reply) { event.reply(null, out); }
+        },
+
+        // --- handler read (phase 6) ---
+
+        'scene-snapshot': function (event: any, opts: any) {
+            const scene = cc.director.getScene();
+            if (!scene) { return event.reply(new Error('no scene open')); }
+            const raw = opts && opts.maxDepth;
+            const depth = (typeof raw === 'number' && raw > 0) ? raw : 6;
+            const roots = (scene.children || []).filter(function (c: any) { return !isEditorNode(c); });
+            event.reply(null, {
+                name: scene.name,
+                uuid: scene.uuid,
+                designResolution: designResolution(),
+                maxDepth: depth,
+                children: roots.map(function (c: any) { return nodeBrief(c, 1, depth); }),
+            });
+        },
+
+        // cc.find la API docs-confirmed (scene-script.md)
+        'node-at-path': function (event: any, opts: any) {
+            const node = cc.find(opts && opts.path);
+            const raw = opts && opts.maxDepth;
+            const depth = (typeof raw === 'number' && raw > 0) ? raw : 3;
+            event.reply(null, node ? nodeBrief(node, 0, depth) : null);
+        },
+
+        'component-props': function (event: any, path: string, compType: string) {
+            const node = cc.find(path);
+            if (!node) { return event.reply(new Error('node not found: ' + path)); }
+            const comp = node.getComponent(compType);
+            if (!comp) { return event.reply(new Error('component not found: ' + compType + ' on ' + path)); }
+            const out: any = {};
+            for (const k in comp) {
+                if (k.charAt(0) === '_') { continue; }           // skip private
+                let v;
+                try { v = comp[k]; } catch (e) { continue; }     // getter co the throw
+                const t = typeof v;
+                if (t === 'function') { continue; }
+                if (v && isRefLike(v)) {
+                    out[k] = asRef(v);
+                } else if (Array.isArray(v)) {
+                    out[k] = v.map(function (item: any) {
+                        if (item && typeof item === 'object' && isRefLike(item)) { return asRef(item); }
+                        try { return JSON.parse(JSON.stringify(item)); } catch (e) { return '<circular>'; }
+                    });
+                } else if (v && t === 'object') {
+                    try { out[k] = JSON.parse(JSON.stringify(v)); } catch (e) { out[k] = '<circular>'; }
+                } else {
+                    out[k] = v;
+                }
+            }
+            event.reply(null, out);
+        },
+
+        // scene:query-nodes-by-comp-name chi tra uuid tran; cai nay tra PATH.
+        // Path bat dau tu root node (khong gom ten scene) de dung duoc voi cc.find().
+        'find-by-component': function (event: any, compType: string) {
+            const scene = cc.director.getScene();
+            if (!scene) { return event.reply(new Error('no scene open')); }
+            const found: any[] = [];
+            function walk(node: any, path: string) {
+                const p = path ? path + '/' + node.name : node.name;
+                if (node.getComponent && node.getComponent(compType)) {
+                    found.push({ path: p, uuid: node.uuid, name: node.name });
+                }
+                (node.children || []).forEach(function (c: any) { walk(c, p); });
+            }
+            (scene.children || [])
+                .filter(function (c: any) { return !isEditorNode(c); })
+                .forEach(function (c: any) { walk(c, ''); });
+            event.reply(null, found);
+        },
+
+        'list-component-classes': function (event: any, filter: string) {
+            const reg = cc.js && cc.js._registeredClassNames;
+            if (!reg) { return event.reply(new Error('cc.js._registeredClassNames not available')); }
+            let names = Object.keys(reg);
+            if (filter) { names = names.filter(function (n) { return n.indexOf(filter) !== -1; }); }
+            event.reply(null, names.sort());
         },
     };
 

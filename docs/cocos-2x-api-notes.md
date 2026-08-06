@@ -358,6 +358,93 @@ Không có name/path → agent phải `dump` từng cái. (Unresolved #3 phase 5
 
 ---
 
+# Phase 6 — deep read qua scene-script (VERIFIED runtime)
+
+**Probe date:** 2026-08-06 · Gate 14/14 curl pass · `sceneSnapshot` default = **1980 B** (gate < 50 KB).
+
+## ⚠️ BẪY 5: query parser custom KHÔNG chạy — mọi arg number về tool là STRING
+
+`utcp-server.ts` (kế thừa 3.x) gọi `app.set('query parser', …)` **sau** `app.use(cors())`. Express bind `query parser fn` lúc `lazyrouter()` chạy — tức ở `use()` **đầu tiên**. Set sau đó không có tác dụng.
+
+Hậu quả: `?maxDepth=2` về tay tool là `"2"` (string). `typeof x === 'number'` false → luôn rơi về default. **Không throw, không warn** — tool chạy, trả JSON hợp lệ, chỉ là ignore tham số.
+
+Phase 4 không lộ vì JS tự coerce: `arr.slice(0, "3")` vẫn ra 3 phần tử. Phase 6 lộ vì có so sánh `typeof`.
+
+**Fix:** `app.set('query parser', …)` phải đứng **trước mọi `app.use()`**.
+
+```ts
+async start(port) {
+    this.app.set('query parser', ...);   // TRUOC
+    this.app.use(cors());                 // SAU
+}
+```
+
+Verify: `_debugOpts` echo `{"maxDepth": 2}` kiểu `int`, trước fix là `"2"` kiểu `str`.
+
+## ⚠️ Arg của `callSceneScript`: bọc trong object
+
+Phase 3 verify `callSceneScript(pkg, msg, ...args, cb)` truyền được 3 arg. Nhưng arg **number ở vị trí cuối** rủi ro — IPC 2.x đọc arg cuối làm timeout. Quy ước dùng: **1 object duy nhất**.
+
+```ts
+sceneScript('scene-snapshot', { maxDepth: 3 });      // OK
+sceneScript('node-at-path', { path: 'Canvas', maxDepth: 3 });
+```
+
+## ⚠️ BẪY 6: asset ref — `cc.SpriteFrame.uuid` là getter kế thừa
+
+`component-props` ban đầu detect ref bằng `typeof v === 'object' && v.uuid`. `cc.SpriteFrame` trượt qua check này → rơi vào `JSON.stringify` → **`"<circular>"`**. Mất hẳn thông tin asset nào đang gán.
+
+Detect đúng bằng `instanceof`:
+
+```js
+function isRefLike(v) {
+    return (cc.Asset && v instanceof cc.Asset)
+        || (cc.Node && v instanceof cc.Node)
+        || (cc.Component && v instanceof cc.Component);
+}
+function asRef(v) {
+    return { __ref: v.uuid || v._uuid || null, __type: className(v), __name: v.name || null };
+}
+```
+
+⚠️ `v.uuid` **vẫn null** cho `cc.SpriteFrame` → phải fallback `v._uuid`.
+
+⚠️ `materials` là **array asset** — phải map từng phần tử, không stringify cả mảng.
+
+Kết quả cross-check với phase 4:
+```
+componentQuery props -> spriteFrame.__ref = 31bc895a-c003-4566-a9f3-2e54ae1c17dc
+assetQuery sub_assets -> 31bc895a-c003-4566-a9f3-2e54ae1c17dc  db://assets/Texture/HelloWorld.png/HelloWorld
+```
+Ref của scene nối thẳng sang asset db — agent đi được từ node → asset → file content.
+
+## `sceneSnapshot` — filter editor node bằng `_objFlags`
+
+Trong scene-script dùng bitmask (khác `nodeQuery.tree` dùng field `hidden` của scene panel):
+```js
+node._objFlags & cc.Object.Flags.HideInHierarchy   // 1024
+```
+Chỉ filter **ở root**. Cây trả về khớp Hierarchy panel: 1 root `Canvas`, 4 con.
+
+Field mỗi node: `name` `uuid` `active` `activeInHierarchy` `is3D` `position` `scale` `angle` `size` `anchor` `components[{type,uuid,enabled}]` `childrenCount` + (`children` | `truncated`).
+
+`designResolution` lấy từ `cc.Canvas` (bẫy 1) → `{width:960, height:640}` đúng.
+
+## `component-props` — `for...in` an toàn
+
+Skip `_private`, skip function, try/catch mỗi getter. Field runtime-only lộ ra: `update` `lateUpdate` `onLoad` `start` `onFocusInEditor` `onLostFocusInEditor` `resetInEditor` = `null`, `isValid` = true. Vô hại nhưng nhiễu.
+
+## `find-by-component` vs `by_name`
+
+| | Trả về |
+|---|---|
+| `find` (scene-script) | `[{path:"Canvas/background", uuid, name}]` — **dùng được với `cc.find()`** |
+| `by_name` (scene panel IPC) | `["e2e0crkOLxGrpMxpbC4iQg1", …]` uuid trần |
+
+`find` path bắt đầu từ root node, **không gồm tên scene** — khớp cú pháp `cc.find()`.
+
+---
+
 ## Unresolved
 
 1. ~~`Editor.assetdb` có sẵn global trong main.js plugin hay phải require?~~ → **resolved phase 4: có sẵn**
@@ -366,4 +453,6 @@ Không có name/path → agent phải `dump` từng cái. (Unresolved #3 phase 5
 4. Vòng 2 write meta: `saveMeta(uuid, jsonString)` — ghi qua API hay ghi thẳng file `.meta`? (đọc thì file thắng vì circular ref, ghi thì có thể phải qua API để asset-db reimport)
 5. Message scene nào ngoài 5 cái đã verify? Không enumerate được (`.ccc` mã hoá) — chỉ biết bằng cách thử.
 6. `scene:query-node` `types` 12 class def cho 1 node — có cách xin dump không kèm `types` không?
+7. `sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). Nếu > 50 KB thì hạ default `maxDepth` xuống 4.
+8. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
 

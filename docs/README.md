@@ -22,7 +22,7 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 | 3 | `scene-script.ts` probe — dump engine API thật | ✅ `errors: []` 2 lượt |
 | 4 | `assetQuery` + `assetResolve` + `assetReadContent` | ✅ 19/19 curl pass |
 | 5 | `nodeQuery` (5 op: tree/dump/info/functions/by_component) | ✅ 8/8 curl pass |
-| 6 | `sceneSnapshot` + `componentQuery` | ⬜ |
+| 6 | `sceneSnapshot` + `componentQuery` + `nodeQuery.at_path` | ✅ 14/14 curl pass |
 | 7 | `editorEnvInfo` + `editorGetLogs` + `editorSelect` + `projectGetConfig` | ⬜ |
 
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
