@@ -10,6 +10,7 @@
         "cocos-engine",
         "source/utcp/tools",
         "source/utcp/utils/asset-importers",
+        "source/utcp/utils/texture-utils.ts",
         "source/utcp/utils/tools-utils.ts",
         "source/panels",
         "source/scene.ts"
