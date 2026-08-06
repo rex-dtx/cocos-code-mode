@@ -30,8 +30,9 @@ export class UtcpServerManager {
     }
 
     async start(port: number = 3000): Promise<number> {
-        this.app.use(cors());
-        this.app.use(express.json());
+        // PHAI set TRUOC moi app.use(): express bind 'query parser fn' luc lazyrouter
+        // chay (o use() dau tien) va khong doc lai. Set sau -> decoder nay khong bao gio
+        // chay, moi arg so/bool ve tay tool duoi dang string.
         this.app.set("query parser", (queryString: string) =>
             parse(queryString, {
                 decoder(value, defaultDecoder, charset, type) {
@@ -54,6 +55,9 @@ export class UtcpServerManager {
                 }
             })
         );
+
+        this.app.use(cors());
+        this.app.use(express.json());
 
         const tools = ToolRegistry.getTools();
         const toolInstances = new Map<Function, any>();
