@@ -23,3 +23,6 @@ package-lock.json
 # Packaged extension
 *.zip
 probe-result.json
+
+# Plans song o Notes vault (notes/plans/cc-code-mode-cst/), khong track o repo
+plans/
