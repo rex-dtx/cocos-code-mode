@@ -55,9 +55,25 @@ export class ProjectTools {
         if (!args.path) {
             throw new Error('projectSetConfig requires path');
         }
-        const ok = await Editor.Message.request('project', 'set-config', 'project', args.path, args.value);
-        if (ok === false) {
-            throw new Error(`Failed to set project config at "${args.path}"`);
+        try {
+            const ok = await Editor.Message.request('project', 'set-config', 'project', args.path, args.value);
+            if (ok === false) {
+                throw new Error(`Failed to set project config at "${args.path}"`);
+            }
+        } catch (e: any) {
+            // 3.7.3 has no project/set-config (verified at runtime). Its config
+            // messages are change-script-config / import-config / export-config,
+            // none of which write a single dotted path: change-script-config covers
+            // script settings only, and the import/export pair moves whole files.
+            // Mapping to any of them would silently write the wrong thing, so this
+            // stays unsupported until one is verified. Reading still works.
+            if (/does not exist/i.test(String(e?.message ?? e))) {
+                throw new Error(
+                    `projectSetConfig is not supported on this editor version - 'project/set-config' does not exist ` +
+                    `(added in 3.8.x). Reading via projectGetConfig still works; edit settings/v2/packages/*.json directly to change them.`
+                );
+            }
+            throw e;
         }
         return { success: true };
     }
