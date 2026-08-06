@@ -6,6 +6,24 @@ import { AssetTreeItemSchema, IAssetTreeItem, Base64ImageSchema, IBase64Image, S
 import path, { basename, extname } from 'path';
 import os from 'os';
 
+// 3.7.3 takes query-assets as a bare glob string; 3.8.x takes an options object
+// and rejects the string. Passing the wrong shape fails with "parameter error"
+// (code -1) from asset-db's query handler. Try the object first, fall back to the
+// pattern alone — on 3.7.3 that drops the non-pattern filters, so callers that
+// rely on them re-filter the result themselves.
+async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }): Promise<any[]> {
+    try {
+        const result = await Editor.Message.request('asset-db', 'query-assets', options as any);
+        if (Array.isArray(result)) {
+            return result;
+        }
+    } catch (e) {
+        // fall through to the 3.7.x signature
+    }
+    const result = await Editor.Message.request('asset-db', 'query-assets', (options.pattern ?? 'db://assets/**') as any);
+    return Array.isArray(result) ? result : [];
+}
+
 function normalizePath(p?: string): string {
     if (!p) return 'db://assets';
     let path = p.replace(/\\/g, '/').trim();
@@ -65,7 +83,7 @@ export class AssetTools {
         let rootPath = normalizePath(args.assetPath);
 
         const pattern = `${rootPath}/**`;
-        const assets = await Editor.Message.request('asset-db', 'query-assets', { pattern });
+        const assets = await queryAssetsCompat({ pattern });
         const rootUuid = await Editor.Message.request('asset-db', 'query-uuid', rootPath);
 
         const assetsMap = new Map<string, IAssetTreeItem>();
@@ -300,10 +318,26 @@ export class AssetTools {
             throw new Error('assetQuery requires at least one filter (pattern, ccType, importer, extname or isBundle)');
         }
 
-        const results = await Editor.Message.request('asset-db', 'query-assets', options);
-        if (!Array.isArray(results)) {
-            throw new Error('Unexpected result from asset-db query-assets');
-        }
+        const raw = await queryAssetsCompat(options);
+
+        // queryAssetsCompat may have fallen back to the pattern-only 3.7.x signature,
+        // which silently ignores the other filters. Re-apply them here so the result
+        // matches what was asked for on either version.
+        const results = raw.filter((a: any) => {
+            if (options.ccType && a.type !== options.ccType) {
+                return false;
+            }
+            if (options.importer && a.importer !== options.importer) {
+                return false;
+            }
+            if (options.extname && extname(a.url || a.name || '') !== options.extname) {
+                return false;
+            }
+            if (options.isBundle !== undefined && !!a.isBundle !== options.isBundle) {
+                return false;
+            }
+            return true;
+        });
 
         const limit = args.limit && args.limit > 0 ? args.limit : 200;
         const sliced = results.slice(0, limit);
