@@ -1,19 +1,21 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { ToolRegistry } from './decorators';
-import './tools/typescript-defenition';
-import './tools/get-properties-tool';
-import './tools/set-properties-tool';
-import './tools/asset-tools';
-import './tools/component-tools';
-import './tools/scene-tools';
-import './tools/editor-tools';
-import './tools/build-tools';
-import './tools/program-tools';
-import './tools/project-tools';
-import './tools/preview-tools';
-import './tools/animation-tools';
-import { registerAllImporters } from './utils/asset-importers';
+// Tool 3.x — dung Editor.Message.request, API do KHONG ton tai o 2.4.15.
+// Giu file lai de doc khi port vong 2; tools-2x thay the tu phase 4.
+// import './tools/typescript-defenition';
+// import './tools/get-properties-tool';
+// import './tools/set-properties-tool';
+// import './tools/asset-tools';
+// import './tools/component-tools';
+// import './tools/scene-tools';
+// import './tools/editor-tools';
+// import './tools/build-tools';
+// import './tools/program-tools';
+// import './tools/project-tools';
+// import './tools/preview-tools';
+// import './tools/animation-tools';
+// import { registerAllImporters } from './utils/asset-importers';   // .meta 3.x
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 
@@ -23,7 +25,7 @@ export class UtcpServerManager {
 
     constructor() {
         this.app = express();
-        registerAllImporters();
+        // registerAllImporters();   // asset-importers doc .meta 3.x — port o vong 2
     }
 
     async start(port: number = 3000): Promise<number> {

@@ -1,74 +1,98 @@
-import packageJSON from '../package.json';
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
+
+const PKG_NAME = 'cocos-code-mode';
 
 let utcpServer: UtcpServerManager | null = null;
 
+// TAM THOI (phase 3) — xoa sau phase 6.
+// Chay probe + echo, ghi ket qua ra file (Editor.log co the truncate JSON dai).
+let probeDone = false;
+function runProbe() {
+    if (probeDone) { return; }
+    probeDone = true;
 
-export const methods: { [key: string]: (...any: any) => any } = {
+    const result: any = {};
+    const outFile = join(__dirname, '..', 'probe-result.json');
 
-    openPanel() {
-        Editor.Panel.open(packageJSON.name + '.configuration');
+    Editor.Scene.callSceneScript(PKG_NAME, 'echo-args', 'x', 42, { k: 1 }, (err: any, r: any) => {
+        result.echo = err ? { error: String(err && err.message || err) } : r;
+
+        Editor.Scene.callSceneScript(PKG_NAME, 'probe', (err2: any, r2: any) => {
+            result.probe = err2 ? { error: String(err2 && err2.message || err2) } : r2;
+
+            Editor.Scene.callSceneScript(PKG_NAME, 'probe2', (err3: any, r3: any) => {
+                result.probe2 = err3 ? { error: String(err3 && err3.message || err3) } : r3;
+                try {
+                    writeFileSync(outFile, JSON.stringify(result, null, 2));
+                    Editor.log(`[${PKG_NAME}] probe written to ${outFile}`);
+                } catch (e) {
+                    Editor.error(`[${PKG_NAME}] probe write failed: ${e}`);
+                }
+            });
+        });
+    });
+}
+
+// Entry point 2.x: module.exports = { load, unload, messages }.
+// Khac 3.x (export const methods + contributions.messages trong package.json).
+// Doc: v2.4/extension/entry-point.md
+module.exports = {
+    async load() {
+        const configManager = getConfigManager();
+        await configManager.initialize();
+
+        utcpServer = new UtcpServerManager();
+
+        // port 0 = xin OS mot free port bat ky
+        const port = await configManager.getCurrentPort();
+        try {
+            const actualPort = await utcpServer.start(port);
+            Editor.log(`[${PKG_NAME}] UTCP Server started on port ${actualPort}`);
+            await configManager.updatePort(actualPort);
+        } catch (err) {
+            Editor.error(`[${PKG_NAME}] Failed to start UTCP Server: ${err}`);
+        }
     },
 
-    openPreviewPanel() {
-        Editor.Panel.open(packageJSON.name + '.preview');
-    },
-
-
-    async restartServer(newPort: number) {
+    unload() {
         if (utcpServer) {
-            console.log(`[${packageJSON.name}] Restarting UTCP Server on port ${newPort}...`);
+            Editor.log(`[${PKG_NAME}] Stopping UTCP Server...`);
+            utcpServer.stop();
+            utcpServer = null;
+        }
+    },
+
+    // Short message (khong co ':') -> editor expand thanh 'cocos-code-mode:restart-server'.
+    // Goi tu renderer: Editor.Ipc.sendToPackage('cocos-code-mode', 'restart-server', port).
+    messages: {
+        async 'restart-server'(event: any, newPort: number) {
+            if (!utcpServer) {
+                return;
+            }
             utcpServer.stop();
             try {
                 const actualPort = await utcpServer.start(newPort);
-                console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
-                
-                // Используем менеджер конфигурации для обновления порта
-                const configManager = getConfigManager();
-                await configManager.updatePort(actualPort);
+                Editor.log(`[${PKG_NAME}] UTCP Server restarted on port ${actualPort}`);
+                await getConfigManager().updatePort(actualPort);
             } catch (err) {
-                console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
+                Editor.error(`[${PKG_NAME}] Failed to restart UTCP Server: ${err}`);
             }
+        },
+
+        // TAM THOI (phase 3) — xoa sau phase 6. Dump engine API that ra file.
+        'probe'(event: any) {
+            probeDone = false;
+            runProbe();
+        },
+
+        // scene:ready la full message (co ':') — broadcast cua builtin package 'scene'.
+        // Doc: v2.4/extension/reference/ipc-reference.md
+        // Dung de auto-trigger probe khi scene mo xong, khong can go tay trong devtools.
+        'scene:ready'(event: any) {
+            runProbe();
         }
     }
 };
-
-export async function load() {
-    // Initialize config manager
-    const configManager = getConfigManager();
-    await configManager.initialize();
-    
-    utcpServer = new UtcpServerManager();
-
-    let wasConfiguredPort = true;
-    // Load port from profile, default to 0 (random free port) if not set
-    let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
-    if (typeof port !== 'number') {
-        port = 0;
-        wasConfiguredPort = false;
-    }
-
-    try {
-        const actualPort = await utcpServer.start(port);
-        console.log(`[${packageJSON.name}] UTCP Server started on port ${actualPort}`);
-        
-        // Automatically update the port in the configuration on startup
-        await configManager.updatePort(actualPort);
-        console.log(`[${packageJSON.name}] UTCP config automatically updated with port ${actualPort}`);
-    } catch (err) {
-        console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);
-    }
-
-    if (!wasConfiguredPort) {
-        Editor.Panel.open(packageJSON.name);
-    }
-}
-
-export function unload() {
-    if (utcpServer) {
-        console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
-        utcpServer.stop();
-        utcpServer = null;
-    }
-}

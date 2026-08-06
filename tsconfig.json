@@ -3,7 +3,15 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./source",
-        "types": ["node", "@cocos/creator-types/editor"]
+        "types": ["node", "editor-2x"],
+        "typeRoots": ["./node_modules/@types", "./@types"]
     },
-    "exclude": ["cocos-engine"]
+    "exclude": [
+        "cocos-engine",
+        "source/utcp/tools",
+        "source/utcp/utils/asset-importers",
+        "source/utcp/utils/tools-utils.ts",
+        "source/panels",
+        "source/scene.ts"
+    ]
 }

@@ -2,13 +2,20 @@ import { readFileSync, writeFileSync, existsSync } from 'fs-extra';
 import { join } from 'path';
 import { homedir } from 'os';
 
-// @ts-ignore
-import packageJSON from '../../package.json';
+const PKG_NAME = 'cocos-code-mode';
+const PROFILE_URL = `profile://project/${PKG_NAME}.json`;
+
+interface IProfile2x {
+    get(key: string): any;
+    set(key: string, value: any): void;
+    save(): void;
+}
 
 
 export class UtcpConfigManager {
     private static instance: UtcpConfigManager;
     private configPath: string = '';
+    private profile: IProfile2x | null = null;
 
     private constructor() {}
 
@@ -19,8 +26,40 @@ export class UtcpConfigManager {
         return UtcpConfigManager.instance;
     }
 
+    // Profile 2.x: load(url, default) tra ve mot EventEmitter co get/set/save tren prototype.
+    // GAN THANG property (profile.serverPort = x) KHONG persist — save() serialize _chain,
+    // khong doc own-property. PHAI dung .set(key, value) roi .save().
+    // Verify bang probe runtime 2.4.15; docs khong noi ro. Doc: main/profile.md
+    private getProfile(): IProfile2x | null {
+        if (this.profile === null) {
+            try {
+                this.profile = Editor.Profile.load(PROFILE_URL, {
+                    serverPort: 0,
+                    utcpConfigPath: '',
+                });
+            } catch (e) {
+                Editor.warn(`[${PKG_NAME}] Profile unavailable, settings will not persist: ${e}`);
+            }
+        }
+        return this.profile;
+    }
+
+    private readSetting<T>(key: string, fallback: T): T {
+        const value = this.getProfile()?.get(key);
+        return value === undefined || value === null ? fallback : value as T;
+    }
+
+    private writeSetting(key: string, value: any): void {
+        const profile = this.getProfile();
+        if (!profile) {
+            return;
+        }
+        profile.set(key, value);
+        profile.save();
+    }
+
     async initialize(): Promise<void> {
-        const savedPath = await Editor.Profile.getConfig(packageJSON.name, 'utcpConfigPath');
+        const savedPath = this.readSetting<string>('utcpConfigPath', '');
         if (savedPath && typeof savedPath === 'string') {
             this.configPath = savedPath;
         } else {
@@ -38,7 +77,7 @@ export class UtcpConfigManager {
 
     async setConfigPath(path: string): Promise<void> {
         this.configPath = path;
-        await Editor.Profile.setConfig(packageJSON.name, 'utcpConfigPath', path);
+        this.writeSetting('utcpConfigPath', path);
         console.log(`[UtcpConfigManager] Config path updated to: ${path}`);
     }
 
@@ -113,12 +152,12 @@ export class UtcpConfigManager {
     }
 
     async getCurrentPort(): Promise<number> {
-        const port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
+        const port = this.readSetting<number>('serverPort', 0);
         return typeof port === 'number' ? port : 0;
     }
 
     async updatePort(port: number): Promise<void> {
-        await Editor.Profile.setConfig(packageJSON.name, 'serverPort', port);
+        this.writeSetting('serverPort', port);
         await this.ensureCocosEditorTemplate(port);
     }
 }
