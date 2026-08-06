@@ -555,7 +555,7 @@ Lưu ý: `package.json` của `custom` khai `express: ^5` nhưng cài về **4.2
 5. `cc.engine.getInstanceById(uuid)` có resolve được node không — chưa verify (vòng 2)
 6. Vòng 2 undo: `Editor.Undo.add + commit` hay `_Scene.Undo`?
 7. Vòng 2 write meta: qua API `saveMeta` hay ghi thẳng file?
-8. `scene:query-node` `types` 12 class def cho 1 node (~19 KB) — có cách xin dump không kèm `types`?
+8. ~~`scene:query-node` `types` 12 class def cho 1 node (~19 KB) — có cách xin dump không kèm `types`?~~ → **resolved: cắt ở tool, không cần API mới** (xem §Vòng 1.1)
 9. `sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). > 50 KB thì hạ default `maxDepth` xuống 4.
 10. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
 11. Config panel UI chưa port — vòng 1 server tự start, đọc port ở `settings/cocos-code-mode.json`.
@@ -644,4 +644,52 @@ scene-utils/
 12. `cc.engine.getInstanceById(id)` — `id` có bằng `uuid` từ `scene:query-hierarchy` không? (probe vòng 2)
 13. `Editor.require('scene://utils/node')` export gì? Probe `Object.keys` trước khi code.
 14. `set-property-by-path` nhận path dạng nào? Ứng viên chính cho write property.
+
+---
+
+# Vòng 1.1 — token guard + not-found nhất quán (2026-08-06)
+
+Ba việc làm **không cần Creator chạy**. Lý do: 2.4.15 không mở được lúc làm (12 process đều 3.7.3, port 57025 serve project 3.x), nên mọi thứ cần probe — cả 3 Unresolved #12/#13/#14 và toàn bộ vòng 2 — đều bị chặn. Ba việc dưới đây thuần logic tool, verify bằng `tsc` + đối chiếu shape đã ghi ở phase 5.
+
+## 1. `nodeQuery dump` — bỏ `types` mặc định
+
+Unresolved #8 hỏi "có message nào xin dump không kèm `types`?". **Câu hỏi sai chỗ** — không cần API mới, cắt ở tool là đủ:
+
+```
+types omitted (default)  ->  ~2 KB    + typesOmitted: ["cc.Node","cc.Vec2",...]
+includeTypes: true       ->  ~19 KB   nguyên bản
+```
+
+`types` chỉ là **schema** (12 class def), không phải giá trị. Đọc `value` không dùng đến. Trả `typesOmitted: string[]` (danh sách tên class đã bỏ) thay vì bỏ im lặng — agent biết có gì mà xin lại, không phải đoán.
+
+Ảnh hưởng: quét 20 node từ ~380 KB xuống ~40 KB.
+
+## 2. Not-found → `Error`, hết 3 kiểu sentinel khác nhau
+
+Trước: 3 op báo "không tìm thấy" theo 3 cách khác nhau, không cách nào là error:
+
+| Op | Trả gì khi không thấy | HTTP |
+|---|---|---|
+| `dump` | `{"types":{},"value":null}` | 200 |
+| `info` | `{missed: true, ...}` | 200 |
+| `at_path` | `null` | 200 |
+
+Agent phải biết trước cả 3 quy ước mới đọc đúng, và **không quy ước nào tự hiển lộ** — uuid sai vẫn ra 200 nên `try/catch` trượt. Giờ cả 3 throw `Error("Node not found: <uuid|path>")`, khớp với `props`/`find` đã throw từ vòng 1.
+
+⚠️ **Đây là breaking change** cho bất kỳ agent nào đã dựa vào `value === null` / `missed`. Vòng 1 chưa release ra ngoài nên chấp nhận được.
+
+## 3. README viết lại cho 2.x
+
+README vẫn là bản 3.x: 59 tool không tồn tại, "all editor interactions go through `Editor.Message.request`" (API không có ở 2.4), Instance Reference `{id, type}` (2.4 không có handle thống nhất), Config panel (chưa port), phần TypeScript Definitions / Settings Inspection (thuộc tool 3.x đã bỏ).
+
+Viết lại: bảng 9 tool × 26 op, bảng 3 đường vào editor (`assetdb` / `Ipc` / `callSceneScript`) + helper tương ứng, bảng so sánh 3.x↔2.4, mục "Not in round 1", 2 cảnh báo cho người viết tool mới (bẫy query-parser, IPC nuốt number ở cuối). Ảnh `tools_screenshot.jpg` bỏ — UI 3.x.
+
+## Không làm
+
+| | Lý do |
+|---|---|
+| Tool write bất kỳ | Cần probe #12/#13/#14 — 2.4.15 không chạy |
+| Hạ default `maxDepth` (Unresolved #9) | Cần đo trên scene production thật, chưa có |
+| Index path cho node trùng tên (#10) | YAGNI, chưa gặp |
+| Config panel UI (#11) | Cần Creator để test |
 

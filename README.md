@@ -1,13 +1,19 @@
-# Code Mode for Cocos Creator
+# Code Mode for Cocos Creator 2.4.x
 
-**Code Mode** turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene manipulation, asset management, and property inspection as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents build, inspect, and modify Cocos Creator projects the same way a developer would through the UI.
+**Code Mode** turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property reading as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and reason about Cocos Creator projects the same way a developer would through the UI.
 These tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) environment to achieve maximum performance and token efficiency for AI agents, letting them call the tools in isolated JS sandbox.
+
+> **This is the 2.4.x port.** It is a fork of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two editor generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
+>
+> **Round 1 is read-only** — 9 tools, 26 operations. The only mutation is editor selection. Write tools (create/modify/delete node, asset, component) are not ported yet.
+>
+> Verified against **Creator 2.4.15**. Other 2.4.x patches are untested.
 
 ## Quickstart
 
-1. [Install extension](https://github.com/RomaRogov/cocos-code-mode/?tab=readme-ov-file#installation) in the Cocos Creator project
-2. [Integrate](https://github.com/RomaRogov/cocos-code-mode/?tab=readme-ov-file#integration) extension with CodeMode MCP Server
-3. Design a system prompt for you agent or use [provided example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md)
+1. [Install the extension](#installation) in the Cocos Creator 2.4.x project
+2. [Integrate](#integration) it with the CodeMode MCP Server
+3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set
 4. Ask AI to help you and see how it learns!
 
 ## What is Code Mode?
@@ -24,115 +30,123 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 
 ## Tools
 
-![Tools <> UI Mapping](tools_screenshot.jpg)
+9 tools, 26 operations. Most tools take an `operation` argument instead of being split into many endpoints — fewer tool definitions in the agent's context.
 
-| Category | Tools | Purpose |
-|----------|-------|---------|
-| **Scene** | `nodeGetTree`, `nodeGetAtPath`, `nodeCreate`, `nodeCreatePrimitive`, `nodeOperate` | Navigate and build scene hierarchy |
-| **Components** | `nodeComponentsGet`, `nodeComponentAdd`, `nodeComponentRemove`, `nodeGetAvailableComponentTypes` | Attach, remove, and discover components |
-| **Inspector** | `inspectorGetInstanceDefinition`, `inspectorGetSettingsDefinition`, `inspectorGetInstanceProperties`, `inspectorGetSettingsProperties`, `inspectorSetInstanceProperties`, `inspectorSetSettingsProperties` | Introspect types and read/write properties |
-| **Assets** | `assetGetTree`, `assetGetAtPath`, `assetCreate`, `assetImport`, `assetOperate`, `assetGetPreview` | Browse, create, and manage project assets |
-| **Editor** | `editorOperate`, `editorGetLogs`, `editorGetScenePreview` | Control editor state and capture previews |
+| Tool | Operations | Purpose |
+|---|---|---|
+| `sceneSnapshot` | — | **Start here.** Whole node tree in one round trip: transform, size, anchor, component list per node, plus design resolution. Editor-only roots filtered out. |
+| `nodeQuery` | `tree` `dump` `info` `functions` `by_component` `at_path` | Hierarchy tree, single-node property dump, node info, callable functions, find by component, fetch by path |
+| `componentQuery` | `props` `classes` `by_name` `find` | Read one component's properties, list registered classes, find nodes carrying a component |
+| `assetResolve` | `uuid_from_url` `url_from_uuid` `fspath` `exists` | Translate between asset url, uuid, and filesystem path |
+| `assetQuery` | `search` `tree` `info` `meta` `types` `sub_assets` | Browse and inspect the asset database |
+| `assetReadContent` | — | Read a text asset's contents |
+| `editorSelect` | `query` `select` `unselect` `clear` | Read and set the editor selection — the one mutating tool |
+| `editorEnvInfo` | — | Editor / engine / node / electron versions and project path |
+| `projectGetConfig` | — | Read `settings/*.json` |
 
+### Not in round 1
+
+| | Why |
+|---|---|
+| All write tools | Node/asset/component mutation needs undo integration and the 2.4 scene write API, neither verified yet |
+| `editorGetLogs` | 2.4.15 has no console read API — verified, all three candidate messages fail |
+| 19 asset importers | `.meta` format differs from 3.x |
 
 ## How It Works
 
 This extension architecture follows a **discover, then act** pattern. AI agents never guess at property names or component structures — they query for the real definitions first.
 
 ```
-1. Get the scene tree         →  find the node you need
-2. Get its type definition    →  learn its actual properties
-3. Set properties by name     →  make precise changes
+1. sceneSnapshot              →  see the whole scene at once
+2. componentQuery props       →  read a component's real property values
+3. nodeQuery dump             →  full serialized dump of one node
 ```
 
 ### Example
 
 ```typescript
-// Find the camera node
-const tree = CocosEditor.nodeGetTree({});
-const cameraRef = tree.children[0].components[0]; // component reference
+// One call gets the whole scene
+const scene = CocosEditor.sceneSnapshot({});
+// → { name, uuid, designResolution: {width, height}, children: [...] }
 
-// Discover what properties Camera has
-const def = CocosEditor.inspectorGetInstanceDefinition({ reference: cameraRef });
-// → "export class Camera { fov: number; near: number; far: number; ... }"
+// Find every node with a Sprite — returns paths, not bare uuids
+const sprites = CocosEditor.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
+// → { result: [{ path: 'Canvas/bg', uuid: '...', name: 'bg' }], total: 1 }
 
-// Set multiple properties in one call
-CocosEditor.inspectorSetInstanceProperties({
-  reference: cameraRef,
-  propertyPaths: ["fov", "near", "far"],
-  values: [60, 0.1, 1000]
+// Read that Sprite's actual property values
+const props = CocosEditor.componentQuery({
+  operation: 'props',
+  path: 'Canvas/bg',
+  componentType: 'cc.Sprite'
 });
+// → { spriteFrame: { __ref: '<uuid>', __type: 'cc.SpriteFrame', __name: 'bg' }, ... }
 ```
 
 ## Architecture
 
 ### Tool Execution
 
-The extension runs an Express.js HTTP server on a configurable port (default: auto-assigned). Tool handlers execute asynchronously using Cocos Creator's Editor Message API — all editor interactions go through `Editor.Message.request`, which marshals calls to the appropriate editor subsystem.
+The extension runs an Express.js HTTP server on a configurable port (default: auto-assigned). Unlike the 3.x version there is no single message bus — 2.4 tool handlers reach the editor three different ways, depending on what the data lives in:
 
-- **Read tools** (GET) — query scene state and return structured data immediately.
-- **Write tools** (POST) — mutate scene state and call `Editor.Message.request('scene', 'snapshot')` to register the change as an undoable step.
+| Path | Used for | Helper |
+|---|---|---|
+| `Editor.assetdb.*` (main process, sync + callback) | all asset tools | `cbToPromise` |
+| `Editor.Ipc.sendToPanel('scene', 'scene:query-*')` | hierarchy, node dump, node info | `sceneIpc` |
+| `Editor.Scene.callSceneScript(...)` | anything needing live `cc.*` — snapshot, component props, find-by-component | `sceneScript` |
 
-This means AI agents can safely chain read calls and batch writes without blocking the editor.
+`callSceneScript` runs `dist/scene-script.js` inside the **scene process**, where the full engine runtime (`cc.director`, `cc.find`, `cc.js`) is available. That file must stay standalone CommonJS — it cannot import anything from the rest of the extension.
+
+All three are callback-style in 2.4; `source/utcp/utils/ipc-promise.ts` wraps them into promises.
+
+### Differences from the 3.x extension
+
+| | 3.x | 2.4.x |
+|---|---|---|
+| Editor API | `Editor.Message.request(module, msg, ...)` | `Editor.assetdb`, `Editor.Ipc`, `Editor.Scene.callSceneScript` |
+| Engine access | via message bus | scene-script running in the scene process |
+| Async style | promises | callback-last `(err, result)` |
+| Node / Electron | Node 18+ | Node 14 / Electron 13 — constrains dependency versions |
+| Settings | `Editor.Profile` object assignment | must call `profile.set()`; plain assignment does not persist |
+| Project config | editor API | read `<project>/settings/*.json` directly |
+| Tool count | 59 | 9 (read-only) |
+
+The behavioural traps found while porting — where the 2.4 docs disagree with the runtime — are recorded in [`docs/cocos-2x-api-notes.md`](docs/cocos-2x-api-notes.md). Read that before adding tools.
 
 ### Tool Discovery
 
 Tools are TypeScript class methods decorated with `@utcpTool`. The `ToolRegistry` collects them at startup, builds JSON schemas from the inline definitions, and serves a UTCP manual at the `/utcp` endpoint.
 
 ```typescript
-export class SceneTools {
+export class DeepReadTools {
 
     @utcpTool(
-        'nodeGetTree',
-        'Get the hierarchy tree of specific node or scene root if no reference is provided.',
+        'sceneSnapshot',
+        'Start here to understand the open scene...',
         {
             type: 'object',
             properties: {
-                reference: InstanceReferenceSchema
+                maxDepth: { type: 'number', description: 'Max tree depth, default 6' }
             }
         },
-        SceneTreeItemSchema, "GET", ['scene', 'graph', 'node', 'hierarchy', 'tree']
+        { type: 'object', properties: { name: { type: 'string' }, children: { type: 'array' } } },
+        'GET', ['scene', 'snapshot', 'hierarchy']
     )
-    async nodeGetTree(args: { reference?: IInstanceReference }): Promise<ISceneTreeItem> {
-        // ...
+    async sceneSnapshot(args: { maxDepth?: number }): Promise<any> {
+        return sceneScript<any>('scene-snapshot', { maxDepth: args.maxDepth || 6 });
     }
 }
 ```
 
-### Instance References
+### Node and asset identity
 
-Nodes, components, and assets are passed around as lightweight UUID-based handles:
+2.4 has no unified instance-reference handle. Nodes are addressed two ways depending on the tool:
 
-```typescript
-{ id: "a1b2c3d4-...", type: "cc.Camera" }
-```
+- **uuid** — what `scene:query-*` messages return and accept (`nodeQuery dump/info/functions`)
+- **path** — `Canvas/background`, resolved with `cc.find` in the scene process (`nodeQuery at_path`, `componentQuery props`)
 
-Returned by tree queries, component lookups, and creation tools. Passed back to any tool that needs to target a specific object.
+`componentQuery find` returns both, so it is the usual bridge from "which nodes have X" to "read X".
 
-### TypeScript Definitions
-
-Code Mode dynamically generates TypeScript class definitions from the live editor property dump. When an AI agent calls `inspectorGetInstanceDefinition`, it receives a complete TypeScript class with the correct field names, types, enums, and decorator hints — including `@property` attributes like `min`, `max`, `unit`, and `tooltip`.
-
-```typescript
-// Example output for a Transform-like node
-export class Node {
-    readonly uuid: string;
-    /** World position */
-    worldPosition: Vec3;
-    /** World rotation (euler angles) */
-    worldRotation: Vec3;
-    worldScale: Vec3;
-    active: boolean;
-}
-```
-
-Components without special handling are reflected automatically from the serialized property dump. Common Cocos math types (`Vec2`, `Vec3`, `Vec4`, `Color`, `Rect`, `Quat`, `Mat4`, `Gradient`, etc.) are always available via `inspectorGetSettingsDefinition({ settingsType: 'CommonTypes' })`.
-
-### Settings Inspection
-
-Two special settings types can be inspected and modified directly:
-- **`CurrentSceneGlobals`** — ambient light, skybox, shadows, and other scene-level rendering settings.
-- **`ProjectSettings`** — engine and project configuration.
+Assets keep the 3.x-style url/uuid duality; `assetResolve` translates between url, uuid, and filesystem path.
 
 ## Installation
 
@@ -145,26 +159,27 @@ Two special settings types can be inspected and modified directly:
 
 ### Build from source
 
-1. Clone this repository.
+1. Clone this repository, check out the `cc-2x` branch.
 2. Install `node` and `npm`.
 3. run
 ```bash
-git clone https://github.com/romarogov/cocos-code-mode.git
-cd cocos-code-mode
 npm i
 npm run package
 ```
 4. If everything builds fine, `cocos-code-mode.zip` file should appear in repository root.
 5. Install it in Cocos Creator with **Extension Manager**.
 
+For development, a junction from `<project>/packages/cocos-code-mode` to the repo works and does not trigger a reload loop.
+
 ## Adding Custom Tools
 
-You should add custom tools right in extension package and build it from source as described above.
+Add tools in `source/utcp/tools-2x/` and build from source as described above. Keep the 3.x tools in `source/utcp/tools/` alone — they are excluded from the build and kept only as a porting reference.
 
 Implementation example:
 
 ```typescript
-import { utcpTool } from './utcp/decorators';
+import { utcpTool } from '../decorators';
+import { sceneScript } from '../utils/ipc-promise';
 
 export class MyTools {
 
@@ -180,20 +195,27 @@ export class MyTools {
             required: ['input']
         },
         { type: 'object', properties: { result: { type: 'string' } } },
-        "POST",
+        "GET",
         ['custom', 'tags']
     )
     async myCustomTool(args: { input: string, count?: number }): Promise<{ result: string }> {
-        // Implementation
+        return { result: await sceneScript<string>('my-handler', args) };
     }
 }
 ```
 
 Register the class by importing it in `utcp-server.ts`. Tools are served automatically at startup. No additional registration needed.
 
+Two things to know before writing a 2.4 tool:
+
+- **Every argument arrives as a string** unless the express query-parser decoder runs. It only runs because `app.set('query parser', ...)` is called *before* the first `app.use()` in `utcp-server.ts` — moving it below breaks every numeric and boolean argument silently. Nothing tests this.
+- **Reaching live `cc.*`** means adding a handler to `source/scene-script.ts` and calling it via `sceneScript`. That file runs in the scene process and must not import anything. Numbers in the last argument position get swallowed by 2.4 IPC — wrap arguments in an object.
+
 ## UTCP Call Templates Configuration
 
-The extension provides a **Configuration** panel accessible from the **Code Mode** top menu. It shows the current server port, the path to the UTCP config file, and lets you manage additional UTCP call templates to connect other UTCP-compatible tool providers (including MCP servers) into the same Code Mode execution context.
+The extension registers itself in `~/.utcp_config.json` as a `CocosEditor` entry pointing at the running server port, and rewrites the port when it changes.
+
+> The **Configuration** panel from the 3.x version is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode.json` (0 = auto-assign). Additional call templates must be added to `~/.utcp_config.json` by hand for now.
 
 You can find Call Template structures in [UTCP documentation](https://www.utcp.io/protocols):
 - [MCP Call Template](https://utcp.io/protocols/mcp#call-template-structure)

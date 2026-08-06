@@ -33,7 +33,7 @@ export class SceneReadTools {
 
     @utcpTool(
         'nodeQuery',
-        'Read the open scene: node hierarchy tree, a single node property dump, node info, callable node functions, find nodes by component class name, or fetch one node by its path.',
+        'Read the open scene: node hierarchy tree, a single node property dump, node info, callable node functions, find nodes by component class name, or fetch one node by its path. dump omits the class-definition block by default and lists the omitted names in typesOmitted; pass includeTypes to get it back.',
         {
             type: 'object',
             properties: {
@@ -42,6 +42,7 @@ export class SceneReadTools {
                 path: { type: 'string', description: 'Node path for at_path, e.g. Canvas/background' },
                 componentName: { type: 'string', description: 'Component class name for by_component, e.g. cc.Sprite' },
                 maxDepth: { type: 'number', description: `Max depth — hierarchy tree default ${DEFAULT_TREE_DEPTH}, at_path default 3` },
+                includeTypes: { type: 'boolean', description: 'dump only: include the class definitions block. Off by default — it is roughly 90% of the payload and is rarely needed to read values.' },
             },
             required: ['operation'],
         },
@@ -55,7 +56,7 @@ export class SceneReadTools {
         },
         'GET', ['scene', 'node', 'hierarchy', 'tree', 'dump', 'inspect']
     )
-    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number }): Promise<{ result: any, sceneId?: string }> {
+    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number, includeTypes?: boolean }): Promise<{ result: any, sceneId?: string }> {
         switch (args.operation) {
             case 'tree': {
                 // callback nhan (err, sceneID, hierarchy) — sceneIpc tra array khi >1 gia tri.
@@ -71,21 +72,42 @@ export class SceneReadTools {
                 // scene:query-node tra STRING, khong phai object.
                 const raw = await sceneIpc<any>('scene:query-node', requireUuid(args, 'dump'));
                 if (typeof raw !== 'string') { return { result: raw }; }
+                let parsed: any;
                 try {
-                    return { result: JSON.parse(raw) };
+                    parsed = JSON.parse(raw);
                 } catch (e) {
                     throw new Error(`Node dump is not valid JSON. First 200 chars: ${raw.slice(0, 200)}`);
                 }
+                // uuid sai -> {"types":{},"value":null}, KHONG throw (phase 5). Bien thanh
+                // Error de dong bo voi at_path/props, agent khong phai tu check null.
+                if (parsed && parsed.value === null) {
+                    throw new Error(`Node not found: ${args.uuid}`);
+                }
+                // `types` la ~90% payload (19 KB cho 1 node Canvas, 12 class def) va chi la
+                // schema — doc gia tri khong can. Bo mac dinh; agent xin lai bang includeTypes.
+                if (!args.includeTypes && parsed && typeof parsed === 'object' && parsed.types) {
+                    const typeNames = Object.keys(parsed.types);
+                    delete parsed.types;
+                    parsed.typesOmitted = typeNames;
+                }
+                return { result: parsed };
             }
-            case 'info':
+            case 'info': {
                 // arg 2 la class name — docs dung 'cc.Node'.
-                return { result: await sceneIpc<any>('scene:query-node-info', requireUuid(args, 'info'), 'cc.Node') };
+                const info = await sceneIpc<any>('scene:query-node-info', requireUuid(args, 'info'), 'cc.Node');
+                // `missed` la co node-khong-ton-tai (phase 5), khong phai error. Thong nhat voi dump.
+                if (info && info.missed) { throw new Error(`Node not found: ${args.uuid}`); }
+                return { result: info };
+            }
             case 'functions':
                 return { result: await sceneIpc<any>('scene:query-node-functions', requireUuid(args, 'functions')) };
             case 'at_path': {
                 // Nguon khac 4 op tren: scene-script (cc.find), khong phai scene panel IPC.
                 if (!args.path) { throw new Error('path is required for operation at_path'); }
-                return { result: await sceneScript<any>('node-at-path', { path: args.path, maxDepth: args.maxDepth || 3 }) };
+                const node = await sceneScript<any>('node-at-path', { path: args.path, maxDepth: args.maxDepth || 3 });
+                // cc.find tra null khi khong thay — thong nhat voi dump/info.
+                if (node === null) { throw new Error(`Node not found at path: ${args.path}`); }
+                return { result: node };
             }
             case 'by_component':
                 if (!args.componentName) { throw new Error('componentName is required for operation by_component'); }
