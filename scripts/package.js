@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { ZipArchive } = require('archiver'); // archiver v8: class-based API
 
 // Read package.json to get the package name
 const packageJsonPath = path.join(__dirname, '../package.json');
@@ -10,10 +10,10 @@ if (!fs.existsSync(packageJsonPath)) {
 }
 
 const packageJson = require(packageJsonPath);
-const packageName = packageJson.name; // cocos-code-mode-ai
+const packageName = packageJson.name; // cocos-code-mode
 const zipFileName = `${packageName}.zip`;
 
-// List of files/folders to include in the list
+// List of files/folders to include in the archive
 const filesToInclude = [
     '@types',
     'dist',
@@ -25,33 +25,38 @@ const filesToInclude = [
     'README.md'
 ];
 
-// Check for missing items (optional, but good for feedback)
 const projectRoot = path.join(__dirname, '..');
-const missingItems = filesToInclude.filter(item => !fs.existsSync(path.join(projectRoot, item)));
-
-if (missingItems.length > 0) {
-    console.warn('Warning: The following items to be packaged were not found:');
-    missingItems.forEach(item => console.warn(` - ${item}`));
-    // We proceed anyway, zip will just skip or fail depending on strictness, but usually it warns.
-    // If 'dist' is missing, it's significant.
-}
+const outputPath = path.join(projectRoot, zipFileName);
 
 console.log(`Packaging project into ${zipFileName}...`);
 
-// Construct the zip command
-// zip -r outputFile inputFiles...
-// We execute this in the project root so paths are relative.
-const includeArgs = filesToInclude.map(f => `'${f}'`).join(' ');
-const command = `zip -r '${zipFileName}' ${includeArgs}`;
+const output = fs.createWriteStream(outputPath);
+const archive = new ZipArchive({ zlib: { level: 9 } });
 
-try {
-    // Run the zip command
-    execSync(command, { 
-        cwd: projectRoot, 
-        stdio: 'inherit' 
-    });
-    console.log(`\nPackage created successfully: ${path.join(projectRoot, zipFileName)}`);
-} catch (error) {
-    console.error('Error creating package:', error.message);
+output.on('close', () => {
+    const sizeMb = (archive.pointer() / 1024 / 1024).toFixed(1);
+    console.log(`\nPackage created successfully: ${outputPath} (${sizeMb} MB)`);
+});
+
+archive.on('error', (err) => {
+    console.error('Error creating package:', err.message);
     process.exit(1);
+});
+
+archive.pipe(output);
+
+for (const item of filesToInclude) {
+    const itemPath = path.join(projectRoot, item);
+    if (!fs.existsSync(itemPath)) {
+        // Skip missing items; 'dist' missing is significant, warn loudly
+        console.warn(`Warning: '${item}' not found, skipping${item === 'dist' ? ' (build output missing - run npm run build!)' : ''}`);
+        continue;
+    }
+    if (fs.statSync(itemPath).isDirectory()) {
+        archive.directory(itemPath, item);
+    } else {
+        archive.file(itemPath, { name: item });
+    }
 }
+
+archive.finalize();
