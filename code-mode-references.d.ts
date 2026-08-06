@@ -369,4 +369,17 @@ declare namespace CocosEditor {
         cameraPosition: Vector3,
         targetPosition: Vector3
     }): { type: string, data: string, mimeType: string };
+
+    /** Inspect materials, shader effects and the render pipeline. Read-only — use inspectorSetProperty to change material properties. Result shapes are whatever the engine returns and are not yet runtime-verified. */
+    function materialQuery(args: {
+        operation: "effects" | "effect" | "material" | "serialized_material" | "render_pipeline",
+        reference?: InstanceReference,
+        effectName?: string
+    }): { result: any };
+
+    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data. Poll "busy" after a refresh before trusting asset queries. */
+    function assetDbQuery(args: {
+        operation: "databases" | "busy" | "mtime" | "data",
+        reference?: InstanceReference
+    }): { result: any };
 }
