@@ -255,10 +255,115 @@ spine sprite-frame text texture texture-packer tiled-map ttf-font typescript vid
 
 ---
 
+# Phase 5 — scene IPC message (VERIFIED runtime)
+
+**Probe date:** 2026-08-06 · Scene `helloworld.fire` · Gate 8/8 curl pass.
+Gọi qua `Editor.Ipc.sendToPanel('scene', msg, ...args, cb)` (`sceneIpc()` helper).
+
+## Message nào THẬT SỰ tồn tại
+
+| Message | Runtime | Ghi chú |
+|---|---|---|
+| `scene:query-hierarchy` | ✅ | `(err, sceneID, hierarchy)` — 2 giá trị, đúng docs |
+| `scene:query-node` | ✅ | trả **string** → `JSON.parse` |
+| `scene:query-node-info` | ✅ | arg 2 = `'cc.Node'` |
+| `scene:query-node-functions` | ✅ | |
+| `scene:query-nodes-by-comp-name` | ✅ | |
+| `scene:query-animation-node` | ❌ **KHÔNG TỒN TẠI** | `ipc failed to send, message not found` |
+
+⚠️ Docs (`reference/ipc-reference.md`) liệt kê `scene:query-animation-node` nhưng runtime 2.4.15 không có handler. Op `animation_root` đã bỏ, thay bằng `by_component`.
+
+**Không enumerate được message thật:** package `scene` nằm trong `app.asar`, file `.ccc` mã hoá. `resources/builtin/` chỉ có 11 package phụ (adapters, package-manager…), không có `scene`. → phải test từng message bằng runtime.
+
+## `scene:query-hierarchy` — NESTED, có `hidden`, KHÔNG có components/transform
+
+```json
+[
+  {"name":"Editor Scene Background","id":"c4lE8kiM9Glapjx3lGXrF9","hidden":true,
+   "prefabState":0,"locked":false,"isActive":true,
+   "children":[{"name":"Scene Grid","id":"039X4VbftEzLlEKRk4Qsn4","hidden":false,"...":"..."}]},
+  {"name":"Canvas","id":"a286bbGknJLZpRpxROV6M94","hidden":false,"children":[
+     {"name":"Main Camera"},{"name":"background"},{"name":"cocos"},{"name":"label"}]},
+  {"name":"Editor Scene Foreground","id":"52NR2srwpNbZ4byz9MXd9K","hidden":true}
+]
+```
+
+Key mỗi node: `name` `id` `children` `prefabState` `locked` `isActive` `hidden`.
+
+⚠️ **`id` là compressed uuid** (`a286bbGknJLZpRpxROV6M94`), KHÔNG phải uuid dạng dash. Truyền thẳng lại cho `scene:query-node` là chạy.
+
+⚠️ **`sceneID` = uuid của scene ASSET** (`2d2f792f-…` = `helloworld.fire`), không phải node id.
+
+### Filter editor node ở phase 6: dùng `hidden`, không cần bitmask
+
+`hidden: true` cho `Editor Scene Background` / `Editor Scene Foreground`, `false` cho `Canvas` — khớp Hierarchy panel. Đơn giản hơn `_objFlags & 1024` của scene-script.
+
+⚠️ Con của editor node có `hidden: false` (`Scene Grid`, `Design Resolution`) → phải filter **ở root**, không filter từng node.
+
+### ✅ Ảnh hưởng phase 6: KHÔNG khỏi được scene-script
+
+`query-hierarchy` **không** trả components/transform — chỉ 7 field trên. Phase 6 `sceneSnapshot` muốn kèm component + position vẫn phải traverse trong scene-script. (Câu hỏi §5.2 của plan → trả lời: **không tiết kiệm được file**.)
+
+## `scene:query-node` dump — value wrapper `{type, value}`, giống 3.x
+
+Top level **2 key**: `types` (12 class def) + `value`.
+
+```json
+{"types": {"cc.Node":{},"cc.Vec2":{},"cc.Canvas":{},"280c3rsZJJKnZ9RqbALVwtK":{}},
+ "value": {
+   "__type__":"cc.Node",
+   "name":     {"type":"String",  "value":"Canvas"},
+   "position": {"type":"cc.Vec2", "value":{"x":480,"y":320}},
+   "size":     {"type":"cc.Size", "value":{"width":960,"height":640}},
+   "color":    {"type":"cc.Color","value":{"r":252,"g":252,"b":252,"a":255}},
+   "__comps__":[ {"type":"cc.Canvas", "value":{}} ]
+ }}
+```
+
+`value` keys: `__comps__` `__type__` `active` `anchor` `angle` `color` `eulerAngles` `group` `is3DNode` `name` `opacity` `position` `scale` `size` `skew` `uuid`.
+
+- **Có `__comps__` sẵn** — mỗi comp `{type, value}`, `type` là class name hoặc **script uuid** (`280c3rsZJJKnZ9RqbALVwtK` = `HelloWorld.js`).
+- Canvas testbed: 3 comp — `cc.Canvas` (17 prop), script (13), `cc.Widget` (50).
+- `cc.Canvas.designResolution` = `{width:960, height:640}` — **khớp giá trị thật**, khác `cc.view` (bẫy 1). Đây là nguồn thứ 2 cho `editorEnvInfo` phase 7, không cần vào scene-script.
+- ⚠️ **Nặng: 19 KB cho 1 node Canvas** (`types` chiếm phần lớn). Phase 6/7 gọi hàng loạt phải cân nhắc; token guard hiện chưa cắt `types`.
+
+## `scene:query-node` với uuid sai → KHÔNG throw
+
+`uuid=deadbeef` → HTTP **200** `{"types":{},"value":null}`. Agent phải tự check `value === null`, không dựa vào error.
+
+## `scene:query-node-info`
+
+```json
+{"name":"Canvas","missed":false,"nodeID":"a286bbGknJLZpRpxROV6M94","compID":null,"compIDList":[]}
+```
+Mỏng. `missed` là cờ node-không-tồn-tại.
+
+## `scene:query-node-functions`
+
+```json
+{"cc.Canvas":["applySettings","addComponent","destroy","schedule"],
+ "HelloWorld":["addComponent","destroy"],
+ "cc.Widget":["updateAlignment","addComponent"]}
+```
+Record `{componentName: methodName[]}`. Script comp dùng **tên class** (`HelloWorld`), khác `__comps__` dùng **uuid**.
+
+## `scene:query-nodes-by-comp-name` → mảng uuid TRẦN
+
+```
+cc.Sprite  -> ["e2e0crkOLxGrpMxpbC4iQg1","c4f30YOS65G64U2TwufdJ+2"]
+cc.Label   -> ["31f1bH7V69Ajr1iXhluMpTB"]
+```
+
+Không có name/path → agent phải `dump` từng cái. (Unresolved #3 phase 5 → resolved: **uuid trần**, nên phase 6 `find-by-component` trả kèm path là có giá trị thật.)
+
+---
+
 ## Unresolved
 
 1. ~~`Editor.assetdb` có sẵn global trong main.js plugin hay phải require?~~ → **resolved phase 4: có sẵn**
 2. `cc.engine.getInstanceById(uuid)` có resolve được node không — chưa verify (vòng 2)
 3. Vòng 2 undo: `Editor.Undo.add + commit` hay `_Scene.Undo`?
 4. Vòng 2 write meta: `saveMeta(uuid, jsonString)` — ghi qua API hay ghi thẳng file `.meta`? (đọc thì file thắng vì circular ref, ghi thì có thể phải qua API để asset-db reimport)
+5. Message scene nào ngoài 5 cái đã verify? Không enumerate được (`.ccc` mã hoá) — chỉ biết bằng cách thử.
+6. `scene:query-node` `types` 12 class def cho 1 node — có cách xin dump không kèm `types` không?
 

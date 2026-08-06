@@ -17,6 +17,7 @@ import { ToolRegistry } from './decorators';
 // import './tools/animation-tools';
 // import { registerAllImporters } from './utils/asset-importers';   // .meta 3.x
 import './tools-2x/asset-read-tools';
+import './tools-2x/scene-read-tools';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 
