@@ -9,6 +9,9 @@ type SizeLike = { width: number; height: number };
 /** Asset/node reference trong component props. __ref dung duoc voi assetQuery / assetResolve. */
 type Ref2x = { __ref: string | null; __type: string | null; __name: string | null };
 
+/** Ly do 1 nhanh bi cat. 'maxDepth' = tang maxDepth; 'nodeLimit' = tang maxNodes. */
+type TruncateReason2x = 'maxDepth' | 'nodeLimit';
+
 interface INodeBrief2x {
     name: string;
     uuid: string;
@@ -21,10 +24,12 @@ interface INodeBrief2x {
     size: SizeLike;
     anchor: Vec2Like;
     components: { type: string | null; uuid: string; enabled: boolean }[];
+    /** So con THAT — van dung ca khi children bi cat. */
     childrenCount: number;
     children?: INodeBrief2x[];
-    /** true khi bi cat boi maxDepth — tang maxDepth de xem tiep */
-    truncated?: boolean;
+    truncated?: TruncateReason2x;
+    /** Chi co khi truncated === 'nodeLimit': so con bi bo giua chung. */
+    childrenOmitted?: number;
 }
 
 /** Node trong cay hierarchy cua editor (nguon khac INodeBrief2x: khong co transform). */
@@ -39,7 +44,8 @@ interface IHierarchyNode2x {
     hidden: boolean;
     childrenCount: number;
     children?: IHierarchyNode2x[];
-    truncated?: boolean;
+    truncated?: TruncateReason2x;
+    childrenOmitted?: number;
 }
 
 declare namespace CocosEditor {
@@ -49,22 +55,31 @@ declare namespace CocosEditor {
     /**
      * GOI DAU TIEN de hieu scene. Ca cay node + transform + component list trong 1 round-trip.
      * Node cua editor da bi loc, cay khop Hierarchy panel.
+     *
+     * Hai gioi han doc lap: `maxDepth` chan cay SAU, `maxNodes` chan cay RONG (1 root +
+     * hang nghin con thi depth khong chan duoc). Xem `budgetExhausted` de biet cay co du khong.
      */
-    function sceneSnapshot(args?: { maxDepth?: number }): {
+    function sceneSnapshot(args?: { maxDepth?: number; maxNodes?: number }): {
         name: string;
         uuid: string;
         designResolution: SizeLike | null;
         maxDepth: number;
+        maxNodes: number;
+        /** So node da di. Bang tong node tra ve. */
+        nodesVisited: number;
+        /** true = cay bi cat vi het budget, KHONG phai cay day du. */
+        budgetExhausted: boolean;
         children: INodeBrief2x[];
     };
 
     /**
-     * Doc node.
-     * - `tree`: hierarchy tu editor (co `hidden`, khong co transform)
-     * - `at_path`: 1 node theo path kieu cc.find, tra INodeBrief2x
-     * - `dump`: property day du + `__comps__`, da JSON.parse. NANG (~19KB/node) — dung goi hang loat.
-     *   uuid sai KHONG loi: tra `{types:{}, value:null}`, phai tu check `value === null`.
-     * - `info`: mong, co co `missed`
+     * Doc node. Khong tim thay -> THROW (dump/info/at_path), khong tra sentinel.
+     * - `tree`: hierarchy tu editor (co `hidden`, khong co transform). Nhan maxDepth + maxNodes.
+     * - `at_path`: 1 node theo path kieu cc.find, tra INodeBrief2x. Nhan maxDepth + maxNodes.
+     * - `dump`: property day du + `__comps__`, da JSON.parse. Khoi `types` BI BO mac dinh
+     *   (~90% payload, chi la schema) — ten class da bo nam o `typesOmitted`, xin lai bang
+     *   `includeTypes: true`.
+     * - `info`: mong
      * - `functions`: `{componentName: methodName[]}`
      * - `by_component`: mang uuid TRAN — dung `componentQuery find` neu can path
      */
@@ -74,20 +89,33 @@ declare namespace CocosEditor {
         path?: string;
         componentName?: string;
         maxDepth?: number;
-    }): { result: any; sceneId?: string };
+        maxNodes?: number;
+        includeTypes?: boolean;
+    }): {
+        result: any;
+        sceneId?: string;
+        /** Chi co voi operation 'tree'. */
+        maxNodes?: number;
+        nodesVisited?: number;
+        budgetExhausted?: boolean;
+    };
 
     /**
      * Component.
      * - `props`: property cua 1 component. Asset/node ra dang Ref2x.
      * - `find`: tra PATH dung duoc voi cc.find — manh hon `by_name` (chi uuid)
      * - `classes`: ten class hop le, loc bang `filter`
+     *
+     * `find` va `classes` bi cap boi `maxResults` (200). `truncated: true` = con nua;
+     * `total` van la so THAT nen biet duoc con bao nhieu — loc hep hon bang `filter`.
      */
     function componentQuery(args: {
         operation: 'props' | 'classes' | 'by_name' | 'find';
         path?: string;
         componentType?: string;
         filter?: string;
-    }): { result: any; total?: number };
+        maxResults?: number;
+    }): { result: any; total?: number; truncated?: boolean };
 
     // --- Asset ---
 

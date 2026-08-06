@@ -9,7 +9,8 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | File | Nội dung | Khi nào đọc |
 |---|---|---|
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
-| `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** | Trước khi viết tool mới. Bắt buộc |
+| `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** + vòng 1.1 (token guard) | Trước khi viết tool mới. Bắt buộc |
+| `../README.md` | Tool surface + payload limit + 2 bẫy cho người viết tool mới (bản 2.x, không phải 3.x) | Khi cần overview nhanh |
 | `../code-mode-references-2x.d.ts` | Tool surface agent-facing (9 tool) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
@@ -25,10 +26,26 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 | 5 | `nodeQuery` (5 op: tree/dump/info/functions/by_component) | ✅ 8/8 curl pass |
 | 6 | `sceneSnapshot` + `componentQuery` + `nodeQuery.at_path` | ✅ 14/14 curl pass |
 | 7 | `editorEnvInfo` + `editorSelect` + `projectGetConfig` + d.ts | ✅ 34/34 smoke test |
+| 1.1 | Token guard (`maxNodes`/`maxResults`), dump bỏ `types`, not-found → throw, README 2.x, self-check | ✅ 12/12 check, build + package exit 0 |
 
 **Vòng 1 xong: 9 tool, 26 op.** `editorGetLogs` bỏ — 2.4.15 không có API đọc console (verified).
 
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
+
+**Vòng 2 (write) CHƯA MỞ — bị chặn cứng.** Cả 3 câu hỏi chặn (`cc.engine.getInstanceById` nhận uuid gì · `Editor.require('scene://utils/node')` export gì · `set-property-by-path` nhận path dạng nào) đều cần probe runtime, mà 2.4.15 phải đang chạy. Không mở được Creator = không làm được vòng 2, không có đường vòng.
+
+## Test tự động
+
+```
+npm run check     # build + scripts/check-node-budget.js (12 check)
+npm run package   # check + zip — không đóng gói được bản đỏ
+```
+
+`check-node-budget.js` verify logic cắt cây của **2 walker độc lập** — `nodeBrief` (scene-script, node `cc.*`) và `truncateHierarchy` (scene-read-tools, JSON từ IPC). Chạy được **không cần Creator**: cả 2 là hàm thuần, test dựng `cc` giả + `require` file đã build.
+
+Đây là phần logic scene-script duy nhất verify được offline. Mọi thứ khác vẫn phải smoke test tay trong editor.
+
+⚠️ Sửa 2 walker đó thì **chạy `npm run check`**, đừng chỉ `npm run build` — build xanh không nói gì về logic budget.
 
 ## Testbed
 
@@ -62,6 +79,12 @@ Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-s
    Không nguồn → ghi Unresolved, không code.
 2. **`search_exact` 0 hit ≠ không tồn tại.** Chỉ nghĩa là *docs không nhắc*. Corpus cover editor extension API, KHÔNG cover engine internals — chỗ đó tra engine source. `cc.engine` là ví dụ: corpus 0 hit, engine source có 3 call site thật.
 3. **Code editor (`app.asar`) KHÔNG đọc được.** 893 `.ccc` = V8 bytecode mã hoá qua native binding `electron_common_compile`, offline vô hiệu. Chỉ tên file/thư mục đọc được → dùng làm bản đồ probe, không phải API đã xác nhận. Chi tiết: `cocos-2x-api-notes.md` §"Nguồn thứ 3".
-4. **Token guard mọi tool trả cây/dump.** Default `maxDepth`, truncate + báo `childrenCount`/`truncated`.
-5. **`npm run build` exit 0 sau mỗi phase.** Đỏ thì không sang phase sau.
+4. **Token guard mọi tool trả cây/list.** Hai chiều, không chỉ một:
+   - `maxDepth` chặn cây **sâu**
+   - `maxNodes` / `maxResults` chặn cây **rộng** — scene slot hay là 1 root + hàng nghìn con cùng cấp, depth không chặn được
+   - Node bị cắt báo `truncated` = **lý do** (`'maxDepth'` | `'nodeLimit'`) + `childrenOmitted`; response báo `nodesVisited`/`budgetExhausted`. Cắt im lặng = agent tưởng đã thấy hết.
+   - Budget chia **chung** cho mọi root, không reset mỗi root.
+5. **`npm run check` exit 0 sau mỗi phase** (build + 12 self-check). Đỏ thì không sang phase sau.
 6. **Style hiện tại:** 4-space indent, `async method(args: {...}): Promise<{...}>`, throw `Error` cho invalid input (transport tự bắt → HTTP 500 + `{error}`).
+7. **Không-tìm-thấy phải throw**, đừng trả sentinel. 2.4 IPC trả `value: null` / `missed: true` / `null` với HTTP 200 — nghĩa là `try/catch` của agent trượt hết. Tool phải dịch sang `Error`.
+8. **Thêm nhánh vào walker → thêm check** vào `scripts/check-node-budget.js`, rồi **mutation-test**: sửa điều kiện thành `if (false)` trong `dist/`, xác nhận test đỏ. Test không đỏ khi phá logic là test vô dụng.

@@ -48,8 +48,8 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 
 ## Tool defenitions reference
 
-- Defenitions for Code Mode tools should be placed in `code-mode-references.d.ts` at project root
-- Create if not exists and use as quick reference guide
+- For Creator **2.4.x**, the tool surface is `code-mode-references-2x.d.ts` at project root — 9 read-only tools, hand-written, kept in sync by hand
+- `code-mode-references.d.ts` is the **3.x** surface and does not apply to a 2.4 project
 - Document mostly used component or asset definitions you will use for current task
 
 ---
