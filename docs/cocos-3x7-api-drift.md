@@ -78,11 +78,49 @@ Shape đa dạng theo version — string uuid hoặc object `{uuid,url,name}` �
 
 ## 3. Việc tiếp theo
 
-1. **Runtime test trên 3.7.3** (`G:\_ws\AI_CC_Test`, đang cài bản 24-tool cũ 18/06) — smoke 59 tool,
+1. **Runtime test trên 3.7.3** (`G:\_ws\AI_CC_Test`, đang cài bản 24-tool cũ 18/06) — smoke 61 tool,
    ghi pass/fail + shape thật. Đây là gate quyết định phạm vi sửa, không đoán tiếp được nữa.
 2. Xử lý 5 message thiếu: bỏ tool hay map thay thế (cần kết quả bước 1).
 3. Cân nhắc viết `@types/editor-3x7.d.ts` tay từ registry — nhưng **chỉ sau** khi runtime test cho
    biết thực sự lệch bao nhiêu. Viết trước = đoán, giống lỗi rev 1 của bản 2x.
+
+---
+
+## 4. Khảo sát message chưa wrap (2026-08-06) → +2 tool, +1 operation
+
+Quét toàn bộ 416 message, trừ 117 message đã dùng:
+- **20 public** chưa wrap — phần lớn là broadcast (`asset-db:ready`, `scene:close`…) và UI panel
+  (`open-settings`, `open-devtools`)
+- **238 non-public, non-broadcast** chưa wrap
+
+Đã thêm (đều read-only, verify có ở registry 3.7.3, signature từ facade):
+
+| Tool / op | Message | Nguồn signature |
+|---|---|---|
+| `materialQuery` (5 op) | `scene/query-all-effects`, `query-effect`, `query-material`, `query-serialized-material`, `query-render-pipeline` | facade `general-scene-facade.d.ts:139-142` |
+| `assetDbQuery` (4 op) | `asset-db/query-db-list`, `is-busy`, `query-asset-mtime`, `query-asset-data` | registry (không typed, không facade) |
+| `editorIntrospect` +`has_script` | `scene/query-component-has-script` | typed **+** facade `:76` — hiếm, có cả hai |
+
+**Giá trị nổi bật:** `assetDbQuery busy` cho biết db có đang import dở không — mảnh còn thiếu khi
+asset query ngay sau `refresh` trả kết quả cũ. `has_script` chặn typo class name trước khi
+`addComponent`/`callComponentMethod` nổ runtime.
+
+### Đã cân nhắc và BỎ (ghi lại để khỏi quét lại)
+
+| Ứng viên | Lý do bỏ |
+|---|---|
+| `project/query-design-resolution` | Trùng — `projectGetConfig` đã đọc được qua `general.designResolution` |
+| `scene/apply-removed-component`, `revert-removed-component` | **Không có facade, không typed** → không có signature đáng tin. Nguyên tắc: không đoán API |
+| `scene/set-node-and-children-layer` | Facade nhận `SetPropertyOptions` nhưng không tìm thấy định nghĩa interface đó |
+| `scene/getdata-prefab`, `unlink-prefab`, `apply-prefab` | `nodeOperate` đã bao create/link/revert/apply/unwrap/open |
+| `messages/*`, `shortcuts/*`, `preferences/*` | Panel-bound / IDE UI, agent không dùng |
+| `preview/*` (11 msg) | Panel-bound; `previewGetUrl`/`previewOpenInBrowser` đã đủ |
+| `scene/quit-editor`, `unit-test`, `native-*` | Nguy hiểm hoặc internal |
+| `builder/*` (29 msg) | Build pipeline đã có 5 tool; còn lại là worker-internal |
+| `animator` (24), `animation-graph` (8) | Panel-bound, cần UI state. Animation **editing** ở module `scene` đã wrap ở b8 |
+
+**Kết luận: tool surface đã bão hoà.** Còn ~230 message nhưng gần như toàn bộ là panel-bound,
+internal, hoặc trùng chức năng. Batch sau nên chờ feedback runtime, đừng quét registry tiếp.
 
 ## Unresolved
 
