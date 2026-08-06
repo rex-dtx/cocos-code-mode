@@ -12,14 +12,19 @@ export function cbToPromise<T>(fn: (cb: (err: any, result: T) => void) => void):
     });
 }
 
-/** Editor.Ipc.sendToPanel('scene', msg, ...args, cb) — cb nhan (err, ...results) */
-export function sceneIpc<T>(message: string, ...args: any[]): Promise<T> {
+/** Editor.Ipc.sendToPanel(panel, msg, ...args, cb) — cb nhan (err, ...results) */
+export function panelIpc<T>(panel: string, message: string, ...args: any[]): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        Editor.Ipc.sendToPanel('scene', message, ...args, (err: any, ...results: any[]) => {
+        Editor.Ipc.sendToPanel(panel, message, ...args, (err: any, ...results: any[]) => {
             if (err) { return reject(toError(err)); }
             resolve((results.length > 1 ? results : results[0]) as T);
         });
     });
+}
+
+/** panelIpc chot cung panel 'scene' — dung cho moi message scene:*. */
+export function sceneIpc<T>(message: string, ...args: any[]): Promise<T> {
+    return panelIpc<T>('scene', message, ...args);
 }
 
 /** Editor.Scene.callSceneScript(pkg, msg, ...args, cb) */

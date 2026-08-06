@@ -9,7 +9,8 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | File | Nội dung | Khi nào đọc |
 |---|---|---|
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
-| `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. Kèm 2 bẫy silent-fail | Trước khi viết tool mới. Phase 5/6/7 bắt buộc |
+| `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL | Trước khi viết tool mới. Bắt buộc |
+| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (9 tool) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
 
@@ -23,7 +24,9 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 | 4 | `assetQuery` + `assetResolve` + `assetReadContent` | ✅ 19/19 curl pass |
 | 5 | `nodeQuery` (5 op: tree/dump/info/functions/by_component) | ✅ 8/8 curl pass |
 | 6 | `sceneSnapshot` + `componentQuery` + `nodeQuery.at_path` | ✅ 14/14 curl pass |
-| 7 | `editorEnvInfo` + `editorGetLogs` + `editorSelect` + `projectGetConfig` | ⬜ |
+| 7 | `editorEnvInfo` + `editorSelect` + `projectGetConfig` + d.ts | ✅ 34/34 smoke test |
+
+**Vòng 1 xong: 9 tool, 26 op.** `editorGetLogs` bỏ — 2.4.15 không có API đọc console (verified).
 
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
 
@@ -36,7 +39,18 @@ Install:  <project>\packages\cocos-code-mode  → junction tới worktree
 Scene:    assets/Scene/helloworld.fire
 ```
 
-Chạy lại probe: restart editor → `main.ts` bắt broadcast `scene:ready` → ghi `probe-result.json` (gitignored).
+Sau mỗi lần `npm run build` **phải restart editor** — junction chặn file-watcher nên plugin không auto-reload:
+
+```powershell
+$p = Get-CimInstance Win32_Process -Filter "Name='CocosCreator.exe'" |
+     Where-Object { $_.CommandLine -like '*cc-2x-testbed*' -and $_.CommandLine -notlike '*--type=*' }
+Stop-Process -Id $p.ProcessId -Force; Start-Sleep 3
+Start-Process "C:\ProgramData\cocos\editors\Creator\2.4.15\CocosCreator.exe" -ArgumentList '--path','G:\_ws\_helpers\cc-2x-testbed'
+```
+
+Lọc `--type=` để không giết nhầm child process, lọc `cc-2x-testbed` để không đụng editor khác đang mở.
+
+Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-script.ts` (trigger tự động đã gỡ ở phase 6). Gọi tay qua `Editor.Scene.callSceneScript('cocos-code-mode', 'probe2', cb)`.
 
 ## Rule bắt buộc khi làm tiếp
 

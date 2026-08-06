@@ -445,14 +445,105 @@ Skip `_private`, skip function, try/catch mỗi getter. Field runtime-only lộ 
 
 ---
 
+# Phase 7 — editor misc + FINAL
+
+**Probe date:** 2026-08-06 · Smoke test toàn bộ: **34/34 pass**, 9 tool.
+
+## `Editor.versions` shape thật
+
+```json
+{"CocosCreator":"2.4.15","editor-framework":"0.7.0","asset-db":"0.2.3","cocos2d":"2.4.15"}
+```
+
+Key là **`CocosCreator`** (PascalCase), không phải `cocos-creator`/`editor`. Engine ở `cocos2d`. (Unresolved #3 phase 7 → resolved.)
+
+Runtime: node `14.16.0`, electron `13.1.4` (`process.versions` — luôn có, không cần API editor).
+
+## `Editor.Selection.select` NHẬN ARRAY
+
+Docs khai `select(type, id: string, …)`. Runtime nhận cả array — không cần loop. (Unresolved #2 phase 7 → resolved.)
+
+Round-trip verified: `select` → `query` thấy uuid → `unselect` → rỗng. `curActivate` trả uuid vừa chọn, `hovering` null khi chuột không trên node.
+
+## ❌ BỎ `editorGetLogs` — 2.4.15 không có API đọc console
+
+Thử 3 message trên panel `console`, **3/3 fail**:
+```
+console:query-logs -> ipc failed to send, message not found
+console:query      -> ipc failed to send, message not found
+logs               -> ipc failed to send, message not found
+```
+
+Docs `main/console.md` chỉ có `log`/`warn`/`error`/`clearLog` — **ghi**, không đọc. Tool đã xoá khỏi code và khỏi `code-mode-references-2x.d.ts`. User xem Console panel trực tiếp. (Unresolved #1 phase 7 → resolved: không có.)
+
+## `projectGetConfig` — đọc thẳng `settings/*.json`
+
+`Editor.Profile.load` trả EventEmitter không serialize được (bẫy 4). Đọc file trực tiếp. Testbed có 5 file: `builder` `builder.panel` `cocos-code-mode` `project` `services`.
+
+Trả kèm `available` để agent biết `type` nào hợp lệ, không phải đoán.
+
+---
+
+# Tool surface vòng 1 (read-only) — FINAL
+
+| Tool | Ops | Nguồn API |
+|---|---|---|
+| `assetResolve` | uuid_from_url · url_from_uuid · fspath · exists | `Editor.assetdb.*` sync |
+| `assetQuery` | search · tree · info · meta · types · sub_assets | `assetdb` sync + `queryAssets`/`deepQuery` async + `fs` (.meta) |
+| `assetReadContent` | — | `assetdb` → `fs.readFileSync` |
+| `nodeQuery` | tree · dump · info · functions · by_component · at_path | scene panel IPC (5) + scene-script (at_path) |
+| `sceneSnapshot` | — | scene-script `cc.*` traverse |
+| `componentQuery` | props · classes · by_name · find | scene-script (3) + scene panel IPC (by_name) |
+| `editorSelect` | query · select · unselect · clear | `Editor.Selection.*` |
+| `editorEnvInfo` | — | `Editor.versions` + `Editor.Project.path` + `process.versions` |
+| `projectGetConfig` | — | `fs` đọc `<project>/settings/*.json` |
+
+**9 tool, 26 op.** Mutation duy nhất: `editorSelect` (selection, không phải scene).
+
+## Bỏ khỏi vòng 1
+
+| Tool | Lý do |
+|---|---|
+| `editorGetLogs` | 2.4.15 không có API đọc console — verified 3/3 message fail |
+| 14 tool 3.x (`source/utcp/tools/`) | dùng `Editor.Message.request`, không tồn tại ở 2.x — port vòng 2 |
+| 19 asset importer | `.meta` format 3.x — port vòng 2 |
+
+## Tổng kết: 6 bẫy docs-sai-runtime
+
+| # | Docs nói | Runtime 2.4.15 | Phát hiện ở |
+|---|---|---|---|
+| 1 | `cc.view.getDesignResolutionSize()` = design resolution | = viewport editor, đổi theo cửa sổ. Thật ở `cc.Canvas.designResolution` | phase 3 |
+| 2 | (không nhắc) | scene root có 2 node editor `objFlags 1096`, phải filter | phase 3 |
+| 3 | `deepQuery` result có `children` | flat list + `parentUuid` | phase 4 |
+| 4 | (không có doc `loadMeta`) | live object circular `_uuid2meta`, không serialize được | phase 4 |
+| 5 | (bug của fork 3.x) | `app.set('query parser')` sau `app.use()` → không chạy, arg số về dạng string | phase 6 |
+| 6 | (không nhắc) | `cc.SpriteFrame.uuid` là getter kế thừa → check `v.uuid` trượt, phải `instanceof cc.Asset` | phase 6 |
+
+Thêm 2 API docs khai mà **không tồn tại**: `scene:query-animation-node`, `console:query-*`.
+
+⚠️ **Bẫy 5 cũng đang có ở repo 3.x** (`cc-code-mode-cst` branch `custom`) — cùng dòng code, cùng thứ tự sai. Đáng port ngược.
+
+# Vòng 2 (write) — blocker đã biết
+
+- **resolve node-by-uuid trong scene process:** `cc.engine` TỒN TẠI (corpus sai), prototype có `getInstanceById` — chưa verify có resolve được không
+- **undo:** `Editor.Undo.add + commit` hay `_Scene.Undo`? chưa verify
+- **write meta:** `saveMeta(uuid, jsonString)` qua API hay ghi thẳng `.meta`? Đọc thì file thắng (circular ref), ghi có thể phải qua API để asset-db reimport
+- **`delete`/`import`** là reserved word trong TS namespace → call site `(Editor.assetdb as any)['delete'](urls, cb)`
+- Message scene ngoài 5 cái đã verify: **không enumerate được** (`.ccc` mã hoá), chỉ biết bằng cách thử
+
+---
+
 ## Unresolved
 
-1. ~~`Editor.assetdb` có sẵn global trong main.js plugin hay phải require?~~ → **resolved phase 4: có sẵn**
-2. `cc.engine.getInstanceById(uuid)` có resolve được node không — chưa verify (vòng 2)
-3. Vòng 2 undo: `Editor.Undo.add + commit` hay `_Scene.Undo`?
-4. Vòng 2 write meta: `saveMeta(uuid, jsonString)` — ghi qua API hay ghi thẳng file `.meta`? (đọc thì file thắng vì circular ref, ghi thì có thể phải qua API để asset-db reimport)
-5. Message scene nào ngoài 5 cái đã verify? Không enumerate được (`.ccc` mã hoá) — chỉ biết bằng cách thử.
-6. `scene:query-node` `types` 12 class def cho 1 node — có cách xin dump không kèm `types` không?
-7. `sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). Nếu > 50 KB thì hạ default `maxDepth` xuống 4.
-8. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
+1. ~~`Editor.assetdb` có sẵn global trong main.js plugin?~~ → **resolved phase 4: có sẵn**
+2. ~~`Editor.Selection.select` nhận array hay chỉ string?~~ → **resolved phase 7: nhận array**
+3. ~~`Editor.versions` shape?~~ → **resolved phase 7: `{CocosCreator, editor-framework, asset-db, cocos2d}`**
+4. ~~`Editor.Console` có API đọc log?~~ → **resolved phase 7: KHÔNG có**
+5. `cc.engine.getInstanceById(uuid)` có resolve được node không — chưa verify (vòng 2)
+6. Vòng 2 undo: `Editor.Undo.add + commit` hay `_Scene.Undo`?
+7. Vòng 2 write meta: qua API `saveMeta` hay ghi thẳng file?
+8. `scene:query-node` `types` 12 class def cho 1 node (~19 KB) — có cách xin dump không kèm `types`?
+9. `sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). > 50 KB thì hạ default `maxDepth` xuống 4.
+10. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
+11. Config panel UI chưa port — vòng 1 server tự start, đọc port ở `settings/cocos-code-mode.json`.
 
