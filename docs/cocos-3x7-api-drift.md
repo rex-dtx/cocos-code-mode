@@ -152,83 +152,109 @@ asset query ngay sau `refresh` trả kết quả cũ. `has_script` chặn typo c
 **Kết luận: tool surface đã bão hoà.** Còn ~230 message nhưng gần như toàn bộ là panel-bound,
 internal, hoặc trùng chức năng. Batch sau nên chờ feedback runtime, đừng quét registry tiếp.
 
-## 5. Chiến lược branch — option (a) / (b) / (c) là gì
+## 5. Chiến lược branch — ✅ ĐÃ CHỐT: **(a) branch độc lập, phát triển song song**
 
-Vấn đề: 3 branch cho 3 version Cocos, cùng 1 codebase gốc, đang trôi xa nhau.
+**Quyết định 2026-08-06.** Lý do chốt: **mỗi editor version có thể cần dependency khác nhau** —
+và điều này **đã xảy ra**, không phải giả thuyết.
 
-```
-custom  (3.8.x)  18b3794   59 tool   ← đã nhận đủ 8 bug-fix
-cc-3x7  (3.7.x)  e193894   61 tool   ← đang phát triển
-cc-2x   (2.4.x)  78fee04    9 tool   ← kiến trúc KHÁC HẲN, không gộp được
-```
-
-`cc-2x` dùng `Editor.assetdb.*` direct-object + `scene-script.js`, không phải message-async như 3.x
-→ **luôn đứng riêng**, không nằm trong 3 option này. Chỉ bàn `custom` ↔ `cc-3x7`.
-
-### (a) Giữ 2 branch, port tay khi cần
+### Bằng chứng: deps 3 branch đã phân kỳ thật
 
 ```
-cc-3x7 ──fix──┐
-              ├─ cherry-pick tay từng cái ──► custom
-custom ───────┘
+                  @types/node   express    sharp     archiver   creator-types
+cc-2x  (2.4.15)   ^14.18.63     ^4.21.2    ^0.30.7   ^7.0.1     (BỎ HẲN)
+cc-3x7 (3.7.3)    ^18.17.1       4.21.2     0.30.7   ^8.0.0     ^3.8.7
+custom (3.8.x)    ^18.17.1       4.21.2     0.30.7   ^8.0.0     ^3.8.7
+                  ▲                                  ▲          ▲
+                  └─ Node 14 vs 18 ─────────────────┴──────────┴─ 4 deps lệch
 ```
 
-Mỗi bug fix / tool mới phải port tay 2 lần. Đang làm cách này (B3 vừa rồi = 1 lượt port tay).
-**Được:** không cần abstraction, mỗi branch tự do. **Mất:** drift tăng dần, dễ quên port, và
-lần nào cũng phải tự tay verify "branch kia có dính bug này không".
+`cc-2x` buộc phải hạ **4 dependency** vì Electron 13 / Node 14 của 2.4.15: `@types/node` 18→14,
+`archiver` 8→7, và **bỏ hẳn `@cocos/creator-types`** (npm không có bản < 3.8.0) — kèm phải xoá
+`scripts/preinstall.js` vì script đó crash khi thiếu key đó trong `devDependencies`.
 
-### (b) Gộp 1 branch, dùng compat guard *(khuyến nghị)*
+Đây là **precedent đã tồn tại trong chính repo này**: version editor khác ⇒ runtime khác ⇒
+dependency graph khác. Một `package.json` không diễn tả được hai runtime.
+
+### Vì sao (b) — gộp 1 branch — SAI, dù code đang đồng dạng
+
+Phân tích ban đầu của tôi chỉ nhìn **application code** và thấy:
+cherry-pick 6 file merge sạch 0 conflict; diff còn 7 file, 0 file là bug lệch; `editor: ">=3.7.0"`
+là superset của `>=3.8.7`; deps `custom` ↔ `cc-3x7` hiện **trùng khớp** → kết luận "chưa phân kỳ".
+
+**Chỗ sai: đó là ảnh chụp hôm nay, không phải ràng buộc.** Bài học từ `cc-2x` cho thấy khi
+version editor đi xa, **runtime đi trước, deps đi theo, code đi sau**. Gộp branch khoá cứng
+**một** `package.json` — đúng chỗ mà version-divergence xuất hiện **sớm nhất và cứng nhất**:
+
+| Trục | Gộp branch giải quyết được? |
+|---|---|
+| Tên/signature message khác nhau | ✅ `try/catch` guard — đã có 5 cái, verified runtime |
+| API vắng mặt (`openBeside`) | ✅ `typeof` check |
+| `editor` range | ✅ lấy superset `>=3.7.0` |
+| **Dependency version khác nhau** | ❌ **KHÔNG** — `package.json` chỉ khai được 1 giá trị/package |
+| **Native module theo Electron ABI** (`sharp`) | ❌ **KHÔNG** — prebuilt binary buộc theo Node ABI |
+
+Guard trong code xử lý được drift **API**. Không guard nào xử lý được drift **build/runtime**.
+
+⚠️ Rủi ro cụ thể chưa loại trừ: `sharp 0.30.7` pin cho Electron của 3.7.3 **chưa verify** — nhánh
+dùng nó (`assetGetPreview`) đúng là nhánh duy nhất chưa test được. Nếu 3.8.x cần `sharp` bản khác
+thì `custom` ↔ `cc-3x7` phân kỳ deps **ngay**, và branch gộp sẽ vỡ ở đúng chỗ khó sửa nhất.
+
+### (a) hoạt động thế nào
 
 ```
-                  ┌─────────────────────────────┐
-   1 branch ──────│  code chung 95%             │
-                  │  + guard tự nhận version:   │
-                  │    try{ msg_3.8 }           │
-                  │    catch{ msg_3.7 }         │──► chạy đúng trên CẢ 3.7.3 và 3.8.x
-                  │    typeof api === 'function'│
-                  └─────────────────────────────┘
+cc-2x    (2.4.15)  ──► deps riêng (Node 14)      ──► kiến trúc scene-script
+cc-3x7   (3.7.3)   ──► deps riêng               ──► message-async
+custom   (3.8.x)   ──► deps riêng               ──► message-async
+                          │
+        bug CHUNG ────────┴──► port tay, verify branch đích có dính không TRƯỚC khi port
 ```
 
-**Không phải** viết adapter layer mới — pattern này **đã tồn tại và đã verify runtime**:
+**Được:** mỗi branch tự do chọn deps/toolchain theo runtime của nó; đổi ở branch này không thể phá
+branch kia; test độc lập.
+**Mất:** bug chung phải port tay. **Giảm nhẹ bằng kỷ luật, không bằng abstraction** — xem dưới.
 
-| Guard đã có | Cơ chế | Đã chứng minh |
+### Kỷ luật bắt buộc cho (a) — rút từ B3 hôm nay
+
+B3 (port 8 fix sang `custom`) là mẫu thực tế. Ba quy tắc:
+
+1. **Verify branch đích CÓ dính bug trước khi port.** Không port mù. Hôm nay tôi kiểm và thấy
+   `custom` thật sự còn bug `captureScreenshot` (`args.imageSize ?? {...}` → numeric `256` xuống
+   canvas 0×0 → `"data:,"`, **JPEG rỗng trông như hợp lệ**). Nếu port mù thì không biết mình vừa
+   sửa bug thật hay thêm code chết.
+2. **Phân loại fix trước khi port:** bug logic version-agnostic → **port**; compat shim của 1
+   version → **KHÔNG port** (vd `program-tools.ts`/`project-tools.ts` chỉ là compat 3.7.x).
+3. **Cherry-pick từng commit "sạch"**, đừng pick commit trộn. `9bb44c3` kèm manifest 3.7.x +
+   registry nên phải sửa tay `getParent`, không pick được. Ngược lại `35ec127` thuần bug-fix →
+   pick sạch 0 conflict.
+
+### Trạng thái đồng bộ hiện tại (2026-08-06)
+
+| Hạng mục | `cc-3x7` | `custom` |
 |---|---|---|
-| `queryAssetsCompat` | try object-arg → catch → string-arg | ✅ chạy đúng trên 3.7.3 |
-| `programOpen` | try `open-program` → catch → `execute` | ✅ 3.7.3 báo missing, fallback hoạt động |
-| `urlOpen` | try `open-url` → catch → `execFile` | ✅ như trên |
-| `assetGetPreview` | `typeof openBeside === 'function'` | ✅ 3.8 có → dùng; 3.7 không → `Panel.open` |
-| `getParent` | xử lý cả string uuid lẫn `{uuid}` | ✅ |
+| 8 bug fix chung | ✅ | ✅ `6c498c9` + `18b3794` |
+| `materialQuery` / `assetDbQuery` (3 tool) | ✅ | ❌ chưa port |
+| `has_script` | ✅ | ❌ chưa port |
+| build provenance (`/build-info`) | ✅ | ❌ chưa port |
+| compat 3.7.x (`program`/`project-tools`) | ✅ | **KHÔNG port** (đúng ý đồ) |
 
-**Bằng chứng mạnh nhất:** cherry-pick 6-bug-fix từ `cc-3x7` sang `custom` **merge sạch, 0 conflict**,
-build exit 0. Hai branch **chưa thực sự phân kỳ về code** — chỉ khác 2 file compat mà bản thân
-chúng tự no-op đúng version. Tức là (b) gần như **đã đạt được rồi**, chỉ thiếu bước gộp.
+4 hạng mục "chưa port" là **feature**, không phải bug → port khi nào cần 3.8.x, không gấp.
+⚠️ **8 fix trên `custom` chưa runtime-test trên 3.8.x** — branch đó chưa có editor session nào mở.
 
-**Được:** 1 nguồn, fix 1 lần ăn cả 2 version, hết drift.
-**Mất:** mỗi lần đổi phải test 2 editor version. **Nhưng rủi ro này đã hiện hữu** — 8 fix vừa port
-sang `custom` hiện chưa ai chạy trên 3.8.x.
 
-### (c) Freeze `custom`, chỉ dev trên `cc-3x7`
+### Hai phương án đã cân nhắc và BỎ (ghi lại để khỏi bàn lại)
 
-```
-custom  ══╳══ đóng băng ở 3.8.x (không nhận gì mới)
-cc-3x7  ──────────────► phát triển tiếp
-```
+**(b) Gộp 1 branch + compat guard.** Tôi từng khuyến nghị cái này. Lý do bỏ: xem §"Vì sao (b) SAI"
+ở trên — guard xử lý được drift **API**, không xử lý được drift **dependency/native-ABI**.
+Phần đúng vẫn giữ lại: **5 compat guard vẫn dùng, vẫn là cách xử drift API trong TỪNG branch.**
+Cái bỏ là bước *gộp branch*, không phải bỏ guard.
 
-**Được:** 1 nơi dev, khớp chỉ đạo "3.8.x tính sau", chi phí thấp nhất **ngay lúc này**.
-**Mất:** 3.8.x đứng yên. Khi nào quay lại 3.8.x thì phải port ngược một lô lớn — đúng cái vừa phải
-làm ở B3, nhưng to hơn nhiều.
-
-### Vì sao đổi khuyến nghị từ (c) sang (b)
-
-Lần đầu đề xuất (c) vì tưởng 2 branch khác nhau đáng kể ("~3 signature"). **Sai.** Sau khi port thật:
-diff `source/` chỉ **7 file**, và **0 file nào là bug lệch** — toàn feature + 2 file compat tự
-no-op. (c) chỉ hoãn chi phí port, không xoá nó; (b) xoá luôn.
-
-Nếu chọn (b), bước kế: merge `cc-3x7` → `custom`, giữ nguyên compat guard, xoá branch `cc-3x7`,
-rồi smoke 1 lượt trên **cả** 3.7.3 và 3.8.x.
+**(c) Freeze `custom` ở 3.8.x, chỉ dev `cc-3x7`.** Bỏ vì trái mục tiêu "phát triển song song" —
+3.8.x đứng yên, và mọi bug chung tìm ra ở 3.7.x vẫn sống nguyên trên `custom` cho tới ngày quay lại.
+(c) chỉ **hoãn** chi phí port chứ không xoá; (a) trả chi phí đó ngay, từng lần, có kiểm soát.
 
 ---
 
+## Unresolved
 
 1. 356/416 message không có param doc → signature ẩn số. **Chiến lược đã chốt: compat helper
    try-catch** như `queryAssetsCompat`. Lý do: 3 drift thật + 3 message vắng mặt đều lộ ra qua lỗi
@@ -242,11 +268,14 @@ rồi smoke 1 lượt trên **cả** 3.7.3 và 3.8.x.
 3. `sharp 0.30.7` + `express 4` pin cho 3.7.x đã đúng chưa — chưa verify Electron version của 3.7.3.
    Bằng chứng gián tiếp: 61 tool load được và trả kết quả trên 3.7.3 → transport (express 4) OK.
    `sharp` thì chưa chứng minh: nhánh dùng nó (`assetGetPreview`) là cái duy nhất chưa test được.
+   **Đây là rủi ro deps-divergence cụ thể nhất** — nếu 3.8.x cần `sharp` bản khác thì `custom` ↔
+   `cc-3x7` phân kỳ deps ngay, và đó chính là tình huống (a) xử được mà (b) không.
 4. ~~`scene/query-uuid` nên port ngược về `custom`?~~ → ✅ **RESOLVED: đã port** (`18b3794`).
    Verify trước khi port: `custom` vẫn còn bug thật. Cùng lượt port luôn 6 bug của `35ec127`
    (cherry-pick `6c498c9`, merge sạch 0 conflict). **8/8 fix đã sang `custom`, build exit 0, nhưng
    chưa runtime-test trên 3.8.x** — branch đó không có editor session nào mở.
-5. **Mới:** `custom` ↔ `cc-3x7` sau khi port chỉ còn khác **7 file**, toàn bộ là feature/compat có
-   chủ ý, **không còn bug nào lệch**. Trong đó `program-tools.ts` + `project-tools.ts` là compat
-   3.7.x thuần — cả hai đã tự no-op đúng version bằng `typeof`/try-catch guard. Nghĩa là gộp 1
-   branch khả thi mà không cần abstraction layer. Chờ quyết định.
+5. ~~Gộp 1 branch có khả thi không?~~ → ✅ **RESOLVED: chốt (a), KHÔNG gộp.** Xem §5.
+6. **Mới:** 4 hạng mục feature chưa port sang `custom` (3 tool `materialQuery`/`assetDbQuery`,
+   `has_script`, build provenance). Không gấp vì là feature không phải bug — nhưng cần **1 danh sách
+   theo dõi** kẻo quên. Hiện danh sách đó nằm ở §5 bảng "Trạng thái đồng bộ"; nếu (a) chạy dài thì
+   nên có chỗ chuyên trách hơn.
