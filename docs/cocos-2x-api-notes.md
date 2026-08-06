@@ -179,9 +179,86 @@ _name _objFlags node _enabled _materials ...   (+ field riêng theo class)
 
 ---
 
+# Phase 4 — assetdb API (VERIFIED runtime)
+
+**Probe date:** 2026-08-06 · Testbed `hello-world` (146 asset, 2 mount: `assets` + `internal`)
+**Gate:** 19/19 curl pass.
+
+## `Editor.assetdb` CÓ SẴN global trong main process
+
+Không cần `require`. Gọi thẳng `Editor.assetdb.urlToUuid(...)` trong `main.js` plugin. (Unresolved #1 phase 2/4 → resolved.)
+
+## ⚠️ BẪY 3: `deepQuery` trả FLAT list, docs khai `children` là SAI
+
+`asset-db-main.md` ghi `// result.children - the array of children result`. **Không đúng với 2.4.15.**
+
+Runtime keys (probe `Object.keys(result[0])`):
+```
+uuid  parentUuid  name  extname  type  isSubAsset  hidden  readonly
+```
+
+Không có `children`. 146 entry phẳng, quan hệ cha-con nằm ở `parentUuid`. Root = node có `parentUuid` không nằm trong tập kết quả (2 mount: `mount-assets`, `mount-internal`).
+
+Tin docs → cây trả về là **list phẳng 146 phần tử với `childrenCount: 0` toàn bộ** — sai mà không throw. Phải tự build:
+
+```js
+// group theo parentUuid, walk tu root ''
+const byParent = new Map();
+const known = new Set(flat.map(n => n.uuid));
+for (const n of flat) {
+    const p = n.parentUuid && known.has(n.parentUuid) ? n.parentUuid : '';
+    (byParent.get(p) || byParent.set(p, []).get(p)).push(n);
+}
+```
+
+Cây đúng của testbed: `assets` (4 con) + `internal` (9 con); sprite-frame là con của `.png`.
+
+## ⚠️ BẪY 4: `loadMeta*()` trả LIVE object có circular ref
+
+`loadMetaByUuid(uuid)` / `loadMeta(url)` trả object nội bộ của asset-db, chứa `_uuid2meta` trỏ ngược lại toàn bộ registry → `JSON.stringify` throw `Converting circular structure to JSON`. Tool trả HTTP 500 dù API "chạy được".
+
+`loadMeta` **0 hit** trong corpus → không có nguồn cho `dump()`/`serialize()`. Giải pháp dùng: đọc thẳng file `<fspath>.meta` (JSON thuần trên đĩa, cùng nguồn dữ liệu, kèm được `mtime`).
+
+```js
+const metaPath = `${Editor.assetdb.uuidToFspath(uuid)}.meta`;
+JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+```
+
+Shape thật (texture): `{ver, uuid, importer, type, wrapMode, filterMode, premultiplyAlpha, genMipmaps, packable, width, height, platformSettings, subMetas:{...}}`.
+
+## `queryAssets` — assetTypes nhận `null` = mọi type
+
+`queryAssets(pattern, null, cb)` chạy, trả tất cả. Không cần liệt kê type. (Unresolved #3 phase 4 → resolved.)
+
+Result shape runtime — docs khai 5 field, thực tế **8**:
+```
+url  path  uuid  type  isSubAsset  readonly  hidden  destPath
+```
+`destPath` = `library/imports/...`, `null` cho folder.
+
+## `assettype2name` — hướng `{className: typeName}`
+
+`Editor.assettype2name['cc.Texture2D'] === 'texture'`. 31 unique type name. (Unresolved #2 phase 4 → resolved.)
+
+```
+animation-clip audio-clip bitmap-font buffer dragonbones dragonbones-atlas
+effect fbx font javascript json label-atlas material mesh native-asset
+particle physics-material prefab scene script skeleton skeleton-animation-clip
+spine sprite-frame text texture texture-packer tiled-map ttf-font typescript video-clip
+```
+
+⚠️ `queryAssets` cần **type name** (`'texture'`), không phải class name (`'cc.Texture2D'`).
+
+## `assetInfo` / `subAssetInfos` — sync, đúng như docs
+
+`assetInfo(url)` → `{uuid, path, url, type, isSubAsset}`. `subAssetInfos('db://assets/Texture/HelloWorld.png')` → 1 sprite-frame, url là `<png-url>/<name>` (không extension).
+
+---
+
 ## Unresolved
 
-1. `Editor.assetdb` có sẵn global trong main.js plugin hay phải require? (phase 4 trả lời ngay)
+1. ~~`Editor.assetdb` có sẵn global trong main.js plugin hay phải require?~~ → **resolved phase 4: có sẵn**
 2. `cc.engine.getInstanceById(uuid)` có resolve được node không — chưa verify (vòng 2)
 3. Vòng 2 undo: `Editor.Undo.add + commit` hay `_Scene.Undo`?
+4. Vòng 2 write meta: `saveMeta(uuid, jsonString)` — ghi qua API hay ghi thẳng file `.meta`? (đọc thì file thắng vì circular ref, ghi thì có thể phải qua API để asset-db reimport)
 

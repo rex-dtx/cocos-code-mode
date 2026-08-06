@@ -18,21 +18,30 @@ interface IMetaInfo2x {
     json: string;
 }
 
+// ⚠️ VERIFY runtime 2.4.15: deepQuery tra FLAT list co parentUuid, KHONG nested children.
+// Docs asset-db-main.md khai `result.children` -> SAI. Key that:
+// uuid / parentUuid / name / extname / type / isSubAsset / hidden / readonly
 interface IDeepQueryResult2x {
+    uuid: string;
+    parentUuid: string;
     name: string;
     extname: string;
-    uuid: string;
     type: string;
     isSubAsset: boolean;
-    children: IDeepQueryResult2x[];
+    hidden: boolean;
+    readonly: boolean;
 }
 
+// VERIFY runtime 2.4.15: docs khai 5 field, runtime tra them readonly/hidden/destPath.
 interface IQueryAssetResult2x {
     url: string;
     path: string;
     uuid: string;
     type: string;
     isSubAsset: boolean;
+    readonly: boolean;
+    hidden: boolean;
+    destPath: string | null;
 }
 
 interface IMountInfo2x {

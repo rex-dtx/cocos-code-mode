@@ -20,7 +20,7 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 | 1 | `@types/editor-2x` + tsconfig + bỏ `@cocos/creator-types` | ✅ build exit 0 |
 | 2 | Manifest 2.x + `main.ts` messages shim + Profile 2.x | ✅ plugin load, `/utcp` trả manual |
 | 3 | `scene-script.ts` probe — dump engine API thật | ✅ `errors: []` 2 lượt |
-| 4 | `assetQuery` + `assetResolve` + `assetReadContent` | ⬜ |
+| 4 | `assetQuery` + `assetResolve` + `assetReadContent` | ✅ 19/19 curl pass |
 | 5 | `nodeQuery` (9 scene message docs-confirmed) | ⬜ |
 | 6 | `sceneSnapshot` + `componentQuery` | ⬜ |
 | 7 | `editorEnvInfo` + `editorGetLogs` + `editorSelect` + `projectGetConfig` | ⬜ |
