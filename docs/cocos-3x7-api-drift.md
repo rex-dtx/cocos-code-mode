@@ -11,6 +11,9 @@ bắt đầu từ 3.8.x). Nên typed `.d.ts` đang dùng **mô tả 3.8.7, khôn
 là giả định cho tới khi verify. Handler `.ccc` mã hoá, không đọc được. i18n `doc:` block là
 nguồn signature machine-readable duy nhất cho 3.7.x.
 
+**Doc này = drift theo message + chiến lược branch.** Phân tích *lớp lỗi* (silent failure, `??`
+nuốt lỗi, kỷ luật verify, regression `build_info`) nằm ở `agent-tool-failure-modes.md`.
+
 ---
 
 ## Coverage: 128/132 message dùng bởi 61 tool CÓ ở 3.7.3
