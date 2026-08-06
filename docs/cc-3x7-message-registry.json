@@ -1,0 +1,2949 @@
+{
+  "animation-graph": {
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "dialog-warn": {
+      "methods": [
+        "dialogWarn"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply": {
+      "methods": [
+        "default.apply"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "unselect": {
+      "methods": [
+        "default.unselect"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "delete": {
+      "methods": [
+        "default.delete"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "copy": {
+      "methods": [
+        "default.copy"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "duplicate": {
+      "methods": [
+        "default.duplicate"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "paste": {
+      "methods": [
+        "default.paste"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:ready": {
+      "methods": [
+        "default.refresh"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "animation-graph:changed": {
+      "methods": [
+        "default.refresh"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "animator": {
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:ready": {
+      "methods": [
+        "default.scene:ready"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:close": {
+      "methods": [
+        "default.scene:close"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:change-node": {
+      "methods": [
+        "default.scene:change-node"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:animation-start": {
+      "methods": [
+        "default.scene:animation-start"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:animation-end": {
+      "methods": [
+        "default.scene:animation-end"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:animation-change": {
+      "methods": [
+        "default.scene:animation-change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:animation-state-change": {
+      "methods": [
+        "default.scene:animation-state-change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:animation-clip-change": {
+      "methods": [
+        "default.scene:animation-clip-change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "selection:activated": {
+      "methods": [
+        "default.selection:activated"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-change": {
+      "methods": [
+        "default.asset-db:asset-change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "inspector-drop-animation": {
+      "methods": [
+        "dropClipToNode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-debug-mode": {
+      "methods": [
+        "default.change-debug-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "copy": {
+      "methods": [
+        "default.copy"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "paste": {
+      "methods": [
+        "default.paste"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "select-all": {
+      "methods": [
+        "default.selectAll"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "delete": {
+      "methods": [
+        "default.deleteSelected"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create": {
+      "methods": [
+        "default.createKey"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "focus": {
+      "methods": [
+        "default.showAllKeys"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "next-step": {
+      "methods": [
+        "default.nextStep"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "prev-step": {
+      "methods": [
+        "default.prevStep"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "jump-to-next-key": {
+      "methods": [
+        "default.jumpToNextKey"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "jump-to-prev-key": {
+      "methods": [
+        "default.jumpToPrevKey"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "jump-to-first-frame": {
+      "methods": [
+        "default.jumpFirstFrame"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "jump-to-last-frame": {
+      "methods": [
+        "default.jumpLastFrame"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "play-or-pause": {
+      "methods": [
+        "default.playOrPause"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "stop": {
+      "methods": [
+        "default.stop"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "clear-selected": {
+      "methods": [
+        "default.clearSelect"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "switch-animation-mode": {
+      "methods": [
+        "default.changeRecordState"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-docs": {
+      "methods": [
+        "openDocs"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-last-clip-cache": {
+      "methods": [
+        "queryLatestClipCache"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "save-clip-cache": {
+      "methods": [
+        "saveClipCacheToFile"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "update-cache-config": {
+      "methods": [
+        "updateCacheConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "enable-embedded-player": {
+      "methods": [
+        "default.enableEmbeddedPlayer"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "asset-db": {
+    "asset-db:ready": {
+      "methods": [
+        "ready"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "asset-db:close": {
+      "methods": [
+        "close"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "asset-db:asset-add": {
+      "methods": [],
+      "public": true,
+      "doc": ""
+    },
+    "asset-db:asset-change": {
+      "methods": [],
+      "public": true,
+      "doc": ""
+    },
+    "asset-db:asset-delete": {
+      "methods": [],
+      "public": true,
+      "doc": ""
+    },
+    "project:change-high-quality": {
+      "methods": [
+        "projectChangeHighQuality"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-ready": {
+      "methods": [
+        "queryReady"
+      ],
+      "public": true,
+      "doc": "@returns {boolean} Ready or not"
+    },
+    "create-asset": {
+      "methods": [
+        "createAsset"
+      ],
+      "public": true,
+      "doc": "- url {string} The URL of the asset, for example: db://assets/abc.json\n- content {string | null} Writes the contents of a string to a file, or creates a new folder if null\n- option {AssetOperationOption}\n    - option.overwrite {boolean} If overwrite is enforced, the default is false\n    - option.rename {boolean} Default false if the conflict is automatically renamed\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "import-asset": {
+      "methods": [
+        "importAsset"
+      ],
+      "public": true,
+      "doc": "- source {string} The absolute address of the local file\n- target {string} The URL address to import into the database\n- option {AssetOperationOption}\n    - option.overwrite {boolean} If overwrite is enforced, the default is false\n    - option.rename {boolean} Default false if the conflict is automatically renamed\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "copy-asset": {
+      "methods": [
+        "copyAsset"
+      ],
+      "public": true,
+      "doc": "- source {string} The URL path of the source resource, for example: db://assets/abc.json\n- target {string} The URL of the destination location copied to\n- option {AssetOperationOption}\n    - option.overwrite {boolean} If overwrite is enforced, the default is false\n    - option.rename {boolean} Default false if the conflict is automatically renamed\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "move-asset": {
+      "methods": [
+        "moveAsset"
+      ],
+      "public": true,
+      "doc": "- source {string} The URL path of the source resource that needs to be moved, for example: db://assets/abc.json\n- target {string} The URL of the destination location moved to\n- option {AssetOperationOption}\n    - option.overwrite {boolean} If overwrite is enforced, the default is false\n    - option.rename {boolean} Default false if the conflict is automatically renamed\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "delete-asset": {
+      "methods": [
+        "deleteAsset"
+      ],
+      "public": true,
+      "doc": "- url {string} The URL of the assets\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "open-asset": {
+      "methods": [
+        "openAsset"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The asset URL or UUID that you are trying to open"
+    },
+    "save-asset": {
+      "methods": [
+        "saveAsset"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "save-asset-meta": {
+      "methods": [
+        "saveAssetMeta"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The URL or UUID of the asset\n- content {string} The serialized content string of the asset Meta\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "reimport-asset": {
+      "methods": [
+        "reimportAsset"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The URL or UUID of the asset"
+    },
+    "refresh-asset": {
+      "methods": [
+        "refreshAsset"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The URL or UUID of the asset"
+    },
+    "refresh-all-effect": {
+      "methods": [
+        "refreshAllEffect"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-path": {
+      "methods": [
+        "queryPath"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The URL or UUID of the asset\n\n@returns {string} Returns the absolute disk path of an asset"
+    },
+    "query-url": {
+      "methods": [
+        "queryUrl"
+      ],
+      "public": true,
+      "doc": "- uuid {string} The UUID of the asset\n\n@returns {string} Returns the URL of an asset"
+    },
+    "query-uuid": {
+      "methods": [
+        "queryUUID"
+      ],
+      "public": true,
+      "doc": "- url {string} The URL of the asset\n\n@returns {string} Returns the UUID of an asset"
+    },
+    "query-assets": {
+      "methods": [
+        "queryAssets"
+      ],
+      "public": true,
+      "doc": "- pattern? {string} Path matching pattern, glob format (db://**)\n\n@returns {AssetInfo[]} Return resource array"
+    },
+    "query-asset-info": {
+      "methods": [
+        "queryAssetInfo"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The URL or UUID of the asset\n\n@returns {AssetInfo} Returns an asset information"
+    },
+    "query-asset-meta": {
+      "methods": [
+        "queryAssetMeta"
+      ],
+      "public": true,
+      "doc": "- urlOrUUID {string} The URL or UUID of the asset\n\n@returns {AssetMeta} Returns a resource meta information"
+    },
+    "query-asset-dependinces": {
+      "methods": [
+        "queryAssetDependencies"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-asset-used": {
+      "methods": [
+        "queryAssetUsed"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-asset-data": {
+      "methods": [
+        "queryAssetData"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "generate-available-url": {
+      "methods": [
+        "generateAvailableUrl"
+      ],
+      "public": true,
+      "doc": "- url {string} The URL of the asset\n\n@returns {string} Returns a new or the same URL as the parameter passed in"
+    },
+    "query-asset-mtime": {
+      "methods": [
+        "queryAssetMtime"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "refresh": {
+      "methods": [
+        "refresh"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "is-busy": {
+      "methods": [
+        "isBusy"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "pause": {
+      "methods": [
+        "pause"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "resume": {
+      "methods": [
+        "resume"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-devtools": {
+      "methods": [
+        "open-devtools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-db-info": {
+      "methods": [
+        "query-db-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-db-list": {
+      "methods": [
+        "query-db-list"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-asset-dialog": {
+      "methods": [
+        "create-asset-dialog"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "init-asset": {
+      "methods": [
+        "init-asset"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-all-importer": {
+      "methods": [
+        "query-all-importer"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-all-asset-types": {
+      "methods": [
+        "query-all-asset-types"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "execute-script": {
+      "methods": [
+        "executeScript"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "notice-reload-editor": {
+      "methods": [
+        "noticeReloadEditor"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "update-config": {
+      "methods": [
+        "updateConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "refresh-all-database": {
+      "methods": [
+        "refreshAllDatabase"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "refresh-default-user-data-config": {
+      "methods": [
+        "refreshDefaultUserDataConfig"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "builder": {
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "query-worker-ready": {
+      "methods": [
+        "query-worker-ready"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "excute-build-stage": {
+      "methods": [
+        "excute-build-stage"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-platform-debug-tools": {
+      "methods": [
+        "open-platform-debug-tools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-build-plugin-template": {
+      "methods": [
+        "createBuildPluginTemplate"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-application-template": {
+      "methods": [
+        "createApplicationTemplate"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-devtools": {
+      "methods": [
+        "openWorkerDevTool"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "generate-preview-setting": {
+      "methods": [
+        "generate-preview-setting"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-tasks-info": {
+      "methods": [
+        "query-tasks-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "add-task": {
+      "methods": [
+        "add-task"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "recompile-task": {
+      "methods": [
+        "recompile-task"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "remove-task": {
+      "methods": [
+        "remove-task"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "break-task": {
+      "methods": [
+        "break-task"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-task": {
+      "methods": [
+        "query-task"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "update-task": {
+      "methods": [
+        "update-task"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "preview-pac": {
+      "methods": [
+        "preview-pac"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-atlas-files": {
+      "methods": [
+        "query-atlas-files"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "command-build": {
+      "methods": [
+        "command-build"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:ready": {
+      "methods": [
+        "asset-db:ready",
+        "default.asset-db:ready"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:close": {
+      "methods": [
+        "asset-db:close"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-delete": {
+      "methods": [
+        "default.asset-db:asset-delete"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-add": {
+      "methods": [
+        "default.asset-db:asset-add"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-change": {
+      "methods": [
+        "default.asset-db:asset-change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "request-to-build-worker": {
+      "methods": [
+        "request-to-build-worker"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "preferences-changed": {
+      "methods": [
+        "preferences-changed"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-compress-config": {
+      "methods": [
+        "query-compress-config"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-platform-config": {
+      "methods": [
+        "query-platform-config"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-bundle-config": {
+      "methods": [
+        "query-bundle-config"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "migrate-options": {
+      "methods": [
+        "migrateOptions"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "builder:task-changed": {
+      "methods": [
+        "default.builder:task-changed"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-debug-mode": {
+      "methods": [
+        "default.change-debug-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "build-worker:ready": {
+      "methods": [
+        "default.onBuildWorkerReady"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "build-worker:closed": {
+      "methods": [
+        "default.onBuildWorkerClosed"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "console:update-log-level": {
+      "methods": [
+        "console:update-log-level"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "register-package": {
+      "methods": [
+        "registerPackage"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "unregister-package": {
+      "methods": [
+        "unRegisterPackage"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "programming:pack-build-end": {
+      "methods": [
+        "programming:pack-build-end"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-docs": {
+      "methods": [
+        "openDocs"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "check-and-complete-options": {
+      "methods": [
+        "check-and-complete-options"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-panel-devtools": {
+      "methods": [
+        "openPanelDevTools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-worker-devtools": {
+      "methods": [
+        "openWorkerDevTool"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "clear-all-cache": {
+      "methods": [
+        "clearAllCache"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "clear-assets-cache": {
+      "methods": [
+        "clearProjectAssetsCache"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "clear-engine-cache": {
+      "methods": [
+        "clearEngineCache"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "engine": {
+    "rebuild": {
+      "methods": [
+        "rebuild"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "relaunch": {
+      "methods": [
+        "relaunch"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "import-engine-error": {
+      "methods": [
+        "importEngineError"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "pipeline-config-change": {
+      "methods": [
+        "onPipelineConfigChange"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-info": {
+      "methods": [
+        "query-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-engine-info": {
+      "methods": [
+        "query-engine-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-custom-engine-config": {
+      "methods": [
+        "changeCustomEngineConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "engine-modules-config-changed": {
+      "methods": [
+        "onEngineModulesChanged"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "engine-custom-macro-changed": {
+      "methods": [
+        "onCustomMacroChanged"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "information": {
+    "query-information": {
+      "methods": [
+        "queryInformation"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "information-dialog": {
+      "methods": [
+        "informationDialog"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "has-dialog": {
+      "methods": [
+        "hasDialog"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "close-dialog": {
+      "methods": [
+        "closeDialog"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "menu": {
+    "engine:engine-modules-config-changed": {
+      "methods": [
+        "engineModuleChanged"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "edit-mode:enter": {
+      "methods": [
+        "modeChanged"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "shortcuts:change": {
+      "methods": [
+        "onShortcutChange"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "messages": {
+    "start-record": {
+      "methods": [
+        "addListener"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "stop-record": {
+      "methods": [
+        "removeListener"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "start-auto-save": {
+      "methods": [
+        "startAutoSave"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "stop-auto-save": {
+      "methods": [
+        "stopAutoSave"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-debug": {
+      "methods": [
+        "openDebug"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "broadcast": {
+      "methods": [
+        "debug.broadcast"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "request": {
+      "methods": [
+        "debug.request"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "send": {
+      "methods": [
+        "debug.send"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "reply": {
+      "methods": [
+        "debug.reply"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-message-state": {
+      "methods": [
+        "queryMessageState"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "placeholder": {
+    "install-extension": {
+      "methods": [
+        "installExtension"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "preferences": {
+    "open-settings": {
+      "methods": [
+        "openSettings"
+      ],
+      "public": true,
+      "doc": "- tab {string} The TAB you want to open (the name of the feature extension)\n- ...args: {any[]} Open tab with any params"
+    },
+    "query-config": {
+      "methods": [
+        "queryConfig"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "change-settings-tab": {
+      "methods": [
+        "settings.changeTab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-preferences-data": {
+      "methods": [
+        "queryPreferencesData"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "import-config": {
+      "methods": [
+        "importConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "export-config": {
+      "methods": [
+        "exportConfig"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "preview": {
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "generate-settings": {
+      "methods": [
+        "generateSettings"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-preview-url": {
+      "methods": [
+        "queryPreviewUrl"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:save": {
+      "methods": [
+        "autoReload"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "programming:compiled": {
+      "methods": [
+        "autoReload"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-terminal": {
+      "methods": [
+        "open-terminal"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "restart-simulator": {
+      "methods": [
+        "restart-simulator"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "reload-terminal": {
+      "methods": [
+        "reload-terminal"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "get-preview-ip": {
+      "methods": [
+        "get-preview-ip"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-preview-ip": {
+      "methods": [
+        "set-preview-ip"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-template": {
+      "methods": [
+        "create-template"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-platform": {
+      "methods": [
+        "change-platform"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "programming:pack-build-end": {
+      "methods": [
+        "on-pack-build-end"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "build-native-engine": {
+      "methods": [
+        "buildNativeEngine"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "preview-scene-in-browser": {
+      "methods": [
+        "previewSceneInBrowser"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "write-setting-file": {
+      "methods": [
+        "writeSettingFile"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "profile": {},
+  "program": {
+    "query-program-info": {
+      "methods": [
+        "queryProgramInfo"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-programs": {
+      "methods": [
+        "queryPrograms"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-program-config": {
+      "methods": [
+        "queryProgramConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "execute": {
+      "methods": [
+        "execute"
+      ],
+      "public": false,
+      "doc": "- program {string} The program key\n- args {Record<string, any>} Program startup arguments"
+    }
+  },
+  "programming": {
+    "packer-driver/start": {
+      "methods": [
+        "packer-driver/start"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "packer-driver/get-loader-context": {
+      "methods": [
+        "packer-driver/get-loader-context"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "packer-driver/ready": {
+      "methods": [
+        "packer-driver/ready"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "packer-driver/update-auto-update-import-config": {
+      "methods": [
+        "packer-driver/update-auto-update-import-config"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-shared-settings": {
+      "methods": [
+        "query-shared-settings"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "clear-code-cache": {
+      "methods": [
+        "clear-code-cache"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-dev-tools": {
+      "methods": [
+        "open-dev-tools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "engine:engine-custom-macro-changed": {
+      "methods": [
+        "custom-macro-changed"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "project": {
+    "open-settings": {
+      "methods": [
+        "openSettings"
+      ],
+      "public": true,
+      "doc": "- name {string} The TAB that needs to be opened belongs to which extension registry\n- tab {string} The key used to register the function\n- ...args: {any[]} Open tab with any params"
+    },
+    "open-joint": {
+      "methods": [
+        "openJoint"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-settings-tab": {
+      "methods": [
+        "settings.changeTab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "refresh-settings-tab": {
+      "methods": [
+        "settings.refreshTab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-script-config": {
+      "methods": [
+        "changeScriptConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-design-resolution": {
+      "methods": [
+        "changeDesignResolution"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-design-resolution": {
+      "methods": [
+        "queryDesignResolution"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-custom-layer": {
+      "methods": [
+        "changeCustomLayer"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-sorting-layer": {
+      "methods": [
+        "changeSortingLayer"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-hight-quality": {
+      "methods": [
+        "changeHighQuality"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "calc-joint-layout": {
+      "methods": [
+        "calcJointLayouts"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-project-data": {
+      "methods": [
+        "queryProjectData"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-config": {
+      "methods": [
+        "queryConfig"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "import-config": {
+      "methods": [
+        "importConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "export-config": {
+      "methods": [
+        "exportConfig"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "scene": {
+    "query-scene-bounds": {
+      "methods": [
+        "default.query-scene-bounds"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-native-config": {
+      "methods": [
+        "default.change-native-config"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "debug-view": {
+      "methods": [
+        "default.change-debug-view-option"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "quit-editor": {
+      "methods": [
+        "default.quit-editor"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:preview-stop": {
+      "methods": [
+        "preview.onEditorPreviewStop"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "full-screen": {
+      "methods": [
+        "default.fullScreen"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "i18n:change": {
+      "methods": [
+        "default.i18n:change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:ready": {
+      "methods": [
+        "default.scene:ready",
+        "onSceneReady",
+        "preview.onSceneReady"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "scene:close": {
+      "methods": [
+        "default.scene:close",
+        "onSceneClosed"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "asset-db:ready": {
+      "methods": [
+        "default.asset-db:ready"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:close": {
+      "methods": [
+        "default.asset-db:close"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "selection:hover": {
+      "methods": [
+        "default.selection:hover"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "selection:select": {
+      "methods": [
+        "default.selection:select"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "selection:unselect": {
+      "methods": [
+        "default.selection:unselect"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-add": {
+      "methods": [
+        "default.asset-db:asset-add"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-change": {
+      "methods": [
+        "default.asset-db:asset-change"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "asset-db:asset-delete": {
+      "methods": [
+        "default.asset-db:asset-delete"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "programming:pack-build-end": {
+      "methods": [
+        "default.programming:pack-build-end"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "project:change-design-resolution": {
+      "methods": [
+        "default.project:change-design-resolution"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "project:change-custom-layer": {
+      "methods": [
+        "default.project:change-custom-layer"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "project:change-sorting-layer": {
+      "methods": [
+        "default.project:change-sorting-layer"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "project:update-physics-group": {
+      "methods": [
+        "default.project:update-physics-group"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "project:change-high-quality": {
+      "methods": [
+        "default.project:change-high-quality"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "engine:engine-modules-config-changed": {
+      "methods": [
+        "default.engine:engine-modules-config-changed"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-devtools": {
+      "methods": [
+        "default.open-devtools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-preview-devtools": {
+      "methods": [
+        "default.open-preview-devtools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "graphical-tools": {
+      "methods": [
+        "default.graphicalTools"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "open-scene": {
+      "methods": [
+        "default.open-scene"
+      ],
+      "public": true,
+      "doc": "- uuid {string} uuid of scene asset"
+    },
+    "save-scene": {
+      "methods": [
+        "default.save-scene"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "save-as-scene": {
+      "methods": [
+        "default.save-as-scene"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "close-scene": {
+      "methods": [
+        "default.close-scene"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "set-property": {
+      "methods": [
+        "default.set-property"
+      ],
+      "public": true,
+      "doc": "- options {SetPropertyOptions}\n                    - uuid {string} uuid of the object\n                    - path {string} search path of the property\n                    - dump {IProperty} the dump data of the property"
+    },
+    "reset-property": {
+      "methods": [
+        "default.reset-property"
+      ],
+      "public": true,
+      "doc": "- options {SetPropertyOptions}\n                    - uuid {string} uuid of the object\n                    - path {string} search path of the property"
+    },
+    "preview-set-property": {
+      "methods": [
+        "default.preview-set-property"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "cancel-preview-set-property": {
+      "methods": [
+        "default.cancel-preview-set-property"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "update-property-from-null": {
+      "methods": [
+        "default.update-property-from-null"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-node-and-children-layer": {
+      "methods": [
+        "default.set-node-and-children-layer"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "move-array-element": {
+      "methods": [
+        "default.move-array-element"
+      ],
+      "public": true,
+      "doc": "- options {MoveArrayOptions}\n                    - uuid {string} uuid of node\n                    - path {string} search path of array\n                    - target {number} original index of the target item\n                    - offset {number} move offset\n                \n                @returns {boolean} whether it is successful"
+    },
+    "remove-array-element": {
+      "methods": [
+        "default.remove-array-element"
+      ],
+      "public": true,
+      "doc": "- options {MoveArrayOptions}\n                    - uuid {string} uuid of node\n                    - path {string} search path of array\n                    - index {number} index of item\n                \n                @returns {boolean} whether it is successful"
+    },
+    "select-all-nodes": {
+      "methods": [
+        "default.select-all-nodes"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "copy-node": {
+      "methods": [
+        "default.copy-node"
+      ],
+      "public": true,
+      "doc": "- uuids {string | string[]} uuid of node\n                \n                @returns {string | string[]} uuid of node"
+    },
+    "duplicate-node": {
+      "methods": [
+        "default.duplicate-node"
+      ],
+      "public": true,
+      "doc": "- uuids {string | string[]} uuid of node\n                \n                @returns {string | string[]} uuid of new node"
+    },
+    "paste-node": {
+      "methods": [
+        "default.paste-node"
+      ],
+      "public": true,
+      "doc": "- options {PasteNodeOptions}\n                    - target {string} uuid of target node\n                    - uuids {string | string[]} uuid of node that is copied\n                    - keepWorldTransform {boolean} whether to keep the world transform\n                \n                @returns {string | string[]} uuid of new node"
+    },
+    "cut-node": {
+      "methods": [
+        "default.cut-node"
+      ],
+      "public": true,
+      "doc": "- uuids {string | string[]} uuid of node\n                \n                @returns {string | string[]} uuid of node"
+    },
+    "set-parent": {
+      "methods": [
+        "default.set-parent"
+      ],
+      "public": true,
+      "doc": "- options {CutNodeOptions}\n                    - parent {string} uuid of parent\n                    - uuids {string|string[]} uuid of the node that need to set\n                    - keepWorldTransform {boolean} whether to keep the world transform\n                \n                @returns {string | string[]} uuid of node"
+    },
+    "create-node": {
+      "methods": [
+        "default.create-node"
+      ],
+      "public": true,
+      "doc": "- options {CreateNodeOptions}\n                    - parent {string} uuid of parent\n                    - components? {string[]} component names\n                \n                    - name? {string} name of node\n                    - dump? {INode | IScene} dump data of node\n                    - keepWorldTransform? {boolean} æ¯whether to keep the world transform\n                    - type? {string} asset type\n                    - canvasRequired? {boolean} need cc.Canvas or not\n                    - unlinkPrefab? {boolean} to be a normal node\n                    - assetUuid? {string} uuid of asset, if this value is set, create node from this asset\n                \n                @returns {string | string[]} uuid of node"
+    },
+    "reset-node": {
+      "methods": [
+        "default.reset-node"
+      ],
+      "public": true,
+      "doc": "- uuid {string} uuid of node\n\n                @returns {boolean} whether it is successful"
+    },
+    "reset-component": {
+      "methods": [
+        "default.reset-component"
+      ],
+      "public": true,
+      "doc": "- options {ResetComponentOptions}\n                    - uuid {string} uuid of component\n                \n                @returns {boolean} whether it is successful"
+    },
+    "restore-prefab": {
+      "methods": [
+        "default.restore-prefab"
+      ],
+      "public": true,
+      "doc": "- uuid {string} uuid of node\n                - assetUuid {string} uuid of asset\n\n                @returns {boolean} whether it is successful"
+    },
+    "remove-node": {
+      "methods": [
+        "default.remove-node"
+      ],
+      "public": true,
+      "doc": "- options {RemoveNodeOptions}\n                    - uuid: {string | string[]} uuid of node"
+    },
+    "create-component": {
+      "methods": [
+        "default.create-component"
+      ],
+      "public": true,
+      "doc": "- options {CreateComponentOptions}\n                    - uuid {string} uuid of node\n                    - component {string} classId (cid) (is recommended) or className"
+    },
+    "remove-component": {
+      "methods": [
+        "default.remove-component"
+      ],
+      "public": true,
+      "doc": "- options {CreateComponentOptions}\n                    - uuid {string} uuid of node\n                    - component {string} classId (cid) (is recommended) or className"
+    },
+    "execute-component-method": {
+      "methods": [
+        "default.execute-component-method"
+      ],
+      "public": true,
+      "doc": "- options {ExecuteComponentMethodOptions}\n                    - uuid {string} uuid of component\n                    - name {string} name of method\n                    - args {any[]} arguments"
+    },
+    "execute-scene-script": {
+      "methods": [
+        "default.execute-scene-script"
+      ],
+      "public": true,
+      "doc": "- options {ExecuteSceneScriptMethodsOptions}\n                    - name {string} name of extension\n                    - method {string} name of method\n                    - args {any[]} arguments"
+    },
+    "snapshot": {
+      "methods": [
+        "default.snapshot"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "snapshot-abort": {
+      "methods": [
+        "default.snapshot-abort"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "undo": {
+      "methods": [
+        "default.undo"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "redo": {
+      "methods": [
+        "default.redo"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "soft-reload": {
+      "methods": [
+        "default.soft-reload"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "preview-material": {
+      "methods": [
+        "default.preview-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "light-probe-update-tetrahedron": {
+      "methods": [
+        "default.light-probe-update-tetrahedron"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-gizmo-tool": {
+      "methods": [
+        "default.change-gizmo-tool"
+      ],
+      "public": true,
+      "doc": "- name {string} tool name 'position' | 'rotation' | 'scale' | 'rect'"
+    },
+    "query-gizmo-tool-name": {
+      "methods": [
+        "default.query-gizmo-tool-name"
+      ],
+      "public": true,
+      "doc": "@returns {string} 'position' | 'rotation' | 'scale' | 'rect'"
+    },
+    "change-gizmo-pivot": {
+      "methods": [
+        "default.change-gizmo-pivot"
+      ],
+      "public": true,
+      "doc": "- name {string} pivot name 'pivot' | 'center'"
+    },
+    "query-gizmo-pivot": {
+      "methods": [
+        "default.query-gizmo-pivot"
+      ],
+      "public": true,
+      "doc": "@returns {string} 'pivot' | 'center'"
+    },
+    "change-gizmo-coordinate": {
+      "methods": [
+        "default.change-gizmo-coordinate"
+      ],
+      "public": true,
+      "doc": "- type {string} coordinate name 'local' | 'global'"
+    },
+    "query-gizmo-coordinate": {
+      "methods": [
+        "default.query-gizmo-coordinate"
+      ],
+      "public": true,
+      "doc": "@returns {string} 'local' | 'global'"
+    },
+    "change-is2D": {
+      "methods": [
+        "default.change-is2D"
+      ],
+      "public": true,
+      "doc": "- is2D {boolean} 2D/3D view"
+    },
+    "query-is2D": {
+      "methods": [
+        "default.query-is2D"
+      ],
+      "public": true,
+      "doc": "@returns {boolean} true:2D, false:3D"
+    },
+    "set-grid-visible": {
+      "methods": [
+        "default.set-grid-visible"
+      ],
+      "public": true,
+      "doc": "- visible {boolean} show/hide grid"
+    },
+    "query-is-grid-visible": {
+      "methods": [
+        "default.query-is-grid-visible"
+      ],
+      "public": true,
+      "doc": "@returns {boolean} true: visible, false: invisible"
+    },
+    "set-icon-gizmo-3d": {
+      "methods": [
+        "default.set-icon-gizmo-3d"
+      ],
+      "public": true,
+      "doc": "- is3D {boolean} 3D/2D IconGizmo"
+    },
+    "query-is-icon-gizmo-3d": {
+      "methods": [
+        "default.query-is-icon-gizmo-3d"
+      ],
+      "public": true,
+      "doc": "@returns {boolean} true: 3D, false: 2D"
+    },
+    "set-icon-gizmo-size": {
+      "methods": [
+        "default.set-icon-gizmo-size"
+      ],
+      "public": true,
+      "doc": "- size {number} size of IconGizmo"
+    },
+    "query-icon-gizmo-size": {
+      "methods": [
+        "default.query-icon-gizmo-size"
+      ],
+      "public": true,
+      "doc": "@returns {number} size of IconGizmo"
+    },
+    "query-transform-snap-configs": {
+      "methods": [
+        "default.query-transform-snap-configs"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-transform-snap-configs": {
+      "methods": [
+        "default.set-transform-snap-configs"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-rect-snapping-configs": {
+      "methods": [
+        "default.query-rect-snapping-configs"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-rect-snapping-configs": {
+      "methods": [
+        "default.set-rect-snapping-configs"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "focus-camera": {
+      "methods": [
+        "default.focus-camera"
+      ],
+      "public": true,
+      "doc": "- uuids {string[] | null} uuid of node"
+    },
+    "align-with-view": {
+      "methods": [
+        "default.align-with-view"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "align-view-with-node": {
+      "methods": [
+        "default.align-view-with-node"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "apply-material": {
+      "methods": [
+        "default.apply-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-physics-material": {
+      "methods": [
+        "default.query-physics-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-physics-material": {
+      "methods": [
+        "default.change-physics-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-physics-material": {
+      "methods": [
+        "default.apply-physics-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-graph-variant": {
+      "methods": [
+        "default.query-animation-graph-variant"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-animation-graph-variant": {
+      "methods": [
+        "default.change-animation-graph-variant"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-animation-graph-variant": {
+      "methods": [
+        "default.apply-animation-graph-variant"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-mask": {
+      "methods": [
+        "default.query-animation-mask"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-animation-mask": {
+      "methods": [
+        "default.change-animation-mask"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-animation-mask": {
+      "methods": [
+        "default.apply-animation-mask"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-render-texture": {
+      "methods": [
+        "default.apply-render-texture"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "copy-camera-data-to-nodes": {
+      "methods": [
+        "default.copy-camera-data-to-nodes"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "record-animation": {
+      "methods": [
+        "default.record-animation"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-animation-root": {
+      "methods": [
+        "default.change-animation-root"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-edit-time": {
+      "methods": [
+        "default.set-edit-time"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-clip-state": {
+      "methods": [
+        "default.change-clip-state"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-edit-clip": {
+      "methods": [
+        "default.change-edit-clip"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "save-clip": {
+      "methods": [
+        "default.save-clip"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "animation-operation": {
+      "methods": [
+        "default.animation-operation"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-prefab": {
+      "methods": [
+        "default.create-prefab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "getdata-prefab": {
+      "methods": [
+        "default.getdata-prefab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "link-prefab": {
+      "methods": [
+        "default.link-prefab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "unlink-prefab": {
+      "methods": [
+        "default.unlink-prefab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-prefab": {
+      "methods": [
+        "default.apply-prefab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-removed-component": {
+      "methods": [
+        "default.apply-removed-component"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "revert-removed-component": {
+      "methods": [
+        "default.revert-removed-component"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-is-ready": {
+      "methods": [
+        "default.query-is-ready"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "query-node": {
+      "methods": [
+        "default.query-node"
+      ],
+      "public": true,
+      "doc": "- uuid {string} uuid of node\n\n                @returns {Object} dump of node"
+    },
+    "query-component": {
+      "methods": [
+        "default.query-component"
+      ],
+      "public": true,
+      "doc": "- uuid {string} uuid of component\n\n                @returns {Object} dump of component"
+    },
+    "query-node-tree": {
+      "methods": [
+        "default.query-node-tree"
+      ],
+      "public": true,
+      "doc": "- uuid? {string} the uuid of root node, default is scene node\n                \n                @returns {Object}\n                - name {string} name of node or 'scene'\n                - active {boolean} active state of node\n                - type {string} cc.Scene or cc.Node\n                - uuid {string} uuid of node\n                - children {[]} children of current node\n                - prefab {number} state of prefab, 1: normal, 2: lost resource\n                - isScene {boolean} whether it is a scene node\n                - components {[Object]} array of component\n                    - type {string} type of component\n                    - value {string} uuid of component\n                    - extends {[string]} array of component inheritance chain"
+    },
+    "query-nodes-by-asset-uuid": {
+      "methods": [
+        "default.query-nodes-by-asset-uuid"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "query-nodes-miss-assets": {
+      "methods": [
+        "default.query-nodes-miss-assets"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-component-function-of-node": {
+      "methods": [
+        "default.query-component-function-of-node"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-all-effects": {
+      "methods": [
+        "default.query-all-effects"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-material": {
+      "methods": [
+        "default.query-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-effect": {
+      "methods": [
+        "default.query-effect"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-serialized-material": {
+      "methods": [
+        "default.query-serialized-material"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-render-pipeline": {
+      "methods": [
+        "default.query-render-pipeline"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-render-pipeline": {
+      "methods": [
+        "default.change-render-pipeline"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "apply-render-pipeline": {
+      "methods": [
+        "default.apply-render-pipeline"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-creatable-asset-types": {
+      "methods": [
+        "default.query-creatable-asset-types"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-scene-json": {
+      "methods": [
+        "default.query-scene-json"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-current-scene": {
+      "methods": [
+        "default.query-current-scene"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-dirty": {
+      "methods": [
+        "default.query-dirty"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "query-classes": {
+      "methods": [
+        "default.query-classes"
+      ],
+      "public": true,
+      "doc": "@returns {[Object]}\n                - extends? {string} filter classes which extend from this class"
+    },
+    "query-components": {
+      "methods": [
+        "default.query-components"
+      ],
+      "public": true,
+      "doc": "@returns {[Object]}\n                - name {string} name of component\n                - path {string} path in menu"
+    },
+    "query-component-has-script": {
+      "methods": [
+        "default.query-component-has-script"
+      ],
+      "public": true,
+      "doc": "- name class name of script\n                \n                @returns {boolean} exist or not"
+    },
+    "query-script-name": {
+      "methods": [
+        "default.query-script-name"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-script-cid": {
+      "methods": [
+        "default.query-script-cid"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-layer-builtin": {
+      "methods": [
+        "default.query-layer-builtin"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-sorting-layer-builtin": {
+      "methods": [
+        "default.query-sorting-layer-builtin"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-scene-mode": {
+      "methods": [
+        "default.query-scene-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-state": {
+      "methods": [
+        "default.query-animation-state"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-current-animation-info": {
+      "methods": [
+        "default.query-current-animation-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-root": {
+      "methods": [
+        "default.query-animation-root"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-root-info": {
+      "methods": [
+        "default.query-animation-root-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-edit-info": {
+      "methods": [
+        "default.query-animation-edit-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-clip": {
+      "methods": [
+        "default.query-animation-clip"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-properties": {
+      "methods": [
+        "default.query-animation-properties"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-clips-info": {
+      "methods": [
+        "default.query-animation-clips-info"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-animation-clips-time": {
+      "methods": [
+        "default.query-animation-clips-time"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-property-value-at-frame": {
+      "methods": [
+        "default.query-property-value-at-frame"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "generate-available-name": {
+      "methods": [
+        "default.generate-available-name"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "editor-preview-set-play": {
+      "methods": [
+        "default.editor-preview-set-play"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "editor-refresh-gizmo-config": {
+      "methods": [
+        "default.editor-refresh-gizmo-config"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "editor-preview-call-method": {
+      "methods": [
+        "default.editor-preview-call-method"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "editor-preview-change-style-web": {
+      "methods": [
+        "default.editor-preview-change-style"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "editor-preview-change-style-native": {
+      "methods": [
+        "preview.editorPreviewChangeStyle"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "editor-preview-change-config": {
+      "methods": [
+        "default.editor-preview-change-config",
+        "preview.editorPreviewChangeConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:show-loading": {
+      "methods": [
+        "default.scene:show-loading"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:hide-loading": {
+      "methods": [
+        "default.scene:hide-loading"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "execute-model-preview-animation-operation": {
+      "methods": [
+        "default.execute-model-preview-animation-operation"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "regenerate-polygon-2d-points": {
+      "methods": [
+        "default.regenerate-polygon-2d-points"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "export-particle-plist": {
+      "methods": [
+        "default.export-particle-plist"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-node-lock": {
+      "methods": [
+        "default.change-node-lock"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "unit-test": {
+      "methods": [
+        "default.unit-test"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-target-resolution": {
+      "methods": [
+        "default.change-target-resolution"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-latest-cache": {
+      "methods": [
+        "queryLatestCache"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "clear-scene-cache": {
+      "methods": [
+        "clearSceneCache"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "save-scene-cache-to-file": {
+      "methods": [
+        "saveSceneCacheToFile"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "update-cache-config": {
+      "methods": [
+        "updateCacheConfig"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-enum-list-with-path": {
+      "methods": [
+        "default.query-enum-list-with-path"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-wrap-mode-enum-list": {
+      "methods": [
+        "default.query-wrap-mode-enum-list"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-scene-light-on": {
+      "methods": [
+        "default.set-scene-light-on"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-scene-light-on": {
+      "methods": [
+        "default.query-scene-light-on"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "native-ipc": {
+      "methods": [
+        "default.native-ipc"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "native-scene": {
+      "methods": [
+        "default.native-scene"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "is-native": {
+      "methods": [
+        "default.query-is-native"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-preview-data": {
+      "methods": [
+        "default.query-preview-data"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "call-preview-function": {
+      "methods": [
+        "default.call-preview-function"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-thumbnail": {
+      "methods": [
+        "default.query-thumbnail"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-preview-game-view-data": {
+      "methods": [
+        "preview.getGameViewData"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "set-preview-window-visible": {
+      "methods": [
+        "preview.setPreviewWindowVisible",
+        "setPreviewWindowVisible"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-preview-window": {
+      "methods": [
+        "preview.createPreviewWindow"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "resize-native-window": {
+      "methods": [
+        "resizeNativeWindow"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "create-native-window": {
+      "methods": [
+        "createNativeWindow"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "preview-panel-ready": {
+      "methods": [
+        "onPreviewPanelReady"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "preview-panel-stop": {
+      "methods": [
+        "onPreviewPanelStop"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "toggle-light-probe-edit-mode": {
+      "methods": [
+        "default.toggle-light-probe-edit-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-light-probe-edit-mode": {
+      "methods": [
+        "default.query-light-probe-edit-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "toggle-light-probe-bounding-box-edit-mode": {
+      "methods": [
+        "default.toggle-light-probe-bounding-box-edit-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-light-probe-bounding-box-edit-mode": {
+      "methods": [
+        "default.query-light-probe-bounding-box-edit-mode"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "light-probe-info-changed": {
+      "methods": [
+        "default.light-probe-info-changed"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "scene:light-probe-edit-mode-changed": {
+      "methods": [],
+      "public": true,
+      "doc": ""
+    },
+    "scene:light-probe-bounding-box-edit-mode-changed": {
+      "methods": [],
+      "public": true,
+      "doc": ""
+    },
+    "lod-apply-current-camera-size": {
+      "methods": [
+        "default.lod-apply-current-camera-size"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "lod-insert": {
+      "methods": [
+        "default.lod-insert"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "lod-erase": {
+      "methods": [
+        "default.lod-erase"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "server": {
+    "query-ip-list": {
+      "methods": [
+        "queryIPList"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "query-port": {
+      "methods": [
+        "queryPort"
+      ],
+      "public": true,
+      "doc": ""
+    },
+    "scan-lan": {
+      "methods": [
+        "scanLAN"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-preview-port": {
+      "methods": [
+        "change-preview-port"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "shortcuts": {
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-shortcut-map": {
+      "methods": [
+        "queryShortcutMap"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-shortcut": {
+      "methods": [
+        "changeShortcut"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "change-tab": {
+      "methods": [
+        "default.changeTab"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "reset-shortcut": {
+      "methods": [
+        "resetShortcut"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "query-packages-shortcut-list": {
+      "methods": [
+        "queryPackagesShortcutList"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "tester": {
+    "open": {
+      "methods": [
+        "open"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "forwarding-to-window": {
+      "methods": [
+        "forwarding-to-window"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "*": {
+      "methods": [
+        "panel.*"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  },
+  "utils": {
+    "export-dts": {
+      "methods": [
+        "exportDTS"
+      ],
+      "public": false,
+      "doc": ""
+    },
+    "tester-tag": {
+      "methods": [
+        "testerTag"
+      ],
+      "public": false,
+      "doc": ""
+    }
+  }
+}

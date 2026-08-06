@@ -4,7 +4,7 @@
   "name": "cocos-code-mode",
   "version": "1.0.0",
   "author": "Roman Rogov",
-  "editor": ">=3.8.7",
+  "editor": ">=3.7.0",
   "scripts": {
     "preinstall": "node ./scripts/preinstall.js",
     "build": "npx tsc",

@@ -773,7 +773,14 @@ export class SceneTools {
         const node = await Editor.Message.request('scene', 'query-node', nodeUuid);
         if (node?.parent?.value?.uuid) return node.parent.value.uuid;
         if (node?.parent?.uuid) return node.parent.uuid;
-        return await Editor.Message.request('scene', 'query-uuid');
+
+        // No parent recorded — the node sits directly under the scene root, so the
+        // scene itself is the parent. 'scene:query-uuid' was used here before and
+        // exists in neither 3.7.3 nor 3.8.7, meaning this path always threw.
+        // query-current-scene returns either a uuid string or a scene info object.
+        const current = await Editor.Message.request('scene', 'query-current-scene');
+        if (typeof current === 'string') return current;
+        return (current as any)?.uuid ?? '';
     }
 
     // Helper to set sibling index
