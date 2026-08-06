@@ -1,5 +1,4 @@
 import packageJSON from '../../../package.json';
-import sharp from 'sharp';
 import fs from 'fs-extra';
 import { utcpTool } from '../decorators';
 import { AssetInfo, AssetOperationOption } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
@@ -682,6 +681,11 @@ export class AssetTools {
 
         if (sourcePath && fs.existsSync(sourcePath)) {
             try {
+                // Lazy require: sharp is a native module and its prebuilt binary does not always
+                // load under the editor's Electron runtime (ERR_DLOPEN_FAILED). A top-level import
+                // takes down the whole extension — every tool, not just this one. Failing here
+                // instead falls through to the renderer-based preview below.
+                const sharp = require('sharp');
                 const image = sharp(sourcePath);
                 const metadata = await image.metadata();
                 const requestedSize = args.imageSize || 512;
@@ -706,7 +710,7 @@ export class AssetTools {
                 }
                 return { type: "image", data: buffer.toString('base64'), mimeType: "image/jpeg" };
             } catch (e) {
-                console.error(`Failed to process image from ${sourcePath} with sharp:`, e);
+                console.error(`Failed to process image from ${sourcePath} with sharp, falling back to renderer preview:`, e);
             }
         }
 
