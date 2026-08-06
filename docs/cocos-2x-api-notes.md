@@ -547,3 +547,88 @@ Thêm 2 API docs khai mà **không tồn tại**: `scene:query-animation-node`, 
 10. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
 11. Config panel UI chưa port — vòng 1 server tự start, đọc port ở `settings/cocos-code-mode.json`.
 
+---
+
+# Nguồn thứ 3: engine source + app.asar giải nén
+
+Bổ sung sau vòng 1. Trước đó chỉ có 2 nguồn: corpus `cc_docs` và probe runtime. Nguồn này lấp đúng khoảng trống của corpus (`cc_docs` cover **editor extension API**, KHÔNG cover engine internals).
+
+| Nguồn | Path | Đọc được? |
+|---|---|---|
+| Engine source | `C:\ProgramData\cocos\editors\Creator\2.4.15\resources\engine\` | ✅ **982 file .js plain, 0 mã hoá** |
+| app.asar giải nén | `G:\_ws\cc_2_4_15\app_asar_cc_2_4_15\` | ❌ 893 `.ccc` / 107 `.js` — code editor mã hoá hết |
+
+## Vì sao `.ccc` không mở được offline
+
+`editor-framework/lib/share/require.js` (1 trong số ít file plain) đăng ký `Module._extensions['.ccc']`, decrypt qua:
+
+```js
+process._linkedBinding('electron_common_compile').test(file, [...], ...)
+```
+
+Native binding của Electron build riêng → offline không gọi được. `.ccc` là **V8 bytecode đã mã hoá**, entropy cao, `strings` ra rác, `grep "scene:query"` toàn asar = **0 hit**. Không có đường decrypt tĩnh.
+
+**Hệ quả:** kết luận phase 5 "message scene không enumerate được" **vẫn đúng**, giờ biết chính xác lý do. Chỉ probe runtime mới ra.
+
+## Xác nhận ngược 3 phát hiện runtime bằng engine source
+
+Cả 3 trước đây chỉ dựa vào probe, giờ có nguồn:
+
+| Phát hiện | File engine | Xác nhận |
+|---|---|---|
+| Bẫy 2: `HideInHierarchy` = 1024 | `cocos2d/core/platform/CCObject.js:42` | `var HideInHierarchy = 1 << 10;` — đúng |
+| Bẫy 1: design res thật ở `cc.Canvas` | `cocos2d/core/components/CCCanvas.js:88` | `designResolution` getter → `cc.size(this._designResolution)` (clone, không phải viewport) — đúng |
+| Bẫy 6: phải `instanceof cc.Asset`, fallback `_uuid` | `cocos2d/core/assets/CCAsset.js:59` | `Object.defineProperty(this,'_uuid',{value:'',writable:true})` — **non-enumerable**, comment engine: *"to avoid uuid being assigned to empty string during destroy"*. Nên `JSON.stringify` mất uuid, `_uuid` fallback là bắt buộc — đúng |
+
+Không thấy chỗ nào code vòng 1 lệch so với engine source.
+
+## Unresolved #5 — `cc.engine.getInstanceById` TỒN TẠI
+
+Engine tự gọi, 3 call site trong `cocos2d/core/base-ui/CCWidgetManager.js:274,287,313`:
+
+```js
+let component   = cc.engine.getInstanceById(AnimUtils.Cache.component);
+var editingNode = cc.engine.getInstanceById(AnimUtils.Cache.rNode);
+```
+
+Trả cả Component lẫn Node → resolve theo **instance id**, không giới hạn loại. Vẫn cần probe để biết id đó có bằng `uuid` mà `scene:query-hierarchy` trả không (vòng 2), nhưng API thì hết phỏng đoán.
+
+## `Editor.require('scene://...')` — cửa vào scene module
+
+Engine dùng scheme URL này load helper của scene panel:
+
+```js
+Editor.require('scene://utils/animation')   // ×2
+Editor.require('scene://utils/prefab')      // ×4
+Editor.require('scene://utils/node')        // ×3
+Editor.require('scene://utils/physics')     // ×2
+Editor.require('scene://edit-mode')         // ×1
+Editor.require('app://editor/page/scene-utils/utils/node')  // dạng đầy đủ
+```
+
+`scene://` → `app.asar/editor/page/scene-utils/`. Nội dung `.ccc` nhưng **cây tên module đọc được** — bản đồ vòng 2:
+
+```
+scene-utils/
+├── dump/          get-node-dump · get-node-functions · hierarchy   ← đúng 3 op nodeQuery đang dùng
+├── undo/          index · scene-undo-impl                          ← Unresolved #6
+├── utils/         node · prefab · scene · animation · material ·
+│                  spriteframe · effect · particle · physics/       ← write API vòng 2
+├── edit-mode/     index · modes/{animation,prefab,scene}
+├── engine-extends/ asset-manager-extends · component-extends · widget-manager-extends
+├── lib/           asset-watcher · detect-conflict · engine-events ·
+│                  sandbox · source-maps · stash-scene · tasks
+├── set-property-by-path.ccc                                        ← ứng viên write property vòng 2
+└── reset-node.ccc
+```
+
+`dump/hierarchy` + `dump/get-node-dump` + `dump/get-node-functions` khớp 1-1 với 3 message `scene:query-*` đã verify → scene panel chỉ là wrapper mỏng quanh các module này. Scene-script chạy **cùng process** nên gọi thẳng `Editor.require('scene://utils/node')` được, bỏ qua IPC.
+
+**CHƯA VERIFY** — `.ccc` không đọc được signature. Đây là **bản đồ để probe**, KHÔNG phải API đã xác nhận. Probe `Object.keys(Editor.require('scene://utils/node'))` trước khi code.
+
+## Unresolved bổ sung
+
+12. `cc.engine.getInstanceById(id)` — `id` có bằng `uuid` từ `scene:query-hierarchy` không? (probe vòng 2)
+13. `Editor.require('scene://utils/node')` export gì? Probe `Object.keys` trước khi code.
+14. `set-property-by-path` nhận path dạng nào? Ứng viên chính cho write property.
+

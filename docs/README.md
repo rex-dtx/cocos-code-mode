@@ -9,7 +9,7 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | File | Nội dung | Khi nào đọc |
 |---|---|---|
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
-| `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL | Trước khi viết tool mới. Bắt buộc |
+| `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** | Trước khi viết tool mới. Bắt buộc |
 | `../code-mode-references-2x.d.ts` | Tool surface agent-facing (9 tool) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
@@ -54,8 +54,14 @@ Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-s
 
 ## Rule bắt buộc khi làm tiếp
 
-1. **Không đoán API.** Mọi `Editor.*` / `cc.*` phải có nguồn: corpus `cc_docs` prefix `v2.4/extension/`, hoặc kết quả probe. Không nguồn → ghi Unresolved, không code.
-2. **`search_exact` 0 hit ≠ không tồn tại.** Chỉ nghĩa là *docs không nhắc*. Corpus cover editor extension API, KHÔNG cover engine internals. `cc.engine` là ví dụ: 0 hit nhưng tồn tại thật.
-3. **Token guard mọi tool trả cây/dump.** Default `maxDepth`, truncate + báo `childrenCount`/`truncated`.
-4. **`npm run build` exit 0 sau mỗi phase.** Đỏ thì không sang phase sau.
-5. **Style hiện tại:** 4-space indent, `async method(args: {...}): Promise<{...}>`, throw `Error` cho invalid input (transport tự bắt → HTTP 500 + `{error}`).
+1. **Không đoán API.** Mọi `Editor.*` / `cc.*` phải có nguồn — 3 nguồn hợp lệ:
+   - corpus `cc_docs` prefix `v2.4/extension/` (editor extension API)
+   - **engine source** `C:\ProgramData\cocos\editors\Creator\2.4.15\resources\engine\` — 982 file `.js` plain, đọc thẳng. Đây là nguồn cho `cc.*` internals mà corpus KHÔNG cover
+   - kết quả probe runtime
+
+   Không nguồn → ghi Unresolved, không code.
+2. **`search_exact` 0 hit ≠ không tồn tại.** Chỉ nghĩa là *docs không nhắc*. Corpus cover editor extension API, KHÔNG cover engine internals — chỗ đó tra engine source. `cc.engine` là ví dụ: corpus 0 hit, engine source có 3 call site thật.
+3. **Code editor (`app.asar`) KHÔNG đọc được.** 893 `.ccc` = V8 bytecode mã hoá qua native binding `electron_common_compile`, offline vô hiệu. Chỉ tên file/thư mục đọc được → dùng làm bản đồ probe, không phải API đã xác nhận. Chi tiết: `cocos-2x-api-notes.md` §"Nguồn thứ 3".
+4. **Token guard mọi tool trả cây/dump.** Default `maxDepth`, truncate + báo `childrenCount`/`truncated`.
+5. **`npm run build` exit 0 sau mỗi phase.** Đỏ thì không sang phase sau.
+6. **Style hiện tại:** 4-space indent, `async method(args: {...}): Promise<{...}>`, throw `Error` cho invalid input (transport tự bắt → HTTP 500 + `{error}`).
