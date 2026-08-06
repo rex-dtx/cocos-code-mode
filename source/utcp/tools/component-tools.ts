@@ -63,14 +63,28 @@ export class ComponentTools {
         const components = node.__comps__ || [];
         const foundComponents: IInstanceReference[] = [];
         for (const comp of components) {
-            const compUuid = (comp.value as any)?.uuid?.value;
-            if (!args.componentType || comp.type?.includes(args.componentType)) {
-                foundComponents.push({ id: compUuid, type: comp.type });
+            const value = comp.value as any;
+            const compUuid = value?.uuid?.value ?? value?.uuid;
+            // comp.type is absent on some dumps (notably user scripts); the dump's
+            // own __type__/cid carries the class name in that case. Without this
+            // the client gets type: undefined and cannot filter by class at all.
+            const compType = comp.type
+                ?? value?.__type__?.value ?? value?.__type__
+                ?? comp.cid ?? value?.cid;
+
+            if (!args.componentType || (compType && compType.includes(args.componentType))) {
+                foundComponents.push({ id: compUuid, type: compType });
             }
         }
 
         if (foundComponents.length > 0) {
             return { references: foundComponents };
+        }
+
+        // A node with no components at all is a legitimate answer, not an error —
+        // only an unmatched explicit filter is worth throwing over.
+        if (!args.componentType) {
+            return { references: [] };
         }
 
         throw new Error(`Components of type ${args.componentType} not found on node ${args.reference.id}`);

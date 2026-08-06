@@ -363,8 +363,14 @@ export class SceneTools {
         } else {
              // Default queries the whole scene
              treeBase = await Editor.Message.request('scene', 'query-node-tree');
+             // In prefab-edit mode the editor wraps the prefab in a throwaway scene:
+             // an unnamed virtual root ("New Node", which query-node cannot even
+             // resolve) holding a locked Canvas, with the real prefab root beneath.
+             // Returning that wrapper makes a correctly-serialized prefab look
+             // renamed and empty. Descend to the root the user actually opened.
+             treeBase = (await this.findPrefabEditRoot(treeBase)) ?? treeBase;
         }
-        
+
         if (!treeBase) {
             throw new Error(`Node tree not found for ${args.reference?.id || 'entire scene'}`);
         }
@@ -768,6 +774,49 @@ export class SceneTools {
     }
 
     // Helpers
+
+    /**
+     * When a prefab is open for editing, 'query-current-scene' reports the prefab
+     * ASSET uuid rather than a scene uuid. Walk the wrapper hierarchy for the node
+     * whose __prefab__ marks it as that asset's root and return its subtree.
+     * Returns null in ordinary scene mode, or if no such root is found.
+     */
+    private async findPrefabEditRoot(sceneTree: any): Promise<any | null> {
+        if (!sceneTree) return null;
+
+        const current: any = await Editor.Message.request('scene', 'query-current-scene');
+        const openUuid = typeof current === 'string' ? current : current?.uuid;
+        if (!openUuid) return null;
+
+        // A real scene's root IS the open asset — nothing to unwrap.
+        if (sceneTree.uuid === openUuid) return null;
+
+        const asset = await Editor.Message.request('asset-db', 'query-asset-info', openUuid);
+        if (!asset || asset.type !== 'cc.Prefab') return null;
+
+        // Breadth-first: the prefab root is the shallowest node claiming to be one.
+        const queue: any[] = [sceneTree];
+        while (queue.length) {
+            const node = queue.shift();
+            if (!node) continue;
+
+            if (node.uuid && node.uuid !== sceneTree.uuid) {
+                const dump: any = await Editor.Message.request('scene', 'query-node', node.uuid)
+                    .catch(() => null);
+                const prefab = dump?.__prefab__?.value ?? dump?.__prefab__;
+                const assetUuid = prefab?.prefabStateInfo?.assetUuid ?? prefab?.uuid;
+                if (prefab && assetUuid === openUuid && prefab.rootUuid === node.uuid) {
+                    return node;
+                }
+            }
+
+            for (const child of node.children ?? []) {
+                queue.push(child);
+            }
+        }
+
+        return null;
+    }
 
     private async getParent(nodeUuid: string): Promise<string> {
         const node = await Editor.Message.request('scene', 'query-node', nodeUuid);

@@ -21,9 +21,21 @@ export class SetPropertyTool {
         },
         SuccessIndicatorSchema, "POST", ['property', 'set', 'scene', 'settings', 'project', 'modify', 'config']
     )
-    async setCurrentSceneProperties(params: { settingsType: string, propertyPaths: string[], values: any[] }): Promise<ISuccessIndicator> {
+    async setCurrentSceneProperties(params: { settingsType: string, propertyPath?: string, value?: any, propertyPaths?: string[], values?: any[] }): Promise<ISuccessIndicator> {
+        // The schema advertises singular propertyPath/value, but this handler only
+        // ever read the plural arrays — so every schema-conformant call failed with
+        // "Property paths and values are required". Accept either shape.
+        const propertyPaths = params.propertyPaths
+            ?? (params.propertyPath !== undefined ? [params.propertyPath] : undefined);
+        const values = params.values
+            ?? (params.propertyPath !== undefined ? [params.value] : undefined);
+
+        if (!propertyPaths || !values) {
+            throw new Error('propertyPath and value are required for inspectorSetSettingsProperties.');
+        }
+
         return await this.setInstanceProperties({
-            reference: { id: params.settingsType }, propertyPaths: params.propertyPaths, values: params.values
+            reference: { id: params.settingsType }, propertyPaths, values
         });
     }
 
