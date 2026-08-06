@@ -23,7 +23,10 @@ const info = {
     commit: git('rev-parse --short HEAD', 'unknown'),
     branch: git('rev-parse --abbrev-ref HEAD', 'unknown'),
     // Uncommitted changes at build time: "the code you tested isn't in git".
-    dirty: git('status --porcelain', '') !== '',
+    // Scoped to what actually ends up in the build -- the editor drops temp files
+    // at the repo root, and a flag that cries wolf is a flag people stop reading.
+    // Untracked files count here: a new source/*.ts does get compiled in.
+    dirty: git('status --porcelain -- source package.json', '') !== '',
     builtAt: new Date().toISOString()
 };
 
