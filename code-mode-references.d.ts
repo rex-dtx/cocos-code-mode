@@ -282,15 +282,17 @@ declare namespace CocosEditor {
 
     /** Introspect editor/scene state: scene_mode (scene vs prefab vs animation - check before mutating), ready (scene loaded), enum_values (legal values of an enum property), layers / sorting_layers, script_info (class name + cid of a script asset). */
     function editorIntrospect(args: {
-        category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info",
+        category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script",
         enumPath?: string,
+        className?: string,
         reference?: InstanceReference
     }): {
         sceneMode?: string,
         ready?: boolean,
         values?: { name?: string, value?: any }[],
         scriptName?: string,
-        scriptCid?: string
+        scriptCid?: string,
+        hasScript?: boolean
     };
 
     /** Read animation data. Start with root_info on any node. clip_dump returns a track summary unless includeCurves is set. */

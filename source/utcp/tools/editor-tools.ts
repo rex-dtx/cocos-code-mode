@@ -251,12 +251,13 @@ export class EditorTools {
 
     @utcpTool(
         'editorIntrospect',
-        'Introspect the editor/scene state that is not visible from node data. "scene_mode" tells whether the scene view currently edits a scene, a prefab, an animation or a preview - CRITICAL before mutating, because edits in prefab mode go into the prefab asset, not the scene. "ready" reports whether the scene is done loading (poll after sceneOpen). "enum_values" lists the legal values of an enum property (pass the enum path from the property dump) so a setter cannot be called with an invalid number. "layers" / "sorting_layers" list the project-defined layer vocabularies. "script_info" resolves a script asset uuid to its class name and cid.',
+        'Introspect the editor/scene state that is not visible from node data. "scene_mode" tells whether the scene view currently edits a scene, a prefab, an animation or a preview - CRITICAL before mutating, because edits in prefab mode go into the prefab asset, not the scene. "ready" reports whether the scene is done loading (poll after sceneOpen). "enum_values" lists the legal values of an enum property (pass the enum path from the property dump) so a setter cannot be called with an invalid number. "layers" / "sorting_layers" list the project-defined layer vocabularies. "script_info" resolves a script asset uuid to its class name and cid. "has_script" asks whether a component class name is registered at all - check this before addComponent or callComponentMethod rather than discovering the typo from a runtime failure.',
         {
             type: 'object',
             properties: {
-                category: { type: 'string', enum: ['scene_mode', 'ready', 'enum_values', 'layers', 'sorting_layers', 'script_info'] },
+                category: { type: 'string', enum: ['scene_mode', 'ready', 'enum_values', 'layers', 'sorting_layers', 'script_info', 'has_script'] },
                 enumPath: { type: 'string', description: 'For enum_values: the enum path reported by the property dump, e.g. "cc.Sprite.SizeMode"' },
+                className: { type: 'string', description: 'For has_script: the component class name to look for, e.g. "SlotReel"' },
                 reference: InstanceReferenceSchema
             },
             required: ['category']
@@ -272,12 +273,13 @@ export class EditorTools {
                     description: 'For enum_values / layers / sorting_layers'
                 },
                 scriptName: { type: 'string' },
-                scriptCid: { type: 'string' }
+                scriptCid: { type: 'string' },
+                hasScript: { type: 'boolean', description: 'For has_script: whether a component class by that name is registered' }
             }
         }, "GET", ['editor', 'introspect', 'mode', 'prefab', 'ready', 'enum', 'layer', 'sorting', 'script', 'cid', 'validation']
     )
-    async editorIntrospect(args: { category: string, enumPath?: string, reference?: IInstanceReference }):
-        Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string }> {
+    async editorIntrospect(args: { category: string, enumPath?: string, className?: string, reference?: IInstanceReference }):
+        Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string, hasScript?: boolean }> {
         // Enumerator / layer results are {name, value} lists but the exact item shape is
         // not guaranteed across versions - normalize defensively instead of asserting.
         const normalizeList = (raw: any): Array<{ name?: string, value?: any }> => {
@@ -324,6 +326,12 @@ export class EditorTools {
                     scriptName: typeof name === 'string' ? name : undefined,
                     scriptCid: typeof cid === 'string' ? cid : undefined
                 };
+            }
+            case 'has_script': {
+                if (!args.className) {
+                    throw new Error('editorIntrospect category "has_script" requires className');
+                }
+                return { hasScript: !!(await Editor.Message.request('scene', 'query-component-has-script', args.className)) };
             }
             default:
                 throw new Error(`Unknown introspect category: ${args.category}`);
