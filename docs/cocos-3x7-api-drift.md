@@ -48,19 +48,30 @@ kèm re-filter client-side vì fallback làm mất ccType/importer/extname/isBun
 ⚠️ **Chỉ 60/416 message có param doc** → 356 message còn lại signature vẫn là ẩn số. Không thể
 kết luận "chỉ 3 cái drift" — chỉ có thể nói "3 cái drift trong số đã kiểm chứng được".
 
-## 2. Message vắng mặt hẳn ở 3.7.3 (5)
+## 2. Message vắng mặt hẳn ở 3.7.3 (5) — ✅ ĐÃ XỬ LÝ HẾT
 
-| Module | Message | Tool ảnh hưởng | Ghi chú |
+Cả 4 cái còn lại đã **verify runtime** trên Creator 3.7.3 thật (project
+`cc-fws\cc30-new-all-in-one`, 2026-08-06) rồi mới sửa — không suy đoán từ registry.
+
+| Module | Message | Tool ảnh hưởng | Trạng thái |
 |---|---|---|---|
-| `asset-db` | `query-asset-thumbnail` | `assetGetPreview` (mesh/gltf branch) | Không có message nào chứa 'thumbnail' ở 3.7.3 |
-| `program` | `open-program` | `programOpen` | Module `program` 3.7.3 chỉ có **4** message: `query-program-info`, `query-programs`, `query-program-config`, `execute` |
-| `program` | `open-url` | `urlOpen` | ↑ như trên |
-| `project` | `set-config` | `projectSetConfig` | 3.7.3 có `query-config` (đọc OK) nhưng **không có** `set-config`. Có `change-script-config`/`import-config`/`export-config` — semantics khác, cần verify trước khi map |
+| `asset-db` | `query-asset-thumbnail` | `assetGetPreview` (mesh/gltf branch) | ⏳ Chưa verify được — server live lúc test còn chạy build cũ (không có `/build-info`). Đã có fallback renderer-based ngay dưới nhánh này |
+| `program` | `open-program` | `programOpen` | ✅ **FIX** `4832cf1` — map sang `execute`. Doc block 3.7.3 khai đúng 2 param `program {string}` + `args {Record<string,any>}` → match có tài liệu, không phải đoán |
+| `program` | `open-url` | `urlOpen` | ✅ **FIX** `4832cf1` — fallback `execFile` (không `exec`, không shell), chặn scheme ngoài http(s) vì URL thành command argument |
+| `project` | `set-config` | `projectSetConfig` | ✅ **FIX** `4832cf1` — **KHÔNG map**. Báo unsupported + chỉ workaround. Xem lý do dưới |
 | `scene` | `query-uuid` | `nodeOperate` (sibling index) | ✅ **ĐÃ FIX** — xem §2b |
 
-**Chưa quyết:** bỏ tool, hay map sang message tương đương. `project/set-config` →
-`change-script-config`? Tên gợi ý phạm vi hẹp hơn (chỉ script config) — **phải verify runtime,
-đừng map mù**.
+**Lỗi runtime thật đã ghi nhận** (trước khi fix):
+```
+Message does not exist: program - open-url
+Message does not exist: program - open-program
+Message does not exist: project - set-config
+```
+
+**Vì sao KHÔNG map `project/set-config`:** 3.7.3 có `change-script-config` / `import-config` /
+`export-config`, nhưng **không cái nào ghi một dotted path đơn lẻ** — cái đầu chỉ đụng script
+settings, hai cái sau chuyển cả file. Map bừa = ghi sai key **im lặng**, nguy hiểm hơn là báo lỗi.
+Nguyên tắc đã chốt: **bỏ tool > map sai**. Đọc vẫn OK (`projectGetConfig` verify chạy tốt).
 
 ## 2b. `scene/query-uuid` — bug sẵn có, KHÔNG phải drift
 
