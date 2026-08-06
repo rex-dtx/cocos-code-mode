@@ -521,7 +521,20 @@ Trả kèm `available` để agent biết `type` nào hợp lệ, không phải 
 
 Thêm 2 API docs khai mà **không tồn tại**: `scene:query-animation-node`, `console:query-*`.
 
-⚠️ **Bẫy 5 cũng đang có ở repo 3.x** (`cc-code-mode-cst` branch `custom`) — cùng dòng code, cùng thứ tự sai. Đáng port ngược.
+✅ **Bẫy 5 đã port ngược sang cả 2 nhánh 3.x** (2026-08-06): `custom` `f3b86ab`, `cc-3x7` `d21acbd` (cherry-pick). Cả 3 nhánh giờ cùng thứ tự đúng.
+
+Chứng minh thực nghiệm (express 4.21.2, không phải suy luận):
+
+```
+set AFTER  use()  ->  {"maxDepth":"3", type:"string"}
+set BEFORE use()  ->  {"maxDepth":3,   type:"number"}
+```
+
+Nguồn gốc ở `node_modules/express/lib/application.js:151` — `lazyrouter()` snapshot setting **1 lần**: `this._router.use(query(this.get('query parser fn')))`, và `app.use()` gọi `lazyrouter()` ở dòng 221. Comment của chính express: *"it reads app settings which might be set after that has run."*
+
+⚠️ **Bug tái phát nếu ai refactor `start()`** — không test nào chặn, không lint được, build vẫn xanh. Comment cảnh báo đã để ngay trên dòng `app.set` ở cả 3 nhánh.
+
+Lưu ý: `package.json` của `custom` khai `express: ^5` nhưng cài về **4.21.2**. Express 5 bỏ `lazyrouter`, cơ chế khác — nếu nâng thật thì phải verify lại.
 
 # Vòng 2 (write) — blocker đã biết
 
