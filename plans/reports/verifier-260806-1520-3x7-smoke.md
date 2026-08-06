@@ -64,7 +64,7 @@ Message does not exist: program - open-program
 Message does not exist: project - set-config
 ```
 
-Fix ở `4832cf1` — xem `docs/cocos-3x7-api-drift.md` §2.
+Fix ở `4832cf1`, doc verdict ở `5372375` — xem `docs/cocos-3x7-api-drift.md` §2.
 
 ## D · File không bị session khác động — PASS
 
