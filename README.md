@@ -34,7 +34,7 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 
 | Tool | Operations | Purpose |
 |---|---|---|
-| `sceneSnapshot` | — | **Start here.** Whole node tree in one round trip: transform, size, anchor, component list per node, plus design resolution. Editor-only roots filtered out. |
+| `sceneSnapshot` | — | **Start here.** Whole node tree in one round trip: transform, size, anchor, component list per node, plus design resolution. Editor-only roots filtered out. Guarded by `maxDepth` and `maxNodes`. |
 | `nodeQuery` | `tree` `dump` `info` `functions` `by_component` `at_path` | Hierarchy tree, single-node property dump, node info, callable functions, find by component, fetch by path |
 | `componentQuery` | `props` `classes` `by_name` `find` | Read one component's properties, list registered classes, find nodes carrying a component |
 | `assetResolve` | `uuid_from_url` `url_from_uuid` `fspath` `exists` | Translate between asset url, uuid, and filesystem path |
@@ -43,6 +43,19 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 | `editorSelect` | `query` `select` `unselect` `clear` | Read and set the editor selection — the one mutating tool |
 | `editorEnvInfo` | — | Editor / engine / node / electron versions and project path |
 | `projectGetConfig` | — | Read `settings/*.json` |
+
+### Payload limits
+
+Tree and list results are capped, because an agent asking for "the scene" on a real project would otherwise get hundreds of kilobytes. Every cap reports that it fired, so a clipped result is never mistaken for a complete one.
+
+| Tool | Limit | Default | Reported as |
+|---|---|---|---|
+| `sceneSnapshot`, `nodeQuery at_path` | `maxDepth` — how deep | 6 / 3 | `truncated: 'maxDepth'` on the node |
+| `sceneSnapshot`, `nodeQuery at_path` | `maxNodes` — how many | 400 | `truncated: 'nodeLimit'`, `childrenOmitted`, plus `nodesVisited` / `budgetExhausted` on the response |
+| `componentQuery find`, `classes` | `maxResults` | 200 | `truncated: true`, with `total` still the real count |
+| `nodeQuery dump` | `types` block dropped | — | `typesOmitted: [...]`, pass `includeTypes` to get it |
+
+`maxDepth` alone is not enough: a slot scene is often one root with a thousand siblings, which no depth limit bounds. `maxNodes` is a single budget shared across all roots.
 
 ### Not in round 1
 
@@ -168,6 +181,8 @@ npm run package
 ```
 4. If everything builds fine, `cocos-code-mode.zip` file should appear in repository root.
 5. Install it in Cocos Creator with **Extension Manager**.
+
+`npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies the tree-walk limits without needing Creator open. Run `npm run check` on its own while developing.
 
 For development, a junction from `<project>/packages/cocos-code-mode` to the repo works and does not trigger a reload loop.
 

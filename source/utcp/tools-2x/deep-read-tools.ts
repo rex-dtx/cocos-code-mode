@@ -2,16 +2,19 @@ import { utcpTool } from '../decorators';
 import { sceneIpc, sceneScript } from '../utils/ipc-promise';
 
 const DEFAULT_SNAPSHOT_DEPTH = 6;
+const DEFAULT_MAX_NODES = 400;
+const DEFAULT_MAX_RESULTS = 200;
 
 export class DeepReadTools {
 
     @utcpTool(
         'sceneSnapshot',
-        'Start here to understand the open scene. Returns the whole node tree in one round trip: name, uuid, transform, size, anchor and the component list of every node, plus the project design resolution. Editor-only roots are filtered out so the tree matches the Hierarchy panel. Raise maxDepth for deeper trees; truncated nodes report childrenCount.',
+        'Start here to understand the open scene. Returns the whole node tree in one round trip: name, uuid, transform, size, anchor and the component list of every node, plus the project design resolution. Editor-only roots are filtered out so the tree matches the Hierarchy panel. Two independent limits guard the payload: maxDepth caps how deep it walks, maxNodes caps how many nodes total. A node cut by either reports truncated (maxDepth or nodeLimit) and childrenCount; the response reports nodesVisited and budgetExhausted so you can tell a complete tree from a clipped one.',
         {
             type: 'object',
             properties: {
                 maxDepth: { type: 'number', description: `Max tree depth, default ${DEFAULT_SNAPSHOT_DEPTH}` },
+                maxNodes: { type: 'number', description: `Max nodes to walk, default ${DEFAULT_MAX_NODES}. Guards against wide scenes that maxDepth alone does not bound.` },
             },
         },
         {
@@ -21,20 +24,26 @@ export class DeepReadTools {
                 uuid: { type: 'string' },
                 designResolution: { type: 'object' },
                 maxDepth: { type: 'number' },
+                maxNodes: { type: 'number' },
+                nodesVisited: { type: 'number' },
+                budgetExhausted: { type: 'boolean' },
                 children: { type: 'array', items: { type: 'object' } },
             },
         },
         'GET', ['scene', 'snapshot', 'hierarchy', 'tree', 'overview', 'node', 'component']
     )
-    async sceneSnapshot(args: { maxDepth?: number }): Promise<any> {
+    async sceneSnapshot(args: { maxDepth?: number, maxNodes?: number }): Promise<any> {
         // Arg boc trong object: so o vi tri cuoi bi IPC 2.x nuot lam timeout — xem
         // docs/cocos-2x-api-notes.md §phase 6.
-        return sceneScript<any>('scene-snapshot', { maxDepth: args.maxDepth || DEFAULT_SNAPSHOT_DEPTH });
+        return sceneScript<any>('scene-snapshot', {
+            maxDepth: args.maxDepth || DEFAULT_SNAPSHOT_DEPTH,
+            maxNodes: args.maxNodes || DEFAULT_MAX_NODES,
+        });
     }
 
     @utcpTool(
         'componentQuery',
-        'Inspect components in the open scene: read the properties of one component, list registered component class names, or find which nodes carry a component. Prefer find over by_name — it returns node paths, by_name returns bare uuids.',
+        'Inspect components in the open scene: read the properties of one component, list registered component class names, or find which nodes carry a component. Prefer find over by_name — it returns node paths, by_name returns bare uuids. find and classes report truncated when the result was clipped by maxResults.',
         {
             type: 'object',
             properties: {
@@ -42,6 +51,7 @@ export class DeepReadTools {
                 path: { type: 'string', description: 'Node path for props, e.g. Canvas/background' },
                 componentType: { type: 'string', description: 'Component class name, e.g. cc.Sprite — for props / by_name / find' },
                 filter: { type: 'string', description: 'Substring filter for classes' },
+                maxResults: { type: 'number', description: `Cap on returned entries for find / classes, default ${DEFAULT_MAX_RESULTS}` },
             },
             required: ['operation'],
         },
@@ -50,12 +60,13 @@ export class DeepReadTools {
             properties: {
                 result: {},
                 total: { type: 'number' },
+                truncated: { type: 'boolean' },
             },
             required: ['result'],
         },
         'GET', ['component', 'props', 'inspect', 'find', 'classes', 'scene']
     )
-    async componentQuery(args: { operation: string, path?: string, componentType?: string, filter?: string }): Promise<{ result: any, total?: number }> {
+    async componentQuery(args: { operation: string, path?: string, componentType?: string, filter?: string, maxResults?: number }): Promise<{ result: any, total?: number, truncated?: boolean }> {
         switch (args.operation) {
             case 'props': {
                 if (!args.path) { throw new Error('path is required for operation props'); }
@@ -64,6 +75,12 @@ export class DeepReadTools {
             }
             case 'classes': {
                 const names = await sceneScript<string[]>('list-component-classes', args.filter || '');
+                const cap = args.maxResults || DEFAULT_MAX_RESULTS;
+                // Registry co ~800+ class; tra het lam ngop context. Cat + noi ro total that
+                // de agent biet can loc hep hon bang `filter`.
+                if (names.length > cap) {
+                    return { result: names.slice(0, cap), total: names.length, truncated: true };
+                }
                 return { result: names, total: names.length };
             }
             case 'by_name': {
@@ -73,8 +90,11 @@ export class DeepReadTools {
             }
             case 'find': {
                 if (!args.componentType) { throw new Error('componentType is required for operation find'); }
-                const nodes = await sceneScript<any[]>('find-by-component', args.componentType);
-                return { result: nodes, total: (nodes || []).length };
+                const res = await sceneScript<any>('find-by-component', args.componentType, {
+                    maxResults: args.maxResults || DEFAULT_MAX_RESULTS,
+                });
+                const nodes = (res && res.nodes) || [];
+                return { result: nodes, total: nodes.length, truncated: !!(res && res.truncated) };
             }
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);

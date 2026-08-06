@@ -42,6 +42,7 @@ export class SceneReadTools {
                 path: { type: 'string', description: 'Node path for at_path, e.g. Canvas/background' },
                 componentName: { type: 'string', description: 'Component class name for by_component, e.g. cc.Sprite' },
                 maxDepth: { type: 'number', description: `Max depth — hierarchy tree default ${DEFAULT_TREE_DEPTH}, at_path default 3` },
+                maxNodes: { type: 'number', description: 'at_path only: max nodes to walk, default 400' },
                 includeTypes: { type: 'boolean', description: 'dump only: include the class definitions block. Off by default — it is roughly 90% of the payload and is rarely needed to read values.' },
             },
             required: ['operation'],
@@ -56,7 +57,7 @@ export class SceneReadTools {
         },
         'GET', ['scene', 'node', 'hierarchy', 'tree', 'dump', 'inspect']
     )
-    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number, includeTypes?: boolean }): Promise<{ result: any, sceneId?: string }> {
+    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number, maxNodes?: number, includeTypes?: boolean }): Promise<{ result: any, sceneId?: string }> {
         switch (args.operation) {
             case 'tree': {
                 // callback nhan (err, sceneID, hierarchy) — sceneIpc tra array khi >1 gia tri.
@@ -104,7 +105,11 @@ export class SceneReadTools {
             case 'at_path': {
                 // Nguon khac 4 op tren: scene-script (cc.find), khong phai scene panel IPC.
                 if (!args.path) { throw new Error('path is required for operation at_path'); }
-                const node = await sceneScript<any>('node-at-path', { path: args.path, maxDepth: args.maxDepth || 3 });
+                const node = await sceneScript<any>('node-at-path', {
+                    path: args.path,
+                    maxDepth: args.maxDepth || 3,
+                    maxNodes: args.maxNodes || 400,
+                });
                 // cc.find tra null khi khong thay — thong nhat voi dump/info.
                 if (node === null) { throw new Error(`Node not found at path: ${args.path}`); }
                 return { result: node };

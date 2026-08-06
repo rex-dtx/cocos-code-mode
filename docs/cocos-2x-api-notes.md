@@ -556,7 +556,7 @@ Lưu ý: `package.json` của `custom` khai `express: ^5` nhưng cài về **4.2
 6. Vòng 2 undo: `Editor.Undo.add + commit` hay `_Scene.Undo`?
 7. Vòng 2 write meta: qua API `saveMeta` hay ghi thẳng file?
 8. ~~`scene:query-node` `types` 12 class def cho 1 node (~19 KB) — có cách xin dump không kèm `types`?~~ → **resolved: cắt ở tool, không cần API mới** (xem §Vòng 1.1)
-9. `sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). > 50 KB thì hạ default `maxDepth` xuống 4.
+9. ~~`sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). > 50 KB thì hạ default `maxDepth` xuống 4.~~ → **resolved: `maxNodes` 400 chặn theo số node**, không phụ thuộc hình dạng cây (xem §Vòng 1.1 §4). Vẫn nên đo trên scene thật để chốt con số 400.
 10. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
 11. Config panel UI chưa port — vòng 1 server tự start, đọc port ở `settings/cocos-code-mode.json`.
 
@@ -689,7 +689,46 @@ Viết lại: bảng 9 tool × 26 op, bảng 3 đường vào editor (`assetdb` 
 | | Lý do |
 |---|---|
 | Tool write bất kỳ | Cần probe #12/#13/#14 — 2.4.15 không chạy |
-| Hạ default `maxDepth` (Unresolved #9) | Cần đo trên scene production thật, chưa có |
+| Hạ default `maxDepth` (Unresolved #9) | Không cần nữa — `maxNodes` chặn theo số node, xem §4 |
 | Index path cho node trùng tên (#10) | YAGNI, chưa gặp |
 | Config panel UI (#11) | Cần Creator để test |
+
+## 4. Token guard cho scene-script — `maxDepth` một mình không đủ
+
+`sceneSnapshot` là tool "start here", gọi nhiều nhất, và **không có guard nào** — vi phạm rule 4 của plan (mọi tool tree/dump phải có token guard). Testbed 5 node/1980 B nên chưa lộ.
+
+Vấn đề thật: `maxDepth` chặn cây **sâu**, không chặn cây **rộng**. Scene slot production hay là 1 root + hàng nghìn con cùng cấp — `maxDepth: 6` cho qua hết.
+
+Thêm `maxNodes` (default 400), cắt theo **số node đã đi**, độc lập với depth:
+
+| Guard | Chặn gì | Node bị cắt báo |
+|---|---|---|
+| `maxDepth` (6) | cây sâu | `truncated: 'maxDepth'` |
+| `maxNodes` (400) | cây rộng | `truncated: 'nodeLimit'` + `childrenOmitted: n` |
+
+`truncated` đổi từ `true` sang **string lý do** — agent biết nên tăng cái nào. Response thêm `nodesVisited` + `budgetExhausted` để phân biệt cây đủ với cây bị cắt.
+
+Budget **chia chung** cho mọi root, không reset mỗi root — nếu reset thì scene 10 root × 400 = 4000 node, guard vô nghĩa.
+
+Cùng lỗ ở 2 chỗ nữa:
+
+| Tool | Trước | Sau |
+|---|---|---|
+| `nodeQuery at_path` | dùng chung `nodeBrief`, không guard | nhận `maxNodes` |
+| `componentQuery find` | walk toàn cây, trả mọi match | `maxResults` (200) + `truncated` |
+| `componentQuery classes` | trả cả registry ~800 tên | cap 200, `total` vẫn là số thật để agent biết lọc hẹp hơn |
+
+⚠️ `find-by-component` đổi shape trả về: `[...]` → `{nodes, truncated, maxResults}`. Call site trong `deep-read-tools.ts` đã sửa; `result` ra ngoài vẫn là array nên tool contract không đổi.
+
+## 5. Self-check cho budget — `scripts/check-node-budget.js`
+
+`nodeBrief` giờ có 2 nhánh cắt độc lập, không gì test được vì scene-script chỉ chạy trong scene process. Cách vòng qua: `nodeBrief` là **hàm thuần** trên node object — dựng `cc` giả (chỉ `Object.Flags` / `js.getClassName` / `director.getScene`), `require('dist/scene-script.js')`, gọi handler qua `event.reply` giả.
+
+9 check: cây đủ không có cờ · `maxDepth` cắt đúng · `maxNodes` cắt cây rộng · `childrenOmitted + children.length === childrenCount` · budget cạn không để lại `children: []` rỗng · budget chia chung giữa root · default áp dụng khi thiếu opts · editor node bị filter ở root · `nodesVisited` khớp cây trả về.
+
+**Đã mutation-test:** thay `if (budget && budget.left <= 0)` thành `if (false)` trong `dist/` → test đỏ đúng chỗ. Không phải test vacuous.
+
+Nối vào `npm run check`; `npm run package` chạy qua `check` nên không package được bản đỏ.
+
+Không cần Creator để chạy — đây là phần logic duy nhất của scene-script verify được offline.
 

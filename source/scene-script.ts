@@ -62,7 +62,9 @@
 
     // Field liet ke TUONG MINH: node.uuid/name/x/y la getter, Object.keys khong thay
     // (probe phase 3). Enumerate se mat het field public.
-    function nodeBrief(node: any, depth: number, maxDepth: number): any {
+    // `budget` cat theo SO NODE, khong chi theo depth: scene production co the rong
+    // hon la sau (1 root, 2000 con) — maxDepth mot minh khong chan duoc.
+    function nodeBrief(node: any, depth: number, maxDepth: number, budget: any): any {
         const out: any = {
             name: node.name,
             uuid: node.uuid,
@@ -82,10 +84,20 @@
         out.childrenCount = children.length;
         if (children.length === 0) { return out; }
         if (depth >= maxDepth) {
-            out.truncated = true;
+            out.truncated = 'maxDepth';
             return out;
         }
-        out.children = children.map(function (c: any) { return nodeBrief(c, depth + 1, maxDepth); });
+        out.children = [];
+        for (let i = 0; i < children.length; i++) {
+            if (budget && budget.left <= 0) {
+                out.truncated = 'nodeLimit';
+                out.childrenOmitted = children.length - i;
+                if (out.children.length === 0) { delete out.children; }
+                break;
+            }
+            if (budget) { budget.left--; }
+            out.children.push(nodeBrief(children[i], depth + 1, maxDepth, budget));
+        }
         return out;
     }
 
@@ -309,13 +321,23 @@
             if (!scene) { return event.reply(new Error('no scene open')); }
             const raw = opts && opts.maxDepth;
             const depth = (typeof raw === 'number' && raw > 0) ? raw : 6;
+            const rawMax = opts && opts.maxNodes;
+            const maxNodes = (typeof rawMax === 'number' && rawMax > 0) ? rawMax : 400;
+            const budget = { left: maxNodes };
             const roots = (scene.children || []).filter(function (c: any) { return !isEditorNode(c); });
+            const children = roots.map(function (c: any) {
+                budget.left--;
+                return nodeBrief(c, 1, depth, budget);
+            });
             event.reply(null, {
                 name: scene.name,
                 uuid: scene.uuid,
                 designResolution: designResolution(),
                 maxDepth: depth,
-                children: roots.map(function (c: any) { return nodeBrief(c, 1, depth); }),
+                maxNodes: maxNodes,
+                nodesVisited: maxNodes - budget.left,
+                budgetExhausted: budget.left <= 0,
+                children: children,
             });
         },
 
@@ -324,7 +346,9 @@
             const node = cc.find(opts && opts.path);
             const raw = opts && opts.maxDepth;
             const depth = (typeof raw === 'number' && raw > 0) ? raw : 3;
-            event.reply(null, node ? nodeBrief(node, 0, depth) : null);
+            const rawMax = opts && opts.maxNodes;
+            const maxNodes = (typeof rawMax === 'number' && rawMax > 0) ? rawMax : 400;
+            event.reply(null, node ? nodeBrief(node, 0, depth, { left: maxNodes }) : null);
         },
 
         'component-props': function (event: any, path: string, compType: string) {
@@ -357,11 +381,15 @@
 
         // scene:query-nodes-by-comp-name chi tra uuid tran; cai nay tra PATH.
         // Path bat dau tu root node (khong gom ten scene) de dung duoc voi cc.find().
-        'find-by-component': function (event: any, compType: string) {
+        'find-by-component': function (event: any, compType: string, opts: any) {
             const scene = cc.director.getScene();
             if (!scene) { return event.reply(new Error('no scene open')); }
+            const rawMax = opts && opts.maxResults;
+            const maxResults = (typeof rawMax === 'number' && rawMax > 0) ? rawMax : 200;
             const found: any[] = [];
+            let truncated = false;
             function walk(node: any, path: string) {
+                if (found.length >= maxResults) { truncated = true; return; }
                 const p = path ? path + '/' + node.name : node.name;
                 if (node.getComponent && node.getComponent(compType)) {
                     found.push({ path: p, uuid: node.uuid, name: node.name });
@@ -371,7 +399,7 @@
             (scene.children || [])
                 .filter(function (c: any) { return !isEditorNode(c); })
                 .forEach(function (c: any) { walk(c, ''); });
-            event.reply(null, found);
+            event.reply(null, { nodes: found, truncated: truncated, maxResults: maxResults });
         },
 
         'list-component-classes': function (event: any, filter: string) {
