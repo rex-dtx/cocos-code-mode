@@ -13,17 +13,24 @@ nguồn signature machine-readable duy nhất cho 3.7.x.
 
 ---
 
-## Coverage: 112/117 message dùng bởi 59 tool CÓ ở 3.7.3
+## Coverage: 128/132 message dùng bởi 61 tool CÓ ở 3.7.3
+
+⚠️ Bản đầu của doc này ghi **112/117 / 59 tool** — **sai**. Đo lại 2026-08-06 bằng
+`grep` 2-literal `Editor.Message.request` + đối chiếu registry:
 
 | Module | Dùng | Có ở 3.7.3 | Thiếu |
 |---|---|---|---|
-| scene | 84 | 83 | 1 |
-| asset-db | 20 | 19 | 1 |
+| scene | 95 | 95 | 0 |
+| asset-db | 24 | 23 | 1 |
 | builder | 5 | 5 | 0 |
 | program | 3 | 1 | 2 |
 | preview | 2 | 2 | 0 |
 | project | 2 | 1 | 1 |
 | engine | 1 | 1 | 0 |
+| **tổng** | **132** | **128** | **4** |
+
+Con số cũ sót vì đếm trước khi thêm `materialQuery`/`assetDbQuery`/`has_script`, và
+`scene/query-uuid` khi đó còn bị tính là "thiếu" (thực ra là bug sẵn có, xem §2b).
 
 Tin tốt: phần lớn tool surface dùng được. Vấn đề nằm ở **signature**, không phải message vắng mặt.
 
@@ -89,11 +96,23 @@ Shape đa dạng theo version — string uuid hoặc object `{uuid,url,name}` �
 
 ## 3. Việc tiếp theo
 
-1. **Runtime test trên 3.7.3** (`G:\_ws\AI_CC_Test`, đang cài bản 24-tool cũ 18/06) — smoke 61 tool,
-   ghi pass/fail + shape thật. Đây là gate quyết định phạm vi sửa, không đoán tiếp được nữa.
-2. Xử lý 5 message thiếu: bỏ tool hay map thay thế (cần kết quả bước 1).
-3. Cân nhắc viết `@types/editor-3x7.d.ts` tay từ registry — nhưng **chỉ sau** khi runtime test cho
-   biết thực sự lệch bao nhiêu. Viết trước = đoán, giống lỗi rev 1 của bản 2x.
+Runtime test **ĐÃ CHẠY** 2026-08-06 trên Creator 3.7.3 thật — project
+`G:\_ws\cc-fws\cc30-new-all-in-one` (KHÔNG phải `AI_CC_Test` như dự định ban đầu).
+Kết quả: `plans/reports/verifier-260806-1520-3x7-smoke.md`.
+
+| Việc | Trạng thái |
+|---|---|
+| Smoke 61 tool | ✅ phần lớn PASS. `materialQuery` / `assetDbQuery` / `has_script` / `assetGetTree` / `assetQuery` đều chạy đúng trên 3.7.3 |
+| 4 message thiếu | ✅ 3 fix (`4832cf1`), 1 (`query-asset-thumbnail`) chưa verify được |
+| `@types/editor-3x7.d.ts` | ❌ **KHÔNG cần** — chỉ 3 message lệch signature, dưới ngưỡng đáng viết 400 LOC typings. Compat helper try-catch rẻ hơn nhiều |
+| Port fix ngược `custom` | ✅ 8/8 (`6c498c9` + `18b3794`) |
+
+**Còn chặn:** editor chưa reload nên nhóm file đã sửa (`asset-tools`, `scene-tools`,
+`component-tools`, `editor-tools`, `set-properties-tool`, `utcp-server`) chưa test lại được.
+`GET /build-info` là cách xác nhận build nào đang trả lời — 404 = process cũ.
+
+**Đừng file bug khi `/build-info` trả 404.** Bài học đã tốn 1 lượt test: bug được file trên build
+tạo ra TRƯỚC khi fix landed, hoá ra là bug đã không còn tồn tại trong source.
 
 ---
 
@@ -133,12 +152,101 @@ asset query ngay sau `refresh` trả kết quả cũ. `has_script` chặn typo c
 **Kết luận: tool surface đã bão hoà.** Còn ~230 message nhưng gần như toàn bộ là panel-bound,
 internal, hoặc trùng chức năng. Batch sau nên chờ feedback runtime, đừng quét registry tiếp.
 
-## Unresolved
+## 5. Chiến lược branch — option (a) / (b) / (c) là gì
 
-1. 356/416 message không có param doc → signature ẩn số. Chiến lược: compat helper try-catch như
-   `queryAssetsCompat`, hay probe từng cái khi runtime test?
-2. `project/set-config` 3.7.3 map sang gì? `change-script-config` chỉ đổi script config hay cả
-   project config?
+Vấn đề: 3 branch cho 3 version Cocos, cùng 1 codebase gốc, đang trôi xa nhau.
+
+```
+custom  (3.8.x)  18b3794   59 tool   ← đã nhận đủ 8 bug-fix
+cc-3x7  (3.7.x)  e193894   61 tool   ← đang phát triển
+cc-2x   (2.4.x)  78fee04    9 tool   ← kiến trúc KHÁC HẲN, không gộp được
+```
+
+`cc-2x` dùng `Editor.assetdb.*` direct-object + `scene-script.js`, không phải message-async như 3.x
+→ **luôn đứng riêng**, không nằm trong 3 option này. Chỉ bàn `custom` ↔ `cc-3x7`.
+
+### (a) Giữ 2 branch, port tay khi cần
+
+```
+cc-3x7 ──fix──┐
+              ├─ cherry-pick tay từng cái ──► custom
+custom ───────┘
+```
+
+Mỗi bug fix / tool mới phải port tay 2 lần. Đang làm cách này (B3 vừa rồi = 1 lượt port tay).
+**Được:** không cần abstraction, mỗi branch tự do. **Mất:** drift tăng dần, dễ quên port, và
+lần nào cũng phải tự tay verify "branch kia có dính bug này không".
+
+### (b) Gộp 1 branch, dùng compat guard *(khuyến nghị)*
+
+```
+                  ┌─────────────────────────────┐
+   1 branch ──────│  code chung 95%             │
+                  │  + guard tự nhận version:   │
+                  │    try{ msg_3.8 }           │
+                  │    catch{ msg_3.7 }         │──► chạy đúng trên CẢ 3.7.3 và 3.8.x
+                  │    typeof api === 'function'│
+                  └─────────────────────────────┘
+```
+
+**Không phải** viết adapter layer mới — pattern này **đã tồn tại và đã verify runtime**:
+
+| Guard đã có | Cơ chế | Đã chứng minh |
+|---|---|---|
+| `queryAssetsCompat` | try object-arg → catch → string-arg | ✅ chạy đúng trên 3.7.3 |
+| `programOpen` | try `open-program` → catch → `execute` | ✅ 3.7.3 báo missing, fallback hoạt động |
+| `urlOpen` | try `open-url` → catch → `execFile` | ✅ như trên |
+| `assetGetPreview` | `typeof openBeside === 'function'` | ✅ 3.8 có → dùng; 3.7 không → `Panel.open` |
+| `getParent` | xử lý cả string uuid lẫn `{uuid}` | ✅ |
+
+**Bằng chứng mạnh nhất:** cherry-pick 6-bug-fix từ `cc-3x7` sang `custom` **merge sạch, 0 conflict**,
+build exit 0. Hai branch **chưa thực sự phân kỳ về code** — chỉ khác 2 file compat mà bản thân
+chúng tự no-op đúng version. Tức là (b) gần như **đã đạt được rồi**, chỉ thiếu bước gộp.
+
+**Được:** 1 nguồn, fix 1 lần ăn cả 2 version, hết drift.
+**Mất:** mỗi lần đổi phải test 2 editor version. **Nhưng rủi ro này đã hiện hữu** — 8 fix vừa port
+sang `custom` hiện chưa ai chạy trên 3.8.x.
+
+### (c) Freeze `custom`, chỉ dev trên `cc-3x7`
+
+```
+custom  ══╳══ đóng băng ở 3.8.x (không nhận gì mới)
+cc-3x7  ──────────────► phát triển tiếp
+```
+
+**Được:** 1 nơi dev, khớp chỉ đạo "3.8.x tính sau", chi phí thấp nhất **ngay lúc này**.
+**Mất:** 3.8.x đứng yên. Khi nào quay lại 3.8.x thì phải port ngược một lô lớn — đúng cái vừa phải
+làm ở B3, nhưng to hơn nhiều.
+
+### Vì sao đổi khuyến nghị từ (c) sang (b)
+
+Lần đầu đề xuất (c) vì tưởng 2 branch khác nhau đáng kể ("~3 signature"). **Sai.** Sau khi port thật:
+diff `source/` chỉ **7 file**, và **0 file nào là bug lệch** — toàn feature + 2 file compat tự
+no-op. (c) chỉ hoãn chi phí port, không xoá nó; (b) xoá luôn.
+
+Nếu chọn (b), bước kế: merge `cc-3x7` → `custom`, giữ nguyên compat guard, xoá branch `cc-3x7`,
+rồi smoke 1 lượt trên **cả** 3.7.3 và 3.8.x.
+
+---
+
+
+1. 356/416 message không có param doc → signature ẩn số. **Chiến lược đã chốt: compat helper
+   try-catch** như `queryAssetsCompat`. Lý do: 3 drift thật + 3 message vắng mặt đều lộ ra qua lỗi
+   runtime rõ ràng (`Message does not exist: …`, `parameter error` code -1), không cần probe hàng
+   loạt — mà probe hàng loạt còn phải **đoán args hợp lệ** cho message không rõ signature → dễ
+   false-negative (fail vì args sai, không phải vì message thiếu).
+2. ~~`project/set-config` map sang gì~~ → ✅ **RESOLVED: KHÔNG map.** `change-script-config` chỉ đụng
+   script settings; `import-config`/`export-config` chuyển cả file. Không cái nào ghi 1 dotted path.
+   Map bừa = ghi sai key **im lặng**. Đã đổi thành báo unsupported + chỉ workaround (`4832cf1`).
+   Nguyên tắc: **bỏ tool > map sai**.
 3. `sharp 0.30.7` + `express 4` pin cho 3.7.x đã đúng chưa — chưa verify Electron version của 3.7.3.
-4. `scene/query-uuid` là bug sẵn có tồn tại trên cả 3.8.x — nên port fix ngược về branch `custom`
-   không, hay để `custom` tự xử khi quay lại 3.8.x?
+   Bằng chứng gián tiếp: 61 tool load được và trả kết quả trên 3.7.3 → transport (express 4) OK.
+   `sharp` thì chưa chứng minh: nhánh dùng nó (`assetGetPreview`) là cái duy nhất chưa test được.
+4. ~~`scene/query-uuid` nên port ngược về `custom`?~~ → ✅ **RESOLVED: đã port** (`18b3794`).
+   Verify trước khi port: `custom` vẫn còn bug thật. Cùng lượt port luôn 6 bug của `35ec127`
+   (cherry-pick `6c498c9`, merge sạch 0 conflict). **8/8 fix đã sang `custom`, build exit 0, nhưng
+   chưa runtime-test trên 3.8.x** — branch đó không có editor session nào mở.
+5. **Mới:** `custom` ↔ `cc-3x7` sau khi port chỉ còn khác **7 file**, toàn bộ là feature/compat có
+   chủ ý, **không còn bug nào lệch**. Trong đó `program-tools.ts` + `project-tools.ts` là compat
+   3.7.x thuần — cả hai đã tự no-op đúng version bằng `typeof`/try-catch guard. Nghĩa là gộp 1
+   branch khả thi mà không cần abstraction layer. Chờ quyết định.
