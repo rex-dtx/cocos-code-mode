@@ -164,4 +164,56 @@ check('nodesVisited matches the tree actually returned', () => {
     assert.strictEqual(r.nodesVisited, countNodes(r.children[0]));
 });
 
+// --- truncateHierarchy (scene-read-tools.ts) ---
+// Cung quy uoc truncated/childrenOmitted nhung KHAC code path: cai nay cat cay JSON
+// tu scene:query-hierarchy o main process, khong phai node cc.* trong scene process.
+
+/** Node giong shape scene:query-hierarchy tra ve. */
+function makeHNode(name, children) {
+    return { name: name, id: 'id-' + name, children: children || [] };
+}
+
+function buildHTree(depth, branch, prefix) {
+    prefix = prefix || 'h';
+    if (depth === 0) { return makeHNode(prefix, []); }
+    const kids = [];
+    for (let i = 0; i < branch; i++) {
+        kids.push(buildHTree(depth - 1, branch, prefix + '-' + i));
+    }
+    return makeHNode(prefix, kids);
+}
+
+const { truncateHierarchy } = (function () {
+    const p = path.join(__dirname, '..', 'dist', 'utcp', 'tools-2x', 'scene-read-tools.js');
+    delete require.cache[require.resolve(p)];
+    // File chay decorator @utcpTool luc load -> can `Editor` global toi thieu.
+    global.Editor = global.Editor || { log: () => {}, warn: () => {}, error: () => {} };
+    return require(p);
+})();
+
+assert.strictEqual(typeof truncateHierarchy, 'function',
+    'scene-read-tools.js phai export truncateHierarchy — check nay khong duoc skip im lang');
+
+check('truncateHierarchy: maxNodes clips a wide tree', () => {
+    const wide = makeHNode('root', Array.from({ length: 300 }, (_, i) => makeHNode('c' + i, [])));
+    const r = truncateHierarchy(wide, 10, { left: 40 });
+    assert.strictEqual(r.truncated, 'nodeLimit');
+    assert.strictEqual(r.childrenCount, 300);
+    assert.strictEqual((r.children || []).length + r.childrenOmitted, 300);
+});
+
+check('truncateHierarchy: maxDepth reports reason string', () => {
+    const deep = buildHTree(3, 2);
+    const r = truncateHierarchy(deep, 2, { left: 1000 });
+    assert.strictEqual(r.children[0].children[0].truncated, 'maxDepth');
+});
+
+check('truncateHierarchy: complete tree carries no truncation flag', () => {
+    const small = buildHTree(2, 2);
+    const r = truncateHierarchy(small, 10, { left: 1000 });
+    assert.strictEqual(r.truncated, undefined);
+    assert.strictEqual(r.children.length, 2);
+    assert.strictEqual(r.childrenOmitted, undefined);
+});
+
 console.log('\n' + passed + ' checks passed');

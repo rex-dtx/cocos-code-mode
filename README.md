@@ -50,9 +50,11 @@ Tree and list results are capped, because an agent asking for "the scene" on a r
 
 | Tool | Limit | Default | Reported as |
 |---|---|---|---|
-| `sceneSnapshot`, `nodeQuery at_path` | `maxDepth` — how deep | 6 / 3 | `truncated: 'maxDepth'` on the node |
-| `sceneSnapshot`, `nodeQuery at_path` | `maxNodes` — how many | 400 | `truncated: 'nodeLimit'`, `childrenOmitted`, plus `nodesVisited` / `budgetExhausted` on the response |
+| `sceneSnapshot`, `nodeQuery tree` / `at_path` | `maxDepth` — how deep | 6 / 6 / 3 | `truncated: 'maxDepth'` on the node |
+| `sceneSnapshot`, `nodeQuery tree` / `at_path` | `maxNodes` — how many | 400 | `truncated: 'nodeLimit'`, `childrenOmitted`, plus `nodesVisited` / `budgetExhausted` on the response |
 | `componentQuery find`, `classes` | `maxResults` | 200 | `truncated: true`, with `total` still the real count |
+| `assetQuery search` | `limit` | 200 | `truncated: true`, with `total` the real count |
+| `assetReadContent` | `maxBytes` + text-extension allowlist | 512 KB | throws rather than truncating |
 | `nodeQuery dump` | `types` block dropped | — | `typesOmitted: [...]`, pass `includeTypes` to get it |
 
 `maxDepth` alone is not enough: a slot scene is often one root with a thousand siblings, which no depth limit bounds. `maxNodes` is a single budget shared across all roots.

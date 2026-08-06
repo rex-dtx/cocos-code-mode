@@ -710,13 +710,16 @@ Thêm `maxNodes` (default 400), cắt theo **số node đã đi**, độc lập 
 
 Budget **chia chung** cho mọi root, không reset mỗi root — nếu reset thì scene 10 root × 400 = 4000 node, guard vô nghĩa.
 
-Cùng lỗ ở 2 chỗ nữa:
+Cùng lỗ ở 3 chỗ nữa:
 
 | Tool | Trước | Sau |
 |---|---|---|
+| `nodeQuery tree` | `truncateHierarchy` chỉ chặn depth | nhận `maxNodes`, trả `nodesVisited`/`budgetExhausted` |
 | `nodeQuery at_path` | dùng chung `nodeBrief`, không guard | nhận `maxNodes` |
 | `componentQuery find` | walk toàn cây, trả mọi match | `maxResults` (200) + `truncated` |
 | `componentQuery classes` | trả cả registry ~800 tên | cap 200, `total` vẫn là số thật để agent biết lọc hẹp hơn |
+
+`nodeQuery tree` và `sceneSnapshot` là **2 code path khác nhau** cho cùng một việc: `tree` cắt cây JSON từ `scene:query-hierarchy` ở main process, `sceneSnapshot` walk node `cc.*` trong scene process. Cả 2 giờ cùng quy ước `truncated`/`childrenOmitted` — agent không phải học 2 kiểu.
 
 ⚠️ `find-by-component` đổi shape trả về: `[...]` → `{nodes, truncated, maxResults}`. Call site trong `deep-read-tools.ts` đã sửa; `result` ra ngoài vẫn là array nên tool contract không đổi.
 
@@ -724,9 +727,11 @@ Cùng lỗ ở 2 chỗ nữa:
 
 `nodeBrief` giờ có 2 nhánh cắt độc lập, không gì test được vì scene-script chỉ chạy trong scene process. Cách vòng qua: `nodeBrief` là **hàm thuần** trên node object — dựng `cc` giả (chỉ `Object.Flags` / `js.getClassName` / `director.getScene`), `require('dist/scene-script.js')`, gọi handler qua `event.reply` giả.
 
-9 check: cây đủ không có cờ · `maxDepth` cắt đúng · `maxNodes` cắt cây rộng · `childrenOmitted + children.length === childrenCount` · budget cạn không để lại `children: []` rỗng · budget chia chung giữa root · default áp dụng khi thiếu opts · editor node bị filter ở root · `nodesVisited` khớp cây trả về.
+9 check cho `nodeBrief` (scene-script): cây đủ không có cờ · `maxDepth` cắt đúng · `maxNodes` cắt cây rộng · `childrenOmitted + children.length === childrenCount` · budget cạn không để lại `children: []` rỗng · budget chia chung giữa root · default áp dụng khi thiếu opts · editor node bị filter ở root · `nodesVisited` khớp cây trả về.
 
-**Đã mutation-test:** thay `if (budget && budget.left <= 0)` thành `if (false)` trong `dist/` → test đỏ đúng chỗ. Không phải test vacuous.
+3 check cho `truncateHierarchy` (scene-read-tools, code path khác): `maxNodes` cắt cây rộng · `maxDepth` trả lý do dạng string · cây đủ không có cờ. Hàm này phải `export` để test được — nếu ai bỏ export, assert đầu file đỏ chứ không skip im lặng.
+
+**Đã mutation-test cả 2:** thay điều kiện budget thành `if (false)` trong `dist/` → test đỏ đúng chỗ. Không phải test vacuous.
 
 Nối vào `npm run check`; `npm run package` chạy qua `check` nên không package được bản đỏ.
 

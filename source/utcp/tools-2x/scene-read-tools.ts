@@ -2,6 +2,7 @@ import { utcpTool } from '../decorators';
 import { sceneIpc, sceneScript } from '../utils/ipc-promise';
 
 const DEFAULT_TREE_DEPTH = 6;
+const DEFAULT_MAX_NODES = 400;
 
 function requireUuid(args: { uuid?: string }, operation: string): string {
     if (!args.uuid) { throw new Error(`uuid is required for operation ${operation}`); }
@@ -9,10 +10,16 @@ function requireUuid(args: { uuid?: string }, operation: string): string {
 }
 
 /**
- * Cat cay hierarchy theo depth. Shape thuc te tu scene:query-hierarchy —
+ * Cat cay hierarchy theo depth VA so node. Shape thuc te tu scene:query-hierarchy —
  * xem docs/cocos-2x-api-notes.md §phase 5.
+ *
+ * Cung quy uoc voi nodeBrief trong scene-script.ts: `truncated` la LY DO
+ * ('maxDepth' | 'nodeLimit'), `childrenOmitted` dem con bi bo. Depth mot minh khong
+ * chan duoc cay rong (1 root, 2000 con cung cap).
  */
-function truncateHierarchy(node: any, maxDepth: number, depth: number = 0): any {
+// Export de scripts/check-node-budget.js verify duoc logic cat cay (2 nhanh doc lap,
+// khong test thi de vo tinh pha).
+export function truncateHierarchy(node: any, maxDepth: number, budget: { left: number }, depth: number = 0): any {
     if (!node || typeof node !== 'object') { return node; }
     const children: any[] = Array.isArray(node.children) ? node.children : [];
     const out: any = { ...node, childrenCount: children.length };
@@ -22,10 +29,20 @@ function truncateHierarchy(node: any, maxDepth: number, depth: number = 0): any 
     }
     if (depth >= maxDepth) {
         delete out.children;
-        out.truncated = true;
+        out.truncated = 'maxDepth';
         return out;
     }
-    out.children = children.map((c) => truncateHierarchy(c, maxDepth, depth + 1));
+    out.children = [];
+    for (let i = 0; i < children.length; i++) {
+        if (budget.left <= 0) {
+            out.truncated = 'nodeLimit';
+            out.childrenOmitted = children.length - i;
+            if (out.children.length === 0) { delete out.children; }
+            break;
+        }
+        budget.left--;
+        out.children.push(truncateHierarchy(children[i], maxDepth, budget, depth + 1));
+    }
     return out;
 }
 
@@ -42,7 +59,7 @@ export class SceneReadTools {
                 path: { type: 'string', description: 'Node path for at_path, e.g. Canvas/background' },
                 componentName: { type: 'string', description: 'Component class name for by_component, e.g. cc.Sprite' },
                 maxDepth: { type: 'number', description: `Max depth — hierarchy tree default ${DEFAULT_TREE_DEPTH}, at_path default 3` },
-                maxNodes: { type: 'number', description: 'at_path only: max nodes to walk, default 400' },
+                maxNodes: { type: 'number', description: `Max nodes to walk for tree / at_path, default ${DEFAULT_MAX_NODES}. Guards wide scenes that maxDepth alone does not bound.` },
                 includeTypes: { type: 'boolean', description: 'dump only: include the class definitions block. Off by default — it is roughly 90% of the payload and is rarely needed to read values.' },
             },
             required: ['operation'],
@@ -52,22 +69,33 @@ export class SceneReadTools {
             properties: {
                 result: {},
                 sceneId: { type: 'string' },
+                maxNodes: { type: 'number' },
+                nodesVisited: { type: 'number' },
+                budgetExhausted: { type: 'boolean' },
             },
             required: ['result'],
         },
         'GET', ['scene', 'node', 'hierarchy', 'tree', 'dump', 'inspect']
     )
-    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number, maxNodes?: number, includeTypes?: boolean }): Promise<{ result: any, sceneId?: string }> {
+    async nodeQuery(args: { operation: string, uuid?: string, path?: string, componentName?: string, maxDepth?: number, maxNodes?: number, includeTypes?: boolean }): Promise<{ result: any, sceneId?: string, maxNodes?: number, nodesVisited?: number, budgetExhausted?: boolean }> {
         switch (args.operation) {
             case 'tree': {
                 // callback nhan (err, sceneID, hierarchy) — sceneIpc tra array khi >1 gia tri.
                 const raw = await sceneIpc<any>('scene:query-hierarchy');
                 const [sceneId, hierarchy] = Array.isArray(raw) ? raw : [undefined, raw];
                 const maxDepth = args.maxDepth || DEFAULT_TREE_DEPTH;
+                const maxNodes = args.maxNodes || DEFAULT_MAX_NODES;
+                const budget = { left: maxNodes };
                 const result = Array.isArray(hierarchy)
-                    ? hierarchy.map((n) => truncateHierarchy(n, maxDepth))
-                    : truncateHierarchy(hierarchy, maxDepth);
-                return { result, sceneId };
+                    ? hierarchy.map((n) => { budget.left--; return truncateHierarchy(n, maxDepth, budget); })
+                    : truncateHierarchy(hierarchy, maxDepth, budget);
+                return {
+                    result,
+                    sceneId,
+                    maxNodes,
+                    nodesVisited: maxNodes - budget.left,
+                    budgetExhausted: budget.left <= 0,
+                };
             }
             case 'dump': {
                 // scene:query-node tra STRING, khong phai object.
