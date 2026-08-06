@@ -148,15 +148,13 @@ export class UtcpServerManager {
                 manual_version: "1.0.0",
                 tools: utcpTools
             };
-            // Non-standard field. UTCP clients that don't know it ignore it, but it
-            // lets a caller tell which build answered — the alternative is reading
-            // the editor log, which a remote client cannot do.
-            (manual as any).build_info = getBuildInfo();
+            // Do NOT add fields here. The UTCP SDK validates the manual with a strict
+            // schema: an extra key fails registration for EVERY tool, not just itself.
+            // Build provenance lives on /build-info below for exactly this reason.
             res.json(manual);
         });
 
-        // Provenance on its own endpoint, for a cheap staleness check that doesn't
-        // pull the whole tool manual.
+        // Provenance on its own endpoint, out of the manual's strict schema.
         this.app.get('/build-info', (req, res) => {
             res.json(getBuildInfo());
         });
