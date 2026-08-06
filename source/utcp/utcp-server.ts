@@ -18,6 +18,7 @@ import './tools/material-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
+import { getBuildInfo } from '../build-info';
 
 export class UtcpServerManager {
     private app: express.Application;
@@ -143,7 +144,17 @@ export class UtcpServerManager {
                 manual_version: "1.0.0",
                 tools: utcpTools
             };
+            // Non-standard field. UTCP clients that don't know it ignore it, but it
+            // lets a caller tell which build answered — the alternative is reading
+            // the editor log, which a remote client cannot do.
+            (manual as any).build_info = getBuildInfo();
             res.json(manual);
+        });
+
+        // Provenance on its own endpoint, for a cheap staleness check that doesn't
+        // pull the whole tool manual.
+        this.app.get('/build-info', (req, res) => {
+            res.json(getBuildInfo());
         });
     }
 

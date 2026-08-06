@@ -7,7 +7,7 @@
   "editor": ">=3.7.0",
   "scripts": {
     "preinstall": "node ./scripts/preinstall.js",
-    "build": "npx tsc",
+    "build": "node ./scripts/generate-build-info.js && npx tsc",
     "package": "npm run build && node ./scripts/package.js"
   },
   "description": "i18n:cocos-code-mode.description",

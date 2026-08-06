@@ -1,6 +1,7 @@
 import packageJSON from '../package.json';
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
+import { formatBuildInfo } from './build-info';
 
 let utcpServer: UtcpServerManager | null = null;
 
@@ -35,6 +36,10 @@ export const methods: { [key: string]: (...any: any) => any } = {
 };
 
 export async function load() {
+    // Log provenance before anything else: if the editor is running a stale dist/,
+    // this is the line that says so.
+    console.log(`[${packageJSON.name}] build ${formatBuildInfo()}`);
+
     // Initialize config manager
     const configManager = getConfigManager();
     await configManager.initialize();
