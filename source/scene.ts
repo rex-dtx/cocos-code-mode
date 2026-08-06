@@ -73,13 +73,27 @@ export const methods = {
     },
 
     async captureScreenshot(
-        imageSize: { width: number, height: number } = { width: 512, height: 512 }, 
+        imageSize: { width: number, height: number } = { width: 512, height: 512 },
         jpegQuality: number = 80,
         cameraPosition?: { x: number, y: number, z: number },
         targetPosition?: { x: number, y: number, z: number },
         orthographic: boolean = false,
         orthographicSize: number = 10
     ): Promise<string> {
+        // A bare number (or any non-{width,height} shape) used to reach root.resize()
+        // as undefined, producing a 0x0 canvas whose toDataURL() is the string
+        // "data:," — which then shipped as a valid-looking but empty JPEG. Fail
+        // loudly instead, and accept the square-size shorthand while we're here.
+        if (typeof imageSize === 'number') {
+            imageSize = { width: imageSize, height: imageSize };
+        }
+        const width = Math.floor(imageSize?.width ?? 0);
+        const height = Math.floor(imageSize?.height ?? 0);
+        if (!(width > 0) || !(height > 0)) {
+            throw new Error(`captureScreenshot: imageSize must be {width,height} with positive values, got ${JSON.stringify(imageSize)}`);
+        }
+        imageSize = { width, height };
+
         return new Promise((resolve, reject) => {
             const cce = (globalThis as any)['cce'];
             const cc = (globalThis as any)['cc'];

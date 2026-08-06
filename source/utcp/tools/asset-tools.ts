@@ -24,6 +24,28 @@ async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }
     return Array.isArray(result) ? result : [];
 }
 
+// asset-db's move/copy/delete handlers only accept db:// urls, but every tool here
+// hands back references keyed by uuid — so feeding a returned reference straight
+// into assetOperate failed with "URL must begin with db://". Resolve either form.
+async function toAssetUrl(id: string): Promise<string> {
+    if (!id) {
+        throw new Error('Asset reference id is empty');
+    }
+    if (id.startsWith('db://')) {
+        return id;
+    }
+    // Sub-asset uuids (uuid@subid) resolve through their parent file.
+    const info = await Editor.Message.request('asset-db', 'query-asset-info', id).catch(() => null);
+    if (info?.url) {
+        return info.url;
+    }
+    const url = await Editor.Message.request('asset-db', 'query-url', id).catch(() => null);
+    if (url) {
+        return url as string;
+    }
+    throw new Error(`Cannot resolve asset reference '${id}' to a db:// url — no asset with that uuid or path.`);
+}
+
 function normalizePath(p?: string): string {
     if (!p) return 'db://assets';
     let path = p.replace(/\\/g, '/').trim();
@@ -597,27 +619,32 @@ export class AssetTools {
             rename: args.options?.rename ?? false
         };
 
+        // Accept both a uuid (what every other tool returns) and a db:// url.
+        const sourceUrl = await toAssetUrl(args.reference.id);
+        // normalizePath(undefined) yields 'db://assets', which would silently turn a
+        // missing target into "move to the assets root" — check before normalizing.
+        const hasTarget = !!args.targetAssetPath;
         args.targetAssetPath = normalizePath(args.targetAssetPath);
         let result: AssetInfo | null = null;
 
         switch (args.operation) {
             case 'move':
-                if (!args.targetAssetPath) {
-                    throw new Error('Target is required for move');
+                if (!hasTarget) {
+                    throw new Error('targetAssetPath is required for move');
                 }
 
-                result = await Editor.Message.request('asset-db', 'move-asset', args.reference.id, args.targetAssetPath, assetOptions);
+                result = await Editor.Message.request('asset-db', 'move-asset', sourceUrl, args.targetAssetPath, assetOptions);
                 break;
 
             case 'copy':
-                if (!args.targetAssetPath) {
-                    throw new Error('Target is required for copy');
+                if (!hasTarget) {
+                    throw new Error('targetAssetPath is required for copy');
                 }
-                result = await Editor.Message.request('asset-db', 'copy-asset', args.reference.id, args.targetAssetPath, assetOptions);
+                result = await Editor.Message.request('asset-db', 'copy-asset', sourceUrl, args.targetAssetPath, assetOptions);
                 break;
 
             case 'delete':
-                result = await Editor.Message.request('asset-db', 'delete-asset', args.reference.id);
+                result = await Editor.Message.request('asset-db', 'delete-asset', sourceUrl);
                 break;
 
             case 'open':
@@ -626,18 +653,25 @@ export class AssetTools {
                 break;
 
             case 'refresh':
-                await Editor.Message.request('asset-db', 'refresh-asset', args.reference.id);
+                await Editor.Message.request('asset-db', 'refresh-asset', sourceUrl);
                 result = null;
                 break;
             case 'reimport':
-                await Editor.Message.request('asset-db', 'reimport-asset', args.reference.id);
+                await Editor.Message.request('asset-db', 'reimport-asset', sourceUrl);
                 result = null;
                 break;
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);
         }
 
-        return { reference: { id: result?.uuid ?? '', type: result?.type ?? '' } };
+        // delete/open/refresh/reimport return no AssetInfo — echo the source asset
+        // back (the documented contract) instead of an empty reference.
+        return {
+            reference: {
+                id: result?.uuid ?? args.reference.id,
+                type: result?.type ?? args.reference.type ?? ''
+            }
+        };
     }
 
     @utcpTool(
@@ -748,8 +782,16 @@ export class AssetTools {
             }
         }
 
-        // Open panel to ensure renderer process is alive
-        await Editor.Panel.openBeside('scene', `${packageJSON.name}.preview`);
+        // Open panel to ensure renderer process is alive.
+        // 3.8.x has Editor.Panel.openBeside; 3.7.3 does not (calling it throws
+        // "is not a function" and takes down every preview). open() exists in both.
+        const previewPanel = `${packageJSON.name}.preview`;
+        const panelApi = Editor.Panel as any;
+        if (typeof panelApi.openBeside === 'function') {
+            await panelApi.openBeside('scene', previewPanel);
+        } else {
+            await Editor.Panel.open(previewPanel);
+        }
 
         let base64Image: string;
         try {
@@ -757,7 +799,7 @@ export class AssetTools {
             base64Image = await Editor.Message.request(packageJSON.name, 'generate-preview', args.reference.id, args.imageSize || 512, args.imageSize || 512, (args.jpegQuality || 80) / 100);
         } finally {
             // Close panel
-            await Editor.Panel.close(`${packageJSON.name}.preview`);
+            await Editor.Panel.close(previewPanel);
         }
 
         if (!base64Image) {

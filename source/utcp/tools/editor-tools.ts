@@ -562,11 +562,24 @@ export class EditorTools {
         orthographicSize?: number
     }): Promise<IBase64Image> {
 
+        // Callers routinely pass imageSize: 256 (the shape assetGetPreview takes).
+        // That used to reach the canvas as a 0x0 resize and yield an empty "data:,".
+        const rawSize: any = args.imageSize;
+        const imageSize = typeof rawSize === 'number'
+            ? { width: rawSize, height: rawSize }
+            : (rawSize ?? { width: 512, height: 512 });
+
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: packageJSON.name,
             method: 'captureScreenshot',
-            args: [args.imageSize ?? { width: 512, height: 512 }, args.jpegQuality ?? 80, args.cameraPosition , args.targetPosition, args.orthographic ?? false, args.orthographicSize ?? 10]
+            args: [imageSize, args.jpegQuality ?? 80, args.cameraPosition , args.targetPosition, args.orthographic ?? false, args.orthographicSize ?? 10]
         });
+
+        // JPEG base64 always begins /9j/. Anything else (notably "data:," from a
+        // zero-sized canvas) is a failed capture masquerading as an image.
+        if (typeof result !== 'string' || !result.startsWith('/9j/')) {
+            throw new Error(`Scene preview capture returned no image data (got ${JSON.stringify(String(result).slice(0, 32))}). The scene view may not be rendering.`);
+        }
 
         return { type: 'image', data: result, mimeType: 'image/jpeg' };
     }
