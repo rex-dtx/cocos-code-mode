@@ -49,15 +49,15 @@ This extension architecture follows a **discover, then act** pattern. AI agents 
 
 ```typescript
 // Find the camera node
-const tree = CocosEditor.nodeGetTree({});
+const tree = CocosEditor3x7.nodeGetTree({});
 const cameraRef = tree.children[0].components[0]; // component reference
 
 // Discover what properties Camera has
-const def = CocosEditor.inspectorGetInstanceDefinition({ reference: cameraRef });
+const def = CocosEditor3x7.inspectorGetInstanceDefinition({ reference: cameraRef });
 // → "export class Camera { fov: number; near: number; far: number; ... }"
 
 // Set multiple properties in one call
-CocosEditor.inspectorSetInstanceProperties({
+CocosEditor3x7.inspectorSetInstanceProperties({
   reference: cameraRef,
   propertyPaths: ["fov", "near", "far"],
   values: [60, 0.1, 1000]
@@ -201,7 +201,7 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension automatically maintains a `CocosEditor` entry in UTCP Config pointing to the running server port.
+The extension automatically maintains a `CocosEditor3x7` entry in UTCP Config pointing to the running server port.
 
 ## Integration
 

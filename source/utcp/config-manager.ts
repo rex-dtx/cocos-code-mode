@@ -84,24 +84,24 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const idx = templates.findIndex((t: any) => t.name === 'CocosEditor');
+        const idx = templates.findIndex((t: any) => t.name === 'CocosEditor3x7');
 
         let changed = false;
         if (idx === -1) {
             templates.push({
-                name: 'CocosEditor',
+                name: 'CocosEditor3x7',
                 call_template_type: 'http',
                 url: expectedUrl,
                 http_method: 'GET',
                 content_type: 'application/json',
             });
             changed = true;
-            console.log(`[UtcpConfigManager] Created CocosEditor template with port ${port}`);
+            console.log(`[UtcpConfigManager] Created CocosEditor3x7 template with port ${port}`);
         } else {
             if (templates[idx].url !== expectedUrl) {
                 templates[idx].url = expectedUrl;
                 changed = true;
-                console.log(`[UtcpConfigManager] Updated CocosEditor template port to ${port}`);
+                console.log(`[UtcpConfigManager] Updated CocosEditor3x7 template port to ${port}`);
             }
         }
 

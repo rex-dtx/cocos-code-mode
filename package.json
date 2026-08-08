@@ -1,16 +1,16 @@
 {
   "$schema": "./@types/schema/package/index.json",
   "package_version": 2,
-  "name": "cocos-code-mode",
+  "name": "cocos-code-mode-3x7",
   "version": "1.0.0",
-  "author": "Roman Rogov",
+  "author": "cst by hzi for cc3.7",
   "editor": ">=3.7.0",
   "scripts": {
     "preinstall": "node ./scripts/preinstall.js",
     "build": "node ./scripts/generate-build-info.js && npx tsc",
     "package": "npm run build && node ./scripts/package.js"
   },
-  "description": "i18n:cocos-code-mode.description",
+  "description": "i18n:cocos-code-mode-3x7.description",
   "main": "./dist/main.js",
   "dependencies": {
     "@types/sharp": "^0.31.1",
@@ -61,8 +61,8 @@
     },
     "menu": [
       {
-        "path": "Code Mode",
-        "label": "i18n:cocos-code-mode.open_panel",
+        "path": "Code Mode (3.7)",
+        "label": "i18n:cocos-code-mode-3x7.open_panel",
         "message": "open-panel"
       }
     ],
@@ -97,5 +97,5 @@
   "creator": {
     "version": "3.8.7"
   },
-  "uuid": "b401b190-c2a1-4149-9250-a0ed22e1968b"
+  "uuid": "cc7a19e1-e3e4-4bad-ae81-f9498fa781fc"
 }
