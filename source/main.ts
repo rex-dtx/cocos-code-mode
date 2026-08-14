@@ -2,6 +2,7 @@ import packageJSON from '../package.json';
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo } from './build-info';
+import { exec } from 'child_process';
 
 let utcpServer: UtcpServerManager | null = null;
 
@@ -24,7 +25,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
             try {
                 const actualPort = await utcpServer.start(newPort);
                 console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
-                
+
                 // Используем менеджер конфигурации для обновления порта
                 const configManager = getConfigManager();
                 await configManager.updatePort(actualPort);
@@ -32,6 +33,32 @@ export const methods: { [key: string]: (...any: any) => any } = {
                 console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
             }
         }
+    },
+
+    toggleDebug() {
+        if (!utcpServer) return;
+        const enabled = utcpServer.toggleDebug();
+        const status = enabled ? 'ON' : 'OFF';
+        console.log(`[${packageJSON.name}] Debug logging ${status}`);
+        // ponytail: toast notification via Editor.Dialog is heavy; console.log is enough for a dev toggle
+    },
+
+    openDebugLogs() {
+        if (!utcpServer) return;
+        const logFile = utcpServer.getDebugLogFile();
+        if (!logFile) {
+            console.warn(`[${packageJSON.name}] No debug log file found. Enable debug first.`);
+            return;
+        }
+        // ponytail: cross-platform open — works on Windows/macOS/Linux
+        const cmd = process.platform === 'win32'
+            ? `start "" "${logFile}"`
+            : process.platform === 'darwin'
+                ? `open "${logFile}"`
+                : `xdg-open "${logFile}"`;
+        exec(cmd, (err) => {
+            if (err) console.error(`[${packageJSON.name}] Failed to open log file:`, err.message);
+        });
     }
 };
 

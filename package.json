@@ -64,6 +64,16 @@
         "path": "Code Mode (3.7)",
         "label": "i18n:cocos-code-mode-3x7.open_panel",
         "message": "open-panel"
+      },
+      {
+        "path": "Code Mode (3.7)/Debug",
+        "label": "Toggle Debug Logging",
+        "message": "toggle-debug"
+      },
+      {
+        "path": "Code Mode (3.7)/Debug",
+        "label": "Open Debug Logs",
+        "message": "open-debug-logs"
       }
     ],
     "messages": {
@@ -90,6 +100,16 @@
       "restart-server": {
         "methods": [
           "restartServer"
+        ]
+      },
+      "toggle-debug": {
+        "methods": [
+          "toggleDebug"
+        ]
+      },
+      "open-debug-logs": {
+        "methods": [
+          "openDebugLogs"
         ]
       }
     }
