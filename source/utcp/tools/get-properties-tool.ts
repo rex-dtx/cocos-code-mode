@@ -16,11 +16,18 @@ export class GetPropertiesTool {
 
     @utcpTool(
         "inspectorGetInstanceProperties",
-        "Gets plain object of properties, with no serialization info for any instance (scene node, component, asset).",
-        { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
+        "Get properties of an instance (node, component, asset). Pass fields[] to request only specific top-level keys instead of full dump.",
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                fields: { type: 'array', items: { type: 'string' }, description: 'Optional: only return these top-level property keys. Omit for full dump.' }
+            },
+            required: ['reference']
+        },
         { type: 'object', properties: { dump: { type: 'object' } }, required: ['dump'] }, "GET",  ['inspect', 'properties', 'dump', 'instance', 'node', 'component', 'asset', 'data']
     )
-    async inspectorGetProperties(args: { reference: IInstanceReference }): Promise<{ dump: any }> {
+    async inspectorGetProperties(args: { reference: IInstanceReference, fields?: string[] }): Promise<{ dump: any }> {
         const info = await ToolsUtils.inspectInstance(args.reference.id);
         if (!info) {
             throw new Error(`Target ${args.reference.id} not found or not supported.`);
@@ -31,7 +38,19 @@ export class GetPropertiesTool {
             throw new Error(`Could not retrieve properties for ${type} (${args.reference.id}).`);
         }
 
-        const parsedProps = ToolsUtils.unwrapProperties(props);
+        // ponytail: selective unwrap — when fields specified, filter raw props BEFORE
+        // unwrapping so we skip expensive recursive unwrap on unwanted subtrees.
+        let filteredProps = props;
+        if (args.fields && args.fields.length > 0) {
+            filteredProps = {};
+            for (const key of args.fields) {
+                if (key in props) {
+                    filteredProps[key] = props[key];
+                }
+            }
+        }
+
+        const parsedProps = ToolsUtils.unwrapProperties(filteredProps);
 
         return { dump: parsedProps };
     }
