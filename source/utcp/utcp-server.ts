@@ -16,6 +16,7 @@ import './tools/animation-tools';
 import './tools/property-array-tools';
 import './tools/material-tools';
 import { registerAllImporters } from './utils/asset-importers';
+import { slimOutputsSchema } from './utils/schema-slimmer';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
@@ -121,6 +122,11 @@ export class UtcpServerManager {
             }
 
             const toolDef = JSON.parse(JSON.stringify(toolMeta.tool));
+            // ponytail: slim outputs schema to top-level keys only; nested detail is token bloat.
+            // Inputs schemas stay intact — Claude needs full param shape to call correctly.
+            if (toolDef.outputs) {
+                toolDef.outputs = slimOutputsSchema(toolDef.outputs);
+            }
             const toolUrlPath = toolDef.tool_call_template.url;
 
             toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;

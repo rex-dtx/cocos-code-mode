@@ -40,7 +40,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorViewport',
-        'Control the editor scene viewport: focus camera on nodes, switch 2D/3D mode, show/hide grid, size component icon gizmos, set gizmo tool/pivot/coordinate space, align view or nodes. "query_viewport" reads back the 2D-mode, grid and icon-gizmo state; "query_gizmo" reads the gizmo tool/pivot/coordinate. Useful to frame nodes before taking a screenshot with editorGetScenePreview.',
+        'Control scene viewport: focus camera, toggle 2D/grid/gizmos, query state, align view or nodes.',
         {
             type: 'object',
             properties: {
@@ -144,7 +144,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorSelect',
-        'Select, deselect, clear or query the editor selection for nodes or assets. Selecting a node reveals it in the hierarchy/inspector and enables align operations in editorViewport. "select_all" selects every node of the current scene (nodes only).',
+        'Select, deselect, clear or query editor selection for nodes or assets.',
         {
             type: 'object',
             properties: {
@@ -206,7 +206,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorListTypes',
-        'Enumerate the type vocabularies of the editor: "creatable_assets" (preset names accepted by assetCreate in THIS editor version - check before creating an unusual asset type), "asset_types" (all cc.* asset class names known to the asset database, e.g. cc.Prefab, cc.SpriteFrame - use as ccType filter in assetQuery), "importers" (all registered importer names - use as importer filter in assetQuery).',
+        'List editor type vocabularies: creatable_assets, asset_types (cc.* names for ccType filter), importers (for importer filter).',
         {
             type: 'object',
             properties: {
@@ -251,7 +251,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorIntrospect',
-        'Introspect the editor/scene state that is not visible from node data. "scene_mode" tells whether the scene view currently edits a scene, a prefab, an animation or a preview - CRITICAL before mutating, because edits in prefab mode go into the prefab asset, not the scene. "ready" reports whether the scene is done loading (poll after sceneOpen). "enum_values" lists the legal values of an enum property (pass the enum path from the property dump) so a setter cannot be called with an invalid number. "layers" / "sorting_layers" list the project-defined layer vocabularies. "script_info" resolves a script asset uuid to its class name and cid. "has_script" asks whether a component class name is registered at all - check this before addComponent or callComponentMethod rather than discovering the typo from a runtime failure.',
+        'Query editor state: scene_mode, ready (post-open), enum_values, layers, sorting_layers, script_info, has_script.',
         {
             type: 'object',
             properties: {
@@ -340,7 +340,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorOperate',
-        'Common editor operations for scene and prefab view, game preview controls and asset database refresh. "save_as" saves the current scene to a new asset (the editor opens a file dialog and returns the new uuid). "soft_reload" reloads the scene in place - use it after scripts were recompiled so the scene picks up changed component classes.',
+        'Editor operations: save/close scene or prefab, soft_reload (post-recompile), preview controls, refresh asset-db.',
         {
             type: 'object',
             properties: {
@@ -538,7 +538,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorGetScenePreview',
-        'Returns preview image of scene view. IMPORTANT: To visualize the image, you must return the result of this function DIRECTLY as the final value of your code, do NOT wrap it in an object.',
+        'Scene preview image. Return result directly to visualize — do NOT wrap in object.',
         {
             type: 'object',
             properties: {

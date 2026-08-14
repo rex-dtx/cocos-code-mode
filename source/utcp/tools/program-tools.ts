@@ -5,7 +5,7 @@ export class ProgramTools {
 
     @utcpTool(
         'programGetInfo',
-        'Get info about a program registered with the editor (path and default command arguments). Programs are registered by editor extensions, not arbitrary executables.',
+        'Get info (path, args) of a program registered with the editor.',
         {
             type: 'object',
             properties: {
@@ -35,7 +35,7 @@ export class ProgramTools {
 
     @utcpTool(
         'programOpen',
-        'Launch a program registered with the editor (e.g. an external tool configured by an extension). Only registered programs can be opened - not arbitrary executables.',
+        'Launch a program registered with the editor (external tool). Registered programs only.',
         {
             type: 'object',
             properties: {

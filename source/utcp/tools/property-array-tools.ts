@@ -10,7 +10,7 @@ export class PropertyArrayTools {
 
     @utcpTool(
         'propertyArrayElement',
-        'Remove or reorder one element of an array-valued property, addressed by index. Use this instead of inspectorSetInstanceProperties, which would replace the whole array (losing object references). "remove" deletes the element at index; "move" shifts it to toIndex. Read the current array first with inspectorGetInstanceProperties to learn its length and element order.',
+        'Remove or reorder one element of an array-valued property by index. Use instead of inspectorSetInstanceProperties (which replaces the whole array).',
         {
             type: 'object',
             properties: {

@@ -4,7 +4,7 @@ export class ProjectTools {
 
     @utcpTool(
         'projectGetConfig',
-        'Read project settings. With no arguments returns the whole settings object; with type returns one category (e.g. general, physics, sorting-layer, layer); with type+key returns one value inside the category.',
+        'Read project settings. No args = all; type = one category; type+key = one value.',
         {
             type: 'object',
             properties: {
@@ -40,7 +40,7 @@ export class ProjectTools {
 
     @utcpTool(
         'projectSetConfig',
-        'Write project settings. Path is either a category name (e.g. "general" with the full category object as value) or a dotted path (e.g. "physics.collisionMatrix"). CAUTION: affects the whole project - read current values with projectGetConfig first.',
+        'Write project settings by category or dotted path. Read first with projectGetConfig.',
         {
             type: 'object',
             properties: {

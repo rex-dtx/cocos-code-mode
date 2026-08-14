@@ -13,7 +13,7 @@ export class MaterialTools {
 
     @utcpTool(
         'materialQuery',
-        'Inspect materials, shader effects and the render pipeline. "effects" lists every effect registered in the scene; "effect" reads one by name; "material" dumps a material asset by uuid (inspector shape, with property values); "serialized_material" gives the on-disk serialized form instead; "render_pipeline" dumps the pipeline asset. Read-only — use inspectorSetProperty to change material properties.',
+        'Inspect materials/effects/render pipeline. Operations: effects, effect, material, serialized_material, render_pipeline.',
         {
             type: 'object',
             properties: {
@@ -62,7 +62,7 @@ export class MaterialTools {
 
     @utcpTool(
         'assetDbQuery',
-        'Introspect the asset database itself. "databases" lists the mounted databases (assets, internal, bundles) with their roots; "busy" reports whether the db is mid-import — poll this before trusting asset queries after a refresh; "mtime" gives an asset\'s modification time, useful to detect changes without re-reading content; "data" returns the raw imported data for an asset.',
+        'Introspect asset-db: databases list, busy status, mtime, raw imported data.',
         {
             type: 'object',
             properties: {

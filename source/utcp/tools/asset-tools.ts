@@ -204,7 +204,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetFindReferences',
-        'Asset-level dependency analysis. "used_by" lists the assets/scripts that reference the given asset (who breaks if it is deleted); "depends_on" lists the assets it references itself. Complements findNodesByAsset, which only looks inside the currently open scene.',
+        'Asset dependency analysis: "used_by" (who references it), "depends_on" (what it references). Complements findNodesByAsset.',
         {
             type: 'object',
             properties: {
@@ -283,7 +283,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetQuery',
-        'Search the asset database with filters: glob pattern, asset type (ccType), importer, extension or bundle flag. Returns a slim list of matching assets. Use for asset discovery (e.g. all prefabs under a folder, all spine skeletons of a game). At least one filter is required.',
+        'Search asset database by glob, ccType, importer, extname or isBundle. At least one filter required.',
         {
             type: 'object',
             properties: {
@@ -379,7 +379,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetSaveContent',
-        'Overwrite the content of an existing text-based asset (TypeScript script, JSON, effect, txt...). Identify the asset by db:// path or uuid. Use for generated/templated files (e.g. rewriting GameInit<ID>.ts during new-game setup). Binary assets are not supported.',
+        'Overwrite content of a text-based asset (TS, JSON, effect, txt). Identify by db:// path or uuid. No binary.',
         {
             type: 'object',
             properties: {
@@ -415,7 +415,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetGetAvailableUrl',
-        'Given a desired db:// path, returns an available (non-colliding) url - appends a suffix if an asset already exists at that path. Use before assetCreate/assetImport when overwriting is not wanted.',
+        'Return a non-colliding db:// url for the given path (appends suffix if exists). Use before assetCreate.',
         {
             type: 'object',
             properties: {
@@ -676,7 +676,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetGetPreview',
-        'Returns preview image of the asset (Prefab, Image, Model or Material is supported). IMPORTANT: To visualize the image, you must return the result of this function DIRECTLY as the final value of your code, do NOT wrap it in an object.',
+        'Preview image of asset (Prefab/Image/Model/Material). Return result directly to visualize — do NOT wrap.',
         {
             type: 'object',
             properties: {

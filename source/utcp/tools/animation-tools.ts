@@ -44,7 +44,7 @@ export class AnimationTools {
 
     @utcpTool(
         'animationQuery',
-        'Read animation data of the current scene. Start with "root_info" on any node - it walks up to the animation root and returns its clip menu, current clip dump, play state and time. Other operations: "root" (uuid of the animation root above a node), "edit_info" (which clips a node can edit), "clips_info" (clip list of a node), "clip_dump" (one clip - slim by default), "properties" (animatable properties of a node), "state"/"current_info" (playback of the clip being edited), "clip_time" (current time of a clip), "value_at_frame" (value of one property track at a frame).',
+        'Query animation data: root_info, clips_info, clip_dump (slim by default), properties, state, value_at_frame.',
         {
             type: 'object',
             properties: {
@@ -115,7 +115,7 @@ export class AnimationTools {
 
     @utcpTool(
         'animationEdit',
-        'Edit animation clips. Workflow: "record_start" on the animation root node (with the clip to edit) puts the editor in animation record mode, then "operate" applies curve/keyframe changes, then "save_clip" writes them to the asset, then "record_stop". Other operations: "change_root" (switch the node being animated - needs both nodeReference and clipReference), "set_edit_clip" (switch clip), "set_edit_time" (move the playhead), "clip_state" (play/pause/resume/stop the previewed clip). Query the current state first with animationQuery root_info.',
+        'Edit animation clips. Workflow: record_start → operate → save_clip → record_stop. Also change_root, set_edit_clip, set_edit_time, clip_state.',
         {
             type: 'object',
             properties: {

@@ -6,7 +6,7 @@ export class SceneTools {
 
     @utcpTool(
         'sceneOpen',
-        'Open a scene by its uuid. Complements editorOperate save/close (which lack an open). If you only have the scene path, resolve its uuid first via assetGetAtPath/assetGetTree.',
+        'Open a scene by uuid. Resolve path to uuid first via assetGetAtPath.',
         {
             type: 'object',
             properties: {
@@ -71,7 +71,7 @@ export class SceneTools {
 
     @utcpTool(
         'findNodesByAsset',
-        'Find all nodes in the current scene that reference the given asset uuid (prefab instances, nodes using a material/texture/sprite/animation clip...). Reverse-reference / impact analysis.',
+        'Find nodes referencing a given asset uuid. Reverse-reference / impact analysis.',
         {
             type: 'object',
             properties: {
@@ -94,7 +94,7 @@ export class SceneTools {
 
     @utcpTool(
         'findNodesWithMissingAssets',
-        'Find all nodes in the current scene whose asset references are missing/broken (deleted or moved assets, unlinked prefabs). QA/health check for scene integrity.',
+        'Find nodes with missing/broken asset references. QA/health check for scene integrity.',
         { type: 'object', properties: {} },
         { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET", ['scene', 'node', 'missing', 'broken', 'asset', 'qa', 'health', 'integrity']
     )
@@ -117,7 +117,7 @@ export class SceneTools {
 
     @utcpTool(
         'nodeReset',
-        'Reset nodes or one component back to their default property values. operation "node" resets all given nodes; operation "component" resets a single component.',
+        'Reset node or component properties to defaults. Operations: "node" (all nodes), "component" (single component).',
         {
             type: 'object',
             properties: {
@@ -154,7 +154,7 @@ export class SceneTools {
 
     @utcpTool(
         'callComponentMethod',
-        'Execute a method on a specific component by its uuid. Arguments and return value must be JSON-serializable. Get the component uuid via nodeComponentsGet.',
+        'Call a method on a component by uuid. Args and return must be JSON-serializable. Get uuid via nodeComponentsGet.',
         {
             type: 'object',
             properties: {
@@ -182,7 +182,7 @@ export class SceneTools {
 
     @utcpTool(
         'listComponentMethods',
-        'List the callable method names of every component on a node - the discovery step for callComponentMethod, which otherwise requires guessing a method name. Returns methods grouped per component (component uuid + type), so the uuid can be passed straight to callComponentMethod.',
+        'List callable method names per component on a node. Use to discover methods before callComponentMethod.',
         {
             type: 'object',
             properties: {
@@ -283,7 +283,7 @@ export class SceneTools {
 
     @utcpTool(
         'nodeClipboard',
-        'Copy/cut/paste nodes. copy: store nodes in the editor clipboard; cut: remove nodes and store them; paste: paste previously copied nodes into a target node (returns references of the pasted nodes).',
+        'Copy/cut/paste nodes via editor clipboard. Paste returns references of pasted nodes.',
         {
             type: 'object',
             properties: {
@@ -565,7 +565,7 @@ export class SceneTools {
 
     @utcpTool(
         'nodeOperate',
-        'Perform operation on referenced node, including prefab operations and hierarchy locking (a locked node cannot be edited or selected in the scene view). "link_prefab" binds an existing plain node to a prefab asset (the inverse of unwrap_prefab); "create_prefab" instead saves the node AS a new prefab asset.',
+        'Node operations: hierarchy locking, prefab link/unlink/create/save. Lock prevents edit/select in scene view.',
         {
             type: 'object',
             properties: {

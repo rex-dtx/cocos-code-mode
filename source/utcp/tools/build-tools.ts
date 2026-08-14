@@ -69,7 +69,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildGetTasksInfo',
-        'Get the build pipeline status: whether the build worker is ready, whether the queue is free, and a summary of all build tasks (id, progress, state, platform).',
+        'Build pipeline status: worker ready, queue free, all tasks summary.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -91,7 +91,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildGetTask',
-        'Get one build task by id: summary plus its FULL options object. To trigger a new build, copy these options, modify them (platform, outputName...), then pass them to buildTrigger.',
+        'Get build task by id with full options. Copy+modify options for buildTrigger.',
         {
             type: 'object',
             properties: {
@@ -121,7 +121,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildTrigger',
-        'Enqueue a build task. RECOMMENDED: copy the options object of an existing task via buildGetTask and modify it (platform, taskName, buildPath...) instead of crafting options from scratch. Returns the task id when available; poll status with buildGetTasksInfo.',
+        'Enqueue a build task. Copy options from buildGetTask and modify. Poll status with buildGetTasksInfo.',
         {
             type: 'object',
             properties: {
@@ -153,7 +153,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildTaskControl',
-        'Manage an existing build task: "break" aborts a running build, "remove" deletes the task from the queue, "recompile" rebuilds only the scripts of an already-built task (much faster than a full rebuild). Get task ids from buildGetTasksInfo.',
+        'Manage build task: "break" aborts, "remove" deletes, "recompile" rebuilds scripts only. Get ids from buildGetTasksInfo.',
         {
             type: 'object',
             properties: {
