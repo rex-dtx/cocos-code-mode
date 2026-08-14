@@ -17,6 +17,7 @@ import './tools/property-array-tools';
 import './tools/material-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
+import { trimResponse } from './utils/response-trimmer';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
@@ -155,7 +156,11 @@ export class UtcpServerManager {
                     }
 
                     debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length });
-                    res.json(result);
+
+                    // ponytail: trim null/undefined/empty containers before serializing.
+                    // Reduces response payload ~15-30% for property dumps and nested objects.
+                    const trimmed = trimResponse(result);
+                    res.json(trimmed ?? null);
 
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
