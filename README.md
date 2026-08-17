@@ -5,7 +5,7 @@ These tools are combined in [UTCP Code Mode](https://github.com/universal-tool-c
 
 > **This is the 2.4.x port.** It is a fork of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two editor generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
 >
-> **Round 1 is read-only** — 9 tools, 27 operations. The only mutation is editor selection. Write tools (create/modify/delete node, asset, component) are not ported yet.
+> **Round 1 is read-only** — 10 tools, 27 operations. The only mutation is editor selection. Write tools (create/modify/delete node, asset, component) are not ported yet.
 >
 > Verified against **Creator 2.4.15**. Other 2.4.x patches are untested.
 
@@ -30,13 +30,14 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 
 ## Tools
 
-9 tools, 27 operations. Most tools take an `operation` argument instead of being split into many endpoints — fewer tool definitions in the agent's context.
+10 tools, 27 operations. Most tools take an `operation` argument instead of being split into many endpoints — fewer tool definitions in the agent's context.
 
 | Tool | Operations | Purpose |
 |---|---|---|
 | `sceneSnapshot` | — | **Start here.** Whole node tree in one round trip: transform, size, anchor, component list per node, plus design resolution. Editor-only roots filtered out. Guarded by `maxDepth` and `maxNodes`. |
 | `nodeQuery` | `tree` `dump` `info` `functions` `by_component` `at_path` | Hierarchy tree, single-node property dump, node info, callable functions, find by component, fetch by path |
 | `componentQuery` | `props` `classes` `by_name` `find` | Read one component's properties, list registered classes, find nodes carrying a component |
+| `listComponentMethods` | — | List callable method names per component on a node (discovery for `callComponentMethod`, ported from v3). Groups by class name; 2.x message returns names, not uuids. |
 | `assetResolve` | `uuid_from_url` `url_from_uuid` `fspath` `exists` | Translate between asset url, uuid, and filesystem path |
 | `assetQuery` | `search` `tree` `info` `meta` `types` `sub_assets` `used_by` | Browse and inspect the asset database, including which scene nodes reference an asset (`used_by`) |
 | `assetReadContent` | — | Read a text asset's contents |

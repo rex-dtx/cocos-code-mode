@@ -11,7 +11,7 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
 | `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** + vòng 1.1 (token guard) | Trước khi viết tool mới. Bắt buộc |
 | `../README.md` | Tool surface + payload limit + 2 bẫy cho người viết tool mới (bản 2.x, không phải 3.x) | Khi cần overview nhanh |
-| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (9 tool / 27 op) | Khi thêm/sửa tool — update tay, không generated |
+| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (10 tool / 27 op) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
 
@@ -32,6 +32,8 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 
 **Vòng 1.2 (đang làm): 27 op** — thêm `assetQuery used_by` (chiều ngược asset → node). Phase A ✅ code + 17 self-check, **chưa smoke** · phase B ✅ tách "nợ thật" vs "không port được" trong `cocos-2x-api-notes.md` · phase C (probe3, cổng vòng 2) ⛔ chờ mở được 2.4.15.
 
+**Tool thứ 10:** `listComponentMethods` — port từ v3 commit `9fc494b`, discovery cho callComponentMethod vòng 2. Output group theo component NAME (không có uuid). Self-check: 22 check.
+
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
 
 **Vòng 2 (write) CHƯA MỞ — bị chặn cứng.** Cả 3 câu hỏi chặn (`cc.engine.getInstanceById` nhận uuid gì · `Editor.require('scene://utils/node')` export gì · `set-property-by-path` nhận path dạng nào) đều cần probe runtime, mà 2.4.15 phải đang chạy. Không mở được Creator = không làm được vòng 2, không có đường vòng.
@@ -39,11 +41,11 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 ## Test tự động
 
 ```
-npm run check     # build + scripts/check-node-budget.js (17 check)
+npm run check     # build + scripts/check-node-budget.js (22 check)
 npm run package   # check + zip — không đóng gói được bản đỏ
 ```
 
-`check-node-budget.js` verify logic cắt cây của **2 walker độc lập** — `nodeBrief` (scene-script, node `cc.*`) và `truncateHierarchy` (scene-read-tools, JSON từ IPC) — cộng **`find-by-asset`** (match uuid + 2 guard `maxResults`, vòng 1.2). Chạy được **không cần Creator**: đều là hàm thuần, test dựng `cc` giả + `require` file đã build.
+`check-node-budget.js` verify logic cắt cây của **2 walker độc lập** — `nodeBrief` (scene-script, node `cc.*`) và `truncateHierarchy` (scene-read-tools, JSON từ IPC) — cộng **`find-by-asset`** (match uuid + 2 guard `maxResults`, vòng 1.2) và **`normalizeComponentFunctions`** (defensive parse cho `listComponentMethods`). Chạy được **không cần Creator**: đều là hàm thuần, test dựng `cc` giả + `require` file đã build.
 
 Đây là phần logic scene-script duy nhất verify được offline. Mọi thứ khác vẫn phải smoke test tay trong editor.
 
@@ -86,7 +88,7 @@ Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-s
    - `maxNodes` / `maxResults` chặn cây **rộng** — scene slot hay là 1 root + hàng nghìn con cùng cấp, depth không chặn được
    - Node bị cắt báo `truncated` = **lý do** (`'maxDepth'` | `'nodeLimit'`) + `childrenOmitted`; response báo `nodesVisited`/`budgetExhausted`. Cắt im lặng = agent tưởng đã thấy hết.
    - Budget chia **chung** cho mọi root, không reset mỗi root.
-5. **`npm run check` exit 0 sau mỗi phase** (build + 12 self-check). Đỏ thì không sang phase sau.
+5. **`npm run check` exit 0 sau mỗi phase** (build + 22 self-check). Đỏ thì không sang phase sau.
 6. **Style hiện tại:** 4-space indent, `async method(args: {...}): Promise<{...}>`, throw `Error` cho invalid input (transport tự bắt → HTTP 500 + `{error}`).
 7. **Không-tìm-thấy phải throw**, đừng trả sentinel. 2.4 IPC trả `value: null` / `missed: true` / `null` với HTTP 200 — nghĩa là `try/catch` của agent trượt hết. Tool phải dịch sang `Error`.
 8. **Thêm nhánh vào walker → thêm check** vào `scripts/check-node-budget.js`, rồi **mutation-test**: sửa điều kiện thành `if (false)` trong `dist/`, xác nhận test đỏ. Test không đỏ khi phá logic là test vô dụng.

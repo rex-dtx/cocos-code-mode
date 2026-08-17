@@ -117,6 +117,20 @@ declare namespace CocosEditor {
         maxResults?: number;
     }): { result: any; total?: number; truncated?: boolean };
 
+    /**
+     * Discovery step cho callComponentMethod (vong 2): liet ke method name moi
+     * component tren node. Port tu v3 tool cung ten. Khac v3:
+     *   - arg la `uuid` string (quy uoc 2.x), khong phai InstanceReference
+     *   - output group theo component NAME (khong co uuid): message
+     *     `scene:query-node-functions` chi tra record {componentName: methodName[]}.
+     *     Khi can component uuid, lay tu `nodeQuery dump.__comps__`.
+     *
+     * Node khong ton tai -> throw (quy uoc vong 1.1).
+     */
+    function listComponentMethods(args: {
+        uuid: string;
+    }): { components: Array<{ name: string | null; methods: string[] }> };
+
     // --- Asset ---
 
     /**

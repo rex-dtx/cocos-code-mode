@@ -287,4 +287,64 @@ check('find-by-asset maxResults clips within a single component', () => {
     assert.strictEqual(r.truncated, true);
 });
 
+// --- normalizeComponentFunctions (component-method-tools.ts, port tu v3 9fc494b) ---
+
+const { normalizeComponentFunctions } = (function () {
+    const p = path.join(__dirname, '..', 'dist', 'utcp', 'tools-2x', 'component-method-tools.js');
+    delete require.cache[require.resolve(p)];
+    global.Editor = global.Editor || { log: () => {}, warn: () => {}, error: () => {} };
+    return require(p);
+})();
+
+assert.strictEqual(typeof normalizeComponentFunctions, 'function',
+    'component-method-tools.js phai export normalizeComponentFunctions — check nay khong duoc skip im lang');
+
+// 10. Shape DA VERIFY tren 2.4.15: record {componentName: methodName[]}.
+check('normalize: verified record shape groups methods per component', () => {
+    const r = normalizeComponentFunctions({
+        'cc.Canvas': ['applySettings', 'addComponent', 'destroy', 'schedule'],
+        'HelloWorld': ['addComponent', 'destroy'],
+        'cc.Widget': ['updateAlignment', 'addComponent'],
+    });
+    assert.strictEqual(r.length, 3);
+    assert.strictEqual(r[0].name, 'cc.Canvas');
+    assert.deepStrictEqual(r[0].methods, ['applySettings', 'addComponent', 'destroy', 'schedule']);
+    assert.strictEqual(r[1].name, 'HelloWorld');
+    assert.strictEqual(r[1].methods.length, 2);
+});
+
+// 11. Defensive parse (tu v3): facade IPC khong co type — dung record key khi value
+// la object key-theo-method thay vi array.
+check('normalize: record-keyed methods object falls back to Object.keys', () => {
+    const r = normalizeComponentFunctions({ 'cc.Sprite': { foo: 1, bar: 2 } });
+    assert.strictEqual(r.length, 1);
+    assert.deepStrictEqual(r[0].methods, ['foo', 'bar']);
+});
+
+// 12. Defensive parse (tu v3): array of {name, methods} — shape tuong lai co the tra.
+check('normalize: array of {name, methods} entries is tolerated', () => {
+    const r = normalizeComponentFunctions([
+        { name: 'cc.Label', methods: ['setString'] },
+        { type: 'cc.Sprite', functions: ['setState'] },
+    ]);
+    assert.strictEqual(r.length, 2);
+    assert.strictEqual(r[0].name, 'cc.Label');
+    assert.deepStrictEqual(r[0].methods, ['setString']);
+    assert.strictEqual(r[1].name, 'cc.Sprite');
+    assert.deepStrictEqual(r[1].methods, ['setState']);
+});
+
+// 13. Guard: gia tri rac (function/undefined/null/so) bi loc khoi method list.
+check('normalize: non-string method entries are filtered out', () => {
+    const r = normalizeComponentFunctions({ 'cc.Node': ['ok', null, undefined, 42, { name: 'also-ok' }] });
+    assert.deepStrictEqual(r[0].methods, ['ok', 'also-ok']);
+});
+
+// 14. Guard: input rong/sai kieu -> mang rong, KHONG throw (v3 cung tra []).
+check('normalize: null or non-object input yields empty components', () => {
+    assert.deepStrictEqual(normalizeComponentFunctions(null), []);
+    assert.deepStrictEqual(normalizeComponentFunctions({}), []);
+    assert.deepStrictEqual(normalizeComponentFunctions('junk'), []);
+});
+
 console.log('\n' + passed + ' checks passed');

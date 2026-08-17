@@ -494,13 +494,16 @@ Trả kèm `available` để agent biết `type` nào hợp lệ, không phải 
 | `nodeQuery` | tree · dump · info · functions · by_component · at_path | scene panel IPC (5) + scene-script (at_path) |
 | `sceneSnapshot` | — | scene-script `cc.*` traverse |
 | `componentQuery` | props · classes · by_name · find | scene-script (3) + scene panel IPC (by_name) |
+| `listComponentMethods` | — | `scene:query-node-functions` (main process IPC), normalized to v3 shape |
 | `editorSelect` | query · select · unselect · clear | `Editor.Selection.*` |
 | `editorEnvInfo` | — | `Editor.versions` + `Editor.Project.path` + `process.versions` |
 | `projectGetConfig` | — | `fs` đọc `<project>/settings/*.json` |
 
-**9 tool, 27 op.** Mutation duy nhất: `editorSelect` (selection, không phải scene).
+**10 tool, 27 op.** Mutation duy nhất: `editorSelect` (selection, không phải scene).
 
 Op thứ 27 là `assetQuery used_by` (vòng 1.2) — chiều ngược asset → node, không cần API mới. Cơ chế + giới hạn + trạng thái smoke: xem **§6 `find-by-asset`** ở phần vòng 1.2 dưới.
+
+Tool thứ 10 (`listComponentMethods`, port từ v3 commit `9fc494b`) thêm vào sau vòng 1.2 — discovery cho callComponentMethod vòng 2. Output group theo component NAME (không có uuid): message `scene:query-node-functions` trả record `{componentName: methodName[]}`. Khi cần component uuid, lấy từ `nodeQuery dump.__comps__`.
 
 ## Bỏ khỏi vòng 1
 
