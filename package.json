@@ -72,8 +72,13 @@
       },
       {
         "path": "Code Mode (3.7)/Debug",
-        "label": "Open Debug Logs",
-        "message": "open-debug-logs"
+        "label": "Open Debug Folder",
+        "message": "open-debug-folder"
+      },
+      {
+        "path": "Code Mode (3.7)/Debug",
+        "label": "Clear Debug Logs",
+        "message": "clear-debug-logs"
       }
     ],
     "messages": {
@@ -107,9 +112,14 @@
           "toggleDebug"
         ]
       },
-      "open-debug-logs": {
+      "open-debug-folder": {
         "methods": [
-          "openDebugLogs"
+          "openDebugFolder"
+        ]
+      },
+      "clear-debug-logs": {
+        "methods": [
+          "clearDebugLogs"
         ]
       }
     }

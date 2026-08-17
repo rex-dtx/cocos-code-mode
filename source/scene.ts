@@ -3,6 +3,27 @@ export function unload() { }
 let _originalConsoleError: (...data: unknown[]) => void = () => { };
 let _caughtLogs: string[] = [];
 
+// ponytail: debug console capture for scene process — writes JSONL to
+// ~/.utcp-debug/scene-console-*.jsonl. Uses dynamic require('fs') because
+// this file runs in the editor's scene renderer where node builtins are available.
+let _catchAllActive = false;
+let _origLog: typeof console.log | null = null;
+let _origWarn: typeof console.warn | null = null;
+let _origErr: typeof console.error | null = null;
+let _sceneLogFile: string | null = null;
+
+function _writeSceneLog(level: 'log' | 'warn' | 'error', data: unknown[]): void {
+    if (!_sceneLogFile) return;
+    const msg = data.map(a => a instanceof Error ? `${a.message}\n${a.stack ?? ''}` : String(a)).join(' ');
+    const line = JSON.stringify({ ts: new Date().toISOString(), level, msg }) + '\n';
+    try {
+        // ponytail: appendFileSync per entry — debug mode is opt-in and volume low.
+        // Accepts slight sync overhead over buffering+flush for simplicity.
+        const fs = require('fs');
+        fs.appendFileSync(_sceneLogFile, line);
+    } catch {}
+}
+
 export const methods = {
     async startCatchLogging() {
         _caughtLogs = [];
@@ -17,6 +38,38 @@ export const methods = {
     async stopCatchLogging(): Promise<string[]> {
         console.error = _originalConsoleError;
         return _caughtLogs;
+    },
+
+    async startCatchAll(): Promise<boolean> {
+        if (_catchAllActive) return true;
+        let fs: any;
+        try { fs = require('fs'); } catch {
+            console.warn('[cocos-code-mode-3x7] startCatchAll: fs unavailable in scene context');
+            return false;
+        }
+        const path = require('path');
+        const os = require('os');
+        const dir = path.join(os.homedir(), '.utcp-debug');
+        try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+        _sceneLogFile = path.join(dir, `scene-console-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
+        _catchAllActive = true;
+        _origLog = console.log;
+        _origWarn = console.warn;
+        _origErr = console.error;
+        console.log = (...args: unknown[]) => { _writeSceneLog('log', args); _origLog!(...args); };
+        console.warn = (...args: unknown[]) => { _writeSceneLog('warn', args); _origWarn!(...args); };
+        console.error = (...args: unknown[]) => { _writeSceneLog('error', args); _origErr!(...args); };
+        return true;
+    },
+
+    async stopCatchAll(): Promise<void> {
+        if (!_catchAllActive) return;
+        if (_origLog) console.log = _origLog;
+        if (_origWarn) console.warn = _origWarn;
+        if (_origErr) console.error = _origErr;
+        _origLog = _origWarn = _origErr = null;
+        _catchAllActive = false;
+        _sceneLogFile = null;
     },
 
     async createPrefabFromNode(nodeUuid: string, path: string): Promise<string> {

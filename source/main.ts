@@ -3,8 +3,12 @@ import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo } from './build-info';
 import { exec } from 'child_process';
+import { homedir } from 'os';
+import { join } from 'path';
+import { readdirSync, unlinkSync } from 'fs';
 
 let utcpServer: UtcpServerManager | null = null;
+const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
 
 export const methods: { [key: string]: (...any: any) => any } = {
@@ -40,25 +44,37 @@ export const methods: { [key: string]: (...any: any) => any } = {
         const enabled = utcpServer.toggleDebug();
         const status = enabled ? 'ON' : 'OFF';
         console.log(`[${packageJSON.name}] Debug logging ${status}`);
-        // ponytail: toast notification via Editor.Dialog is heavy; console.log is enough for a dev toggle
+        // Also toggle scene-process console capture (log/warn/error from editor
+        // scripts). Fails silently when no scene is open — MCP logging still works.
+        const method = enabled ? 'startCatchAll' : 'stopCatchAll';
+        Editor.Message.request('scene', 'execute-scene-script',
+            { name: packageJSON.name, method, args: [] })
+            .catch((err: any) => console.warn(`[${packageJSON.name}] Scene console capture not toggled: ${err?.message || err}`));
     },
 
-    openDebugLogs() {
-        if (!utcpServer) return;
-        const logFile = utcpServer.getDebugLogFile();
-        if (!logFile) {
-            console.warn(`[${packageJSON.name}] No debug log file found. Enable debug first.`);
-            return;
-        }
+    openDebugFolder() {
         // ponytail: cross-platform open — works on Windows/macOS/Linux
         const cmd = process.platform === 'win32'
-            ? `start "" "${logFile}"`
+            ? `start "" "${DEBUG_LOG_DIR}"`
             : process.platform === 'darwin'
-                ? `open "${logFile}"`
-                : `xdg-open "${logFile}"`;
+                ? `open "${DEBUG_LOG_DIR}"`
+                : `xdg-open "${DEBUG_LOG_DIR}"`;
         exec(cmd, (err) => {
-            if (err) console.error(`[${packageJSON.name}] Failed to open log file:`, err.message);
+            if (err) console.error(`[${packageJSON.name}] Failed to open debug folder:`, err.message);
         });
+    },
+
+    clearDebugLogs() {
+        try {
+            const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
+            files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
+            console.log(`[${packageJSON.name}] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
+        } catch (err: any) {
+            // ENOENT means the folder never existed — nothing to clear.
+            if (err?.code !== 'ENOENT') {
+                console.error(`[${packageJSON.name}] Failed to clear debug logs:`, err?.message || err);
+            }
+        }
     }
 };
 

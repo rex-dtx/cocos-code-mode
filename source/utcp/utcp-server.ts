@@ -257,13 +257,4 @@ export class UtcpServerManager {
         }
         return debugEnabled;
     }
-
-    getDebugLogFile(): string | null {
-        try {
-            const files = readdirSync(DEBUG_LOG_DIR).filter(f => f.endsWith('.jsonl')).sort().reverse();
-            return files.length > 0 ? join(DEBUG_LOG_DIR, files[0]) : null;
-        } catch {
-            return null;
-        }
-    }
 }
