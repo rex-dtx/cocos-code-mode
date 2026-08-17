@@ -524,6 +524,10 @@ Tách làm 2 loại. Bản trước gộp chung thành *"14 tool — port vòng 
 | Build | `buildTrigger` `buildTaskControl` `buildGetTask` `buildGetTasksInfo` `buildPanelOpen` | `Editor.Builder` 2.4 **chỉ có `on`/`once`/`removeListener`** — event hook, không có API trigger build. Nguồn: corpus `v2.4/extension/api/editor-framework/main/builder.md` |
 | Animation | `animationQuery` `animationEdit` | `scene:query-animation-node` verified **không tồn tại** ở 2.4.15 (phase 5) |
 | Typings | `typescript-defenition` (2 tool) | Sinh `.d.ts` từ property dump 3.x. 2.x thay bằng `code-mode-references-2x.d.ts` viết tay — **có chủ đích**, không phải nợ |
+| Asset dep graph | `assetFindReferences` (commit `8094c9c`) | Hand-written `@types/editor-2x/index.d.ts` liệt kê toàn bộ assetdb API verified từ docs: **không có method nào cho reference/dependency query** (`queryImports`/`queryReferences`/`queryUsedBy`). 2.x meta format không có block imports như 3.x → không port được |
+| Array element ops | `propertyArrayElement` (commit `8094c9c`) | Write op — chặn cứng vòng 2 (undo + set-property-by-path chưa verify) |
+| Editor introspect | `editorIntrospect` categories `scene_mode` / `ready` / `enum_values` / `script_info` (commit `8094c9c`) | Map sang 6 message scene panel (`query-scene-mode`, `query-is-ready`, `query-enum-list-with-path`, `query-layer-builtin`, `query-sorting-layer-builtin`, `query-script-name/cid`) — **tất cả chưa verify trên 2.4.15**. Không nằm trong bảng Phase 5 (6 message đã test). Probe cần thiết trước khi code. `sorting_layers` đặc biệt: tính năng 3.x, 2.4 dùng groups thay thế (đã khả thi qua `projectGetConfig type=project key=groupList`) |
+| Viewport ops | `editorViewport` ops `set_icon_gizmo_3d` / `set_icon_gizmo_size` / `query_viewport.*` (commit `9fc494b`) | 6 message scene panel icon-gizmo/is2D/grid **chưa verify trên 2.4.15**. Mutation ops (`set_*`) còn thuộc vòng 2 scope. Probe cần thiết |
 
 Số thật (đếm `@utcpTool` trong `source/utcp/tools/`, 2026-08-08): **12 file / 55 tool**. Đóng sổ **10 tool**: build 5 + animation 2 + typings 2 + `editorGetLogs` 1. Còn lại **45 tool ở 9 file**.
 
