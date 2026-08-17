@@ -84,24 +84,35 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const idx = templates.findIndex((t: any) => t.name === 'CocosEditor3x7');
+        // ponytail: short manual name = fewer tokens per tool reference in every
+        // code-mode script. Legacy long name migrated in place, not duplicated.
+        const NAME = 'cc37';
+        const LEGACY = 'CocosEditor3x7';
+        let idx = templates.findIndex((t: any) => t.name === NAME);
+        if (idx === -1) {
+            idx = templates.findIndex((t: any) => t.name === LEGACY);
+            if (idx !== -1) {
+                templates[idx].name = NAME;
+                console.log(`[UtcpConfigManager] Migrated template name ${LEGACY} -> ${NAME}`);
+            }
+        }
 
         let changed = false;
         if (idx === -1) {
             templates.push({
-                name: 'CocosEditor3x7',
+                name: NAME,
                 call_template_type: 'http',
                 url: expectedUrl,
                 http_method: 'GET',
                 content_type: 'application/json',
             });
             changed = true;
-            console.log(`[UtcpConfigManager] Created CocosEditor3x7 template with port ${port}`);
+            console.log(`[UtcpConfigManager] Created ${NAME} template with port ${port}`);
         } else {
             if (templates[idx].url !== expectedUrl) {
                 templates[idx].url = expectedUrl;
                 changed = true;
-                console.log(`[UtcpConfigManager] Updated CocosEditor3x7 template port to ${port}`);
+                console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
             }
         }
 

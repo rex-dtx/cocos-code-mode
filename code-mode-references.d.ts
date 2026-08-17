@@ -44,7 +44,7 @@ type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alph
 /**
  * Cocos Editor Tools
  */
-declare namespace CocosEditor3x7 {
+declare namespace cc37 {
     /** Generates TypeScript definition for specific settings. */
     function inspectorGetSettingsDefinition(args: {
         settingsType: "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings"
