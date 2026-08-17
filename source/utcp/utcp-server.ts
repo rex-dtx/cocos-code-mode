@@ -136,6 +136,7 @@ export class UtcpServerManager {
 
             // Register specific endpoint
             const handler = async (req: Request, res: Response) => {
+                const t0 = Date.now();
                 try {
                     const args = req.query;
 
@@ -150,12 +151,12 @@ export class UtcpServerManager {
                     let result = await toolMeta.method.apply(instance, [args]);
 
                     if (result === undefined || result === null) {
-                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0 });
+                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: Date.now() - t0 });
                         res.json(null);
                         return;
                     }
 
-                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length });
+                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: Date.now() - t0 });
 
                     // ponytail: trim null/undefined/empty containers before serializing.
                     // Reduces response payload ~15-30% for property dumps and nested objects.
@@ -164,7 +165,7 @@ export class UtcpServerManager {
 
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
-                    debugLog({ type: 'error', tool: toolDef.name, error: err.message });
+                    debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: Date.now() - t0 });
                     res.status(500).json({ error: err.message });
                 }
             };
