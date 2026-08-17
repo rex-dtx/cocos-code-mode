@@ -347,16 +347,18 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetTree',
-        'Get the hierarchy tree of specific node or scene root if no reference is provided. Children have recursive structure.',
+        'Get the hierarchy tree of specific node or scene root if no reference is provided. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited); pass fields[] to keep only these node keys (reference and children always kept).',
         {
             type: 'object',
             properties: {
-                reference: InstanceReferenceSchema
+                reference: InstanceReferenceSchema,
+                maxDepth: { type: 'number', description: 'Optional: max recursion depth. 0 = root only, 1 = root + direct children, etc. Omit for full tree.' },
+                fields: { type: 'array', items: { type: 'string' }, description: 'Optional: only keep these node keys per node (e.g. ["name","active","components"]). reference+children always kept. Omit for all fields.' }
             }
         },
         SceneTreeItemSchema, "GET",  ['scene', 'graph', 'node', 'hierarchy', 'tree']
     )
-    async nodeGetTree(args: { reference?: IInstanceReference }): Promise<ISceneTreeItem> {
+    async nodeGetTree(args: { reference?: IInstanceReference, maxDepth?: number, fields?: string[] }): Promise<ISceneTreeItem> {
         let treeBase;
         if (args.reference) {
              treeBase = await Editor.Message.request('scene', 'query-node-tree', args.reference.id);
@@ -375,26 +377,38 @@ export class SceneTools {
             throw new Error(`Node tree not found for ${args.reference?.id || 'entire scene'}`);
         }
 
-        const formatNode = (node: any): ISceneTreeItem => {
+        const formatNode = (node: any, depth: number): ISceneTreeItem => {
 
-           const comps = node.components ? node.components.map((c: any) => ({
-               reference: { id: c.value, type: c.type }
-           })) : [];
+           // ponytail: depth cap — stop recursion past maxDepth, return empty children.
+           const atMaxDepth = args.maxDepth !== undefined && depth >= args.maxDepth;
+
+           // ponytail: field whitelist — reference+children always kept so the
+           // tree stays navigable; others only if user asked or no filter set.
+           const fieldSet = args.fields && args.fields.length > 0 ? new Set(args.fields) : null;
+           const want = (k: string) => !fieldSet || fieldSet.has(k);
 
            let children: ISceneTreeItem[] = [];
-            children = node.children ? node.children.map(formatNode).filter((c: any) => c !== null) : [];
+           if (!atMaxDepth) {
+               children = node.children ? node.children.map((c: any) => formatNode(c, depth + 1)).filter((c: any) => c !== null) : [];
+           }
 
-           return {
+           const item: Partial<ISceneTreeItem> = {
                 reference: { id: node.uuid, type: 'cc.Node' },
-                name: node.name,
-                active: node.active,
-                components: comps,
                 children: children
            };
+           if (want('name')) item.name = node.name;
+           if (want('active')) item.active = node.active;
+           if (want('components')) {
+               item.components = node.components ? node.components.map((c: any) => ({
+                   reference: { id: c.value, type: c.type }
+               })) : [];
+           }
+           if (node.path && want('path')) item.path = node.path;
+           return item as ISceneTreeItem;
         };
-        
-        const result: ISceneTreeItem = formatNode(treeBase);
-        result.path = (treeBase as any).path || undefined;
+
+        const result: ISceneTreeItem = formatNode(treeBase, 0);
+        if (treeBase.path) result.path = (treeBase as any).path;
         return result;
     }
 

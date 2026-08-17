@@ -83,17 +83,18 @@ export class AssetTools {
 
     @utcpTool(
         'assetGetTree',
-        'Get the asset and subAsset hierarchy tree. Children have recursive structure.',
+        'Get the asset and subAsset hierarchy tree. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited).',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
-                assetPath: { type: 'string', description: 'Root path to start from' }
+                assetPath: { type: 'string', description: 'Root path to start from' },
+                maxDepth: { type: 'number', description: 'Optional: max recursion depth. 0 = root only, 1 = root + direct children, etc. Omit for full tree.' }
             }
         },
         AssetTreeItemSchema, "GET", ['asset', 'file', 'tree', 'hierarchy', 'folder', 'subasset']
     )
-    async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string }): Promise<IAssetTreeItem> {
+    async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number }): Promise<IAssetTreeItem> {
         if (args.reference) {
             const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
             if (!info) {
@@ -149,6 +150,18 @@ export class AssetTools {
                 parentItem.children.push(treeItem);
             }
         });
+
+        // ponytail: depth prune — if maxDepth set, clip children past that depth.
+        if (args.maxDepth !== undefined) {
+            const prune = (node: IAssetTreeItem, depth: number) => {
+                if (depth >= args.maxDepth!) {
+                    node.children = [];
+                } else {
+                    node.children.forEach((c) => prune(c, depth + 1));
+                }
+            };
+            prune(rootNode, 0);
+        }
 
         return rootNode;
     }
