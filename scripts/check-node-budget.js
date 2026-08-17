@@ -12,7 +12,7 @@ const assert = require('assert');
 const path = require('path');
 
 // --- cc gia: chi nhung gi nodeBrief/scene-snapshot cham vao ---
-function makeNode(name, children) {
+function makeNode(name, children, components) {
     return {
         name: name,
         uuid: 'uuid-' + name,
@@ -22,7 +22,7 @@ function makeNode(name, children) {
         x: 0, y: 0, scaleX: 1, scaleY: 1, angle: 0,
         width: 10, height: 10, anchorX: 0.5, anchorY: 0.5,
         _objFlags: 0,
-        _components: [],
+        _components: components || [],
         children: children || [],
     };
 }
@@ -43,6 +43,13 @@ function countNodes(n) {
     return 1 + (n.children || []).reduce((s, c) => s + countNodes(c), 0);
 }
 
+// Constructor gia phai ON DINH giua cac lan loadHandlers: fakeAsset() tao object
+// TRUOC khi handler chay, neu moi lan load lai sinh constructor moi thi instanceof
+// so voi prototype cu -> truot het. Khai o module scope, khong trong loadHandlers.
+function FakeAsset() {}
+function FakeNode() {}
+function FakeComponent() {}
+
 /** Load dist/scene-script.js voi cc gia, tra module.exports cua no. */
 function loadHandlers(sceneRoots) {
     const scriptPath = path.join(__dirname, '..', 'dist', 'scene-script.js');
@@ -55,7 +62,7 @@ function loadHandlers(sceneRoots) {
             getScene: () => makeNode('Scene', sceneRoots),
         },
         find: () => null,
-        Asset: function () {}, Node: function () {}, Component: function () {},
+        Asset: FakeAsset, Node: FakeNode, Component: FakeComponent,
         view: {},
     };
 
@@ -214,6 +221,70 @@ check('truncateHierarchy: complete tree carries no truncation flag', () => {
     assert.strictEqual(r.truncated, undefined);
     assert.strictEqual(r.children.length, 2);
     assert.strictEqual(r.childrenOmitted, undefined);
+});
+
+// --- find-by-asset (scene-script.ts, vong 1.2 phase A) ---
+
+function fakeAsset(uuid) {
+    // FakeAsset (module scope), KHONG global.cc.Asset: fakeAsset() chay TRUOC loadHandlers
+    // trong moi check, luc do global.cc con la cc cua lan load truoc.
+    const a = Object.create(FakeAsset.prototype);
+    a._uuid = uuid;         // CCAsset that: non-enumerable. Handler doc truc tiep nen khong sao.
+    return a;
+}
+
+function findByAsset(assetUuid, sceneRoots, opts) {
+    const handlers = loadHandlers(sceneRoots);
+    let out = null;
+    let err = null;
+    handlers['find-by-asset']({ reply: (e, r) => { err = e; out = r; } }, assetUuid, opts);
+    if (err) { throw err; }
+    return out;
+}
+
+check('find-by-asset matches a direct component property', () => {
+    const comp = { spriteFrame: fakeAsset('asset-1') };
+    const node = makeNode('Sprite', [], [comp]);
+    const r = findByAsset('asset-1', [node], {});
+    assert.strictEqual(r.nodes.length, 1);
+    assert.strictEqual(r.nodes[0].property, 'spriteFrame');
+    assert.strictEqual(r.nodes[0].path, 'Sprite');
+});
+
+check('find-by-asset matches a ref nested inside an array property', () => {
+    const comp = { frames: [fakeAsset('other'), fakeAsset('asset-2')] };
+    const node = makeNode('Anim', [], [comp]);
+    const r = findByAsset('asset-2', [node], {});
+    assert.strictEqual(r.nodes.length, 1);
+    assert.strictEqual(r.nodes[0].property, 'frames[1]');
+});
+
+check('find-by-asset does not match an unrelated asset uuid', () => {
+    const comp = { spriteFrame: fakeAsset('asset-1') };
+    const node = makeNode('Sprite', [], [comp]);
+    const r = findByAsset('asset-999', [node], {});
+    assert.strictEqual(r.nodes.length, 0, 'khong duoc match sai uuid');
+});
+
+check('find-by-asset maxResults clips across nodes and reports truncated', () => {
+    const nodes = Array.from({ length: 5 }, (_, i) =>
+        makeNode('n' + i, [], [{ spriteFrame: fakeAsset('shared') }]));
+    const r = findByAsset('shared', nodes, { maxResults: 2 });
+    assert.strictEqual(r.nodes.length, 2);
+    assert.strictEqual(r.truncated, true);
+});
+
+// Guard TRONG scanComponent: 1 component nhieu prop cung match, cap nho hon so prop.
+// Check tren khong phu duoc nhanh nay — no dung o guard cua walk (moi node 1 match).
+// Mutation-test da chung minh: bo guard trong scanComponent thi check tren VAN xanh.
+check('find-by-asset maxResults clips within a single component', () => {
+    const comp = {
+        a: fakeAsset('shared'), b: fakeAsset('shared'), c: fakeAsset('shared'),
+        d: fakeAsset('shared'), e: fakeAsset('shared'),
+    };
+    const r = findByAsset('shared', [makeNode('one', [], [comp])], { maxResults: 2 });
+    assert.strictEqual(r.nodes.length, 2, 'guard trong scanComponent phai cat giua vong for...in');
+    assert.strictEqual(r.truncated, true);
 });
 
 console.log('\n' + passed + ' checks passed');

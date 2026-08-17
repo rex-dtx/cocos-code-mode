@@ -123,15 +123,23 @@ declare namespace CocosEditor {
      * Tim asset.
      * `assetTypes` la TYPE NAME (`'texture'`), KHONG phai class name (`'cc.Texture2D'`) —
      * lay danh sach qua `operation: 'types'`. Bo trong = moi type.
+     *
+     * `used_by` la chieu NGUOC cua `componentQuery props`: asset -> node dang dung no.
+     * Hoi truoc khi sua asset ("doi sprite frame nay thi vo cho nao?"). Nhan `uuid`
+     * HOAC `url`. Chi quet SCENE DANG MO, khong quet prefab tren dia.
+     * Gioi han: chi 2 tang (prop truc tiep + phan tu array), sub-asset uuid khac nen
+     * KHONG match (spriteFrame trong atlas phai hoi bang uuid cua chinh no).
      */
     function assetQuery(args: {
-        operation: 'search' | 'tree' | 'info' | 'meta' | 'types' | 'sub_assets';
+        operation: 'search' | 'tree' | 'info' | 'meta' | 'types' | 'sub_assets' | 'used_by';
         pattern?: string;
         assetTypes?: string;
         url?: string;
         uuid?: string;
         limit?: number;
         maxDepth?: number;
+        /** Cap cho `used_by`, default 200. */
+        maxResults?: number;
     }): {
         assets?: any[];
         tree?: any[];
@@ -141,6 +149,8 @@ declare namespace CocosEditor {
         metaMtime?: number;
         types?: string[];
         classToType?: Record<string, string>;
+        /** Chi co voi `used_by`. `property` kem index neu ref nam trong array (`frames[1]`). */
+        nodes?: { path: string; uuid: string; name: string; component: string | null; property: string }[];
         total?: number;
         truncated?: boolean;
     };

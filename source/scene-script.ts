@@ -402,6 +402,75 @@
             event.reply(null, { nodes: found, truncated: truncated, maxResults: maxResults });
         },
 
+        // Chieu NGUOC cua component-props: asset -> node dang dung no. Cau hoi hay hoi
+        // truoc khi sua asset ("doi sprite frame nay thi vo cho nao?").
+        // 3.x goi Editor.Message.request('scene','query-node-by-asset'); 2.4 KHONG co
+        // message do, nhung scene-script co full cc.* nen walk tay duoc.
+        // Chi SO uuid roi vut (khong serialize nhu component-props) -> re hon, khong circular.
+        'find-by-asset': function (event: any, assetUuid: string, opts: any) {
+            if (!assetUuid) { return event.reply(new Error('assetUuid is required')); }
+            const scene = cc.director.getScene();
+            if (!scene) { return event.reply(new Error('no scene open')); }
+            const rawMax = opts && opts.maxResults;
+            const maxResults = (typeof rawMax === 'number' && rawMax > 0) ? rawMax : 200;
+            const found: any[] = [];
+            let truncated = false;
+
+            // BAY 6 (vong 1): cc.SpriteFrame.uuid la getter KE THUA va _uuid la
+            // non-enumerable (CCAsset.js:59) -> phai instanceof + fallback _uuid.
+            // Object.keys / check `.uuid` own-property deu truot.
+            function refUuid(v: any): string | null {
+                if (!v || typeof v !== 'object' || !isRefLike(v)) { return null; }
+                return v.uuid || v._uuid || null;
+            }
+
+            // Tra ten prop (kem index neu nam trong array), null neu khong match.
+            // Cung gioi han 2 tang nhu asRef() o vong 1: khong loi vao object long sau.
+            function matchedAt(key: string, v: any): string | null {
+                if (refUuid(v) === assetUuid) { return key; }
+                if (Array.isArray(v)) {
+                    for (let i = 0; i < v.length; i++) {
+                        if (refUuid(v[i]) === assetUuid) { return key + '[' + i + ']'; }
+                    }
+                }
+                return null;
+            }
+
+            function scanComponent(node: any, path: string, comp: any) {
+                for (const k in comp) {
+                    if (found.length >= maxResults) { truncated = true; return; }
+                    if (k.charAt(0) === '_') { continue; }        // skip private
+                    let v;
+                    try { v = comp[k]; } catch (e) { continue; }  // getter co the throw
+                    if (!v || typeof v !== 'object') { continue; }
+                    const where = matchedAt(k, v);
+                    if (where) {
+                        found.push({
+                            path: path,
+                            uuid: node.uuid,
+                            name: node.name,
+                            component: className(comp),
+                            property: where,
+                        });
+                    }
+                }
+            }
+
+            function walk(node: any, parentPath: string) {
+                if (found.length >= maxResults) { truncated = true; return; }
+                const p = parentPath ? parentPath + '/' + node.name : node.name;
+                const comps = node._components || [];
+                for (let i = 0; i < comps.length; i++) { scanComponent(node, p, comps[i]); }
+                (node.children || []).forEach(function (c: any) { walk(c, p); });
+            }
+
+            (scene.children || [])
+                .filter(function (c: any) { return !isEditorNode(c); })
+                .forEach(function (c: any) { walk(c, ''); });
+
+            event.reply(null, { nodes: found, truncated: truncated, maxResults: maxResults });
+        },
+
         'list-component-classes': function (event: any, filter: string) {
             const reg = cc.js && cc.js._registeredClassNames;
             if (!reg) { return event.reply(new Error('cc.js._registeredClassNames not available')); }

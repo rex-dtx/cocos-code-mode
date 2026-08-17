@@ -489,7 +489,7 @@ Trả kèm `available` để agent biết `type` nào hợp lệ, không phải 
 | Tool | Ops | Nguồn API |
 |---|---|---|
 | `assetResolve` | uuid_from_url · url_from_uuid · fspath · exists | `Editor.assetdb.*` sync |
-| `assetQuery` | search · tree · info · meta · types · sub_assets | `assetdb` sync + `queryAssets`/`deepQuery` async + `fs` (.meta) |
+| `assetQuery` | search · tree · info · meta · types · sub_assets · used_by | `assetdb` sync + `queryAssets`/`deepQuery` async + `fs` (.meta) + scene-script (`used_by`) |
 | `assetReadContent` | — | `assetdb` → `fs.readFileSync` |
 | `nodeQuery` | tree · dump · info · functions · by_component · at_path | scene panel IPC (5) + scene-script (at_path) |
 | `sceneSnapshot` | — | scene-script `cc.*` traverse |
@@ -498,15 +498,33 @@ Trả kèm `available` để agent biết `type` nào hợp lệ, không phải 
 | `editorEnvInfo` | — | `Editor.versions` + `Editor.Project.path` + `process.versions` |
 | `projectGetConfig` | — | `fs` đọc `<project>/settings/*.json` |
 
-**9 tool, 26 op.** Mutation duy nhất: `editorSelect` (selection, không phải scene).
+**9 tool, 27 op.** Mutation duy nhất: `editorSelect` (selection, không phải scene).
+
+Op thứ 27 là `assetQuery used_by` (vòng 1.2) — chiều ngược asset → node, không cần API mới. Cơ chế + giới hạn + trạng thái smoke: xem **§6 `find-by-asset`** ở phần vòng 1.2 dưới.
 
 ## Bỏ khỏi vòng 1
 
+Tách làm 2 loại. Bản trước gộp chung thành *"14 tool — port vòng 2"*, **sai**: một phần không bao giờ port được, để lẫn vào nợ kỹ thuật khiến lần sau lại đi tra lại từ đầu.
+
+### Còn nợ thật — port vòng 2
+
 | Tool | Lý do |
 |---|---|
-| `editorGetLogs` | 2.4.15 không có API đọc console — verified 3/3 message fail |
-| 14 tool 3.x (`source/utcp/tools/`) | dùng `Editor.Message.request`, không tồn tại ở 2.x — port vòng 2 |
-| 19 asset importer | `.meta` format 3.x — port vòng 2 |
+| 45 tool ở 9 file (`source/utcp/tools/`) | dùng `Editor.Message.request` (không có ở 2.x) nhưng **còn khả thi** qua scene-script — chờ vòng 2 |
+| 19 asset importer | `.meta` format 3.x |
+
+### Đóng sổ — KHÔNG port được, đừng tra lại
+
+| Nhóm | Tool | Vì sao không port được |
+|---|---|---|
+| Console | `editorGetLogs` | 2.4.15 không có API đọc console — verified 3/3 message candidate fail |
+| Build | `buildTrigger` `buildTaskControl` `buildGetTask` `buildGetTasksInfo` `buildPanelOpen` | `Editor.Builder` 2.4 **chỉ có `on`/`once`/`removeListener`** — event hook, không có API trigger build. Nguồn: corpus `v2.4/extension/api/editor-framework/main/builder.md` |
+| Animation | `animationQuery` `animationEdit` | `scene:query-animation-node` verified **không tồn tại** ở 2.4.15 (phase 5) |
+| Typings | `typescript-defenition` (2 tool) | Sinh `.d.ts` từ property dump 3.x. 2.x thay bằng `code-mode-references-2x.d.ts` viết tay — **có chủ đích**, không phải nợ |
+
+Số thật (đếm `@utcpTool` trong `source/utcp/tools/`, 2026-08-08): **12 file / 55 tool**. Đóng sổ **10 tool**: build 5 + animation 2 + typings 2 + `editorGetLogs` 1. Còn lại **45 tool ở 9 file**.
+
+3 file đóng sổ *hoàn toàn*: `build-tools.ts` · `animation-tools.ts` · `typescript-defenition.ts`. `editor-tools.ts` đóng sổ **một phần** — mất `editorGetLogs`, còn `editorViewport`/`editorOperate`/`editorHistory`/`editorSelect`… vẫn khả thi, nên file vẫn nằm trong nhóm nợ thật.
 
 ## Tổng kết: 6 bẫy docs-sai-runtime
 
@@ -736,4 +754,56 @@ Cùng lỗ ở 3 chỗ nữa:
 Nối vào `npm run check`; `npm run package` chạy qua `check` nên không package được bản đỏ.
 
 Không cần Creator để chạy — đây là phần logic duy nhất của scene-script verify được offline.
+
+---
+
+# VÒNG 1.2 — 2026-08-08 (phase A+B, không cần Creator)
+
+## 6. `find-by-asset` — chiều ngược asset → node
+
+Surface vòng 1 chỉ đi **một chiều**: node → component → asset ref (`componentQuery props` trả `__ref`). Câu hỏi hay hỏi trước khi sửa asset lại là chiều ngược: *"đổi sprite frame này thì vỡ chỗ nào?"*
+
+Bản 3.x gọi `Editor.Message.request('scene', 'query-node-by-asset')`. **2.4 không có message đó** — nhưng không cần: scene-script có full `cc.*` nên walk tay được. Mọi mảnh đã có sẵn từ vòng 1, không API mới nào:
+
+| Mảnh | Tái dùng từ |
+|---|---|
+| Walk cây + lọc editor root | `find-by-component` |
+| Nhận diện asset ref | `isRefLike()` (dùng cho `component-props`) |
+| Path dùng được với `cc.find` | `find-by-component` |
+| Cap kết quả | `maxResults` pattern §4 |
+
+Khác `component-props` ở chỗ then chốt: chỗ đó **serialize** giá trị, chỗ này chỉ **so uuid rồi vứt** → rẻ hơn nhiều, không lo circular.
+
+Trả cả `component` + `property` chứ không chỉ node — biết "node X dùng" mà không biết "ở prop nào" thì vẫn phải mò tay. Ref lồng trong array báo kèm index: `frames[1]`.
+
+**Bẫy 6 áp dụng nguyên** (`cc.SpriteFrame.uuid` là getter kế thừa, `_uuid` non-enumerable): so qua `isRefLike()` + fallback `_uuid`, không `Object.keys`.
+
+Nối vào `assetQuery` thành op `used_by` thay vì đẻ tool thứ 10 — tool surface là thứ agent phải giữ trong context, `assetQuery` đã là chỗ hỏi mọi thứ về asset. Giữ **9 tool / 27 op**. Nhận `url` hoặc `uuid` (agent hay cầm url hơn), resolve qua `urlToUuid` sẵn có.
+
+**Giới hạn (ghi rõ, không phải bug):** chỉ quét 2 tầng — prop trực tiếp + phần tử array. Asset lồng trong object-trong-array bị sót, cùng giới hạn với `asRef()` vòng 1. Sub-asset (spriteFrame trong atlas) uuid khác nên **không** match; đúng/sai tuỳ dùng thật.
+
+⚠️ **CHƯA SMOKE trên Creator thật** — 2.4.15 không mở được, chỉ có 5 self-check offline (§8: check thứ 5 thêm sau khi mutation-test lộ 1 check vacuous). Đừng đọc bảng này như đã verify runtime.
+
+## 7. Test harness: constructor giả phải ổn định giữa các lần load
+
+Bug tự gây khi viết check cho `find-by-asset`, đáng ghi vì sẽ tái diễn với bất kỳ check nào dùng `instanceof`:
+
+`loadHandlers()` gán `global.cc = { Asset: function () {} }` — **constructor mới mỗi lần gọi**. Test tạo asset giả *trước* khi gọi handler, nên object mang prototype của lần load trước → `instanceof cc.Asset` trượt, `find-by-asset` trả 0 match. Triệu chứng giống hệt "code sai", thật ra harness sai.
+
+Sửa: khai `FakeAsset`/`FakeNode`/`FakeComponent` ở **module scope**, `loadHandlers` chỉ trỏ tới.
+
+## 8. Mutation-test tìm ra 1 check vacuous
+
+Kỷ luật "mutation-test mọi logic mới" trả tiền ngay. Hai guard `maxResults` trong `find-by-asset`:
+
+| Guard | Chặn gì | Mutation ban đầu |
+|---|---|---|
+| trong `walk` | nhiều node cùng match | ✅ đỏ |
+| trong `scanComponent` | **một** component nhiều prop cùng match | ❌ **vẫn xanh** |
+
+Check `maxResults` đầu tiên của tôi dựng 5 node mỗi node 1 match → guard `walk` chặn trước, guard `scanComponent` không bao giờ chạy. Test xanh, coverage giả.
+
+Thêm check phủ đúng nhánh đó: **1 node, 1 component, 4 prop cùng trỏ asset**, cap 2. Giờ bỏ guard `scanComponent` → đỏ; restore → xanh. 17 check.
+
+Bài học lặp lại vòng 1: *test xanh chưa chắc test có ý nghĩa.* Cả 2 lần đều chỉ lộ ra khi cố tình phá code.
 

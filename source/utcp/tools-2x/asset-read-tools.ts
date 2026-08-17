@@ -1,13 +1,14 @@
 import { existsSync, readFileSync, statSync } from 'fs';
 import { extname } from 'path';
 import { utcpTool } from '../decorators';
-import { cbToPromise } from '../utils/ipc-promise';
+import { cbToPromise, sceneScript } from '../utils/ipc-promise';
 
 // Text extension cho phep doc. Ngoai list -> throw (dung do binary vao context agent).
 const READABLE_EXTENSIONS = ['.ts', '.js', '.json', '.fire', '.prefab', '.anim', '.effect', '.txt', '.md', '.yaml', '.yml', '.plist', '.atlas'];
 const DEFAULT_MAX_BYTES = 512 * 1024;
 const DEFAULT_SEARCH_LIMIT = 200;
 const DEFAULT_TREE_DEPTH = 5;
+const DEFAULT_USED_BY_LIMIT = 200;
 
 function requireUrl(args: { url?: string }): string {
     if (!args.url) { throw new Error('url is required for this operation'); }
@@ -107,17 +108,18 @@ export class AssetReadTools {
 
     @utcpTool(
         'assetQuery',
-        'Query the asset database: glob search, folder tree, asset info, asset meta, registered asset types, or sub-assets.',
+        'Query the asset database: glob search, folder tree, asset info, asset meta, registered asset types, sub-assets, or reverse lookup which scene nodes reference an asset (used_by).',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['search', 'tree', 'info', 'meta', 'types', 'sub_assets'], description: 'Which query to run' },
+                operation: { type: 'string', enum: ['search', 'tree', 'info', 'meta', 'types', 'sub_assets', 'used_by'], description: 'Which query to run' },
                 pattern: { type: 'string', description: 'Glob for search, default db://assets/**/*' },
                 assetTypes: { type: 'string', description: 'Comma-separated asset type names (not class names), e.g. texture,scene. Omit for all types' },
-                url: { type: 'string', description: 'Asset url — for info / meta / sub_assets' },
-                uuid: { type: 'string', description: 'Asset uuid — for info / meta / sub_assets' },
+                url: { type: 'string', description: 'Asset url — for info / meta / sub_assets / used_by' },
+                uuid: { type: 'string', description: 'Asset uuid — for info / meta / sub_assets / used_by' },
                 limit: { type: 'number', description: `Max results for search, default ${DEFAULT_SEARCH_LIMIT}` },
                 maxDepth: { type: 'number', description: `Max tree depth, default ${DEFAULT_TREE_DEPTH}` },
+                maxResults: { type: 'number', description: `Max results for used_by, default ${DEFAULT_USED_BY_LIMIT}` },
             },
             required: ['operation'],
         },
@@ -131,13 +133,14 @@ export class AssetReadTools {
                 metaPath: { type: 'string' },
                 metaMtime: { type: 'number' },
                 types: { type: 'array', items: { type: 'string' } },
+                nodes: { type: 'array', items: { type: 'object' } },
                 total: { type: 'number' },
                 truncated: { type: 'boolean' },
             },
         },
-        'GET', ['asset', 'search', 'tree', 'meta', 'info', 'types', 'query']
+        'GET', ['asset', 'search', 'tree', 'meta', 'info', 'types', 'query', 'used_by', 'reverse', 'reference']
     )
-    async assetQuery(args: { operation: string, pattern?: string, assetTypes?: string, url?: string, uuid?: string, limit?: number, maxDepth?: number }): Promise<any> {
+    async assetQuery(args: { operation: string, pattern?: string, assetTypes?: string, url?: string, uuid?: string, limit?: number, maxDepth?: number, maxResults?: number }): Promise<any> {
         switch (args.operation) {
             case 'search': {
                 const pattern = args.pattern || 'db://assets/**/*';
@@ -175,6 +178,17 @@ export class AssetReadTools {
             case 'sub_assets': {
                 const subs = args.uuid ? Editor.assetdb.subAssetInfosByUuid(args.uuid) : Editor.assetdb.subAssetInfos(requireUrl(args));
                 return { assets: subs || [], total: (subs || []).length };
+            }
+            case 'used_by': {
+                // Chieu nguoc cua `componentQuery props`: asset -> node nao dang tham chieu.
+                // 2.4 KHONG co message `scene:query-node-by-asset` (3.x co) — nhung khong can:
+                // scene-script co full cc.* nen walk cay + so uuid duoc.
+                const uuid = args.uuid || Editor.assetdb.urlToUuid(requireUrl(args));
+                if (!uuid) { throw new Error(`Cannot resolve uuid from url ${args.url}`); }
+                const maxResults = args.maxResults || DEFAULT_USED_BY_LIMIT;
+                const res = await sceneScript<any>('find-by-asset', uuid, { maxResults });
+                const nodes = (res && res.nodes) || [];
+                return { nodes, total: nodes.length, truncated: !!(res && res.truncated), uuid, maxResults };
             }
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);

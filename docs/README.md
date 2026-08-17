@@ -11,7 +11,7 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
 | `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** + vòng 1.1 (token guard) | Trước khi viết tool mới. Bắt buộc |
 | `../README.md` | Tool surface + payload limit + 2 bẫy cho người viết tool mới (bản 2.x, không phải 3.x) | Khi cần overview nhanh |
-| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (9 tool) | Khi thêm/sửa tool — update tay, không generated |
+| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (9 tool / 27 op) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
 
@@ -30,6 +30,8 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 
 **Vòng 1 xong: 9 tool, 26 op.** `editorGetLogs` bỏ — 2.4.15 không có API đọc console (verified).
 
+**Vòng 1.2 (đang làm): 27 op** — thêm `assetQuery used_by` (chiều ngược asset → node). Phase A ✅ code + 17 self-check, **chưa smoke** · phase B ✅ tách "nợ thật" vs "không port được" trong `cocos-2x-api-notes.md` · phase C (probe3, cổng vòng 2) ⛔ chờ mở được 2.4.15.
+
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
 
 **Vòng 2 (write) CHƯA MỞ — bị chặn cứng.** Cả 3 câu hỏi chặn (`cc.engine.getInstanceById` nhận uuid gì · `Editor.require('scene://utils/node')` export gì · `set-property-by-path` nhận path dạng nào) đều cần probe runtime, mà 2.4.15 phải đang chạy. Không mở được Creator = không làm được vòng 2, không có đường vòng.
@@ -37,11 +39,11 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 ## Test tự động
 
 ```
-npm run check     # build + scripts/check-node-budget.js (12 check)
+npm run check     # build + scripts/check-node-budget.js (17 check)
 npm run package   # check + zip — không đóng gói được bản đỏ
 ```
 
-`check-node-budget.js` verify logic cắt cây của **2 walker độc lập** — `nodeBrief` (scene-script, node `cc.*`) và `truncateHierarchy` (scene-read-tools, JSON từ IPC). Chạy được **không cần Creator**: cả 2 là hàm thuần, test dựng `cc` giả + `require` file đã build.
+`check-node-budget.js` verify logic cắt cây của **2 walker độc lập** — `nodeBrief` (scene-script, node `cc.*`) và `truncateHierarchy` (scene-read-tools, JSON từ IPC) — cộng **`find-by-asset`** (match uuid + 2 guard `maxResults`, vòng 1.2). Chạy được **không cần Creator**: đều là hàm thuần, test dựng `cc` giả + `require` file đã build.
 
 Đây là phần logic scene-script duy nhất verify được offline. Mọi thứ khác vẫn phải smoke test tay trong editor.
 
