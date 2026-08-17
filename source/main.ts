@@ -1,7 +1,7 @@
 import packageJSON from '../package.json';
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
-import { formatBuildInfo } from './build-info';
+import { formatBuildInfo, getBuildInfo } from './build-info';
 import { exec } from 'child_process';
 import { homedir } from 'os';
 import { join } from 'path';
@@ -74,6 +74,24 @@ export const methods: { [key: string]: (...any: any) => any } = {
             if (err?.code !== 'ENOENT') {
                 console.error(`[${packageJSON.name}] Failed to clear debug logs:`, err?.message || err);
             }
+        }
+    },
+
+    showBuildInfo() {
+        const b = getBuildInfo();
+        const lines = [
+            `Version:  ${b.version}`,
+            `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
+            `Branch:   ${b.branch}`,
+            `Built at: ${b.builtAt}`,
+        ];
+        console.log(`[${packageJSON.name}] Build info:\n${lines.join('\n')}`);
+        // ponytail: Editor.Dialog.info is heavy but this is a one-shot user query.
+        // Clipboard copy would be nicer but CC3.x has no clipboard API in main process.
+        try {
+            (Editor as any).Dialog.info(lines.join('\n'), { title: `${packageJSON.name} Build Info` });
+        } catch {
+            // Fallback: already logged to console above.
         }
     }
 };

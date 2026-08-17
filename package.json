@@ -71,6 +71,11 @@
         "message": "toggle-debug"
       },
       {
+        "path": "Code Mode (3.7)",
+        "label": "Show Build Info",
+        "message": "show-build-info"
+      },
+      {
         "path": "Code Mode (3.7)/Debug",
         "label": "Open Debug Folder",
         "message": "open-debug-folder"
@@ -120,6 +125,11 @@
       "clear-debug-logs": {
         "methods": [
           "clearDebugLogs"
+        ]
+      },
+      "show-build-info": {
+        "methods": [
+          "showBuildInfo"
         ]
       }
     }
