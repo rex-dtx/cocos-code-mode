@@ -43,13 +43,14 @@ function getServerPort() {
 
 Editor.Panel.extend({
     template: (function () {
-        try { return Fs.readFileSync(Path.join(__dirname, '../static/template/configuration/index.html'), 'utf-8'); } catch (e) {}
-        try { return Fs.readFileSync(Editor.url('packages://' + PKG + '/static/template/configuration/index.html'), 'utf-8'); } catch (e) {}
-        return '<div style="padding:20px">Template not found. Check package install.</div>';
+        try { const t = Fs.readFileSync(Path.join(__dirname, '../static/template/configuration/index.html'), 'utf-8'); if (t) return t; } catch (e) {}
+        try { const u = Editor.url('packages://' + PKG + '/static/template/configuration/index.html'); const t2 = Fs.readFileSync(u, 'utf-8'); if (t2) return t2; } catch (e) { try { Editor.log('[cc2x4] template load fail: ' + e.message); } catch(_){} }
+        try { Editor.error('[cc2x4] Template not found — check packages/' + PKG + '/static/template/configuration/index.html'); } catch(_){}
+        return '<div style="padding:20px;color:#f44">Template not found. Check package install. Tried __dirname and Editor.url(packages://' + PKG + ')</div>';
     })(),
     style: (function () {
-        try { return Fs.readFileSync(Path.join(__dirname, '../static/style/configuration/index.css'), 'utf-8'); } catch (e) {}
-        try { return Fs.readFileSync(Editor.url('packages://' + PKG + '/static/style/configuration/index.css'), 'utf-8'); } catch (e) {}
+        try { const s = Fs.readFileSync(Path.join(__dirname, '../static/style/configuration/index.css'), 'utf-8'); if (s) return s; } catch (e) {}
+        try { const u2 = Editor.url('packages://' + PKG + '/static/style/configuration/index.css'); const s2 = Fs.readFileSync(u2, 'utf-8'); if (s2) return s2; } catch (e) {}
         return '';
     })(),
 
@@ -175,10 +176,13 @@ Editor.Panel.extend({
     ready() {
         const self = this;
         const init = function() {
-            if (!self.$ || !self.$.portInput) { setTimeout(init, 50); return; }
+            if (!self.$) { setTimeout(init, 50); return; }
             self.loadSettings();
+            if (self.$.savePortBtn) self.$.savePortBtn.addEventListener('confirm', function () { self.updatePort(); });
             if (self.$.savePortBtn) self.$.savePortBtn.addEventListener('click', function () { self.updatePort(); });
+            if (self.$.utcpConfigPathSaveBtn) self.$.utcpConfigPathSaveBtn.addEventListener('confirm', function () { self.saveSettings(); });
             if (self.$.utcpConfigPathSaveBtn) self.$.utcpConfigPathSaveBtn.addEventListener('click', function () { self.saveSettings(); });
+            if (self.$.addBridgeBtn) self.$.addBridgeBtn.addEventListener('confirm', function () { self.addBridgeTemplate(); });
             if (self.$.addBridgeBtn) self.$.addBridgeBtn.addEventListener('click', function () { self.addBridgeTemplate(); });
             if (self.$.bridgeList) self.$.bridgeList.addEventListener('click', function (e) {
             const btn = e.target.closest('.remove-btn');
