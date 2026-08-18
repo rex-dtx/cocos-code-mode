@@ -5,6 +5,14 @@
   "author": "cst by hzi for cc2.4",
   "main": "dist/main.js",
   "scene-script": "dist/scene-script.js",
+  "main-menu": {
+    "Extension/Cocos Code Mode 2x/Server Info": {
+      "message": "cocos-code-mode-2x:show-info"
+    },
+    "Extension/Cocos Code Mode 2x/Restart Server": {
+      "message": "cocos-code-mode-2x:restart-server"
+    }
+  },
   "reload": {
     "ignore": [
       "node_modules/**/*"

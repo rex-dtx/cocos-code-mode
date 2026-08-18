@@ -34,12 +34,26 @@ module.exports = {
         }
     },
 
-    // Short message (khong co ':') -> editor expand thanh 'cocos-code-mode:restart-server'.
-    // Goi tu renderer: Editor.Ipc.sendToPackage('cocos-code-mode', 'restart-server', port).
+    // Short message (khong co ':') -> editor expand thanh 'cocos-code-mode-2x:restart-server'.
+    // Goi tu renderer: Editor.Ipc.sendToPackage('cocos-code-mode-2x', 'restart-server', port).
+    // Goi tu main-menu: click Extension -> Cocos Code Mode 2x (khong co arg).
     messages: {
+        'show-info'() {
+            const cm = getConfigManager();
+            // port from profile (last saved) — server does not keep it as a field
+            cm.getCurrentPort().then((port) => {
+                const configPath = cm.getConfigPath();
+                const url = port ? `http://localhost:${port}/utcp` : '(not running)';
+                Editor.log(`[${PKG_NAME}] port=${port} | config=${configPath} | ${url}`);
+            });
+        },
         async 'restart-server'(event: any, newPort: number) {
             if (!utcpServer) {
                 return;
+            }
+            // Menu click khong truyen port -> restart voi port hien tai (0 = auto)
+            if (typeof newPort !== 'number' || !newPort) {
+                newPort = await getConfigManager().getCurrentPort();
             }
             utcpServer.stop();
             try {
