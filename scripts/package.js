@@ -69,7 +69,7 @@ archive.pipe(output);
 for (const item of filesToInclude) {
     if (item === 'package.json') {
         const patched = { ...packageJson, version: zipVersion };
-        archive.append(JSON.stringify(patched, null, 2), { name: 'package.json' });
+        archive.append(JSON.stringify(patched, null, 2), { name: `${packageName}/package.json` });
         continue;
     }
     const itemPath = path.join(projectRoot, item);
@@ -79,9 +79,9 @@ for (const item of filesToInclude) {
         continue;
     }
     if (fs.statSync(itemPath).isDirectory()) {
-        archive.directory(itemPath, item);
+        archive.directory(itemPath, `${packageName}/${item}`);
     } else {
-        archive.file(itemPath, { name: item });
+        archive.file(itemPath, { name: `${packageName}/${item}` });
     }
 }
 
