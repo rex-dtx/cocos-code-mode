@@ -6,6 +6,9 @@
   "main": "dist/main.js",
   "scene-script": "dist/scene-script.js",
   "main-menu": {
+    "Extension/Cocos Code Mode 2x/Configuration": {
+      "message": "cocos-code-mode-2x:open-config"
+    },
     "Extension/Cocos Code Mode 2x/Server Info": {
       "message": "cocos-code-mode-2x:show-info"
     },
@@ -18,6 +21,15 @@
     "Extension/Cocos Code Mode 2x/About": {
       "message": "cocos-code-mode-2x:show-build-info"
     }
+  },
+  "panel": {
+    "main": "panel/configuration.js",
+    "type": "dockable",
+    "title": "Cocos Code Mode 2x",
+    "width": 600,
+    "height": 700,
+    "min-width": 400,
+    "min-height": 400
   },
   "reload": {
     "ignore": [

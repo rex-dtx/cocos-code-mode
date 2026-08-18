@@ -40,6 +40,7 @@ const filesToInclude = [
     '@types',
     'dist',
     'i18n',
+    'panel',
     'node_modules',
     'static',
     'package-lock.json',

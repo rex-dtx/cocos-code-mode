@@ -110,6 +110,9 @@ module.exports = {
                     (Editor as any).Dialog.info(lines.join('\n'), { title: `${PKG_NAME} Build Info` });
                 } catch { /* logged above */ }
             }
+        },
+        'open-config'() {
+            Editor.Panel.open(PKG_NAME);
         }
     }
 };
