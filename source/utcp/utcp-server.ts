@@ -17,6 +17,7 @@ import { ToolRegistry } from './decorators';
 // import './tools/animation-tools';
 // import { registerAllImporters } from './utils/asset-importers';   // .meta 3.x
 import './tools-2x/asset-read-tools';
+import './tools-2x/asset-write-tools';
 import './tools-2x/scene-read-tools';
 import './tools-2x/deep-read-tools';
 import './tools-2x/component-method-tools';
@@ -24,6 +25,7 @@ import './tools-2x/scene-misc-tools';
 import './tools-2x/scene-probe-tools';
 import './tools-2x/scene-write-tools';
 import './tools-2x/editor-misc-tools';
+import './tools-2x/editor-extra-tools';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';

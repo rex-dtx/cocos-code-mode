@@ -1,4 +1,4 @@
-// Agent-facing tool surface cho Cocos Creator 2.4.x — READ-ONLY (vong 1).
+// Agent-facing tool surface cho Cocos Creator 2.4.x.
 // STATIC hand-written, KHONG generated, 0 code importer. Them tool thi sua tay.
 // Chi khai tool DA PASS gate — thay trong d.ts ma goi khong duoc con te hon khong co.
 // Doi chieu shape that: docs/cocos-2x-api-notes.md
@@ -245,6 +245,18 @@ declare namespace cc2x4 {
 
     /** Undo/redo. */
     function editorUndo(args: { operation: 'undo' | 'redo' }): { success: boolean };
+
+    /** Asset: create folder, write content, move/rename, delete. */
+    function assetCreateFolder(args: { url: string }): { url: string; fspath: string };
+    function assetWriteContent(args: { url: string; content: string }): { url: string; fspath: string; bytes: number };
+    function assetMove(args: { srcUrl: string; destUrl: string }): { srcUrl: string; destUrl: string };
+    function assetDelete(args: { url: string }): { url: string };
+
+    /** Editor operate: save scene, refresh assets. */
+    function editorOperate(args: { operation: 'save_scene' | 'refresh_assets' }): { success: boolean };
+
+    /** Write project settings. */
+    function projectSaveConfig(args: { type: string; key: string; value: any }): { success: boolean };
 
     /** Goi handler bat ky trong scene-script (probe). */
     function sceneScript(args: { handler: string; arg1?: string; arg2?: any }): { result: any };
