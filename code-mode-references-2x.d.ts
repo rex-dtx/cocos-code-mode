@@ -222,4 +222,21 @@ declare namespace cc2x4 {
 
     /** Mo preview trong browser mac dinh. */
     function previewOpenInBrowser(): { success: boolean };
+
+    // --- Write (probe verified: setPropertyByPath + direct_x + createNode) ---
+
+    /** Set property tren node (path: x, y, active) hoac component (them compType). */
+    function nodeSetProperty(args: { uuid: string; path: string; value: any; compType?: string }): { before: any; after: any; path: string };
+
+    /** Tao node moi. */
+    function nodeCreate(args: { name: string; parentUuid?: string }): { uuid: string; name: string; parent: string };
+
+    /** Xoa node khoi scene. */
+    function nodeRemove(args: { uuid: string }): { removed: string };
+
+    /** Them/xoa component tren node. */
+    function nodeComponentManage(args: { operation: 'add' | 'remove'; nodeUuid: string; compType: string }): { uuid?: string; type?: string; removed?: string };
+
+    /** Goi handler bat ky trong scene-script (probe). */
+    function sceneScript(args: { handler: string; arg1?: string; arg2?: any }): { result: any };
 }

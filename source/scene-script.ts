@@ -690,11 +690,117 @@
             out['scene://utils/node'] = tryRequire('scene://utils/node');
             out['scene://utils/prefab'] = tryRequire('scene://utils/prefab');
             out['scene://utils/scene'] = tryRequire('scene://utils/scene');
-            // check cc.Node creation
             try { out['cc.Node'] = typeof cc.Node; out['new_cc_Node'] = (() => { const n = new cc.Node('ProbeNode'); return { name: n.name, has_uuid: !!n.uuid }; })(); } catch (e: any) { out['cc.Node'] = 'ERR:' + e.message; }
             try { out['has_createNodeFromAsset'] = typeof (Editor.require('scene://utils/node') as any).createNodeFromAsset === 'function'; } catch (e: any) { out['has_createNodeFromAsset'] = 'ERR:' + e.message; }
             try { out['has_createNodeFromClass'] = typeof (Editor.require('scene://utils/node') as any).createNodeFromClass === 'function'; } catch (e: any) { out['has_createNodeFromClass'] = 'ERR:' + e.message; }
             event.reply(null, out);
+        },
+
+        // --- write handlers (probe verified: direct assign x 0→999 OK, direct_x 0→1 OK) ---
+
+        'set-node-prop': function (event: any, uuid: string, path: string, value: any) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) {
+                    if (node || !n) { return; }
+                    if (n.uuid === uuid) { node = n; return; }
+                    (n.children || []).forEach(walk);
+                })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+            try {
+                const parts = path.split('.');
+                let cur: any = node;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    cur = cur[parts[i]];
+                    if (cur === undefined || cur === null) { throw new Error('path segment not found: ' + parts.slice(0, i + 1).join('.')); }
+                }
+                const last = parts[parts.length - 1];
+                const before = cur[last];
+                cur[last] = value;
+                event.reply(null, { uuid, path, before, after: cur[last] });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'set-comp-prop': function (event: any, nodeUuid: string, compType: string, path: string, value: any) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(nodeUuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) {
+                    if (node || !n) { return; }
+                    if (n.uuid === nodeUuid) { node = n; return; }
+                    (n.children || []).forEach(walk);
+                })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + nodeUuid)); }
+            const comp = node.getComponent(compType);
+            if (!comp) { return event.reply(new Error('component not found: ' + compType + ' on ' + node.name)); }
+            try {
+                const parts = path.split('.');
+                let cur: any = comp;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    cur = cur[parts[i]];
+                    if (cur === undefined || cur === null) { throw new Error('path segment not found: ' + parts.slice(0, i + 1).join('.')); }
+                }
+                const last = parts[parts.length - 1];
+                const before = cur[last];
+                cur[last] = value;
+                event.reply(null, { nodeUuid, compType, path, before, after: cur[last] });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'create-node': function (event: any, name: string, parentUuid: string) {
+            try {
+                const node = new cc.Node(name);
+                let parent: any = cc.director.getScene();
+                if (parentUuid) {
+                    try { if (cc.engine && cc.engine.getInstanceById) { parent = cc.engine.getInstanceById(parentUuid) || parent; } } catch (e) {}
+                    if (parent.uuid !== parentUuid) {
+                        let found: any = null;
+                        (function walk(n: any) { if (found || !n) return; if (n.uuid === parentUuid) { found = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                        if (found) { parent = found; }
+                    }
+                }
+                parent.addChild(node);
+                event.reply(null, { uuid: node.uuid, name: node.name, parent: parent.name });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'remove-node': function (event: any, uuid: string) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+            try { node.removeFromParent(false); event.reply(null, { removed: uuid }); } catch (e: any) { event.reply(e); }
+        },
+
+        'add-component': function (event: any, nodeUuid: string, compType: string) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(nodeUuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) { if (node || !n) return; if (n.uuid === nodeUuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + nodeUuid)); }
+            try {
+                const comp = node.addComponent(compType);
+                if (!comp) { return event.reply(new Error('addComponent returned null for ' + compType)); }
+                event.reply(null, { uuid: comp.uuid || null, type: compType });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'remove-component': function (event: any, nodeUuid: string, compType: string) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(nodeUuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) { if (node || !n) return; if (n.uuid === nodeUuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + nodeUuid)); }
+            const comp = node.getComponent(compType);
+            if (!comp) { return event.reply(new Error('component not found: ' + compType)); }
+            try { node.removeComponent(comp); event.reply(null, { removed: compType }); } catch (e: any) { event.reply(e); }
         },
     };
 

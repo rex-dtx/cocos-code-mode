@@ -664,11 +664,16 @@ scene-utils/
 
 **CHƯA VERIFY** — `.ccc` không đọc được signature. Đây là **bản đồ để probe**, KHÔNG phải API đã xác nhận. Probe `Object.keys(Editor.require('scene://utils/node'))` trước khi code.
 
-## Unresolved bổ sung
+## Unresolved bổ sung — probe 2026-08-18 (helloworld, 12 nodes)
 
-12. `cc.engine.getInstanceById(id)` — `id` có bằng `uuid` từ `scene:query-hierarchy` không? (probe vòng 2)
-13. `Editor.require('scene://utils/node')` export gì? Probe `Object.keys` trước khi code.
-14. `set-property-by-path` nhận path dạng nào? Ứng viên chính cho write property.
+12. `cc.engine.getInstanceById(id)` — chưa probe `probe-getInstanceById` (Canvas uuid `a286bbGkn...`). Kết luận chờ.
+13. `Editor.require('scene://utils/node')` — **đã probe**: KHÔNG có `setProperty`/`setPropertyByPath`. Export: `getObbFromRect, getWorldBounds, getWorldOrientedBounds, getScenePosition, setScenePosition, getWorldPosition, setWorldPosition, getWorldRotation, setWorldRotation, getWorldScale, createNodeFromAsset, createNodeFromClass, getNodePath, makeVec3InPrecision...` — chỉ có transform + create helpers. `set-property-by-path.ccc` nằm top-level `scene-utils/` (thử `scene://set-property-by-path` chưa ra).
+14. `set-property` — **đã probe 2 hướng**:
+    - `scene://utils/node` → không có. Thử mọi `scene://set-property-by-path` / `app://editor/page/scene-utils/set-property-by-path` → keys khác nhau, chưa match.
+    - **Direct `node.x = 999` → 0→999 thành công**, `probe-mutate direct_x 0→1 OK`. Write qua `node[prop] = value` hoạt động trong scene process. Undo chưa verify (probe-undo: `Editor.Undo` / `_Scene.Undo` keys pending detail).
+    - `setWorldPosition(uuid, Vec3)` / `setScenePosition` tồn tại — dùng cho position.
+
+→ **Write vòng 2 sẽ đi đường direct assign + `scene:snapshot` undo** (đã verify), không đợi `setPropertyByPath`. Probe `probe-undo` detail cần chạy lại để chốt undo entry point.
 
 ---
 
