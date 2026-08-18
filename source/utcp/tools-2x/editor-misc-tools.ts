@@ -180,4 +180,54 @@ export class EditorMiscTools {
     //   console:query-logs / console:query / logs -> "message not found"
     // Docs main/console.md cung chi co log/warn/error (GHI). User xem Console panel
     // truc tiep. KHONG fake tool tra mang rong.
+
+    @utcpTool(
+        'previewGetUrl',
+        'Get the URL of the editor game preview server (browser preview). Null if preview not running.',
+        { type: 'object', properties: {} },
+        { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] },
+        'GET', ['preview', 'url', 'browser', 'play']
+    )
+    async previewGetUrl(): Promise<{ url: string }> {
+        // 2.4: Editor.PreviewServer ? probe tung message
+        const candidates = ['preview:query-preview-url', 'preview:get-url', 'scene:query-preview-url'];
+        for (const msg of candidates) {
+            try {
+                const url: string = await new Promise<string>((resolve, reject) => {
+                    const panel = msg.startsWith('preview:') ? 'preview' : 'scene';
+                    Editor.Ipc.sendToPanel(panel, msg, (err: any, result: any) => {
+                        if (err) { return reject(err); }
+                        resolve(result);
+                    });
+                });
+                if (url && typeof url === 'string') { return { url }; }
+            } catch (e) { /* thu message tiep theo */ }
+        }
+        throw new Error('Preview URL not available — preview server may not be running');
+    }
+
+    @utcpTool(
+        'previewOpenInBrowser',
+        'Open the current scene preview in the system default browser.',
+        { type: 'object', properties: {} },
+        { type: 'object', properties: { success: { type: 'boolean' } }, required: ['success'] },
+        'POST', ['preview', 'browser', 'open', 'play']
+    )
+    async previewOpenInBrowser(): Promise<{ success: boolean }> {
+        const candidates = ['preview:preview-scene-in-browser', 'preview:open', 'scene:preview-scene-in-browser'];
+        let lastErr: any;
+        for (const msg of candidates) {
+            try {
+                await new Promise<void>((resolve, reject) => {
+                    const panel = msg.startsWith('preview:') ? 'preview' : 'scene';
+                    Editor.Ipc.sendToPanel(panel, msg, (err: any) => {
+                        if (err) { return reject(err); }
+                        resolve();
+                    });
+                });
+                return { success: true };
+            } catch (e) { lastErr = e; }
+        }
+        throw new Error(`Failed to open preview: ${lastErr?.message || lastErr}`);
+    }
 }

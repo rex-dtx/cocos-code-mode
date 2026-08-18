@@ -210,4 +210,16 @@ declare namespace cc2x4 {
         ids?: string;
         unselectOthers?: boolean;
     }): { success: boolean; selected?: string[]; activate?: string | null; hovering?: string | null };
+
+    /** Mo scene khac. Truyen uuid hoac db:// url cua scene asset. */
+    function sceneOpen(args: { uuid?: string; url?: string }): { success: boolean; uuid: string };
+
+    /** Info nhe ve scene dang mo: name/uuid/designResolution/so node. */
+    function sceneInfo(): { name: string; uuid: string; designResolution: { width: number; height: number } | null; nodesVisited: number };
+
+    /** Preview server url (null neu chua chay). */
+    function previewGetUrl(): { url: string };
+
+    /** Mo preview trong browser mac dinh. */
+    function previewOpenInBrowser(): { success: boolean };
 }

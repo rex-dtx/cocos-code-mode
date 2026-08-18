@@ -478,6 +478,33 @@
             if (filter) { names = names.filter(function (n) { return n.indexOf(filter) !== -1; }); }
             event.reply(null, names.sort());
         },
+
+        'open-scene': function (event: any, uuid: string) {
+            if (typeof _Scene !== 'undefined' && _Scene.loadSceneByUuid) {
+                _Scene.loadSceneByUuid(uuid, function (err: any) {
+                    if (err) { return event.reply(err); }
+                    event.reply(null, { ok: true });
+                });
+            } else {
+                event.reply(new Error('_Scene.loadSceneByUuid not available'));
+            }
+        },
+
+        'scene-info': function (event: any) {
+            const scene = cc.director.getScene();
+            if (!scene) { return event.reply(new Error('no scene open')); }
+            // designResolution helper da co san o scope ngoai
+            let dr: any = null;
+            try {
+                const c = cc.find('Canvas');
+                const comp = c && c.getComponent('cc.Canvas');
+                if (comp && comp.designResolution) { dr = { width: comp.designResolution.width, height: comp.designResolution.height }; }
+            } catch (e) { /* bo qua */ }
+            // node count: walk nhe, chi dem — khong build INodeBrief
+            let count = 0;
+            (function walk(n: any) { count++; (n.children || []).forEach(walk); })(scene);
+            event.reply(null, { name: scene.name, uuid: scene.uuid, designResolution: dr, nodesVisited: count });
+        },
     };
 
 })();

@@ -20,6 +20,7 @@ import './tools-2x/asset-read-tools';
 import './tools-2x/scene-read-tools';
 import './tools-2x/deep-read-tools';
 import './tools-2x/component-method-tools';
+import './tools-2x/scene-misc-tools';
 import './tools-2x/editor-misc-tools';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
