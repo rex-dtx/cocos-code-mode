@@ -43,10 +43,12 @@ function getServerPort() {
 
 Editor.Panel.extend({
     template: (function () {
+        try { return Fs.readFileSync(Path.join(__dirname, '../static/template/configuration/index.html'), 'utf-8'); } catch (e) {}
         try { return Fs.readFileSync(Editor.url('packages://' + PKG + '/static/template/configuration/index.html'), 'utf-8'); } catch (e) {}
         return '<div style="padding:20px">Template not found. Check package install.</div>';
     })(),
     style: (function () {
+        try { return Fs.readFileSync(Path.join(__dirname, '../static/style/configuration/index.css'), 'utf-8'); } catch (e) {}
         try { return Fs.readFileSync(Editor.url('packages://' + PKG + '/static/style/configuration/index.css'), 'utf-8'); } catch (e) {}
         return '';
     })(),
@@ -64,6 +66,7 @@ Editor.Panel.extend({
     },
 
     loadSettings() {
+        if (!this.$) return;
         if (this.$.utcpConfigPathInput) this.$.utcpConfigPathInput.value = getConfigPath();
         if (this.$.portInput) this.$.portInput.value = getServerPort() || 0;
         this.updateMcpCodeBlock();
@@ -71,6 +74,7 @@ Editor.Panel.extend({
     },
 
     saveSettings() {
+        if (!this.$) return;
         const newPath = this.$.utcpConfigPathInput && this.$.utcpConfigPathInput.value;
         if (!newPath) return;
         // Update settings file: project/settings/cocos-code-mode-2x.json
@@ -88,6 +92,7 @@ Editor.Panel.extend({
     },
 
     updatePort() {
+        if (!this.$) return;
         const val = this.$.portInput && this.$.portInput.value;
         const port = parseInt(val);
         Editor.Ipc.sendToMain(PKG + ':restart-server', port, function (err) {
@@ -96,6 +101,7 @@ Editor.Panel.extend({
     },
 
     updateMcpCodeBlock() {
+        if (!this.$) return;
         const el = this.$.mcpConfigCode;
         if (!el) return;
         const configPath = getConfigPath();
@@ -111,6 +117,7 @@ Editor.Panel.extend({
     },
 
     fetchBridgeList() {
+        if (!this.$) return;
         const container = this.$.bridgeList;
         if (!container) return;
         container.innerHTML = '';
@@ -138,6 +145,7 @@ Editor.Panel.extend({
     },
 
     addBridgeTemplate() {
+        if (!this.$) return;
         const input = this.$.newTemplateJson;
         if (!input) return;
         const content = input.value.trim();
@@ -165,18 +173,22 @@ Editor.Panel.extend({
     },
 
     ready() {
-        this.loadSettings();
         const self = this;
-        if (this.$.savePortBtn) this.$.savePortBtn.addEventListener('click', function () { self.updatePort(); });
-        if (this.$.utcpConfigPathSaveBtn) this.$.utcpConfigPathSaveBtn.addEventListener('click', function () { self.saveSettings(); });
-        if (this.$.addBridgeBtn) this.$.addBridgeBtn.addEventListener('click', function () { self.addBridgeTemplate(); });
-        if (this.$.bridgeList) this.$.bridgeList.addEventListener('click', function (e) {
+        const init = function() {
+            if (!self.$ || !self.$.portInput) { setTimeout(init, 50); return; }
+            self.loadSettings();
+            if (self.$.savePortBtn) self.$.savePortBtn.addEventListener('click', function () { self.updatePort(); });
+            if (self.$.utcpConfigPathSaveBtn) self.$.utcpConfigPathSaveBtn.addEventListener('click', function () { self.saveSettings(); });
+            if (self.$.addBridgeBtn) self.$.addBridgeBtn.addEventListener('click', function () { self.addBridgeTemplate(); });
+            if (self.$.bridgeList) self.$.bridgeList.addEventListener('click', function (e) {
             const btn = e.target.closest('.remove-btn');
             if (btn) {
                 const section = btn.closest('.bridge-item-section');
                 if (section && section.dataset.name) self.removeBridge(section.dataset.name);
             }
         });
+        };
+        init();
     },
 
     beforeClose() {},
