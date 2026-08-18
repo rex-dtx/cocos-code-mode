@@ -29,6 +29,15 @@ import './tools-2x/editor-extra-tools';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
+import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { homedir } from 'os';
+
+let debugEnabled = process.env.UTCP_DEBUG === '1' || process.env.UTCP_DEBUG === 'true';
+const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
+let debugLogFile = join(DEBUG_LOG_DIR, `utcp-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
+if (debugEnabled) { try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {} console.log(`[UTCP] Debug mode ON -> ${debugLogFile}`); }
+function debugLog(entry: Record<string, any>): void { if (!debugEnabled) return; try { try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {} const line = JSON.stringify({ ts: new Date().toISOString(), ...entry }); appendFileSync(debugLogFile, line + '\n'); } catch {} }
 
 export class UtcpServerManager {
     private app: express.Application;
@@ -115,20 +124,21 @@ export class UtcpServerManager {
 
             // Register specific endpoint
             const handler = async (req: Request, res: Response) => {
+                const t0 = Date.now();
                 try {
                     const args = req.query;
-
+                    debugLog({ type: 'request', tool: toolDef.name, method: req.method, url: req.originalUrl, args });
                     let result = await toolMeta.method.apply(instance, [args]);
-
                     if (result === undefined || result === null) {
+                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: Date.now() - t0 });
                         res.json(null);
                         return;
                     }
-
+                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: Date.now() - t0 });
                     res.json(result);
-
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
+                    debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: Date.now() - t0 });
                     res.status(500).json({ error: err.message });
                 }
             };
@@ -165,6 +175,27 @@ export class UtcpServerManager {
         this.app.get('/build-info', (req, res) => {
             res.json(getBuildInfo());
         });
+
+        this.app.get('/debug-logs', (req, res) => {
+            if (!debugEnabled) { res.status(404).json({ error: 'Debug mode not enabled. Toggle via menu or set UTCP_DEBUG=1.' }); return; }
+            try {
+                const files = readdirSync(DEBUG_LOG_DIR).filter(f => f.endsWith('.jsonl')).sort().reverse();
+                if (files.length === 0) { res.json([]); return; }
+                const content = readFileSync(join(DEBUG_LOG_DIR, files[0]), 'utf-8');
+                let entries = content.trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
+                const toolFilter = req.query.tool as string | undefined;
+                if (toolFilter) entries = entries.filter(e => e.tool === toolFilter);
+                const lastN = Number(req.query.last);
+                if (lastN > 0) entries = entries.slice(-lastN);
+                res.json(entries);
+            } catch (err: any) { res.status(500).json({ error: err.message }); }
+        });
+    }
+
+    toggleDebug(): boolean {
+        debugEnabled = !debugEnabled;
+        if (debugEnabled) { try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {} console.log(`[UTCP] Debug mode ON -> ${debugLogFile}`); } else { console.log('[UTCP] Debug mode OFF'); }
+        return debugEnabled;
     }
 
     stop() {

@@ -40,6 +40,17 @@
 
     // BAY 1 (probe phase 3): cc.view.getDesignResolutionSize() tra size VIEWPORT EDITOR,
     // doi theo keo cua so. Design resolution that nam o component cc.Canvas.
+    // --- debug console capture (port from 3x7 scene.ts) ---
+    let _catchAllActive = false;
+    let _origLog: any = null; let _origWarn: any = null; let _origErr: any = null;
+    let _sceneLogFile: string | null = null;
+    function _writeSceneLog(level: string, data: any[]): void {
+        if (!_sceneLogFile) return;
+        const msg = data.map(a => a instanceof Error ? `${a.message}\n${(a as any).stack || ''}` : String(a)).join(' ');
+        const line = JSON.stringify({ ts: new Date().toISOString(), level, msg }) + '\n';
+        try { const fs: any = require('fs'); fs.appendFileSync(_sceneLogFile, line); } catch {}
+    }
+
     function designResolution(): any {
         const canvasNode = cc.find('Canvas');
         if (!canvasNode) { return null; }
@@ -833,6 +844,33 @@
             } catch (e: any) { event.reply(e); }
         },
 
+        'startCatchAll': function (event: any) {
+            try {
+                if (_catchAllActive) return event.reply(null, true);
+                let fs: any; try { fs = require('fs'); } catch { return event.reply(null, false); }
+                const path = require('path'); const os = require('os');
+                const dir = path.join(os.homedir(), '.utcp-debug');
+                try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+                _sceneLogFile = path.join(dir, `scene-console-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
+                _catchAllActive = true;
+                _origLog = console.log; _origWarn = console.warn; _origErr = console.error;
+                console.log = function(...args: any[]) { _writeSceneLog('log', args); return _origLog.apply(console, args); } as any;
+                console.warn = function(...args: any[]) { _writeSceneLog('warn', args); return _origWarn.apply(console, args); } as any;
+                console.error = function(...args: any[]) { _writeSceneLog('error', args); return _origErr.apply(console, args); } as any;
+                event.reply(null, true);
+            } catch (e: any) { event.reply(e); }
+        },
+        'stopCatchAll': function (event: any) {
+            try {
+                if (!_catchAllActive) return event.reply(null, true);
+                if (_origLog) console.log = _origLog;
+                if (_origWarn) console.warn = _origWarn;
+                if (_origErr) console.error = _origErr;
+                _origLog = _origWarn = _origErr = null;
+                _catchAllActive = false; _sceneLogFile = null;
+                event.reply(null, true);
+            } catch (e: any) { event.reply(e); }
+        },
         'duplicate-node': function (event: any, uuid: string) {
             let node: any = null;
             try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}

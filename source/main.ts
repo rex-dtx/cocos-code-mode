@@ -1,6 +1,12 @@
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
+import { exec } from 'child_process';
+import { homedir } from 'os';
+import { join } from 'path';
+import { readdirSync, unlinkSync } from 'fs';
+
+const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
 const PKG_NAME = 'cocos-code-mode-2x';
 
@@ -113,6 +119,27 @@ module.exports = {
         },
         'open-config'() {
             Editor.Panel.open(PKG_NAME);
+        },
+        'toggle-debug'() {
+            if (!utcpServer) return;
+            const enabled = utcpServer.toggleDebug();
+            const status = enabled ? 'ON' : 'OFF';
+            Editor.log(`[${PKG_NAME}] Debug logging ${status}`);
+            const method = enabled ? 'startCatchAll' : 'stopCatchAll';
+            Editor.Scene.callSceneScript(PKG_NAME, method, (err: any) => {
+                if (err) Editor.log(`[${PKG_NAME}] Scene console capture not toggled: ${err.message || err}`);
+            });
+        },
+        'open-debug-folder'() {
+            const cmd = process.platform === 'win32' ? `start "" "${DEBUG_LOG_DIR}"` : process.platform === 'darwin' ? `open "${DEBUG_LOG_DIR}"` : `xdg-open "${DEBUG_LOG_DIR}"`;
+            exec(cmd, (err) => { if (err) Editor.error(`[${PKG_NAME}] Failed to open debug folder: ${err.message}`); });
+        },
+        'clear-debug-logs'() {
+            try {
+                const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
+                files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
+                Editor.log(`[${PKG_NAME}] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
+            } catch (err: any) { if (err?.code !== 'ENOENT') Editor.error(`[${PKG_NAME}] Failed to clear debug logs: ${err.message || err}`); }
         }
     }
 };

@@ -20,6 +20,15 @@
     },
     "Extension/Cocos Code Mode 2x/About": {
       "message": "cocos-code-mode-2x:show-build-info"
+    },
+    "Extension/Cocos Code Mode 2x/Debug/Toggle Debug Logging": {
+      "message": "cocos-code-mode-2x:toggle-debug"
+    },
+    "Extension/Cocos Code Mode 2x/Debug/Open Debug Folder": {
+      "message": "cocos-code-mode-2x:open-debug-folder"
+    },
+    "Extension/Cocos Code Mode 2x/Debug/Clear Debug Logs": {
+      "message": "cocos-code-mode-2x:clear-debug-logs"
     }
   },
   "panel": {
