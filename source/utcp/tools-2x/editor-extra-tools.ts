@@ -1,5 +1,4 @@
 import { utcpTool } from '../decorators';
-import { panelIpc } from '../utils/ipc-promise';
 
 /**
  * Lightweight preview helpers — no engine scene mutation.
@@ -23,22 +22,14 @@ export class EditorExtraTools {
     async editorOperate(args: { operation: string }): Promise<any> {
         switch (args.operation) {
             case 'save_scene': {
-                const candidates = ['scene:stash-and-save', 'scene:save', 'scene:save-scene', 'editor:save'];
-                let lastErr: any;
-                for (const msg of candidates) {
-                    try {
-                        const panel = msg.startsWith('scene:') ? 'scene' : 'main';
-                        if (panel === 'main') {
-                            await new Promise<void>((resolve, reject) => {
-                                Editor.Ipc.sendToMain(msg, (err: any) => err ? reject(err) : resolve());
-                            });
-                        } else {
-                            await panelIpc<any>('scene', msg);
-                        }
-                        return { success: true };
-                    } catch (e) { lastErr = e; }
+                // 2.4: fire-and-forget — ref pkg does sendToPanel('scene','scene:stash-and-save') with NO callback.
+                // Awaiting reply causes 10s timeout; just send and return.
+                try {
+                    Editor.Ipc.sendToPanel('scene', 'scene:stash-and-save');
+                    return { success: true };
+                } catch (e: any) {
+                    throw new Error(`save_scene failed: ${e?.message || e}`);
                 }
-                throw new Error(`save_scene failed (tried ${candidates.join(', ')}): ${lastErr?.message || lastErr}`);
             }
             case 'refresh_assets':
                 await new Promise<void>((resolve) => {

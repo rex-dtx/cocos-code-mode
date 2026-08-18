@@ -27,9 +27,7 @@
     "type": "dockable",
     "title": "Cocos Code Mode 2x",
     "width": 600,
-    "height": 700,
-    "min-width": 400,
-    "min-height": 400
+    "height": 700
   },
   "reload": {
     "ignore": [
