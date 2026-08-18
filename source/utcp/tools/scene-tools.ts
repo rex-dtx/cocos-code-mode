@@ -26,7 +26,7 @@ export class SceneTools {
 
     @utcpTool(
         'sceneGetInfo',
-        'Get info about the current scene: its bounds (canvas/scene size), whether it has unsaved changes (dirty), and which scene asset is currently open.',
+        'Get scene bounds, dirty state, and current scene asset.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -251,7 +251,7 @@ export class SceneTools {
 
     @utcpTool(
         'listComponentClasses',
-        'List classes known to the editor, optionally filtered by base class (e.g. "cc.Component"). Helps resolve valid class names before nodeComponentAdd.',
+        'List editor classes, filter by base class e.g. cc.Component.',
         {
             type: 'object',
             properties: {
@@ -347,7 +347,7 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetTree',
-        'Get the hierarchy tree of specific node or scene root if no reference is provided. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited); pass fields[] to keep only these node keys (reference and children always kept). Pass maxNodes to cap total nodes walked (default unlimited, 400 guards wide scenes) — truncated branches set truncated/childrenOmitted.',
+        'Get node hierarchy tree. Supports maxDepth, maxNodes, fields filter. Marks truncated branches.',
         {
             type: 'object',
             properties: {
@@ -442,7 +442,7 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetAtPath',
-        'Get nodes at specific path in the scene hierarchy. Usually returns one node, but can return multiple nodes with the same name.',
+        'Get nodes at hierarchy path.',
         {
             type: 'object',
             properties: {
@@ -487,7 +487,7 @@ export class SceneTools {
 
     @utcpTool(
         'nodeCreatePrimitive',
-        'Create a new node with predefined primitive geometry MeshRenderer. If no parent is specified, root node is used. Returns reference to the new node.',
+        'Create primitive node (Capsule/Cube/Sphere etc.) under parent.',
          {  type: 'object',
             properties: {
                 name: { type: 'string' },

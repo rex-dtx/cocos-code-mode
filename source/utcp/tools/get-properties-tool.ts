@@ -16,7 +16,7 @@ export class GetPropertiesTool {
 
     @utcpTool(
         "inspectorGetInstanceProperties",
-        "Get properties of an instance (node, component, asset). Pass fields[] to request only specific top-level keys instead of full dump.",
+        "Get properties for instance. Use fields[] for specific keys.",
         {
             type: 'object',
             properties: {

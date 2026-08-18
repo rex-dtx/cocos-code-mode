@@ -115,7 +115,7 @@ export class AnimationTools {
 
     @utcpTool(
         'animationEdit',
-        'Edit animation clips. Workflow: record_start → operate → save_clip → record_stop. Also change_root, set_edit_clip, set_edit_time, clip_state.',
+        'Edit animation clips: record_start -> operate -> save_clip -> record_stop.',
         {
             type: 'object',
             properties: {

@@ -8,7 +8,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorEnvInfo',
-        'Get info about the current editor environment: editor version, engine version and paths, native engine info, current project filesystem path.',
+        'Get editor/engine version, paths, and project filesystem path.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -206,7 +206,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorListTypes',
-        'List editor type vocabularies: creatable_assets, asset_types (cc.* names for ccType filter), importers (for importer filter).',
+        'List editor vocabularies: creatable_assets, asset_types, importers.',
         {
             type: 'object',
             properties: {
@@ -400,7 +400,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorHistory',
-        'Undo or redo the last editor operation in the scene view (node/component/property changes recorded via snapshot). Use undo to roll back a failed or unwanted mutation.',
+        'Undo/redo last scene operation (snapshot).',
         {
             type: 'object',
             properties: {

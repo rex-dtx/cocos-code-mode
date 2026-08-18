@@ -10,7 +10,7 @@ declare const Editor: any;
 export class SetPropertyTool {
     @utcpTool(
         "inspectorSetSettingsProperties",
-        "Sets a property on the specific settings. If a property path or type is not confirmed via inspectorGet* tools, you MUST NOT call any setter.",
+        "Set property on CurrentSceneGlobals/ProjectSettings.",
         { type: 'object',
             properties: {
                 settingsType: { type: 'string', enum: ['CurrentSceneGlobals', 'ProjectSettings'] },
@@ -42,7 +42,7 @@ export class SetPropertyTool {
 
     @utcpTool(
         "inspectorSetInstanceProperties",
-        "Sets a property on instance of Node, Component or Asset. If a property path or type is not confirmed via inspectorGet* tools, you MUST NOT call any setter.",
+        "Set properties on node/component/asset instance.",
         {
             type: 'object',
             properties: {

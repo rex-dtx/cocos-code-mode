@@ -10,7 +10,7 @@ export class PropertyArrayTools {
 
     @utcpTool(
         'propertyArrayElement',
-        'Remove or reorder one element of an array-valued property by index. Use instead of inspectorSetInstanceProperties (which replaces the whole array).',
+        'Remove or reorder array property element by index.',
         {
             type: 'object',
             properties: {

@@ -83,7 +83,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetGetTree',
-        'Get the asset and subAsset hierarchy tree. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited). Pass maxNodes to cap total nodes walked (default unlimited, 400 guards wide folders) — truncated branches set truncated/childrenOmitted.',
+        'Get asset hierarchy tree. Supports maxDepth, maxNodes. Marks truncated branches.',
         {
             type: 'object',
             properties: {
@@ -200,7 +200,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetGetAtPath',
-        'Get asset reference by given local path and name, including extension. Can be used for subassets too. Returns reference to the asset.',
+        'Get asset reference by db:// path.',
         {
             type: 'object',
             properties: {
@@ -225,7 +225,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetResolvePath',
-        'Resolve filesystem path and db:// url for an asset by its uuid. Lighter than query-asset-info when you only need locations (e.g. to read the file directly).',
+        'Resolve db:// url and filesystem path for asset uuid.',
         {
             type: 'object',
             properties: {
@@ -249,7 +249,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetFindReferences',
-        'Asset dependency analysis: "used_by" (who references it), "depends_on" (what it references). Complements findNodesByAsset.',
+        'Find asset references: used_by / depends_on.',
         {
             type: 'object',
             properties: {
@@ -483,7 +483,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetCreate',
-        'Create empty asset or folder of given type. Automatically handles folders creation along the path. Returns reference to the new asset.',
+        'Create empty asset or folder at db:// path.',
         {
             type: 'object',
             properties: {
@@ -582,7 +582,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetImport',
-        'Import an external file as an asset into the project. Path must end with the extension. Returns reference to the new asset.',
+        'Import external file as asset.',
         {
             type: 'object',
             properties: {
@@ -645,7 +645,7 @@ export class AssetTools {
 
     @utcpTool(
         'assetOperate',
-        'Perform operations on assets (move, copy, delete, open). Returns reference to the affected asset (for delete/open returns the source asset reference).',
+        'Move/copy/delete/open/refresh/reimport asset.',
         {
             type: 'object',
             properties: {

@@ -29,7 +29,7 @@ export class GetClassInfoTool {
 
     @utcpTool(
         "inspectorGetSettingsDefinition",
-        "Generates TypeScript definition for specific settings. Pass section to get one class/enum only (reduces tokens 40-60%).",
+        "Generate TS definition for settings. Use section for single class.",
         { type: 'object' , properties: { settingsType: { type: 'string', enum: ['CommonTypes', 'CurrentSceneGlobals', 'ProjectSettings'] }, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['settingsType'] },
         { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
         "GET",  ['code', 'typescript', 'inspection', 'definition', 'common', 'types', 'settings', 'scene', 'globals', 'project']
@@ -67,7 +67,7 @@ export class GetClassInfoTool {
 
     @utcpTool(
         "inspectorGetInstanceDefinition",
-        "Generates TypeScript definition based on properties and descriptions of instance (Node, Component, Asset). Pass section to get one class/enum only (reduces tokens 40-60%).",
+        "Generate TS definition for instance. Use section for single class.",
         { type: 'object', properties: { reference: InstanceReferenceSchema, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['reference'] },
         { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
         "GET",  ['code', 'typescript', 'inspection', 'definition', 'class', 'info', 'meta', 'instance', 'node', 'component', 'asset', 'data']
