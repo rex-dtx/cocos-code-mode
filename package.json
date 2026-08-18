@@ -1,8 +1,8 @@
 {
-  "name": "cocos-code-mode",
+  "name": "cocos-code-mode-2x",
   "version": "1.0.0",
-  "description": "UTCP Code Mode for Cocos Creator 2.4.x",
-  "author": "Roman Rogov",
+  "description": "i18n:cocos-code-mode-2x.description",
+  "author": "cst by hzi for cc2.4",
   "main": "dist/main.js",
   "scene-script": "dist/scene-script.js",
   "reload": {

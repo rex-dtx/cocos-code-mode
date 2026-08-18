@@ -71,7 +71,7 @@ Start-Process "C:\ProgramData\cocos\editors\Creator\2.4.15\CocosCreator.exe" -Ar
 
 Lọc `--type=` để không giết nhầm child process, lọc `cc-2x-testbed` để không đụng editor khác đang mở.
 
-Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-script.ts` (trigger tự động đã gỡ ở phase 6). Gọi tay qua `Editor.Scene.callSceneScript('cocos-code-mode', 'probe2', cb)`.
+Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-script.ts` (trigger tự động đã gỡ ở phase 6). Gọi tay qua `Editor.Scene.callSceneScript('cocos-code-mode-2x', 'probe2', cb)`.
 
 ## Rule bắt buộc khi làm tiếp
 

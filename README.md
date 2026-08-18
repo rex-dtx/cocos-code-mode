@@ -190,12 +190,12 @@ Assets keep the 3.x-style url/uuid duality; `assetResolve` translates between ur
 npm i
 npm run package
 ```
-4. If everything builds fine, `cocos-code-mode.zip` file should appear in repository root.
+4. If everything builds fine, `cocos-code-mode-2x.zip` file should appear in repository root.
 5. Install it in Cocos Creator with **Extension Manager**.
 
 `npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies the tree-walk limits without needing Creator open. Run `npm run check` on its own while developing.
 
-For development, a junction from `<project>/packages/cocos-code-mode` to the repo works and does not trigger a reload loop.
+For development, a junction from `<project>/packages/cocos-code-mode-2x` to the repo works and does not trigger a reload loop.
 
 ## Adding Custom Tools
 
@@ -239,9 +239,9 @@ Two things to know before writing a 2.4 tool:
 
 ## UTCP Call Templates Configuration
 
-The extension registers itself in `~/.utcp_config.json` as a `CocosEditor` entry pointing at the running server port, and rewrites the port when it changes.
+The extension registers itself in `~/.utcp_config.json` as a `cc24` entry pointing at the running server port, and rewrites the port when it changes.
 
-> The **Configuration** panel from the 3.x version is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode.json` (0 = auto-assign). Additional call templates must be added to `~/.utcp_config.json` by hand for now.
+> The **Configuration** panel from the 3.x version is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode-2x.json` (0 = auto-assign). Additional call templates must be added to `~/.utcp_config.json` by hand for now.
 
 You can find Call Template structures in [UTCP documentation](https://www.utcp.io/protocols):
 - [MCP Call Template](https://utcp.io/protocols/mcp#call-template-structure)
@@ -249,7 +249,7 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension automatically maintains a `CocosEditor` entry in UTCP Config pointing to the running server port.
+The extension automatically maintains a `cc24` entry in UTCP Config pointing to the running server port.
 
 ## Integration
 

@@ -48,7 +48,7 @@ interface IHierarchyNode2x {
     childrenOmitted?: number;
 }
 
-declare namespace CocosEditor {
+declare namespace cc24 {
 
     // --- Scene ---
 

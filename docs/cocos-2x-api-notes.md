@@ -16,7 +16,7 @@ Manifest 2.x tối giản đủ để load (`name`/`version`/`main`/`reload`). K
 
 ```
 success: cocos-code-mode loaded
-normal: [cocos-code-mode] UTCP Server started on port 59142
+normal: [cocos-code-mode-2x] UTCP Server started on port 59142
 ```
 
 `GET http://127.0.0.1:<port>/utcp` → `{utcp_version:"1.0.1", manual_version:"1.0.0", tools:[]}`
@@ -27,7 +27,7 @@ normal: [cocos-code-mode] UTCP Server started on port 59142
 
 ### `Editor.Profile` — KHÔNG cần `register()`
 
-`Editor.Profile.load('profile://project/cocos-code-mode.json', {...})` chạy thẳng, không throw. Editor register sẵn type `project`. File đẻ ra ở `<project>/settings/cocos-code-mode.json`.
+`Editor.Profile.load('profile://project/cocos-code-mode-2x.json', {...})` chạy thẳng, không throw. Editor register sẵn type `project`. File đẻ ra ở `<project>/settings/cocos-code-mode-2x.json`.
 
 (Unresolved #2 phase 2 + rủi ro "Profile 2.x cần register trước load" → resolved, không cần fallback đọc `settings/project.json` bằng `fs`.)
 

@@ -1,7 +1,7 @@
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 
-const PKG_NAME = 'cocos-code-mode';
+const PKG_NAME = 'cocos-code-mode-2x';
 
 let utcpServer: UtcpServerManager | null = null;
 

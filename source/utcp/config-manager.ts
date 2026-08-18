@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs-extra';
 import { join } from 'path';
 import { homedir } from 'os';
 
-const PKG_NAME = 'cocos-code-mode';
+const PKG_NAME = 'cocos-code-mode-2x';
 const PROFILE_URL = `profile://project/${PKG_NAME}.json`;
 
 interface IProfile2x {
@@ -123,24 +123,36 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const idx = templates.findIndex((t: any) => t.name === 'CocosEditor');
+        const NAME = 'cc24';
+        const LEGACY_NAMES = ['CocosEditor', 'CocosEditor2x'];
+        let idx = templates.findIndex((t: any) => t.name === NAME);
+        if (idx === -1) {
+            for (const legacy of LEGACY_NAMES) {
+                idx = templates.findIndex((t: any) => t.name === legacy);
+                if (idx !== -1) {
+                    templates[idx].name = NAME;
+                    console.log(`[UtcpConfigManager] Migrated template name ${legacy} -> ${NAME}`);
+                    break;
+                }
+            }
+        }
 
         let changed = false;
         if (idx === -1) {
             templates.push({
-                name: 'CocosEditor',
+                name: NAME,
                 call_template_type: 'http',
                 url: expectedUrl,
                 http_method: 'GET',
                 content_type: 'application/json',
             });
             changed = true;
-            console.log(`[UtcpConfigManager] Created CocosEditor template with port ${port}`);
+            console.log(`[UtcpConfigManager] Created ${NAME} template with port ${port}`);
         } else {
             if (templates[idx].url !== expectedUrl) {
                 templates[idx].url = expectedUrl;
                 changed = true;
-                console.log(`[UtcpConfigManager] Updated CocosEditor template port to ${port}`);
+                console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
             }
         }
 
