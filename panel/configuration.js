@@ -6,12 +6,18 @@ const PKG = 'cocos-code-mode-2x';
 
 function getConfigPath() {
     try {
+        const profile = Editor.Profile.load('profile://project/' + PKG + '.json', { utcpConfigPath: '' });
+        const v = profile.get('utcpConfigPath');
+        if (v) return v;
+    } catch (e) {}
+    try {
         const projectPath = Editor.Project ? Editor.Project.path : null;
-        if (!projectPath) return Path.join(Os.homedir(), '.utcp_config.json');
-        const settingsPath = Path.join(projectPath, 'settings', PKG + '.json');
-        if (Fs.existsSync(settingsPath)) {
-            const data = JSON.parse(Fs.readFileSync(settingsPath, 'utf8'));
-            if (data.utcpConfigPath) return data.utcpConfigPath;
+        if (projectPath) {
+            const settingsPath = Path.join(projectPath, 'settings', PKG + '.json');
+            if (Fs.existsSync(settingsPath)) {
+                const data = JSON.parse(Fs.readFileSync(settingsPath, 'utf8'));
+                if (data.utcpConfigPath) return data.utcpConfigPath;
+            }
         }
     } catch (e) {}
     return Path.join(Os.homedir(), '.utcp_config.json');
@@ -30,12 +36,18 @@ function writeUtcpConfig(cfg) {
 
 function getServerPort() {
     try {
+        const profile = Editor.Profile.load('profile://project/' + PKG + '.json', { serverPort: 0 });
+        const v = profile.get('serverPort');
+        if (typeof v === 'number' && v > 0) return v;
+    } catch (e) {}
+    try {
         const projectPath = Editor.Project ? Editor.Project.path : null;
-        if (!projectPath) return 0;
-        const settingsPath = Path.join(projectPath, 'settings', PKG + '.json');
-        if (Fs.existsSync(settingsPath)) {
-            const data = JSON.parse(Fs.readFileSync(settingsPath, 'utf8'));
-            return data.serverPort || 0;
+        if (projectPath) {
+            const settingsPath = Path.join(projectPath, 'settings', PKG + '.json');
+            if (Fs.existsSync(settingsPath)) {
+                const data = JSON.parse(Fs.readFileSync(settingsPath, 'utf8'));
+                return data.serverPort || 0;
+            }
         }
     } catch (e) {}
     return 0;
