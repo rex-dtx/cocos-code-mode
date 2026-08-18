@@ -24,6 +24,7 @@ import './tools-2x/scene-misc-tools';
 import './tools-2x/editor-misc-tools';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
+import { getBuildInfo } from '../build-info';
 
 export class UtcpServerManager {
     private app: express.Application;
@@ -153,7 +154,12 @@ export class UtcpServerManager {
                 manual_version: "1.0.0",
                 tools: utcpTools
             };
+            (manual as any).build_info = getBuildInfo();
             res.json(manual);
+        });
+
+        this.app.get('/build-info', (req, res) => {
+            res.json(getBuildInfo());
         });
     }
 

@@ -12,8 +12,28 @@ if (!fs.existsSync(packageJsonPath)) {
 }
 
 const packageJson = require(packageJsonPath);
-const packageName = packageJson.name; // cocos-code-mode
+const packageName = packageJson.name;
 const zipFileName = `${packageName}.zip`;
+const projectRoot = path.join(__dirname, '..');
+
+// Derive zip version from build-info.json stamped at build time.
+function resolveZipVersion() {
+    const fallback = packageJson.version;
+    try {
+        const infoPath = path.join(projectRoot, 'dist', 'build-info.json');
+        if (!fs.existsSync(infoPath)) return fallback;
+        const info = JSON.parse(fs.readFileSync(infoPath, 'utf8'));
+        if (!info.commit || info.commit === 'unknown') return fallback;
+        const suffix = info.dirty ? '-dirty' : '';
+        return `${fallback}-dev.${info.commit}${suffix}`;
+    } catch {
+        return fallback;
+    }
+}
+const zipVersion = resolveZipVersion();
+if (zipVersion !== packageJson.version) {
+    console.log(`Patched zip version: ${packageJson.version} -> ${zipVersion}`);
+}
 
 // List of files/folders to include in the archive
 const filesToInclude = [
@@ -27,7 +47,6 @@ const filesToInclude = [
     'README.md'
 ];
 
-const projectRoot = path.join(__dirname, '..');
 const outputPath = path.join(projectRoot, zipFileName);
 
 console.log(`Packaging project into ${zipFileName}...`);
@@ -48,6 +67,11 @@ archive.on('error', (err) => {
 archive.pipe(output);
 
 for (const item of filesToInclude) {
+    if (item === 'package.json') {
+        const patched = { ...packageJson, version: zipVersion };
+        archive.append(JSON.stringify(patched, null, 2), { name: 'package.json' });
+        continue;
+    }
     const itemPath = path.join(projectRoot, item);
     if (!fs.existsSync(itemPath)) {
         // Skip missing items; 'dist' missing is significant, warn loudly

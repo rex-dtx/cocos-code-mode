@@ -14,6 +14,9 @@
     },
     "Extension/Cocos Code Mode 2x/Reload Extension": {
       "message": "cocos-code-mode-2x:reload"
+    },
+    "Extension/Cocos Code Mode 2x/About": {
+      "message": "cocos-code-mode-2x:show-build-info"
     }
   },
   "reload": {
@@ -22,7 +25,7 @@
     ]
   },
   "scripts": {
-    "build": "npx tsc",
+    "build": "node ./scripts/generate-build-info.js && npx tsc",
     "check": "npm run build && node ./scripts/check-node-budget.js",
     "package": "npm run check && node ./scripts/package.js"
   },

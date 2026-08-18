@@ -1,5 +1,6 @@
 import { UtcpServerManager } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
+import { formatBuildInfo, getBuildInfo } from './build-info';
 
 const PKG_NAME = 'cocos-code-mode-2x';
 
@@ -10,6 +11,8 @@ let utcpServer: UtcpServerManager | null = null;
 // Doc: v2.4/extension/entry-point.md
 module.exports = {
     async load() {
+        Editor.log(`[${PKG_NAME}] build ${formatBuildInfo()}`);
+
         const configManager = getConfigManager();
         await configManager.initialize();
 
@@ -84,6 +87,29 @@ module.exports = {
                     Editor.log(`[${PKG_NAME}] Reloading...`);
                 }
             });
+        },
+        'show-build-info'() {
+            const b = getBuildInfo();
+            const lines = [
+                `Version:  ${b.version}`,
+                `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
+                `Branch:   ${b.branch}`,
+                `Built at: ${b.builtAt}`,
+            ];
+            Editor.log(`[${PKG_NAME}] Build info:\n${lines.join('\n')}`);
+            try {
+                (Editor as any).Dialog.messageBox({
+                    type: 'info',
+                    title: `${PKG_NAME} Build Info`,
+                    message: lines.join('\n'),
+                    buttons: ['OK'],
+                    defaultId: 0,
+                });
+            } catch {
+                try {
+                    (Editor as any).Dialog.info(lines.join('\n'), { title: `${PKG_NAME} Build Info` });
+                } catch { /* logged above */ }
+            }
         }
     }
 };
