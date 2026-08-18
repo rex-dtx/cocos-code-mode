@@ -49,15 +49,15 @@ This extension architecture follows a **discover, then act** pattern. AI agents 
 
 ```typescript
 // Find the camera node
-const tree = cc37.nodeGetTree({});
+const tree = cc3x7.nodeGetTree({});
 const cameraRef = tree.children[0].components[0]; // component reference
 
 // Discover what properties Camera has
-const def = cc37.inspectorGetInstanceDefinition({ reference: cameraRef });
+const def = cc3x7.inspectorGetInstanceDefinition({ reference: cameraRef });
 // → "export class Camera { fov: number; near: number; far: number; ... }"
 
 // Set multiple properties in one call
-cc37.inspectorSetInstanceProperties({
+cc3x7.inspectorSetInstanceProperties({
   reference: cameraRef,
   propertyPaths: ["fov", "near", "far"],
   values: [60, 0.1, 1000]
@@ -201,14 +201,14 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension automatically maintains a `cc37` entry in UTCP Config pointing to the running server port.
+The extension automatically maintains a `cc3x7` entry in UTCP Config pointing to the running server port.
 
 ## Agent Prompt Guidance
 
 When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
 
 ```text
-When returning data from cc37 tools:
+When returning data from cc3x7 tools:
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

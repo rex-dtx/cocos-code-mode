@@ -85,15 +85,19 @@ export class UtcpConfigManager {
 
         const templates = config.manual_call_templates;
         // ponytail: short manual name = fewer tokens per tool reference in every
-        // code-mode script. Legacy long name migrated in place, not duplicated.
-        const NAME = 'cc37';
-        const LEGACY = 'CocosEditor3x7';
+        // code-mode script. Legacy names migrated in place, not duplicated.
+        // chain: CocosEditor3x7 -> cc37 -> cc3x7  (matches cc2x: CocosEditor -> cc24 -> cc2x4)
+        const NAME = 'cc3x7';
+        const LEGACIES = ['CocosEditor3x7', 'cc37'];
         let idx = templates.findIndex((t: any) => t.name === NAME);
         if (idx === -1) {
-            idx = templates.findIndex((t: any) => t.name === LEGACY);
-            if (idx !== -1) {
-                templates[idx].name = NAME;
-                console.log(`[UtcpConfigManager] Migrated template name ${LEGACY} -> ${NAME}`);
+            for (const legacy of LEGACIES) {
+                idx = templates.findIndex((t: any) => t.name === legacy);
+                if (idx !== -1) {
+                    templates[idx].name = NAME;
+                    console.log(`[UtcpConfigManager] Migrated template name ${legacy} -> ${NAME}`);
+                    break;
+                }
             }
         }
 

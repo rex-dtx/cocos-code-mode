@@ -83,18 +83,19 @@ export class AssetTools {
 
     @utcpTool(
         'assetGetTree',
-        'Get the asset and subAsset hierarchy tree. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited).',
+        'Get the asset and subAsset hierarchy tree. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited). Pass maxNodes to cap total nodes walked (default unlimited, 400 guards wide folders) — truncated branches set truncated/childrenOmitted.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
                 assetPath: { type: 'string', description: 'Root path to start from' },
-                maxDepth: { type: 'number', description: 'Optional: max recursion depth. 0 = root only, 1 = root + direct children, etc. Omit for full tree.' }
+                maxDepth: { type: 'number', description: 'Optional: max recursion depth. 0 = root only, 1 = root + direct children, etc. Omit for full tree.' },
+                maxNodes: { type: 'number', description: 'Optional: max nodes to walk. Guards wide folders where maxDepth alone does not bound. Omit for unlimited.' }
             }
         },
         AssetTreeItemSchema, "GET", ['asset', 'file', 'tree', 'hierarchy', 'folder', 'subasset']
     )
-    async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number }): Promise<IAssetTreeItem> {
+    async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number, maxNodes?: number }): Promise<IAssetTreeItem> {
         if (args.reference) {
             const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
             if (!info) {
@@ -155,12 +156,43 @@ export class AssetTools {
         if (args.maxDepth !== undefined) {
             const prune = (node: IAssetTreeItem, depth: number) => {
                 if (depth >= args.maxDepth!) {
+                    (node as any).truncated = 'maxDepth';
+                    (node as any).childrenOmitted = node.children.length;
+                    (node as any).childrenCount = node.children.length;
                     node.children = [];
                 } else {
                     node.children.forEach((c) => prune(c, depth + 1));
                 }
             };
             prune(rootNode, 0);
+        }
+
+        // ponytail: node budget — guards wide folders where maxDepth alone does not bound.
+        // cc-2x port (6f98715): same truncated/childrenOmitted + childrenCount convention.
+        if (args.maxNodes !== undefined) {
+            const budget = { left: args.maxNodes };
+            const truncateByBudget = (node: IAssetTreeItem, depth: number): void => {
+                const children = node.children;
+                if (!children || children.length === 0) return;
+                (node as any).childrenCount = children.length;
+                // respect maxDepth already pruned above, so only budget check here
+                const kept: IAssetTreeItem[] = [];
+                for (let i = 0; i < children.length; i++) {
+                    if (budget.left <= 0) {
+                        (node as any).truncated = (node as any).truncated || 'nodeLimit';
+                        (node as any).childrenOmitted = children.length - i;
+                        break;
+                    }
+                    budget.left--;
+                    truncateByBudget(children[i], depth + 1);
+                    kept.push(children[i]);
+                }
+                if (kept.length !== children.length) {
+                    node.children = kept;
+                }
+            };
+            // root itself not counted, children start budget
+            truncateByBudget(rootNode, 0);
         }
 
         return rootNode;

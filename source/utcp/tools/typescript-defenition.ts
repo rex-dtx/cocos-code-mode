@@ -29,32 +29,50 @@ export class GetClassInfoTool {
 
     @utcpTool(
         "inspectorGetSettingsDefinition",
-        "Generates TypeScript definition for specific settings.",
-        { type: 'object' , properties: { settingsType: { type: 'string', enum: ['CommonTypes', 'CurrentSceneGlobals', 'ProjectSettings'] } }, required: ['settingsType'] },
-        { type: 'object', properties: { definition: { type: 'string' } }, required: ['definition'] }, 
+        "Generates TypeScript definition for specific settings. Pass section to get one class/enum only (reduces tokens 40-60%).",
+        { type: 'object' , properties: { settingsType: { type: 'string', enum: ['CommonTypes', 'CurrentSceneGlobals', 'ProjectSettings'] }, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['settingsType'] },
+        { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
         "GET",  ['code', 'typescript', 'inspection', 'definition', 'common', 'types', 'settings', 'scene', 'globals', 'project']
     )
-    async inspectorGetSettingsDefinition(params: { settingsType: string }): Promise<{ definition: string }> {
+    async inspectorGetSettingsDefinition(params: { settingsType: string, section?: string }): Promise<{ definition: string, sections: string[], totalSections: number }> {
         switch (params.settingsType) {
-            case 'CommonTypes':
-                return { definition: this._commonTypesDefinition };
+            case 'CommonTypes': {
+                const chunks = this._commonTypesDefinition.split('\n').reduce((acc: string[], line: string) => {
+                    if (line.startsWith('class ') || line.startsWith('interface ') || line.startsWith('type ') || line.startsWith('function ')) {
+                        acc.push(line);
+                    } else if (acc.length) {
+                        acc[acc.length - 1] += '\n' + line;
+                    }
+                    return acc;
+                }, [] as string[]);
+                const sections = chunks.map(c => {
+                    const m = c.match(/^(?:class|interface|type|function)\s+(\w+)/);
+                    return m ? m[1] : c.slice(0, 30);
+                });
+                if (params.section) {
+                    const idx = sections.findIndex(s => s === params.section);
+                    if (idx === -1) throw new Error(`Section '${params.section}' not found. Available: ${sections.join(', ')}`);
+                    return { definition: chunks[idx], sections, totalSections: sections.length };
+                }
+                return { definition: this._commonTypesDefinition, sections, totalSections: sections.length };
+            }
             case 'CurrentSceneGlobals':
-                return this.inspectorGetInstanceDefinition({ reference: { id: 'CurrentSceneGlobals' } });
+                return this.inspectorGetInstanceDefinition({ reference: { id: 'CurrentSceneGlobals' }, section: params.section });
             case 'ProjectSettings':
-                return this.inspectorGetInstanceDefinition({ reference: { id: 'ProjectSettings' } });
+                return this.inspectorGetInstanceDefinition({ reference: { id: 'ProjectSettings' }, section: params.section });
             default:
                 throw new Error(`Unknown settings type: '${params.settingsType}'.`);
         }
     }
-    
+
     @utcpTool(
         "inspectorGetInstanceDefinition",
-        "Generates TypeScript definition based on properties and descriptions of instance (Node, Component, Asset).",
-        { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
-        { type: 'object', properties: { definition: { type: 'string' } }, required: ['definition'] }, 
+        "Generates TypeScript definition based on properties and descriptions of instance (Node, Component, Asset). Pass section to get one class/enum only (reduces tokens 40-60%).",
+        { type: 'object', properties: { reference: InstanceReferenceSchema, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['reference'] },
+        { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
         "GET",  ['code', 'typescript', 'inspection', 'definition', 'class', 'info', 'meta', 'instance', 'node', 'component', 'asset', 'data']
     )
-    async inspectorGetInstanceDefinition(params: { reference: IInstanceReference }): Promise<{ definition: string }> {
+    async inspectorGetInstanceDefinition(params: { reference: IInstanceReference, section?: string }): Promise<{ definition: string, sections: string[], totalSections: number }> {
         this._definitions = [];
         this._definedNames.clear();
 
@@ -74,7 +92,17 @@ export class GetClassInfoTool {
             throw new Error(`Class, Instance or special keyword not found: '${params.reference.id}'.`);
         }
 
-        return { definition: this._definitions.join('\n') };
+        // ponytail: pagination — sections are exported class/enum names
+        const sections = this._definitions.map(d => {
+            const m = d.match(/export\s+(?:class|enum)\s+(\w+)/);
+            return m ? m[1] : '';
+        }).filter(Boolean);
+        if (params.section) {
+            const idx = sections.findIndex(s => s === params.section);
+            if (idx === -1) throw new Error(`Section '${params.section}' not found. Available: ${sections.join(', ')}`);
+            return { definition: this._definitions[idx], sections, totalSections: sections.length };
+        }
+        return { definition: this._definitions.join('\n'), sections, totalSections: sections.length };
     }
 
     private processClass(className: string, providedProps?: { [key: string]: IPropertyValueType }, extendsClass?: string) {

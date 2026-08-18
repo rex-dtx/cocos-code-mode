@@ -347,18 +347,19 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetTree',
-        'Get the hierarchy tree of specific node or scene root if no reference is provided. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited); pass fields[] to keep only these node keys (reference and children always kept).',
+        'Get the hierarchy tree of specific node or scene root if no reference is provided. Children have recursive structure. Pass maxDepth to limit recursion depth (default unlimited); pass fields[] to keep only these node keys (reference and children always kept). Pass maxNodes to cap total nodes walked (default unlimited, 400 guards wide scenes) — truncated branches set truncated/childrenOmitted.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
                 maxDepth: { type: 'number', description: 'Optional: max recursion depth. 0 = root only, 1 = root + direct children, etc. Omit for full tree.' },
+                maxNodes: { type: 'number', description: 'Optional: max nodes to walk. Guards wide scenes where maxDepth alone does not bound. Omit for unlimited.' },
                 fields: { type: 'array', items: { type: 'string' }, description: 'Optional: only keep these node keys per node (e.g. ["name","active","components"]). reference+children always kept. Omit for all fields.' }
             }
         },
         SceneTreeItemSchema, "GET",  ['scene', 'graph', 'node', 'hierarchy', 'tree']
     )
-    async nodeGetTree(args: { reference?: IInstanceReference, maxDepth?: number, fields?: string[] }): Promise<ISceneTreeItem> {
+    async nodeGetTree(args: { reference?: IInstanceReference, maxDepth?: number, maxNodes?: number, fields?: string[] }): Promise<ISceneTreeItem> {
         let treeBase;
         if (args.reference) {
              treeBase = await Editor.Message.request('scene', 'query-node-tree', args.reference.id);
@@ -377,6 +378,10 @@ export class SceneTools {
             throw new Error(`Node tree not found for ${args.reference?.id || 'entire scene'}`);
         }
 
+        // ponytail: node budget — guards wide scenes where maxDepth alone does not bound.
+        // cc-2x port (ee0a888/6f98715): same truncated/childrenOmitted convention.
+        const budget = { left: args.maxNodes ?? Infinity };
+
         const formatNode = (node: any, depth: number): ISceneTreeItem => {
 
            // ponytail: depth cap — stop recursion past maxDepth, return empty children.
@@ -388,11 +393,31 @@ export class SceneTools {
            const want = (k: string) => !fieldSet || fieldSet.has(k);
 
            let children: ISceneTreeItem[] = [];
+           let truncated: string | undefined;
+           let childrenOmitted: number | undefined;
+           let childrenCount: number | undefined;
+
            if (!atMaxDepth) {
-               children = node.children ? node.children.map((c: any) => formatNode(c, depth + 1)).filter((c: any) => c !== null) : [];
+               const rawChildren: any[] = node.children || [];
+               if (rawChildren.length > 0) {
+                   childrenCount = rawChildren.length;
+                   for (let i = 0; i < rawChildren.length; i++) {
+                       if (budget.left <= 0) {
+                           truncated = 'nodeLimit';
+                           childrenOmitted = rawChildren.length - i;
+                           break;
+                       }
+                       budget.left--;
+                       children.push(formatNode(rawChildren[i], depth + 1));
+                   }
+               }
+           } else if (node.children && node.children.length > 0) {
+               truncated = 'maxDepth';
+               childrenOmitted = node.children.length;
+               childrenCount = node.children.length;
            }
 
-           const item: Partial<ISceneTreeItem> = {
+           const item: any = {
                 reference: { id: node.uuid, type: 'cc.Node' },
                 children: children
            };
@@ -404,6 +429,9 @@ export class SceneTools {
                })) : [];
            }
            if (node.path && want('path')) item.path = node.path;
+           if (truncated) (item as any).truncated = truncated;
+           if (childrenOmitted !== undefined) (item as any).childrenOmitted = childrenOmitted;
+           if (childrenCount !== undefined) (item as any).childrenCount = childrenCount;
            return item as ISceneTreeItem;
         };
 

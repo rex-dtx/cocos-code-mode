@@ -5,6 +5,9 @@ interface IAssetTree {
     reference: InstanceReference;
     name: string;
     children: IAssetTree[];
+    truncated?: string;
+    childrenOmitted?: number;
+    childrenCount?: number;
 }
 interface IHierarchyTree {
     path?: string;
@@ -13,6 +16,9 @@ interface IHierarchyTree {
     active: boolean;
     components: InstanceReference[];
     children: IHierarchyTree[];
+    truncated?: string;
+    childrenOmitted?: number;
+    childrenCount?: number;
 }
 
 interface IExposedAttributes { type?: string, visible?: boolean, multiline?: boolean, min?: number, max?: number }
@@ -44,14 +50,15 @@ type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alph
 /**
  * Cocos Editor Tools
  */
-declare namespace cc37 {
-    /** Generates TypeScript definition for specific settings. */
+declare namespace cc3x7 {
+    /** Generates TypeScript definition for specific settings. Pass section to get one class/enum only (reduces tokens 40-60%). Returns sections list for discovery. */
     function inspectorGetSettingsDefinition(args: {
-        settingsType: "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings"
-    }): { definition: string };
+        settingsType: "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings",
+        section?: string
+    }): { definition: string, sections?: string[], totalSections?: number };
 
-    /** Generates TypeScript definition based on properties of instance. */
-    function inspectorGetInstanceDefinition(args: { reference: InstanceReference }): { definition: string };
+    /** Generates TypeScript definition based on properties of instance. Pass section to get one class/enum only. Returns sections list for discovery. */
+    function inspectorGetInstanceDefinition(args: { reference: InstanceReference, section?: string }): { definition: string, sections?: string[], totalSections?: number };
 
     /** Gets plain object of properties for the specific settings. */
     function inspectorGetSettingsProperties(args: {
@@ -84,10 +91,12 @@ declare namespace cc37 {
         toIndex?: number
     }): { success: boolean, error?: string };
 
-    /** Get the asset and subAsset hierarchy tree. */
+    /** Get the asset and subAsset hierarchy tree. Pass maxDepth/maxNodes to bound wide scenes (truncated branches set truncated/childrenOmitted). */
     function assetGetTree(args: {
         reference?: InstanceReference,
-        assetPath?: string
+        assetPath?: string,
+        maxDepth?: number,
+        maxNodes?: number
     }): IAssetTree;
 
     /** Get asset reference by given local path and name. */
@@ -207,8 +216,8 @@ declare namespace cc37 {
         pasteAsChild?: boolean
     }): { success: boolean, references?: InstanceReference[] };
 
-    /** Get the hierarchy tree of specific node or scene root. */
-    function nodeGetTree(args: { reference?: InstanceReference }): IHierarchyTree;
+    /** Get the hierarchy tree of specific node or scene root. Pass maxDepth/maxNodes/fields to bound payload (wide scenes). */
+    function nodeGetTree(args: { reference?: InstanceReference, maxDepth?: number, maxNodes?: number, fields?: string[] }): IHierarchyTree;
 
     /** Get nodes at specific path in the scene hierarchy. */
     function nodeGetAtPath(args: { hierarchyPath: string }): { references?: InstanceReference[] };
