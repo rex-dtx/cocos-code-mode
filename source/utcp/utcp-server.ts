@@ -147,17 +147,17 @@ export class UtcpServerManager {
             }
         }
 
-        // Serve UTCP Manual
+        // Serve UTCP Manual — must NOT add extra top-level fields (UTCP spec strict).
         this.app.get('/utcp', (req, res) => {
             const manual: UtcpManual = {
                 utcp_version: "1.0.1",
                 manual_version: "1.0.0",
                 tools: utcpTools
             };
-            (manual as any).build_info = getBuildInfo();
             res.json(manual);
         });
 
+        // Build provenance — separate endpoint, not part of UTCP manual schema.
         this.app.get('/build-info', (req, res) => {
             res.json(getBuildInfo());
         });

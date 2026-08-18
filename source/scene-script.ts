@@ -505,6 +505,22 @@
             (function walk(n: any) { count++; (n.children || []).forEach(walk); })(scene);
             event.reply(null, { name: scene.name, uuid: scene.uuid, designResolution: dr, nodesVisited: count });
         },
+
+
+        'probe-getInstanceById': function (event: any, uuid: any) {
+            try {
+                const byEngine = cc.engine.getInstanceById(uuid);
+                const byFind = cc.find('Canvas'); // control
+                event.reply(null, {
+                    uuid,
+                    engineFound: !!byEngine,
+                    engineName: byEngine && byEngine.name,
+                    findWorksForComparison: !!byFind,
+                    // thử _Scene hoặc cc.director
+                    sceneChildren: cc.director.getScene().children.map((c: any) => ({ name: c.name, uuid: c.uuid })),
+                });
+            } catch (e: any) { event.reply(e); }
+        },
     };
 
 })();
