@@ -44,8 +44,16 @@ function getServerPort() {
 Editor.Panel.define({
     listeners: { show() {}, hide() {} },
 
-    template: Fs.readFileSync(Editor.url('packages://' + PKG + '/static/template/configuration/index.html'), 'utf-8'),
-    style: Fs.readFileSync(Editor.url('packages://' + PKG + '/static/style/configuration/index.css'), 'utf-8'),
+    template: (function () {
+        try { return Fs.readFileSync(Path.join(__dirname, '../static/template/configuration/index.html'), 'utf-8'); } catch (e) {}
+        try { return Fs.readFileSync(Editor.url('packages://' + PKG + '/static/template/configuration/index.html'), 'utf-8'); } catch (e) {}
+        return '<div style="padding:20px">Template not found. Check package install.</div>';
+    })(),
+    style: (function () {
+        try { return Fs.readFileSync(Path.join(__dirname, '../static/style/configuration/index.css'), 'utf-8'); } catch (e) {}
+        try { return Fs.readFileSync(Editor.url('packages://' + PKG + '/static/style/configuration/index.css'), 'utf-8'); } catch (e) {}
+        return '';
+    })(),
 
     $: {
         app: '.panel',
