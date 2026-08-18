@@ -521,6 +521,58 @@
                 });
             } catch (e: any) { event.reply(e); }
         },
+
+        'probe-scene-utils': function (event: any) {
+            const out: any = {};
+            function tryRequire(url: string) {
+                try { return Object.keys(Editor.require(url)); }
+                catch (e: any) { return 'ERR: ' + (e && e.message ? e.message : String(e)); }
+            }
+            out['scene://utils/node'] = tryRequire('scene://utils/node');
+            out['scene://utils/prefab'] = tryRequire('scene://utils/prefab');
+            out['scene://utils/scene'] = tryRequire('scene://utils/scene');
+            out['scene://utils/animation'] = tryRequire('scene://utils/animation');
+            out['scene://edit-mode'] = tryRequire('scene://edit-mode');
+            out['app://editor/page/scene-utils/utils/node'] = tryRequire('app://editor/page/scene-utils/utils/node');
+            // dump which Editor APIs exist in scene process
+            try { out['Editor_keys'] = Object.keys(Editor).slice(0, 30); } catch (e: any) { out['Editor_keys'] = 'ERR: ' + e.message; }
+            try { out['Editor.Undo'] = (Editor as any).Undo ? Object.keys((Editor as any).Undo).slice(0, 20) : 'no Editor.Undo'; } catch (e: any) { out['Editor.Undo'] = 'ERR: ' + e.message; }
+            try { out['_Scene_keys'] = typeof _Scene !== 'undefined' ? Object.keys(_Scene).slice(0, 20) : 'no _Scene'; } catch (e: any) { out['_Scene_keys'] = 'ERR: ' + e.message; }
+            event.reply(null, out);
+        },
+
+        'probe-set-prop': function (event: any, path: any, value: any) {
+            const out: any = { errors: [] as string[] };
+            function tryIt(label: string, fn: () => any) {
+                try { out[label] = fn(); }
+                catch (e: any) { out.errors.push(label + ': ' + (e && e.message ? e.message : String(e))); }
+            }
+            tryIt('has_setPropertyByPath', () => {
+                const mod = Editor.require('scene://utils/node');
+                return { has_setProperty: typeof mod.setProperty === 'function', has_setPropertyByPath: typeof mod.setPropertyByPath === 'function', keys: Object.keys(mod).slice(0, 20) };
+            });
+            tryIt('Editor.Undo_keys', () => (Editor as any).Undo ? Object.keys((Editor as any).Undo).slice(0, 20) : 'no Editor.Undo');
+            tryIt('_Scene.Undo_keys', () => typeof _Scene !== 'undefined' && (_Scene as any).Undo ? Object.keys((_Scene as any).Undo).slice(0, 20) : 'no _Scene.Undo');
+            tryIt('_Scene_keys', () => typeof _Scene !== 'undefined' ? Object.keys(_Scene).slice(0, 20) : 'no _Scene');
+            if (path) {
+                try {
+                    const node = cc.find('Canvas/background') || cc.find('Canvas');
+                    if (node && Editor.require) {
+                        const utils: any = Editor.require('scene://utils/node');
+                        if (typeof utils.setProperty === 'function') {
+                            utils.setProperty(node.uuid, path, value);
+                            out.setViaUtils = 'ok via setProperty(' + node.name + ', ' + path + ')';
+                        } else if (typeof utils.setPropertyByPath === 'function') {
+                            utils.setPropertyByPath(node.uuid, path, value);
+                            out.setViaUtils = 'ok via setPropertyByPath(' + node.name + ', ' + path + ')';
+                        } else {
+                            out.setViaUtils = 'no setProperty API, keys: ' + Object.keys(utils).slice(0, 20).join(',');
+                        }
+                    }
+                } catch (e: any) { out.setError = e && e.message ? e.message : String(e); }
+            }
+            event.reply(null, out);
+        },
     };
 
 })();
