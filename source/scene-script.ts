@@ -802,6 +802,52 @@
             if (!comp) { return event.reply(new Error('component not found: ' + compType)); }
             try { node.removeComponent(comp); event.reply(null, { removed: compType }); } catch (e: any) { event.reply(e); }
         },
+
+        'move-node': function (event: any, uuid: string, newParentUuid: string, siblingIndex: any) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+            let newParent: any = null;
+            if (newParentUuid) {
+                try { if (cc.engine && cc.engine.getInstanceById) { newParent = cc.engine.getInstanceById(newParentUuid); } } catch (e) {}
+                if (!newParent) {
+                    (function walk(n: any) { if (newParent || !n) return; if (n.uuid === newParentUuid) { newParent = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                }
+                if (!newParent) { return event.reply(new Error('parent not found: ' + newParentUuid)); }
+            } else {
+                newParent = cc.director.getScene();
+            }
+            try {
+                const keepWorld = true;
+                // 2.4: setParent or addChild — try setParent first
+                if (typeof node.setParent === 'function') { node.setParent(newParent, keepWorld); }
+                else if (typeof node.parent !== 'undefined') { node.removeFromParent(false); newParent.addChild(node); }
+                else { newParent.addChild(node); }
+                if (typeof siblingIndex === 'number' && siblingIndex >= 0 && typeof node.setSiblingIndex === 'function') {
+                    node.setSiblingIndex(siblingIndex);
+                }
+                event.reply(null, { uuid: node.uuid, parent: newParent.name || newParent.uuid });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'duplicate-node': function (event: any, uuid: string) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+            if (!node) {
+                (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+            }
+            if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+            try {
+                const clone = cc.instantiate(node);
+                clone.name = node.name + '_copy';
+                const parent = node.parent || cc.director.getScene();
+                parent.addChild(clone);
+                event.reply(null, { uuid: clone.uuid, name: clone.name, parent: parent.name });
+            } catch (e: any) { event.reply(e); }
+        },
     };
 
 })();

@@ -1,5 +1,5 @@
 import { utcpTool } from '../decorators';
-import { sceneScript } from '../utils/ipc-promise';
+import { panelIpc, sceneScript } from '../utils/ipc-promise';
 
 /**
  * Write tools — probe verified direct assign (x: 0→999 OK).
@@ -84,5 +84,70 @@ export class SceneWriteTools {
             return sceneScript<any>('add-component', args.nodeUuid, args.compType);
         }
         return sceneScript<any>('remove-component', args.nodeUuid, args.compType);
+    }
+
+    @utcpTool(
+        'nodeMove',
+        'Reparent a node under a new parent (or scene root if parentUuid omitted). Optionally set sibling index.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Node uuid to move' },
+                parentUuid: { type: 'string', description: 'New parent uuid, omit for scene root' },
+                siblingIndex: { type: 'number', description: 'Position among siblings, omit for append' },
+            },
+            required: ['uuid'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, parent: { type: 'string' } } },
+        'POST', ['scene', 'node', 'move', 'reparent', 'parent']
+    )
+    async nodeMove(args: { uuid: string, parentUuid?: string, siblingIndex?: number }): Promise<any> {
+        return sceneScript<any>('move-node', args.uuid, args.parentUuid || '', args.siblingIndex);
+    }
+
+    @utcpTool(
+        'nodeDuplicate',
+        'Duplicate a node (cc.instantiate). Clone is added as sibling under same parent.',
+        {
+            type: 'object',
+            properties: { uuid: { type: 'string', description: 'Node uuid to duplicate' } },
+            required: ['uuid'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' }, parent: { type: 'string' } } },
+        'POST', ['scene', 'node', 'duplicate', 'copy', 'clone', 'instantiate']
+    )
+    async nodeDuplicate(args: { uuid: string }): Promise<any> {
+        return sceneScript<any>('duplicate-node', args.uuid);
+    }
+
+    @utcpTool(
+        'editorUndo',
+        'Undo or redo the last scene operation. Uses Editor.Ipc scene panel messages.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['undo', 'redo'], description: 'undo or redo' },
+            },
+            required: ['operation'],
+        },
+        { type: 'object', properties: { success: { type: 'boolean' } } },
+        'POST', ['editor', 'undo', 'redo', 'history']
+    )
+    async editorUndo(args: { operation: string }): Promise<any> {
+        const msg = args.operation === 'redo' ? 'scene:redo' : 'scene:undo';
+        // try scene panel first, fallback to global
+        const candidates: Array<[string, string]> = [
+            ['scene', msg],
+            ['scene', args.operation],
+            ['editor', args.operation],
+        ];
+        let lastErr: any;
+        for (const [panel, message] of candidates) {
+            try {
+                await panelIpc<any>(panel, message);
+                return { success: true };
+            } catch (e) { lastErr = e; }
+        }
+        throw new Error(`Undo failed: ${lastErr?.message || lastErr}`);
     }
 }

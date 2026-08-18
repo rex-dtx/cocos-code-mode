@@ -237,6 +237,15 @@ declare namespace cc2x4 {
     /** Them/xoa component tren node. */
     function nodeComponentManage(args: { operation: 'add' | 'remove'; nodeUuid: string; compType: string }): { uuid?: string; type?: string; removed?: string };
 
+    /** Reparent node. */
+    function nodeMove(args: { uuid: string; parentUuid?: string; siblingIndex?: number }): { uuid: string; parent: string };
+
+    /** Duplicate node (cc.instantiate). */
+    function nodeDuplicate(args: { uuid: string }): { uuid: string; name: string; parent: string };
+
+    /** Undo/redo. */
+    function editorUndo(args: { operation: 'undo' | 'redo' }): { success: boolean };
+
     /** Goi handler bat ky trong scene-script (probe). */
     function sceneScript(args: { handler: string; arg1?: string; arg2?: any }): { result: any };
 }
