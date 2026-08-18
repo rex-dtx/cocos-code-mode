@@ -63,6 +63,27 @@ module.exports = {
             } catch (err) {
                 Editor.error(`[${PKG_NAME}] Failed to restart UTCP Server: ${err}`);
             }
+        },
+        'reload'() {
+            // 2.4 reload = unload + load. Editor tu reload package khi file doi,
+            // nhung junction khong trigger watcher -> can goi tay.
+            // Pomelo: (Editor as any).Package.reload khong on dinh giua cac ban 2.4,
+            // nen dung Ipc reload-package neu co, fallback la log huong dan.
+            try {
+                const pkg = (Editor as any).Package;
+                if (pkg && typeof pkg.reload === 'function') {
+                    pkg.reload(PKG_NAME);
+                    Editor.log(`[${PKG_NAME}] Reloading...`);
+                    return;
+                }
+            } catch (e) { /* fallback */ }
+            Editor.Ipc.sendToMain('package:reload', PKG_NAME, (err: any) => {
+                if (err) {
+                    Editor.warn(`[${PKG_NAME}] Auto-reload not available, please restart Creator (Ctrl+R or reopen project).`);
+                } else {
+                    Editor.log(`[${PKG_NAME}] Reloading...`);
+                }
+            });
         }
     }
 };
