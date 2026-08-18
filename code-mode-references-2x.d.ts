@@ -48,7 +48,7 @@ interface IHierarchyNode2x {
     childrenOmitted?: number;
 }
 
-declare namespace cc24 {
+declare namespace cc2x4 {
 
     // --- Scene ---
 

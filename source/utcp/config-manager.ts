@@ -123,8 +123,8 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const NAME = 'cc24';
-        const LEGACY_NAMES = ['CocosEditor', 'CocosEditor2x'];
+        const NAME = 'cc2x4';
+        const LEGACY_NAMES = ['cc24', 'CocosEditor', 'CocosEditor2x'];
         let idx = templates.findIndex((t: any) => t.name === NAME);
         if (idx === -1) {
             for (const legacy of LEGACY_NAMES) {

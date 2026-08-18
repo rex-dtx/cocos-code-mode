@@ -239,7 +239,7 @@ Two things to know before writing a 2.4 tool:
 
 ## UTCP Call Templates Configuration
 
-The extension registers itself in `~/.utcp_config.json` as a `cc24` entry pointing at the running server port, and rewrites the port when it changes.
+The extension registers itself in `~/.utcp_config.json` as a `cc2x4` entry pointing at the running server port, and rewrites the port when it changes.
 
 > The **Configuration** panel from the 3.x version is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode-2x.json` (0 = auto-assign). Additional call templates must be added to `~/.utcp_config.json` by hand for now.
 
@@ -249,7 +249,7 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension automatically maintains a `cc24` entry in UTCP Config pointing to the running server port.
+The extension automatically maintains a `cc2x4` entry in UTCP Config pointing to the running server port.
 
 ## Integration
 
