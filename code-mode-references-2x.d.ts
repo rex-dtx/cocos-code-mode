@@ -260,4 +260,16 @@ declare namespace cc2x4 {
 
     /** Goi handler bat ky trong scene-script (probe). */
     function sceneScript(args: { handler: string; arg1?: string; arg2?: any }): { result: any };
+
+    /** Open http(s) URL in system browser. */
+    function urlOpen(args: { url: string }): { success: boolean };
+    /** Get registered program info (path, args). */
+    function programGetInfo(args: { programName: string }): { path: string; commandArgument?: string };
+    /** Launch registered program. */
+    function programOpen(args: { programName: string; commandArguments?: Record<string, any> }): { success: boolean };
+    /** Animation 2.4 (cc.Animation): clips_info/clip_dump/properties/state. */
+    function animationQuery(args: { operation: string; nodeUuid?: string; path?: string; clipName?: string; includeCurves?: boolean }): { result: any };
+    function animationEdit(args: { operation: string; nodeUuid?: string }): { success: boolean; note?: string };
+    /** Clipboard copy/cut/paste/duplicate nodes. */
+    function nodeClipboard(args: { operation: 'copy'|'cut'|'paste'|'duplicate'; ids?: string; targetId?: string }): { success: boolean; ids?: string[] };
 }

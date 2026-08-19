@@ -871,6 +871,23 @@
                 event.reply(null, true);
             } catch (e: any) { event.reply(e); }
         },
+        'probe-animation': function (event: any, uuid: string) {
+            let node: any = null;
+            try { if (cc.engine && cc.engine.getInstanceById) node = cc.engine.getInstanceById(uuid); } catch(e){}
+            if (!node) { (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+            if (!node) return event.reply(new Error('node not found: '+uuid));
+            const anim = node.getComponent('cc.Animation') || node.getComponent(cc.Animation as any);
+            if (!anim) return event.reply(new Error('cc.Animation not found on '+node.name));
+            const out:any={};
+            for(const k in anim){ if(k.charAt(0)==='_') continue; let v; try{v=(anim as any)[k];}catch(e){continue;} if(typeof v==='function') continue;
+                if(Array.isArray(v)) out[k]=v.map((it:any)=>{ try{ if(it && (it.uuid||it._uuid)) return {name:it.name||it._name, uuid:it.uuid||it._uuid, duration:it.duration, sample:it.sample, wrapMode:it.wrapMode}; return JSON.parse(JSON.stringify(it)); }catch(e){return String(it);} });
+                else if(v && typeof v==='object' && (v.uuid||v._uuid)) out[k]={__ref:v.uuid||v._uuid, __type: (v.constructor&&v.constructor.name)||null, __name:v.name||v._name||null};
+                else { try{ out[k]=JSON.parse(JSON.stringify(v)); } catch(e){ out[k]=String(v); } }
+            }
+            // also expose clips array directly
+            try{ const clips=(anim as any).getClips ? (anim as any).getClips() : ((anim as any).clips||(anim as any)._clips||[]); out._clipsResolved = clips.map((cl:any)=>({name:cl.name||cl._name, uuid:cl.uuid||cl._uuid, duration:cl.duration, sample:cl.sample})); }catch(e){}
+            event.reply(null, out);
+        },
         'duplicate-node': function (event: any, uuid: string) {
             let node: any = null;
             try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
