@@ -775,6 +775,27 @@
                 else { node.setPosition(0,0,0); event.reply(null, { uuid, reset:true, fallback:true }); }
             } catch(e:any){ event.reply(e); }
         },
+        'batch-property': function (event: any, ops: any[]) {
+            // ops: [{uuid, path, value, undo?:boolean}] — undo true uses setPropertyByPath, false direct assign
+            if(!Array.isArray(ops)) return event.reply(new Error('ops must be array'));
+            const results:any[]=[];
+            try{
+                let setter:any=null; try{ const mod:any=Editor.require('scene://set-property-by-path'); setter=mod.setPropertyByPath||mod.setProperty; }catch{}
+                for(const op of ops){
+                    const uuid=op.uuid, path=op.path, value=op.value;
+                    if(op.undo && typeof setter==='function'){ setter(uuid, path, value); results.push({uuid, path, ok:true}); }
+                    else {
+                        let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
+                        if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+                        if(!node) { results.push({uuid, path, ok:false, error:'node not found'}); continue; }
+                        const parts=String(path).split('.'); let cur:any=node;
+                        for(let i=0;i<parts.length-1;i++){ cur=cur[parts[i]]; if(cur==null) break; }
+                        const last=parts[parts.length-1]; cur[last]=value; results.push({uuid, path, ok:true});
+                    }
+                }
+                event.reply(null, { results });
+            } catch(e:any){ event.reply(e); }
+        },
         'asset-preview': function (event: any, uuid: string) {
             try{
                 // 2.4 has no stable preview thumbnail IPC — return hint

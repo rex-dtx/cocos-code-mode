@@ -265,6 +265,8 @@ declare namespace cc2x4 {
     function editorListTypes(args: { category: string }): { types: string[] };
     /** Create primitive 3D node (Cube/Sphere etc.) under parent. */
     function nodeCreatePrimitive(args: { name?: string; primitiveType: string; parentUuid?: string }): { uuid: string; name: string };
+    /** Batch set properties (multi-node). */
+    function batchSetProperties(args: { ops: Array<{uuid:string, path:string, value:any, undo?:boolean}> }): { results: Array<{uuid:string, path:string, ok:boolean}> };
     /** Write project settings. */
     function projectSaveConfig(args: { type: string; key: string; value: any }): { success: boolean };
 

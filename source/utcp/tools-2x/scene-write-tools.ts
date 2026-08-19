@@ -51,6 +51,24 @@ export class SceneWriteTools {
     }
 
     @utcpTool(
+        'batchSetProperties',
+        'Batch set properties on multiple nodes. Each op can be undo-aware (via setPropertyByPath) or direct.',
+        {
+            type: 'object',
+            properties: {
+                ops: { type: 'array', items: { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' }, value: {}, undo: { type: 'boolean' } }, required: ['uuid','path'] }, description: 'Array of {uuid, path, value, undo?}' },
+            },
+            required: ['ops'],
+        },
+        { type: 'object', properties: { results: { type: 'array', items: { type: 'object' } } } },
+        'POST', ['scene','batch','set','property','multi']
+    )
+    async batchSetProperties(args: { ops: Array<{uuid:string, path:string, value:any, undo?:boolean}> }): Promise<any> {
+        if (!Array.isArray(args.ops) || args.ops.length === 0) throw new Error('ops must be non-empty array');
+        return sceneScript<any>('batch-property', args.ops);
+    }
+
+    @utcpTool(
         'nodeCreate',
         'Create a new node. If parentUuid is given, attach under that node, else under scene root. Returns new node uuid.',
         {
