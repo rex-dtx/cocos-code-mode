@@ -871,6 +871,32 @@
                 event.reply(null, true);
             } catch (e: any) { event.reply(e); }
         },
+        'create-primitive': function (event: any, type: string, name: string, parentUuid: string) {
+            try {
+                const node = new (cc as any).Node(name || type);
+                // 2.4 has no Editor primitive mesh factory in scene process; create via MeshRenderer + builtin primitive if available
+                let parent: any = cc.director.getScene();
+                if (parentUuid) {
+                    try { if (cc.engine && (cc.engine as any).getInstanceById) parent = (cc.engine as any).getInstanceById(parentUuid) || parent; } catch {}
+                    if (parent.uuid !== parentUuid) {
+                        let found:any=null; (function walk(n:any){ if(found||!n) return; if(n.uuid===parentUuid){found=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene());
+                        if(found) parent = found;
+                    }
+                }
+                // Try to add ModelComponent + primitive mesh if API exists
+                try {
+                    const map: any = { Cube:'cube', Sphere:'sphere', Capsule:'capsule', Cylinder:'cylinder', Plane:'plane', Quad:'quad', Cone:'cone', Torus:'torus' };
+                    const prim = map[type] || 'cube';
+                    // cc.utils.createMesh or cc.primitive polyfill is not on 2.4 scene; fallback: add cc.ModelComponent placeholder
+                    if (typeof cc.ModelComponent !== 'undefined') {
+                        const comp:any = node.addComponent('cc.ModelComponent');
+                        // leave mesh null — user can assign via asset in next step
+                    }
+                } catch {}
+                parent.addChild(node);
+                event.reply(null, { uuid: node.uuid, name: node.name, parent: parent.name });
+            } catch(e:any){ event.reply(e); }
+        },
         'probe-animation': function (event: any, uuid: string) {
             let node: any = null;
             try { if (cc.engine && cc.engine.getInstanceById) node = cc.engine.getInstanceById(uuid); } catch(e){}

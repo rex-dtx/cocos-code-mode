@@ -90,6 +90,32 @@ export class AssetWriteTools {
     }
 
     @utcpTool(
+        'assetGetAvailableUrl',
+        'Return a non-colliding db:// url for the given desired path (appends _1 suffix if exists). Use before create to avoid overwrite.',
+        {
+            type: 'object',
+            properties: { assetPath: { type: 'string', description: 'Desired db:// path, e.g. db://assets/NewFolder' } },
+            required: ['assetPath'],
+        },
+        { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] },
+        'GET', ['asset', 'available', 'url', 'unique', 'collision']
+    )
+    async assetGetAvailableUrl(args: { assetPath: string }): Promise<any> {
+        if (!args.assetPath) throw new Error('assetPath is required');
+        const url = args.assetPath.startsWith('db://') ? args.assetPath : `db://${args.assetPath.replace(/^\/+/, '')}`;
+        // 2.4 assetdb has no generate-available-url; do suffix loop via exists check (sync, cheap)
+        if (!Editor.assetdb.exists(url)) return { url };
+        const dot = url.lastIndexOf('.');
+        const dir = dot > 0 ? url.slice(0, dot) : url;
+        const ext = dot > 0 ? url.slice(dot) : '';
+        for (let i = 1; i < 100; i++) {
+            const cand = `${dir}_${i}${ext}`;
+            if (!Editor.assetdb.exists(cand)) return { url: cand };
+        }
+        throw new Error('Could not find available url near ' + url);
+    }
+
+    @utcpTool(
         'assetDelete',
         'Delete an asset or folder by db:// url.',
         {

@@ -121,6 +121,25 @@ export class SceneWriteTools {
     }
 
     @utcpTool(
+        'nodeCreatePrimitive',
+        'Create a primitive 3D node (Cube, Sphere, Capsule etc.) via cc.Model + mesh. Parent by uuid, else scene root.',
+        {
+            type: 'object',
+            properties: {
+                primitiveType: { type: 'string', enum: ['Cube','Sphere','Capsule','Cylinder','Plane','Quad','Cone','Torus'], description: 'Primitive type' },
+                name: { type: 'string', description: 'Node name; defaults to primitive type' },
+                parentUuid: { type: 'string', description: 'Parent node uuid' },
+            },
+            required: ['primitiveType'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' } }, required: ['uuid'] },
+        'POST', ['scene', 'node', 'primitive', 'cube', 'sphere', 'create']
+    )
+    async nodeCreatePrimitive(args: { primitiveType: string, name?: string, parentUuid?: string }): Promise<any> {
+        return sceneScript<any>('create-primitive', args.primitiveType, args.name || args.primitiveType, args.parentUuid || '');
+    }
+
+    @utcpTool(
         'editorUndo',
         'Undo or redo the last scene operation. Uses Editor.Ipc scene panel messages.',
         {

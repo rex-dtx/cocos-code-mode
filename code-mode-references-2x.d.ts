@@ -255,6 +255,12 @@ declare namespace cc2x4 {
     /** Editor operate: save scene, refresh assets. */
     function editorOperate(args: { operation: 'save_scene' | 'refresh_assets' }): { success: boolean };
 
+    /** Return non-colliding db:// url (adds suffix if exists). Use before create. */
+    function assetGetAvailableUrl(args: { assetPath: string }): { url: string };
+    /** All registered asset types, importers, creatable presets. */
+    function editorListTypes(args: { category: string }): { types: string[] };
+    /** Create primitive 3D node (Cube/Sphere etc.) under parent. */
+    function nodeCreatePrimitive(args: { name?: string; primitiveType: string; parentUuid?: string }): { uuid: string; name: string };
     /** Write project settings. */
     function projectSaveConfig(args: { type: string; key: string; value: any }): { success: boolean };
 

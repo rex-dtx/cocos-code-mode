@@ -46,6 +46,20 @@ export class SceneMiscTools {
         'GET', ['scene', 'info', 'current', 'header', 'bounds', 'dirty']
     )
     async sceneInfo(): Promise<any> {
-        return sceneScript<any>('scene-info');
+        const base: any = await sceneScript<any>('scene-info');
+        try {
+            const bounds: any = await new Promise((resolve, reject) => {
+                Editor.Ipc.sendToPanel('scene', 'scene:query-scene-bounds' as any, (err: any, res: any) => err ? reject(err) : resolve(res));
+            });
+            if (bounds) base.bounds = bounds;
+        } catch {}
+        try {
+            const dirty: any = await new Promise((resolve, reject) => {
+                Editor.Ipc.sendToPanel('scene', 'scene:query-dirty' as any, (err: any, res: any) => err ? reject(err) : resolve(res));
+            });
+            base.dirty = !!dirty;
+            if (!base.bounds && base.designResolution) base.bounds = base.designResolution;
+        } catch {}
+        return base;
     }
 }

@@ -182,6 +182,50 @@ export class EditorMiscTools {
     // truc tiep. KHONG fake tool tra mang rong.
 
     @utcpTool(
+        'editorListTypes',
+        'Enumerate type vocabularies. creatable_assets = presets accepted by assetCreate; asset_types = cc.* asset class names; importers = registered importer names.',
+        {
+            type: 'object',
+            properties: {
+                category: { type: 'string', enum: ['creatable_assets', 'asset_types', 'importers'], description: 'Which vocabulary' },
+            },
+            required: ['category'],
+        },
+        { type: 'object', properties: { types: { type: 'array', items: { type: 'string' } } }, required: ['types'] },
+        'GET', ['editor', 'types', 'list', 'enumerate', 'creatable', 'importer']
+    )
+    async editorListTypes(args: { category: string }): Promise<any> {
+        const cat = args.category;
+        if (cat === 'asset_types') {
+            // Editor.assettype2name: { 'cc.Texture2D': 'texture', ... } -> unique type names
+            const map: any = (Editor as any).assettype2name || {};
+            const types = Array.from(new Set(Object.values(map) as string[])).sort();
+            return { types };
+        }
+        if (cat === 'importers') {
+            // No direct enumerate on 2.4; derive from assettype2name keys + .meta importer field
+            // Fallback: return keys of assettype2name (importer name == class name for most assets)
+            const map: any = (Editor as any).assettype2name || {};
+            return { types: Object.keys(map).sort() };
+        }
+        if (cat === 'creatable_assets') {
+            // 2.4 scene messages for creatable presets: try known candidates, else fallback to common list
+            const candidates = ['scene:query-creatable-asset-types', 'asset-db:query-creatable-asset-types'];
+            for (const msg of candidates) {
+                try {
+                    const raw: any = await new Promise((resolve, reject) => {
+                        Editor.Ipc.sendToPanel('scene', msg as any, (err: any, res: any) => err ? reject(err) : resolve(res));
+                    });
+                    if (Array.isArray(raw) && raw.length) return { types: raw.filter((s: any) => typeof s === 'string') };
+                } catch {}
+            }
+            // Fallback known presets observed in 2.4 asset-db
+            return { types: ['folder','scene','prefab','material','typescript','javascript','json','effect','particle','texture-packer','sprite-frame'] };
+        }
+        throw new Error(`Unknown category: ${cat}. Use creatable_assets, asset_types, or importers`);
+    }
+
+    @utcpTool(
         'previewGetUrl',
         'Get the URL of the editor game preview server (browser preview). Null if preview not running.',
         { type: 'object', properties: {} },
