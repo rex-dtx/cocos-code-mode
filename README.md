@@ -151,7 +151,7 @@ Two special settings types can be inspected and modified directly:
 1. Download last release from this repository.
 2. Open Cocos Creator, go to **Extension → Extension Manager**, and click `Import Extension File(.zip)` button (icon with arrow).
 3. Select the downloaded zip file.
-4. The UTCP server starts automatically and registers itself in `~/.utcp_cc3x7.json` by default (override via Configuration panel or `UTCP_CONFIG_FILE` env, isolated from `cc2x4`'s `~/.utcp_config.json`).
+4. The UTCP server starts automatically and registers itself in `~/.utcp_config.json` by default.
 
 ### Build from source
 
@@ -243,7 +243,7 @@ Code Mode works with any UTCP-compatible client, including the [Code Mode MCP se
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
       "env": {
-        "UTCP_CONFIG_FILE": "~/.utcp_cc3x7.json"
+        "UTCP_CONFIG_FILE": "~/.utcp_config.json"
       }
     }
   }
@@ -256,10 +256,10 @@ To set up a Claude Code agent to use Code Mode, open your project and run:
 
 Linux/MacOS:
 ``` bash
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_cc3x7.json" -- code-mode npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- code-mode npx @utcp/code-mode-mcp
 ```
 
 Windows:
 ``` powershell
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_cc3x7.json" -- code-mode cmd /c npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- code-mode cmd /c npx @utcp/code-mode-mcp
 ```

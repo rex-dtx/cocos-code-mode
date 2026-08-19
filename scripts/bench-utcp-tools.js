@@ -15,7 +15,7 @@ function pctl(sorted, q) {
 async function discoverPort() {
     // 1) editor's UTCP config (ground truth)
     try {
-        const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_cc3x7.json');
+        const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
         const raw = readFileSync(cfgPath, 'utf8');
         const cfg = JSON.parse(raw);
         for (const t of cfg.manual_call_templates || []) {

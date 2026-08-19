@@ -8,7 +8,7 @@ async function discoverBase() {
     let port = Number(process.argv[2]);
     if (port) return `http://localhost:${port}`;
     try {
-        const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_cc3x7.json');
+        const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
         const raw = readFileSync(cfgPath, 'utf8');
         const cfg = JSON.parse(raw);
         for (const t of cfg.manual_call_templates || []) {
@@ -48,7 +48,7 @@ async function main() {
         ok(`manual valid: 45 tools, keys ${keys.join(',')}`);
         // check cc3x7 template exists in config
         try {
-            const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_cc3x7.json');
+            const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
             const raw = readFileSync(cfgPath, 'utf8');
             const cfg = JSON.parse(raw);
             const names = (cfg.manual_call_templates || []).map(t => t.name);
