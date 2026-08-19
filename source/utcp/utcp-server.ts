@@ -79,7 +79,10 @@ export class UtcpServerManager {
         );
 
         this.app.use(cors());
-        this.app.use(express.json());
+        // C2.4 uses rawCreator form-data in places; ensure JSON body is parsed even when
+        // express.json's default type filter rejects custom content-types.
+        this.app.use(express.json({ type: '*/*' }));
+        this.app.use(express.urlencoded({ extended: false }));
 
         const tools = ToolRegistry.getTools();
         const toolInstances = new Map<Function, any>();
@@ -129,7 +132,9 @@ export class UtcpServerManager {
             const handler = async (req: Request, res: Response) => {
                 const t0 = Date.now();
                 try {
-                    const args = req.query;
+                    const queryArgs = req.query as Record<string, any>;
+                    const bodyArgs = (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) ? req.body : {};
+                    const args = req.method === 'GET' ? queryArgs : { ...queryArgs, ...bodyArgs };
                     debugLog({ type: 'request', tool: toolDef.name, method: req.method, url: req.originalUrl, args });
                     let result = await toolMeta.method.apply(instance, [args]);
                     if (result === undefined || result === null) {

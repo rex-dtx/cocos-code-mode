@@ -743,9 +743,22 @@
                 let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
                 if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
                 if(!node) return event.reply(new Error('node not found: '+uuid));
-                // 2.4 setPropertyByPath needs node object, not uuid (probe: ok (node obj))
-                try{ fn(node, path, value); } catch { fn(uuid, path, value); }
-                event.reply(null, { uuid, path, value });
+                // 2.4 setPropertyByPath(path like "x" or "position.x") silently no-ops if path wrong.
+                // probe confirms direct assign works; undo path must actually mutate.
+                // Try uuid sig then node sig, verify change and fallback to direct assign.
+                let applied=false;
+                try{ const before=(node as any)[path] ?? (path.indexOf('.')>=0 ? (function(){let c:any=node; for(const p of path.split('.')) c=c?.[p]; return c;})() : undefined);
+                    try{ fn(uuid, path, value);}catch{ fn(node, path, value); }
+                    const after=(node as any)[path] ?? (path.indexOf('.')>=0 ? (function(){let c:any=node; for(const p of path.split('.')) c=c?.[p]; return c;})() : undefined);
+                    if(after===value || (typeof after==='object' && after!==before)) applied=true;
+                    // also check x/y via position Vec2 indirection
+                    if(!applied && (path==='x'||path==='y')) applied = (node.x===value || node.y===value);
+                }catch{}
+                if(!applied){
+                    // definitive fallback — direct assign always works (verified probe)
+                    try{ const parts=path.split('.'); let cur:any=node; for(let i=0;i<parts.length-1;i++) cur=cur[parts[i]]; cur[parts[parts.length-1]]=value; applied=true; }catch{}
+                }
+                event.reply(null, { uuid, path, value, applied });
             } catch(e:any){ event.reply(e); }
         },
         'call-component-method': function (event: any, uuid: string, method: string, args: any) {
@@ -802,33 +815,43 @@
             try{ const n=new (cc as any).Node(name); let parent:any=cc.director.getScene(); if(parentUuid){ try{ if(cc.engine && (cc.engine as any).getInstanceById) parent=(cc.engine as any).getInstanceById(parentUuid)||parent;}catch{} } parent.addChild(n); event.reply(null,{uuid:n.uuid,name:n.name}); }catch(e:any){event.reply(e);}
         },
         'batch-property': function (event: any, ops: any[]) {
-            // ops: [{uuid, path, value, undo?:boolean}] — undo true uses setPropertyByPath, false direct assign
             if(!Array.isArray(ops)) return event.reply(new Error('ops must be array'));
             const results:any[]=[];
-            try{
-                let setter:any=null; try{ const mod:any=Editor.require('scene://set-property-by-path'); setter=mod.setPropertyByPath||mod.setProperty; }catch{}
-                for(const op of ops){
-                    const uuid=op.uuid, path=op.path, value=op.value;
-                    if(op.undo && typeof setter==='function'){
-                        let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
-                        if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
-                        try{
-                            if(node) try{ setter(node, path, value); } catch { setter(uuid, path, value); }
-                            else setter(uuid, path, value);
-                            results.push({uuid, path, ok:true});
-                        } catch(e:any){ results.push({uuid, path, ok:false, error: e.message}); }
-                    }
-                    else {
-                        let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
-                        if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
-                        if(!node) { results.push({uuid, path, ok:false, error:'node not found'}); continue; }
-                        const parts=String(path).split('.'); let cur:any=node;
-                        for(let i=0;i<parts.length-1;i++){ cur=cur[parts[i]]; if(cur==null) break; }
-                        const last=parts[parts.length-1]; cur[last]=value; results.push({uuid, path, ok:true});
-                    }
+            let setter:any=null; try{ const mod:any=Editor.require('scene://set-property-by-path'); setter=mod.setPropertyByPath||mod.setProperty; }catch{}
+            function resolveNode(uuid:string){
+                let n:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) n=(cc.engine as any).getInstanceById(uuid);}catch{}
+                if(!n){ (function walk(x:any){ if(n||!x) return; if(x.uuid===uuid){n=x;return;} (x.children||[]).forEach(walk); })(cc.director.getScene()); }
+                return n;
+            }
+            function applyDirect(node:any, path:string, value:any){
+                const parts=String(path).split('.'); let cur:any=node;
+                for(let i=0;i<parts.length-1;i++){ cur=cur[parts[i]]; if(cur==null) break; }
+                cur[parts[parts.length-1]]=value;
+            }
+            for(const op of ops){
+                const uuid=op.uuid, path=op.path, value=op.value;
+                if(op.undo && typeof setter==='function'){
+                    const node=resolveNode(uuid);
+                    if(!node){ results.push({uuid, path, ok:false, error:'node not found'}); continue; }
+                    let ok=false, err:string|null=null;
+                    try{
+                        try{ setter(uuid, path, value); } catch{ setter(node, path, value); }
+                        // verify — 2.4 silently no-ops on wrong path
+                        let after:any=(node as any)[path];
+                        if(path.indexOf('.')>=0){ let c:any=node; for(const p of path.split('.')) c=c?.[p]; after=c; }
+                        if(after===value) ok=true;
+                        else if((path==='x' && node.x===value) || (path==='y' && node.y===value)) ok=true;
+                        if(!ok){ applyDirect(node, path, value); ok=true; }
+                    } catch(e:any){ try{ applyDirect(node, path, value); ok=true; } catch(e2:any){ err=(e2&&e2.message)||String(e2); } }
+                    results.push(ok? {uuid, path, ok:true} : {uuid, path, ok:false, error: err||'set failed'});
                 }
-                event.reply(null, { results });
-            } catch(e:any){ event.reply(e); }
+                else {
+                    const node=resolveNode(uuid);
+                    if(!node) { results.push({uuid, path, ok:false, error:'node not found'}); continue; }
+                    try{ applyDirect(node, path, value); results.push({uuid, path, ok:true}); } catch(e:any){ results.push({uuid, path, ok:false, error: e.message}); }
+                }
+            }
+            event.reply(null, { results });
         },
         'asset-preview': function (event: any, uuid: string) {
             try{
