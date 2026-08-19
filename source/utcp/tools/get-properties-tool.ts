@@ -4,9 +4,10 @@ import { ToolsUtils } from '../utils/tools-utils';
 
 export class GetPropertiesTool {
 
+    /** @deprecated use inspectorGet({ target: 'CurrentSceneGlobals'|'ProjectSettings' }) */
     @utcpTool(
         "inspectorGetSettingsProperties",
-        "Gets plain object of properties for the specific settings.",
+        "[DEPRECATED] Use inspectorGet. Gets plain object of properties for the specific settings.",
         { type: 'object', properties: { settingsType: { type: 'string', enum: ['CurrentSceneGlobals', 'ProjectSettings'] } }, required: ['settingsType'] },
         { type: 'object', properties: { dump: { type: 'object' } }, required: ['dump'] }, "GET",  ['inspect', 'scene', 'properties', 'settings', 'config', 'dump']
     )
@@ -14,9 +15,10 @@ export class GetPropertiesTool {
         return await this.inspectorGetProperties({ reference: { id: params.settingsType } });
     }
 
+    /** @deprecated use inspectorGet({ target: 'instance', reference }) */
     @utcpTool(
         "inspectorGetInstanceProperties",
-        "Get properties for instance. Use fields[] for specific keys.",
+        "[DEPRECATED] Use inspectorGet. Get properties for instance. Use fields[] for specific keys.",
         {
             type: 'object',
             properties: {

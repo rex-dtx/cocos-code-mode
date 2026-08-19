@@ -22,17 +22,26 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools
+## Tools (68 — 61 legacy + 7 consolidated preferred)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
+> 7 `consolidated` tools replace 16 legacy operations. Legacy tools stay for one major version (tags `deprecated` + `consolidated`) — new code should use the consolidated entry points. Total exposed in `/utcp`: 68 (61 legacy + 7 consolidated); next major will remove legacy shims and land at 45.
+
 | Category | Tools | Purpose |
 |----------|-------|---------|
-| **Scene** | `nodeGetTree`, `nodeGetAtPath`, `nodeCreate`, `nodeCreatePrimitive`, `nodeOperate` | Navigate and build scene hierarchy |
-| **Components** | `nodeComponentsGet`, `nodeComponentAdd`, `nodeComponentRemove`, `nodeGetAvailableComponentTypes` | Attach, remove, and discover components |
-| **Inspector** | `inspectorGetInstanceDefinition`, `inspectorGetSettingsDefinition`, `inspectorGetInstanceProperties`, `inspectorGetSettingsProperties`, `inspectorSetInstanceProperties`, `inspectorSetSettingsProperties` | Introspect types and read/write properties |
-| **Assets** | `assetGetTree`, `assetGetAtPath`, `assetCreate`, `assetImport`, `assetOperate`, `assetGetPreview` | Browse, create, and manage project assets |
-| **Editor** | `editorOperate`, `editorGetLogs`, `editorGetScenePreview` | Control editor state and capture previews |
+| **Scene** (14) | `sceneOpen`*, `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` → `truncated`/`childrenOmitted` |
+| **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate`, `assetGetPreview` | Browse/search/create/import/mutate/preview. *`assetGetTree` supports `maxDepth`/`maxNodes` |
+| **Inspector** (6 + 3) | `inspectorGetInstanceProperties`*, `inspectorGetSettingsProperties`*, `inspectorSetInstanceProperties`*, `inspectorSetSettingsProperties`*, `inspectorGetInstanceDefinition`*, `inspectorGetSettingsDefinition`* → **preferred** `inspectorGet`, `inspectorSet`, `inspectorGetDefinition` | Dump/set properties and generate TS definitions. *`fields[]` and `section` pagination cut 50-80% |
+| **Components** (4 + 1) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentAdd`*, `nodeComponentRemove`* → **preferred** `nodeComponentManage` | Discover and attach components |
+| **Editor** (9 + 2) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorListTypes`*, `editorIntrospect`*, `editorOperate`*, `editorHistory`, `editorGetLogs`, `editorGetScenePreview` → **preferred** `editorQuery` (=`editorIntrospect`+`editorListTypes`), `sceneManage` (=`sceneOpen`+`editorOperate`) | Viewport, selection, introspection, lifecycle, capture |
+| **Build** (5 + 1) | `buildPanelOpen`*, `buildGetTasksInfo`*, `buildGetTask`*, `buildTrigger`*, `buildTaskControl`* → **preferred** `buildManage` | Panel, pipeline status, trigger and control |
+| **Animation** (2) | `animationQuery`, `animationEdit` | Slim clip dumps and record/operate flow |
+| **Material/DB** (2) | `materialQuery`, `assetDbQuery` | Effects/pipeline and asset-DB introspection |
+| **System** (8) | `previewGetUrl`, `previewOpenInBrowser`, `programGetInfo`, `programOpen`, `urlOpen`, `projectGetConfig`, `projectSetConfig`, `propertyArrayElement` | Preview server, external programs, project config, array ops |
+| **Consolidated** (7) | `inspectorGet`, `inspectorSet`, `inspectorGetDefinition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `buildManage` | Preferred entry points — each maps to legacy impls via shim; see `docs/consolidated-migration.md` |
+
+* `*` = has consolidated replacement or pagination/budget optimization. Token guidance: `docs/prompt-guidance-risks.md` · QA: `scripts/smoke-utcp.js` (61→68) · Perf: `a769a46` bench + `e419276` trim.
 
 
 ## How It Works
@@ -48,20 +57,20 @@ This extension architecture follows a **discover, then act** pattern. AI agents 
 ### Example
 
 ```typescript
-// Find the camera node
-const tree = cc3x7.nodeGetTree({});
-const cameraRef = tree.children[0].components[0]; // component reference
+// Preferred (consolidated): discover → set in one session
+const tree = cc3x7.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
+const ref = tree.children[0].reference;
 
-// Discover what properties Camera has
-const def = cc3x7.inspectorGetInstanceDefinition({ reference: cameraRef });
-// → "export class Camera { fov: number; near: number; far: number; ... }"
+// Single-class definition instead of full dump
+const { definition } = await cc3x7.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
 
-// Set multiple properties in one call
-cc3x7.inspectorSetInstanceProperties({
-  reference: cameraRef,
-  propertyPaths: ["fov", "near", "far"],
-  values: [60, 0.1, 1000]
-});
+// Unified get/set — no need to pick inspector*Instance vs inspector*Settings
+const { dump } = await cc3x7.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
+await cc3x7.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
+
+// Legacy still works (deprecated shim → same impl):
+// const def = cc3x7.inspectorGetInstanceDefinition({ reference: ref });
+// cc3x7.inspectorSetInstanceProperties({ reference: ref, propertyPaths: ['position.x'], values: [120] });
 ```
 
 ## Architecture
@@ -201,7 +210,8 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension automatically maintains a `cc3x7` entry in UTCP Config pointing to the running server port.
+The extension automatically maintains a `cc3x7` entry in UTCP Config pointing to the running server port. It
+migrates `CocosEditor3x7` → `cc37` → `cc3x7` in place. Legacy names are still read (`cc-2x` uses `cc2x4` with `CocosEditor`/`cc24` legacy).
 
 ## Agent Prompt Guidance
 
@@ -217,6 +227,7 @@ When returning data from cc3x7 tools:
 ```
 
 Full failure-mode analysis and trade-offs: [`docs/prompt-guidance-risks.md`](docs/prompt-guidance-risks.md).
+Migration for consolidated tools (A1 shims → 45): [`docs/consolidated-migration.md`](docs/consolidated-migration.md).
 
 ## Integration
 

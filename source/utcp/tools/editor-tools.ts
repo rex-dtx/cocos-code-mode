@@ -204,9 +204,10 @@ export class EditorTools {
         }
     }
 
+    /** @deprecated use editorQuery({ category: 'creatable_assets'|'asset_types'|'importers' }) */
     @utcpTool(
         'editorListTypes',
-        'List editor vocabularies: creatable_assets, asset_types, importers.',
+        '[DEPRECATED] Use editorQuery. List editor vocabularies: creatable_assets, asset_types, importers.',
         {
             type: 'object',
             properties: {
@@ -249,9 +250,10 @@ export class EditorTools {
         return { types: list.map(pickName).filter((name): name is string => !!name) };
     }
 
+    /** @deprecated use editorQuery({ category }) */
     @utcpTool(
         'editorIntrospect',
-        'Query editor state: scene_mode, ready (post-open), enum_values, layers, sorting_layers, script_info, has_script.',
+        '[DEPRECATED] Use editorQuery. Query editor state: scene_mode, ready (post-open), enum_values, layers, sorting_layers, script_info, has_script.',
         {
             type: 'object',
             properties: {
@@ -338,9 +340,10 @@ export class EditorTools {
         }
     }
 
+    /** @deprecated use sceneManage({ operation }) for save/close, editorViewport for preview. */
     @utcpTool(
         'editorOperate',
-        'Editor operations: save/close scene or prefab, soft_reload (post-recompile), preview controls, refresh asset-db.',
+        '[DEPRECATED] Use sceneManage. Editor operations: save/close scene or prefab, soft_reload (post-recompile), preview controls, refresh asset-db.',
         {
             type: 'object',
             properties: {

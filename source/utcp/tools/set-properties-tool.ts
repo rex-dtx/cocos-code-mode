@@ -8,9 +8,10 @@ import { IInstanceReference, InstanceReferenceSchema, ISuccessIndicator, Success
 declare const Editor: any;
 
 export class SetPropertyTool {
+    /** @deprecated use inspectorSet({ target, ... }) */
     @utcpTool(
         "inspectorSetSettingsProperties",
-        "Set property on CurrentSceneGlobals/ProjectSettings.",
+        "[DEPRECATED] Use inspectorSet. Set property on CurrentSceneGlobals/ProjectSettings.",
         { type: 'object',
             properties: {
                 settingsType: { type: 'string', enum: ['CurrentSceneGlobals', 'ProjectSettings'] },
@@ -40,9 +41,10 @@ export class SetPropertyTool {
     }
 
 
+    /** @deprecated use inspectorSet({ target: 'instance', ... }) */
     @utcpTool(
         "inspectorSetInstanceProperties",
-        "Set properties on node/component/asset instance.",
+        "[DEPRECATED] Use inspectorSet. Set properties on node/component/asset instance.",
         {
             type: 'object',
             properties: {

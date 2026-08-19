@@ -90,9 +90,10 @@ export class ComponentTools {
         throw new Error(`Components of type ${args.componentType} not found on node ${args.reference.id}`);
     }
 
+    /** @deprecated use nodeComponentManage({ operation: 'remove', reference }) */
     @utcpTool(
         'nodeComponentRemove',
-        'Remove referenced component from node it is attached to.',
+        '[DEPRECATED] Use nodeComponentManage. Remove referenced component from node it is attached to.',
         { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
         SuccessIndicatorSchema, "POST",  ['scene', 'node', 'component', 'remove', 'delete']
     )
@@ -115,9 +116,10 @@ export class ComponentTools {
         }
     }
 
+    /** @deprecated use nodeComponentManage({ operation: 'add', reference, componentType }) */
     @utcpTool(
         'nodeComponentAdd',
-        'Add a component to a referenced node, returns reference to the new component',
+        '[DEPRECATED] Use nodeComponentManage. Add a component to a referenced node, returns reference to the new component',
         {
             type: 'object',
             properties: {

@@ -4,9 +4,10 @@ import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, I
 
 export class SceneTools {
 
+    /** @deprecated use sceneManage({ operation: 'open', reference }) */
     @utcpTool(
         'sceneOpen',
-        'Open a scene by uuid. Resolve path to uuid first via assetGetAtPath.',
+        '[DEPRECATED] Use sceneManage. Open a scene by uuid. Resolve path to uuid first via assetGetAtPath.',
         {
             type: 'object',
             properties: {

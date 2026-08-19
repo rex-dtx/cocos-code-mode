@@ -27,9 +27,10 @@ export class GetClassInfoTool {
         '\tm12: number; m13: number; m14: number; m15: number; }\n' +
         'class Gradient { alphaKeys: Array<{ alpha: number, time: number }>, colorKeys: Array<{ /* always 3 elements: r, g and b values */color: Array<number>, time: number }>, mode: number }';
 
+    /** @deprecated use inspectorGetDefinition({ target }) */
     @utcpTool(
         "inspectorGetSettingsDefinition",
-        "Generate TS definition for settings. Use section for single class.",
+        "[DEPRECATED] Use inspectorGetDefinition. Generate TS definition for settings. Use section for single class.",
         { type: 'object' , properties: { settingsType: { type: 'string', enum: ['CommonTypes', 'CurrentSceneGlobals', 'ProjectSettings'] }, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['settingsType'] },
         { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
         "GET",  ['code', 'typescript', 'inspection', 'definition', 'common', 'types', 'settings', 'scene', 'globals', 'project']
@@ -65,9 +66,10 @@ export class GetClassInfoTool {
         }
     }
 
+    /** @deprecated use inspectorGetDefinition({ target: 'instance', reference }) */
     @utcpTool(
         "inspectorGetInstanceDefinition",
-        "Generate TS definition for instance. Use section for single class.",
+        "[DEPRECATED] Use inspectorGetDefinition. Generate TS definition for instance. Use section for single class.",
         { type: 'object', properties: { reference: InstanceReferenceSchema, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['reference'] },
         { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
         "GET",  ['code', 'typescript', 'inspection', 'definition', 'class', 'info', 'meta', 'instance', 'node', 'component', 'asset', 'data']

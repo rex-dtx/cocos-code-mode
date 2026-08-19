@@ -52,7 +52,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildPanelOpen',
-        'Open the editor build panel (default build panel or the bundle build panel).',
+        '[DEPRECATED] Use buildManage. Open the editor build panel (default build panel or the bundle build panel).',
         {
             type: 'object',
             properties: {
@@ -69,7 +69,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildGetTasksInfo',
-        'Build pipeline status: worker ready, queue free, all tasks summary.',
+        '[DEPRECATED] Use buildManage. Build pipeline status: worker ready, queue free, all tasks summary.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -91,7 +91,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildGetTask',
-        'Get build task by id with full options. Copy+modify options for buildTrigger.',
+        '[DEPRECATED] Use buildManage. Get build task by id with full options. Copy+modify options for buildTrigger.',
         {
             type: 'object',
             properties: {
@@ -121,7 +121,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildTrigger',
-        'Enqueue a build task. Copy options from buildGetTask and modify. Poll status with buildGetTasksInfo.',
+        '[DEPRECATED] Use buildManage. Enqueue a build task. Copy options from buildGetTask and modify. Poll status with buildGetTasksInfo.',
         {
             type: 'object',
             properties: {
@@ -153,7 +153,7 @@ export class BuildTools {
 
     @utcpTool(
         'buildTaskControl',
-        'Manage build task: "break" aborts, "remove" deletes, "recompile" rebuilds scripts only. Get ids from buildGetTasksInfo.',
+        '[DEPRECATED] Use buildManage. Manage build task: "break" aborts, "remove" deletes, "recompile" rebuilds scripts only. Get ids from buildGetTasksInfo.',
         {
             type: 'object',
             properties: {
