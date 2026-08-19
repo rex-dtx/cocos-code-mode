@@ -11,7 +11,7 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
 | `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** + vòng 1.1 (token guard) | Trước khi viết tool mới. Bắt buộc |
 | `../README.md` | Tool surface + payload limit + 2 bẫy cho người viết tool mới (bản 2.x, không phải 3.x) | Khi cần overview nhanh |
-| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (10 tool / 27 op) | Khi thêm/sửa tool — update tay, không generated |
+| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (46 decorators, ~44 dts, ~39 effective) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
 
@@ -28,15 +28,21 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 | 7 | `editorEnvInfo` + `editorSelect` + `projectGetConfig` + d.ts | ✅ 34/34 smoke test |
 | 1.1 | Token guard (`maxNodes`/`maxResults`), dump bỏ `types`, not-found → throw, README 2.x, self-check | ✅ 12/12 check, build + package exit 0 |
 
-**Vòng 1 xong: 9 tool, 26 op.** `editorGetLogs` bỏ — 2.4.15 không có API đọc console (verified).
+**Vòng 1 xong: 9 tool, 26 op.** `editorGetLogs` bỏ ban đầu — 2.4.15 không có console read (verified), sau thêm lại via `temp/logs/project.log` ở Batch B.
 
-**Vòng 1.2 (đang làm): 27 op** — thêm `assetQuery used_by` (chiều ngược asset → node). Phase A ✅ code + 17 self-check, **chưa smoke** · phase B ✅ tách "nợ thật" vs "không port được" trong `cocos-2x-api-notes.md` · phase C (probe3, cổng vòng 2) ⛔ chờ mở được 2.4.15.
+**Vòng 1.2: 27 op** — thêm `assetQuery used_by` (chiều ngược asset → node). Phase A ✅ code + 17 self-check, **chưa smoke** · phase B ✅ tách "nợ thật" vs "không port được" trong `cocos-2x-api-notes.md` · phase C (probe3, cổng vòng 2) ⛔ chờ mở được 2.4.15.
 
 **Tool thứ 10:** `listComponentMethods` — port từ v3 commit `9fc494b`, discovery cho callComponentMethod vòng 2. Output group theo component NAME (không có uuid). Self-check: 22 check.
 
+**Batch A (5f56442):** `assetGetAvailableUrl`, `editorListTypes`, `nodeCreatePrimitive`, `sceneInfo` enrich (`bounds`/`dirty`).
+
+**Batch B (f85edfe..1825f1c):** `callComponentMethod` + `nodeReset` (undo-aware via `scene://set-property-by-path`), `probe-animation`, `assetGetPreview`/`editorGetLogs`/`editorGetScenePreview` (fallbacks).
+
+**Batch HL + BatchProps (e779f38..1349d6d):** `sceneCreateNodeHL`/`sceneSetPropertyHL` (`scene://utils/scene` high-level, undo/dirty), `batchSetProperties` multi-node mix (`undo:true` → `setPropertyByPath(node, path, value)` probe requires **node object not uuid**, verify+direct fallback — fix `Cannot read property constructor` silent no-op), `nodeSetPropertyUndo` single.
+
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
 
-**Vòng 2 (write) CHƯA MỞ — bị chặn cứng.** Cả 3 câu hỏi chặn (`cc.engine.getInstanceById` nhận uuid gì · `Editor.require('scene://utils/node')` export gì · `set-property-by-path` nhận path dạng nào) đều cần probe runtime, mà 2.4.15 phải đang chạy. Không mở được Creator = không làm được vòng 2, không có đường vòng.
+**Vòng 2 (write) ĐÃ MỞ (0de84a7..1349d6d) — probe batch đã giải 3 blocker.** Cả 3 câu hỏi chặn (`cc.engine.getInstanceById` nhận uuid gì · `Editor.require('scene://utils/node')` export gì · `set-property-by-path` nhận path dạng nào) đều cần probe runtime, mà 2.4.15 phải đang chạy. Không mở được Creator = không làm được vòng 2, không có đường vòng.
 
 ## Test tự động
 

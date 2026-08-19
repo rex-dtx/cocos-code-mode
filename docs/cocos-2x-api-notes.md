@@ -587,6 +587,13 @@ Lưu ý: `package.json` của `custom` khai `express: ^5` nhưng cài về **4.2
 
 ---
 
+
+# Batch HL + BatchProps — 2026-08-19 (e779f38..1349d6d)
+
+**Probe kết luận:** `scene://set-property-by-path:setPropertyByPath` cần **node object** (`setter(node, path, value)` — `ok (node obj)`), gọi `setter(uuid, path, value)` throw `Cannot read property 'constructor' of undefined`. Fix: resolve node via `cc.engine.getInstanceById(uuid)` walk fallback, thử `setter(node, path, value)` rồi fallback `setter(uuid, ...)`. Silent no-op khi path sai → verify `after===value` (và `x`/`y` indirection) rồi fallback direct `cur[last]=value`. Áp dụng cho `set-node-prop-undo`, `scene-set-property`, `batch-property` (`undo:true` branch). `batchSetProperties` verify xong `{x:120,y:60}` trên TestBox `503IBudZ9FqaNQkiuQBZNU`.
+
+**Batch A/B đã ghi ở docs/README.md** — xem đó cho tool surface chi tiết.
+
 # Nguồn thứ 3: engine source + app.asar giải nén
 
 Bổ sung sau vòng 1. Trước đó chỉ có 2 nguồn: corpus `cc_docs` và probe runtime. Nguồn này lấp đúng khoảng trống của corpus (`cc_docs` cover **editor extension API**, KHÔNG cover engine internals).
