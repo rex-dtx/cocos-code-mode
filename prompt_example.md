@@ -58,11 +58,10 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 
 **Maximize efficiency per tool call — do MORE in single execution.**
 
-### Phase 1: Discover & Plan
-MCP Tools:
-- `list_tools` → reveal all available toolset
-- `search_tools` → find relevant tools definitions by prompts
-- `tools_info` → get definitions for particular tools
+### Phase 1: Discover & Plan (cache-first — see `.claude/skills/cc-code-mode/SKILL.md`)
+- If `CK_CODE_MODE=ready` or `.claude/cc-code-mode-cache.json` exists → **skip** `register_manual`/`list_tools`/`search_tools`/`tools_info`, go straight to `call_tool_chain("cc3x7.<tool>({ ... })")`.
+- Cache miss only (Cocos was closed at SessionStart): `register_manual` from `~/.utcp_config.json` → `list_tools` once → then cache hit thereafter.
+- On `manual not found` / `tool not found`: re-`register_manual` (re-read `~/.utcp_config.json` — port may have changed) → refresh cache → retry once.
 
 ### Phase 2: Inspect
 - Process tools output to get only required information

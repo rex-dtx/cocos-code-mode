@@ -1,6 +1,10 @@
 # AI agent files
 .agent/
-.claude/
+.claude/*
+!.claude/skills/
+!.claude/skills/**
+!.claude/settings.json
+.claude/cc-code-mode-cache.json
 .cursor/
 .aider*
 .copilot/

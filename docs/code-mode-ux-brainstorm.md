@@ -1,8 +1,9 @@
-# Code Mode UX — Brainstorm: tu tool trung gian sang tool thuong
+# Code Mode UX — tu tool trung gian sang tool thuong
 
-> **Ngay:** 2026-08-19 · **Trang thai:** brainstorm / chua trien khai
+> **Ngay:** 2026-08-19 · **Trang thai:** done — Huong 1 da trien khai (2026-08-19)
 > **Pain point (a):** Muon dung code mode phai noi rat nhieu — `register_manual` toi server Cocos, roi moi lan can tool gi lai `search_tools`/`tools_info` de check trong "code mode box" co gi. Muon rut gon de agent tu hieu va goi thang nhu tool thuong.
 > **Huong chon:** (A) cache — register xong thi nho, chat trong session bao "dung code mode / set vi tri / ..." neu tool da co trong cache thi goi thang `cc3x7.*` thay vi register/tim lai. (Khong phai (B) tach moi tool thanh MCP tool rieng.)
+> **Trien khai:** `.claude/skills/cc-code-mode/SKILL.md` + `scripts/code-mode-bootstrap.js` (SessionStart hook) + `.claude/settings.json` + `prompt_example.md` Phase 1 cache-first. Cache luu full `toolDefs[]` tu `GET /utcp` (1 fetch = full detail). Da sync sang `cc-2x`.
 
 ## 1. Hien trang (as-is)
 
@@ -61,12 +62,9 @@ User prompt: "dung code mode set vi tri node X"
 - **Ap dung cho ca 2 nhanh:** `cc-3x7` (`cc3x7`) va `cc-2x` (`cc2x4`) — cung co che, khac ten manual.
 - **Khong can spec file lon:** day la bounded change (sua flow hien co, khong tao subsystem moi). Skill + hook la du.
 
-## 6. Next step (khi a duyet)
+## 6. Next step — done 2026-08-19
 
-1. Tao skill + hook + script bootstrap (Huong 1).
-2. Sua `prompt_example.md`.
-3. Test 1 session thuc te.
-4. Ghi lai ket qua vao plan `cc-code-mode-cst` (neu can) va dong brainstorm nay.
+Huong 1 da xong: skill + hook + cache `toolDefs` (full detail) + prompt cache-first. Session resume da log `[code-mode-bootstrap] cached cc3x7, cc2x4 (91 tools)`. Them tool moi thi diff `toolDefs` la thay ngay — khong can `tools_info` tung tool.
 
 ---
 *Nguon: brainstorm session 2026-08-19 — phan loai: bounded, recommend Huong 1 (skill + hook).*
