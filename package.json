@@ -66,14 +66,29 @@
         "message": "open-panel"
       },
       {
-        "path": "Code Mode (3.7)/Debug",
-        "label": "Toggle Debug Logging",
-        "message": "toggle-debug"
+        "path": "Code Mode (3.7)",
+        "label": "Server Info",
+        "message": "show-info"
       },
       {
         "path": "Code Mode (3.7)",
-        "label": "Show Build Info",
+        "label": "Restart Server",
+        "message": "restart-server"
+      },
+      {
+        "path": "Code Mode (3.7)",
+        "label": "Reload Extension",
+        "message": "reload-extension"
+      },
+      {
+        "path": "Code Mode (3.7)",
+        "label": "About",
         "message": "show-build-info"
+      },
+      {
+        "path": "Code Mode (3.7)/Debug",
+        "label": "Toggle Debug Logging",
+        "message": "toggle-debug"
       },
       {
         "path": "Code Mode (3.7)/Debug",
@@ -130,6 +145,16 @@
       "show-build-info": {
         "methods": [
           "showBuildInfo"
+        ]
+      },
+      "show-info": {
+        "methods": [
+          "showInfo"
+        ]
+      },
+      "reload-extension": {
+        "methods": [
+          "reloadExtension"
         ]
       }
     }

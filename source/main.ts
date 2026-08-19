@@ -21,22 +21,51 @@ export const methods: { [key: string]: (...any: any) => any } = {
         Editor.Panel.open(packageJSON.name + '.preview');
     },
 
+    async showInfo() {
+        const cm = getConfigManager();
+        const port = await cm.getCurrentPort().catch(() => null);
+        const configPath = cm.getConfigPath();
+        const url = port ? `http://localhost:${port}/utcp` : '(not running)';
+        console.log(`[${packageJSON.name}] port=${port} | config=${configPath} | ${url}`);
+    },
 
     async restartServer(newPort: number) {
-        if (utcpServer) {
-            console.log(`[${packageJSON.name}] Restarting UTCP Server on port ${newPort}...`);
-            utcpServer.stop();
-            try {
-                const actualPort = await utcpServer.start(newPort);
-                console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
-
-                // Используем менеджер конфигурации для обновления порта
-                const configManager = getConfigManager();
-                await configManager.updatePort(actualPort);
-            } catch (err) {
-                console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
-            }
+        if (!utcpServer) return;
+        if (typeof newPort !== 'number' || !newPort) {
+            newPort = await getConfigManager().getCurrentPort().catch(() => 0);
         }
+        console.log(`[${packageJSON.name}] Restarting UTCP Server on port ${newPort}...`);
+        utcpServer.stop();
+        try {
+            const actualPort = await utcpServer.start(newPort);
+            console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
+            const configManager = getConfigManager();
+            await configManager.updatePort(actualPort);
+        } catch (err) {
+            console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
+        }
+    },
+
+    reloadExtension() {
+        try {
+            const pkg = (Editor as any).Package;
+            if (pkg && typeof pkg.reload === 'function') {
+                pkg.reload(packageJSON.name);
+                console.log(`[${packageJSON.name}] Reloading...`);
+                return;
+            }
+        } catch (e) { /* fallback */ }
+        try {
+            const Ipc = (Editor as any).Ipc;
+            if (Ipc && typeof Ipc.sendToMain === 'function') {
+                Ipc.sendToMain('package:reload', packageJSON.name, (err: any) => {
+                    if (err) console.warn(`[${packageJSON.name}] Auto-reload not available, please restart Creator (Ctrl+R or reopen project).`);
+                    else console.log(`[${packageJSON.name}] Reloading...`);
+                });
+                return;
+            }
+        } catch (e) { /* fallback */ }
+        console.warn(`[${packageJSON.name}] Auto-reload not available, please restart Creator (Ctrl+R or reopen project).`);
     },
 
     toggleDebug() {
@@ -104,7 +133,7 @@ export async function load() {
     // Initialize config manager
     const configManager = getConfigManager();
     await configManager.initialize();
-    
+
     utcpServer = new UtcpServerManager();
 
     let wasConfiguredPort = true;
@@ -118,7 +147,7 @@ export async function load() {
     try {
         const actualPort = await utcpServer.start(port);
         console.log(`[${packageJSON.name}] UTCP Server started on port ${actualPort}`);
-        
+
         // Automatically update the port in the configuration on startup
         await configManager.updatePort(actualPort);
         console.log(`[${packageJSON.name}] UTCP config automatically updated with port ${actualPort}`);
