@@ -393,4 +393,20 @@ declare namespace cc3x7 {
         operation: "databases" | "busy" | "mtime" | "data",
         reference?: InstanceReference
     }): { result: any };
+
+    // ── Consolidated (preferred) ── 7 tools replace ~16 legacy; legacy remain as @deprecated shims
+    /** Consolidated: get properties (instance or settings). Use instead of inspectorGet*Properties. */
+    function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
+    /** Consolidated: set properties (instance or settings). */
+    function inspectorSet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, propertyPaths?: string[], values?: any[], propertyPath?: string, value?: any }): { success: boolean, error?: string };
+    /** Consolidated: TS definition (instance or settings). */
+    function inspectorGetDefinition(args: { target: "instance" | "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, section?: string }): { definition: string, sections: string[], totalSections: number };
+    /** Consolidated: add/remove component on node. */
+    function nodeComponentManage(args: { operation: "add" | "remove", reference: InstanceReference, componentType?: string }): { reference?: InstanceReference, success?: boolean };
+    /** Consolidated: query editor state or vocabularies. Use instead of editorIntrospect/editorListTypes. */
+    function editorQuery(args: { category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script" | "creatable_assets" | "asset_types" | "importers", enumPath?: string, className?: string, reference?: InstanceReference }): any;
+    /** Consolidated: scene lifecycle open/save/close/soft_reload. Use instead of sceneOpen/editorOperate. */
+    function sceneManage(args: { operation: "open" | "save" | "save_as" | "close" | "soft_reload", reference?: InstanceReference }): { success: boolean, error?: string, reference?: InstanceReference };
+    /** Consolidated: build panel/tasks/trigger/control. */
+    function buildManage(args: { operation: "panel_open" | "tasks_info" | "get_task" | "trigger" | "control", panel?: string, taskId?: string, options?: any, control?: "break" | "remove" | "recompile" }): any;
 }

@@ -15,6 +15,7 @@ import './tools/preview-tools';
 import './tools/animation-tools';
 import './tools/property-array-tools';
 import './tools/material-tools';
+import './tools/consolidated-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';
