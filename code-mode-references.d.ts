@@ -48,8 +48,8 @@ type Size = { width: number, height: number };
 type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alphaKeys: Array<{ alpha: number, time: number }>, mode: number }
 
 /**
- * Cocos Editor Tools — 51 tools (44 standalone + 7 consolidated)
- * Legacy inspector/scene/editor/build shims removed in 2.0.0 — use consolidated entry points.
+ * Cocos Editor Tools — 45 tools (35 standalone + 10 consolidated)
+ * Legacy inspector/scene/editor/build + preview/program/project shims removed in 2.0.x — use consolidated entry points.
  */
 declare namespace cc3x7 {
     /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSet, which replaces the whole array and loses object references. */
@@ -121,14 +121,6 @@ declare namespace cc3x7 {
         targetAssetPath?: string,
         options?: { overwrite?: boolean, rename?: boolean }
     }): { reference: InstanceReference };
-
-    /** Returns preview image of the asset. */
-    function assetGetPreview(args: {
-        reference: InstanceReference,
-        imageSize?: number,
-        jpegQuality?: number,
-        transparentColor?: Color
-    }): { type: string, data: string, mimeType: string };
 
     /** Get list of globally available component types. */
     function nodeGetAvailableComponentTypes(args: {
@@ -265,41 +257,12 @@ declare namespace cc3x7 {
         operations?: { funcName: string, args: any[] }[]
     }): { success: boolean, error?: string, result?: any };
 
-    /** Get info about a program registered with the editor (path and default command arguments). */
-    function programGetInfo(args: { programName: string }): { path: string, commandArgument?: string };
-
-    /** Launch a program registered with the editor (only registered programs, not arbitrary executables). */
-    function programOpen(args: { programName: string, commandArguments?: Record<string, any> }): { success: boolean, error?: string };
-
-    /** Open a URL in the system default browser. */
-    function urlOpen(args: { url: string }): { success: boolean, error?: string };
-
-    /** Read project settings: no args = all, type = one category (general, physics, sorting-layer...), type+key = one value. */
-    function projectGetConfig(args: { type?: string, key?: string }): { config: any };
-
-    /** Write project settings. Path = category name or dotted path (e.g. "general", "layer.3"). Caution: affects the whole project. */
-    function projectSetConfig(args: { path: string, value: any }): { success: boolean };
-
-    /** Get the URL of the editor game preview server. */
-    function previewGetUrl(): { url: string };
-
-    /** Open the current scene/game preview in the system default browser. */
-    function previewOpenInBrowser(): { success: boolean, error?: string };
-
     /** Get last N editor log entries. */
     function editorGetLogs(args: {
         count: number,
         showStack?: boolean,
         order: "newest-to-oldest" | "oldest-to-newest"
     }): { logLines: string[] };
-
-    /** Returns preview image of scene view. */
-    function editorGetScenePreview(args: {
-        imageSize?: { width?: number, height?: number },
-        jpegQuality?: number,
-        cameraPosition: Vector3,
-        targetPosition: Vector3
-    }): { type: string, data: string, mimeType: string };
 
     /** Inspect materials, shader effects and the render pipeline. Read-only — use inspectorSetProperty to change material properties. Result shapes are whatever the engine returns and are not yet runtime-verified. */
     function materialQuery(args: {
@@ -314,7 +277,7 @@ declare namespace cc3x7 {
         reference?: InstanceReference
     }): { result: any };
 
-    // ── Consolidated (preferred) ── 7 tools replace 17 legacy (removed in 2.0.0)
+    // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
     /** Consolidated: set properties (instance or settings). */
@@ -327,6 +290,12 @@ declare namespace cc3x7 {
     function editorQuery(args: { category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script" | "creatable_assets" | "asset_types" | "importers", enumPath?: string, className?: string, reference?: InstanceReference }): any;
     /** Consolidated: scene lifecycle open/save/close/soft_reload. Use instead of removed sceneOpen/editorOperate. */
     function sceneManage(args: { operation: "open" | "save" | "save_as" | "close" | "soft_reload", reference?: InstanceReference }): { success: boolean, error?: string, reference?: InstanceReference };
+    /** Consolidated: preview (asset/scene capture, get url, open browser). */
+    function previewManage(args: { operation: "get_url" | "open_browser" | "asset_preview" | "scene_preview", reference?: InstanceReference, imageSize?: number, jpegQuality?: number, transparentColor?: Color, cameraPosition?: Vector3, targetPosition?: Vector3, orthographic?: boolean, orthographicSize?: number }): any;
+    /** Consolidated: external programs and url open. */
+    function programManage(args: { operation: "get_info" | "open" | "open_url", programName?: string, commandArguments?: Record<string, any>, url?: string }): any;
+    /** Consolidated: project settings read/write. */
+    function projectManage(args: { operation: "get" | "set", type?: string, key?: string, path?: string, value?: any }): any;
     /** Consolidated: build panel/tasks/trigger/control. */
     function buildManage(args: { operation: "panel_open" | "tasks_info" | "get_task" | "trigger" | "control", panel?: string, taskId?: string, options?: any, control?: "break" | "remove" | "recompile" }): any;
 }

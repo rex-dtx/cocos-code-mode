@@ -1,43 +1,52 @@
-# Consolidated Migration — 2.0.0 (68→51)
+# Consolidated Migration — 2.0.x (68→45)
 
-> **2.0.0 shipped:** 17 legacy tools removed from `/utcp` registration. Consolidated 7 are now the only surface (51 total). 1.x clients using legacy names will get 404 until migrated.
+> **2.0.0:** 17 legacy removed → 51 (7 consolidated). **2.0.x delta:** 9 more legacy removed → **45 (10 consolidated)**. Total 26 legacy removed from A1 68. Legacy names 404.
 
-## Mapping (7 consolidated replace 17 legacy — removed)
+## Mapping (10 consolidated replace 26 legacy — removed)
 
-| Consolidated (keep) | Legacy removed in 2.0.0 | Status |
+| Consolidated (keep) | Legacy removed | Status |
 |---|---|---|
-| `inspectorGet` | `inspectorGetInstanceProperties`, `inspectorGetSettingsProperties` | **removed** |
-| `inspectorSet` | `inspectorSetInstanceProperties`, `inspectorSetSettingsProperties` | **removed** |
-| `inspectorGetDefinition` | `inspectorGetInstanceDefinition`, `inspectorGetSettingsDefinition` | **removed** |
-| `nodeComponentManage` | `nodeComponentAdd`, `nodeComponentRemove` | **removed** |
-| `editorQuery` | `editorIntrospect`, `editorListTypes` | **removed** |
-| `sceneManage` | `sceneOpen`, `editorOperate` (`save_scene_or_prefab`/`close`/`soft_reload`/`save_as` + preview ops) | **removed** |
-| `buildManage` | `buildPanelOpen`, `buildGetTasksInfo`, `buildGetTask`, `buildTrigger`, `buildTaskControl` | **removed** |
+| `inspectorGet` | `inspectorGetInstanceProperties`, `inspectorGetSettingsProperties` | **removed 2.0.0** |
+| `inspectorSet` | `inspectorSetInstanceProperties`, `inspectorSetSettingsProperties` | **removed 2.0.0** |
+| `inspectorGetDefinition` | `inspectorGetInstanceDefinition`, `inspectorGetSettingsDefinition` | **removed 2.0.0** |
+| `nodeComponentManage` | `nodeComponentAdd`, `nodeComponentRemove` | **removed 2.0.0** |
+| `editorQuery` | `editorIntrospect`, `editorListTypes` | **removed 2.0.0** |
+| `sceneManage` | `sceneOpen`, `editorOperate` (`save_scene_or_prefab`/`close`/`soft_reload`/`save_as` + preview ops) | **removed 2.0.0** |
+| `buildManage` | `buildPanelOpen`, `buildGetTasksInfo`, `buildGetTask`, `buildTrigger`, `buildTaskControl` | **removed 2.0.0** |
+| `previewManage` | `previewGetUrl`, `previewOpenInBrowser`, `assetGetPreview`, `editorGetScenePreview` | **removed 2.0.x** |
+| `programManage` | `programGetInfo`, `programOpen`, `urlOpen` | **removed 2.0.x** |
+| `projectManage` | `projectGetConfig`, `projectSetConfig` | **removed 2.0.x** |
 
-**Count:** `68 (A1 shims) - 17 legacy = 51 (44 standalone + 7 consolidated)`. Prior doc's "45" was estimate (assumed extra merges); actual is **51**. Gap 6 to reach 45 needs 6 more merges — deferred to backlog with frequency data.
+**Count:** `68 - 26 = 45 = 35 standalone + 10 consolidated`.
 
-## One-line codemod (1.x → 2.0)
+## One-line codemod (1.x → 2.0.x)
 
 ```ts
 // before (1.x legacy, now 404)
 inspectorGetInstanceProperties({ reference, fields: ['position'] })
-inspectorGetSettingsProperties({ settingsType: 'CurrentSceneGlobals' })
 sceneOpen({ reference })
-editorOperate({ operation: 'save_scene_or_prefab' })
 editorIntrospect({ category: 'ready' })
-editorListTypes({ category: 'importers' })
 nodeComponentAdd({ reference, componentType: 'cc.Sprite' })
 buildGetTasksInfo({})
+previewGetUrl({})
+programGetInfo({ programName: 'vscode' })
+urlOpen({ url: 'https://...' })
+projectGetConfig({ type: 'general' })
+assetGetPreview({ reference })
+editorGetScenePreview({ cameraPosition, targetPosition })
 
-// after (2.0 consolidated)
+// after (2.0.x consolidated)
 inspectorGet({ target: 'instance', reference, fields: ['position'] })
-inspectorGet({ target: 'CurrentSceneGlobals' })
 sceneManage({ operation: 'open', reference })
-sceneManage({ operation: 'save' })
 editorQuery({ category: 'ready' })
-editorQuery({ category: 'importers' })
 nodeComponentManage({ operation: 'add', reference, componentType: 'cc.Sprite' })
 buildManage({ operation: 'tasks_info' })
+previewManage({ operation: 'get_url' })
+programManage({ operation: 'get_info', programName: 'vscode' })
+programManage({ operation: 'open_url', url: 'https://...' })
+projectManage({ operation: 'get', type: 'general' })
+previewManage({ operation: 'asset_preview', reference })
+previewManage({ operation: 'scene_preview', cameraPosition, targetPosition })
 ```
 
 ## `target` / `operation` enums
@@ -46,13 +55,12 @@ buildManage({ operation: 'tasks_info' })
 - `inspectorGetDefinition` `target`: `instance` | `CommonTypes` | `CurrentSceneGlobals` | `ProjectSettings`
 - `sceneManage` `operation`: `open` | `save` | `save_as` | `close` | `soft_reload`
 - `buildManage` `operation`: `panel_open` | `tasks_info` | `get_task` | `trigger` | `control`
+- `previewManage` `operation`: `get_url` | `open_browser` | `asset_preview` | `scene_preview`
+- `programManage` `operation`: `get_info` | `open` | `open_url`
+- `projectManage` `operation`: `get` | `set`
 
-## Notes (2.0)
+## Notes
 
-- Legacy method bodies kept (not registered) — `consolidated-tools.ts` delegates via `new LegacyTool().method()`. No logic moved, no file deleted.
-- `package.json` 1.0.0 → 2.0.0 (breaking), `code-mode-references.d.ts` drops 17 legacy signatures.
-- `maxDepth`/`maxNodes`/`fields[]` (tree), `section` pagination, `fields[]` selective dump, `response-trimmer`, desc avg 76 chars remain. See vault `1-wip-260819__tbd-cc-sync-backlog`.
-
-## Further consolidation to 45 (deferred)
-
-6 more merges to reach 45 need debug-log frequency before choosing — candidates: `preview*`, `program*`, `project*`, `asset*` groups. See vault next-major plan gap note.
+- Legacy method bodies kept (not registered) — consolidated delegates via `new LegacyTool().method()`.
+- `code-mode-references.d.ts` drops 26 legacy signatures, adds 10 consolidated.
+- `maxDepth`/`maxNodes`/`fields[]`/`section`/`response-trimmer` unchanged.

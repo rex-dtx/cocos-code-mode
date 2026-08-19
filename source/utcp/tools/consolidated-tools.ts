@@ -219,4 +219,48 @@ export class ConsolidatedTools {
             default: throw new Error(`Unknown buildManage operation: ${args.operation}`);
         }
     }
+
+    // ── previewManage: 4→1 (previewGetUrl, previewOpenInBrowser, assetGetPreview, editorGetScenePreview) ──
+    @utcpTool('previewManage','Preview: get url/open browser/asset preview/scene capture.',{type:'object',properties:{operation:{type:'string',enum:['get_url','open_browser','asset_preview','scene_preview']},reference:InstanceReferenceSchema,imageSize:{type:'number'},jpegQuality:{type:'number'},transparentColor:{type:'object',properties:{r:{type:'integer'},g:{type:'integer'},b:{type:'integer'}}},cameraPosition:{type:'object',properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},targetPosition:{type:'object',properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},orthographic:{type:'boolean'},orthographicSize:{type:'number'}},required:['operation']},{type:'object',properties:{url:{type:'string'},success:{type:'boolean'},type:{type:'string'},data:{type:'string'},mimeType:{type:'string'}}},'POST',['preview','consolidated'])
+    async previewManage(args:any):Promise<any>{
+        const { PreviewTools } = await import('./preview-tools');
+        const { AssetTools } = await import('./asset-tools');
+        const { EditorTools } = await import('./editor-tools');
+        switch(args.operation){
+            case 'get_url': return new (PreviewTools as any)().previewGetUrl();
+            case 'open_browser': return new (PreviewTools as any)().previewOpenInBrowser();
+            case 'asset_preview': {
+                if(!args.reference?.id) throw new Error('previewManage asset_preview requires reference.id');
+                return new (AssetTools as any)().assetGetPreview({ reference:args.reference, imageSize:args.imageSize, jpegQuality:args.jpegQuality, transparentColor:args.transparentColor });
+            }
+            case 'scene_preview': {
+                if(!args.cameraPosition||!args.targetPosition) throw new Error('previewManage scene_preview requires cameraPosition+targetPosition');
+                return new (EditorTools as any)().editorGetScenePreview({ imageSize:args.imageSize, jpegQuality:args.jpegQuality, cameraPosition:args.cameraPosition, targetPosition:args.targetPosition, orthographic:args.orthographic, orthographicSize:args.orthographicSize });
+            }
+            default: throw new Error(`Unknown previewManage operation: ${args.operation}`);
+        }
+    }
+
+    // ── programManage: 3→1 (programGetInfo, programOpen, urlOpen) ──
+    @utcpTool('programManage','External programs and URL open.',{type:'object',properties:{operation:{type:'string',enum:['get_info','open','open_url']},programName:{type:'string'},commandArguments:{type:'object'},url:{type:'string'}},required:['operation']},{type:'object',properties:{success:{type:'boolean'},path:{type:'string'},commandArgument:{type:'string'}}},'POST',['program','consolidated'])
+    async programManage(args:any):Promise<any>{
+        const { ProgramTools } = await import('./program-tools');
+        const t=new (ProgramTools as any)();
+        switch(args.operation){
+            case 'get_info': if(!args.programName) throw new Error('programManage get_info requires programName'); return t.programGetInfo({ programName:args.programName });
+            case 'open': if(!args.programName) throw new Error('programManage open requires programName'); return t.programOpen({ programName:args.programName, commandArguments:args.commandArguments });
+            case 'open_url': if(!args.url) throw new Error('programManage open_url requires url'); return t.urlOpen({ url:args.url });
+            default: throw new Error(`Unknown programManage operation: ${args.operation}`);
+        }
+    }
+
+    // ── projectManage: 2→1 (projectGetConfig, projectSetConfig) ──
+    @utcpTool('projectManage','Read/write project settings.',{type:'object',properties:{operation:{type:'string',enum:['get','set']},type:{type:'string'},key:{type:'string'},path:{type:'string'},value:{}},required:['operation']},{type:'object',properties:{config:{},success:{type:'boolean'}}},'POST',['project','consolidated'])
+    async projectManage(args:any):Promise<any>{
+        const { ProjectTools } = await import('./project-tools');
+        const t=new (ProjectTools as any)();
+        if(args.operation==='get') return t.projectGetConfig({ type:args.type, key:args.key });
+        if(args.operation==='set'){ if(!args.path) throw new Error('projectManage set requires path'); return t.projectSetConfig({ path:args.path, value:args.value }); }
+        throw new Error(`Unknown projectManage operation: ${args.operation}`);
+    }
 }

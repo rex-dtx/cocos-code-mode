@@ -22,26 +22,29 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools (51 — 7 consolidated replaces 17 legacy, removed in 2.0.0)
+## Tools (45 — 10 consolidated replaces 26 legacy)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
-> **2.0.0 breaking:** 17 legacy tools removed (shims were 68→51). Use `consolidated` entry points — see `docs/consolidated-migration.md` + codemod. Legacy 1.x clients must migrate.
+> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod.
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
-| **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` → `truncated`/`childrenOmitted` |
-| **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate`, `assetGetPreview` | Browse/search/create/import/mutate/preview. *`assetGetTree` supports `maxDepth`/`maxNodes` |
-| **Inspector** (3) | `inspectorGet`*, `inspectorSet`*, `inspectorGetDefinition`* | Dump/set properties and generate TS definitions. *`fields[]` and `section` pagination cut 50-80% |
-| **Components** (3) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentManage`* | Discover and attach components |
-| **Editor** (6) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorHistory`, `editorGetLogs`, `editorGetScenePreview` + `editorQuery`*, `sceneManage`* | Viewport, selection, introspection, lifecycle, capture. *consolidated |
-| **Build** (1) | `buildManage`* | Panel, pipeline status, trigger and control (replaces 5 legacy) |
-| **Animation** (2) | `animationQuery`, `animationEdit` | Slim clip dumps and record/operate flow |
-| **Material/DB** (2) | `materialQuery`, `assetDbQuery` | Effects/pipeline and asset-DB introspection |
-| **System** (8) | `previewGetUrl`, `previewOpenInBrowser`, `programGetInfo`, `programOpen`, `urlOpen`, `projectGetConfig`, `projectSetConfig`, `propertyArrayElement` | Preview server, external programs, project config, array ops |
-| **Consolidated** (7) | `inspectorGet`, `inspectorSet`, `inspectorGetDefinition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `buildManage` | Replaces 17 legacy — now the only surface |
+| **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` |
+| **Assets** (10) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate` | Browse/search/create/import/mutate. *`maxDepth`/`maxNodes` |
+| **Inspector** (3) | `inspectorGet`*, `inspectorSet`*, `inspectorGetDefinition`* | Dump/set + TS definitions. *`fields[]`/`section` |
+| **Components** (3) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentManage`* | Discover + attach |
+| **Editor** (4) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorHistory` + `editorQuery`*, `sceneManage`* | Viewport, selection, lifecycle |
+| **Preview** (1) | `previewManage`* | `get_url`/`open_browser`/`asset_preview`/`scene_preview` (replaces 4: preview*, assetGetPreview, editorGetScenePreview) |
+| **Program** (1) | `programManage`* | `get_info`/`open`/`open_url` (replaces 3: program*, urlOpen) |
+| **Project** (1) | `projectManage`* | `get`/`set` (replaces 2: project*) |
+| **Build** (1) | `buildManage`* | Panel, tasks, trigger, control (replaces 5) |
+| **Animation** (2) | `animationQuery`, `animationEdit` | Slim clip dumps |
+| **Material/DB** (2) | `materialQuery`, `assetDbQuery` | Effects/pipeline |
+| **System** (2) | `editorGetLogs`, `propertyArrayElement` | Logs, array ops |
+| **Consolidated** (10) | `inspectorGet/Set/Definition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `previewManage`, `programManage`, `projectManage`, `buildManage` | Replaces 26 legacy — now the only surface |
 
-* Token guidance: `docs/prompt-guidance-risks.md` · QA: `scripts/smoke-utcp.js` (expects 51) · Perf: `a769a46` bench + `e419276` trim.
+* QA: `scripts/smoke-utcp.js` (expects 45) · Perf: `a769a46` bench + `e419276` trim.
 
 
 ## How It Works

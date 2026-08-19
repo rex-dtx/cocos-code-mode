@@ -477,23 +477,7 @@ export class EditorTools {
         return { logLines: entries };
     }
 
-    @utcpTool(
-        'editorGetScenePreview',
-        'Scene preview image. Return result directly to visualize — do NOT wrap in object.',
-        {
-            type: 'object',
-            properties: {
-                imageSize: { type: 'object', properties: { width: { type: 'number', default: 512 }, height: { type: 'number', default: 512 } }, nullable: true },
-                jpegQuality: { type: 'integer', minimum: 40, maximum: 100, default: 80 },
-                cameraPosition: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'], description: 'Camera world position'},
-                targetPosition: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'], description: 'Point the camera looks at'},
-                orthographic: { type: 'boolean', default: false, description: 'Whether to use orthographic projection'},
-                orthographicSize: { type: 'number', default: 10, description: 'Orthographic size (only applies if orthographic is true)'}
-            },
-            required: ['cameraPosition', 'targetPosition']
-        },
-        Base64ImageSchema, "GET", ['scene', 'screenshot', 'preview', 'inspection', 'image']
-    )
+    // via previewManage — kept for delegation
     async editorGetScenePreview(args: { 
         imageSize?: { width: number, height: number }, 
         jpegQuality?: number, 
