@@ -19,7 +19,7 @@ When returning data from cc3x7 tools:
 
 Prompt says "keep reference/id only if next step needs it" → agent must predict chain.
 
-- Fail: turn 1 aggregates, turn 2 wants `inspectorSetInstanceProperties` but has no `uuid` → extra round-trip to re-fetch tree.
+- Fail: turn 1 aggregates, turn 2 wants `inspectorSet` (was `inspectorSetInstanceProperties`) but has no `uuid` → extra round-trip to re-fetch tree.
 - Impact: +1 hop, ~0.5k tok. Still cheaper than retaining raw tree (~3k).
 - Mitigation in snippet: explicit verb list, keep on any planned mutate.
 
