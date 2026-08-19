@@ -4,6 +4,7 @@ import { homedir } from 'os';
 
 const PKG_NAME = 'cocos-code-mode-2x';
 const PROFILE_URL = `profile://project/${PKG_NAME}.json`;
+const DEFAULT_FILENAME = '.utcp_config.json';
 
 interface IProfile2x {
     get(key: string): any;
@@ -63,14 +64,14 @@ export class UtcpConfigManager {
         if (savedPath && typeof savedPath === 'string') {
             this.configPath = savedPath;
         } else {
-            this.configPath = join(homedir(), '.utcp_config.json');
+            this.configPath = join(homedir(), DEFAULT_FILENAME);
         }
         console.log(`[UtcpConfigManager] Initialized with config path: ${this.configPath}`);
     }
 
     getConfigPath(): string {
         if (!this.configPath) {
-            this.configPath = join(homedir(), '.utcp_config.json');
+            this.configPath = join(homedir(), DEFAULT_FILENAME);
         }
         return this.configPath;
     }

@@ -286,16 +286,11 @@ Code Mode works with any UTCP-compatible client, including the [Code Mode MCP se
 }
 ```
 
-### Claude Code Configuration
+Claude Code Configuration
 
-To set up a Claude Code agent to use Code Mode, open your project and run:
-
-Linux/MacOS:
-``` bash
+```bash
+# Linux/macOS
 claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- code-mode npx @utcp/code-mode-mcp
-```
-
-Windows:
-``` powershell
+# Windows (PowerShell: %userprofile% expands; cmd: %userprofile%/.utcp_config.json)
 claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- code-mode cmd /c npx @utcp/code-mode-mcp
 ```

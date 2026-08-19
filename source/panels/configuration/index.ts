@@ -106,7 +106,7 @@ module.exports = Editor.Panel.define({
             } else {
                 let html = '';
                 templates.forEach((t: any) => {
-                    const isCocos = t.name === 'CocosEditor';
+                    const isCocos = ['cc2x4', 'cc24', 'CocosEditor', 'CocosEditor2x'].includes(t.name);
                     const delBtn = isCocos
                         ? `` // No delete for Cocos
                         : `<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove Template">
@@ -171,7 +171,7 @@ module.exports = Editor.Panel.define({
         },
 
         removeBridge(name: string) {
-            if (name === 'CocosEditor') return;
+            if (['cc2x4', 'cc24', 'CocosEditor', 'CocosEditor2x'].includes(name)) return;
             if (!confirm(`Remove template ${name}?`)) return;
 
             const configManager = getConfigManager();
