@@ -740,8 +740,11 @@
                 const mod:any = Editor.require('scene://set-property-by-path');
                 const fn = mod.setPropertyByPath || mod.setProperty;
                 if (typeof fn !== 'function') return event.reply(new Error('setPropertyByPath not found'));
-                // resolve node to get instance for high-level path? low-level takes uuid
-                fn(uuid, path, value);
+                let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
+                if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+                if(!node) return event.reply(new Error('node not found: '+uuid));
+                // 2.4 setPropertyByPath needs node object, not uuid (probe: ok (node obj))
+                try{ fn(node, path, value); } catch { fn(uuid, path, value); }
                 event.reply(null, { uuid, path, value });
             } catch(e:any){ event.reply(e); }
         },
@@ -777,7 +780,11 @@
         },
         'scene-set-property': function (event:any, uuid:string, path:string, value:any) {
             try{ const mod:any=Editor.require('scene://utils/scene'); const fn=mod.setProperty; if(typeof fn==='function'){ fn(uuid, path, value); event.reply(null,{uuid,path}); return; } }catch{}
-            try{ const mod2:any=Editor.require('scene://set-property-by-path'); const fn2=mod2.setPropertyByPath||mod2.setProperty; fn2(uuid,path,value); event.reply(null,{uuid,path}); }catch(e:any){event.reply(e);}
+            try{ const mod2:any=Editor.require('scene://set-property-by-path'); const fn2=mod2.setPropertyByPath||mod2.setProperty;
+                let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
+                if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+                if(node) try{ fn2(node, path, value);}catch{ fn2(uuid,path,value);} else fn2(uuid,path,value);
+                event.reply(null,{uuid,path}); }catch(e:any){event.reply(e);}
         },
         'scene-create-node': function (event:any, name:string, parentUuid:string) {
             try{
@@ -802,7 +809,15 @@
                 let setter:any=null; try{ const mod:any=Editor.require('scene://set-property-by-path'); setter=mod.setPropertyByPath||mod.setProperty; }catch{}
                 for(const op of ops){
                     const uuid=op.uuid, path=op.path, value=op.value;
-                    if(op.undo && typeof setter==='function'){ setter(uuid, path, value); results.push({uuid, path, ok:true}); }
+                    if(op.undo && typeof setter==='function'){
+                        let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
+                        if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+                        try{
+                            if(node) try{ setter(node, path, value); } catch { setter(uuid, path, value); }
+                            else setter(uuid, path, value);
+                            results.push({uuid, path, ok:true});
+                        } catch(e:any){ results.push({uuid, path, ok:false, error: e.message}); }
+                    }
                     else {
                         let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
                         if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
