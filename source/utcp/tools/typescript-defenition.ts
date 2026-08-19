@@ -1,13 +1,12 @@
-import { utcpTool } from '../decorators';
 import { IProperty, IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { ToolsUtils } from '../utils/tools-utils';
-import { IInstanceReference, InstanceReferenceSchema } from '../schemas';
+import { IInstanceReference } from '../schemas';
 
 export class GetClassInfoTool {
 
     private _definitions: string[] = [];
     private _definedNames: Set<string> = new Set();
-    private _commonTypesDefinition: string = 
+    private _commonTypesDefinition: string =
         'interface IExposedAttributes { type?: string, visible?: boolean, multiline?: boolean, min?: number, max?: number, step?: number, unit?: string, radian?: boolean }\n' +
         'function property(options: IExposedAttributes) {}\n' +
         'type InstanceReference<T> = { id: string; type: string };\n' +
@@ -27,14 +26,7 @@ export class GetClassInfoTool {
         '\tm12: number; m13: number; m14: number; m15: number; }\n' +
         'class Gradient { alphaKeys: Array<{ alpha: number, time: number }>, colorKeys: Array<{ /* always 3 elements: r, g and b values */color: Array<number>, time: number }>, mode: number }';
 
-    /** @deprecated use inspectorGetDefinition({ target }) */
-    @utcpTool(
-        "inspectorGetSettingsDefinition",
-        "[DEPRECATED] Use inspectorGetDefinition. Generate TS definition for settings. Use section for single class.",
-        { type: 'object' , properties: { settingsType: { type: 'string', enum: ['CommonTypes', 'CurrentSceneGlobals', 'ProjectSettings'] }, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['settingsType'] },
-        { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
-        "GET",  ['code', 'typescript', 'inspection', 'definition', 'common', 'types', 'settings', 'scene', 'globals', 'project']
-    )
+    /** @deprecated use inspectorGetDefinition({ target }) — not registered, kept for delegation */
     async inspectorGetSettingsDefinition(params: { settingsType: string, section?: string }): Promise<{ definition: string, sections: string[], totalSections: number }> {
         switch (params.settingsType) {
             case 'CommonTypes': {
@@ -66,14 +58,7 @@ export class GetClassInfoTool {
         }
     }
 
-    /** @deprecated use inspectorGetDefinition({ target: 'instance', reference }) */
-    @utcpTool(
-        "inspectorGetInstanceDefinition",
-        "[DEPRECATED] Use inspectorGetDefinition. Generate TS definition for instance. Use section for single class.",
-        { type: 'object', properties: { reference: InstanceReferenceSchema, section: { type: 'string', description: 'Optional: class/enum name to return only that section. Omit for full definition + sections list.' } }, required: ['reference'] },
-        { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] },
-        "GET",  ['code', 'typescript', 'inspection', 'definition', 'class', 'info', 'meta', 'instance', 'node', 'component', 'asset', 'data']
-    )
+    /** @deprecated use inspectorGetDefinition({ target: 'instance', reference }) — not registered, kept for delegation */
     async inspectorGetInstanceDefinition(params: { reference: IInstanceReference, section?: string }): Promise<{ definition: string, sections: string[], totalSections: number }> {
         this._definitions = [];
         this._definedNames.clear();
@@ -126,9 +111,9 @@ export class GetClassInfoTool {
 
         for (const propName of Object.keys(providedProps)) {
             const prop = providedProps[propName];
-            
+
             // Filter out primitive properties which can't be inspected or invisible ones
-            if (prop === undefined || prop === null || 
+            if (prop === undefined || prop === null ||
                 (this.isProperty(prop) && 'visible' in prop && !prop.visible)) continue;
 
             // IProperty Handling (Complex types, Metadata)
@@ -136,7 +121,7 @@ export class GetClassInfoTool {
                 const p = prop as IProperty;
                 const decoratorParts: string[] = [];
                 const isArray = !!p.isArray;
-                
+
                 // Determine item definition for Arrays
                 let itemDef: any = p;
                 if (isArray) {
@@ -148,19 +133,19 @@ export class GetClassInfoTool {
                     } else {
                         // Cannot infer structure for empty array without schema
                         // Fallback to basic type handling
-                        itemDef = null; 
+                        itemDef = null;
                     }
                 }
-                
+
                 // Analyze Identity (based on itemDef if array, or p if single)
                 const defToAnalyze = itemDef || p;
                 const itemExtends = defToAnalyze.extends || [];
                 const rawType = defToAnalyze.type || 'any';
-                
+
                 const isValueType = itemExtends.includes('cc.ValueType');
-                const isReference = itemExtends.includes('cc.Object') || 
+                const isReference = itemExtends.includes('cc.Object') ||
                                     (!isValueType && (rawType === 'Node' || rawType === 'Component' || rawType === 'cc.Node' || rawType === 'cc.Component'));
-                
+
                 let tsType = this.resolveTsType(rawType).replace(/^cc\./, '');
 
                 // Process Enum/BitMask
@@ -178,16 +163,16 @@ export class GetClassInfoTool {
                      } else {
                         p.displayName = propName.charAt(0).toUpperCase() + propName.slice(1);
                      }
-                     
+
                      let enumName = `${cleanClassName}${p.displayName.replace(/[^a-zA-Z0-9_]/g, '')}${rawType}`;
 
                      if (defToAnalyze.userData && typeof defToAnalyze.userData === 'object' && 'enumName' in defToAnalyze.userData) {
                          enumName = defToAnalyze.userData['enumName'];
                      }
-                     
+
                      this.generateEnumDefinition(enumName, targetList);
                      tsType = enumName;
-                } 
+                }
                 // Process Struct or Standard Type
                 else {
                     // Recursion: Only recurse if we have a valid item definition (itemDef)
@@ -198,19 +183,19 @@ export class GetClassInfoTool {
                              const suffix = isArray ? 'Item' : 'Type';
                              nestedName = `${className}${propName.charAt(0).toUpperCase() + propName.slice(1)}${suffix}`;
                          }
-                         
+
                          const extendsForNested = itemDef.extends && itemDef.extends.length > 0 ? itemDef.extends[0].replace(/^cc\./, '') : undefined;
                          this.processClass(nestedName, itemDef.value as any, extendsForNested !== nestedName ? extendsForNested : undefined);
                          tsType = nestedName;
                     }
                 }
-                
+
                 // Wrap reference type
                 if (isReference) {
                     if (tsType === 'any') tsType = 'Object';
                     tsType = `InstanceReference<${tsType}>`;
                 }
-                
+
                 // Wrap array type
                 if (isArray) {
                      tsType = `Array<${tsType}>`;
@@ -222,14 +207,14 @@ export class GetClassInfoTool {
                 // Valuable types for decorators is only CCInteger and CCFloat
                 if (p.type === 'Integer') decoratorType = 'CCInteger';
                 else if (p.type === 'Float' || p.type === 'Number') decoratorType = 'CCFloat';
-                
+
                 if (decoratorType) {
                      decoratorParts.push(isArray ? `type: [${decoratorType}]` : `type: ${decoratorType}`);
                 }
 
                 // Attributes that can help AI get more context
                 const attrs = ['min', 'max', 'step', 'unit', 'radian', 'multiline'];
-                attrs.forEach(attr => { 
+                attrs.forEach(attr => {
                     const val = (p as any)[attr];
                     if (val !== undefined && val !== null) decoratorParts.push(`${attr}: ${val}`);
                 });
@@ -239,7 +224,7 @@ export class GetClassInfoTool {
                     if (tooltip.startsWith('i18n:')) {
                         tooltip = Editor.I18n.t(tooltip.slice(5)); // Remove 'i18n:' prefix
                     }
-                    
+
                     if (tooltip.trim().length > 0) {
                         if (tooltip.match(/<br\s*\/?>/i) || tooltip.includes('\n')) {
                             const lines = tooltip.split(/<br\s*\/?>|\n/i).map(l => l.trim()).filter(l => l.length > 0);
@@ -288,12 +273,12 @@ export class GetClassInfoTool {
                 }
                 continue;
             }
-             
+
             // Fallback for raw object (struct)
              if (typeof prop === 'object') {
                 const cleanClassName = className.replace(/^cc\./, '').replace(/[^a-zA-Z0-9_]/g, '_');
                 const nestedClassName = `${cleanClassName}${propName.charAt(0).toUpperCase() + propName.slice(1)}Type`;
-                this.processClass(nestedClassName, prop as unknown as { [key: string]: IPropertyValueType });                 
+                this.processClass(nestedClassName, prop as unknown as { [key: string]: IPropertyValueType });
                 fields.push(`\t${propName}: ${nestedClassName};`);
             }
         }
@@ -335,7 +320,7 @@ export class GetClassInfoTool {
             if (/^[0-9]/.test(cleanName)) {
                 cleanName = `_${cleanName}`;
             }
-            
+
             if (typeof item.value === 'string') {
                 lines.push(`\t${cleanName} = '${item.value}',`);
             } else {
@@ -345,7 +330,7 @@ export class GetClassInfoTool {
         lines.push(`}`);
         this._definitions.unshift(lines.join('\n'));
     }
-    
+
     private resolveTsType(type: string): string {
         switch (type) {
             case 'Integer':
@@ -364,4 +349,3 @@ export class GetClassInfoTool {
     }
 
 }
-

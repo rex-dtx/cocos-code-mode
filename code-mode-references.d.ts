@@ -48,41 +48,11 @@ type Size = { width: number, height: number };
 type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alphaKeys: Array<{ alpha: number, time: number }>, mode: number }
 
 /**
- * Cocos Editor Tools
+ * Cocos Editor Tools — 51 tools (44 standalone + 7 consolidated)
+ * Legacy inspector/scene/editor/build shims removed in 2.0.0 — use consolidated entry points.
  */
 declare namespace cc3x7 {
-    /** Generates TypeScript definition for specific settings. Pass section to get one class/enum only (reduces tokens 40-60%). Returns sections list for discovery. */
-    function inspectorGetSettingsDefinition(args: {
-        settingsType: "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings",
-        section?: string
-    }): { definition: string, sections?: string[], totalSections?: number };
-
-    /** Generates TypeScript definition based on properties of instance. Pass section to get one class/enum only. Returns sections list for discovery. */
-    function inspectorGetInstanceDefinition(args: { reference: InstanceReference, section?: string }): { definition: string, sections?: string[], totalSections?: number };
-
-    /** Gets plain object of properties for the specific settings. */
-    function inspectorGetSettingsProperties(args: {
-        settingsType: "CurrentSceneGlobals" | "ProjectSettings"
-    }): { dump: any };
-
-    /** Gets plain object of properties for any instance. */
-    function inspectorGetInstanceProperties(args: { reference: InstanceReference }): { dump: any };
-
-    /** Sets a property on the specific settings. */
-    function inspectorSetSettingsProperties(args: {
-        settingsType: "CurrentSceneGlobals" | "ProjectSettings",
-        propertyPaths: string[],
-        values: any[]
-    }): { success: boolean, error?: string };
-
-    /** Sets a property on instance of Node, Component or Asset. */
-    function inspectorSetInstanceProperties(args: {
-        reference: InstanceReference,
-        propertyPaths: string[],
-        values: any[]
-    }): { success: boolean, error?: string };
-
-    /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSetInstanceProperties, which replaces the whole array and loses object references. */
+    /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSet, which replaces the whole array and loses object references. */
     function propertyArrayElement(args: {
         operation: "remove" | "move",
         reference: InstanceReference,
@@ -171,18 +141,6 @@ declare namespace cc3x7 {
         reference: InstanceReference,
         componentType?: string
     }): { references: InstanceReference[] };
-
-    /** Remove referenced component from node it is attached to. */
-    function nodeComponentRemove(args: { reference: InstanceReference }): { success: boolean, error?: string };
-
-    /** Add a component to a referenced node. */
-    function nodeComponentAdd(args: {
-        reference: InstanceReference,
-        componentType: string
-    }): { reference: InstanceReference };
-
-    /** Open a scene by its uuid. Complements editorOperate save/close (no open). Resolve uuid via assetGetAtPath if you only have the path. */
-    function sceneOpen(args: { reference: InstanceReference }): { success: boolean, error?: string };
 
     /** Get info about the current scene: bounds (canvas/scene size), unsaved changes (dirty), and which scene asset is open. */
     function sceneGetInfo(): { bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, currentScene?: { uuid?: string, url?: string, name?: string } };
@@ -286,24 +244,6 @@ declare namespace cc3x7 {
         references?: InstanceReference[]
     }): { success: boolean, selected?: string[], lastSelected?: string };
 
-    /** Enumerate editor type vocabularies: assetCreate presets, cc.* asset types, or registered importers (the latter two are valid assetQuery filters). */
-    function editorListTypes(args: { category: "creatable_assets" | "asset_types" | "importers" }): { types: string[] };
-
-    /** Introspect editor/scene state: scene_mode (scene vs prefab vs animation - check before mutating), ready (scene loaded), enum_values (legal values of an enum property), layers / sorting_layers, script_info (class name + cid of a script asset). */
-    function editorIntrospect(args: {
-        category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script",
-        enumPath?: string,
-        className?: string,
-        reference?: InstanceReference
-    }): {
-        sceneMode?: string,
-        ready?: boolean,
-        values?: { name?: string, value?: any }[],
-        scriptName?: string,
-        scriptCid?: string,
-        hasScript?: boolean
-    };
-
     /** Read animation data. Start with root_info on any node. clip_dump returns a track summary unless includeCurves is set. */
     function animationQuery(args: {
         operation: "root_info" | "root" | "edit_info" | "clips_info" | "clip_dump" | "properties" | "state" | "current_info" | "clip_time" | "value_at_frame",
@@ -346,32 +286,12 @@ declare namespace cc3x7 {
     /** Open the current scene/game preview in the system default browser. */
     function previewOpenInBrowser(): { success: boolean, error?: string };
 
-    /** Common editor operations for scene and prefab view. save_as returns the new scene asset reference; soft_reload reloads the scene in place after scripts changed. */
-    function editorOperate(args: {
-        operation: "save_scene_or_prefab" | "save_as" | "close_scene_or_prefab" | "soft_reload" | "play_preview" | "pause" | "step" | "stop" | "refresh"
-    }): { success: boolean, error?: string, reference?: InstanceReference };
-
     /** Get last N editor log entries. */
     function editorGetLogs(args: {
         count: number,
         showStack?: boolean,
         order: "newest-to-oldest" | "oldest-to-newest"
     }): { logLines: string[] };
-
-    /** Open the editor build panel ('default' or 'build-bundle'). */
-    function buildPanelOpen(args: { panel?: "default" | "build-bundle" }): { success: boolean, error?: string };
-
-    /** Get build pipeline status: worker ready, queue free, and summary of all build tasks. */
-    function buildGetTasksInfo(): { workerReady: boolean, free: boolean, tasks: { id: string, progress: number, state: string, message?: string, time?: string, stage?: string, dirty?: boolean, name?: string, platform?: string, buildPath?: string }[] };
-
-    /** Get one build task by id: summary plus its FULL options object (clone + modify to trigger new builds). */
-    function buildGetTask(args: { taskId: string }): { task: { id: string, progress: number, state: string, message?: string, name?: string, platform?: string }, options?: any };
-
-    /** Enqueue a build task. Copy options from buildGetTask and modify instead of crafting from scratch. Poll status with buildGetTasksInfo. */
-    function buildTrigger(args: { options: any }): { success: boolean, taskId?: string };
-
-    /** Manage an existing build task: break (abort running), remove (delete from queue), recompile (scripts only, faster than full rebuild). */
-    function buildTaskControl(args: { operation: "break" | "remove" | "recompile", taskId: string }): { success: boolean, error?: string };
 
     /** Returns preview image of scene view. */
     function editorGetScenePreview(args: {
@@ -394,8 +314,8 @@ declare namespace cc3x7 {
         reference?: InstanceReference
     }): { result: any };
 
-    // ── Consolidated (preferred) ── 7 tools replace ~16 legacy; legacy remain as @deprecated shims
-    /** Consolidated: get properties (instance or settings). Use instead of inspectorGet*Properties. */
+    // ── Consolidated (preferred) ── 7 tools replace 17 legacy (removed in 2.0.0)
+    /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
     /** Consolidated: set properties (instance or settings). */
     function inspectorSet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, propertyPaths?: string[], values?: any[], propertyPath?: string, value?: any }): { success: boolean, error?: string };
@@ -403,9 +323,9 @@ declare namespace cc3x7 {
     function inspectorGetDefinition(args: { target: "instance" | "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, section?: string }): { definition: string, sections: string[], totalSections: number };
     /** Consolidated: add/remove component on node. */
     function nodeComponentManage(args: { operation: "add" | "remove", reference: InstanceReference, componentType?: string }): { reference?: InstanceReference, success?: boolean };
-    /** Consolidated: query editor state or vocabularies. Use instead of editorIntrospect/editorListTypes. */
+    /** Consolidated: query editor state or vocabularies. Use instead of removed editorIntrospect/editorListTypes. */
     function editorQuery(args: { category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script" | "creatable_assets" | "asset_types" | "importers", enumPath?: string, className?: string, reference?: InstanceReference }): any;
-    /** Consolidated: scene lifecycle open/save/close/soft_reload. Use instead of sceneOpen/editorOperate. */
+    /** Consolidated: scene lifecycle open/save/close/soft_reload. Use instead of removed sceneOpen/editorOperate. */
     function sceneManage(args: { operation: "open" | "save" | "save_as" | "close" | "soft_reload", reference?: InstanceReference }): { success: boolean, error?: string, reference?: InstanceReference };
     /** Consolidated: build panel/tasks/trigger/control. */
     function buildManage(args: { operation: "panel_open" | "tasks_info" | "get_task" | "trigger" | "control", panel?: string, taskId?: string, options?: any, control?: "break" | "remove" | "recompile" }): any;

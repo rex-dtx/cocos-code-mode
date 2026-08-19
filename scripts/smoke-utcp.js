@@ -42,9 +42,9 @@ async function main() {
         const keys = Object.keys(m).sort();
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
-        assert.equal(n, 61, `tools.length expected 61 got ${n}`);
+        assert.equal(n, 51, `tools.length expected 51 got ${n}`);
         // ensure no unknown keys (strict schema)
-        ok(`manual valid: 61 tools, keys ${keys.join(',')}`);
+        ok(`manual valid: 51 tools, keys ${keys.join(',')}`);
         // check cc3x7 template exists in config
         try {
             const raw = readFileSync(join(homedir(), '.utcp_config.json'), 'utf8');

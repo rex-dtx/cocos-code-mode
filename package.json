@@ -2,7 +2,7 @@
   "$schema": "./@types/schema/package/index.json",
   "package_version": 2,
   "name": "cocos-code-mode-3x7",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "cst by hzi for cc3.7",
   "editor": ">=3.7.0",
   "scripts": {

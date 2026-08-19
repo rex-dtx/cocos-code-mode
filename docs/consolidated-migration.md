@@ -1,25 +1,25 @@
-# Consolidated Migration (cc3x7 A1 shims → 45 tools)
+# Consolidated Migration — 2.0.0 (68→51)
 
-> Branch `cc-3x7` — A1 keeps legacy tools as deprecated shims. Next major removes them and lands at 45 tools (61 → 68 → 45).
+> **2.0.0 shipped:** 17 legacy tools removed from `/utcp` registration. Consolidated 7 are now the only surface (51 total). 1.x clients using legacy names will get 404 until migrated.
 
-## Mapping (7 consolidated replace 16 legacy)
+## Mapping (7 consolidated replace 17 legacy — removed)
 
-| Consolidated (preferred) | Replaces | Legacy status |
+| Consolidated (keep) | Legacy removed in 2.0.0 | Status |
 |---|---|---|
-| `inspectorGet` | `inspectorGetInstanceProperties` + `inspectorGetSettingsProperties` | `@deprecated` |
-| `inspectorSet` | `inspectorSetInstanceProperties` + `inspectorSetSettingsProperties` | `@deprecated` |
-| `inspectorGetDefinition` | `inspectorGetInstanceDefinition` + `inspectorGetSettingsDefinition` | `@deprecated` |
-| `nodeComponentManage` | `nodeComponentAdd` + `nodeComponentRemove` | `@deprecated` |
-| `editorQuery` | `editorIntrospect` + `editorListTypes` | `@deprecated` |
-| `sceneManage` | `sceneOpen` + `editorOperate(save/close/soft_reload/save_as)` | `@deprecated` |
-| `buildManage` | `buildPanelOpen` + `buildGetTasksInfo` + `buildGetTask` + `buildTrigger` + `buildTaskControl` | `@deprecated` |
+| `inspectorGet` | `inspectorGetInstanceProperties`, `inspectorGetSettingsProperties` | **removed** |
+| `inspectorSet` | `inspectorSetInstanceProperties`, `inspectorSetSettingsProperties` | **removed** |
+| `inspectorGetDefinition` | `inspectorGetInstanceDefinition`, `inspectorGetSettingsDefinition` | **removed** |
+| `nodeComponentManage` | `nodeComponentAdd`, `nodeComponentRemove` | **removed** |
+| `editorQuery` | `editorIntrospect`, `editorListTypes` | **removed** |
+| `sceneManage` | `sceneOpen`, `editorOperate` (`save_scene_or_prefab`/`close`/`soft_reload`/`save_as` + preview ops) | **removed** |
+| `buildManage` | `buildPanelOpen`, `buildGetTasksInfo`, `buildGetTask`, `buildTrigger`, `buildTaskControl` | **removed** |
 
-Current `/utcp` count: **68** (61 legacy + 7 consolidated). Target next major: **45** (drop 16 legacy, add back ~ -2 for partial overlaps already counted).
+**Count:** `68 (A1 shims) - 17 legacy = 51 (44 standalone + 7 consolidated)`. Prior doc's "45" was estimate (assumed extra merges); actual is **51**. Gap 6 to reach 45 needs 6 more merges — deferred to backlog with frequency data.
 
-## One-line codemod
+## One-line codemod (1.x → 2.0)
 
 ```ts
-// before
+// before (1.x legacy, now 404)
 inspectorGetInstanceProperties({ reference, fields: ['position'] })
 inspectorGetSettingsProperties({ settingsType: 'CurrentSceneGlobals' })
 sceneOpen({ reference })
@@ -29,7 +29,7 @@ editorListTypes({ category: 'importers' })
 nodeComponentAdd({ reference, componentType: 'cc.Sprite' })
 buildGetTasksInfo({})
 
-// after
+// after (2.0 consolidated)
 inspectorGet({ target: 'instance', reference, fields: ['position'] })
 inspectorGet({ target: 'CurrentSceneGlobals' })
 sceneManage({ operation: 'open', reference })
@@ -47,16 +47,12 @@ buildManage({ operation: 'tasks_info' })
 - `sceneManage` `operation`: `open` | `save` | `save_as` | `close` | `soft_reload`
 - `buildManage` `operation`: `panel_open` | `tasks_info` | `get_task` | `trigger` | `control`
 
-## Perf notes (cc3x7 already shipped, cc2x4 backlog)
+## Notes (2.0)
 
-`maxDepth`/`maxNodes`/`fields[]` (tree), `section` pagination (definitions), `fields[]` selective dump, `response-trimmer`, desc avg 76 chars — all benefit more via consolidated entry points because the agent picks one surface. See sync ledger `notes/plans/cc-code-mode-cst/1-wip-260819__tbd-cc-sync-backlog/`.
+- Legacy method bodies kept (not registered) — `consolidated-tools.ts` delegates via `new LegacyTool().method()`. No logic moved, no file deleted.
+- `package.json` 1.0.0 → 2.0.0 (breaking), `code-mode-references.d.ts` drops 17 legacy signatures.
+- `maxDepth`/`maxNodes`/`fields[]` (tree), `section` pagination, `fields[]` selective dump, `response-trimmer`, desc avg 76 chars remain. See vault `1-wip-260819__tbd-cc-sync-backlog`.
 
-## Removal timeline
+## Further consolidation to 45 (deferred)
 
-- **Now (A1):** both names work; consolidated has tag `consolidated`, legacy has `deprecated`.
-- **Next major:** delete legacy `@utcpTool` registrations; `code-mode-references.d.ts` drops legacy signatures.
-- **Prompt guidance** already prefers consolidated names — see `prompt-guidance-risks.md`.
-
-## Testing
-
-`npx tsc --noEmit` passes; `/utcp` must list 68 tools before and 45 after removal. `scripts/smoke-utcp.js` will be updated to 45 when shims drop.
+6 more merges to reach 45 need debug-log frequency before choosing — candidates: `preview*`, `program*`, `project*`, `asset*` groups. See vault next-major plan gap note.

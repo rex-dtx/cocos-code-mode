@@ -22,26 +22,26 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools (68 — 61 legacy + 7 consolidated preferred)
+## Tools (51 — 7 consolidated replaces 17 legacy, removed in 2.0.0)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
-> 7 `consolidated` tools replace 16 legacy operations. Legacy tools stay for one major version (tags `deprecated` + `consolidated`) — new code should use the consolidated entry points. Total exposed in `/utcp`: 68 (61 legacy + 7 consolidated); next major will remove legacy shims and land at 45.
+> **2.0.0 breaking:** 17 legacy tools removed (shims were 68→51). Use `consolidated` entry points — see `docs/consolidated-migration.md` + codemod. Legacy 1.x clients must migrate.
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
-| **Scene** (14) | `sceneOpen`*, `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` → `truncated`/`childrenOmitted` |
+| **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` → `truncated`/`childrenOmitted` |
 | **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate`, `assetGetPreview` | Browse/search/create/import/mutate/preview. *`assetGetTree` supports `maxDepth`/`maxNodes` |
-| **Inspector** (6 + 3) | `inspectorGetInstanceProperties`*, `inspectorGetSettingsProperties`*, `inspectorSetInstanceProperties`*, `inspectorSetSettingsProperties`*, `inspectorGetInstanceDefinition`*, `inspectorGetSettingsDefinition`* → **preferred** `inspectorGet`, `inspectorSet`, `inspectorGetDefinition` | Dump/set properties and generate TS definitions. *`fields[]` and `section` pagination cut 50-80% |
-| **Components** (4 + 1) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentAdd`*, `nodeComponentRemove`* → **preferred** `nodeComponentManage` | Discover and attach components |
-| **Editor** (9 + 2) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorListTypes`*, `editorIntrospect`*, `editorOperate`*, `editorHistory`, `editorGetLogs`, `editorGetScenePreview` → **preferred** `editorQuery` (=`editorIntrospect`+`editorListTypes`), `sceneManage` (=`sceneOpen`+`editorOperate`) | Viewport, selection, introspection, lifecycle, capture |
-| **Build** (5 + 1) | `buildPanelOpen`*, `buildGetTasksInfo`*, `buildGetTask`*, `buildTrigger`*, `buildTaskControl`* → **preferred** `buildManage` | Panel, pipeline status, trigger and control |
+| **Inspector** (3) | `inspectorGet`*, `inspectorSet`*, `inspectorGetDefinition`* | Dump/set properties and generate TS definitions. *`fields[]` and `section` pagination cut 50-80% |
+| **Components** (3) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentManage`* | Discover and attach components |
+| **Editor** (6) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorHistory`, `editorGetLogs`, `editorGetScenePreview` + `editorQuery`*, `sceneManage`* | Viewport, selection, introspection, lifecycle, capture. *consolidated |
+| **Build** (1) | `buildManage`* | Panel, pipeline status, trigger and control (replaces 5 legacy) |
 | **Animation** (2) | `animationQuery`, `animationEdit` | Slim clip dumps and record/operate flow |
 | **Material/DB** (2) | `materialQuery`, `assetDbQuery` | Effects/pipeline and asset-DB introspection |
 | **System** (8) | `previewGetUrl`, `previewOpenInBrowser`, `programGetInfo`, `programOpen`, `urlOpen`, `projectGetConfig`, `projectSetConfig`, `propertyArrayElement` | Preview server, external programs, project config, array ops |
-| **Consolidated** (7) | `inspectorGet`, `inspectorSet`, `inspectorGetDefinition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `buildManage` | Preferred entry points — each maps to legacy impls via shim; see `docs/consolidated-migration.md` |
+| **Consolidated** (7) | `inspectorGet`, `inspectorSet`, `inspectorGetDefinition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `buildManage` | Replaces 17 legacy — now the only surface |
 
-* `*` = has consolidated replacement or pagination/budget optimization. Token guidance: `docs/prompt-guidance-risks.md` · QA: `scripts/smoke-utcp.js` (61→68) · Perf: `a769a46` bench + `e419276` trim.
+* Token guidance: `docs/prompt-guidance-risks.md` · QA: `scripts/smoke-utcp.js` (expects 51) · Perf: `a769a46` bench + `e419276` trim.
 
 
 ## How It Works
@@ -68,9 +68,7 @@ const { definition } = await cc3x7.inspectorGetDefinition({ target: 'instance', 
 const { dump } = await cc3x7.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
 await cc3x7.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
 
-// Legacy still works (deprecated shim → same impl):
-// const def = cc3x7.inspectorGetInstanceDefinition({ reference: ref });
-// cc3x7.inspectorSetInstanceProperties({ reference: ref, propertyPaths: ['position.x'], values: [120] });
+// 2.0.0: legacy removed — use consolidated names above.
 ```
 
 ## Architecture

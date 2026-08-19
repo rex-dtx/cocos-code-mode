@@ -19,7 +19,7 @@ export class ComponentTools {
     )
     async nodeGetAvailableComponentTypes(args: { includeInternal: boolean, filter?: string }): Promise<{ componentTypes: string[] }> {
         const allComponents = await Editor.Message.request('scene', 'query-components');
-        
+
         if (!Array.isArray(allComponents)) {
             throw new Error('Failed to retrieve component types');
         }
@@ -90,13 +90,7 @@ export class ComponentTools {
         throw new Error(`Components of type ${args.componentType} not found on node ${args.reference.id}`);
     }
 
-    /** @deprecated use nodeComponentManage({ operation: 'remove', reference }) */
-    @utcpTool(
-        'nodeComponentRemove',
-        '[DEPRECATED] Use nodeComponentManage. Remove referenced component from node it is attached to.',
-        { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
-        SuccessIndicatorSchema, "POST",  ['scene', 'node', 'component', 'remove', 'delete']
-    )
+    /** @deprecated use nodeComponentManage({ operation: 'remove', reference }) — not registered, kept for delegation */
     async nodeComponentRemove(args: { reference: IInstanceReference }): Promise<ISuccessIndicator> {
         try {
             const component = await Editor.Message.request('scene', 'query-component', args.reference.id);
@@ -116,20 +110,7 @@ export class ComponentTools {
         }
     }
 
-    /** @deprecated use nodeComponentManage({ operation: 'add', reference, componentType }) */
-    @utcpTool(
-        'nodeComponentAdd',
-        '[DEPRECATED] Use nodeComponentManage. Add a component to a referenced node, returns reference to the new component',
-        {
-            type: 'object',
-            properties: {
-                reference: InstanceReferenceSchema,
-                componentType: { type: 'string' }
-            },
-            required: ['reference', 'componentType']
-        },
-        { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, "POST",  ['scene', 'node', 'component', 'add']
-    )
+    /** @deprecated use nodeComponentManage({ operation: 'add', reference, componentType }) — not registered, kept for delegation */
     async nodeComponentAdd(args: { reference: IInstanceReference, componentType: string }): Promise<{ reference: IInstanceReference }> {
         const node = await Editor.Message.request('scene', 'query-node', args.reference.id);
         if (!node) {
@@ -139,7 +120,7 @@ export class ComponentTools {
         const beforeComponents = node.__comps__ ? node.__comps__.map((c: any) => c.value?.uuid?.value || c.value?.uuid || c.uuid) : [];
         const existingUuids = new Set(beforeComponents);
 
-        await Editor.Message.request('scene', 'execute-scene-script', 
+        await Editor.Message.request('scene', 'execute-scene-script',
             { name: packageJSON.name, method: 'startCatchLogging', args: [] });
 
         await Editor.Message.request('scene', 'create-component', {
@@ -148,10 +129,10 @@ export class ComponentTools {
         });
 
         const nodeAfter = await Editor.Message.request('scene', 'query-node', args.reference.id);
-        const afterComponents: IInstanceReference[] = nodeAfter.__comps__ ? 
+        const afterComponents: IInstanceReference[] = nodeAfter.__comps__ ?
             nodeAfter.__comps__.map((c: any) => { return { id: c.value?.uuid?.value, type: c.type } }) : [];
-        
-        const caughtLogs: string[] = await Editor.Message.request('scene', 'execute-scene-script', 
+
+        const caughtLogs: string[] = await Editor.Message.request('scene', 'execute-scene-script',
             { name: packageJSON.name, method: 'stopCatchLogging', args: [] });
 
         const newComponentRef = afterComponents.find(ref => !existingUuids.has(ref.id));

@@ -4,19 +4,7 @@ import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, I
 
 export class SceneTools {
 
-    /** @deprecated use sceneManage({ operation: 'open', reference }) */
-    @utcpTool(
-        'sceneOpen',
-        '[DEPRECATED] Use sceneManage. Open a scene by uuid. Resolve path to uuid first via assetGetAtPath.',
-        {
-            type: 'object',
-            properties: {
-                reference: InstanceReferenceSchema
-            },
-            required: ['reference']
-        },
-        SuccessIndicatorSchema, "POST", ['scene', 'open', 'load', 'uuid', 'level']
-    )
+    /** @deprecated use sceneManage({ operation: 'open', reference }) — not registered, kept for delegation */
     async sceneOpen(args: { reference: IInstanceReference }): Promise<ISuccessIndicator> {
         if (!args.reference || !args.reference.id) {
             throw new Error('sceneOpen requires reference.id (scene uuid)');

@@ -1,5 +1,4 @@
 import { JsonSchema } from '@utcp/sdk';
-import { utcpTool } from '../decorators';
 import { SuccessIndicatorSchema, ISuccessIndicator } from '../schemas';
 
 // Slim view of a build task for agent consumption (full IBuildTaskItemJSON is huge)
@@ -50,37 +49,14 @@ function slimTask(task: any): IBuildTaskSummary {
 
 export class BuildTools {
 
-    @utcpTool(
-        'buildPanelOpen',
-        '[DEPRECATED] Use buildManage. Open the editor build panel (default build panel or the bundle build panel).',
-        {
-            type: 'object',
-            properties: {
-                panel: { type: 'string', enum: ['default', 'build-bundle'], description: 'Which build panel to open', default: 'default' }
-            }
-        },
-        SuccessIndicatorSchema, "POST", ['build', 'panel', 'open', 'bundle']
-    )
+    /** @deprecated Use buildManage({ operation: 'panel_open' }) — not registered, kept for delegation */
     async buildPanelOpen(args: { panel?: string }): Promise<ISuccessIndicator> {
         const panel = args.panel === 'build-bundle' ? 'build-bundle' : 'default';
         await Editor.Message.request('builder', 'open', panel);
         return { success: true };
     }
 
-    @utcpTool(
-        'buildGetTasksInfo',
-        '[DEPRECATED] Use buildManage. Build pipeline status: worker ready, queue free, all tasks summary.',
-        { type: 'object', properties: {} },
-        {
-            type: 'object',
-            properties: {
-                workerReady: { type: 'boolean' },
-                free: { type: 'boolean', description: 'True when no build task is running' },
-                tasks: { type: 'array', items: BuildTaskSummarySchema }
-            },
-            required: ['workerReady', 'free', 'tasks']
-        }, "GET", ['build', 'task', 'queue', 'status', 'progress', 'worker']
-    )
+    /** @deprecated Use buildManage({ operation: 'tasks_info' }) — not registered, kept for delegation */
     async buildGetTasksInfo(): Promise<{ workerReady: boolean, free: boolean, tasks: IBuildTaskSummary[] }> {
         const workerReady = await Editor.Message.request('builder', 'query-worker-ready');
         const info = await Editor.Message.request('builder', 'query-tasks-info');
@@ -89,25 +65,7 @@ export class BuildTools {
         return { workerReady: !!workerReady, free: !!(info && info.free), tasks };
     }
 
-    @utcpTool(
-        'buildGetTask',
-        '[DEPRECATED] Use buildManage. Get build task by id with full options. Copy+modify options for buildTrigger.',
-        {
-            type: 'object',
-            properties: {
-                taskId: { type: 'string', description: 'Build task id (from buildGetTasksInfo)' }
-            },
-            required: ['taskId']
-        },
-        {
-            type: 'object',
-            properties: {
-                task: BuildTaskSummarySchema,
-                options: { type: 'object', description: 'Full IBuildTaskOption of the task' }
-            },
-            required: ['task']
-        }, "GET", ['build', 'task', 'get', 'options', 'config']
-    )
+    /** @deprecated Use buildManage({ operation: 'get_task' }) — not registered, kept for delegation */
     async buildGetTask(args: { taskId: string }): Promise<{ task: IBuildTaskSummary, options?: any }> {
         if (!args.taskId) {
             throw new Error('buildGetTask requires taskId');
@@ -119,26 +77,7 @@ export class BuildTools {
         return { task: slimTask(item), options: item.options || undefined };
     }
 
-    @utcpTool(
-        'buildTrigger',
-        '[DEPRECATED] Use buildManage. Enqueue a build task. Copy options from buildGetTask and modify. Poll status with buildGetTasksInfo.',
-        {
-            type: 'object',
-            properties: {
-                options: {
-                    type: 'object',
-                    description: 'Full build options (IBuildTaskOption). Key fields: platform (e.g. web-mobile, web-desktop, android, windows), taskName, buildPath, startScene, scenes, debug, md5Cache.',
-                    properties: {
-                        platform: { type: 'string', description: 'Target platform, e.g. web-mobile, web-desktop, android, ios, windows' },
-                        taskName: { type: 'string' },
-                        buildPath: { type: 'string' }
-                    }
-                }
-            },
-            required: ['options']
-        },
-        { type: 'object', properties: { success: { type: 'boolean' }, taskId: { type: 'string' } }, required: ['success'] }, "POST", ['build', 'trigger', 'start', 'export', 'task', 'platform']
-    )
+    /** @deprecated Use buildManage({ operation: 'trigger' }) — not registered, kept for delegation */
     async buildTrigger(args: { options: any }): Promise<{ success: boolean, taskId?: string }> {
         if (!args.options || typeof args.options !== 'object') {
             throw new Error('buildTrigger requires an options object (copy it from buildGetTask and modify)');
@@ -151,19 +90,7 @@ export class BuildTools {
         return { success: true, taskId };
     }
 
-    @utcpTool(
-        'buildTaskControl',
-        '[DEPRECATED] Use buildManage. Manage build task: "break" aborts, "remove" deletes, "recompile" rebuilds scripts only. Get ids from buildGetTasksInfo.',
-        {
-            type: 'object',
-            properties: {
-                operation: { type: 'string', enum: ['break', 'remove', 'recompile'] },
-                taskId: { type: 'string', description: 'Build task id (from buildGetTasksInfo)' }
-            },
-            required: ['operation', 'taskId']
-        },
-        SuccessIndicatorSchema, "POST", ['build', 'task', 'break', 'abort', 'cancel', 'remove', 'delete', 'recompile', 'scripts']
-    )
+    /** @deprecated Use buildManage({ operation: 'control' }) — not registered, kept for delegation */
     async buildTaskControl(args: { operation: string, taskId: string }): Promise<ISuccessIndicator> {
         if (!args.taskId) {
             throw new Error('buildTaskControl requires taskId');

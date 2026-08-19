@@ -204,20 +204,7 @@ export class EditorTools {
         }
     }
 
-    /** @deprecated use editorQuery({ category: 'creatable_assets'|'asset_types'|'importers' }) */
-    @utcpTool(
-        'editorListTypes',
-        '[DEPRECATED] Use editorQuery. List editor vocabularies: creatable_assets, asset_types, importers.',
-        {
-            type: 'object',
-            properties: {
-                category: { type: 'string', enum: ['creatable_assets', 'asset_types', 'importers'] }
-            },
-            required: ['category']
-        },
-        { type: 'object', properties: { types: { type: 'array', items: { type: 'string' } } }, required: ['types'] }, "GET",
-        ['editor', 'types', 'list', 'enumerate', 'asset', 'importer', 'creatable', 'validation']
-    )
+    /** @deprecated use editorQuery({ category: 'creatable_assets'|'asset_types'|'importers' }) — not registered, kept for delegation */
     async editorListTypes(args: { category: string }): Promise<{ types: string[] }> {
         let raw: any;
         switch (args.category) {
@@ -250,36 +237,7 @@ export class EditorTools {
         return { types: list.map(pickName).filter((name): name is string => !!name) };
     }
 
-    /** @deprecated use editorQuery({ category }) */
-    @utcpTool(
-        'editorIntrospect',
-        '[DEPRECATED] Use editorQuery. Query editor state: scene_mode, ready (post-open), enum_values, layers, sorting_layers, script_info, has_script.',
-        {
-            type: 'object',
-            properties: {
-                category: { type: 'string', enum: ['scene_mode', 'ready', 'enum_values', 'layers', 'sorting_layers', 'script_info', 'has_script'] },
-                enumPath: { type: 'string', description: 'For enum_values: the enum path reported by the property dump, e.g. "cc.Sprite.SizeMode"' },
-                className: { type: 'string', description: 'For has_script: the component class name to look for, e.g. "SlotReel"' },
-                reference: InstanceReferenceSchema
-            },
-            required: ['category']
-        },
-        {
-            type: 'object',
-            properties: {
-                sceneMode: { type: 'string', description: 'general | prefab | animation | preview | "" (nothing open)' },
-                ready: { type: 'boolean' },
-                values: {
-                    type: 'array',
-                    items: { type: 'object', properties: { name: { type: 'string' }, value: {} } },
-                    description: 'For enum_values / layers / sorting_layers'
-                },
-                scriptName: { type: 'string' },
-                scriptCid: { type: 'string' },
-                hasScript: { type: 'boolean', description: 'For has_script: whether a component class by that name is registered' }
-            }
-        }, "GET", ['editor', 'introspect', 'mode', 'prefab', 'ready', 'enum', 'layer', 'sorting', 'script', 'cid', 'validation']
-    )
+    /** @deprecated use editorQuery({ category }) — not registered, kept for delegation */
     async editorIntrospect(args: { category: string, enumPath?: string, className?: string, reference?: IInstanceReference }):
         Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string, hasScript?: boolean }> {
         // Enumerator / layer results are {name, value} lists but the exact item shape is
@@ -340,27 +298,7 @@ export class EditorTools {
         }
     }
 
-    /** @deprecated use sceneManage({ operation }) for save/close, editorViewport for preview. */
-    @utcpTool(
-        'editorOperate',
-        '[DEPRECATED] Use sceneManage. Editor operations: save/close scene or prefab, soft_reload (post-recompile), preview controls, refresh asset-db.',
-        {
-            type: 'object',
-            properties: {
-                operation: { type: 'string', enum: ['save_scene_or_prefab', 'save_as', 'close_scene_or_prefab', 'soft_reload', 'play_preview', 'pause', 'step', 'stop', 'refresh'] }
-            },
-            required: ['operation']
-        },
-        {
-            type: 'object',
-            properties: {
-                success: { type: 'boolean' },
-                error: { type: 'string' },
-                reference: InstanceReferenceSchema
-            },
-            required: ['success']
-        }, "POST",  ['operation', 'editor', 'scene', 'prefab', 'preview', 'asset', 'refresh', 'save', 'reload', 'recompile']
-    )
+    /** @deprecated use sceneManage({ operation }) — not registered, kept for delegation */
     async editorOperate(args: { operation: string }): Promise<ISuccessIndicator & { reference?: IInstanceReference }> {
         switch (args.operation) {
             case 'save_scene_or_prefab':

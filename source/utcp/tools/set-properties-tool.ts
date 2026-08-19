@@ -1,27 +1,13 @@
-import { utcpTool } from '../decorators';
 import { IProperty, IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { ToolsUtils } from '../utils/tools-utils';
 import { ImporterManager } from '../utils/asset-importers';
 import { AssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
-import { IInstanceReference, InstanceReferenceSchema, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
+import { IInstanceReference, ISuccessIndicator } from '../schemas';
 
 declare const Editor: any;
 
 export class SetPropertyTool {
-    /** @deprecated use inspectorSet({ target, ... }) */
-    @utcpTool(
-        "inspectorSetSettingsProperties",
-        "[DEPRECATED] Use inspectorSet. Set property on CurrentSceneGlobals/ProjectSettings.",
-        { type: 'object',
-            properties: {
-                settingsType: { type: 'string', enum: ['CurrentSceneGlobals', 'ProjectSettings'] },
-                propertyPath: { type: 'string', description: "Plain path to the property (e.g., 'ambient.skyLightingColor.r'). Don't support code execution." },
-                value: { type: ['array', 'object', 'string', 'number', 'boolean', 'null'], additionalProperties: true }
-            },
-            required: ['settingsType', 'propertyPath', 'value']
-        },
-        SuccessIndicatorSchema, "POST", ['property', 'set', 'scene', 'settings', 'project', 'modify', 'config']
-    )
+    /** @deprecated use inspectorSet({ target, ... }) — not registered, kept for delegation */
     async setCurrentSceneProperties(params: { settingsType: string, propertyPath?: string, value?: any, propertyPaths?: string[], values?: any[] }): Promise<ISuccessIndicator> {
         // The schema advertises singular propertyPath/value, but this handler only
         // ever read the plural arrays — so every schema-conformant call failed with
@@ -41,21 +27,7 @@ export class SetPropertyTool {
     }
 
 
-    /** @deprecated use inspectorSet({ target: 'instance', ... }) */
-    @utcpTool(
-        "inspectorSetInstanceProperties",
-        "[DEPRECATED] Use inspectorSet. Set properties on node/component/asset instance.",
-        {
-            type: 'object',
-            properties: {
-                reference: InstanceReferenceSchema,
-                propertyPaths: { type: 'array', items: { type: 'string' }, description: "Plain paths to the properties (e.g., ['position.x', 'rotation.y']). Don't support code execution. Arrays are reached by indexes. (e.g. 'sharedMaterials.0')" },
-                values: { type: 'array', items: { type: ['array', 'object', 'string', 'number', 'boolean', 'null'], additionalProperties: true } }
-            },
-            required: ['reference', 'propertyPaths', 'values']
-        },
-        SuccessIndicatorSchema, "POST", ['property', 'set', 'instance', 'node', 'component', 'asset', 'modify', 'meta']
-    )
+    /** @deprecated use inspectorSet({ target: 'instance', ... }) — not registered, kept for delegation */
     async setInstanceProperties(params: { reference: IInstanceReference, propertyPaths: string[], values: any[] }): Promise<ISuccessIndicator> {
         let { reference: { id: uuid }, propertyPaths, values } = params;
 
@@ -275,7 +247,7 @@ export class SetPropertyTool {
         if (typeof value === 'string') {
             value = { uuid: value };
         }
-        
+
         // Reference object with id is sent
         if (typeof value === 'object' && value !== null && 'id' in value) {
             value = { uuid: value.id };
