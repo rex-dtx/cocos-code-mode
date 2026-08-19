@@ -274,4 +274,105 @@ export class EditorMiscTools {
         }
         throw new Error(`Failed to open preview: ${lastErr?.message || lastErr}`);
     }
+
+    @utcpTool(
+        'assetGetPreview',
+        'Get thumbnail/preview base64 for an asset (texture/prefab/material). Returns note if not available on 2.4.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Asset uuid' },
+                url: { type: 'string', description: 'Asset db:// url' },
+            },
+        },
+        { type: 'object', properties: { type: { type: 'string' }, data: { type: 'string' }, mimeType: { type: 'string' }, note: { type: 'string' } } },
+        'GET', ['asset', 'preview', 'thumbnail', 'image']
+    )
+    async assetGetPreview(args: { uuid?: string, url?: string }): Promise<any> {
+        const uuid = args.uuid || (args.url ? Editor.assetdb.urlToUuid(args.url) : null);
+        if (!uuid) throw new Error('assetGetPreview requires uuid or url');
+        // Try 2.4 asset-db preview message if exists
+        for (const msg of ['asset-db:query-asset-preview', 'asset-db:get-preview'] as any[]) {
+            try {
+                const res: any = await new Promise((resolve, reject) => {
+                    Editor.Ipc.sendToMain(msg, uuid, (err: any, r: any) => err ? reject(err) : resolve(r));
+                });
+                if (res) return res;
+            } catch {}
+        }
+        // Fallback: generate from file via sharp if texture
+        const fspath = Editor.assetdb.uuidToFspath(uuid) || (args.url ? Editor.assetdb.urlToFspath(args.url) : null);
+        if (fspath) {
+            try {
+                const { existsSync } = await import('fs');
+                const path = await import('path');
+                if (existsSync(fspath)) {
+                    const ext = path.extname(fspath).toLowerCase();
+                    if (['.png','.jpg','.jpeg'].includes(ext)) {
+                        const { readFileSync } = await import('fs');
+                        const b64 = readFileSync(fspath).toString('base64');
+                        const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+                        return { type: 'image', data: b64, mimeType: mime };
+                    }
+                }
+            } catch {}
+        }
+        return { note: 'Preview not available for this asset on Creator 2.4 — texture fallback only', type: 'image', data: '', mimeType: 'image/png' };
+    }
+
+    @utcpTool(
+        'editorGetLogs',
+        'Get last N lines from project.log (Editor.Project.path/temp/logs/project.log). Returns empty if log missing.',
+        {
+            type: 'object',
+            properties: {
+                count: { type: 'number', description: 'Lines to return', default: 50 },
+                order: { type: 'string', enum: ['newest-to-oldest','oldest-to-newest'], description: 'Order', default: 'newest-to-oldest' },
+            },
+        },
+        { type: 'object', properties: { logLines: { type: 'array', items: { type: 'string' } }, path: { type: 'string' } }, required: ['logLines'] },
+        'GET', ['editor', 'logs', 'debug', 'info']
+    )
+    async editorGetLogs(args: { count?: number, order?: string }): Promise<any> {
+        const { join } = await import('path');
+        const { existsSync, readFileSync } = await import('fs');
+        const projectPath = Editor.Project.path;
+        if (!projectPath) throw new Error('Editor.Project.path not available');
+        const logPath = join(projectPath, 'temp', 'logs', 'project.log');
+        if (!existsSync(logPath)) return { logLines: [], path: logPath };
+        const text = readFileSync(logPath, 'utf8');
+        let lines = text.split('\n').filter(Boolean);
+        const n = args.count && args.count > 0 ? args.count : 50;
+        if (args.order === 'oldest-to-newest') lines = lines.slice(-n);
+        else { lines = lines.slice(-n).reverse(); }
+        return { logLines: lines, path: logPath };
+    }
+
+    @utcpTool(
+        'editorGetScenePreview',
+        'Scene screenshot preview via scene console capture fallback. Returns base64 JPEG if available, otherwise note.',
+        {
+            type: 'object',
+            properties: {
+                width: { type: 'number', description: 'Image width', default: 512 },
+                height: { type: 'number', description: 'Image height', default: 512 },
+            },
+        },
+        { type: 'object', properties: { type: { type: 'string' }, data: { type: 'string' }, mimeType: { type: 'string' }, note: { type: 'string' } } },
+        'GET', ['scene', 'screenshot', 'preview', 'image']
+    )
+    async editorGetScenePreview(args: { width?: number, height?: number }): Promise<any> {
+        // 2.4 has no scene:capture-screenshot; try, else return note
+        const w = args.width || 512, h = args.height || 512;
+        for (const msg of ['scene:capture-screenshot', 'scene:query-screenshot'] as any[]) {
+            try {
+                const res: any = await new Promise((resolve, reject) => {
+                    Editor.Ipc.sendToPanel('scene', msg, { width: w, height: h }, (err: any, r: any) => err ? reject(err) : resolve(r));
+                });
+                if (typeof res === 'string' && res.startsWith('/9j/')) return { type: 'image', data: res, mimeType: 'image/jpeg' };
+                if (res && res.data) return res;
+            } catch {}
+        }
+        return { note: 'Scene preview capture not available on Creator 2.4.15 — try manual screenshot from editor toolbar', type: 'image', data: '', mimeType: 'image/jpeg' };
+    }
 }

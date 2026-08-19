@@ -280,6 +280,9 @@ declare namespace cc2x4 {
     function animationEdit(args: { operation: string; nodeUuid?: string }): { success: boolean; note?: string };
     /** Reset node transform (undo-aware via resetPropertyByPath). */
     function nodeReset(args: { uuid: string }): { uuid: string; reset: boolean };
+    function assetGetPreview(args: { uuid?: string; url?: string }): { type: string; data: string; mimeType: string; note?: string };
+    function editorGetLogs(args?: { count?: number; order?: string }): { logLines: string[]; path?: string };
+    function editorGetScenePreview(args?: { width?: number; height?: number }): { type: string; data: string; mimeType: string; note?: string };
     /** Clipboard copy/cut/paste/duplicate nodes. */
     function nodeClipboard(args: { operation: 'copy'|'cut'|'paste'|'duplicate'; ids?: string; targetId?: string }): { success: boolean; ids?: string[] };
 }
