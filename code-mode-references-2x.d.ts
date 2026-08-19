@@ -245,6 +245,8 @@ declare namespace cc2x4 {
     /** Duplicate node (cc.instantiate). */
     function nodeDuplicate(args: { uuid: string }): { uuid: string; name: string; parent: string };
 
+    /** Undo-aware set (via setPropertyByPath). */
+    function nodeSetPropertyUndo(args: { uuid: string; path: string; value: any }): { uuid: string; path: string; value: any };
     /** Undo/redo. */
     function editorUndo(args: { operation: 'undo' | 'redo' }): { success: boolean };
 

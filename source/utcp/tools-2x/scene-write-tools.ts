@@ -32,6 +32,25 @@ export class SceneWriteTools {
     }
 
     @utcpTool(
+        'nodeSetPropertyUndo',
+        'Undo-aware set property via scene://set-property-by-path (Editor.Undo). Use when you need undo/dirty tracking.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Node uuid' },
+                path: { type: 'string', description: 'Property path by setPropertyByPath, e.g. position.x or node name' },
+                value: { description: 'New value' },
+            },
+            required: ['uuid','path','value'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' }, value: {} } },
+        'POST', ['scene','undo','set','property']
+    )
+    async nodeSetPropertyUndo(args: { uuid: string, path: string, value: any }): Promise<any> {
+        return sceneScript<any>('set-node-prop-undo', args.uuid, args.path, args.value);
+    }
+
+    @utcpTool(
         'nodeCreate',
         'Create a new node. If parentUuid is given, attach under that node, else under scene root. Returns new node uuid.',
         {
