@@ -118,6 +118,8 @@ declare namespace cc2x4 {
     }): { result: any; total?: number; truncated?: boolean };
 
     /**
+    function callComponentMethod(args: { uuid: string; method: string; args?: any[] }): { result: any };
+    /**
      * Discovery step cho callComponentMethod (vong 2): liet ke method name moi
      * component tren node. Port tu v3 tool cung ten. Khac v3:
      *   - arg la `uuid` string (quy uoc 2.x), khong phai InstanceReference
@@ -276,6 +278,8 @@ declare namespace cc2x4 {
     /** Animation 2.4 (cc.Animation): clips_info/clip_dump/properties/state. */
     function animationQuery(args: { operation: string; nodeUuid?: string; path?: string; clipName?: string; includeCurves?: boolean }): { result: any };
     function animationEdit(args: { operation: string; nodeUuid?: string }): { success: boolean; note?: string };
+    /** Reset node transform (undo-aware via resetPropertyByPath). */
+    function nodeReset(args: { uuid: string }): { uuid: string; reset: boolean };
     /** Clipboard copy/cut/paste/duplicate nodes. */
     function nodeClipboard(args: { operation: 'copy'|'cut'|'paste'|'duplicate'; ids?: string; targetId?: string }): { success: boolean; ids?: string[] };
 }

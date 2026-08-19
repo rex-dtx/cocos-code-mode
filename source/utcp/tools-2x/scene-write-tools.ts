@@ -139,6 +139,41 @@ export class SceneWriteTools {
         return sceneScript<any>('create-primitive', args.primitiveType, args.name || args.primitiveType, args.parentUuid || '');
     }
 
+
+    @utcpTool(
+        'callComponentMethod',
+        'Call a component method on a node by uuid. Discovery via listComponentMethods first.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Node uuid' },
+                method: { type: 'string', description: 'Method name' },
+                args: { type: 'array', items: {}, description: 'Optional args array' },
+            },
+            required: ['uuid','method'],
+        },
+        { type: 'object', properties: { result: {} } },
+        'POST', ['scene','component','method','call','invoke']
+    )
+    async callComponentMethod(args: { uuid: string, method: string, args?: any[] }): Promise<any> {
+        return sceneScript<any>('call-component-method', args.uuid, args.method, args.args || []);
+    }
+
+    @utcpTool(
+        'nodeReset',
+        'Reset node transform via resetPropertyByPath (undo-aware).',
+        {
+            type: 'object',
+            properties: { uuid: { type: 'string', description: 'Node uuid' } },
+            required: ['uuid'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, reset: { type: 'boolean' } } },
+        'POST', ['scene','node','reset','property']
+    )
+    async nodeReset(args: { uuid: string }): Promise<any> {
+        return sceneScript<any>('node-reset', args.uuid);
+    }
+
     @utcpTool(
         'editorUndo',
         'Undo or redo the last scene operation. Uses Editor.Ipc scene panel messages.',

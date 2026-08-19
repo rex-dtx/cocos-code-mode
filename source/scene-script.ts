@@ -707,7 +707,9 @@
             event.reply(null, out);
         },
 
-        // --- write handlers (probe verified: direct assign x 0→999 OK, direct_x 0→1 OK) ---
+        // --- probe tells high-level undo API: scene://utils/scene (createProperty/setProperty/resetProperty/etc.)
+        // --- and low-level scene://set-property-by-path. set-node-prop now offers undo variant.
+        // --- probe verifies direct assign works but bypasses Undo — keep both paths.
 
         'set-node-prop': function (event: any, uuid: string, path: string, value: any) {
             let node: any = null;
@@ -733,7 +735,52 @@
                 event.reply(null, { uuid, path, before, after: cur[last] });
             } catch (e: any) { event.reply(e); }
         },
-
+        'set-node-prop-undo': function (event: any, uuid: string, path: string, value: any) {
+            try {
+                const mod:any = Editor.require('scene://set-property-by-path');
+                const fn = mod.setPropertyByPath || mod.setProperty;
+                if (typeof fn !== 'function') return event.reply(new Error('setPropertyByPath not found'));
+                // resolve node to get instance for high-level path? low-level takes uuid
+                fn(uuid, path, value);
+                event.reply(null, { uuid, path, value });
+            } catch(e:any){ event.reply(e); }
+        },
+        'call-component-method': function (event: any, uuid: string, method: string, args: any) {
+            try {
+                let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
+                if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+                if(!node) return event.reply(new Error('node not found: '+uuid));
+                // find component that owns method
+                let target:any=null;
+                for(const comp of (node._components||[])){
+                    if(typeof (comp as any)[method]==='function'){ target=comp; break; }
+                }
+                if(!target) return event.reply(new Error('method '+method+' not found on any component of '+node.name));
+                const a = Array.isArray(args)? args : (args!==undefined? [args]: []);
+                const result = target[method].apply(target, a);
+                // serialize result if object
+                let out:any=result;
+                try{ if(result && typeof result==='object') out=JSON.parse(JSON.stringify(result)); }catch{}
+                event.reply(null, { result: out });
+            } catch(e:any){ event.reply(e); }
+        },
+        'node-reset': function (event: any, uuid: string) {
+            try{
+                const mod:any = Editor.require('scene://set-property-by-path');
+                const fn = mod.resetPropertyByPath || mod.resetProperty;
+                let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
+                if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
+                if(!node) return event.reply(new Error('node not found: '+uuid));
+                if(typeof fn==='function'){ fn(node.uuid, 'position'); fn(node.uuid, 'rotation'); fn(node.uuid, 'scale'); event.reply(null, { uuid, reset:true }); }
+                else { node.setPosition(0,0,0); event.reply(null, { uuid, reset:true, fallback:true }); }
+            } catch(e:any){ event.reply(e); }
+        },
+        'asset-preview': function (event: any, uuid: string) {
+            try{
+                // 2.4 has no stable preview thumbnail IPC — return hint
+                event.reply(null, { uuid, note: 'asset preview not available on 2.4 — use assetReadContent or Editor.assetdb.queryInfoByUuid' });
+            } catch(e:any){ event.reply(e); }
+        },
         'set-comp-prop': function (event: any, nodeUuid: string, compType: string, path: string, value: any) {
             let node: any = null;
             try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(nodeUuid); } } catch (e) {}
