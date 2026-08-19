@@ -24,14 +24,14 @@ export class UtcpConfigManager {
         if (savedPath && typeof savedPath === 'string') {
             this.configPath = savedPath;
         } else {
-            this.configPath = join(homedir(), '.utcp_config.json');
+            this.configPath = join(homedir(), '.utcp_cc3x7.json');
         }
         console.log(`[UtcpConfigManager] Initialized with config path: ${this.configPath}`);
     }
 
     getConfigPath(): string {
         if (!this.configPath) {
-            this.configPath = join(homedir(), '.utcp_config.json');
+            this.configPath = join(homedir(), '.utcp_cc3x7.json');
         }
         return this.configPath;
     }
