@@ -177,6 +177,44 @@ export class SceneWriteTools {
     }
 
 
+
+    @utcpTool(
+        'sceneCreateNodeHL',
+        'High-level create node via scene://utils/scene (undo-aware). Falls back to cc.Node.',
+        {
+            type: 'object',
+            properties: {
+                name: { type: 'string' },
+                parentUuid: { type: 'string' },
+            },
+            required: ['name'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' } }, required: ['uuid'] },
+        'POST', ['scene','utils','create','high-level']
+    )
+    async sceneCreateNodeHL(args: { name: string, parentUuid?: string }): Promise<any> {
+        return sceneScript<any>('scene-create-node', args.name, args.parentUuid || '');
+    }
+
+    @utcpTool(
+        'sceneSetPropertyHL',
+        'High-level set property via scene://utils/scene (undo-aware). Falls back to setPropertyByPath.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string' },
+                path: { type: 'string' },
+                value: {},
+            },
+            required: ['uuid','path','value'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' } } },
+        'POST', ['scene','utils','set','property','high-level']
+    )
+    async sceneSetPropertyHL(args: { uuid: string, path: string, value: any }): Promise<any> {
+        return sceneScript<any>('scene-set-property', args.uuid, args.path, args.value);
+    }
+
     @utcpTool(
         'callComponentMethod',
         'Call a component method on a node by uuid. Discovery via listComponentMethods first.',

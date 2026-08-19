@@ -775,6 +775,25 @@
                 else { node.setPosition(0,0,0); event.reply(null, { uuid, reset:true, fallback:true }); }
             } catch(e:any){ event.reply(e); }
         },
+        'scene-set-property': function (event:any, uuid:string, path:string, value:any) {
+            try{ const mod:any=Editor.require('scene://utils/scene'); const fn=mod.setProperty; if(typeof fn==='function'){ fn(uuid, path, value); event.reply(null,{uuid,path}); return; } }catch{}
+            try{ const mod2:any=Editor.require('scene://set-property-by-path'); const fn2=mod2.setPropertyByPath||mod2.setProperty; fn2(uuid,path,value); event.reply(null,{uuid,path}); }catch(e:any){event.reply(e);}
+        },
+        'scene-create-node': function (event:any, name:string, parentUuid:string) {
+            try{
+                const mod:any=Editor.require('scene://utils/scene');
+                const fn=mod.createNodes || mod.createNode;
+                if(typeof fn==='function'){
+                    let parent:any=null; if(parentUuid){ try{ if(cc.engine && (cc.engine as any).getInstanceById) parent=(cc.engine as any).getInstanceById(parentUuid);}catch{} if(!parent || parent.uuid!==parentUuid){ (function walk(n:any){ if(parent||!n) return; if(n.uuid===parentUuid){parent=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); } }
+                    const res = fn.call(mod, name, parent);
+                    const node = Array.isArray(res)? res[0] : res;
+                    event.reply(null, { uuid: node?.uuid||'', name: node?.name||name });
+                    return;
+                }
+            }catch{}
+            // fallback: plain cc.Node
+            try{ const n=new (cc as any).Node(name); let parent:any=cc.director.getScene(); if(parentUuid){ try{ if(cc.engine && (cc.engine as any).getInstanceById) parent=(cc.engine as any).getInstanceById(parentUuid)||parent;}catch{} } parent.addChild(n); event.reply(null,{uuid:n.uuid,name:n.name}); }catch(e:any){event.reply(e);}
+        },
         'batch-property': function (event: any, ops: any[]) {
             // ops: [{uuid, path, value, undo?:boolean}] — undo true uses setPropertyByPath, false direct assign
             if(!Array.isArray(ops)) return event.reply(new Error('ops must be array'));
