@@ -52,7 +52,7 @@ export class ComponentMethodTools {
      */
     @utcpTool(
         'listComponentMethods',
-        'List the callable method names of every component on a node — the discovery step before invoking a component method (otherwise the method name must be guessed). Results are grouped per component class name. Ported from the 3.x tool of the same name; 2.x returns class names, not component uuids.',
+        'List callable methods on node — discovery before callComponentMethod. Grouped by component.',
         {
             type: 'object',
             properties: {

@@ -251,6 +251,21 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 
 The extension automatically maintains a `cc2x4` entry in UTCP Config pointing to the running server port.
 
+## Agent Prompt Guidance
+
+When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
+
+```text
+When returning data from cc2x4 tools:
+- Return stats/aggregates (counts, top-N) unless the question needs items.
+- User asks list/find/which/show → return capped list with .slice(0, N), not count.
+- Drop empty arrays/objects and deep subtrees a summary already answers.
+- Keep uuid for any node you may operate on in a next step (verbs: set/add/remove/destroy).
+- If an aggregate looks anomalous (large branch, mixed active, errors), drill into that branch before concluding.
+```
+
+Full failure-mode analysis and trade-offs: [`docs/prompt-guidance-risks.md`](docs/prompt-guidance-risks.md).
+
 ## Integration
 
 Code Mode works with any UTCP-compatible client, including the [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) for AI assistants.

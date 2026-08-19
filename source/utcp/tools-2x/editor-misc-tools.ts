@@ -33,7 +33,7 @@ export class EditorMiscTools {
 
     @utcpTool(
         'editorSelect',
-        'Read or change what is selected in the editor. This changes the selection only, never the scene contents. Use query to learn what the user is looking at before acting.',
+        'Get or change editor selection (node/asset). Changes selection only, not scene.',
         {
             type: 'object',
             properties: {
@@ -84,7 +84,7 @@ export class EditorMiscTools {
 
     @utcpTool(
         'editorEnvInfo',
-        'Editor version, engine version, runtime versions and project path. Fields that cannot be read come back as null with an explanation in notes, so this never fails outright.',
+        'Get editor/engine versions and project path.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -126,7 +126,7 @@ export class EditorMiscTools {
 
     @utcpTool(
         'projectGetConfig',
-        'Read project settings. No arguments returns everything, type narrows to one settings file, type plus key returns a single value.',
+        'Read project settings. Omit type for all, type for one file, key for one value.',
         {
             type: 'object',
             properties: {
@@ -183,7 +183,7 @@ export class EditorMiscTools {
 
     @utcpTool(
         'editorListTypes',
-        'Enumerate type vocabularies. creatable_assets = presets accepted by assetCreate; asset_types = cc.* asset class names; importers = registered importer names.',
+        'List vocabularies: creatable_assets, asset_types, or importers.',
         {
             type: 'object',
             properties: {

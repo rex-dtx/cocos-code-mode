@@ -32,6 +32,7 @@ import './tools-2x/animation-tools';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
+import { trimResponse } from './utils/response-trimmer';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -143,7 +144,8 @@ export class UtcpServerManager {
                         return;
                     }
                     debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: Date.now() - t0 });
-                    res.json(result);
+                    const trimmed = trimResponse(result);
+                    res.json(trimmed ?? null);
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
                     debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: Date.now() - t0 });

@@ -50,7 +50,7 @@ export class SceneReadTools {
 
     @utcpTool(
         'nodeQuery',
-        'Read the open scene: node hierarchy tree, a single node property dump, node info, callable node functions, find nodes by component class name, or fetch one node by its path. dump omits the class-definition block by default and lists the omitted names in typesOmitted; pass includeTypes to get it back.',
+        'Query scene nodes: tree, dump, info, functions, by_component, or at_path. Supports maxDepth/maxNodes.',
         {
             type: 'object',
             properties: {

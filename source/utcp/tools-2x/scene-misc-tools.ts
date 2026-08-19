@@ -32,7 +32,7 @@ export class SceneMiscTools {
 
     @utcpTool(
         'sceneInfo',
-        'Info about the currently open scene: name, uuid, designResolution and node count. Lighter than sceneSnapshot when you only need the header.',
+        'Get current scene header: name, uuid, designResolution, node count.',
         { type: 'object', properties: {} },
         {
             type: 'object',

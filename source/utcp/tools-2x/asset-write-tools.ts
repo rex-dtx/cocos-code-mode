@@ -91,7 +91,7 @@ export class AssetWriteTools {
 
     @utcpTool(
         'assetGetAvailableUrl',
-        'Return a non-colliding db:// url for the given desired path (appends _1 suffix if exists). Use before create to avoid overwrite.',
+        'Return non-colliding db:// url for desired path (appends _1 if exists).',
         {
             type: 'object',
             properties: { assetPath: { type: 'string', description: 'Desired db:// path, e.g. db://assets/NewFolder' } },

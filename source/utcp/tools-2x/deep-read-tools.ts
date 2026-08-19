@@ -9,7 +9,7 @@ export class DeepReadTools {
 
     @utcpTool(
         'sceneSnapshot',
-        'Start here to understand the open scene. Returns the whole node tree in one round trip: name, uuid, transform, size, anchor and the component list of every node, plus the project design resolution. Editor-only roots are filtered out so the tree matches the Hierarchy panel. Two independent limits guard the payload: maxDepth caps how deep it walks, maxNodes caps how many nodes total. A node cut by either reports truncated (maxDepth or nodeLimit) and childrenCount; the response reports nodesVisited and budgetExhausted so you can tell a complete tree from a clipped one.',
+        'Get scene hierarchy tree with transforms, sizes, components. Supports maxDepth/maxNodes; marks truncated.',
         {
             type: 'object',
             properties: {
@@ -43,7 +43,7 @@ export class DeepReadTools {
 
     @utcpTool(
         'componentQuery',
-        'Inspect components in the open scene: read the properties of one component, list registered component class names, or find which nodes carry a component. Prefer find over by_name — it returns node paths, by_name returns bare uuids. find and classes report truncated when the result was clipped by maxResults.',
+        'Inspect components: read one component props, list classes, or find nodes by component. Supports maxResults.',
         {
             type: 'object',
             properties: {

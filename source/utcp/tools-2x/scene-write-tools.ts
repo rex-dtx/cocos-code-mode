@@ -10,7 +10,7 @@ export class SceneWriteTools {
 
     @utcpTool(
         'nodeSetProperty',
-        'Set a property on a node or component by path. Node example: path "x", "y", "active", "opacity". Component example: give compType "cc.Sprite" and path "spriteFrame". Returns before/after.',
+        'Set property on node or component by path. Use compType for component.',
         {
             type: 'object',
             properties: {

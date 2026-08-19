@@ -8,7 +8,7 @@ import { sceneScript } from '../utils/ipc-promise';
 export class AnimationTools2x {
     @utcpTool(
         'animationQuery',
-        'Query animation data on 2.4 (cc.Animation). clips_info = list clips on node; clip_dump = one clip asset info (slim); properties = all Animation props. Use nodeUuid or path (cc.find).',
+        'Query animation on node (cc.Animation): list clips, dump one clip, or all props.',
         {
             type: 'object',
             properties: {
@@ -104,7 +104,7 @@ export class AnimationTools2x {
 
     @utcpTool(
         'animationEdit',
-        'Edit animation clip on 2.4 — not supported via scene messages. Edit .anim files directly via assetWriteContent. This tool returns guidance.',
+        'Edit animation clip on 2.4 — not supported. Edit .anim via assetWriteContent.',
         {
             type: 'object',
             properties: {

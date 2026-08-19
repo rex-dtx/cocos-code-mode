@@ -69,7 +69,7 @@ export class AssetReadTools {
 
     @utcpTool(
         'assetResolve',
-        'Convert between asset url, uuid and filesystem path, or check existence. All operations are synchronous lookups in the editor asset database.',
+        'Convert asset url/uuid/path or check existence (sync asset db lookup).',
         {
             type: 'object',
             properties: {
@@ -108,7 +108,7 @@ export class AssetReadTools {
 
     @utcpTool(
         'assetQuery',
-        'Query the asset database: glob search, folder tree, asset info, asset meta, registered asset types, sub-assets, or reverse lookup which scene nodes reference an asset (used_by).',
+        'Query asset db: search, tree, info, meta, types, sub_assets, used_by.',
         {
             type: 'object',
             properties: {
