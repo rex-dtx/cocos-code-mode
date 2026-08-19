@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { ZipArchive } = require('archiver'); // archiver v8: class-based API
+const { ZipArchive } = require('archiver'); // archiver v8: class-based API (cc3x7 Node >= 18)
 
-// Read package.json to get the package name
 const packageJsonPath = path.join(__dirname, '../package.json');
 if (!fs.existsSync(packageJsonPath)) {
     console.error('package.json not found!');
@@ -68,10 +67,10 @@ archive.pipe(output);
 
 for (const item of filesToInclude) {
     if (item === 'package.json') {
-        // Patch version in archived copy; leave source untouched.
+        // Patch version in archived copy; leave source untouched. Wrap in package prefix (v2 parity).
         const patched = { ...packageJson, version: zipVersion };
         const content = JSON.stringify(patched, null, 2);
-        archive.append(content, { name: 'package.json' });
+        archive.append(content, { name: `${packageName}/package.json` });
         continue;
     }
     const itemPath = path.join(projectRoot, item);
@@ -81,9 +80,9 @@ for (const item of filesToInclude) {
         continue;
     }
     if (fs.statSync(itemPath).isDirectory()) {
-        archive.directory(itemPath, item);
+        archive.directory(itemPath, `${packageName}/${item}`);
     } else {
-        archive.file(itemPath, { name: item });
+        archive.file(itemPath, { name: `${packageName}/${item}` });
     }
 }
 
