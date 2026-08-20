@@ -826,3 +826,45 @@ Thêm check phủ đúng nhánh đó: **1 node, 1 component, 4 prop cùng trỏ 
 
 Bài học lặp lại vòng 1: *test xanh chưa chắc test có ý nghĩa.* Cả 2 lần đều chỉ lộ ra khi cố tình phá code.
 
+# Phase C — Probe3 + vòng 2 gate (2026-08-20)
+
+**Build:** `f644425-dirty` · **Scene:** `dbQnUq369G5qMjlBnJOvAD` (Scene Grid, helloworld)
+**Handler:** `sceneScript('probe3')` — một lượt duy nhất bao 6 nhóm.
+
+## C.1 — kết quả (đối chiếu spec probe)
+
+| # | Spec | Kết quả | Verdict |
+|---|---|---|---|
+| 1 | `getInstanceById` vs uuid | `hierarchyUuid === _id === "dbQn…"` · `engineSameInstance: true` · `engineType: cc_Node` · `engineName: "Scene Grid"` | ✅ `cc.engine.getInstanceById(uuid)` trả **cùng instance** — `hierarchyUuid` chính là `instanceId`. Không cần `cc.find` nữa |
+| 2a | `scene://utils/node` exports | `getObbFromRect, getWorldBounds, getWorldOrientedBounds, getScenePosition, setScenePosition, getWorldPosition, setWorldPosition, getWorldRotation, setWorldRotation, getWorldScale, _hasFlagInComponents, _destroyForUndo, getNodePath, createNodeFromAsset, createNodeFromClass, makeVec3InPrecision, ...` (27 keys) | Chỉ transform + create helpers — **không** có `setProperty` (`probe-undo`/`set-property-by-path` ở module riêng) |
+| 2b | `scene://utils/scene` exports | `createDefaultScene, loadScene, loadSceneByUuid, isAnyChildClassOf, copyNodes, pasteNodes, duplicateNodes, moveNodes, hasCopiedComponent, copyComponent, pasteComponent, createNodes, createNodesAt, createNodeByClassID, createNodeByPrefab, deleteNodes, checkAddComponentID, addComponent, checkRemoveComponentID, removeComponent, createProperty, resetProperty, setProperty, copyNodeDataToNodes` (24 keys) | ✅ **High-level write surface** — `createNodes`, `setProperty`, `copyComponent`, `deleteNodes`, `moveNodes`. Đây sẽ là đường write chính vòng 2 |
+| 2c | `scene://set-property-by-path` — `setPropertyByPath` | `keys: [setAsset, setPropertyByPath, getPropertyByPath, resetPropertyByPath, setDeepPropertyByPath, fillDefaultValue, setNodePropertyByPath, preprocessForSetProperty]` · `fnLength: 2` · `srcHead: "function(e,t){cc.Node.isNode(e)?d(e,t.path,t.value,t.type):y(e,t.path,t.value,t.type,t.isSubProp)}"` → sig `(nodeOrUuid?, {path,value,type,isSubProp})` — **object form, KHÔNG `(node,path,value)`** | ⚠️ Signature khác suy đoán ban đầu. Tool Batches A/B/HL đoán đúng branch `setter(uuid,path,value)` → throw → fallback `setter(node,path,value)` nhưng object-form chưa từng thử. Vòng 2 cần verify object-form hoặc tiếp tục direct-assign verification path |
+| 3 | Undo — `Editor.Undo` vs `_Scene.Undo` vs `scene://undo/index` | `Editor.Undo`: `undo, redo, add, commit, cancel, collapseTo, save, clear, reset, dirty, setCurrentDescription, register, local, Command, _global` · `_Scene.Undo`: `recordObject, recordNode, recordCreateNode, recordDeleteNode, recordMoveNode, recordAddComponent, recordRemoveComponent, commit, cancel, undo, redo, save, dirty, on, reset, init, clear, dump, restore` · `scene://undo/index`: identical to `_Scene.Undo` | `_Scene.Undo` là **low-level recorder** (scene-scoped). `Editor.Undo` là **main-process commit surface**. Write tool đã correct: gọi `scene://set-property-by-path` (đã tự record bên trong) + `Editor.Undo.commit` từ main là đường đúng |
+| 4 | `missing-object-reporter` — gate C.2 | `type: function` · `protoKeys: [doReport, report, reportByOwner]` · `stashSrc: "function(e,t,n){var s=this.missingOwners.get(e);s||(s={},this.missingOwners.set(e,s)),s[t]=n}"` · `stashHead: null` | `stashByOwner(owner, prop, serializedAsset)` chỉ ghi vào **internal Map `missingOwners`** — **KHÔNG** gắn property lên `owner[prop]`. Prop đó vẫn `null` ở runtime. Thuật toán vòng 1 (`__qc_bundle__.js:101465`): `depend.owner[depend.prop] = dependAsset.addRef()` chỉ khi CÓ asset, else `stashByOwner` |
+| 5 | Introspect 6 msgs (`query-scene-mode`… `query-script-cid`, `query-enum-list-with-path`) | CONTROL `scene:query-hierarchy` → `ok:true` (harness sound). Tất cả 11 còn lại → `err: "ipc failed to send, message not found. panel: scene, message: scene:..."` (thử cả bare và `scene:` prefix, identical) | ❌ **Không tồn tại ở 2.4.15** — chỉ 6 message scene đã verify phase 5 tồn tại. `editorIntrospect` (`8094c9c`) **đóng sổ, không port** |
+| 6 | Viewport 6 msgs (icon-gizmo/is2D/grid) | Cùng 11 “not found” trên | ❌ **Không tồn tại ở 2.4.15** — `editorViewport` (`9fc494b`) **đóng sổ, không port** |
+
+Chi tiết thô (full `probe3` output): `scene:utils/node` 27 keys · `scene:utils/scene` 24 keys · `setPropertyByPath` fnLength 2 · `Editor.Undo` 15 keys · Clone `_Scene` (18 keys Undo + 25 keys singleton).
+
+## C.2 — `findNodesWithMissingAssets` — **BỎ**
+
+Cần probe (5) cho thấy `stashByOwner` **không để lại dấu trên object** — prop vẫn `null`,
+phân biệt `null` (chưa gán) với `null` (ref gãy) là **không thể** từ scan tĩnh.
+Bản đoán “null ⇒ missing” sẽ báo giả 100% trường hợp default-null.
+
+> **Bỏ tool — không đoán** (quy tắc phase C). Ghi lý do: report về asset thiếu sống trong
+> `Editor.require('app://editor/page/scene-utils/missing-object-reporter').missingOwners` — internal Map,
+> chỉ đọc được ở scene process khi có instance. Không expose ra `Editor.Message`/`Global`.
+
+## C.3 — Quyết định vòng 2 (đường write)
+
+Write train **đã ship** Batches A/B/HL trên `cc-2x` (`6739b20/0b4c2d3/d483520` — `scene-write-tools.ts`, `clipboard-tools.ts`, `animation-tools.ts`, `component-method-tools.ts`, `scene-misc-tools.ts`, `deep-read-tools.ts`, `editor-misc-tools.ts`, `program-tools.ts`):
+đúng bài probe3 xác nhận — dải `scene://utils/scene.*` (`createNodes`, `setProperty`, `copyComponent`, `deleteNodes`) + `scene://set-property-by-path` với verify-by-read fallback sang `cur[last]=value` (Batch HL đóng silent-no-op).
+
+**Cửa vòng 2:** `cc.engine.getInstanceById(uuid)` đã **verified cùng-instance** → mọi mutation resolve node thẳng, fallback walk chỉ phòng hờ Electron cũ. `Editor.require('scene://utils/scene')` = high-level façade; `Editor.Undo.commit/add` = history commit. `maxNodes/maxResults` guard copy từ vòng 1.1 giữ nguyên.
+
+**Còn nợ thật 2.4-viable (dịch từ 3.x `custom` 59 tools):** ước ~19 importer + 2 animation read + 1 `propertyArrayElement` — vẫn mở. Tool `build/*` (5) + `editorViewport/introspect` (10/11 probe fail) đóng sổ vĩnh viễn (verified trong C.1).
+
+C.1 ✅ done (probe3 pass) · C.2 ⛔ bỏ có lý do · C.3 ✅ quyết — **gate vòng 2 mở**.
+
+

@@ -692,6 +692,125 @@
             event.reply(null, out);
         },
 
+        // C.1 gate — single-shot probe for the 4 unresolved that still block C.2/C.3.
+        // Call via: `sceneScript('probe3')`. Result shape mirrors C.1 spec (tryIt per group).
+        'probe3': function (event: any) {
+            const out: any = { errors: [] as string[] };
+            function tryIt(label: string, fn: () => any) {
+                try { out[label] = fn(); }
+                catch (e: any) { out.errors.push(label + ': ' + (e && (e.stack || e.message) ? (e.stack || e.message) : String(e))); }
+            }
+            // (1) getInstanceById vs uuid — Unresolved #5/#12
+            tryIt('getInstanceById_vs_uuid', () => {
+                const scene: any = cc.director.getScene();
+                let truthNode: any = null;
+                (function walk(n: any) {
+                    if (truthNode || !n) { return; }
+                    if (n._components && n._components.length) { truthNode = n; return; }
+                    (n.children || []).forEach(walk);
+                })(scene);
+                if (!truthNode) {
+                    truthNode = scene && scene.children && scene.children[0] || scene || { uuid: 'no-node', _id: 'no-node', constructor: { name: '<none>' } };
+                }
+                const hierarchyUuid: string = truthNode.uuid;
+                const nId: string = (truthNode as any)._id;
+                let engineRes: any = null;
+                let engineSameInstance = false;
+                let engineType: string = 'not-tried';
+                try {
+                    const eng: any = (cc as any).engine;
+                    engineRes = eng && typeof eng.getInstanceById === 'function' ? eng.getInstanceById(hierarchyUuid) : '<no cc.engine.getInstanceById>';
+                    engineType = typeof engineRes === 'object' && engineRes !== null ? (engineRes.constructor && engineRes.constructor.name) || 'object' : typeof engineRes;
+                    engineSameInstance = engineRes === truthNode;
+                } catch (e: any) { engineRes = 'throw:' + (e && e.message ? e.message : String(e)); engineType = 'throw'; }
+                return {
+                    hierarchyUuid: hierarchyUuid,
+                    nIdField: String(nId),
+                    uuidEqualsId: hierarchyUuid === nId,
+                    engineFound: !!engineRes && typeof engineRes === 'object',
+                    engineType: engineType,
+                    engineSameInstance: engineSameInstance,
+                    engineName: engineRes && engineRes.name,
+                    engineUuid: engineRes && (engineRes.uuid || engineRes._id),
+                };
+            });
+            // (2) scene://utils + require signatures via Function.toString
+            tryIt('scene_utils_node', () => Object.keys((Editor as any).require('scene://utils/node') || {}).slice(0, 40));
+            tryIt('scene_utils_scene', () => Object.keys((Editor as any).require('scene://utils/scene') || {}).slice(0, 40));
+            tryIt('set_property_by_path', () => {
+                const m: any = (Editor as any).require('scene://set-property-by-path');
+                return { type: typeof m, keys: Object.keys(m || {}).slice(0, 20), fnLength: typeof m === 'function' ? m.length : (typeof (m.setProperty || m.setPropertyByPath) === 'function' ? ((m.setProperty || m.setPropertyByPath).length) : null), srcHead: typeof m === 'function' ? String(m).slice(0, 600) : (typeof (m.setProperty || m.setPropertyByPath) === 'function' ? String((m.setProperty || m.setPropertyByPath) as any).slice(0, 600) : '<not-a-function>') };
+            });
+            // (3) Undo surfaces
+            tryIt('undo_apis', () => ({
+                editorUndo: typeof (Editor as any).Undo, editorUndoKeys: Object.keys(((Editor as any).Undo) || {}).slice(0, 20),
+                sceneUndo: typeof _Scene !== 'undefined' ? Object.keys((( _Scene as any).Undo) || {}) .slice(0, 20) : 'no _Scene',
+                sceneUtilsUndo: (() => { try { return Object.keys((Editor as any).require('scene://undo/index') || {} ).slice(0, 20); } catch (e: any) { return 'ERR:' + (e && e.message ? e.message : String(e)); } })(),
+                sceneSingletonKeys: typeof _Scene !== 'undefined' ? Object.keys((_Scene as any)).slice(0, 30) : 'no _Scene',
+            }));
+            // (4) missing-object-reporter — gate for C.2
+            tryIt('missing_reporter', () => {
+                const ctor: any = (Editor as any).require('app://editor/page/scene-utils/missing-object-reporter');
+                const proto = ctor && (ctor.prototype || ctor);
+                const keys = proto ? Object.keys(proto).slice(0, 30) : [];
+                const srcHead = typeof ctor === 'function' ? String(ctor).slice(0, 900) : '<not-a-ctor>';
+                // Probe stashByOwner signature + where it writes (grep key fragments)
+                let stashSrc: string | null = null; let stashHead: string | null = null;
+                try {
+                    const fn = ctor.prototype.stashByOwner || ctor.stashByOwner || (proto && proto.stashByOwner);
+                    if (typeof fn === 'function') stashSrc = String(fn).slice(0, 1200);
+                    // Also peek at class source for markers like '_missing', 'asset', 'owner'
+                    if (!stashSrc && typeof ctor === 'function') stashHead = String(ctor).slice(0, 1200);
+                } catch {}
+                return { type: typeof ctor, ctorKeys: Object.keys(ctor || {}).slice(0, 20), protoKeys: keys, srcHead: srcHead, stashSrc: stashSrc, stashHead: stashHead };
+            });
+            // (5)+(6) Introspect + viewport gaps — fire Editor.Ipc.sendToPanel and collect results async.
+            // Must reply async from the out bag; scene handlers are callback-based — use a timeout to collect.
+            const probeIpcs: Array<{ label: string, msg: string, args: any[] }> = [
+                // CONTROL — da verify phase 5: neu no fail = harness sai, khong phai message vang
+                { label: 'CONTROL:scene:query-hierarchy', msg: 'scene:query-hierarchy', args: [] },
+                // 5 — editorIntrospect (commit 8094c9c) — 6 messages previously unverified on 2.4.15
+                { label: 'scene:query-scene-mode', msg: 'scene:query-scene-mode', args: [] },
+                { label: 'scene:query-is-ready', msg: 'scene:query-is-ready', args: [] },
+                { label: 'scene:query-layer-builtin', msg: 'scene:query-layer-builtin', args: [] },
+                { label: 'scene:query-sorting-layer-builtin', msg: 'scene:query-sorting-layer-builtin', args: [] },
+                { label: 'scene:query-enum-list-with-path@cc.Sprite.SizeMode', msg: 'scene:query-enum-list-with-path', args: ['cc.Sprite.SizeMode'] },
+                // Script probes need a real uuid; caller can pass _probeScriptUuid via sceneScript, else skip.
+                { label: 'scene:query-script-name@skip', msg: 'scene:query-script-name', args: ['<skip-needs-uuid>'] },
+                { label: 'scene:query-script-cid@skip', msg: 'scene:query-script-cid', args: ['<skip-needs-uuid>'] },
+                // 6 — viewport ops (commit 9fc494b) — 6 messages unverified on 2.4.15
+                { label: 'scene:query-is2D', msg: 'scene:query-is2D', args: [] },
+                { label: 'scene:query-is-grid-visible', msg: 'scene:query-is-grid-visible', args: [] },
+                { label: 'scene:query-is-icon-gizmo-3d', msg: 'scene:query-is-icon-gizmo-3d', args: [] },
+                { label: 'scene:query-icon-gizmo-size', msg: 'scene:query-icon-gizmo-size', args: [] },
+                { label: 'scene:set-icon-gizmo-3d@true', msg: 'scene:set-icon-gizmo-3d', args: [true] },
+                { label: 'scene:set-icon-gizmo-size@32', msg: 'scene:set-icon-gizmo-size', args: [32] },
+            ];
+            if (probeIpcs.length) {
+                let pending = probeIpcs.filter(p => p.args[0] !== '<skip-needs-uuid>').length;
+                if (pending === 0) { event.reply(null, out); return; }
+                probeIpcs.forEach(p => {
+                    if (p.args[0] === '<skip-needs-uuid>') return;
+                    (Editor as any).Ipc.sendToPanel('scene', p.msg, ...p.args, (err: any, result: any) => {
+                        const entry: any = { err: err ? (err && err.message ? err.message : String(err)) : null };
+                        if (!err) {
+                            entry.ok = true; entry.type = typeof result;
+                            try {
+                                if (result !== null && result !== undefined && typeof result === 'object') {
+                                    if (Array.isArray(result)) { entry.len = result.length; entry.sample = JSON.stringify(result).slice(0, 200); }
+                                    else { entry.keys = Object.keys(result as any).slice(0, 15); entry.sample = JSON.stringify(result).slice(0, 220); }
+                                } else { entry.value = String(result).slice(0, 200); }
+                            } catch { entry.note = '<unsampled>'; }
+                        }
+                        out[p.label] = entry;
+                        if (--pending <= 0) event.reply(null, out);
+                    });
+                });
+                return;
+            }
+            if (event.reply) event.reply(null, out);
+        },
+
         'probe-create-node': function (event: any) {
             const out: any = {};
             function tryRequire(url: string) {
