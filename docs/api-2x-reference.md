@@ -1,6 +1,6 @@
 # API Reference 2.4.x — doi chieu forum + verified runtime
 
-Nguon chinh: https://forum.cocos.org/t/topic/92605/5 — tong hop API editor 2.x ma community thu thap (asset-db, selection, scene, IPC). File nay doi chieu tung nhom voi `cocos-2x-api-notes.md` (verified tren 2.4.15) va surface thuc te `source/utcp/tools-2x/*.ts` (46 tool).
+Nguon chinh: https://forum.cocos.org/t/topic/92605/5 — tong hop API editor 2.x ma community thu thap (asset-db, selection, scene, IPC). File nay doi chieu tung nhom voi `cocos-2x-api-notes.md` (verified tren 2.4.15) va surface thuc te `source/utcp/tools-2x/*.ts` (52 tool).
 
 > Doc truoc khi them tool moi. Forum la ban do, verified notes la su that runtime — khi lech, tin runtime.
 
@@ -115,12 +115,6 @@ Nguồn: `https://docs.cocos.com/creator/2.4/manual/zh/extension/api/editor-fram
 
 | API | Docs chính thống | Verified | Tool |
 |---|---|---|---|
-| `Editor.Selection.register(type)` | `register(type: string)` | chưa verify | — |
-| `Editor.Selection.reset()` | `reset()` | chưa verify | — |
-| `Editor.Selection.local()` | `local() -> ConfirmableSelectionHelper` | chưa verify | — |
-| `Editor.Selection.confirm()` | `confirm()` — may trigger `deactivated/activated` | chưa verify | — |
-| `Editor.Selection.cancel()` | `cancel()` — may trigger `selected/unselected` | chưa verify | — |
-| `Editor.Selection.confirmed(type)` | `confirmed(type) -> boolean` | chưa verify | — |
 | `Editor.Selection.select(type, id[, unselectOthers, confirm])` | `select(type, id, unselectOthers?, confirm?)` | OK, nhan **array** | `editorSelect select` — `confirm` exposed (`false`=do not confirm) |
 | `Editor.Selection.unselect(type, id[, confirm])` | `unselect(type, id, confirm?)` | OK | `editorSelect unselect` — `confirm` exposed |
 | `Editor.Selection.hover(type, id)` | `hover(type, id)` — `id=null` = hover out | chưa verify | `editorSelect hover` — `ids` 1 id (omit=out) |
@@ -266,4 +260,4 @@ Tuong ung tool debug: `GET /debug-logs`, `UTCP_DEBUG=1`, `source/utcp/utils/ipc-
 - **Verified runtime:** `docs/cocos-2x-api-notes.md` (probe 1/2/3, 6 bay, phase 5/6/7, C.1)
 - **Engine source:** `C:\ProgramData\cocos\editors\Creator\2.4.15\resources\engine\` (982 .js plain)
 - **App.asar:** `G:\_ws\cc_2_4_15\app_asar_cc_2_4_15\` (893 `.ccc` ma hoa — khong doc duoc signature, chi biet ten module)
-- **Surface that:** `code-mode-references-2x.d.ts` + `source/utcp/tools-2x/*.ts` (46 tool, `npm run check` + smoke 34/34)
+- **Surface that:** `code-mode-references-2x.d.ts` + `source/utcp/tools-2x/*.ts` (52 tool, `npm run check` + 22 self-checks + `tsc --noEmit`)

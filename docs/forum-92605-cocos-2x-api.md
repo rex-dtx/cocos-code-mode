@@ -2,7 +2,7 @@
 
 > **Nguồn gốc:** https://forum.cocos.org/t/topic/92605 (topic + reply #5 và #41, community-collected). Fetch 2026-08-20 qua `WebFetch` (excerpt 125 chars + paraphrase grouping, không phải verbatim full do tool limit). Bổ sung 2026-08-20 từ 4 nguồn chính thống: `asset-db-renderer`, `asset-db-main`, `selection`, `asset-management`. Đây là **raw dump** để tra offline — không phải verified spec.
 >
-> **Đối chiếu verified:** `api-2x-reference.md` (bảng 1:1 forum ↔ verified runtime 2.4.15 ↔ 46 tool). Khi lệch, tin `cocos-2x-api-notes.md` + probe runtime.
+> **Đối chiếu verified:** `api-2x-reference.md` (bảng 1:1 forum ↔ verified runtime 2.4.15 ↔ 52 tool). Khi lệch, tin `cocos-2x-api-notes.md` + probe runtime.
 
 ## Mục lục
 
@@ -129,7 +129,7 @@ Editor.assetdb.move(srcUrl, destUrl);
 Editor.assetdb.delete([url1, url2]);
 ```
 
-> Forum #41 thêm: `Editor.Ipc.sendToPanel("scene", "scene:set-prefab-sync", "d1n+BilrRKdZBt8xztUpGO")` — prefab sync dialog (revert/apply), chưa có tool wrapper.
+> Forum #41 thêm: `Editor.Ipc.sendToPanel("scene", "scene:set-prefab-sync", "d1n+BilrRKdZBt8xztUpGO")` — prefab sync dialog (revert/apply). Đã land tool `prefabSync` (Phase A, fire-and-forget, chưa verify runtime).
 
 ### Snippet — renderer API (forum ghi là "renderer")
 
@@ -205,7 +205,7 @@ Thêm (`hovering` không có snippet nhưng forum liệt trong selection API):
 - `Editor.Selection.hovering(type)` — hovering uuid
 - `Editor.Selection.curActivate(type)` — activate per-type
 
-> Verified: `select` nhận **array** (`api-2x-reference` §2). `curGlobalActivate` hiện chưa expose qua `editorSelect query` — Phase 1 fix.
+> Verified: `select` nhận **array** (`api-2x-reference` §2). `curGlobalActivate`/`contexts`/`confirmed`/`filter`/`hover`/`patch` đã land trong `editorSelect` (Phase A — toàn bộ Selection 18 methods).
 
 ---
 
