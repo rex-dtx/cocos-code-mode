@@ -2,7 +2,7 @@
 
 > **Nguồn gốc:** https://forum.cocos.org/t/topic/92605 (topic + reply #5 và #41, community-collected). Fetch 2026-08-20 qua `WebFetch` (excerpt 125 chars + paraphrase grouping, không phải verbatim full do tool limit). Bổ sung 2026-08-20 từ 4 nguồn chính thống: `asset-db-renderer`, `asset-db-main`, `selection`, `asset-management`. Đây là **raw dump** để tra offline — không phải verified spec.
 >
-> **Đối chiếu verified:** `api-2x-reference.md` (bảng 1:1 forum ↔ verified runtime 2.4.15 ↔ 52 tool). Khi lệch, tin `cocos-2x-api-notes.md` + probe runtime.
+> **Đối chiếu verified:** `api-2x-reference.md` (bảng 1:1 forum ↔ verified runtime 2.4.15 ↔ 53 tool). Khi lệch, tin `cocos-2x-api-notes.md` + probe runtime.
 
 ## Mục lục
 

@@ -867,4 +867,54 @@ Write train **đã ship** Batches A/B/HL trên `cc-2x` (`6739b20/0b4c2d3/d483520
 
 C.1 ✅ done (probe3 pass) · C.2 ⛔ bỏ có lý do · C.3 ✅ quyết — **gate vòng 2 mở**.
 
+---
+
+## Probe 4 — Phase B gate: 14 `scene:*` IPC (forum 92605 §4) — **KHÔNG port**
+
+**Probe date:** 2026-08-20 · **Creator:** 2.4.15 · **Scene:** `helloworld.fire` · tool `probeSceneIpc` (main process, timeout 2000 ms/msg).
+
+### Kết quả: 14/14 `timeout` — không message nào reply qua callback
+
+| Message | Status | Ý nghĩa |
+|---|---|---|
+| `scene:create-node-by-classid` | timeout | registered nhưng KHÔNG reply cb |
+| `scene:add-component` | timeout | nt |
+| `scene:remove-component` | timeout | nt |
+| `scene:copy-nodes` | timeout | nt |
+| `scene:paste-nodes` | timeout | nt |
+| `scene:create-nodes-by-uuids` | timeout | nt |
+| `scene:create-node-by-prefab` | timeout | nt |
+| `scene:set-property` | timeout | nt |
+| `scene:new-property` | timeout | nt |
+| `scene:reset-property` | timeout | nt |
+| `scene:move-nodes` | timeout | nt |
+| `scene:delete-nodes` | timeout | nt |
+| `scene:duplicate-nodes` | timeout | nt |
+| `scene:create-prefab` | timeout | nt |
+
+**Control chứng minh phép đo đúng:**
+- Message **closed** (C.1, vd `scene:query-is-ready`) → err `"ipc failed to send, message not found. panel: scene"` — phân biệt rõ với timeout.
+- Message **reply** (vd `scene:query-hierarchy` qua `nodeQuery tree`) → trả result đúng.
+- 14 message trên KHÔNG phải `not found` (nếu closed đã báo err) → chúng **registered** trong scene panel, nhưng handler KHÔNG gọi callback với arg probe.
+
+### Diễn giải
+
+14 `scene:*` write/mutation này là **fire-and-forget / broadcast-style** — forum snippet gốc gọi KHÔNG có callback (`Editor.Ipc.sendToPanel('scene','scene:set-property',{id,path,type,value,isSubProp})` — không cb), và probe xác nhận handler không reply. Chúng KHÔNG phải request/reply API kiểu `Editor.Message.request` của 3.x → **không dùng được làm tool có xác nhận qua `sendToPanel(..., cb)`**.
+
+Probe dùng **fake uuid** (`00000000-...probe`) để mutate là no-op; nếu cần xác nhận thêm có thể probe với uuid thật, nhưng **không cần** vì write train đã verify hoạt động (bên dưới).
+
+### Phụ: scene-script `probe-scene-ipc` bị TREO
+
+Handler cùng tên đặt trong `scene-script.ts` (scene process) bị treo khi gọi `Editor.Ipc.sendToPanel` cho các message này — scene process không flush reply. **Fix:** dời probe sang **main process** (`probeSceneIpc` trong `scene-probe-tools.ts`) — chạy ổn, ra kết quả trên. Ghi nhận: đừng probe IPC scene-panel từ scene-script.
+
+### Quyết định
+
+- **KHÔNG port B+** (`nodeCreateFromPrefab` / `prefabCreate` / `nodeSetProperty` sang IPC / `animationEdit` thật) — không có IPC surface khả dụng dạng request/reply.
+- **Giữ write train hiện tại** — `scene://utils/scene.*` + `scene://set-property-by-path` + direct assign, đã verify: `nodeSetProperty(Canvas, x, 480)` no-op trả `before=480 after=480` (2026-08-20).
+- `prefabSync` (`scene:set-prefab-sync`, forum #41) + `sceneNew` (`scene:new-scene`) giữ **fire-and-forget** (không chờ reply, hợp với dạng event).
+- `probeSceneIpc` giữ làm tool probe (53 tool) — hữu ích nếu cần probe `scene:*` khác sau này.
+
+**Cửa Phase B đóng: không có IPC mutation nào port được, write train scene-script là đường đúng.**
+
+
 

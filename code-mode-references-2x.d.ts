@@ -305,6 +305,9 @@ declare namespace cc2x4 {
     /** Goi handler bat ky trong scene-script (probe). */
     function sceneScript(args: { handler: string; arg1?: string; arg2?: any }): { result: any };
 
+    /** Phase B gate: fire 14 candidate scene:* IPC (fake uuid, mutate no-op) from MAIN process, classify exists/closed/timeout. Temporary probe tool — remove after porting. */
+    function probeSceneIpc(args?: { timeoutMs?: number }): { results: Array<{ msg: string; status: 'exists' | 'closed' | 'timeout'; err?: string; sample?: string; type?: string }>; summary: { exists: string[]; closed: string[]; timeout: string[] } };
+
     /** Open http(s) URL in system browser. */
     function urlOpen(args: { url: string }): { success: boolean };
     /** Get registered program info (path, args). */

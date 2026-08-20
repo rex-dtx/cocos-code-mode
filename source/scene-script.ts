@@ -829,6 +829,8 @@
         // Probe gate nhom B (forum 92605 §4 scene:* IPC). Can Creator 2.4.15 chay.
         // Goi tung message voi FAKE uuid de mutate la no-op — chi can biet message co ton tai
         // (err "not found" = dong; err khac / result = message ton tai). Async: dem pending, reply khi xong.
+        // BAY: message ton tai nhung KHONG reply (hoac mo dialog block panel) -> cb khong bao gio
+        // chay -> pending khong ve 0 -> handler treo. Fix: timeout 8s moi message, guard 1 lan finish.
         'probe-scene-ipc': function (event: any) {
             const out: any = { errors: [] as string[] };
 
@@ -862,28 +864,33 @@
             let pending = msgs.length;
             if (pending === 0) { event.reply(null, out); return; }
             msgs.forEach((p) => {
+                let settled = false;
+                const finish = (entry: any) => {
+                    if (settled) { return; }
+                    settled = true;
+                    out[p.label] = entry;
+                    if (--pending <= 0) { event.reply(null, out); }
+                };
+                const timer = setTimeout(() => {
+                    finish({ exists: 'unknown-no-reply', err: 'timeout 8s — message co the ton tai nhung khong reply (hoac dialog block panel)' });
+                }, 8000);
                 try {
                     (Editor as any).Ipc.sendToPanel('scene', p.msg, ...p.args, (err: any, result: any) => {
-                        const entry: any = {};
+                        clearTimeout(timer);
                         if (err) {
                             const m = err && err.message ? err.message : String(err);
-                            entry.err = m;
                             // "not found"/"not registered" = message khong ton tai.
-                            entry.exists = !/not found|not registered|no handler/i.test(m);
+                            finish({ err: m, exists: !/not found|not registered|no handler/i.test(m) });
                         } else {
-                            entry.exists = true;
-                            entry.type = typeof result;
-                            try {
-                                entry.sample = result === undefined ? 'undefined'
-                                    : JSON.stringify(result).slice(0, 200);
-                            } catch { entry.sample = '<unserializable>'; }
+                            let sample: string;
+                            try { sample = result === undefined ? 'undefined' : JSON.stringify(result).slice(0, 200); }
+                            catch { sample = '<unserializable>'; }
+                            finish({ exists: true, type: typeof result, sample });
                         }
-                        out[p.label] = entry;
-                        if (--pending <= 0) { event.reply(null, out); }
                     });
                 } catch (e: any) {
-                    out[p.label] = { err: e && e.message ? e.message : String(e), exists: false };
-                    if (--pending <= 0) { event.reply(null, out); }
+                    clearTimeout(timer);
+                    finish({ err: e && e.message ? e.message : String(e), exists: false });
                 }
             });
         },

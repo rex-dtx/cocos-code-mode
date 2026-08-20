@@ -1,6 +1,6 @@
 # API Reference 2.4.x — doi chieu forum + verified runtime
 
-Nguon chinh: https://forum.cocos.org/t/topic/92605/5 — tong hop API editor 2.x ma community thu thap (asset-db, selection, scene, IPC). File nay doi chieu tung nhom voi `cocos-2x-api-notes.md` (verified tren 2.4.15) va surface thuc te `source/utcp/tools-2x/*.ts` (52 tool).
+Nguon chinh: https://forum.cocos.org/t/topic/92605/5 — tong hop API editor 2.x ma community thu thap (asset-db, selection, scene, IPC). File nay doi chieu tung nhom voi `cocos-2x-api-notes.md` (verified tren 2.4.15) va surface thuc te `source/utcp/tools-2x/*.ts` (53 tool).
 
 > Doc truoc khi them tool moi. Forum la ban do, verified notes la su that runtime — khi lech, tin runtime.
 
@@ -154,12 +154,12 @@ Su kien `assets:find-usages` tuong ung `assetQuery used_by` nhung 2.4 khong co m
 
 | API | Forum | Verified 2.4.15 | Tool |
 |---|---|---|---|
-| `scene:create-node-by-classid` | create node by class | chua verify rieng | `nodeCreate` dung `cc.Node` truc tiep trong scene-script |
-| `scene:add-component` | add component | chua verify qua IPC | `nodeComponentManage add` dung `node.addComponent` trong scene-script |
-| `scene:remove-component` | remove component | chua verify qua IPC | `nodeComponentManage remove` |
-| `scene:copy-nodes` / `paste-nodes` | copy/paste | chua verify | `nodeClipboard` thu `scene:copy/cut/paste` + fallback |
-| `scene:create-nodes-by-uuids` | prefab insert | chua verify | chua dung truc tiep |
-| `scene:set-property` | set prop | chua verify qua IPC | `nodeSetProperty*` dung `scene://set-property-by-path` + direct assign trong scene-script |
+| `scene:create-node-by-classid` | create node by class | **Probe 4: timeout (registered, no reply)** | `nodeCreate` dung `cc.Node` — **không port** |
+| `scene:add-component` | add component | **Probe 4: timeout (registered, no reply)** | `nodeComponentManage add` trong scene-script — **không port** |
+| `scene:remove-component` | remove component | **Probe 4: timeout (registered, no reply)** | `nodeComponentManage remove` — **không port** |
+| `scene:copy-nodes` / `paste-nodes` | copy/paste | **Probe 4: timeout (registered, no reply)** | `nodeClipboard` thu `scene:copy/cut/paste` + fallback — **không port** |
+| `scene:create-nodes-by-uuids` | prefab insert | **Probe 4: timeout (registered, no reply)** | chua dung truc tiep — **không port** |
+| `scene:set-property` | set prop | **Probe 4: timeout (registered, no reply)** | `nodeSetProperty*` trong scene-script — **không port** |
 | `scene:query-hierarchy` | hierarchy | **OK** — `(err, sceneID, hierarchy)` | `nodeQuery tree` |
 | `scene:query-node` | dump | **OK** — tra **string** JSON | `nodeQuery dump` |
 | `scene:query-node-info` | info | **OK** | `nodeQuery info` |
@@ -174,6 +174,8 @@ Forum dump ~170 ten `scene:*` (is-ready, new-scene, saved, undo, redo, query-hie
 **Verified ton tai (phase 5):** 6 message — `scene:query-hierarchy`, `scene:query-node`, `scene:query-node-info`, `scene:query-node-functions`, `scene:query-nodes-by-comp-name` (+ `scene:stash-and-save` qua `editorOperate save_scene`). Con lai chua probe — `.ccc` ma hoa khong enumerate duoc, chi biet bang thu runtime.
 
 **Probe 3 ket luan (C.1):** 11 message thu them deu `not found` — `scene:query-scene-mode`, `query-is-ready`, `query-layer-builtin`, `query-sorting-layer-builtin`, `query-enum-list-with-path`, `query-script-name/cid`, `query-is2D`, `query-is-grid-visible`, `query-is-icon-gizmo-3d`, `query-icon-gizmo-size`, `set-icon-gizmo-3d/size`. → `editorIntrospect` + `editorViewport` (3.x) **dong so, khong port**.
+
+**Probe 4 ket luan (Phase B, 2026-08-20):** 14 `scene:*` mutation/write (create-node-by-classid, add/remove-component, copy/paste/create-nodes-by-uuids/create-node-by-prefab, set/new/reset-property, move/delete/duplicate-nodes, create-prefab) đều **`timeout` (registered nhưng không reply callback)**, phân biệt với `closed` (`ipc failed to send, message not found`). → **KHÔNG port B+** — giữ write train `scene://utils/scene.*` + `scene://set-property-by-path` + direct assign. Xem `cocos-2x-api-notes.md` Probe 4.
 
 ---
 
@@ -260,4 +262,4 @@ Tuong ung tool debug: `GET /debug-logs`, `UTCP_DEBUG=1`, `source/utcp/utils/ipc-
 - **Verified runtime:** `docs/cocos-2x-api-notes.md` (probe 1/2/3, 6 bay, phase 5/6/7, C.1)
 - **Engine source:** `C:\ProgramData\cocos\editors\Creator\2.4.15\resources\engine\` (982 .js plain)
 - **App.asar:** `G:\_ws\cc_2_4_15\app_asar_cc_2_4_15\` (893 `.ccc` ma hoa — khong doc duoc signature, chi biet ten module)
-- **Surface that:** `code-mode-references-2x.d.ts` + `source/utcp/tools-2x/*.ts` (52 tool, `npm run check` + 22 self-checks + `tsc --noEmit`)
+- **Surface that:** `code-mode-references-2x.d.ts` + `source/utcp/tools-2x/*.ts` (53 tool, `npm run check` + 22 self-checks + `tsc --noEmit`)

@@ -26,7 +26,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 
 ## Tools
 
-52 tools (13 files in `source/utcp/tools-2x/`). Most read tools take an `operation` argument instead of many endpoints — fewer definitions in agent context.
+53 tools (13 files in `source/utcp/tools-2x/`). Most read tools take an `operation` argument instead of many endpoints — fewer definitions in agent context.
 
 ### Read — scene & components (8 tools)
 
@@ -105,7 +105,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 | `programOpen` | Launch registered program |
 | `urlOpen` | Open `http(s)` URL in system browser |
 
-Agent-facing TypeScript surface: [code-mode-references-2x.d.ts](code-mode-references-2x.d.ts) (hand-written, 52 entries).
+Agent-facing TypeScript surface: [code-mode-references-2x.d.ts](code-mode-references-2x.d.ts) (hand-written, 53 entries).
 
 ### Payload limits
 
@@ -200,7 +200,7 @@ All three are callback-style in 2.4; `source/utcp/utils/ipc-promise.ts` wraps th
 | Node / Electron | Node 18+ | Node 14 / Electron 13 |
 | Settings | `Editor.Profile` object assignment | must call `profile.set()`; plain assignment does not persist |
 | Project config | editor API | read `<project>/settings/*.json` directly |
-| Tool count | 59 | 52 (read + write) |
+| Tool count | 59 | 53 (read + write) |
 
 Behavioural traps where docs disagree with runtime: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md). Read it before adding tools. Forum API map: [docs/api-2x-reference.md](docs/api-2x-reference.md).
 
