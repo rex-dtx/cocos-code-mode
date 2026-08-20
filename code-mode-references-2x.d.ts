@@ -139,23 +139,21 @@ declare namespace cc2x4 {
      * Tim asset.
      * `assetTypes` la TYPE NAME (`'texture'`), KHONG phai class name (`'cc.Texture2D'`) —
      * lay danh sach qua `operation: 'types'`. Bo trong = moi type.
+     * Nhan ca CSV string (e.g. `"texture,scene"`) va `string[]` (e.g. `["texture","scene"]`).
      *
      * `used_by` la chieu NGUOC cua `componentQuery props`: asset -> node dang dung no.
-     * Hoi truoc khi sua asset ("doi sprite frame nay thi vo cho nao?"). Nhan `uuid`
-     * HOAC `url`. Chi quet SCENE DANG MO, khong quet prefab tren dia.
-     * Gioi han: chi 2 tang (prop truc tiep + phan tu array), sub-asset uuid khac nen
-     * KHONG match (spriteFrame trong atlas phai hoi bang uuid cua chinh no).
+     * `metas` tra live meta instances (circular-safe).
      */
     function assetQuery(args: {
-        operation: 'search' | 'tree' | 'info' | 'meta' | 'types' | 'sub_assets' | 'used_by';
+        operation: 'search' | 'tree' | 'info' | 'meta' | 'types' | 'sub_assets' | 'used_by' | 'metas';
         pattern?: string;
-        assetTypes?: string;
+        assetTypes?: string | string[];
         url?: string;
         uuid?: string;
         limit?: number;
         maxDepth?: number;
-        /** Cap cho `used_by`, default 200. */
         maxResults?: number;
+        type?: string; // metas filter
     }): {
         assets?: any[];
         tree?: any[];
@@ -165,18 +163,25 @@ declare namespace cc2x4 {
         metaMtime?: number;
         types?: string[];
         classToType?: Record<string, string>;
-        /** Chi co voi `used_by`. `property` kem index neu ref nam trong array (`frames[1]`). */
         nodes?: { path: string; uuid: string; name: string; component: string | null; property: string }[];
+        metas?: any[];
         total?: number;
         truncated?: boolean;
     };
 
-    /** Chuyen doi url <-> uuid <-> fspath, va kiem tra ton tai. */
+    /** Chuyen doi url <-> uuid <-> fspath, va kiem tra ton tai + mount/relative/backup. */
     function assetResolve(args: {
-        operation: 'uuid_from_url' | 'url_from_uuid' | 'fspath' | 'exists';
+        operation: 'uuid_from_url' | 'url_from_uuid' | 'fspath' | 'exists'
+            | 'exists_by_path' | 'is_sub_asset' | 'contains_sub_assets'
+            | 'mount_info' | 'relative_path' | 'backup_path';
         url?: string;
         uuid?: string;
-    }): { uuid?: string; url?: string; fspath?: string; exists?: boolean };
+        fspath?: string;
+    }): {
+        uuid?: string; url?: string; fspath?: string;
+        exists?: boolean; isSubAsset?: boolean; containsSubAssets?: boolean;
+        mountInfo?: any; relativePath?: string; backupPath?: string;
+    };
 
     /** Doc noi dung asset text (.ts/.js/.json/.fire/.prefab/...). Binary va file >512KB bi tu choi. */
     function assetReadContent(args: { url?: string; uuid?: string; maxBytes?: number }): {
@@ -204,17 +209,32 @@ declare namespace cc2x4 {
         notes: string[];
     };
 
-    /** Selection cua editor. Mutate SELECTION, KHONG mutate scene. */
+    /** Selection cua editor (asset-db-main 18 methods). Mutate SELECTION, KHONG mutate scene.
+     * Ops: query/select/unselect/clear + hover/set_context/patch/filter/confirm/cancel.
+     * `ids` doi voi hover = 1 id (omit = out), filter = items con can loc, patch = "srcId,destId".
+     */
     function editorSelect(args: {
-        operation: 'query' | 'select' | 'unselect' | 'clear';
+        operation: 'query' | 'select' | 'unselect' | 'clear' | 'hover' | 'set_context' | 'patch' | 'filter' | 'confirm' | 'cancel';
         selectionType?: 'node' | 'asset';
-        /** comma-separated uuid */
         ids?: string;
         unselectOthers?: boolean;
-    }): { success: boolean; selected?: string[]; activate?: string | null; hovering?: string | null };
+        confirm?: boolean;
+        filterMode?: 'top-level' | 'deep' | 'name';
+    }): {
+        success: boolean;
+        selected?: string[]; activate?: string | null; hovering?: string | null;
+        globalActive?: { type: string; id: string } | null;
+        contexts?: string[] | null; confirmed?: boolean | null;
+        filtered?: string[];
+        notes?: string[];
+    };
 
     /** Mo scene khac. Truyen uuid hoac db:// url cua scene asset. */
     function sceneOpen(args: { uuid?: string; url?: string }): { success: boolean; uuid: string };
+    /** Tao scene moi (scene:new-scene), fire-and-forget. */
+    function sceneNew(): { success: boolean; note?: string };
+    /** Apply prefab instance edits back to prefab asset (scene:set-prefab-sync), fire-and-forget. */
+    function prefabSync(args: { uuid: string }): { success: boolean; note?: string };
 
     /** Info nhe ve scene dang mo: name/uuid/designResolution/so node. */
     function sceneInfo(): { name: string; uuid: string; designResolution: { width: number; height: number } | null; nodesVisited: number };
@@ -227,8 +247,8 @@ declare namespace cc2x4 {
 
     // --- Write (probe verified: setPropertyByPath + direct_x + createNode) ---
 
-    /** Set property tren node (path: x, y, active) hoac component (them compType). */
-    function nodeSetProperty(args: { uuid: string; path: string; value: any; compType?: string }): { before: any; after: any; path: string };
+    /** Set property tren node (path: x, y, active) hoac component (them compType). isSubProp=false for top-level (forum scene:set-property flag). */
+    function nodeSetProperty(args: { uuid: string; path: string; value: any; compType?: string; isSubProp?: boolean }): { before: any; after: any; path: string };
 
     /** Tao node moi. */
     function nodeCreate(args: { name: string; parentUuid?: string }): { uuid: string; name: string; parent: string };
@@ -250,11 +270,19 @@ declare namespace cc2x4 {
     /** Undo/redo. */
     function editorUndo(args: { operation: 'undo' | 'redo' }): { success: boolean };
 
-    /** Asset: create folder, write content, move/rename, delete. */
+    /** Asset: create folder, write content, move/rename, delete, save meta, import raw files, exchange uuid, refresh. */
     function assetCreateFolder(args: { url: string }): { url: string; fspath: string };
     function assetWriteContent(args: { url: string; content: string }): { url: string; fspath: string; bytes: number };
     function assetMove(args: { srcUrl: string; destUrl: string }): { srcUrl: string; destUrl: string };
     function assetDelete(args: { url: string }): { url: string };
+    /** Save asset meta. Pass metaJson as JSON string (JSON.stringify(meta,null,2)) OR meta object. */
+    function assetSaveMeta(args: { uuid: string; metaJson?: string; meta?: any }): { success: boolean; uuid: string };
+    /** Import external raw files into db://. Returns results[] (uuid/url/path/type). */
+    function assetImport(args: { rawfiles: string[]; destUrl: string }): { results: any[]; destUrl: string };
+    /** Exchange uuids of two assets (swap identity, keep references). */
+    function assetExchangeUuid(args: { urlA: string; urlB: string }): { success: boolean };
+    /** Refresh asset-db at url. Returns results[] (command: create/delete/change/uuid-change). */
+    function assetRefresh(args: { url: string }): { url: string; results: any[] };
 
     /** Editor operate: save scene, refresh assets. */
     function editorOperate(args: { operation: 'save_scene' | 'refresh_assets' }): { success: boolean };

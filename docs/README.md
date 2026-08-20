@@ -11,7 +11,9 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | `cocos-2x-port-architecture.md` | Delta 2.x vs 3.x: manifest, entry point, IPC, scene access, Profile | Trước khi sửa bất kỳ code editor-facing |
 | `cocos-2x-api-notes.md` | **API verified runtime** — probe thật, không suy đoán. **6 bẫy docs-sai-runtime** + tool surface FINAL + **nguồn thứ 3 (engine source)** + vòng 1.1 (token guard) | Trước khi viết tool mới. Bắt buộc |
 | `../README.md` | Tool surface + payload limit + 2 bẫy cho người viết tool mới (bản 2.x, không phải 3.x) | Khi cần overview nhanh |
-| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (46 decorators, ~44 dts, ~39 effective) | Khi thêm/sửa tool — update tay, không generated |
+| `forum-92605-cocos-2x-api.md` | **Forum 92605 raw dump** — toan bo 170+ `scene:*`/`assets:*` IPC + snippet + panel DOM tips, fetch 2026-08-20, tra offline | Tra cuu API goc (chua verify), doi chieu voi `api-2x-reference.md` |
+| `api-2x-reference.md` | **API 2.x tham chieu** — doi chieu forum 92605 voi verified runtime + surface 52 tool | Truoc khi them tool: xem bang 1:1 forum → verified → tool |
+| `../code-mode-references-2x.d.ts` | Tool surface agent-facing (52 decorators) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
 
@@ -39,6 +41,8 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 **Batch B (f85edfe..1825f1c):** `callComponentMethod` + `nodeReset` (undo-aware via `scene://set-property-by-path`), `probe-animation`, `assetGetPreview`/`editorGetLogs`/`editorGetScenePreview` (fallbacks).
 
 **Batch HL + BatchProps (e779f38..1349d6d):** `sceneCreateNodeHL`/`sceneSetPropertyHL` (`scene://utils/scene` high-level, undo/dirty), `batchSetProperties` multi-node mix (`undo:true` → `setPropertyByPath(node, path, value)` probe requires **node object not uuid**, verify+direct fallback — fix `Cannot read property constructor` silent no-op), `nodeSetPropertyUndo` single.
+
+**Phase A forum-92605 (2026-08-20):** +6 tool mới (46→52): `assetSaveMeta`/`assetImport`/`assetExchangeUuid`/`assetRefresh` + `sceneNew`/`prefabSync`. Mở rộng: `assetResolve` +6 ops (exists_by_path/is_sub_asset/contains_sub_assets/mount_info/relative_path/backup_path), `assetQuery` +`metas` op + `assetTypes` array (W1), `editorSelect` full Selection 18 methods (query `globalActive`/`contexts`/`confirmed` + ops hover/set_context/patch/filter/confirm/cancel, `confirm` exposed — W3), `isSubProp` flag trên property writes (I8). `probe-scene-ipc` handler sẵn cho Phase B (14 `scene:*` + 2 `scene://utils`). Verify: `npm run check` 22 pass + `tsc --noEmit` 0 err. Smoke cần Creator 2.4.15.
 
 **Vòng 1 = read-only.** Mutation duy nhất cho phép: `Editor.Selection.*`. Write train vòng 2.
 

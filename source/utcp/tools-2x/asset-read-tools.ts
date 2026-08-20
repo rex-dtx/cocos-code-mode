@@ -65,17 +65,53 @@ function buildTree(flat: IDeepQueryResult2x[], maxDepth: number): any[] {
     return walk('', 0);
 }
 
+/** assetTypes accept CSV string OR array. Return array or null (=all types). */
+function normalizeTypes(assetTypes: string | string[] | undefined): string[] | null {
+    if (!assetTypes) { return null; }
+    if (Array.isArray(assetTypes)) {
+        const clean = assetTypes.map((t) => String(t).trim()).filter((t) => t.length > 0);
+        return clean.length ? clean : null;
+    }
+    const clean = String(assetTypes).split(',').map((t) => t.trim()).filter((t) => t.length > 0);
+    return clean.length ? clean : null;
+}
+
+/** Meta instance from queryMetas can carry circular refs -> safe JSON round-trip. */
+function safeSerialize(value: any): any {
+    const seen = new WeakSet();
+    try {
+        return JSON.parse(JSON.stringify(value, (_k, v) => {
+            if (v && typeof v === 'object') {
+                if (seen.has(v)) { return '[circular]'; }
+                seen.add(v);
+            }
+            return v;
+        }));
+    } catch {
+        return null;
+    }
+}
+
 export class AssetReadTools {
 
     @utcpTool(
         'assetResolve',
-        'Convert asset url/uuid/path or check existence (sync asset db lookup).',
+        'Convert asset url/uuid/path or check existence (sync asset db lookup). Also: mount/relative/backup helpers.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['uuid_from_url', 'url_from_uuid', 'fspath', 'exists'], description: 'Which conversion to perform' },
+                operation: {
+                    type: 'string',
+                    enum: [
+                        'uuid_from_url', 'url_from_uuid', 'fspath', 'exists',
+                        'exists_by_path', 'is_sub_asset', 'contains_sub_assets',
+                        'mount_info', 'relative_path', 'backup_path',
+                    ],
+                    description: 'Which conversion to perform'
+                },
                 url: { type: 'string', description: 'Asset url, e.g. db://assets/Scene/helloworld.fire' },
                 uuid: { type: 'string', description: 'Asset uuid' },
+                fspath: { type: 'string', description: 'Absolute filesystem path (for exists_by_path / is_sub_asset / mount_info / relative_path / backup_path)' },
             },
             required: ['operation'],
         },
@@ -86,11 +122,16 @@ export class AssetReadTools {
                 url: { type: 'string' },
                 fspath: { type: 'string' },
                 exists: { type: 'boolean' },
+                isSubAsset: { type: 'boolean' },
+                containsSubAssets: { type: 'boolean' },
+                mountInfo: { type: 'object' },
+                relativePath: { type: 'string' },
+                backupPath: { type: 'string' },
             },
         },
-        'GET', ['asset', 'uuid', 'url', 'path', 'resolve', 'exists']
+        'GET', ['asset', 'uuid', 'url', 'path', 'resolve', 'exists', 'mount', 'relative', 'backup', 'subasset']
     )
-    async assetResolve(args: { operation: string, url?: string, uuid?: string }): Promise<{ uuid?: string, url?: string, fspath?: string, exists?: boolean }> {
+    async assetResolve(args: { operation: string, url?: string, uuid?: string, fspath?: string }): Promise<any> {
         switch (args.operation) {
             case 'uuid_from_url':
                 return { uuid: Editor.assetdb.urlToUuid(requireUrl(args)) || undefined };
@@ -101,6 +142,37 @@ export class AssetReadTools {
             case 'exists':
                 if (args.uuid) { return { exists: Editor.assetdb.existsByUuid(args.uuid) }; }
                 return { exists: Editor.assetdb.exists(requireUrl(args)) };
+            case 'exists_by_path': {
+                if (!args.fspath) { throw new Error('fspath is required for exists_by_path'); }
+                return { exists: (Editor.assetdb as any).existsByPath(args.fspath) };
+            }
+            case 'is_sub_asset': {
+                if (args.fspath) { return { isSubAsset: (Editor.assetdb as any).isSubAssetByPath(args.fspath) }; }
+                if (args.uuid) { return { isSubAsset: (Editor.assetdb as any).isSubAssetByUuid(args.uuid) }; }
+                return { isSubAsset: (Editor.assetdb as any).isSubAsset(requireUrl(args)) };
+            }
+            case 'contains_sub_assets': {
+                if (args.fspath) { return { containsSubAssets: (Editor.assetdb as any).containsSubAssetsByPath(args.fspath) }; }
+                if (args.uuid) { return { containsSubAssets: (Editor.assetdb as any).containsSubAssetsByUuid(args.uuid) }; }
+                return { containsSubAssets: (Editor.assetdb as any).containsSubAssets(requireUrl(args)) };
+            }
+            case 'mount_info': {
+                let info: any = null;
+                try {
+                    if (args.fspath) { info = (Editor.assetdb as any).mountInfoByPath(args.fspath); }
+                    else if (args.uuid) { info = (Editor.assetdb as any).mountInfoByUuid(args.uuid); }
+                    else { info = (Editor.assetdb as any).mountInfo(requireUrl(args)); }
+                } catch {}
+                return { mountInfo: info || null };
+            }
+            case 'relative_path': {
+                const p = args.fspath || resolveFspath(args);
+                return { relativePath: (Editor.assetdb as any).getRelativePath(p) };
+            }
+            case 'backup_path': {
+                const p = args.fspath || resolveFspath(args);
+                return { backupPath: (Editor.assetdb as any).getAssetBackupPath(p) };
+            }
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);
         }
@@ -108,18 +180,20 @@ export class AssetReadTools {
 
     @utcpTool(
         'assetQuery',
-        'Query asset db: search, tree, info, meta, types, sub_assets, used_by.',
+        'Query asset db: search, tree, info, meta, types, sub_assets, used_by, metas.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['search', 'tree', 'info', 'meta', 'types', 'sub_assets', 'used_by'], description: 'Which query to run' },
+                operation: { type: 'string', enum: ['search', 'tree', 'info', 'meta', 'types', 'sub_assets', 'used_by', 'metas'], description: 'Which query to run' },
                 pattern: { type: 'string', description: 'Glob for search, default db://assets/**/*' },
-                assetTypes: { type: 'string', description: 'Comma-separated asset type names (not class names), e.g. texture,scene. Omit for all types' },
+                assetTypes: { description: 'Comma-separated type names OR array, e.g. texture,scene OR ["texture","scene"]. Omit for all types' },
                 url: { type: 'string', description: 'Asset url — for info / meta / sub_assets / used_by' },
                 uuid: { type: 'string', description: 'Asset uuid — for info / meta / sub_assets / used_by' },
                 limit: { type: 'number', description: `Max results for search, default ${DEFAULT_SEARCH_LIMIT}` },
                 maxDepth: { type: 'number', description: `Max tree depth, default ${DEFAULT_TREE_DEPTH}` },
                 maxResults: { type: 'number', description: `Max results for used_by, default ${DEFAULT_USED_BY_LIMIT}` },
+                // metas-only
+                type: { type: 'string', description: 'Importer/type name for metas (e.g. texture), filter passed to queryMetas' },
             },
             required: ['operation'],
         },
@@ -134,19 +208,20 @@ export class AssetReadTools {
                 metaMtime: { type: 'number' },
                 types: { type: 'array', items: { type: 'string' } },
                 nodes: { type: 'array', items: { type: 'object' } },
+                metas: { type: 'array', items: { type: 'object' } },
                 total: { type: 'number' },
                 truncated: { type: 'boolean' },
             },
         },
-        'GET', ['asset', 'search', 'tree', 'meta', 'info', 'types', 'query', 'used_by', 'reverse', 'reference']
+        'GET', ['asset', 'search', 'tree', 'meta', 'info', 'types', 'query', 'used_by', 'reverse', 'reference', 'metas']
     )
-    async assetQuery(args: { operation: string, pattern?: string, assetTypes?: string, url?: string, uuid?: string, limit?: number, maxDepth?: number, maxResults?: number }): Promise<any> {
+    async assetQuery(args: { operation: string, pattern?: string, assetTypes?: any, url?: string, uuid?: string, limit?: number, maxDepth?: number, maxResults?: number, type?: string }): Promise<any> {
         switch (args.operation) {
             case 'search': {
                 const pattern = args.pattern || 'db://assets/**/*';
                 // assetTypes null = moi type (verify runtime — Unresolved phase 4).
-                const types = args.assetTypes ? String(args.assetTypes).split(',').map((t) => t.trim()) : (null as any);
-                const found = await cbToPromise<IQueryAssetResult2x[]>((cb) => Editor.assetdb.queryAssets(pattern, types, cb));
+                const types = normalizeTypes(args.assetTypes as any);
+                const found = await cbToPromise<IQueryAssetResult2x[]>((cb) => Editor.assetdb.queryAssets(pattern, types as any, cb));
                 const limit = args.limit || DEFAULT_SEARCH_LIMIT;
                 return { assets: found.slice(0, limit), total: found.length, truncated: found.length > limit };
             }
@@ -189,6 +264,26 @@ export class AssetReadTools {
                 const res = await sceneScript<any>('find-by-asset', uuid, { maxResults });
                 const nodes = (res && res.nodes) || [];
                 return { nodes, total: nodes.length, truncated: !!(res && res.truncated), uuid, maxResults };
+            }
+            case 'metas': {
+                // queryMetas(pattern, type, cb) -> array meta instances, co circular ref nhu loadMeta.
+                const pattern = args.pattern || 'db://assets/**/*';
+                const type = args.type || '';
+                const found = await cbToPromise<any[]>((cb) => (Editor.assetdb as any).queryMetas(pattern, type, cb));
+                const limit = args.limit || DEFAULT_SEARCH_LIMIT;
+                const sliced = found.slice(0, limit);
+                const metas = sliced.map((m) => {
+                    const s = safeSerialize(m);
+                    if (s && typeof s === 'object') {
+                        // Attach uuid/url hints if available on raw meta.
+                        const uuid = (m as any).uuid || (m as any)._uuid;
+                        const url = uuid ? Editor.assetdb.uuidToUrl(uuid) : null;
+                        s.__uuid = uuid || undefined;
+                        s.__url = url || undefined;
+                    }
+                    return s;
+                });
+                return { metas, total: found.length, truncated: found.length > limit };
             }
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);

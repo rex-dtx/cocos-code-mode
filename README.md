@@ -1,157 +1,219 @@
 # Code Mode for Cocos Creator 2.4.x
 
-**Code Mode** turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property reading as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and reason about Cocos Creator projects the same way a developer would through the UI.
-These tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) environment to achieve maximum performance and token efficiency for AI agents, letting them call the tools in isolated JS sandbox.
+**Code Mode** turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
 
-> **This is the 2.4.x port.** It is a fork of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two editor generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
->
-> **Round 1 is read-only** — 10 tools, 27 operations. The only mutation is editor selection. Write tools (create/modify/delete node, asset, component) are not ported yet.
+> **This is the 2.4.x port** of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
 >
 > Verified against **Creator 2.4.15**. Other 2.4.x patches are untested.
 
 ## Quickstart
 
-1. [Install the extension](#installation) in the Cocos Creator 2.4.x project
+1. [Install the extension](#installation) in a Cocos Creator 2.4.x project
 2. [Integrate](#integration) it with the CodeMode MCP Server
-3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set
+3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [code-mode-references-2x.d.ts](code-mode-references-2x.d.ts)
 4. Ask AI to help you and see how it learns!
 
 ## What is Code Mode?
 
-In contrast to rigid MCP tool defenitions, which always kept in LLM context, CodeMode is an approach which helps AI to call tools in the most familiar way - by writing JavaScript code based on TypeScript defenitions of tools. This helps AI to keep token consumption low, implement loops and chained calls for complex tasks, organize output in compact form and reuse output from different existing servers and endpoints in one JavaScript execution context, isolating LLM context from unnecessary data.
-This opens endless possibilities for interaction between different environments. Here is some examples:
-1. Move scene from blender with [Blender MCP](https://github.com/ahujasid/blender-mcp), exporting particular objects as FBX straight into Cocos project
-2. Use [Figma MCP](https://www.figma.com/mcp-catalog/) to fetch UI layout from figma and implement these layouts in your project in the smart way instead of blindly recreating every panel
-3. Use [Unity Code Mode](https://github.com/RomaRogov/unity-code-mode) to perform game porting between engines
-4. Bring your own examples 🙃
+In contrast to rigid MCP tool definitions kept in LLM context, CodeMode lets AI call tools by writing JavaScript against TypeScript definitions. This keeps token consumption low, allows loops and chained calls, and reuses output from different servers in one JS execution context.
 
-All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
-You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
+Examples enabled by [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode):
+1. Move a scene from Blender with [Blender MCP](https://github.com/ahujasid/blender-mcp), exporting objects as FBX straight into Cocos
+2. Use [Figma MCP](https://www.figma.com/mcp-catalog/) to fetch UI layout and implement it in the project
+3. Use [Unity Code Mode](https://github.com/RomaRogov/unity-code-mode) to port games between engines
+
+Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact), [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
 ## Tools
 
-10 tools, 27 operations. Most tools take an `operation` argument instead of being split into many endpoints — fewer tool definitions in the agent's context.
+52 tools (13 files in `source/utcp/tools-2x/`). Most read tools take an `operation` argument instead of many endpoints — fewer definitions in agent context.
+
+### Read — scene & components (8 tools)
 
 | Tool | Operations | Purpose |
 |---|---|---|
-| `sceneSnapshot` | — | **Start here.** Whole node tree in one round trip: transform, size, anchor, component list per node, plus design resolution. Editor-only roots filtered out. Guarded by `maxDepth` and `maxNodes`. |
-| `nodeQuery` | `tree` `dump` `info` `functions` `by_component` `at_path` | Hierarchy tree, single-node property dump, node info, callable functions, find by component, fetch by path |
-| `componentQuery` | `props` `classes` `by_name` `find` | Read one component's properties, list registered classes, find nodes carrying a component |
-| `listComponentMethods` | — | List callable method names per component on a node (discovery for `callComponentMethod`, ported from v3). Groups by class name; 2.x message returns names, not uuids. |
-| `assetResolve` | `uuid_from_url` `url_from_uuid` `fspath` `exists` | Translate between asset url, uuid, and filesystem path |
-| `assetQuery` | `search` `tree` `info` `meta` `types` `sub_assets` `used_by` | Browse and inspect the asset database, including which scene nodes reference an asset (`used_by`) |
-| `assetReadContent` | — | Read a text asset's contents |
-| `editorSelect` | `query` `select` `unselect` `clear` | Read and set the editor selection — the one mutating tool |
-| `editorEnvInfo` | — | Editor / engine / node / electron versions and project path |
-| `projectGetConfig` | — | Read `settings/*.json` |
+| `sceneSnapshot` | — | **Start here.** Whole node tree in one round trip: transform, size, anchor, component list per node, plus design resolution. Editor-only roots filtered. Guarded by `maxDepth` + `maxNodes`. |
+| `sceneInfo` | — | Current scene header: name, uuid, designResolution, node count, bounds/dirty if available |
+| `sceneOpen` | — | Open a scene asset by uuid or `db://` url (`_Scene.loadSceneByUuid` in scene process) |
+| `sceneScript` | — | Probe: call any scene-script handler (`probe-*`, `open-scene`, `scene-info`, …) |
+| `nodeQuery` | `tree` `dump` `info` `functions` `by_component` `at_path` | Hierarchy tree, single-node dump, node info, callable functions, find by component, fetch by path |
+| `componentQuery` | `props` `classes` `by_name` `find` | Read one component's properties, list registered classes, find nodes by component |
+| `listComponentMethods` | — | List callable method names per component on a node (discovery for `callComponentMethod`) |
+| `animationQuery` | `clips_info` `clip_dump` `properties` `state` | Query `cc.Animation` on a node: clip list, clip dump, all props, state |
+
+### Write — scene & components (18 tools)
+
+| Tool | Purpose |
+|---|---|
+| `nodeSetProperty` | Set node property (`x`, `y`, `active`, …) or component property (`compType` like `cc.Sprite`); `isSubProp` forwarded to `setPropertyByPath` |
+| `nodeSetPropertyUndo` | Undo-aware via `scene://set-property-by-path`; `isSubProp` forwarded |
+| `batchSetProperties` | Batch set on many nodes; each op can be `undo:true` + `isSubProp:true` (verify + direct fallback) |
+| `sceneSetPropertyHL` | High-level `scene://utils/scene.setProperty` (undo-aware), `isSubProp` forwarded |
+| `nodeCreate` | Create node (`cc.Node`) under parent or scene root |
+| `sceneCreateNodeHL` | High-level `scene://utils/scene.createNodes` (undo-aware), falls back to `cc.Node` |
+| `nodeRemove` | Remove node (`removeFromParent`) |
+| `nodeDuplicate` | Duplicate node (`cc.instantiate`) |
+| `nodeMove` | Reparent node + optional `siblingIndex` |
+| `nodeComponentManage` | `add` / `remove` component (`cc.Sprite`, `cc.Label`, …) |
+| `nodeCreatePrimitive` | Primitive 3D node (Cube/Sphere/Capsule/…) |
+| `callComponentMethod` | Call a component method by name (discovery via `listComponentMethods`) |
+| `nodeReset` | Reset transform via `resetPropertyByPath` |
+| `editorUndo` | `undo` / `redo` via `scene:undo` / `scene:redo` |
+| `nodeClipboard` | `copy` / `cut` / `paste` / `duplicate` via scene panel + `cc.instantiate` |
+| `animationEdit` | Stub — edit `.anim` via `assetWriteContent` on 2.4 |
+| `sceneNew` | New empty scene (`scene:new-scene` IPC, fire-and-forget — save first) |
+| `prefabSync` | Apply prefab edits back to prefab asset (`scene:set-prefab-sync`, forum #41, fire-and-forget) |
+
+### Read — assets (7 tools)
+
+| Tool | Operations | Purpose |
+|---|---|---|
+| `assetResolve` | `uuid_from_url` `url_from_uuid` `fspath` `exists` `exists_by_path` `is_sub_asset` `contains_sub_assets` `mount_info` `relative_path` `backup_path` | Translate between url/uuid/fspath + existence/isSubAsset/mount/relative/backup helpers |
+| `assetQuery` | `search` `tree` `info` `meta` `metas` `types` `sub_assets` `used_by` | Browse/inspect asset db; `metas` = live `queryMetas` (circular-safe); `used_by` = reverse asset → node. Search `assetTypes` accepts CSV string OR `string[]` |
+| `assetReadContent` | — | Read text asset content |
+| `assetGetPreview` | — | Thumbnail/base64 for texture/prefab/material (falls back to `sharp` for png/jpg) |
+| `editorListTypes` | `creatable_assets` `asset_types` `importers` | Vocabularies from `assettype2name` + scene panel probes |
+| `editorGetLogs` | — | Last N lines from `temp/logs/project.log` |
+| `editorGetScenePreview` | — | Scene screenshot (tries `scene:capture-screenshot`, fallback note on 2.4) |
+
+### Write — assets (9 tools)
+
+| Tool | Purpose |
+|---|---|
+| `assetCreateFolder` | Create folder under `db://assets` (+ `refresh`) |
+| `assetWriteContent` | Write text asset (creates if not exists, + `refresh`) |
+| `assetMove` | Move/rename (`Editor.assetdb.move`) |
+| `assetGetAvailableUrl` | Non-colliding `db://` url (suffix `_1`…) |
+| `assetRefresh` | Refresh at `db://` url; returns `results[]` (`create/delete/change/uuid-change`) |
+| `assetSaveMeta` | Save `.meta` JSON (`saveMeta(uuid, JSON-string)`) — `metaJson` string or `meta` object |
+| `assetImport` | Import external raw files into `db://` → `results[]` (uuid/url/path/type) |
+| `assetExchangeUuid` | Swap uuids of two assets (keep references) |
+| `assetDelete` | Delete asset/folder (`Editor.assetdb.delete` + `fs` fallback) |
+
+### Editor / project / program / preview (10 tools)
+
+| Tool | Purpose |
+|---|---|
+| `editorSelect` | `query`(`globalActive`/`contexts`/`confirmed`) / `select`(`confirm`) / `unselect`(`confirm`) / `clear` / `hover` / `set_context` / `patch` / `filter` / `confirm` / `cancel` — selection only, not scene mutation; `hover` 1 id (omit=out), `filter` mode `top-level|deep|name` |
+| `editorEnvInfo` | Editor / engine / node / electron versions + project path |
+| `editorOperate` | `save_scene` (`scene:stash-and-save`) / `refresh_assets` |
+| `projectGetConfig` | Read `settings/*.json` |
+| `projectSaveConfig` | Write `settings/*.json` key |
+| `previewGetUrl` | Game preview server URL |
+| `previewOpenInBrowser` | Open preview in system browser |
+| `programGetInfo` | Registered external program info |
+| `programOpen` | Launch registered program |
+| `urlOpen` | Open `http(s)` URL in system browser |
+
+Agent-facing TypeScript surface: [code-mode-references-2x.d.ts](code-mode-references-2x.d.ts) (hand-written, 52 entries).
 
 ### Payload limits
 
-Tree and list results are capped, because an agent asking for "the scene" on a real project would otherwise get hundreds of kilobytes. Every cap reports that it fired, so a clipped result is never mistaken for a complete one.
-
 | Tool | Limit | Default | Reported as |
 |---|---|---|---|
-| `sceneSnapshot`, `nodeQuery tree` / `at_path` | `maxDepth` — how deep | 6 / 6 / 3 | `truncated: 'maxDepth'` on the node |
-| `sceneSnapshot`, `nodeQuery tree` / `at_path` | `maxNodes` — how many | 400 | `truncated: 'nodeLimit'`, `childrenOmitted`, plus `nodesVisited` / `budgetExhausted` on the response |
-| `componentQuery find`, `classes` | `maxResults` | 200 | `truncated: true`, with `total` still the real count |
-| `assetQuery search` | `limit` | 200 | `truncated: true`, with `total` the real count |
-| `assetQuery used_by` | `maxResults` | 200 | `truncated: true`, with `total` the number returned |
+| `sceneSnapshot`, `nodeQuery tree` / `at_path` | `maxDepth` | 6 / 6 / 3 | `truncated: 'maxDepth'` |
+| `sceneSnapshot`, `nodeQuery tree` / `at_path` | `maxNodes` | 400 | `truncated: 'nodeLimit'`, `childrenOmitted`, `nodesVisited` / `budgetExhausted` |
+| `componentQuery find`, `classes` | `maxResults` | 200 | `truncated: true`, `total` is real count |
+| `assetQuery search` | `limit` | 200 | `truncated: true`, `total` is real count |
+| `assetQuery used_by` | `maxResults` | 200 | `truncated: true` |
 | `assetReadContent` | `maxBytes` + text-extension allowlist | 512 KB | throws rather than truncating |
 | `nodeQuery dump` | `types` block dropped | — | `typesOmitted: [...]`, pass `includeTypes` to get it |
 
-`maxDepth` alone is not enough: a slot scene is often one root with a thousand siblings, which no depth limit bounds. `maxNodes` is a single budget shared across all roots.
+`maxDepth` alone is not enough: a slot scene is often one root with thousands of siblings — `maxNodes` is a single shared budget.
 
-### Not in round 1
+### Not ported (verified on 2.4.15)
 
-| | Why |
-|---|---|
-| All write tools | Node/asset/component mutation needs undo integration and the 2.4 scene write API, neither verified yet |
-| `editorGetLogs` | 2.4.15 has no console read API — verified, all three candidate messages fail |
-| 19 asset importers | `.meta` format differs from 3.x |
+| Group | Tool | Why |
+|---|---|---|
+| Build | `buildTrigger` etc. (5) | `Editor.Builder` 2.4 only has `on/once/removeListener` — no trigger API |
+| Viewport gizmo | `editorViewport` | 6 messages probe `not found` |
+| Introspect | `editorIntrospect` | 6 messages probe `not found` |
+| Asset dep graph | `assetFindReferences` | No reference/dependency query API |
+| Console read | old `editorGetLogs` via IPC | `console:query-logs` does not exist — new impl reads `temp/logs/project.log` |
+
+Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runtime traps, probe3 gate), [docs/api-2x-reference.md](docs/api-2x-reference.md) (forum API 92605 mapped to verified runtime + actual tool surface), [docs/forum-92605-cocos-2x-api.md](docs/forum-92605-cocos-2x-api.md) (forum 92605 raw dump offline), [docs/cocos-2x-port-architecture.md](docs/cocos-2x-port-architecture.md) (delta 2.4 vs 3.x).
 
 ## How It Works
 
-This extension architecture follows a **discover, then act** pattern. AI agents never guess at property names or component structures — they query for the real definitions first.
+**Discover, then act** — agents never guess property names, they query definitions first.
 
 ```
-1. sceneSnapshot              →  see the whole scene at once
-2. componentQuery props       →  read a component's real property values
-3. nodeQuery dump             →  full serialized dump of one node
+1. sceneSnapshot            →  see the whole scene at once
+2. componentQuery props     →  read a component's real property values
+3. nodeQuery dump           →  full serialized dump of one node
 ```
 
 ### Example
 
 ```typescript
 // One call gets the whole scene
-const scene = CocosEditor.sceneSnapshot({});
+const scene = cc2x4.sceneSnapshot({});
 // → { name, uuid, designResolution: {width, height}, children: [...] }
 
 // Find every node with a Sprite — returns paths, not bare uuids
-const sprites = CocosEditor.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
+const sprites = cc2x4.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
 // → { result: [{ path: 'Canvas/bg', uuid: '...', name: 'bg' }], total: 1 }
 
 // Read that Sprite's actual property values
-const props = CocosEditor.componentQuery({
+const props = cc2x4.componentQuery({
   operation: 'props',
   path: 'Canvas/bg',
-  componentType: 'cc.Sprite'
+  componentType: 'cc.Sprite',
 });
 // → { spriteFrame: { __ref: '<uuid>', __type: 'cc.SpriteFrame', __name: 'bg' }, ... }
 
-// And the reverse: before changing an asset, ask what already uses it
-const users = CocosEditor.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
+// Reverse: what uses this asset?
+const users = cc2x4.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
 // → { nodes: [{ path: 'Canvas/bg', uuid: '...', name: 'bg',
 //               component: 'cc.Sprite', property: 'spriteFrame' }], total: 1 }
+
+// Mutate (write train — probe-verified)
+const node = cc2x4.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
+cc2x4.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
+cc2x4.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
+cc2x4.editorOperate({ operation: 'save_scene' });
 ```
 
-`used_by` reports the component and property, not just the node — knowing "node X uses it" without knowing which property still leaves you searching by hand. A reference nested in an array is reported with its index (`frames[1]`).
+`used_by` reports component + property, not just node. Array refs include index (`frames[1]`).
 
 ## Architecture
 
-### Tool Execution
-
-The extension runs an Express.js HTTP server on a configurable port (default: auto-assigned). Unlike the 3.x version there is no single message bus — 2.4 tool handlers reach the editor three different ways, depending on what the data lives in:
+The extension runs an Express HTTP server on a configurable port (default: auto-assigned). Unlike 3.x there is no single message bus — 2.4 handlers reach the editor three ways:
 
 | Path | Used for | Helper |
 |---|---|---|
-| `Editor.assetdb.*` (main process, sync + callback) | all asset tools | `cbToPromise` |
+| `Editor.assetdb.*` (main, sync + callback) | all asset tools | `cbToPromise` |
 | `Editor.Ipc.sendToPanel('scene', 'scene:query-*')` | hierarchy, node dump, node info | `sceneIpc` |
-| `Editor.Scene.callSceneScript(...)` | anything needing live `cc.*` — snapshot, component props, find-by-component | `sceneScript` |
+| `Editor.Scene.callSceneScript(...)` | anything needing live `cc.*` — snapshot, component props, find-by-component, mutations | `sceneScript` |
 
-`callSceneScript` runs `dist/scene-script.js` inside the **scene process**, where the full engine runtime (`cc.director`, `cc.find`, `cc.js`) is available. That file must stay standalone CommonJS — it cannot import anything from the rest of the extension.
+`callSceneScript` runs `dist/scene-script.js` inside the **scene process**, where the full engine runtime (`cc.director`, `cc.find`, `cc.js`, `cc.engine.getInstanceById`) is available. That file must stay standalone CommonJS — it cannot import anything.
 
-All three are callback-style in 2.4; `source/utcp/utils/ipc-promise.ts` wraps them into promises.
+All three are callback-style in 2.4; `source/utcp/utils/ipc-promise.ts` wraps them into promises. `cc.engine.getInstanceById(uuid)` is the node resolver for every mutation (verified same-instance).
 
 ### Differences from the 3.x extension
 
 | | 3.x | 2.4.x |
 |---|---|---|
 | Editor API | `Editor.Message.request(module, msg, ...)` | `Editor.assetdb`, `Editor.Ipc`, `Editor.Scene.callSceneScript` |
-| Engine access | via message bus | scene-script running in the scene process |
+| Engine access | via message bus | scene-script in scene process |
 | Async style | promises | callback-last `(err, result)` |
-| Node / Electron | Node 18+ | Node 14 / Electron 13 — constrains dependency versions |
+| Node / Electron | Node 18+ | Node 14 / Electron 13 |
 | Settings | `Editor.Profile` object assignment | must call `profile.set()`; plain assignment does not persist |
 | Project config | editor API | read `<project>/settings/*.json` directly |
-| Tool count | 59 | 9 (read-only) |
+| Tool count | 59 | 52 (read + write) |
 
-The behavioural traps found while porting — where the 2.4 docs disagree with the runtime — are recorded in [`docs/cocos-2x-api-notes.md`](docs/cocos-2x-api-notes.md). Read that before adding tools.
+Behavioural traps where docs disagree with runtime: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md). Read it before adding tools. Forum API map: [docs/api-2x-reference.md](docs/api-2x-reference.md).
 
 ### Tool Discovery
 
-Tools are TypeScript class methods decorated with `@utcpTool`. The `ToolRegistry` collects them at startup, builds JSON schemas from the inline definitions, and serves a UTCP manual at the `/utcp` endpoint.
+Tools are TypeScript class methods decorated with `@utcpTool`. `ToolRegistry` collects them at startup, builds JSON schemas, and serves a UTCP manual at `/utcp`.
 
 ```typescript
 export class DeepReadTools {
-
     @utcpTool(
         'sceneSnapshot',
         'Start here to understand the open scene...',
-        {
-            type: 'object',
-            properties: {
-                maxDepth: { type: 'number', description: 'Max tree depth, default 6' }
-            }
-        },
+        { type: 'object', properties: { maxDepth: { type: 'number', description: 'Max tree depth, default 6' } } },
         { type: 'object', properties: { name: { type: 'string' }, children: { type: 'array' } } },
         'GET', ['scene', 'snapshot', 'hierarchy']
     )
@@ -163,66 +225,47 @@ export class DeepReadTools {
 
 ### Node and asset identity
 
-2.4 has no unified instance-reference handle. Nodes are addressed two ways depending on the tool:
+2.4 has no unified handle. Nodes are addressed two ways:
+- **uuid** — from `scene:query-*` and `sceneSnapshot` (`nodeQuery dump/info/functions`, every `node*` mutation)
+- **path** — `Canvas/background`, resolved with `cc.find` (`nodeQuery at_path`, `componentQuery props`)
 
-- **uuid** — what `scene:query-*` messages return and accept (`nodeQuery dump/info/functions`)
-- **path** — `Canvas/background`, resolved with `cc.find` in the scene process (`nodeQuery at_path`, `componentQuery props`)
-
-`componentQuery find` returns both, so it is the usual bridge from "which nodes have X" to "read X".
-
-Assets keep the 3.x-style url/uuid duality; `assetResolve` translates between url, uuid, and filesystem path.
+`componentQuery find` returns both, so it bridges "which nodes have X" to "read X". Assets keep url/uuid duality; `assetResolve` translates.
 
 ## Installation
 
 ### From release
 
 1. Download last release from this repository.
-2. Open Cocos Creator, go to **Extension → Extension Manager**, and click `Import Extension File(.zip)` button (icon with arrow).
-3. Select the downloaded zip file.
-4. The UTCP server starts automatically and registers itself in `~/.utcp_config.json` by default.
+2. Open Cocos Creator → **Extension → Extension Manager** → `Import Extension File (.zip)`.
+3. Select the downloaded zip.
+4. The UTCP server starts automatically and registers itself in `~/.utcp_config.json`.
 
 ### Build from source
 
-1. Clone this repository, check out the `cc-2x` branch.
-2. Install `node` and `npm`.
-3. run
 ```bash
 npm i
 npm run package
 ```
-4. If everything builds fine, `cocos-code-mode-2x.zip` file should appear in repository root.
-5. Install it in Cocos Creator with **Extension Manager**.
 
-`npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies the tree-walk limits without needing Creator open. Run `npm run check` on its own while developing.
+`npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies tree-walk limits without Creator open. Run `npm run check` while developing.
 
 For development, a junction from `<project>/packages/cocos-code-mode-2x` to the repo works and does not trigger a reload loop.
 
 ## Adding Custom Tools
 
-Add tools in `source/utcp/tools-2x/` and build from source as described above. Keep the 3.x tools in `source/utcp/tools/` alone — they are excluded from the build and kept only as a porting reference.
-
-Implementation example:
+Add tools in `source/utcp/tools-2x/` and build from source. Keep the 3.x tools in `source/utcp/tools/` — they are excluded from the build and kept as porting reference.
 
 ```typescript
 import { utcpTool } from '../decorators';
 import { sceneScript } from '../utils/ipc-promise';
 
 export class MyTools {
-
     @utcpTool(
         'myCustomTool',
         'Describe what this tool does',
-        {
-            type: 'object',
-            properties: {
-                input: { type: 'string' },
-                count: { type: 'number', default: 10 }
-            },
-            required: ['input']
-        },
+        { type: 'object', properties: { input: { type: 'string' }, count: { type: 'number', default: 10 } }, required: ['input'] },
         { type: 'object', properties: { result: { type: 'string' } } },
-        "GET",
-        ['custom', 'tags']
+        "GET", ['custom', 'tags']
     )
     async myCustomTool(args: { input: string, count?: number }): Promise<{ result: string }> {
         return { result: await sceneScript<string>('my-handler', args) };
@@ -230,30 +273,21 @@ export class MyTools {
 }
 ```
 
-Register the class by importing it in `utcp-server.ts`. Tools are served automatically at startup. No additional registration needed.
-
-Two things to know before writing a 2.4 tool:
-
-- **Every argument arrives as a string** unless the express query-parser decoder runs. It only runs because `app.set('query parser', ...)` is called *before* the first `app.use()` in `utcp-server.ts` — moving it below breaks every numeric and boolean argument silently. Nothing tests this.
+Register by importing the class in `utcp-server.ts`. Two things to know:
+- **Every argument arrives as a string** unless the express query-parser decoder runs. It only runs because `app.set('query parser', ...)` is called *before* the first `app.use()` in `utcp-server.ts` — moving it below breaks every numeric/boolean argument silently.
 - **Reaching live `cc.*`** means adding a handler to `source/scene-script.ts` and calling it via `sceneScript`. That file runs in the scene process and must not import anything. Numbers in the last argument position get swallowed by 2.4 IPC — wrap arguments in an object.
 
 ## UTCP Call Templates Configuration
 
 The extension registers itself in `~/.utcp_config.json` as a `cc2x4` entry pointing at the running server port, and rewrites the port when it changes.
 
-> The **Configuration** panel from the 3.x version is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode-2x.json` (0 = auto-assign). Additional call templates must be added to `~/.utcp_config.json` by hand for now.
+> The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode-2x.json` (0 = auto-assign). Additional call templates must be added by hand for now.
 
-You can find Call Template structures in [UTCP documentation](https://www.utcp.io/protocols):
-- [MCP Call Template](https://utcp.io/protocols/mcp#call-template-structure)
-- [HTTP Call Template](https://utcp.io/protocols/http#call-template-structure) ([Streamable](https://utcp.io/protocols/http#call-template-structure), [SSE](https://utcp.io/protocols/http#call-template-structure))
-- [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
-- [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
-
-The extension automatically maintains a `cc2x4` entry in UTCP Config pointing to the running server port.
+Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-structure) · [HTTP](https://utcp.io/protocols/http#call-template-structure) · [CLI](https://utcp.io/protocols/cli#call-template-structure) · [Text](http://utcp.io/protocols/text#call-template-structure)
 
 ## Agent Prompt Guidance
 
-When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
+Add to the agent's system prompt — cuts 50-80% of response tokens:
 
 ```text
 When returning data from cc2x4 tools:
@@ -264,11 +298,11 @@ When returning data from cc2x4 tools:
 - If an aggregate looks anomalous (large branch, mixed active, errors), drill into that branch before concluding.
 ```
 
-Full failure-mode analysis and trade-offs: [`docs/prompt-guidance-risks.md`](docs/prompt-guidance-risks.md).
+Trade-offs: [docs/prompt-guidance-risks.md](docs/prompt-guidance-risks.md).
 
 ## Integration
 
-Code Mode works with any UTCP-compatible client, including the [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) for AI assistants.
+Works with any UTCP-compatible client, including the [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server).
 
 ### MCP Server Config
 
@@ -278,15 +312,13 @@ Code Mode works with any UTCP-compatible client, including the [Code Mode MCP se
     "code-mode": {
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
-      "env": {
-        "UTCP_CONFIG_FILE": "~/.utcp_config.json"
-      }
+      "env": { "UTCP_CONFIG_FILE": "~/.utcp_config.json" }
     }
   }
 }
 ```
 
-Claude Code Configuration
+Claude Code:
 
 ```bash
 # Linux/macOS

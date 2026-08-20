@@ -826,6 +826,68 @@
             event.reply(null, out);
         },
 
+        // Probe gate nhom B (forum 92605 §4 scene:* IPC). Can Creator 2.4.15 chay.
+        // Goi tung message voi FAKE uuid de mutate la no-op — chi can biet message co ton tai
+        // (err "not found" = dong; err khac / result = message ton tai). Async: dem pending, reply khi xong.
+        'probe-scene-ipc': function (event: any) {
+            const out: any = { errors: [] as string[] };
+
+            // scene:// modules truoc (sync, re).
+            function tryRequire(url: string) {
+                try { const m = Editor.require(url); return { keys: Object.keys(m).slice(0, 40) }; }
+                catch (e: any) { return 'ERR: ' + (e && e.message ? e.message : String(e)); }
+            }
+            out['scene://utils/prefab'] = tryRequire('scene://utils/prefab');
+            out['scene://utils/animation'] = tryRequire('scene://utils/animation');
+
+            // 14 candidate scene:* IPC. Fake uuid -> mutate no-op.
+            const FAKE = '00000000-0000-0000-0000-00000000probe';
+            const msgs: Array<{ label: string; msg: string; args: any[] }> = [
+                { label: 'scene:create-node-by-classid', msg: 'scene:create-node-by-classid', args: ['2d.renderer', FAKE] },
+                { label: 'scene:add-component', msg: 'scene:add-component', args: [FAKE, 'cc.Sprite'] },
+                { label: 'scene:remove-component', msg: 'scene:remove-component', args: [FAKE, 'cc.Sprite'] },
+                { label: 'scene:copy-nodes', msg: 'scene:copy-nodes', args: [[FAKE]] },
+                { label: 'scene:paste-nodes', msg: 'scene:paste-nodes', args: [] },
+                { label: 'scene:create-nodes-by-uuids', msg: 'scene:create-nodes-by-uuids', args: [[FAKE], FAKE] },
+                { label: 'scene:create-node-by-prefab', msg: 'scene:create-node-by-prefab', args: [FAKE, FAKE] },
+                { label: 'scene:set-property', msg: 'scene:set-property', args: [FAKE, 'position.x', 0, false] },
+                { label: 'scene:new-property', msg: 'scene:new-property', args: [FAKE, 'foo', 0] },
+                { label: 'scene:reset-property', msg: 'scene:reset-property', args: [FAKE, 'position'] },
+                { label: 'scene:move-nodes', msg: 'scene:move-nodes', args: [[FAKE], FAKE] },
+                { label: 'scene:delete-nodes', msg: 'scene:delete-nodes', args: [[FAKE]] },
+                { label: 'scene:duplicate-nodes', msg: 'scene:duplicate-nodes', args: [[FAKE]] },
+                { label: 'scene:create-prefab', msg: 'scene:create-prefab', args: [FAKE] },
+            ];
+
+            let pending = msgs.length;
+            if (pending === 0) { event.reply(null, out); return; }
+            msgs.forEach((p) => {
+                try {
+                    (Editor as any).Ipc.sendToPanel('scene', p.msg, ...p.args, (err: any, result: any) => {
+                        const entry: any = {};
+                        if (err) {
+                            const m = err && err.message ? err.message : String(err);
+                            entry.err = m;
+                            // "not found"/"not registered" = message khong ton tai.
+                            entry.exists = !/not found|not registered|no handler/i.test(m);
+                        } else {
+                            entry.exists = true;
+                            entry.type = typeof result;
+                            try {
+                                entry.sample = result === undefined ? 'undefined'
+                                    : JSON.stringify(result).slice(0, 200);
+                            } catch { entry.sample = '<unserializable>'; }
+                        }
+                        out[p.label] = entry;
+                        if (--pending <= 0) { event.reply(null, out); }
+                    });
+                } catch (e: any) {
+                    out[p.label] = { err: e && e.message ? e.message : String(e), exists: false };
+                    if (--pending <= 0) { event.reply(null, out); }
+                }
+            });
+        },
+
         // --- probe tells high-level undo API: scene://utils/scene (createProperty/setProperty/resetProperty/etc.)
         // --- and low-level scene://set-property-by-path. set-node-prop now offers undo variant.
         // --- probe verifies direct assign works but bypasses Undo — keep both paths.
@@ -854,7 +916,7 @@
                 event.reply(null, { uuid, path, before, after: cur[last] });
             } catch (e: any) { event.reply(e); }
         },
-        'set-node-prop-undo': function (event: any, uuid: string, path: string, value: any) {
+        'set-node-prop-undo': function (event: any, uuid: string, path: string, value: any, isSubProp:any) {
             try {
                 const mod:any = Editor.require('scene://set-property-by-path');
                 const fn = mod.setPropertyByPath || mod.setProperty;
@@ -867,7 +929,7 @@
                 // Try uuid sig then node sig, verify change and fallback to direct assign.
                 let applied=false;
                 try{ const before=(node as any)[path] ?? (path.indexOf('.')>=0 ? (function(){let c:any=node; for(const p of path.split('.')) c=c?.[p]; return c;})() : undefined);
-                    try{ fn(uuid, path, value);}catch{ fn(node, path, value); }
+                    try{ fn(uuid, path, value, isSubProp);}catch{ fn(node, path, value, isSubProp); }
                     const after=(node as any)[path] ?? (path.indexOf('.')>=0 ? (function(){let c:any=node; for(const p of path.split('.')) c=c?.[p]; return c;})() : undefined);
                     if(after===value || (typeof after==='object' && after!==before)) applied=true;
                     // also check x/y via position Vec2 indirection
@@ -910,12 +972,14 @@
                 else { node.setPosition(0,0,0); event.reply(null, { uuid, reset:true, fallback:true }); }
             } catch(e:any){ event.reply(e); }
         },
-        'scene-set-property': function (event:any, uuid:string, path:string, value:any) {
+        'scene-set-property': function (event:any, uuid:string, path:string, value:any, isSubProp:any) {
             try{ const mod:any=Editor.require('scene://utils/scene'); const fn=mod.setProperty; if(typeof fn==='function'){ fn(uuid, path, value); event.reply(null,{uuid,path}); return; } }catch{}
             try{ const mod2:any=Editor.require('scene://set-property-by-path'); const fn2=mod2.setPropertyByPath||mod2.setProperty;
                 let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
                 if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
-                if(node) try{ fn2(node, path, value);}catch{ fn2(uuid,path,value);} else fn2(uuid,path,value);
+                // isSubProp truyen kem arg thu 4 — setPropertyByPath 2.4 co the bo qua (harmless),
+                // giu positional da verify; forum scene:set-property co flag isSubProp.
+                if(node) try{ fn2(node, path, value, isSubProp);}catch{ fn2(uuid,path,value,isSubProp);} else fn2(uuid,path,value,isSubProp);
                 event.reply(null,{uuid,path}); }catch(e:any){event.reply(e);}
         },
         'scene-create-node': function (event:any, name:string, parentUuid:string) {
@@ -949,12 +1013,13 @@
             }
             for(const op of ops){
                 const uuid=op.uuid, path=op.path, value=op.value;
+                const isSubProp = op.isSubProp;
                 if(op.undo && typeof setter==='function'){
                     const node=resolveNode(uuid);
                     if(!node){ results.push({uuid, path, ok:false, error:'node not found'}); continue; }
                     let ok=false, err:string|null=null;
                     try{
-                        try{ setter(uuid, path, value); } catch{ setter(node, path, value); }
+                        try{ setter(uuid, path, value, isSubProp); } catch{ setter(node, path, value, isSubProp); }
                         // verify — 2.4 silently no-ops on wrong path
                         let after:any=(node as any)[path];
                         if(path.indexOf('.')>=0){ let c:any=node; for(const p of path.split('.')) c=c?.[p]; after=c; }

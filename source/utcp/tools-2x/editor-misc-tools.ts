@@ -33,14 +33,21 @@ export class EditorMiscTools {
 
     @utcpTool(
         'editorSelect',
-        'Get or change editor selection (node/asset). Changes selection only, not scene.',
+        'Get or change editor selection (node/asset). Changes selection only, not scene. ' +
+        'Ops: query/select/unselect/clear + hover/set_context/patch/filter/confirm/cancel (selection.html 18-method API).',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['query', 'select', 'unselect', 'clear'], description: 'Which action to take' },
+                operation: {
+                    type: 'string',
+                    enum: ['query', 'select', 'unselect', 'clear', 'hover', 'set_context', 'patch', 'filter', 'confirm', 'cancel'],
+                    description: 'Which action to take'
+                },
                 selectionType: { type: 'string', enum: ['node', 'asset'], description: 'Selection channel, default node' },
-                ids: { type: 'string', description: 'Comma-separated uuids — required for select / unselect' },
+                ids: { type: 'string', description: 'Comma-separated uuids — select/unselect/filter. hover: single id (omit = hover out). patch: "srcId,destId"' },
                 unselectOthers: { type: 'boolean', description: 'Replace the current selection instead of adding to it, select only' },
+                confirm: { type: 'boolean', description: 'Confirm the selection change (select/unselect), default true' },
+                filterMode: { type: 'string', enum: ['top-level', 'deep', 'name'], description: 'Mode for filter op, default top-level' },
             },
             required: ['operation'],
         },
@@ -51,32 +58,75 @@ export class EditorMiscTools {
                 selected: { type: 'array', items: { type: 'string' } },
                 activate: { type: 'string' },
                 hovering: { type: 'string' },
+                globalActive: { type: 'object' },
+                contexts: { type: 'array', items: { type: 'string' } },
+                confirmed: { type: 'boolean' },
+                filtered: { type: 'array', items: { type: 'string' } },
+                notes: { type: 'array', items: { type: 'string' } },
             },
             required: ['success'],
         },
-        'GET', ['editor', 'selection', 'select', 'node', 'asset', 'ui']
+        'GET', ['editor', 'selection', 'select', 'node', 'asset', 'ui', 'hover', 'context', 'filter']
     )
-    async editorSelect(args: { operation: string, selectionType?: string, ids?: any, unselectOthers?: boolean }): Promise<any> {
+    async editorSelect(args: { operation: string, selectionType?: string, ids?: any, unselectOthers?: boolean, confirm?: boolean, filterMode?: string }): Promise<any> {
         const type = selectionType(args.selectionType);
+        const notes: string[] = [];
+        const confirmFlag = args.confirm !== false;
 
         const snapshot = () => ({
             selected: Editor.Selection.curSelection(type),
             activate: Editor.Selection.curActivate(type),
             hovering: Editor.Selection.hovering(type),
+            // curGlobalActivate verified OK; contexts/confirmed chua verify -> tryGet.
+            globalActive: tryGet(() => Editor.Selection.curGlobalActivate(type), notes, 'curGlobalActivate'),
+            contexts: tryGet(() => Editor.Selection.contexts(type), notes, 'contexts'),
+            confirmed: tryGet(() => Editor.Selection.confirmed(type), notes, 'confirmed'),
         });
+
+        const done = (extra?: any) => ({ success: true, ...snapshot(), ...extra, ...(notes.length ? { notes } : {}) });
 
         switch (args.operation) {
             case 'query':
-                return { success: true, ...snapshot() };
+                return done();
             case 'select':
-                Editor.Selection.select(type, toIdArray(args.ids), args.unselectOthers !== false, true);
-                return { success: true, ...snapshot() };
+                Editor.Selection.select(type, toIdArray(args.ids), args.unselectOthers !== false, confirmFlag);
+                return done();
             case 'unselect':
-                Editor.Selection.unselect(type, toIdArray(args.ids), true);
-                return { success: true, ...snapshot() };
+                Editor.Selection.unselect(type, toIdArray(args.ids), confirmFlag);
+                return done();
             case 'clear':
                 Editor.Selection.clear(type);
-                return { success: true, ...snapshot() };
+                return done();
+            case 'hover': {
+                // hover(type, id) — id=null = hover out. Chi nhan 1 id.
+                const list = args.ids ? String(args.ids).split(',').map((s) => s.trim()).filter(Boolean) : [];
+                Editor.Selection.hover(type, list.length ? list[0] : null);
+                return done();
+            }
+            case 'set_context': {
+                const id = toIdArray(args.ids)[0];
+                Editor.Selection.setContext(type, id);
+                return done();
+            }
+            case 'patch': {
+                // patch(type, srcID, destID) — drag-reorder selection. ids = "src,dest".
+                const ids = toIdArray(args.ids);
+                if (ids.length < 2) { throw new Error('patch requires ids "srcId,destId"'); }
+                Editor.Selection.patch(type, ids[0], ids[1]);
+                return done();
+            }
+            case 'filter': {
+                const items = toIdArray(args.ids);
+                const mode = (args.filterMode || 'top-level') as 'top-level' | 'deep' | 'name';
+                const filtered = Editor.Selection.filter(items, mode);
+                return { success: true, filtered };
+            }
+            case 'confirm':
+                Editor.Selection.confirm();
+                return { success: true };
+            case 'cancel':
+                Editor.Selection.cancel();
+                return { success: true };
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);
         }

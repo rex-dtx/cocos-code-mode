@@ -10,7 +10,7 @@ export class SceneWriteTools {
 
     @utcpTool(
         'nodeSetProperty',
-        'Set property on node or component by path. Use compType for component.',
+        'Set property on node or component by path. Use compType for component. isSubProp=false for top-level props (forum isSubProp flag).',
         {
             type: 'object',
             properties: {
@@ -18,52 +18,56 @@ export class SceneWriteTools {
                 path: { type: 'string', description: 'Property path, e.g. x, y, active, opacity, color' },
                 value: { description: 'New value' },
                 compType: { type: 'string', description: 'If set, set on component instead of node, e.g. cc.Sprite' },
+                isSubProp: { type: 'boolean', description: 'Whether this is a sub-property (deep path under comp), default false. Passed to scene:set-property IPC' },
             },
             required: ['uuid', 'path', 'value'],
         },
         { type: 'object', properties: { before: {}, after: {}, path: { type: 'string' } } },
         'POST', ['scene', 'node', 'set', 'property', 'write']
     )
-    async nodeSetProperty(args: { uuid: string, path: string, value: any, compType?: string }): Promise<any> {
+    async nodeSetProperty(args: { uuid: string, path: string, value: any, compType?: string, isSubProp?: boolean }): Promise<any> {
         if (args.compType) {
             return sceneScript<any>('set-comp-prop', args.uuid, args.compType, args.path, args.value);
         }
-        return sceneScript<any>('set-node-prop', args.uuid, args.path, args.value);
+        // isSubProp chi co nghia voi scene:set-property IPC / setPropertyByPath (undo path).
+        // Direct-assign path bo qua no — truyen xuong de handler quyet, khong doi behavior.
+        return sceneScript<any>('set-node-prop', args.uuid, args.path, args.value, args.isSubProp);
     }
 
     @utcpTool(
         'nodeSetPropertyUndo',
-        'Undo-aware set property via scene://set-property-by-path (Editor.Undo). Use when you need undo/dirty tracking.',
+        'Undo-aware set property via scene://set-property-by-path (Editor.Undo). Use when you need undo/dirty tracking. isSubProp forwarded.',
         {
             type: 'object',
             properties: {
                 uuid: { type: 'string', description: 'Node uuid' },
                 path: { type: 'string', description: 'Property path by setPropertyByPath, e.g. position.x or node name' },
                 value: { description: 'New value' },
+                isSubProp: { type: 'boolean', description: 'Whether path is a sub-property, default false' },
             },
             required: ['uuid','path','value'],
         },
         { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' }, value: {} } },
         'POST', ['scene','undo','set','property']
     )
-    async nodeSetPropertyUndo(args: { uuid: string, path: string, value: any }): Promise<any> {
-        return sceneScript<any>('set-node-prop-undo', args.uuid, args.path, args.value);
+    async nodeSetPropertyUndo(args: { uuid: string, path: string, value: any, isSubProp?: boolean }): Promise<any> {
+        return sceneScript<any>('set-node-prop-undo', args.uuid, args.path, args.value, args.isSubProp);
     }
 
     @utcpTool(
         'batchSetProperties',
-        'Batch set properties on multiple nodes. Each op can be undo-aware (via setPropertyByPath) or direct.',
+        'Batch set properties on multiple nodes. Each op can be undo-aware (via setPropertyByPath) or direct. Supports isSubProp per op.',
         {
             type: 'object',
             properties: {
-                ops: { type: 'array', items: { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' }, value: {}, undo: { type: 'boolean' } }, required: ['uuid','path'] }, description: 'Array of {uuid, path, value, undo?}' },
+                ops: { type: 'array', items: { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' }, value: {}, undo: { type: 'boolean' }, isSubProp: { type: 'boolean' } }, required: ['uuid','path'] }, description: 'Array of {uuid, path, value, undo?, isSubProp?}' },
             },
             required: ['ops'],
         },
         { type: 'object', properties: { results: { type: 'array', items: { type: 'object' } } } },
         'POST', ['scene','batch','set','property','multi']
     )
-    async batchSetProperties(args: { ops: Array<{uuid:string, path:string, value:any, undo?:boolean}> }): Promise<any> {
+    async batchSetProperties(args: { ops: Array<{uuid:string, path:string, value:any, undo?:boolean, isSubProp?:boolean}> }): Promise<any> {
         if (!Array.isArray(args.ops) || args.ops.length === 0) throw new Error('ops must be non-empty array');
         return sceneScript<any>('batch-property', args.ops);
     }
@@ -205,14 +209,15 @@ export class SceneWriteTools {
                 uuid: { type: 'string' },
                 path: { type: 'string' },
                 value: {},
+                isSubProp: { type: 'boolean', description: 'Whether path is a sub-property, default false. Forwarded to setPropertyByPath' },
             },
             required: ['uuid','path','value'],
         },
         { type: 'object', properties: { uuid: { type: 'string' }, path: { type: 'string' } } },
         'POST', ['scene','utils','set','property','high-level']
     )
-    async sceneSetPropertyHL(args: { uuid: string, path: string, value: any }): Promise<any> {
-        return sceneScript<any>('scene-set-property', args.uuid, args.path, args.value);
+    async sceneSetPropertyHL(args: { uuid: string, path: string, value: any, isSubProp?: boolean }): Promise<any> {
+        return sceneScript<any>('scene-set-property', args.uuid, args.path, args.value, args.isSubProp);
     }
 
     @utcpTool(

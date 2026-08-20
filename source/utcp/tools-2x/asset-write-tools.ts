@@ -145,4 +145,98 @@ export class AssetWriteTools {
         }
         return { url };
     }
+
+    @utcpTool(
+        'assetSaveMeta',
+        'Save asset meta (writes .meta JSON). metaJson must be a JSON string; meta object also accepted.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Asset uuid' },
+                metaJson: { description: 'JSON string of the meta (JSON.stringify(meta,null,2)). Or pass raw meta object via meta' },
+                meta: { description: 'Raw meta object (alternative to metaJson string)' },
+            },
+            required: ['uuid'],
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, uuid: { type: 'string' } }, required: ['success'] },
+        'POST', ['asset', 'meta', 'save', 'saveMeta']
+    )
+    async assetSaveMeta(args: { uuid: string, metaJson?: string, meta?: any }): Promise<any> {
+        if (!args.uuid) { throw new Error('uuid is required'); }
+        let json: string;
+        if (args.metaJson !== undefined) {
+            json = typeof args.metaJson === 'string' ? args.metaJson : JSON.stringify(args.metaJson, null, 2);
+            // Validate it is JSON
+            try { JSON.parse(json); } catch (e: any) { throw new Error('metaJson is not valid JSON: ' + e.message); }
+        } else if (args.meta !== undefined) {
+            json = JSON.stringify(args.meta, null, 2);
+        } else {
+            throw new Error('Either metaJson (string) or meta (object) is required');
+        }
+        await cbToPromise<void>((cb) => (Editor.assetdb as any).saveMeta(args.uuid, json, cb as any));
+        return { success: true, uuid: args.uuid };
+    }
+
+    @utcpTool(
+        'assetImport',
+        'Import external files (rawfiles) into db://. Results contain uuid/url/path/type per imported asset.',
+        {
+            type: 'object',
+            properties: {
+                rawfiles: { type: 'array', items: { type: 'string' }, description: 'Absolute filesystem paths to import, e.g. ["/tmp/foo.png"]' },
+                destUrl: { type: 'string', description: 'Destination db:// url, e.g. db://assets/Imported' },
+            },
+            required: ['rawfiles', 'destUrl'],
+        },
+        { type: 'object', properties: { results: { type: 'array', items: { type: 'object' } }, destUrl: { type: 'string' } } },
+        'POST', ['asset', 'import', 'rawfile', 'external']
+    )
+    async assetImport(args: { rawfiles: string[], destUrl: string }): Promise<any> {
+        if (!Array.isArray(args.rawfiles) || args.rawfiles.length === 0) { throw new Error('rawfiles must be non-empty array'); }
+        const destUrl = requireUrl(args.destUrl);
+        const results = await cbToPromise<any[]>((cb) => (Editor.assetdb as any)['import'](args.rawfiles, destUrl, cb as any));
+        return { results: results || [], destUrl };
+    }
+
+    @utcpTool(
+        'assetExchangeUuid',
+        'Exchange uuids of two assets (swap identity). Useful for replacing an asset while keeping references.',
+        {
+            type: 'object',
+            properties: {
+                urlA: { type: 'string', description: 'First db:// url' },
+                urlB: { type: 'string', description: 'Second db:// url' },
+            },
+            required: ['urlA', 'urlB'],
+        },
+        { type: 'object', properties: { success: { type: 'boolean' } }, required: ['success'] },
+        'POST', ['asset', 'exchange', 'uuid', 'swap']
+    )
+    async assetExchangeUuid(args: { urlA: string, urlB: string }): Promise<any> {
+        const urlA = requireUrl(args.urlA);
+        const urlB = requireUrl(args.urlB);
+        await cbToPromise<void>((cb) => (Editor.assetdb as any).exchangeUuid(urlA, urlB, cb as any));
+        return { success: true };
+    }
+
+    @utcpTool(
+        'assetRefresh',
+        'Refresh asset-db at url and return results (command: create/delete/change/uuid-change).',
+        {
+            type: 'object',
+            properties: { url: { type: 'string', description: 'db:// url to refresh, e.g. db://assets' } },
+            required: ['url'],
+        },
+        { type: 'object', properties: { results: { type: 'array', items: { type: 'object' } }, url: { type: 'string' } } },
+        'POST', ['asset', 'refresh', 'reload']
+    )
+    async assetRefresh(args: { url: string }): Promise<any> {
+        const url = requireUrl(args.url);
+        const results = await new Promise<any[]>((resolve) => {
+            try {
+                Editor.assetdb.refresh(url, ((err: any, res: any) => resolve(res || [])) as any);
+            } catch { resolve([]); }
+        });
+        return { url, results: results || [] };
+    }
 }

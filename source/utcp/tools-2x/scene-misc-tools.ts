@@ -31,6 +31,39 @@ export class SceneMiscTools {
     }
 
     @utcpTool(
+        'sceneNew',
+        'Create a new empty scene (scene:new-scene IPC). Fire-and-forget like save_scene — save the current scene first if it is dirty.',
+        { type: 'object', properties: {} },
+        { type: 'object', properties: { success: { type: 'boolean' }, note: { type: 'string' } }, required: ['success'] },
+        'POST', ['scene', 'new', 'create', 'empty']
+    )
+    async sceneNew(): Promise<any> {
+        // asset-management docs: Editor.Ipc.sendToPanel('scene','scene:new-scene').
+        // Khong await cb — lifecycle message co the khong reply (giong scene:stash-and-save, 10s timeout).
+        Editor.Ipc.sendToPanel('scene', 'scene:new-scene' as any);
+        return { success: true, note: 'fire-and-forget; verify with sceneInfo' };
+    }
+
+    @utcpTool(
+        'prefabSync',
+        'Apply prefab instance changes back to the prefab asset (scene:set-prefab-sync, forum reply #41). Fire-and-forget.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Prefab asset uuid (or instance node uuid per forum snippet)' },
+            },
+            required: ['uuid'],
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, note: { type: 'string' } }, required: ['success'] },
+        'POST', ['prefab', 'sync', 'apply', 'save']
+    )
+    async prefabSync(args: { uuid: string }): Promise<any> {
+        if (!args.uuid) { throw new Error('uuid is required'); }
+        Editor.Ipc.sendToPanel('scene', 'scene:set-prefab-sync' as any, args.uuid);
+        return { success: true, note: 'fire-and-forget; message from forum #41, chua verify runtime' };
+    }
+
+    @utcpTool(
         'sceneInfo',
         'Get current scene header: name, uuid, designResolution, node count.',
         { type: 'object', properties: {} },
