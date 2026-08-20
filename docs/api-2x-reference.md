@@ -39,7 +39,7 @@ Nguon chinh: https://forum.cocos.org/t/topic/92605/5 — tong hop API editor 2.x
 | `Editor.assetdb.refresh(url, cb)` | main `refresh` → `result.command ∈ {delete,change,create,uuid-change}` | OK, `cb` optional | `assetRefresh(url)` → `{url, results[]}` |
 | `Editor.assetdb.queryAssets(pattern, types, cb)` | main `queryAssets(pattern, assetTypes, cb)` — `types` accept `string|string[]` per docs | OK, `types=null` = all | `assetQuery search` — `assetTypes: string|string[]`, `normalizeTypes()` |
 | `Editor.assetdb.deepQuery(cb)` | main `deepQuery` docs ghi `result.name/uuid/type/children` hierarchical | OK nhung **tra flat** + `parentUuid` | `assetQuery tree` build cay |
-| `Editor.assetdb.queryMetas(pattern, type, cb)` | main `queryMetas` → meta instances | OK (circular) | `assetQuery metas` — `safeSerialize` + `__uuid/__url` hint |
+| `Editor.assetdb.queryMetas(pattern, type, cb)` | main `queryMetas` → meta instances | chưa verify | `assetQuery metas` — `safeSerialize` + `__uuid/__url` hint (code circular-safe, chưa smoke) |
 | `Editor.assetdb.uuidToUrl(uuid)` | main conversion sync | OK | `assetResolve url_from_uuid` |
 | `Editor.assetdb.urlToUuid(url)` | main sync | OK | `assetResolve uuid_from_url` |
 | `Editor.assetdb.fspathToUrl(fspath)` | main sync | OK | `assetResolve fspath` |

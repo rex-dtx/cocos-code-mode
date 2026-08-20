@@ -1,6 +1,6 @@
 {
   "name": "cocos-code-mode-2x",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "i18n:cocos-code-mode-2x.description",
   "author": "cst by hzi for cc2.4",
   "main": "dist/main.js",
