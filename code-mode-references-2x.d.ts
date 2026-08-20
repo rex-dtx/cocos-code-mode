@@ -117,7 +117,7 @@ declare namespace cc2x4 {
         maxResults?: number;
     }): { result: any; total?: number; truncated?: boolean };
 
-    /**
+    /** Goi method cua component theo ten. Discovery: listComponentMethods. */
     function callComponentMethod(args: { uuid: string; method: string; args?: any[] }): { result: any };
     /**
      * Discovery step cho callComponentMethod (vong 2): liet ke method name moi
@@ -265,8 +265,12 @@ declare namespace cc2x4 {
     /** Duplicate node (cc.instantiate). */
     function nodeDuplicate(args: { uuid: string }): { uuid: string; name: string; parent: string };
 
-    /** Undo-aware set (via setPropertyByPath). */
-    function nodeSetPropertyUndo(args: { uuid: string; path: string; value: any }): { uuid: string; path: string; value: any };
+    /** Undo-aware set (via setPropertyByPath). isSubProp forwarded. */
+    function nodeSetPropertyUndo(args: { uuid: string; path: string; value: any; isSubProp?: boolean }): { uuid: string; path: string; value: any };
+    /** High-level create node via scene://utils/scene (undo-aware), falls back to cc.Node. */
+    function sceneCreateNodeHL(args: { name: string; parentUuid?: string }): { uuid: string; name: string };
+    /** High-level set property via scene://utils/scene (undo-aware), falls back to setPropertyByPath. isSubProp forwarded. */
+    function sceneSetPropertyHL(args: { uuid: string; path: string; value: any; isSubProp?: boolean }): { uuid: string; path: string };
     /** Undo/redo. */
     function editorUndo(args: { operation: 'undo' | 'redo' }): { success: boolean };
 
@@ -293,8 +297,8 @@ declare namespace cc2x4 {
     function editorListTypes(args: { category: string }): { types: string[] };
     /** Create primitive 3D node (Cube/Sphere etc.) under parent. */
     function nodeCreatePrimitive(args: { name?: string; primitiveType: string; parentUuid?: string }): { uuid: string; name: string };
-    /** Batch set properties (multi-node). */
-    function batchSetProperties(args: { ops: Array<{uuid:string, path:string, value:any, undo?:boolean}> }): { results: Array<{uuid:string, path:string, ok:boolean}> };
+    /** Batch set properties (multi-node). Supports isSubProp per op. */
+    function batchSetProperties(args: { ops: Array<{uuid:string, path:string, value:any, undo?:boolean, isSubProp?:boolean}> }): { results: Array<{uuid:string, path:string, ok:boolean}> };
     /** Write project settings. */
     function projectSaveConfig(args: { type: string; key: string; value: any }): { success: boolean };
 
