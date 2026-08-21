@@ -124,8 +124,10 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const NAME = 'cc2x4';
-        const LEGACY_NAMES = ['cc24', 'CocosEditor', 'CocosEditor2x'];
+        const NAME = 'cc-remoter-2x';
+        const SHORT = 'ccr-2x';
+        const LEGACY_NAMES = ['cc-remoter-v2x4', 'cc_remoter_v2x4', 'cc_remoter_2x', 'ccr_2x', 'cc2x4', 'cc24', 'CocosEditor', 'CocosEditor2x'];
+        // migrate any legacy single entry to canonical NAME
         let idx = templates.findIndex((t: any) => t.name === NAME);
         if (idx === -1) {
             for (const legacy of LEGACY_NAMES) {
@@ -155,6 +157,23 @@ export class UtcpConfigManager {
                 changed = true;
                 console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
             }
+        }
+        // ensure short alias ccr-2x mirrors canonical (so call_tool_chain("ccr_2x.*") works)
+        let sIdx = templates.findIndex((t: any) => t.name === SHORT);
+        if (sIdx === -1) {
+            templates.push({
+                name: SHORT,
+                call_template_type: 'http',
+                url: expectedUrl,
+                http_method: 'GET',
+                content_type: 'application/json',
+            });
+            changed = true;
+            console.log(`[UtcpConfigManager] Created ${SHORT} alias with port ${port}`);
+        } else if (templates[sIdx].url !== expectedUrl) {
+            templates[sIdx].url = expectedUrl;
+            changed = true;
+            console.log(`[UtcpConfigManager] Updated ${SHORT} alias port to ${port}`);
         }
 
         if (changed) {

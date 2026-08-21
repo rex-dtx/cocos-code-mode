@@ -56,10 +56,10 @@ Build → restart Creator → gọi:
 GET http://localhost:<port>/tools/scene-script?message=probe-getInstanceById&uuid=<canvas-uuid>
 ```
 
-Hoặc từ `cc2x4` code-mode:
+Hoặc từ `cc_remoter_2x` code-mode (manual `cc-remoter-2x`, short `ccr-2x`->`ccr_2x`, legacy `cc2x4`/`cc-remoter-v2x4`):
 
 ```js
-cc2x4.sceneScript('probe-getInstanceById', 'a286bbGkn...')
+cc_remoter_2x.sceneScript('probe-getInstanceById', 'a286bbGkn...')
 ```
 
 **Kết quả mong đợi:**
@@ -95,7 +95,7 @@ Thêm handler:
 ```
 
 ```js
-cc2x4.sceneScript('probe-scene-utils')
+cc_remoter_2x.sceneScript('probe-scene-utils')
 ```
 
 **Kết quả mong đợi:** Mỗi entry trả array tên export (ví dụ `['createNode','removeNode','setProperty',...]`). Dựa vào đó chọn API cho write.
@@ -147,8 +147,8 @@ Thêm handler:
 ```
 
 ```js
-cc2x4.sceneScript('probe-set-prop', 'x', 999)
-cc2x4.sceneScript('probe-set-prop') // dump API trước
+cc_remoter_2x.sceneScript('probe-set-prop', 'x', 999)
+cc_remoter_2x.sceneScript('probe-set-prop') // dump API trước
 ```
 
 **Kết quả mong đợi:**

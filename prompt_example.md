@@ -59,7 +59,7 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 **Maximize efficiency per tool call — do MORE in single execution.**
 
 ### Phase 1: Discover & Plan (cache-first — see `.claude/skills/cc-code-mode/SKILL.md`)
-- If `CK_CODE_MODE=ready` or `.claude/cc-code-mode-cache.json` exists → **skip** `register_manual`/`list_tools`/`search_tools`/`tools_info`, go straight to `call_tool_chain("cc2x4.<tool>({ ... })")` (cc3x7 on 3.x branch, cc2x4 on 2.x).
+- If `CK_CODE_MODE=ready` or `.claude/cc-code-mode-cache.json` exists → **skip** `register_manual`/`list_tools`/`search_tools`/`tools_info`, go straight to `call_tool_chain("cc_remoter_2x.<tool>({ ... })")` — manual `cc-remoter-2x` (short `ccr-2x`->`ccr_2x`), legacy `cc2x4`/`cc-remoter-v2x4` van dung duoc (cc3x7 on 3.x branch).
 - Cache miss only (Cocos was closed at SessionStart): `register_manual` from `~/.utcp_config.json` → `list_tools` once → then cache hit thereafter.
 - On `manual not found` / `tool not found`: re-`register_manual` (re-read `~/.utcp_config.json` — port may have changed) → refresh cache → retry once.
 

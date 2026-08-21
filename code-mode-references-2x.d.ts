@@ -1,4 +1,6 @@
 // Agent-facing tool surface cho Cocos Creator 2.4.x.
+// Manual: cc-remoter-2x (UTCP, hyphen). JS: cc_remoter_2x (underscore).
+// Short: ccr-2x / ccr_2x. Legacy cc-remoter-v2x4 / cc2x4 kept for compat.
 // STATIC hand-written, KHONG generated, 0 code importer. Them tool thi sua tay.
 // Chi khai tool DA PASS gate — thay trong d.ts ma goi khong duoc con te hon khong co.
 // Doi chieu shape that: docs/cocos-2x-api-notes.md
@@ -48,7 +50,7 @@ interface IHierarchyNode2x {
     childrenOmitted?: number;
 }
 
-declare namespace cc2x4 {
+declare namespace cc_remoter_2x {
 
     // --- Scene ---
 
@@ -325,3 +327,8 @@ declare namespace cc2x4 {
     /** Clipboard copy/cut/paste/duplicate nodes. */
     function nodeClipboard(args: { operation: 'copy'|'cut'|'paste'|'duplicate'; ids?: string; targetId?: string }): { success: boolean; ids?: string[] };
 }
+
+// Aliases — legacy names still resolve (kept for compat).
+// New code should use cc_remoter_2x (manual cc-remoter-2x) or ccr_2x (manual ccr-2x).
+import cc2x4 = cc_remoter_2x;
+import ccr_2x = cc_remoter_2x;

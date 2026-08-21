@@ -29,8 +29,12 @@ async function main() {
     return;
   }
 
-  const manuals = utcp.manual_call_templates.filter((m) => m.name === 'cc3x7' || m.name === 'cc2x4');
+  const CANON = 'cc-remoter-2x';
+  const SHORT = 'ccr-2x';
+  const ALIASES_2X = new Set(['cc-remoter-2x', 'ccr-2x', 'cc-remoter-v2x4', 'cc_remoter_v2x4', 'cc_remoter_2x', 'ccr_2x', 'cc2x4', 'cc24', 'CocosEditor', 'CocosEditor2x']);
+  const manuals = utcp.manual_call_templates.filter((m) => ALIASES_2X.has(m.name) || m.name === 'cc3x7');
   if (manuals.length === 0) return;
+  // legacy aliases map to CANON via cacheKey below; SHORT keeps its own entry
 
   const cache = { updatedAt: new Date().toISOString(), manuals: {} };
   for (const m of manuals) {
@@ -42,7 +46,9 @@ async function main() {
     const tools = toolDefs.map((t) => t.name);
     // build-info is out-of-schema for /utcp, lives on its own endpoint
     const buildInfo = await fetchJson(`${base}/build-info`);
-    cache.manuals[m.name] = { url: m.url, toolCount: tools.length, tools, toolDefs, buildInfo: buildInfo || null };
+    const is2x = ALIASES_2X.has(m.name);
+    const cacheKey = is2x ? (m.name === SHORT || m.name === 'ccr_2x' ? SHORT : CANON) : m.name;
+    cache.manuals[cacheKey] = { url: m.url, toolCount: tools.length, tools, toolDefs, buildInfo: buildInfo || null, aliasOf: m.name !== cacheKey ? m.name : undefined };
   }
 
   // write project-local cache (.claude/cc-code-mode-cache.json) — prefer project dir from env/hook cwd
@@ -57,9 +63,9 @@ async function main() {
   const envFile = process.env.CLAUDE_ENV_FILE;
   if (envFile && fs.existsSync(path.dirname(envFile))) {
     try { fs.appendFileSync(envFile, `CK_CODE_MODE=ready\n`); } catch {}
-    // also expose per-manual counts for quick checks
+    // also expose per-manual counts for quick checks (hyphen -> underscore for env var)
     for (const [name, info] of Object.entries(cache.manuals)) {
-      try { fs.appendFileSync(envFile, `CK_CODE_MODE_${name.toUpperCase()}=${info.toolCount}\n`); } catch {}
+      try { fs.appendFileSync(envFile, `CK_CODE_MODE_${name.toUpperCase().replace(/-/g, '_')}=${info.toolCount}\n`); } catch {}
     }
   }
 

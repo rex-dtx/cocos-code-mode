@@ -1,11 +1,11 @@
 # Prompt Guidance — Risks & Trade-offs
 
-Applies to: `README.md` → Agent Prompt Guidance snippet for `cc2x4.*` (mirrored from `cc3x7`).
+Applies to: `README.md` → Agent Prompt Guidance snippet for `cc_remoter_2x.*` / `ccr_2x.*` (manual `cc-remoter-2x`/`ccr-2x`, mirrored from `cc3x7`).
 
 ## The snippet
 
 ```text
-When returning data from cc2x4 tools:
+When returning data from cc_remoter_2x / ccr_2x / cc2x4 tools (manual cc-remoter-2x/ccr-2x):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.
