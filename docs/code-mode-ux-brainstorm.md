@@ -68,3 +68,6 @@ Huong 1 da xong: skill + hook + cache `toolDefs` (full detail) + prompt cache-fi
 
 ---
 *Nguon: brainstorm session 2026-08-19 — phan loai: bounded, recommend Huong 1 (skill + hook).*
+
+
+> 2026-08-21 renamed: `cc-remoter-*` → `cc-bridge-*` (ccb3x/ccb2x), `cc3x7` deprecated compat.

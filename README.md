@@ -1,6 +1,6 @@
-# CC Remoter 3x — Cocos Creator 3.7 remoter (UTCP)
+# CC Bridge 3x — Cocos Creator 3.7 remoter (UTCP)
 
-**CC Remoter 3x** (formerly `cocos-code-mode-3x7`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene manipulation, asset management, and property inspection as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents build, inspect, and modify Cocos Creator projects the same way a developer would through the UI.
+**CC Bridge 3x** (formerly `cocos-code-mode-3x7`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene manipulation, asset management, and property inspection as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents build, inspect, and modify Cocos Creator projects the same way a developer would through the UI.
 These tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) environment to achieve maximum performance and token efficiency for AI agents, letting them call the tools in isolated JS sandbox.
 
 ## Quickstart
@@ -61,15 +61,15 @@ This extension architecture follows a **discover, then act** pattern. AI agents 
 
 ```typescript
 // Preferred (consolidated): discover → set in one session
-const tree = cc3x7.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
+const tree = ccb3x.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
 const ref = tree.children[0].reference;
 
 // Single-class definition instead of full dump
-const { definition } = await cc3x7.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
+const { definition } = await ccb3x.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
 
 // Unified get/set — no need to pick inspector*Instance vs inspector*Settings
-const { dump } = await cc3x7.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
-await cc3x7.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
+const { dump } = await ccb3x.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
+await ccb3x.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
 
 // 2.0.0: legacy removed — use consolidated names above.
 ```
@@ -211,15 +211,14 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension automatically maintains a `cc3x7` entry in UTCP Config pointing to the running server port. It
-migrates `CocosEditor3x7` → `cc37` → `cc3x7` in place. Legacy names are still read (`cc-2x` uses `cc2x4` with `CocosEditor`/`cc24` legacy).
+The extension registers itself in `~/.utcp_config.json` as a `cc-bridge-3x` entry (JS: `cc_bridge_3x`, short `ccb3x` (compat `ccb-3x`/`ccb_3x`)) pointing at the running server port, and rewrites the port when it changes.
 
 ## Agent Prompt Guidance
 
 When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
 
 ```text
-When returning data from cc3x7 tools:
+When returning data from ccb3x tools (manual `cc-bridge-3x`, short `ccb3x`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

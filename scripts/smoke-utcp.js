@@ -46,14 +46,14 @@ async function main() {
         assert.equal(n, 46, `tools.length expected 46 got ${n}`);
         // ensure no unknown keys (strict schema)
         ok(`manual valid: 46 tools, keys ${keys.join(',')}`);
-        // check cc3x7 template exists in config
+        // check cc-bridge-3x template exists in config
         try {
             const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
             const raw = readFileSync(cfgPath, 'utf8');
             const cfg = JSON.parse(raw);
             const names = (cfg.manual_call_templates || []).map(t => t.name);
-            assert.ok(names.includes('cc3x7'), `cc3x7 template present, found ${names.join(',')}`);
-            ok('config has cc3x7 template');
+            assert.ok(names.includes('cc-bridge-3x') || names.includes('ccb3x') || names.includes('cc3x7'), `cc3x7 template present, found ${names.join(',')}`);
+            ok('config has cc-bridge-3x template');
         } catch (e) { skipped('config cc3x7 check', e.message); }
     } catch (e) { bad('manual', e.message); }
 

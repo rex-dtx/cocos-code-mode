@@ -62,5 +62,5 @@ previewManage({ operation: 'scene_preview', cameraPosition, targetPosition })
 ## Notes
 
 - Legacy method bodies kept (not registered) — consolidated delegates via `new LegacyTool().method()`.
-- `code-mode-references.d.ts` drops 26 legacy signatures, adds 10 consolidated.
+- `cc-bridge-3x.d.ts` drops 26 legacy signatures, adds 10 consolidated.
 - `maxDepth`/`maxNodes`/`fields[]`/`section`/`response-trimmer` unchanged.

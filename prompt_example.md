@@ -48,7 +48,7 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 
 ## Tool defenitions reference
 
-- Defenitions for Code Mode tools should be placed in `cc-remoter-3x.d.ts (legacy `code-mode-references.d.ts` compat)` at project root
+- Defenitions for Code Mode tools should be placed in `cc-bridge-3x.d.ts` at project root
 - Create if not exists and use as quick reference guide
 - Document mostly used component or asset definitions you will use for current task
 
@@ -58,8 +58,8 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 
 **Maximize efficiency per tool call — do MORE in single execution.**
 
-### Phase 1: Discover & Plan (cache-first — see `.claude/skills/cc-remoter-3x/SKILL.md (legacy `cc-code-mode` still works)`)
-- If `CK_CODE_MODE=ready` or `.claude/cc-code-mode-cache.json` exists → **skip** `register_manual`/`list_tools`/`search_tools`/`tools_info`, go straight to `call_tool_chain("cc3x7.<tool>({ ... })")`.
+### Phase 1: Discover & Plan (cache-first — see `.claude/skills/cc-bridge-3x/SKILL.md`)
+- If `CK_CODE_MODE=ready` or `.claude/cc-bridge-cache.json` exists → **skip** `register_manual`/`list_tools`/`search_tools`/`tools_info`, go straight to `call_tool_chain("ccb3x.<tool>({ ... })")`.
 - Cache miss only (Cocos was closed at SessionStart): `register_manual` from `~/.utcp_config.json` → `list_tools` once → then cache hit thereafter.
 - On `manual not found` / `tool not found`: re-`register_manual` (re-read `~/.utcp_config.json` — port may have changed) → refresh cache → retry once.
 

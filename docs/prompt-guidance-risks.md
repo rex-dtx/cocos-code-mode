@@ -1,11 +1,11 @@
 # Prompt Guidance — Risks & Trade-offs
 
-Applies to: `README.md` → Agent Prompt Guidance snippet for `cc3x7.*`.
+Applies to: `README.md` → Agent Prompt Guidance snippet for `ccb3x.*` (manual `cc-bridge-3x`/`ccb3x`).
 
 ## The snippet
 
 ```text
-When returning data from cc3x7 tools:
+When returning data from ccb3x tools (manual `cc-bridge-3x`, short `ccb3x`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

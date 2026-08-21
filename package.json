@@ -1,7 +1,7 @@
 {
   "$schema": "./@types/schema/package/index.json",
   "package_version": 2,
-  "name": "cc-remoter-3x",
+  "name": "cc-bridge-3x",
   "version": "2.0.0",
   "author": "cst by hzi for cc3.7",
   "editor": ">=3.7.0",
@@ -10,7 +10,7 @@
     "build": "node ./scripts/generate-build-info.js && npx tsc",
     "package": "npm run build && node ./scripts/package.js"
   },
-  "description": "i18n:cc-remoter-3x.description",
+  "description": "i18n:cc-bridge-3x.description",
   "main": "./dist/main.js",
   "dependencies": {
     "@types/sharp": "^0.31.1",
@@ -61,42 +61,42 @@
     },
     "menu": [
       {
-        "path": "CC Remoter 3x",
-        "label": "i18n:cc-remoter-3x.open_panel",
+        "path": "CC Bridge 3x",
+        "label": "i18n:cc-bridge-3x.open_panel",
         "message": "open-panel"
       },
       {
-        "path": "CC Remoter 3x",
+        "path": "CC Bridge 3x",
         "label": "Server Info",
         "message": "show-info"
       },
       {
-        "path": "CC Remoter 3x",
+        "path": "CC Bridge 3x",
         "label": "Restart Server",
         "message": "restart-server"
       },
       {
-        "path": "CC Remoter 3x",
+        "path": "CC Bridge 3x",
         "label": "Reload Extension",
         "message": "reload-extension"
       },
       {
-        "path": "CC Remoter 3x",
+        "path": "CC Bridge 3x",
         "label": "About",
         "message": "show-build-info"
       },
       {
-        "path": "CC Remoter 3x/Debug",
+        "path": "CC Bridge 3x/Debug",
         "label": "Toggle Debug Logging",
         "message": "toggle-debug"
       },
       {
-        "path": "CC Remoter 3x/Debug",
+        "path": "CC Bridge 3x/Debug",
         "label": "Open Debug Folder",
         "message": "open-debug-folder"
       },
       {
-        "path": "CC Remoter 3x/Debug",
+        "path": "CC Bridge 3x/Debug",
         "label": "Clear Debug Logs",
         "message": "clear-debug-logs"
       }

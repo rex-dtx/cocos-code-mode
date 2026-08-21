@@ -84,20 +84,9 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const NAME = 'cc-remoter-3x';
-        const SHORT = 'ccr-3x';
-        const LEGACY_NAMES = ['cc-remoter-v3x7', 'cc_remoter_v3x7', 'cc_remoter_3x', 'ccr_3x', 'cc3x7', 'cc37', 'CocosEditor3x7', 'CocosEditor3x'];
+        const NAME = 'cc-bridge-3x';
+        const SHORT = 'ccb3x';
         let idx = templates.findIndex((t: any) => t.name === NAME);
-        if (idx === -1) {
-            for (const legacy of LEGACY_NAMES) {
-                idx = templates.findIndex((t: any) => t.name === legacy);
-                if (idx !== -1) {
-                    templates[idx].name = NAME;
-                    console.log(`[UtcpConfigManager] Migrated template name ${legacy} -> ${NAME}`);
-                    break;
-                }
-            }
-        }
 
         let changed = false;
         if (idx === -1) {
@@ -115,6 +104,14 @@ export class UtcpConfigManager {
                 templates[idx].url = expectedUrl;
                 changed = true;
                 console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
+            }
+        }
+        // migrate old short names (ccb-3x/ccb_3x) to ccb3x if present
+        for (const old of ['ccb-3x', 'ccb_3x']) {
+            const oi = templates.findIndex((t: any) => t.name === old);
+            if (oi !== -1 && !templates.some((t: any) => t.name === SHORT)) {
+                templates[oi].name = SHORT;
+                console.log(`[UtcpConfigManager] Migrated short alias ${old} -> ${SHORT}`);
             }
         }
         let sIdx = templates.findIndex((t: any) => t.name === SHORT);

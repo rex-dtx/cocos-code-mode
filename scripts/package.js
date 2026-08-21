@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { ZipArchive } = require('archiver'); // archiver v8: class-based API (cc3x7 Node >= 18)
+const { ZipArchive } = require('archiver'); // archiver v8: class-based API (cc-bridge-3x Node >= 18)
 
 const packageJsonPath = path.join(__dirname, '../package.json');
 if (!fs.existsSync(packageJsonPath)) {
