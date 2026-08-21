@@ -48,7 +48,7 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 
 ## Tool defenitions reference
 
-- Defenitions for Code Mode tools should be placed in `code-mode-references.d.ts` at project root
+- Defenitions for Code Mode tools should be placed in `cc-remoter-3x.d.ts (legacy `code-mode-references.d.ts` compat)` at project root
 - Create if not exists and use as quick reference guide
 - Document mostly used component or asset definitions you will use for current task
 

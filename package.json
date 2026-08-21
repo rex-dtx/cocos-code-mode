@@ -1,7 +1,7 @@
 {
   "$schema": "./@types/schema/package/index.json",
   "package_version": 2,
-  "name": "cocos-code-mode-3x7",
+  "name": "cc-remoter-3x",
   "version": "2.0.0",
   "author": "cst by hzi for cc3.7",
   "editor": ">=3.7.0",
@@ -10,7 +10,7 @@
     "build": "node ./scripts/generate-build-info.js && npx tsc",
     "package": "npm run build && node ./scripts/package.js"
   },
-  "description": "i18n:cocos-code-mode-3x7.description",
+  "description": "i18n:cc-remoter-3x.description",
   "main": "./dist/main.js",
   "dependencies": {
     "@types/sharp": "^0.31.1",
@@ -61,42 +61,42 @@
     },
     "menu": [
       {
-        "path": "Code Mode (3.7)",
-        "label": "i18n:cocos-code-mode-3x7.open_panel",
+        "path": "CC Remoter 3x",
+        "label": "i18n:cc-remoter-3x.open_panel",
         "message": "open-panel"
       },
       {
-        "path": "Code Mode (3.7)",
+        "path": "CC Remoter 3x",
         "label": "Server Info",
         "message": "show-info"
       },
       {
-        "path": "Code Mode (3.7)",
+        "path": "CC Remoter 3x",
         "label": "Restart Server",
         "message": "restart-server"
       },
       {
-        "path": "Code Mode (3.7)",
+        "path": "CC Remoter 3x",
         "label": "Reload Extension",
         "message": "reload-extension"
       },
       {
-        "path": "Code Mode (3.7)",
+        "path": "CC Remoter 3x",
         "label": "About",
         "message": "show-build-info"
       },
       {
-        "path": "Code Mode (3.7)/Debug",
+        "path": "CC Remoter 3x/Debug",
         "label": "Toggle Debug Logging",
         "message": "toggle-debug"
       },
       {
-        "path": "Code Mode (3.7)/Debug",
+        "path": "CC Remoter 3x/Debug",
         "label": "Open Debug Folder",
         "message": "open-debug-folder"
       },
       {
-        "path": "Code Mode (3.7)/Debug",
+        "path": "CC Remoter 3x/Debug",
         "label": "Clear Debug Logs",
         "message": "clear-debug-logs"
       }
