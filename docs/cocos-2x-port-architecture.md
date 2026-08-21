@@ -151,3 +151,15 @@ Không có `.d.ts` chính thức cho 2.x. `@cocos/creator-types@3.8.7` đã bỏ
 1. `Editor.assetdb` có thật sự sẵn global trong main.js plugin? (phase 4 trả lời ngay)
 2. Vòng 2: resolve node-by-uuid trong scene process — `cc.engine.getInstanceById(uuid)` là ứng viên, chưa verify
 3. Vòng 2: undo dùng `Editor.Undo.add + commit` hay `_Scene.Undo`?
+
+
+---
+
+## Rename 2026-08-21 -- cocos-code-mode-2x -> cc-remoter-2x
+
+- Extension ID + npm package.json name: cc-remoter-2x (panel CC Remoter 2x). Re-import extension after rename (Creator caches package name).
+- PROFILE_URL = profile://project/cc-remoter-2x.json -> file <project>/settings/cc-remoter-2x.json. config-manager.ts#getProfile auto-migrates legacy cocos-code-mode-2x.json if new file empty.
+- Scene pkg for Editor.Scene.callSceneScript(pkg, ...) + Editor.Ipc.sendToPackage -> cc-remoter-2x (all source/*, panel/*, scene-script handlers).
+- UTCP manuals: long cc-remoter-2x (JS cc_remoter_2x) + short ccr-2x->ccr_2x -- SDK name.replace(/[^\w]/g,"_") so hyphen in ~/.utcp_config.json normalizes to underscore when calling: cc_remoter_2x.sceneSnapshot(...) / ccr_2x.*. Legacy cc2x4/cc-remoter-v2x4 auto-migrated in config-manager + cc-remoter-bootstrap.js (+ cc-code-mode-cache.json mapping).
+- cc-remoter-2x.d.ts is canon agent-facing (legacy code-mode-references-2x.d.ts shim kept). README Quickstart + Agent prompt + UTCP Call Templates synced.
+- Compat shims: scripts/code-mode-bootstrap.js -> shim to scripts/cc-remoter-bootstrap.js; .claude/skills/cc-code-mode deprecated -> cc-remoter-2x; .claude/settings.json hook points to cc-remoter-bootstrap.js.

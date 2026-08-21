@@ -2,6 +2,8 @@
 
 Ghi từ chạy thật trên Creator 2.4.15, không phải suy luận từ docs. Phase sau đọc file này.
 
+> Renamed 2026-08-21: `cocos-code-mode-2x` -> **cc-remoter-2x** (short `ccr-2x`). Manuals `cc-remoter-2x`/`ccr-2x`, JS `cc_remoter_2x`/`ccr_2x`. Legacy names auto-migrated -- see `README.md`. Breaking: re-import extension; profile auto-migrates.
+
 **Editor:** `C:\ProgramData\cocos\editors\Creator\2.4.15`
 **Testbed:** `G:\_ws\_helpers\cc-2x-testbed` (từ template `hello-world`)
 **Install:** junction `<project>\packages\cc-remoter-2x` (legacy `cocos-code-mode` → `G:\_ws\_helpers\cc-code-mode-cst-2x`
@@ -15,7 +17,7 @@ Ghi từ chạy thật trên Creator 2.4.15, không phải suy luận từ docs.
 Manifest 2.x tối giản đủ để load (`name`/`version`/`main`/`reload`). Không cần `panel`, `main-menu`, `uuid`.
 
 ```
-success: cocos-code-mode loaded
+success: cc-remoter-2x loaded
 normal: [cc-remoter-2x] UTCP Server started on port 59142
 ```
 
@@ -478,7 +480,7 @@ Docs `main/console.md` chỉ có `log`/`warn`/`error`/`clearLog` — **ghi**, kh
 
 ## `projectGetConfig` — đọc thẳng `settings/*.json`
 
-`Editor.Profile.load` trả EventEmitter không serialize được (bẫy 4). Đọc file trực tiếp. Testbed có 5 file: `builder` `builder.panel` `cocos-code-mode` `project` `services`.
+`Editor.Profile.load` trả EventEmitter không serialize được (bẫy 4). Đọc file trực tiếp. Testbed có 5 file: `builder` `builder.panel` `cc-remoter-2x` `project` `services` (legacy `cocos-code-mode`).
 
 Trả kèm `available` để agent biết `type` nào hợp lệ, không phải đoán.
 
@@ -583,7 +585,7 @@ Lưu ý: `package.json` của `custom` khai `express: ^5` nhưng cài về **4.2
 8. ~~`scene:query-node` `types` 12 class def cho 1 node (~19 KB) — có cách xin dump không kèm `types`?~~ → **resolved: cắt ở tool, không cần API mới** (xem §Vòng 1.1)
 9. ~~`sceneSnapshot` trên scene production của team (testbed chỉ 5 node / 1980 B). > 50 KB thì hạ default `maxDepth` xuống 4.~~ → **resolved: `maxNodes` 400 chặn theo số node**, không phụ thuộc hình dạng cây (xem §Vòng 1.1 §4). Vẫn nên đo trên scene thật để chốt con số 400.
 10. `find-by-component` node trùng tên → path không unique. Cần index `Canvas/Bg[1]`? YAGNI tới khi gặp.
-11. Config panel UI chưa port — vòng 1 server tự start, đọc port ở `settings/cocos-code-mode.json`.
+11. Config panel UI chưa port — vòng 1 server tự start, đọc port ở `settings/cc-remoter-2x.json` (legacy `cocos-code-mode.json`).
 
 ---
 

@@ -2,6 +2,8 @@
 
 Port `cocos-code-mode` (Creator 3.8.x) sang **Creator 2.4.15**. Branch `cc-2x`.
 
+> Renamed 2026-08-21: `cocos-code-mode-2x` -> **cc-remoter-2x** (short `ccr-2x`). Manuals `cc-remoter-2x`/`ccr-2x`, JS `cc_remoter_2x`/`ccr_2x`. Legacy names (`cc2x4`, `cocos-code-mode-2x`, `cc-remoter-v2x4`) auto-migrated -- see `README.md`. Breaking: re-import extension; profile `cc-remoter-2x.json` auto-migrates from `cocos-code-mode-2x.json`.
+
 Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover phần khác 2.x.
 
 ## Đọc gì

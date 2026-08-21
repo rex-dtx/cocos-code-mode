@@ -15,7 +15,7 @@ Start-Process "C:\ProgramData\cocos\editors\Creator\2.4.15\CocosCreator.exe" -Ar
 
 # 3. Đợi Editor log: [cc-remoter-2x] UTCP Server started on port 5xxxx
 # 4. Lấy port
-cat G:\_ws\_helpers\cc-2x-testbed\settings\cc-remoter-2x.json  # legacy cc-remoter-2x.json also checked
+cat G:\_ws\_helpers\cc-2x-testbed\settings\cc-remoter-2x.json  # legacy cocos-code-mode-2x.json also checked
 ```
 
 ## Probe 1: `cc.engine.getInstanceById(uuid)` nhận uuid gì?
