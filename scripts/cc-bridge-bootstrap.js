@@ -29,8 +29,8 @@ async function main() {
   }
 
   const CANON = 'cc-bridge-2x';
-  const SHORT = 'ccb-2x';
-  const ALIASES_2X = new Set(['cc-bridge-2x', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x']);
+  const SHORT = 'ccb2x';
+  const ALIASES_2X = new Set(['cc-bridge-2x', 'ccb2x', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x']);
   const manuals = utcp.manual_call_templates.filter((m) => ALIASES_2X.has(m.name) || m.name === 'cc3x7');
   if (manuals.length === 0) return;
 
@@ -43,7 +43,7 @@ async function main() {
     const tools = toolDefs.map((t) => t.name);
     const buildInfo = await fetchJson(`${base}/build-info`);
     const is2x = ALIASES_2X.has(m.name);
-    const cacheKey = is2x ? (m.name === SHORT || m.name === 'ccb_2x' ? SHORT : CANON) : m.name;
+    const cacheKey = is2x ? (['ccb2x','ccb-2x','ccb_2x'].includes(m.name) ? SHORT : CANON) : m.name;
     cache.manuals[cacheKey] = { url: m.url, toolCount: tools.length, tools, toolDefs, buildInfo: buildInfo || null, aliasOf: m.name !== cacheKey ? m.name : undefined };
   }
 

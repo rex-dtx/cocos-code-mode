@@ -2,7 +2,7 @@
 
 Ghi từ chạy thật trên Creator 2.4.15, không phải suy luận từ docs. Phase sau đọc file này.
 
-> Renamed 2026-08-21: `cocos-code-mode-2x` -> **cc-bridge-2x** (short `ccb-2x`). Manuals `cc-bridge-2x`/`ccb-2x`, JS `cc_bridge_2x`/`ccb_2x`. Legacy names auto-migrated -- see `README.md`. Breaking: re-import extension; profile auto-migrates.
+> Renamed 2026-08-21: `cocos-code-mode-2x` -> **cc-bridge-2x** (short `ccb2x`). Manuals `cc-bridge-2x`/`ccb2x`, JS `cc_bridge_2x`/`ccb2x` (compat `ccb-2x`/`ccb_2x`). Legacy names auto-migrated -- see `README.md`. Breaking: re-import extension; profile auto-migrates.
 
 **Editor:** `C:\ProgramData\cocos\editors\Creator\2.4.15`
 **Testbed:** `G:\_ws\_helpers\cc-2x-testbed` (từ template `hello-world`)

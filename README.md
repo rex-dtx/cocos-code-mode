@@ -147,15 +147,15 @@ Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runt
 
 ```typescript
 // One call gets the whole scene
-const scene = cc_bridge_2x.sceneSnapshot({});
+const scene = ccb2x.sceneSnapshot({});
 // → { name, uuid, designResolution: {width, height}, children: [...] }
 
 // Find every node with a Sprite — returns paths, not bare uuids
-const sprites = cc_bridge_2x.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
+const sprites = ccb2x.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
 // → { result: [{ path: 'Canvas/bg', uuid: '...', name: 'bg' }], total: 1 }
 
 // Read that Sprite's actual property values
-const props = cc_bridge_2x.componentQuery({
+const props = ccb2x.componentQuery({
   operation: 'props',
   path: 'Canvas/bg',
   componentType: 'cc.Sprite',
@@ -163,15 +163,15 @@ const props = cc_bridge_2x.componentQuery({
 // → { spriteFrame: { __ref: '<uuid>', __type: 'cc.SpriteFrame', __name: 'bg' }, ... }
 
 // Reverse: what uses this asset?
-const users = cc_bridge_2x.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
+const users = ccb2x.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
 // → { nodes: [{ path: 'Canvas/bg', uuid: '...', name: 'bg',
 //               component: 'cc.Sprite', property: 'spriteFrame' }], total: 1 }
 
 // Mutate (write train — probe-verified)
-const node = cc_bridge_2x.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
-cc_bridge_2x.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
-cc_bridge_2x.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
-cc_bridge_2x.editorOperate({ operation: 'save_scene' });
+const node = ccb2x.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
+ccb2x.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
+ccb2x.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
+ccb2x.editorOperate({ operation: 'save_scene' });
 ```
 
 `used_by` reports component + property, not just node. Array refs include index (`frames[1]`).
@@ -279,7 +279,7 @@ Register by importing the class in `utcp-server.ts`. Two things to know:
 
 ## UTCP Call Templates Configuration
 
-The extension registers itself in `~/.utcp_config.json` as a `cc-bridge-2x` entry (JS: `cc_bridge_2x`, short `ccb-2x`->`ccb_2x`) pointing at the running server port, and rewrites the port when it changes.
+The extension registers itself in `~/.utcp_config.json` as a `cc-bridge-2x` entry (JS: `cc_bridge_2x`, short `ccb2x` (compat `ccb-2x`/`ccb_2x`)) pointing at the running server port, and rewrites the port when it changes.
 
 > The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cc-bridge-2x.json` (legacy `cocos-code-mode-2x.json` auto-migrated) (0 = auto-assign). Additional call templates must be added by hand for now.
 
@@ -290,7 +290,7 @@ Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-stru
 Add to the agent's system prompt — cuts 50-80% of response tokens:
 
 ```text
-When returning data from cc_bridge_2x / ccb_2x tools (manual `cc-bridge-2x`, short `ccb-2x`):
+When returning data from ccb2x tools (manual `cc-bridge-2x`, short `ccb2x`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

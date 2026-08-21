@@ -142,7 +142,7 @@ Editor.Panel.extend({
         }
         let html = '';
         templates.forEach(function (t) {
-            const isCocos = t.name === 'cc-bridge-2x' || t.name === 'ccb-2x' || t.name === 'cc_bridge_2x' || t.name === 'ccb_2x';
+            const isCocos = t.name === 'cc-bridge-2x' || t.name === 'ccb2x' || t.name === 'ccb-2x' || t.name === 'cc_bridge_2x' || t.name === 'ccb_2x';
             const delBtn = isCocos ? '' : '<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove"><ui-icon value="del"></ui-icon></ui-button>';
             html += '<ui-section class="bridge-item-section" data-name="' + t.name + '">'
                 + '<div slot="header" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding-right:10px;">'
@@ -177,7 +177,7 @@ Editor.Panel.extend({
     },
 
     removeBridge(name) {
-        if (name === 'cc-bridge-2x' || name === 'ccb-2x' || name === 'cc_bridge_2x' || name === 'ccb_2x') return;
+        if (name === 'cc-bridge-2x' || name === 'ccb2x' || name === 'ccb-2x' || name === 'cc_bridge_2x' || name === 'ccb_2x') return;
         if (!confirm('Remove ' + name + '?')) return;
         const cfg = readUtcpConfig();
         cfg.manual_call_templates = (cfg.manual_call_templates || []).filter(function (t) { return t.name !== name; });

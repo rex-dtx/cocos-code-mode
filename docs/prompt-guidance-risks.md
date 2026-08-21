@@ -1,11 +1,11 @@
 # Prompt Guidance — Risks & Trade-offs
 
-Applies to: `README.md` → Agent Prompt Guidance snippet for `cc_bridge_2x.*` / `ccb_2x.*` (manual `cc-bridge-2x`/`ccb-2x`, mirrored from `cc3x7`).
+Applies to: `README.md` → Agent Prompt Guidance snippet for `ccb2x.*` (manual `cc-bridge-2x`/`ccb2x` compat `cc_bridge_2x`/`ccb_2x`, mirrored from `cc3x7`).
 
 ## The snippet
 
 ```text
-When returning data from cc_bridge_2x / ccb_2x tools (manual cc-bridge-2x/ccb-2x):
+When returning data from ccb2x tools (manual cc-bridge-2x/ccb-2x):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

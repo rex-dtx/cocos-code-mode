@@ -56,7 +56,7 @@ Build → restart Creator → gọi:
 GET http://localhost:<port>/tools/scene-script?message=probe-getInstanceById&uuid=<canvas-uuid>
 ```
 
-Hoặc từ `cc_bridge_2x` code-mode (manual `cc-bridge-2x`, short `ccb-2x`->`ccb_2x`):
+Hoặc từ `cc_bridge_2x` code-mode (manual `cc-bridge-2x`, short `ccb2x` (compat `ccb-2x`/`ccb_2x`)):
 
 ```js
 cc_bridge_2x.sceneScript('probe-getInstanceById', 'a286bbGkn...')

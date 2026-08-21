@@ -149,7 +149,7 @@ export class UtcpConfigManager {
 
         const templates = config.manual_call_templates;
         const NAME = 'cc-bridge-2x';
-        const SHORT = 'ccb-2x';
+        const SHORT = 'ccb2x';
         let idx = templates.findIndex((t: any) => t.name === NAME);
 
         let changed = false;
@@ -170,7 +170,15 @@ export class UtcpConfigManager {
                 console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
             }
         }
-        // ensure short alias ccb-2x mirrors canonical (so call_tool_chain("ccb_2x.*") works)
+        // ensure short alias ccb2x mirrors canonical (also accept ccb-2x/ccb_2x for compat)
+        // migrate old short names (ccb-2x/ccb_2x) to ccb2x if present
+        for (const old of ['ccb-2x', 'ccb_2x']) {
+            const oi = templates.findIndex((t: any) => t.name === old);
+            if (oi !== -1 && !templates.some((t: any) => t.name === SHORT)) {
+                templates[oi].name = SHORT;
+                console.log(`[UtcpConfigManager] Migrated short alias ${old} -> ${SHORT}`);
+            }
+        }
         let sIdx = templates.findIndex((t: any) => t.name === SHORT);
         if (sIdx === -1) {
             templates.push({
