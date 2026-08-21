@@ -84,14 +84,12 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        // ponytail: short manual name = fewer tokens per tool reference in every
-        // code-mode script. Legacy names migrated in place, not duplicated.
-        // chain: CocosEditor3x7 -> cc37 -> cc3x7  (matches cc2x: CocosEditor -> cc24 -> cc2x4)
-        const NAME = 'cc3x7';
-        const LEGACIES = ['CocosEditor3x7', 'cc37'];
+        const NAME = 'cc-remoter-3x';
+        const SHORT = 'ccr-3x';
+        const LEGACY_NAMES = ['cc-remoter-v3x7', 'cc_remoter_v3x7', 'cc_remoter_3x', 'ccr_3x', 'cc3x7', 'cc37', 'CocosEditor3x7', 'CocosEditor3x'];
         let idx = templates.findIndex((t: any) => t.name === NAME);
         if (idx === -1) {
-            for (const legacy of LEGACIES) {
+            for (const legacy of LEGACY_NAMES) {
                 idx = templates.findIndex((t: any) => t.name === legacy);
                 if (idx !== -1) {
                     templates[idx].name = NAME;
@@ -118,6 +116,22 @@ export class UtcpConfigManager {
                 changed = true;
                 console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
             }
+        }
+        let sIdx = templates.findIndex((t: any) => t.name === SHORT);
+        if (sIdx === -1) {
+            templates.push({
+                name: SHORT,
+                call_template_type: 'http',
+                url: expectedUrl,
+                http_method: 'GET',
+                content_type: 'application/json',
+            });
+            changed = true;
+            console.log(`[UtcpConfigManager] Created ${SHORT} alias with port ${port}`);
+        } else if (templates[sIdx].url !== expectedUrl) {
+            templates[sIdx].url = expectedUrl;
+            changed = true;
+            console.log(`[UtcpConfigManager] Updated ${SHORT} alias port to ${port}`);
         }
 
         if (changed) {
