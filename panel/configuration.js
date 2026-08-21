@@ -2,7 +2,7 @@ const Fs = require('fs');
 const Path = require('path');
 const Os = require('os');
 
-const PKG = 'cc-remoter-2x';
+const PKG = 'cc-bridge-2x';
 
 function getConfigPath() {
     try {
@@ -56,8 +56,8 @@ function getServerPort() {
 Editor.Panel.extend({
     template: (function () {
         try { const t = Fs.readFileSync(Path.join(__dirname, '../static/template/configuration/index.html'), 'utf-8'); if (t) return t; } catch (e) {}
-        try { const u = Editor.url('packages://' + PKG + '/static/template/configuration/index.html'); const t2 = Fs.readFileSync(u, 'utf-8'); if (t2) return t2; } catch (e) { try { Editor.log('[cc-remoter-2x] template load fail: ' + e.message); } catch(_){} }
-        try { Editor.error('[cc-remoter-2x] Template not found — check packages/' + PKG + '/static/template/configuration/index.html'); } catch(_){}
+        try { const u = Editor.url('packages://' + PKG + '/static/template/configuration/index.html'); const t2 = Fs.readFileSync(u, 'utf-8'); if (t2) return t2; } catch (e) { try { Editor.log('[cc-bridge-2x] template load fail: ' + e.message); } catch(_){} }
+        try { Editor.error('[cc-bridge-2x] Template not found — check packages/' + PKG + '/static/template/configuration/index.html'); } catch(_){}
         return '<div style="padding:20px;color:#f44">Template not found. Check package install. Tried __dirname and Editor.url(packages://' + PKG + ')</div>';
     })(),
     style: (function () {
@@ -90,7 +90,7 @@ Editor.Panel.extend({
         if (!this.$) return;
         const newPath = this.$.utcpConfigPathInput && this.$.utcpConfigPathInput.value;
         if (!newPath) return;
-        // Update settings file: project/settings/cc-remoter-2x.json
+        // Update settings file: project/settings/cc-bridge-2x.json
         try {
             const projectPath = Editor.Project.path;
             const settingsPath = Path.join(projectPath, 'settings', PKG + '.json');
@@ -142,7 +142,7 @@ Editor.Panel.extend({
         }
         let html = '';
         templates.forEach(function (t) {
-            const isCocos = t.name === 'cc-remoter-2x' || t.name === 'ccr-2x' || t.name === 'cc_remoter_2x' || t.name === 'ccr_2x' || t.name === 'cc-remoter-v2x4' || t.name === 'cc_remoter_v2x4' || t.name === 'cc2x4' || t.name === 'cc24' || t.name === 'CocosEditor' || t.name === 'CocosEditor2x';
+            const isCocos = t.name === 'cc-bridge-2x' || t.name === 'ccb-2x' || t.name === 'cc_bridge_2x' || t.name === 'ccb_2x';
             const delBtn = isCocos ? '' : '<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove"><ui-icon value="del"></ui-icon></ui-button>';
             html += '<ui-section class="bridge-item-section" data-name="' + t.name + '">'
                 + '<div slot="header" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding-right:10px;">'
@@ -177,7 +177,7 @@ Editor.Panel.extend({
     },
 
     removeBridge(name) {
-        if (name === 'cc-remoter-2x' || name === 'ccr-2x' || name === 'cc_remoter_2x' || name === 'ccr_2x' || name === 'cc-remoter-v2x4' || name === 'cc_remoter_v2x4' || name === 'cc2x4' || name === 'cc24' || name === 'CocosEditor' || name === 'CocosEditor2x') return;
+        if (name === 'cc-bridge-2x' || name === 'ccb-2x' || name === 'cc_bridge_2x' || name === 'ccb_2x') return;
         if (!confirm('Remove ' + name + '?')) return;
         const cfg = readUtcpConfig();
         cfg.manual_call_templates = (cfg.manual_call_templates || []).filter(function (t) { return t.name !== name; });

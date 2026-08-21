@@ -30,7 +30,7 @@ export function sceneIpc<T>(message: string, ...args: any[]): Promise<T> {
 /** Editor.Scene.callSceneScript(pkg, msg, ...args, cb) */
 export function sceneScript<T>(message: string, ...args: any[]): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        Editor.Scene.callSceneScript('cc-remoter-2x', message, ...args, (err: any, result: T) => {
+        Editor.Scene.callSceneScript('cc-bridge-2x', message, ...args, (err: any, result: T) => {
             if (err) { return reject(toError(err)); }
             resolve(result);
         });

@@ -262,4 +262,4 @@ Tuong ung tool debug: `GET /debug-logs`, `UTCP_DEBUG=1`, `source/utcp/utils/ipc-
 - **Verified runtime:** `docs/cocos-2x-api-notes.md` (probe 1/2/3, 6 bay, phase 5/6/7, C.1)
 - **Engine source:** `C:\ProgramData\cocos\editors\Creator\2.4.15\resources\engine\` (982 .js plain)
 - **App.asar:** `G:\_ws\cc_2_4_15\app_asar_cc_2_4_15\` (893 `.ccc` ma hoa — khong doc duoc signature, chi biet ten module)
-- **Surface that:** `cc-remoter-2x.d.ts` + `source/utcp/tools-2x/*.ts` (53 tool, `npm run check` + 22 self-checks + `tsc --noEmit`)
+- **Surface that:** `cc-bridge-2x.d.ts` + `source/utcp/tools-2x/*.ts` (53 tool, `npm run check` + 22 self-checks + `tsc --noEmit`)

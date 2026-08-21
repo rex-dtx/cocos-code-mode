@@ -1,6 +1,6 @@
 # Probe guide — gỡ chặn write train (vòng 2)
 
-Làm khi **Creator 2.4.15 đang chạy** với project `cc-2x-testbed` đã cài extension `cc-remoter-2x`.
+Làm khi **Creator 2.4.15 đang chạy** với project `cc-2x-testbed` đã cài extension `cc-bridge-2x`.
 
 Mục đích: trả lời 3 câu hỏi chặn mọi write tool, rồi port write train.
 
@@ -13,9 +13,9 @@ npm run build
 # 2. Mở Creator 2.4.15
 Start-Process "C:\ProgramData\cocos\editors\Creator\2.4.15\CocosCreator.exe" -ArgumentList '--path','G:\_ws\_helpers\cc-2x-testbed'
 
-# 3. Đợi Editor log: [cc-remoter-2x] UTCP Server started on port 5xxxx
+# 3. Đợi Editor log: [cc-bridge-2x] UTCP Server started on port 5xxxx
 # 4. Lấy port
-cat G:\_ws\_helpers\cc-2x-testbed\settings\cc-remoter-2x.json  # legacy cocos-code-mode-2x.json also checked
+cat G:\_ws\_helpers\cc-2x-testbed\settings\cc-bridge-2x.json  # legacy cocos-code-mode-2x.json also checked
 ```
 
 ## Probe 1: `cc.engine.getInstanceById(uuid)` nhận uuid gì?
@@ -56,10 +56,10 @@ Build → restart Creator → gọi:
 GET http://localhost:<port>/tools/scene-script?message=probe-getInstanceById&uuid=<canvas-uuid>
 ```
 
-Hoặc từ `cc_remoter_2x` code-mode (manual `cc-remoter-2x`, short `ccr-2x`->`ccr_2x`, legacy `cc2x4`/`cc-remoter-v2x4`):
+Hoặc từ `cc_bridge_2x` code-mode (manual `cc-bridge-2x`, short `ccb-2x`->`ccb_2x`):
 
 ```js
-cc_remoter_2x.sceneScript('probe-getInstanceById', 'a286bbGkn...')
+cc_bridge_2x.sceneScript('probe-getInstanceById', 'a286bbGkn...')
 ```
 
 **Kết quả mong đợi:**
@@ -95,7 +95,7 @@ Thêm handler:
 ```
 
 ```js
-cc_remoter_2x.sceneScript('probe-scene-utils')
+cc_bridge_2x.sceneScript('probe-scene-utils')
 ```
 
 **Kết quả mong đợi:** Mỗi entry trả array tên export (ví dụ `['createNode','removeNode','setProperty',...]`). Dựa vào đó chọn API cho write.
@@ -147,8 +147,8 @@ Thêm handler:
 ```
 
 ```js
-cc_remoter_2x.sceneScript('probe-set-prop', 'x', 999)
-cc_remoter_2x.sceneScript('probe-set-prop') // dump API trước
+cc_bridge_2x.sceneScript('probe-set-prop', 'x', 999)
+cc_bridge_2x.sceneScript('probe-set-prop') // dump API trước
 ```
 
 **Kết quả mong đợi:**

@@ -2,7 +2,7 @@
 
 Port `cocos-code-mode` (Creator 3.8.x) sang **Creator 2.4.15**. Branch `cc-2x`.
 
-> Renamed 2026-08-21: `cocos-code-mode-2x` -> **cc-remoter-2x** (short `ccr-2x`). Manuals `cc-remoter-2x`/`ccr-2x`, JS `cc_remoter_2x`/`ccr_2x`. Legacy names (`cc2x4`, `cocos-code-mode-2x`, `cc-remoter-v2x4`) auto-migrated -- see `README.md`. Breaking: re-import extension; profile `cc-remoter-2x.json` auto-migrates from `cocos-code-mode-2x.json`.
+> Renamed 2026-08-21: `cocos-code-mode-2x` -> **cc-bridge-2x** (short `ccb-2x`). Manuals `cc-bridge-2x`/`ccb-2x`, JS `cc_bridge_2x`/`ccb_2x`. Legacy name `cocos-code-mode-2x` auto-migrated -- see `README.md`. Breaking: re-import extension; profile `cc-bridge-2x.json` auto-migrates from `cocos-code-mode-2x.json`.
 
 Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover phần khác 2.x.
 
@@ -15,7 +15,7 @@ Docs 3.x gốc: `G:\_ws\_helpers\docs\` (5 lane). Docs ở đây **chỉ** cover
 | `../README.md` | Tool surface + payload limit + 2 bẫy cho người viết tool mới (bản 2.x, không phải 3.x) | Khi cần overview nhanh |
 | `forum-92605-cocos-2x-api.md` | **Forum 92605 raw dump** — toan bo 170+ `scene:*`/`assets:*` IPC + snippet + panel DOM tips, fetch 2026-08-20, tra offline | Tra cuu API goc (chua verify), doi chieu voi `api-2x-reference.md` |
 | `api-2x-reference.md` | **API 2.x tham chieu** — doi chieu forum 92605 voi verified runtime + surface 53 tool | Truoc khi them tool: xem bang 1:1 forum → verified → tool |
-| `../cc-remoter-2x.d.ts` | Tool surface agent-facing (53 decorators) | Khi thêm/sửa tool — update tay, không generated |
+| `../cc-bridge-2x.d.ts` | Tool surface agent-facing (53 decorators) | Khi thêm/sửa tool — update tay, không generated |
 
 ## Trạng thái port
 
@@ -46,7 +46,7 @@ Plan: `plans/260805-1756-cc-2x-read-only/plan.md` · Vault: `notes/plans/cc-code
 
 **Phase A forum-92605 (2026-08-20):** +6 tool mới (46→52): `assetSaveMeta`/`assetImport`/`assetExchangeUuid`/`assetRefresh` + `sceneNew`/`prefabSync`. Mở rộng: `assetResolve` +6 ops (exists_by_path/is_sub_asset/contains_sub_assets/mount_info/relative_path/backup_path), `assetQuery` +`metas` op + `assetTypes` array (W1), `editorSelect` full Selection 18 methods (query `globalActive`/`contexts`/`confirmed` + ops hover/set_context/patch/filter/confirm/cancel, `confirm` exposed — W3), `isSubProp` flag trên property writes (I8). `probe-scene-ipc` handler sẵn cho Phase B (14 `scene:*` + 2 `scene://utils`). Verify: `npm run check` 22 pass + `tsc --noEmit` 0 err.
 
-**Probe 4 (2026-08-20 tối, `5f12226`):** 14 `scene:*` IPC → **14/14 `timeout` (registered, fire-and-forget)** vs `closed` = `message not found` (C.1). **KHÔNG port B+.** Write train `scene://utils/scene.*` + `set-property-by-path` + direct assign là đường đúng (smoke no-op `before=480 after=480`). `probeSceneIpc` giữ lại (53rd tool) cho mỗi lần probe gate, `probe-scene-ipc` scene-script bị TREO (scene Ipc không flush) → đã dời sang main-process. Junction testbed `packages/cc-remoter-2x → repo` (trước là stale copy 10:29).
+**Probe 4 (2026-08-20 tối, `5f12226`):** 14 `scene:*` IPC → **14/14 `timeout` (registered, fire-and-forget)** vs `closed` = `message not found` (C.1). **KHÔNG port B+.** Write train `scene://utils/scene.*` + `set-property-by-path` + direct assign là đường đúng (smoke no-op `before=480 after=480`). `probeSceneIpc` giữ lại (53rd tool) cho mỗi lần probe gate, `probe-scene-ipc` scene-script bị TREO (scene Ipc không flush) → đã dời sang main-process. Junction testbed `packages/cc-bridge-2x → repo` (trước là stale copy 10:29).
 
 **Còn nợ thật 2.4-viable (từ 3.x `custom` 59 tool):** `findNodesWithMissingAssets` đã bỏ (C.2), còn ~17 importer + 2 animation read + 1 `propertyArrayElement` mở.
 
@@ -72,7 +72,7 @@ npm run package   # check + zip — không đóng gói được bản đỏ
 ```
 Editor:   C:\ProgramData\cocos\editors\Creator\2.4.15
 Project:  G:\_ws\_helpers\cc-2x-testbed          (template hello-world)
-Install:  <project>\packages\cc-remoter-2x` (legacy `cocos-code-mode  → junction tới worktree
+Install:  <project>\packages\cc-bridge-2x` → junction tới repo
 Scene:    assets/Scene/helloworld.fire
 ```
 
@@ -87,7 +87,7 @@ Start-Process "C:\ProgramData\cocos\editors\Creator\2.4.15\CocosCreator.exe" -Ar
 
 Lọc `--type=` để không giết nhầm child process, lọc `cc-2x-testbed` để không đụng editor khác đang mở.
 
-Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-script.ts` (trigger tự động đã gỡ ở phase 6). Gọi tay qua `Editor.Scene.callSceneScript('cc-remoter-2x', 'probe2', cb)`.
+Probe engine API: handler `probe`/`probe2`/`echo-args` vẫn còn trong `scene-script.ts` (trigger tự động đã gỡ ở phase 6). Gọi tay qua `Editor.Scene.callSceneScript('cc-bridge-2x', 'probe2', cb)`.
 
 ## Rule bắt buộc khi làm tiếp
 

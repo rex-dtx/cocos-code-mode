@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./scripts/cc-remoter-bootstrap.js",
+            "command": "node ./scripts/cc-bridge-bootstrap.js",
             "timeout": 10
           }
         ]

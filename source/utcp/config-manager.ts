@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs-extra';
 import { join } from 'path';
 import { homedir } from 'os';
 
-const PKG_NAME = 'cc-remoter-2x';
+const PKG_NAME = 'cc-bridge-2x';
 const PROFILE_URL = `profile://project/${PKG_NAME}.json`;
 const DEFAULT_FILENAME = '.utcp_config.json';
 
@@ -42,13 +42,23 @@ export class UtcpConfigManager {
                 try {
                     const cur = (this.profile as any).get('serverPort');
                     if ((cur === undefined || cur === null || cur === 0)) {
-                        const legacy = Editor.Profile.load('profile://project/cocos-code-mode-2x.json', { serverPort: 0, utcpConfigPath: '' } as any) as any;
+                        const legacyFiles = ['cocos-code-mode-2x.json'];
+                        let legacy: any = null;
+                        let legacyFile = '';
+                        for (const lf of legacyFiles) {
+                            try {
+                                const cand = Editor.Profile.load(`profile://project/${lf}` as any, { serverPort: 0, utcpConfigPath: '' } as any) as any;
+                                const cp = cand && typeof cand.get === 'function' ? cand.get('serverPort') : null;
+                                if (typeof cp === 'number' && cp > 0) { legacy = cand; legacyFile = lf; break; }
+                                if (!legacy) { legacy = cand; legacyFile = lf; }
+                            } catch {}
+                        }
                         const lp = legacy && typeof legacy.get === 'function' ? legacy.get('serverPort') : null;
                         const lu = legacy && typeof legacy.get === 'function' ? legacy.get('utcpConfigPath') : null;
                         if (typeof lp === 'number' && lp > 0) { this.profile.set('serverPort', lp); (this.profile as any).save?.(); }
                         if (typeof lu === 'string' && lu) { this.profile.set('utcpConfigPath', lu); (this.profile as any).save?.(); }
                         if ((typeof lp === 'number' && lp > 0) || (typeof lu === 'string' && lu)) {
-                            console.log(`[${PKG_NAME}] Migrated legacy profile cocos-code-mode-2x.json`);
+                            console.log(`[${PKG_NAME}] Migrated legacy profile ${legacyFile}`);
                         }
                     }
                 } catch {}
@@ -138,21 +148,9 @@ export class UtcpConfigManager {
         }
 
         const templates = config.manual_call_templates;
-        const NAME = 'cc-remoter-2x';
-        const SHORT = 'ccr-2x';
-        const LEGACY_NAMES = ['cc-remoter-v2x4', 'cc_remoter_v2x4', 'cc_remoter_2x', 'ccr_2x', 'cc2x4', 'cc24', 'CocosEditor', 'CocosEditor2x'];
-        // migrate any legacy single entry to canonical NAME
+        const NAME = 'cc-bridge-2x';
+        const SHORT = 'ccb-2x';
         let idx = templates.findIndex((t: any) => t.name === NAME);
-        if (idx === -1) {
-            for (const legacy of LEGACY_NAMES) {
-                idx = templates.findIndex((t: any) => t.name === legacy);
-                if (idx !== -1) {
-                    templates[idx].name = NAME;
-                    console.log(`[UtcpConfigManager] Migrated template name ${legacy} -> ${NAME}`);
-                    break;
-                }
-            }
-        }
 
         let changed = false;
         if (idx === -1) {
@@ -172,7 +170,7 @@ export class UtcpConfigManager {
                 console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
             }
         }
-        // ensure short alias ccr-2x mirrors canonical (so call_tool_chain("ccr_2x.*") works)
+        // ensure short alias ccb-2x mirrors canonical (so call_tool_chain("ccb_2x.*") works)
         let sIdx = templates.findIndex((t: any) => t.name === SHORT);
         if (sIdx === -1) {
             templates.push({

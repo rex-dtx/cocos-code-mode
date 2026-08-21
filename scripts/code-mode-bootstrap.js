@@ -1,1 +1,1 @@
-require("./cc-remoter-bootstrap.js");
+require("./cc-bridge-bootstrap.js");

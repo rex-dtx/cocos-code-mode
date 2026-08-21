@@ -1,36 +1,36 @@
 ---
-name: cc-remoter-2x
+name: cc-bridge-2x
 description: >
-  Cache-first Code Mode UX — dung cc3x7/cc_remoter_2x (manual cc-remoter-2x, short ccr-2x/ccr_2x) nhu tool thuong.
-  Bat khi prompt chua "code mode", "cc3x7", "cc-remoter-2x", "cc_remoter_2x", "ccr-2x", "ccr_2x", "cc2x4", "cocos", "set vi tri",
+  Cache-first Code Mode UX — dung cc3x7/cc_bridge_2x (manual cc-bridge-2x, short ccb-2x/ccb_2x) nhu tool thuong.
+  Bat khi prompt chua "code mode", "cc3x7", "cc-bridge-2x", "cc_bridge_2x", "ccb-2x", "ccb_2x", "cocos", "set vi tri",
   "node", "scene", "prefab", "inspector" hoac bat ky tac vu nao can
   thao tac Cocos Editor qua UTCP. Khong can register/search lai neu cache hit.
 ---
 
-# cc-remoter-2x — Cache Skill
+# cc-bridge-2x — Cache Skill
 
 Dung Code Mode nhu tool thuong, khong `register_manual`/`search_tools` lai moi lan.
 
 ## Khi nao kich hoat
 
-Auto khi prompt chua mot trong: `code mode`, `cc3x7`, `cc-remoter-2x`, `cc_remoter_2x`, `ccr-2x`, `ccr_2x`, `cc2x4`, `cocos`,
+Auto khi prompt chua mot trong: `code mode`, `cc3x7`, `cc-bridge-2x`, `cc_bridge_2x`, `ccb-2x`, `ccb_2x`, `cocos`,
 `set vi tri`, `node`, `scene`, `prefab`, `inspector`, `asset`, `component`,
 `preview`, `build` — hoac agent dinh goi `call_tool_chain`.
 
 ## Cache
 
-- **Nguon:** `~/.utcp_config.json` (extension ghi `cc3x7`/`cc-remoter-2x` (+ `ccr-2x`) → `http://localhost:<port>/utcp` moi lan start).
-- **Bootstrap:** `SessionStart` hook chay `scripts/cc-remoter-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-remoter-cache.json`` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
+- **Nguon:** `~/.utcp_config.json` (extension ghi `cc3x7`/`cc-bridge-2x` (+ `ccb-2x`) → `http://localhost:<port>/utcp` moi lan start).
+- **Bootstrap:** `SessionStart` hook chay `scripts/cc-bridge-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-bridge-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
 - **Persist:** file cache ton tai qua session; hook refresh moi session (port doi tu fix).
 
 ### Doc cache
 
 Cache luu `manuals.<name>.toolDefs[]` — full JSON Schema tung tool (de so sanh khi them/sua tool, khong chi ten). `tools[]` la ten rut gon de check nhanh.
-`cat .claude/cc-remoter-cache.json` | jq '.manuals.cc3x7.toolDefs[] | .name'` hoac `echo $CK_CODE_MODE`.
+`cat .claude/cc-bridge-cache.json` | jq '.manuals.cc3x7.toolDefs[] | .name'` hoac `echo $CK_CODE_MODE`.
 
 ## Quy tac goi tool
 
-1. **Cache hit** (`CK_CODE_MODE=ready` hoac `.claude/cc-remoter-cache.json`` co `tools[]`): goi thang
+1. **Cache hit** (`CK_CODE_MODE=ready` hoac `.claude/cc-bridge-cache.json` co `tools[]`): goi thang
    `call_tool_chain("cc3x7.<tool>({ ... })")` — KHONG `register_manual`, KHONG `search_tools`/`list_tools`/`tools_info`.
 2. **Cache miss** (file khong co, hoac Cocos chua mo luc SessionStart): lam 1 lan
    `register_manual` tu `~/.utcp_config.json` → `list_tools` 1 lan → tiep tuc nhu (1).
@@ -41,7 +41,7 @@ Cache luu `manuals.<name>.toolDefs[]` — full JSON Schema tung tool (de so sanh
 Neu `call_tool_chain` tra ve `manual not found` / `tool not found`:
 
 1. Re-`register_manual` tu `~/.utcp_config.json` (doc lai file — port co the doi).
-2. Refresh cache: fetch `/utcp` lai, ghi `.claude/cc-remoter-cache.json``.
+2. Refresh cache: fetch `/utcp` lai, ghi `.claude/cc-bridge-cache.json`.
 3. Retry `call_tool_chain` 1 lan. Van fail → bao loi + goi `editorGetLogs`.
 
 Chi retry 1 lan — tranh loop.
@@ -58,7 +58,7 @@ Chi retry 1 lan — tranh loop.
 ## Manual names
 
 - `cc3x7` — Cocos Creator 3.7 (repo nay)
-- `cc-remoter-2x` (JS: `cc_remoter_2x`, short `ccr-2x`->`ccr_2x`, legacy `cc2x4`/`cc-remoter-v2x4`) — Cocos Creator 2.4 (nhanh `cc-2x`, cung co che)
+- `cc-bridge-2x` (JS: `cc_bridge_2x`, short `ccb-2x`->`ccb_2x`) — Cocos Creator 2.4 (nhanh `cc-2x`, cung co che)
 
 Tu dong theo `~/.utcp_config.json`; khong hardcode port.
 

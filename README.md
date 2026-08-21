@@ -1,6 +1,6 @@
-# CC Remoter 2x — Cocos Creator 2.4.x remoter (UTCP)
+# CC Bridge 2x — Cocos Creator 2.4.x remoter (UTCP)
 
-**CC Remoter 2x** (formerly `cocos-code-mode-2x`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
+**CC Bridge 2x** (formerly `cocos-code-mode-2x`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
 
 > **This is the 2.4.x port** of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
 >
@@ -10,10 +10,10 @@
 
 1. [Install the extension](#installation) in a Cocos Creator 2.4.x project
 2. [Integrate](#integration) it with the CodeMode MCP Server
-3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts)
+3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cc-bridge-2x.d.ts](cc-bridge-2x.d.ts)
 4. Ask AI to help you and see how it learns!
 
-## What is CC Remoter 2x?
+## What is CC Bridge 2x?
 
 In contrast to rigid MCP tool definitions kept in LLM context, CodeMode lets AI call tools by writing JavaScript against TypeScript definitions. This keeps token consumption low, allows loops and chained calls, and reuses output from different servers in one JS execution context.
 
@@ -105,7 +105,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 | `programOpen` | Launch registered program |
 | `urlOpen` | Open `http(s)` URL in system browser |
 
-Agent-facing TypeScript surface: [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts) (hand-written, 53 entries).
+Agent-facing TypeScript surface: [cc-bridge-2x.d.ts](cc-bridge-2x.d.ts) (hand-written, 53 entries).
 
 ### Payload limits
 
@@ -147,15 +147,15 @@ Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runt
 
 ```typescript
 // One call gets the whole scene
-const scene = cc_remoter_2x.sceneSnapshot({});
+const scene = cc_bridge_2x.sceneSnapshot({});
 // → { name, uuid, designResolution: {width, height}, children: [...] }
 
 // Find every node with a Sprite — returns paths, not bare uuids
-const sprites = cc_remoter_2x.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
+const sprites = cc_bridge_2x.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
 // → { result: [{ path: 'Canvas/bg', uuid: '...', name: 'bg' }], total: 1 }
 
 // Read that Sprite's actual property values
-const props = cc_remoter_2x.componentQuery({
+const props = cc_bridge_2x.componentQuery({
   operation: 'props',
   path: 'Canvas/bg',
   componentType: 'cc.Sprite',
@@ -163,15 +163,15 @@ const props = cc_remoter_2x.componentQuery({
 // → { spriteFrame: { __ref: '<uuid>', __type: 'cc.SpriteFrame', __name: 'bg' }, ... }
 
 // Reverse: what uses this asset?
-const users = cc_remoter_2x.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
+const users = cc_bridge_2x.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
 // → { nodes: [{ path: 'Canvas/bg', uuid: '...', name: 'bg',
 //               component: 'cc.Sprite', property: 'spriteFrame' }], total: 1 }
 
 // Mutate (write train — probe-verified)
-const node = cc_remoter_2x.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
-cc_remoter_2x.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
-cc_remoter_2x.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
-cc_remoter_2x.editorOperate({ operation: 'save_scene' });
+const node = cc_bridge_2x.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
+cc_bridge_2x.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
+cc_bridge_2x.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
+cc_bridge_2x.editorOperate({ operation: 'save_scene' });
 ```
 
 `used_by` reports component + property, not just node. Array refs include index (`frames[1]`).
@@ -249,7 +249,7 @@ npm run package
 
 `npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies tree-walk limits without Creator open. Run `npm run check` while developing.
 
-For development, a junction from `<project>/packages/cc-remoter-2x` (legacy `cocos-code-mode-2x` still works) to the repo works and does not trigger a reload loop.
+For development, a junction from `<project>/packages/cc-bridge-2x` (legacy `cocos-code-mode-2x` still works) to the repo works and does not trigger a reload loop.
 
 ## Adding Custom Tools
 
@@ -279,9 +279,9 @@ Register by importing the class in `utcp-server.ts`. Two things to know:
 
 ## UTCP Call Templates Configuration
 
-The extension registers itself in `~/.utcp_config.json` as a `cc-remoter-2x` entry (JS: `cc_remoter_2x`, short `ccr-2x`->`ccr_2x`, legacy aliases `cc2x4`/`cc-remoter-v2x4`) pointing at the running server port, and rewrites the port when it changes.
+The extension registers itself in `~/.utcp_config.json` as a `cc-bridge-2x` entry (JS: `cc_bridge_2x`, short `ccb-2x`->`ccb_2x`) pointing at the running server port, and rewrites the port when it changes.
 
-> The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cc-remoter-2x.json` (legacy `cocos-code-mode-2x.json` auto-migrated) (0 = auto-assign). Additional call templates must be added by hand for now.
+> The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cc-bridge-2x.json` (legacy `cocos-code-mode-2x.json` auto-migrated) (0 = auto-assign). Additional call templates must be added by hand for now.
 
 Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-structure) · [HTTP](https://utcp.io/protocols/http#call-template-structure) · [CLI](https://utcp.io/protocols/cli#call-template-structure) · [Text](http://utcp.io/protocols/text#call-template-structure)
 
@@ -290,7 +290,7 @@ Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-stru
 Add to the agent's system prompt — cuts 50-80% of response tokens:
 
 ```text
-When returning data from cc_remoter_2x / ccr_2x / cc2x4 tools (manual `cc-remoter-2x`, short `ccr-2x`):
+When returning data from cc_bridge_2x / ccb_2x tools (manual `cc-bridge-2x`, short `ccb-2x`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

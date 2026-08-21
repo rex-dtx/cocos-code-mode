@@ -155,11 +155,11 @@ Không có `.d.ts` chính thức cho 2.x. `@cocos/creator-types@3.8.7` đã bỏ
 
 ---
 
-## Rename 2026-08-21 -- cocos-code-mode-2x -> cc-remoter-2x
+## Rename 2026-08-21 -- cocos-code-mode-2x -> cc-bridge-2x
 
-- Extension ID + npm package.json name: cc-remoter-2x (panel CC Remoter 2x). Re-import extension after rename (Creator caches package name).
-- PROFILE_URL = profile://project/cc-remoter-2x.json -> file <project>/settings/cc-remoter-2x.json. config-manager.ts#getProfile auto-migrates legacy cocos-code-mode-2x.json if new file empty.
-- Scene pkg for Editor.Scene.callSceneScript(pkg, ...) + Editor.Ipc.sendToPackage -> cc-remoter-2x (all source/*, panel/*, scene-script handlers).
-- UTCP manuals: long cc-remoter-2x (JS cc_remoter_2x) + short ccr-2x->ccr_2x -- SDK name.replace(/[^\w]/g,"_") so hyphen in ~/.utcp_config.json normalizes to underscore when calling: cc_remoter_2x.sceneSnapshot(...) / ccr_2x.*. Legacy cc2x4/cc-remoter-v2x4 auto-migrated in config-manager + cc-remoter-bootstrap.js (+ cc-remoter-cache.json mapping).
-- cc-remoter-2x.d.ts is canon agent-facing. README Quickstart + Agent prompt + UTCP Call Templates synced.
-- Compat shims: scripts/code-mode-bootstrap.js -> shim to scripts/cc-remoter-bootstrap.js; .claude/skills/cc-code-mode deprecated -> cc-remoter-2x; .claude/settings.json hook points to cc-remoter-bootstrap.js.
+- Extension ID + npm package.json name: cc-bridge-2x (panel CC Bridge 2x). Re-import extension after rename (Creator caches package name).
+- PROFILE_URL = profile://project/cc-bridge-2x.json -> file <project>/settings/cc-bridge-2x.json. config-manager.ts#getProfile auto-migrates legacy cocos-code-mode-2x.json if new file empty.
+- Scene pkg for Editor.Scene.callSceneScript(pkg, ...) + Editor.Ipc.sendToPackage -> cc-bridge-2x (all source/*, panel/*, scene-script handlers).
+- UTCP manuals: long cc-bridge-2x (JS cc_bridge_2x) + short ccb-2x->ccb_2x -- SDK name.replace(/[^\w]/g,"_") so hyphen in ~/.utcp_config.json normalizes to underscore when calling: cc_bridge_2x.sceneSnapshot(...) / ccb_2x.*. Legacy cc-bridge variants auto-migrated in config-manager + cc-bridge-bootstrap.js (+ cc-bridge-cache.json).
+- cc-bridge-2x.d.ts is canon agent-facing. README Quickstart + Agent prompt + UTCP Call Templates synced.
+- Compat shims: scripts/code-mode-bootstrap.js -> cc-bridge-bootstrap.js; .claude/settings.json hook points to cc-bridge-bootstrap.js.
