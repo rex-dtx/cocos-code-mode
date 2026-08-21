@@ -144,13 +144,13 @@ export class EditorTools {
 
     @utcpTool(
         'editorSelect',
-        'Select, deselect, clear or query editor selection for nodes or assets.',
+        'Select, deselect, clear or query editor selection for nodes or assets. Also hover/update.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['select', 'unselect', 'clear', 'query', 'select_all'] },
+                operation: { type: 'string', enum: ['select', 'unselect', 'clear', 'query', 'select_all', 'hover', 'update'] },
                 selectionType: { type: 'string', enum: ['node', 'asset'], description: 'Selection domain', default: 'node' },
-                references: { type: 'array', items: InstanceReferenceSchema, description: 'For select/unselect: the items to select or deselect' }
+                references: { type: 'array', items: InstanceReferenceSchema, description: 'For select/unselect/update/hover: the items (hover = 0..1, null = hover-out)' }
             },
             required: ['operation']
         },
@@ -159,13 +159,14 @@ export class EditorTools {
             properties: {
                 success: { type: 'boolean' },
                 selected: { type: 'array', items: { type: 'string' }, description: 'Currently selected uuids after the operation' },
-                lastSelected: { type: 'string' }
+                lastSelected: { type: 'string' },
+                lastSelectedType: { type: 'string', description: 'Type of the last selected element' }
             },
             required: ['success']
-        }, "POST", ['editor', 'select', 'selection', 'all', 'hierarchy', 'inspector', 'highlight']
+        }, "POST", ['editor', 'select', 'selection', 'all', 'hierarchy', 'inspector', 'highlight', 'hover', 'update']
     )
     async editorSelect(args: { operation: string, selectionType?: string, references?: IInstanceReference[] }):
-        Promise<{ success: boolean, selected?: string[], lastSelected?: string }> {
+        Promise<{ success: boolean, selected?: string[], lastSelected?: string, lastSelectedType?: string }> {
         const type = args.selectionType === 'asset' ? 'asset' : 'node';
         const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
 
@@ -193,11 +194,25 @@ export class EditorTools {
                 }
                 await Editor.Message.request('scene', 'select-all-nodes');
                 return { success: true, selected: Editor.Selection.getSelected('node') };
+            case 'hover': {
+                // 3.7: hover(type, uuid?) — uuid omitted/null = hover-out, emits selection:hover
+                const uuid = uuids.length ? uuids[0] : undefined;
+                (Editor.Selection as any).hover(type, uuid);
+                return { success: true, selected: Editor.Selection.getSelected(type) };
+            }
+            case 'update': {
+                if (uuids.length === 0) {
+                    throw new Error('references required for update');
+                }
+                (Editor.Selection as any).update(type, uuids);
+                return { success: true, selected: Editor.Selection.getSelected(type) };
+            }
             case 'query':
                 return {
                     success: true,
                     selected: Editor.Selection.getSelected(type),
-                    lastSelected: Editor.Selection.getLastSelected(type) || undefined
+                    lastSelected: Editor.Selection.getLastSelected(type) || undefined,
+                    lastSelectedType: (Editor.Selection as any).getLastSelectedType?.() || undefined
                 };
             default:
                 throw new Error(`Unknown selection operation: ${args.operation}`);

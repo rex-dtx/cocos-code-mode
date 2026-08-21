@@ -229,12 +229,12 @@ declare namespace cc3x7 {
         iconGizmoSize?: number
     };
 
-    /** Select, deselect, clear or query the editor selection for nodes or assets. select_all selects every node of the scene. Enables align operations in editorViewport. */
+    /** Select, deselect, clear, hover, update or query the editor selection for nodes or assets. select_all selects every node of the scene. hover with no reference = hover-out. Enables align operations in editorViewport. */
     function editorSelect(args: {
-        operation: "select" | "unselect" | "clear" | "query" | "select_all",
+        operation: "select" | "unselect" | "clear" | "query" | "select_all" | "hover" | "update",
         selectionType?: "node" | "asset",
         references?: InstanceReference[]
-    }): { success: boolean, selected?: string[], lastSelected?: string };
+    }): { success: boolean, selected?: string[], lastSelected?: string, lastSelectedType?: string };
 
     /** Read animation data. Start with root_info on any node. clip_dump returns a track summary unless includeCurves is set. */
     function animationQuery(args: {
