@@ -1,6 +1,6 @@
-# Code Mode for Cocos Creator 2.4.x
+# CC Remoter 2x — Cocos Creator 2.4.x remoter (UTCP)
 
-**Code Mode** turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
+**CC Remoter 2x** (formerly `cocos-code-mode-2x`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
 
 > **This is the 2.4.x port** of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
 >
@@ -10,10 +10,10 @@
 
 1. [Install the extension](#installation) in a Cocos Creator 2.4.x project
 2. [Integrate](#integration) it with the CodeMode MCP Server
-3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [code-mode-references-2x.d.ts](code-mode-references-2x.d.ts)
+3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts) (legacy alias `code-mode-references-2x.d.ts` still present)
 4. Ask AI to help you and see how it learns!
 
-## What is Code Mode?
+## What is CC Remoter 2x?
 
 In contrast to rigid MCP tool definitions kept in LLM context, CodeMode lets AI call tools by writing JavaScript against TypeScript definitions. This keeps token consumption low, allows loops and chained calls, and reuses output from different servers in one JS execution context.
 
@@ -105,7 +105,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 | `programOpen` | Launch registered program |
 | `urlOpen` | Open `http(s)` URL in system browser |
 
-Agent-facing TypeScript surface: [code-mode-references-2x.d.ts](code-mode-references-2x.d.ts) (hand-written, 53 entries).
+Agent-facing TypeScript surface: [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts) (hand-written, 53 entries; legacy `code-mode-references-2x.d.ts` kept for compat).
 
 ### Payload limits
 
@@ -249,7 +249,7 @@ npm run package
 
 `npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies tree-walk limits without Creator open. Run `npm run check` while developing.
 
-For development, a junction from `<project>/packages/cocos-code-mode-2x` to the repo works and does not trigger a reload loop.
+For development, a junction from `<project>/packages/cc-remoter-2x` (legacy `cocos-code-mode-2x` still works) to the repo works and does not trigger a reload loop.
 
 ## Adding Custom Tools
 
@@ -281,7 +281,7 @@ Register by importing the class in `utcp-server.ts`. Two things to know:
 
 The extension registers itself in `~/.utcp_config.json` as a `cc-remoter-2x` entry (JS: `cc_remoter_2x`, short `ccr-2x`->`ccr_2x`, legacy aliases `cc2x4`/`cc-remoter-v2x4`) pointing at the running server port, and rewrites the port when it changes.
 
-> The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cocos-code-mode-2x.json` (0 = auto-assign). Additional call templates must be added by hand for now.
+> The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cc-remoter-2x.json` (legacy `cocos-code-mode-2x.json` auto-migrated) (0 = auto-assign). Additional call templates must be added by hand for now.
 
 Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-structure) · [HTTP](https://utcp.io/protocols/http#call-template-structure) · [CLI](https://utcp.io/protocols/cli#call-template-structure) · [Text](http://utcp.io/protocols/text#call-template-structure)
 

@@ -1,5 +1,4 @@
 // Agent-facing tool surface cho Cocos Creator 2.4.x.
-// DEPRECATED: use cc-remoter-2x.d.ts — kept for compat.
 // Manual: cc-remoter-2x (UTCP, hyphen). JS: cc_remoter_2x (underscore).
 // Short: ccr-2x / ccr_2x. Legacy cc-remoter-v2x4 / cc2x4 kept for compat.
 // STATIC hand-written, KHONG generated, 0 code importer. Them tool thi sua tay.

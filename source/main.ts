@@ -8,7 +8,7 @@ import { readdirSync, unlinkSync } from 'fs';
 
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
-const PKG_NAME = 'cocos-code-mode-2x';
+const PKG_NAME = 'cc-remoter-2x';
 
 let utcpServer: UtcpServerManager | null = null;
 
@@ -43,9 +43,9 @@ module.exports = {
         }
     },
 
-    // Short message (khong co ':') -> editor expand thanh 'cocos-code-mode-2x:restart-server'.
-    // Goi tu renderer: Editor.Ipc.sendToPackage('cocos-code-mode-2x', 'restart-server', port).
-    // Goi tu main-menu: click Extension -> Cocos Code Mode 2x (khong co arg).
+    // Short message (khong co ':') -> editor expand thanh 'cc-remoter-2x:restart-server'.
+    // Goi tu renderer: Editor.Ipc.sendToPackage('cc-remoter-2x', 'restart-server', port).
+    // Goi tu main-menu: click Extension -> CC Remoter 2x (khong co arg).
     messages: {
         'show-info'() {
             const cm = getConfigManager();

@@ -1,5 +1,5 @@
 ---
-name: cc-code-mode
+name: cc-remoter-2x
 description: >
   Cache-first Code Mode UX — dung cc3x7/cc_remoter_2x (manual cc-remoter-2x, short ccr-2x/ccr_2x) nhu tool thuong.
   Bat khi prompt chua "code mode", "cc3x7", "cc-remoter-2x", "cc_remoter_2x", "ccr-2x", "ccr_2x", "cc2x4", "cocos", "set vi tri",
@@ -7,7 +7,7 @@ description: >
   thao tac Cocos Editor qua UTCP. Khong can register/search lai neu cache hit.
 ---
 
-# cc-code-mode — DEPRECATED → cc-remoter-2x — Cache Skill
+# cc-remoter-2x — Cache Skill
 
 Dung Code Mode nhu tool thuong, khong `register_manual`/`search_tools` lai moi lan.
 
@@ -20,7 +20,7 @@ Auto khi prompt chua mot trong: `code mode`, `cc3x7`, `cc-remoter-2x`, `cc_remot
 ## Cache
 
 - **Nguon:** `~/.utcp_config.json` (extension ghi `cc3x7`/`cc-remoter-2x` (+ `ccr-2x`) → `http://localhost:<port>/utcp` moi lan start).
-- **Bootstrap:** `SessionStart` hook chay `scripts/code-mode-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-code-mode-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
+- **Bootstrap:** `SessionStart` hook chay `scripts/cc-remoter-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-code-mode-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
 - **Persist:** file cache ton tai qua session; hook refresh moi session (port doi tu fix).
 
 ### Doc cache

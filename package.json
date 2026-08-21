@@ -1,40 +1,40 @@
 {
-  "name": "cocos-code-mode-2x",
+  "name": "cc-remoter-2x",
   "version": "1.0.1",
-  "description": "i18n:cocos-code-mode-2x.description",
+  "description": "i18n:cc-remoter-2x.description",
   "author": "cst by hzi for cc2.4",
   "main": "dist/main.js",
   "scene-script": "dist/scene-script.js",
   "main-menu": {
-    "Extension/Cocos Code Mode 2x/Configuration": {
-      "message": "cocos-code-mode-2x:open-config"
+    "Extension/CC Remoter 2x/Configuration": {
+      "message": "cc-remoter-2x:open-config"
     },
-    "Extension/Cocos Code Mode 2x/Server Info": {
-      "message": "cocos-code-mode-2x:show-info"
+    "Extension/CC Remoter 2x/Server Info": {
+      "message": "cc-remoter-2x:show-info"
     },
-    "Extension/Cocos Code Mode 2x/Restart Server": {
-      "message": "cocos-code-mode-2x:restart-server"
+    "Extension/CC Remoter 2x/Restart Server": {
+      "message": "cc-remoter-2x:restart-server"
     },
-    "Extension/Cocos Code Mode 2x/Reload Extension": {
-      "message": "cocos-code-mode-2x:reload"
+    "Extension/CC Remoter 2x/Reload Extension": {
+      "message": "cc-remoter-2x:reload"
     },
-    "Extension/Cocos Code Mode 2x/About": {
-      "message": "cocos-code-mode-2x:show-build-info"
+    "Extension/CC Remoter 2x/About": {
+      "message": "cc-remoter-2x:show-build-info"
     },
-    "Extension/Cocos Code Mode 2x/Debug/Toggle Debug Logging": {
-      "message": "cocos-code-mode-2x:toggle-debug"
+    "Extension/CC Remoter 2x/Debug/Toggle Debug Logging": {
+      "message": "cc-remoter-2x:toggle-debug"
     },
-    "Extension/Cocos Code Mode 2x/Debug/Open Debug Folder": {
-      "message": "cocos-code-mode-2x:open-debug-folder"
+    "Extension/CC Remoter 2x/Debug/Open Debug Folder": {
+      "message": "cc-remoter-2x:open-debug-folder"
     },
-    "Extension/Cocos Code Mode 2x/Debug/Clear Debug Logs": {
-      "message": "cocos-code-mode-2x:clear-debug-logs"
+    "Extension/CC Remoter 2x/Debug/Clear Debug Logs": {
+      "message": "cc-remoter-2x:clear-debug-logs"
     }
   },
   "panel": {
     "main": "panel/configuration.js",
     "type": "dockable",
-    "title": "Cocos Code Mode 2x",
+    "title": "CC Remoter 2x",
     "width": 600,
     "height": 700
   },

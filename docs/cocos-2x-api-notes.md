@@ -4,7 +4,7 @@ Ghi từ chạy thật trên Creator 2.4.15, không phải suy luận từ docs.
 
 **Editor:** `C:\ProgramData\cocos\editors\Creator\2.4.15`
 **Testbed:** `G:\_ws\_helpers\cc-2x-testbed` (từ template `hello-world`)
-**Install:** junction `<project>\packages\cocos-code-mode` → `G:\_ws\_helpers\cc-code-mode-cst-2x`
+**Install:** junction `<project>\packages\cc-remoter-2x` (legacy `cocos-code-mode` → `G:\_ws\_helpers\cc-code-mode-cst-2x`
 
 ---
 
@@ -16,7 +16,7 @@ Manifest 2.x tối giản đủ để load (`name`/`version`/`main`/`reload`). K
 
 ```
 success: cocos-code-mode loaded
-normal: [cocos-code-mode-2x] UTCP Server started on port 59142
+normal: [cc-remoter-2x] UTCP Server started on port 59142
 ```
 
 `GET http://127.0.0.1:<port>/utcp` → `{utcp_version:"1.0.1", manual_version:"1.0.0", tools:[]}`
@@ -27,7 +27,7 @@ normal: [cocos-code-mode-2x] UTCP Server started on port 59142
 
 ### `Editor.Profile` — KHÔNG cần `register()`
 
-`Editor.Profile.load('profile://project/cocos-code-mode-2x.json', {...})` chạy thẳng, không throw. Editor register sẵn type `project`. File đẻ ra ở `<project>/settings/cocos-code-mode-2x.json`.
+`Editor.Profile.load('profile://project/cc-remoter-2x.json', {...})` chạy thẳng, không throw. Editor register sẵn type `project`. File đẻ ra ở `<project>/settings/cc-remoter-2x.json`.
 
 (Unresolved #2 phase 2 + rủi ro "Profile 2.x cần register trước load" → resolved, không cần fallback đọc `settings/project.json` bằng `fs`.)
 
@@ -474,7 +474,7 @@ console:query      -> ipc failed to send, message not found
 logs               -> ipc failed to send, message not found
 ```
 
-Docs `main/console.md` chỉ có `log`/`warn`/`error`/`clearLog` — **ghi**, không đọc. Tool đã xoá khỏi code và khỏi `code-mode-references-2x.d.ts`. User xem Console panel trực tiếp. (Unresolved #1 phase 7 → resolved: không có.)
+Docs `main/console.md` chỉ có `log`/`warn`/`error`/`clearLog` — **ghi**, không đọc. Tool đã xoá khỏi code và khỏi `cc-remoter-2x.d.ts`. User xem Console panel trực tiếp. (Unresolved #1 phase 7 → resolved: không có.)
 
 ## `projectGetConfig` — đọc thẳng `settings/*.json`
 
@@ -523,7 +523,7 @@ Tách làm 2 loại. Bản trước gộp chung thành *"14 tool — port vòng 
 | Console | `editorGetLogs` | 2.4.15 không có API đọc console — verified 3/3 message candidate fail |
 | Build | `buildTrigger` `buildTaskControl` `buildGetTask` `buildGetTasksInfo` `buildPanelOpen` | `Editor.Builder` 2.4 **chỉ có `on`/`once`/`removeListener`** — event hook, không có API trigger build. Nguồn: corpus `v2.4/extension/api/editor-framework/main/builder.md` |
 | Animation | `animationQuery` `animationEdit` | `scene:query-animation-node` verified **không tồn tại** ở 2.4.15 (phase 5) |
-| Typings | `typescript-defenition` (2 tool) | Sinh `.d.ts` từ property dump 3.x. 2.x thay bằng `code-mode-references-2x.d.ts` viết tay — **có chủ đích**, không phải nợ |
+| Typings | `typescript-defenition` (2 tool) | Sinh `.d.ts` từ property dump 3.x. 2.x thay bằng `cc-remoter-2x.d.ts` viết tay — **có chủ đích**, không phải nợ |
 | Asset dep graph | `assetFindReferences` (commit `8094c9c`) | Hand-written `@types/editor-2x/index.d.ts` liệt kê toàn bộ assetdb API verified từ docs: **không có method nào cho reference/dependency query** (`queryImports`/`queryReferences`/`queryUsedBy`). 2.x meta format không có block imports như 3.x → không port được |
 | Array element ops | `propertyArrayElement` (commit `8094c9c`) | Write op — chặn cứng vòng 2 (undo + set-property-by-path chưa verify) |
 | Editor introspect | `editorIntrospect` categories `scene_mode` / `ready` / `enum_values` / `script_info` (commit `8094c9c`) | Map sang 6 message scene panel (`query-scene-mode`, `query-is-ready`, `query-enum-list-with-path`, `query-layer-builtin`, `query-sorting-layer-builtin`, `query-script-name/cid`) — **tất cả chưa verify trên 2.4.15**. Không nằm trong bảng Phase 5 (6 message đã test). Probe cần thiết trước khi code. `sorting_layers` đặc biệt: tính năng 3.x, 2.4 dùng groups thay thế (đã khả thi qua `projectGetConfig type=project key=groupList`) |

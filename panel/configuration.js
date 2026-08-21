@@ -2,7 +2,7 @@ const Fs = require('fs');
 const Path = require('path');
 const Os = require('os');
 
-const PKG = 'cocos-code-mode-2x';
+const PKG = 'cc-remoter-2x';
 
 function getConfigPath() {
     try {
@@ -90,7 +90,7 @@ Editor.Panel.extend({
         if (!this.$) return;
         const newPath = this.$.utcpConfigPathInput && this.$.utcpConfigPathInput.value;
         if (!newPath) return;
-        // Update settings file: project/settings/cocos-code-mode-2x.json
+        // Update settings file: project/settings/cc-remoter-2x.json
         try {
             const projectPath = Editor.Project.path;
             const settingsPath = Path.join(projectPath, 'settings', PKG + '.json');

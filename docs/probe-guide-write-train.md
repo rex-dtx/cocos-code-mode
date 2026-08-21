@@ -1,6 +1,6 @@
 # Probe guide — gỡ chặn write train (vòng 2)
 
-Làm khi **Creator 2.4.15 đang chạy** với project `cc-2x-testbed` đã cài extension `cocos-code-mode-2x`.
+Làm khi **Creator 2.4.15 đang chạy** với project `cc-2x-testbed` đã cài extension `cc-remoter-2x`.
 
 Mục đích: trả lời 3 câu hỏi chặn mọi write tool, rồi port write train.
 
@@ -13,9 +13,9 @@ npm run build
 # 2. Mở Creator 2.4.15
 Start-Process "C:\ProgramData\cocos\editors\Creator\2.4.15\CocosCreator.exe" -ArgumentList '--path','G:\_ws\_helpers\cc-2x-testbed'
 
-# 3. Đợi Editor log: [cocos-code-mode-2x] UTCP Server started on port 5xxxx
+# 3. Đợi Editor log: [cc-remoter-2x] UTCP Server started on port 5xxxx
 # 4. Lấy port
-cat G:\_ws\_helpers\cc-2x-testbed\settings\cocos-code-mode-2x.json
+cat G:\_ws\_helpers\cc-2x-testbed\settings\cc-remoter-2x.json  # legacy cc-remoter-2x.json also checked
 ```
 
 ## Probe 1: `cc.engine.getInstanceById(uuid)` nhận uuid gì?

@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs-extra';
 import { join } from 'path';
 import { homedir } from 'os';
 
-const PKG_NAME = 'cocos-code-mode-2x';
+const PKG_NAME = 'cc-remoter-2x';
 const PROFILE_URL = `profile://project/${PKG_NAME}.json`;
 const DEFAULT_FILENAME = '.utcp_config.json';
 
@@ -38,6 +38,20 @@ export class UtcpConfigManager {
                     serverPort: 0,
                     utcpConfigPath: '',
                 });
+                // migrate legacy profile cocos-code-mode-2x.json if new one is empty
+                try {
+                    const cur = (this.profile as any).get('serverPort');
+                    if ((cur === undefined || cur === null || cur === 0)) {
+                        const legacy = Editor.Profile.load('profile://project/cocos-code-mode-2x.json', { serverPort: 0, utcpConfigPath: '' } as any) as any;
+                        const lp = legacy && typeof legacy.get === 'function' ? legacy.get('serverPort') : null;
+                        const lu = legacy && typeof legacy.get === 'function' ? legacy.get('utcpConfigPath') : null;
+                        if (typeof lp === 'number' && lp > 0) { this.profile.set('serverPort', lp); (this.profile as any).save?.(); }
+                        if (typeof lu === 'string' && lu) { this.profile.set('utcpConfigPath', lu); (this.profile as any).save?.(); }
+                        if ((typeof lp === 'number' && lp > 0) || (typeof lu === 'string' && lu)) {
+                            console.log(`[${PKG_NAME}] Migrated legacy profile cocos-code-mode-2x.json`);
+                        }
+                    }
+                } catch {}
             } catch (e) {
                 Editor.warn(`[${PKG_NAME}] Profile unavailable, settings will not persist: ${e}`);
             }
