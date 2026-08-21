@@ -22,16 +22,16 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools (45 — 10 consolidated replaces 26 legacy)
+## Tools (46 — 10 consolidated replaces 26 legacy + 1 additive)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
-> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod.
+> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod. **2.1:** +1 `assetReadContent` (text read) → 46.
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
 | **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` |
-| **Assets** (10) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate` | Browse/search/create/import/mutate. *`maxDepth`/`maxNodes` |
+| **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetReadContent`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate` | Browse/search/create/import/mutate. *`maxDepth`/`maxNodes` |
 | **Inspector** (3) | `inspectorGet`*, `inspectorSet`*, `inspectorGetDefinition`* | Dump/set + TS definitions. *`fields[]`/`section` |
 | **Components** (3) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentManage`* | Discover + attach |
 | **Editor** (4) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorHistory` + `editorQuery`*, `sceneManage`* | Viewport, selection, lifecycle |
@@ -44,7 +44,7 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 | **System** (2) | `editorGetLogs`, `propertyArrayElement` | Logs, array ops |
 | **Consolidated** (10) | `inspectorGet/Set/Definition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `previewManage`, `programManage`, `projectManage`, `buildManage` | Replaces 26 legacy — now the only surface |
 
-* QA: `scripts/smoke-utcp.js` (expects 45) · Perf: `a769a46` bench + `e419276` trim.
+* QA: `scripts/smoke-utcp.js` (expects 46) · Perf: `a769a46` bench + `e419276` trim.
 
 
 ## How It Works

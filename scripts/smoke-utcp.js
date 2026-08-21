@@ -43,9 +43,9 @@ async function main() {
         const keys = Object.keys(m).sort();
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
-        assert.equal(n, 45, `tools.length expected 45 got ${n}`);
+        assert.equal(n, 46, `tools.length expected 46 got ${n}`);
         // ensure no unknown keys (strict schema)
-        ok(`manual valid: 45 tools, keys ${keys.join(',')}`);
+        ok(`manual valid: 46 tools, keys ${keys.join(',')}`);
         // check cc3x7 template exists in config
         try {
             const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');

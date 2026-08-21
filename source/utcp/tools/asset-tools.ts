@@ -64,8 +64,100 @@ export class AssetTools {
     @utcpTool('assetGetAtPath','Get asset reference by db:// path.',{type:'object',properties:{assetPath:{type:'string'}},required:['assetPath']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"GET",['asset','get','path','look','find'])
     async assetGetAtPath(args:{assetPath:string}):Promise<{reference:IInstanceReference}>{ const p=normalizePath(args.assetPath); const info=await Editor.Message.request('asset-db','query-asset-info',p); if(!info) throw new Error(`Asset not found at path: ${p}`); return {reference:{id:info.uuid, type:info.type}}; }
 
-    @utcpTool('assetResolvePath','Resolve db:// url and filesystem path for asset uuid.',{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},{type:'object',properties:{filesystemPath:{type:'string'},url:{type:'string'}},required:['filesystemPath']},"GET",['asset','resolve','path','url','filesystem','uuid'])
-    async assetResolvePath(args:{reference:IInstanceReference}):Promise<{filesystemPath:string,url?:string}>{ if(!args.reference||!args.reference.id) throw new Error('assetResolvePath requires reference.id'); const fp=await Editor.Message.request('asset-db','query-path',args.reference.id); if(!fp) throw new Error(`No filesystem path found for asset ${args.reference.id}`); const url=await Editor.Message.request('asset-db','query-url',fp); return {filesystemPath:fp, url:url||undefined}; }
+    @utcpTool(
+        'assetResolvePath',
+        'Resolve asset locations (uuid <-> db:// url <-> filesystem path) and probe existence. Accepts uuid (reference) OR db:// path (assetPath).',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                assetPath: { type: 'string', description: 'db:// url or path, alternative to reference.id' }
+            },
+            required: []
+        },
+        {
+            type: 'object',
+            properties: {
+                filesystemPath: { type: 'string' },
+                url: { type: 'string' },
+                uuid: { type: 'string' },
+                exists: { type: 'boolean' },
+                isDirectory: { type: 'boolean' },
+                type: { type: 'string' },
+                importer: { type: 'string' }
+            },
+            required: ['filesystemPath']
+        },
+        "GET",
+        ['asset', 'resolve', 'path', 'url', 'filesystem', 'uuid', 'exists']
+    )
+    async assetResolvePath(args: { reference?: IInstanceReference, assetPath?: string }): Promise<{ filesystemPath: string, url?: string, uuid?: string, exists: boolean, isDirectory?: boolean, type?: string, importer?: string }> {
+        const id = args.reference?.id || (args.assetPath ? normalizePath(args.assetPath) : undefined);
+        if (!id) throw new Error('assetResolvePath requires reference.id or assetPath');
+        const asUuid = !id.startsWith('db://');
+        let fp2: string | null = null;
+        if (asUuid) fp2 = await Editor.Message.request('asset-db', 'query-path', id);
+        else {
+            const inf2: any = await Editor.Message.request('asset-db', 'query-asset-info', id).catch(() => null);
+            if (inf2?.file) fp2 = inf2.file;
+            else fp2 = await Editor.Message.request('asset-db', 'query-path', id).catch(() => null);
+        }
+        if (!fp2) return { filesystemPath: '', url: asUuid ? undefined : id, uuid: asUuid ? id : undefined, exists: false };
+        const url2: string | null = asUuid ? await Editor.Message.request('asset-db', 'query-url', fp2).catch(() => null) : id;
+        const lookupKey = asUuid ? id : (url2 || id);
+        const inf3: any = await Editor.Message.request('asset-db', 'query-asset-info', lookupKey).catch(() => null);
+        const uuidResolved = inf3?.uuid || (asUuid ? id : await Editor.Message.request('asset-db', 'query-uuid', id).catch(() => undefined) || undefined);
+        return { filesystemPath: fp2, url: url2 || inf3?.url || undefined, uuid: uuidResolved, exists: !!inf3, isDirectory: inf3?.isDirectory, type: inf3?.type, importer: inf3?.importer };
+    }
+
+    @utcpTool(
+        'assetReadContent',
+        'Read text content of an asset by uuid or db:// path. Rejects binary/oversized files; use maxBytes to raise the cap.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                assetPath: { type: 'string', description: 'db:// url or path' },
+                maxBytes: { type: 'number', description: 'Size cap in bytes, default 512KB' }
+            },
+            required: []
+        },
+        {
+            type: 'object',
+            properties: {
+                content: { type: 'string' },
+                filesystemPath: { type: 'string' },
+                bytes: { type: 'number' },
+                truncated: { type: 'boolean' }
+            },
+            required: ['content']
+        },
+        "GET",
+        ['asset', 'read', 'content', 'text', 'file', 'source']
+    )
+    async assetReadContent(args: { reference?: IInstanceReference, assetPath?: string, maxBytes?: number }): Promise<{ content: string, filesystemPath: string, bytes: number, truncated: boolean }> {
+        const ident = args.reference?.id || (args.assetPath ? normalizePath(args.assetPath) : undefined);
+        if (!ident) throw new Error('assetReadContent requires reference.id or assetPath');
+        const asUuid2 = !ident.startsWith('db://');
+        let fpR: string | null = null;
+        if (asUuid2) fpR = await Editor.Message.request('asset-db', 'query-path', ident);
+        else {
+            const infR: any = await Editor.Message.request('asset-db', 'query-asset-info', ident).catch(() => null);
+            if (infR?.file) fpR = infR.file;
+            else fpR = await Editor.Message.request('asset-db', 'query-path', ident).catch(() => null);
+        }
+        if (!fpR) throw new Error('Asset not found: ' + ident);
+        const fpResolved = fpR as string;
+        const extR = path.extname(fpResolved).toLowerCase();
+        const BINARY = ['.png', '.jpg', '.jpeg', '.webp', '.mp3', '.ogg', '.wav', '.ttf', '.woff', '.mp4', '.mov', '.zip', '.gz', '.bmp', '.tga', '.psd'];
+        if ((BINARY as string[]).includes(extR)) throw new Error('Extension ' + extR + ' is binary and not readable as text.');
+        const stat: any = await (fs as any).stat(fpResolved).catch(() => null);
+        if (!stat) throw new Error('File not found on disk: ' + fpResolved);
+        const cap = args.maxBytes ?? 512 * 1024;
+        if (stat.size > cap) throw new Error('File is ' + stat.size + ' bytes, over the ' + cap + ' byte cap. Pass maxBytes to raise it.');
+        const content = await (fs as any).readFile(fpResolved, 'utf8');
+        return { content, filesystemPath: fpResolved, bytes: stat.size, truncated: false };
+    }
 
     @utcpTool('assetFindReferences','Find asset references: used_by / depends_on.',{type:'object',properties:{direction:{type:'string',enum:['used_by','depends_on']},reference:InstanceReferenceSchema,assetKind:{type:'string',enum:['asset','script','all'],default:'all'},resolveUrls:{type:'boolean',default:false}},required:['direction','reference']},{type:'object',properties:{references:{type:'array',items:InstanceReferenceSchema},assets:{type:'array',items:{type:'object',properties:{uuid:{type:'string'},url:{type:'string'},type:{type:'string'}}}},total:{type:'number'}},required:['references','total']},"GET",['asset','reference','dependency','used','usage','impact'])
     async assetFindReferences(args:{direction:string,reference:IInstanceReference,assetKind?:string,resolveUrls?:boolean}):Promise<{references:IInstanceReference[],assets?:Array<{uuid:string,url?:string,type?:string}>,total:number}>{ if(!args.reference||!args.reference.id) throw new Error('assetFindReferences requires reference.id'); const kind=args.assetKind||'all'; const cands=args.direction==='used_by'?['query-asset-users','query-asset-used']:args.direction==='depends_on'?['query-asset-dependencies','query-asset-dependinces']:[]; if(!cands.length) throw new Error(`Unknown direction: ${args.direction}`); let raw:any, lastError:any; for(const m of cands){ try{ raw=await Editor.Message.request('asset-db',m as any,args.reference.id,kind); lastError=undefined; break;}catch(e){lastError=e;}} if(lastError) throw new Error(`Failed to query asset ${args.direction}: ${(lastError as any)?.message||lastError}`); const list:any[]=Array.isArray(raw)?raw:[]; const uuids=list.map((it:any)=>typeof it==='string'?it:(it?.uuid||it?.id)).filter((u:any):u is string=>typeof u==='string'&&!!u); const refs: IInstanceReference[]=uuids.map((u:string)=>({id:u} as any)); if(!args.resolveUrls) return {references:refs,total:refs.length}; const assets:Array<{uuid:string,url?:string,type?:string}>=[]; for(const u of uuids){ const info:AssetInfo|null=await Editor.Message.request('asset-db','query-asset-info',u); assets.push({uuid:u, url:info?.url, type:info?.type}); } return {references:refs,assets,total:refs.length}; }

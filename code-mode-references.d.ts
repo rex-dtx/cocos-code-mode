@@ -48,7 +48,7 @@ type Size = { width: number, height: number };
 type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alphaKeys: Array<{ alpha: number, time: number }>, mode: number }
 
 /**
- * Cocos Editor Tools — 45 tools (35 standalone + 10 consolidated)
+ * Cocos Editor Tools — 46 tools (36 standalone + 10 consolidated)
  * Legacy inspector/scene/editor/build + preview/program/project shims removed in 2.0.x — use consolidated entry points.
  */
 declare namespace cc3x7 {
@@ -72,8 +72,11 @@ declare namespace cc3x7 {
     /** Get asset reference by given local path and name. */
     function assetGetAtPath(args: { assetPath: string }): { reference: InstanceReference };
 
-    /** Resolve filesystem path and db:// url for an asset by its uuid. Lighter than query-asset-info when you only need locations. */
-    function assetResolvePath(args: { reference: InstanceReference }): { filesystemPath: string, url?: string };
+    /** Resolve asset locations (uuid <-> db:// url <-> filesystem path) and probe existence. Accepts uuid (reference) OR db:// path (assetPath). */
+    function assetResolvePath(args: { reference?: InstanceReference, assetPath?: string }): { filesystemPath: string, url?: string, uuid?: string, exists: boolean, isDirectory?: boolean, type?: string, importer?: string };
+
+    /** Read text content of an asset by uuid or db:// path. Rejects binary/oversized files; use maxBytes to raise the cap. */
+    function assetReadContent(args: { reference?: InstanceReference, assetPath?: string, maxBytes?: number }): { content: string, filesystemPath: string, bytes: number, truncated: boolean };
 
     /** Asset-level dependency analysis: used_by = assets/scripts referencing this asset (who breaks if deleted), depends_on = assets it references. Wider than findNodesByAsset, which only scans the open scene. */
     function assetFindReferences(args: {
