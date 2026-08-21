@@ -17,14 +17,14 @@ export class MaterialTools {
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['effects', 'effect', 'material', 'serialized_material', 'render_pipeline'] },
+                operation: { type: 'string', enum: ['effects', 'effect', 'material', 'serialized_material', 'render_pipeline', 'physics_material'] },
                 reference: { ...InstanceReferenceSchema, description: 'For material / serialized_material / render_pipeline: the asset' },
                 effectName: { type: 'string', description: 'For effect: the effect name as listed by the "effects" operation' }
             },
             required: ['operation']
         },
         { type: 'object', properties: { result: {} } }, "GET",
-        ['material', 'effect', 'shader', 'render', 'pipeline', 'inspect']
+        ['material', 'effect', 'shader', 'render', 'pipeline', 'inspect', 'physics']
     )
     async materialQuery(args: { operation: string, reference?: IInstanceReference, effectName?: string }): Promise<{ result: any }> {
         switch (args.operation) {
@@ -55,6 +55,12 @@ export class MaterialTools {
                 }
                 return { result: await Editor.Message.request('scene', 'query-render-pipeline' as any, args.reference.id) };
 
+            case 'physics_material':
+                if (!args.reference?.id) {
+                    throw new Error('materialQuery "physics_material" requires reference');
+                }
+                return { result: await Editor.Message.request('scene', 'query-physics-material' as any, args.reference.id) };
+
             default:
                 throw new Error(`Unknown materialQuery operation: ${args.operation}`);
         }
@@ -66,15 +72,16 @@ export class MaterialTools {
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['databases', 'busy', 'mtime', 'data'] },
-                reference: { ...InstanceReferenceSchema, description: 'For mtime / data: the asset' }
+                operation: { type: 'string', enum: ['databases', 'busy', 'mtime', 'data', 'db_info'] },
+                reference: { ...InstanceReferenceSchema, description: 'For mtime / data / db_info: the asset (db_info also accepts dbName)' },
+                dbName: { type: 'string', description: 'For db_info: database name, e.g. assets or internal' }
             },
             required: ['operation']
         },
         { type: 'object', properties: { result: {} } }, "GET",
-        ['asset', 'database', 'db', 'mtime', 'busy', 'introspect']
+        ['asset', 'database', 'db', 'mtime', 'busy', 'introspect', 'db-info']
     )
-    async assetDbQuery(args: { operation: string, reference?: IInstanceReference }): Promise<{ result: any }> {
+    async assetDbQuery(args: { operation: string, reference?: IInstanceReference, dbName?: string }): Promise<{ result: any }> {
         switch (args.operation) {
             case 'databases':
                 return { result: await Editor.Message.request('asset-db', 'query-db-list' as any) };
@@ -93,6 +100,11 @@ export class MaterialTools {
                     throw new Error('assetDbQuery "data" requires reference');
                 }
                 return { result: await Editor.Message.request('asset-db', 'query-asset-data' as any, args.reference.id) };
+
+            case 'db_info': {
+                const name = args.dbName || args.reference?.id || 'assets';
+                return { result: await Editor.Message.request('asset-db', 'query-db-info' as any, name) };
+            }
 
             default:
                 throw new Error(`Unknown assetDbQuery operation: ${args.operation}`);

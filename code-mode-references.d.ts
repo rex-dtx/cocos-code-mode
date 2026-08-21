@@ -269,15 +269,16 @@ declare namespace cc3x7 {
 
     /** Inspect materials, shader effects and the render pipeline. Read-only — use inspectorSetProperty to change material properties. Result shapes are whatever the engine returns and are not yet runtime-verified. */
     function materialQuery(args: {
-        operation: "effects" | "effect" | "material" | "serialized_material" | "render_pipeline",
+        operation: "effects" | "effect" | "material" | "serialized_material" | "render_pipeline" | "physics_material",
         reference?: InstanceReference,
         effectName?: string
     }): { result: any };
 
-    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data. Poll "busy" after a refresh before trusting asset queries. */
+    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data, db_info. Poll "busy" after a refresh before trusting asset queries. */
     function assetDbQuery(args: {
-        operation: "databases" | "busy" | "mtime" | "data",
-        reference?: InstanceReference
+        operation: "databases" | "busy" | "mtime" | "data" | "db_info",
+        reference?: InstanceReference,
+        dbName?: string
     }): { result: any };
 
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
