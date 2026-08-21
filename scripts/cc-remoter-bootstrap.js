@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// DEPRECATED: use cc-remoter-bootstrap.js —
 // cc-remoter-bootstrap — SessionStart hook: register cc-remoter manuals from ~/.utcp_config.json
 // and cache tool list to .claude/cc-remoter-cache.json (compat alias cc-code-mode-cache.json). Fail-open: never blocks session.
 const fs = require('fs');
