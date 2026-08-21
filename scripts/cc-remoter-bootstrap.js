@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// code-mode-bootstrap — SessionStart hook: register Code Mode manuals from ~/.utcp_config.json
-// and cache tool list to .claude/cc-code-mode-cache.json. Fail-open: never blocks session.
+// cc-remoter-bootstrap — SessionStart hook: register cc-remoter manuals from ~/.utcp_config.json
+// and cache tool list to .claude/cc-remoter-cache.json (compat alias cc-code-mode-cache.json). Fail-open: never blocks session.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -51,7 +51,7 @@ async function main() {
     cache.manuals[cacheKey] = { url: m.url, toolCount: tools.length, tools, toolDefs, buildInfo: buildInfo || null, aliasOf: m.name !== cacheKey ? m.name : undefined };
   }
 
-  // write project-local cache (.claude/cc-code-mode-cache.json) — prefer project dir from env/hook cwd
+  // write project-local cache (.claude/cc-remoter-cache.json) — prefer project dir from env/hook cwd
   const projectRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   const claudeDir = path.join(projectRoot, '.claude');
   try {
@@ -73,7 +73,7 @@ async function main() {
 
   const names = Object.keys(cache.manuals).join(', ');
   const total = Object.values(cache.manuals).reduce((s, v) => s + v.toolCount, 0);
-  console.log(`[code-mode-bootstrap] cached ${names} (${total} tools) → .claude/cc-code-mode-cache.json`);
+  console.log(`[cc-remoter-bootstrap] cached ${names} (${total} tools) → .claude/cc-code-mode-cache.json`);
 }
 
 main().catch(() => process.exit(0));
