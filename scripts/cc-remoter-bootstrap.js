@@ -56,7 +56,9 @@ async function main() {
   const claudeDir = path.join(projectRoot, '.claude');
   try {
     if (!fs.existsSync(claudeDir)) fs.mkdirSync(claudeDir, { recursive: true });
-    fs.writeFileSync(path.join(claudeDir, 'cc-code-mode-cache.json'), JSON.stringify(cache, null, 2));
+    fs.writeFileSync(path.join(claudeDir, 'cc-remoter-cache.json'), JSON.stringify(cache, null, 2));
+    // compat: keep old name for agents still reading it
+    try { fs.writeFileSync(path.join(claudeDir, 'cc-code-mode-cache.json'), JSON.stringify(cache, null, 2)); } catch {}
   } catch {}
 
   // inject env for this session so the agent can check CK_CODE_MODE without reading file

@@ -20,17 +20,17 @@ Auto khi prompt chua mot trong: `code mode`, `cc3x7`, `cc-remoter-2x`, `cc_remot
 ## Cache
 
 - **Nguon:** `~/.utcp_config.json` (extension ghi `cc3x7`/`cc-remoter-2x` (+ `ccr-2x`) → `http://localhost:<port>/utcp` moi lan start).
-- **Bootstrap:** `SessionStart` hook chay `scripts/cc-remoter-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-code-mode-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
+- **Bootstrap:** `SessionStart` hook chay `scripts/cc-remoter-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-remoter-cache.json` (compat `.claude/cc-code-mode-cache.json`)` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
 - **Persist:** file cache ton tai qua session; hook refresh moi session (port doi tu fix).
 
 ### Doc cache
 
 Cache luu `manuals.<name>.toolDefs[]` — full JSON Schema tung tool (de so sanh khi them/sua tool, khong chi ten). `tools[]` la ten rut gon de check nhanh.
-`cat .claude/cc-code-mode-cache.json | jq '.manuals.cc3x7.toolDefs[] | .name'` hoac `echo $CK_CODE_MODE`.
+`cat .claude/cc-remoter-cache.json` (compat `.claude/cc-code-mode-cache.json`) | jq '.manuals.cc3x7.toolDefs[] | .name'` hoac `echo $CK_CODE_MODE`.
 
 ## Quy tac goi tool
 
-1. **Cache hit** (`CK_CODE_MODE=ready` hoac `.claude/cc-code-mode-cache.json` co `tools[]`): goi thang
+1. **Cache hit** (`CK_CODE_MODE=ready` hoac `.claude/cc-remoter-cache.json` (compat `.claude/cc-code-mode-cache.json`)` co `tools[]`): goi thang
    `call_tool_chain("cc3x7.<tool>({ ... })")` — KHONG `register_manual`, KHONG `search_tools`/`list_tools`/`tools_info`.
 2. **Cache miss** (file khong co, hoac Cocos chua mo luc SessionStart): lam 1 lan
    `register_manual` tu `~/.utcp_config.json` → `list_tools` 1 lan → tiep tuc nhu (1).
@@ -41,7 +41,7 @@ Cache luu `manuals.<name>.toolDefs[]` — full JSON Schema tung tool (de so sanh
 Neu `call_tool_chain` tra ve `manual not found` / `tool not found`:
 
 1. Re-`register_manual` tu `~/.utcp_config.json` (doc lai file — port co the doi).
-2. Refresh cache: fetch `/utcp` lai, ghi `.claude/cc-code-mode-cache.json`.
+2. Refresh cache: fetch `/utcp` lai, ghi `.claude/cc-remoter-cache.json` (compat `.claude/cc-code-mode-cache.json`)`.
 3. Retry `call_tool_chain` 1 lan. Van fail → bao loi + goi `editorGetLogs`.
 
 Chi retry 1 lan — tranh loop.
