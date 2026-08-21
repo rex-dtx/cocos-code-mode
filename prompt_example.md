@@ -48,7 +48,7 @@ You orchestrate tools to modify editor state in a controlled and verifiable way.
 
 ## Tool defenitions reference
 
-- For Creator **2.4.x**, the tool surface is `cc-remoter-2x.d.ts (legacy `code-mode-references-2x.d.ts`)` at project root — 9 read-only tools, hand-written, kept in sync by hand
+- For Creator **2.4.x**, the tool surface is `cc-remoter-2x.d.ts` at project root — 9 read-only tools, hand-written, kept in sync by hand
 - `code-mode-references.d.ts` is the **3.x** surface and does not apply to a 2.4 project
 - Document mostly used component or asset definitions you will use for current task
 

@@ -10,7 +10,7 @@
 
 1. [Install the extension](#installation) in a Cocos Creator 2.4.x project
 2. [Integrate](#integration) it with the CodeMode MCP Server
-3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts) (legacy alias `code-mode-references-2x.d.ts` still present)
+3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts)
 4. Ask AI to help you and see how it learns!
 
 ## What is CC Remoter 2x?
@@ -105,7 +105,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 | `programOpen` | Launch registered program |
 | `urlOpen` | Open `http(s)` URL in system browser |
 
-Agent-facing TypeScript surface: [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts) (hand-written, 53 entries; legacy `code-mode-references-2x.d.ts` kept for compat).
+Agent-facing TypeScript surface: [cc-remoter-2x.d.ts](cc-remoter-2x.d.ts) (hand-written, 53 entries).
 
 ### Payload limits
 
