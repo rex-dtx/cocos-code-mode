@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1.0 — 2026-08-21 — game-complete enrich (CC Remoter 3x)
+## 2.1.0 — 2026-08-21 — game-complete enrich (CC Bridge 3x)
 
 - **Enrich 46:** `assetResolvePath` -> accepts `reference` OR `assetPath`, returns `exists`/`isDirectory`/`type`/`importer` alongside `filesystemPath`/`url`/`uuid` (verified `query-path`/`query-url`/`query-asset-info`/`query-uuid`).
 - **New +1:** `assetReadContent` (text read by uuid or db:// path, 512KB cap + binary guard, `maxBytes` override) -> 45 -> **46** (additive).
@@ -8,7 +8,7 @@
 - **Enrich:** `materialQuery` +`physics_material` (`query-physics-material`, facade + registry), `assetDbQuery` +`db_info` (`query-db-info dbName`).
 - **Rename 3x:** `cocos-code-mode-3x7` -> `cc-bridge-3x`, manual `cc3x7` -> `cc-bridge-3x` + alias `ccb3x` (JS `cc_bridge_3x`/`ccb3x`, compat `ccb-3x`/`ccb_3x`), package menu `CC Bridge 3x`, d.ts `cc-bridge-3x.d.ts`, bootstrap `cc-bridge-bootstrap.js`, skills `.claude/skills/cc-bridge-3x`, removed legacy `cc-code-mode` shim + `code-mode-references.d.ts`.
 
-## 2.0.0 — 2026-08-19 — CC Remoter 3x (formerly Code Mode for Cocos Creator)
+## 2.0.0 — 2026-08-19 — CC Bridge 3x (formerly Code Mode for Cocos Creator)
 
 **Breaking:** consolidate 68 legacy+A1 tools -> **45** via 10 consolidated dispatchers. 26 legacy names removed from `/utcp`; consolidated surface is now the only one. Legacy method bodies kept (not registered) for `consolidated-tools.ts` delegation (`new LegacyTool().method()`).
 

@@ -52,9 +52,9 @@ async function main() {
             const raw = readFileSync(cfgPath, 'utf8');
             const cfg = JSON.parse(raw);
             const names = (cfg.manual_call_templates || []).map(t => t.name);
-            assert.ok(names.includes('cc-bridge-3x') || names.includes('ccb3x') || names.includes('cc3x7'), `cc3x7 template present, found ${names.join(',')}`);
+            assert.ok(names.includes('cc-bridge-3x') || names.includes('ccb3x'), `cc-bridge-3x template present, found ${names.join(',')}`);
             ok('config has cc-bridge-3x template');
-        } catch (e) { skipped('config cc3x7 check', e.message); }
+        } catch (e) { skipped('config cc-bridge-3x check', e.message); }
     } catch (e) { bad('manual', e.message); }
 
     // 2 — build-info matches HEAD (catches stale dist)

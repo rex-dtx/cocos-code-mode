@@ -2,7 +2,7 @@
 name: cc-bridge-3x
 description: >
   Cache-first Code Mode UX — dung cc-bridge-3x/cc_bridge_3x (manual cc-bridge-3x, short ccb3x) nhu tool thuong.
-  Bat khi prompt chua "code mode", "cc-bridge-3x", "cc_bridge_3x", "ccb3x", "ccb-3x", "ccb_3x", "cc3x7", "cc2x4", "cocos", "set vi tri",
+  Bat khi prompt chua "code mode", "cc-bridge-3x", "cc_bridge_3x", "ccb3x", "ccb-3x", "ccb_3x", "ccb2x", "cocos", "set vi tri",
   "node", "scene", "prefab", "inspector" hoac bat ky tac vu nao can
   thao tac Cocos Editor qua UTCP. Khong can register/search lai neu cache hit.
 ---
@@ -13,7 +13,7 @@ Dung Code Mode nhu tool thuong, khong `register_manual`/`search_tools` lai moi l
 
 ## Khi nao kich hoat
 
-Auto khi prompt chua mot trong: `code mode`, `cc-bridge-3x`, `cc_bridge_3x`, `ccb3x`, `ccb-3x`, `ccb_3x`, `cc3x7`, `cc-bridge-2x`, `ccb2x`, `cocos`,
+Auto khi prompt chua mot trong: `code mode`, `cc-bridge-3x`, `cc_bridge_3x`, `ccb3x`, `ccb-3x`, `ccb_3x`, `cc-bridge-2x`, `ccb2x`, `cocos`,
 `set vi tri`, `node`, `scene`, `prefab`, `inspector`, `asset`, `component`,
 `preview`, `build` — hoac agent dinh goi `call_tool_chain`.
 
