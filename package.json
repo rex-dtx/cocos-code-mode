@@ -67,21 +67,6 @@
       },
       {
         "path": "CC Bridge 3x",
-        "label": "Server Info",
-        "message": "show-info"
-      },
-      {
-        "path": "CC Bridge 3x",
-        "label": "Restart Server",
-        "message": "restart-server"
-      },
-      {
-        "path": "CC Bridge 3x",
-        "label": "Reload Extension",
-        "message": "reload-extension"
-      },
-      {
-        "path": "CC Bridge 3x",
         "label": "About",
         "message": "show-build-info"
       },
@@ -89,6 +74,16 @@
         "path": "CC Bridge 3x/Debug",
         "label": "Toggle Debug Logging",
         "message": "toggle-debug"
+      },
+      {
+        "path": "CC Bridge 3x/Debug",
+        "label": "Restart Server",
+        "message": "restart-server"
+      },
+      {
+        "path": "CC Bridge 3x/Debug",
+        "label": "Reload Extension",
+        "message": "reload-extension"
       },
       {
         "path": "CC Bridge 3x/Debug",

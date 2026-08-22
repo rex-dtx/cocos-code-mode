@@ -22,11 +22,8 @@ export const methods: { [key: string]: (...any: any) => any } = {
     },
 
     async showInfo() {
-        const cm = getConfigManager();
-        const port = await cm.getCurrentPort().catch(() => null);
-        const configPath = cm.getConfigPath();
-        const url = port ? `http://localhost:${port}/utcp` : '(not running)';
-        console.log(`[${packageJSON.name}] port=${port} | config=${configPath} | ${url}`);
+        // ponytail: alias kept for compat, menu no longer exposes it — delegates to show-build-info
+        return (methods as any).showBuildInfo();
     },
 
     async restartServer(newPort: number) {
@@ -106,21 +103,31 @@ export const methods: { [key: string]: (...any: any) => any } = {
         }
     },
 
-    showBuildInfo() {
+    async showBuildInfo() {
         const b = getBuildInfo();
+        const cm = getConfigManager();
+        // ponytail: merged Server Info + About — single log has port/config/url + build info (same as 2x)
+        const port = await cm.getCurrentPort().catch(() => 0);
+        const configPath = cm.getConfigPath();
+        const url = port ? `http://localhost:${port}/utcp` : '(not running)';
         const lines = [
+            `Port:     ${port || '(not running)'} | Config: ${configPath} | ${url}`,
             `Version:  ${b.version}`,
             `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
             `Branch:   ${b.branch}`,
             `Built at: ${b.builtAt}`,
         ];
         console.log(`[${packageJSON.name}] Build info:\n${lines.join('\n')}`);
-        // ponytail: Editor.Dialog.info is heavy but this is a one-shot user query.
-        // Clipboard copy would be nicer but CC3.x has no clipboard API in main process.
         try {
-            (Editor as any).Dialog.info(lines.join('\n'), { title: `${packageJSON.name} Build Info` });
+            (Editor as any).Dialog.messageBox({
+                type: 'info',
+                title: `${packageJSON.name} Build Info`,
+                message: lines.join('\n'),
+                buttons: ['OK'],
+                defaultId: 0,
+            });
         } catch {
-            // Fallback: already logged to console above.
+            try { (Editor as any).Dialog.info(lines.join('\n'), { title: `${packageJSON.name} Build Info` }); } catch { /* logged above */ }
         }
     }
 };
