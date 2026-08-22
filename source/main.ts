@@ -48,13 +48,8 @@ module.exports = {
     // Goi tu main-menu: click Extension -> CC Bridge 2x (khong co arg).
     messages: {
         'show-info'() {
-            const cm = getConfigManager();
-            // port from profile (last saved) — server does not keep it as a field
-            cm.getCurrentPort().then((port) => {
-                const configPath = cm.getConfigPath();
-                const url = port ? `http://localhost:${port}/utcp` : '(not running)';
-                Editor.log(`[${PKG_NAME}] port=${port} | config=${configPath} | ${url}`);
-            });
+            // ponytail: alias kept for compat, menu no longer exposes it — delegates to show-build-info
+            (module.exports as any).messages['show-build-info']();
         },
         async 'restart-server'(event: any, newPort: number) {
             if (!utcpServer) {
@@ -96,26 +91,35 @@ module.exports = {
         },
         'show-build-info'() {
             const b = getBuildInfo();
-            const lines = [
-                `Version:  ${b.version}`,
-                `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
-                `Branch:   ${b.branch}`,
-                `Built at: ${b.builtAt}`,
-            ];
-            Editor.log(`[${PKG_NAME}] Build info:\n${lines.join('\n')}`);
-            try {
-                (Editor as any).Dialog.messageBox({
-                    type: 'info',
-                    title: `${PKG_NAME} Build Info`,
-                    message: lines.join('\n'),
-                    buttons: ['OK'],
-                    defaultId: 0,
-                });
-            } catch {
+            const cm = getConfigManager();
+            // ponytail: merged Server Info + About — single log has port/config/url + build info
+            const portP = cm.getCurrentPort().catch(() => 0);
+            // fire-and-log without blocking dialog; port resolves fast (profile read)
+            portP.then((port: number) => {
+                const configPath = cm.getConfigPath();
+                const url = port ? `http://localhost:${port}/utcp` : '(not running)';
+                const lines = [
+                    `Port:     ${port || '(not running)'} | Config: ${configPath} | ${url}`,
+                    `Version:  ${b.version}`,
+                    `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
+                    `Branch:   ${b.branch}`,
+                    `Built at: ${b.builtAt}`,
+                ];
+                Editor.log(`[${PKG_NAME}] Build info:\n${lines.join('\n')}`);
                 try {
-                    (Editor as any).Dialog.info(lines.join('\n'), { title: `${PKG_NAME} Build Info` });
-                } catch { /* logged above */ }
-            }
+                    (Editor as any).Dialog.messageBox({
+                        type: 'info',
+                        title: `${PKG_NAME} Build Info`,
+                        message: lines.join('\n'),
+                        buttons: ['OK'],
+                        defaultId: 0,
+                    });
+                } catch {
+                    try {
+                        (Editor as any).Dialog.info(lines.join('\n'), { title: `${PKG_NAME} Build Info` });
+                    } catch { /* logged above */ }
+                }
+            });
         },
         'open-config'() {
             Editor.Panel.open(PKG_NAME);

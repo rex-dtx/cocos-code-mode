@@ -9,20 +9,17 @@
     "Extension/CC Bridge 2x/Configuration": {
       "message": "cc-bridge-2x:open-config"
     },
-    "Extension/CC Bridge 2x/Server Info": {
-      "message": "cc-bridge-2x:show-info"
-    },
-    "Extension/CC Bridge 2x/Restart Server": {
-      "message": "cc-bridge-2x:restart-server"
-    },
-    "Extension/CC Bridge 2x/Reload Extension": {
-      "message": "cc-bridge-2x:reload"
-    },
     "Extension/CC Bridge 2x/About": {
       "message": "cc-bridge-2x:show-build-info"
     },
     "Extension/CC Bridge 2x/Debug/Toggle Debug Logging": {
       "message": "cc-bridge-2x:toggle-debug"
+    },
+    "Extension/CC Bridge 2x/Debug/Restart Server": {
+      "message": "cc-bridge-2x:restart-server"
+    },
+    "Extension/CC Bridge 2x/Debug/Reload Extension": {
+      "message": "cc-bridge-2x:reload"
     },
     "Extension/CC Bridge 2x/Debug/Open Debug Folder": {
       "message": "cc-bridge-2x:open-debug-folder"
