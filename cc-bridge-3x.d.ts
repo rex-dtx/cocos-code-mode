@@ -215,8 +215,8 @@ declare namespace cc_bridge_3x {
     /** Get info about the current editor environment: editor version, engine version and paths, native engine info, current project path. */
     function editorEnvInfo(): { editor: string, engineVersion: string, enginePath?: string, nativeVersion?: string, nativePath?: string, projectPath: string };
 
-    /** Undo or redo the last editor operation in the scene view. Use undo to roll back a failed or unwanted mutation. */
-    function editorHistory(args: { operation: "undo" | "redo" }): { success: boolean, error?: string };
+    /** Undo/redo/last-op snapshot; abort drops a pending snapshot without creating an undo step. */
+    function editorHistory(args: { operation: "undo" | "redo" | "abort" }): { success: boolean, error?: string };
 
     /** Control the editor scene viewport: focus camera on nodes, 2D/3D mode, grid visibility, icon gizmo 3D/size, gizmo tool/pivot/coordinate, align view/node (align ops act on the current selection). query_viewport reads 2D/grid/icon state, query_gizmo reads gizmo state. Frame nodes before editorGetScenePreview. */
     function editorViewport(args: {
@@ -281,9 +281,9 @@ declare namespace cc_bridge_3x {
         effectName?: string
     }): { result: any };
 
-    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data, db_info, asset meta. Poll "busy" after a refresh before trusting asset queries. */
+    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data, db_info, asset meta, ready. Poll "busy" after a refresh before trusting asset queries. */
     function assetDbQuery(args: {
-        operation: "databases" | "busy" | "mtime" | "data" | "db_info" | "meta",
+        operation: "databases" | "busy" | "mtime" | "data" | "db_info" | "meta" | "ready",
         reference?: InstanceReference,
         dbName?: string
     }): { result: any };
@@ -297,8 +297,8 @@ declare namespace cc_bridge_3x {
     function inspectorGetDefinition(args: { target: "instance" | "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, section?: string }): { definition: string, sections: string[], totalSections: number };
     /** Consolidated: add/remove component on node. */
     function nodeComponentManage(args: { operation: "add" | "remove", reference: InstanceReference, componentType?: string }): { reference?: InstanceReference, success?: boolean };
-    /** Consolidated: query editor state or vocabularies. Use instead of removed editorIntrospect/editorListTypes. */
-    function editorQuery(args: { category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script" | "creatable_assets" | "asset_types" | "importers", enumPath?: string, className?: string, reference?: InstanceReference }): any;
+    /** Consolidated: query editor state or vocabularies. Use instead of removed editorIntrospect/editorListTypes. Plus: shared_settings (= programming builtins) and sorted_plugins (typed after 3.7 — may report not-supported on 3.7.3). */
+    function editorQuery(args: { category: "scene_mode" | "ready" | "enum_values" | "layers" | "sorting_layers" | "script_info" | "has_script" | "creatable_assets" | "asset_types" | "importers" | "shared_settings" | "sorted_plugins", enumPath?: string, className?: string, reference?: InstanceReference }): any;
     /** Consolidated: scene lifecycle open/save/close/soft_reload. Use instead of removed sceneOpen/editorOperate. */
     function sceneManage(args: { operation: "open" | "save" | "save_as" | "close" | "soft_reload", reference?: InstanceReference }): { success: boolean, error?: string, reference?: InstanceReference };
     /** Consolidated: preview (asset/scene capture, get url, open browser). */

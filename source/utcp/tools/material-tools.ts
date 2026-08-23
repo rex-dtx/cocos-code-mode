@@ -124,7 +124,12 @@ export class MaterialTools {
                 if (!args.reference?.id) {
                     throw new Error('assetDbQuery "missing" requires reference.id (uuid or db:// path string)');
                 }
-                return { result: await Editor.Message.request('asset-db', 'query-missing-asset-info' as any, args.reference.id) };
+                try {
+                    return { result: await Editor.Message.request('asset-db', 'query-missing-asset-info' as any, args.reference.id) };
+                } catch (e: any) {
+                    if (/does not exist/i.test(String(e?.message ?? e))) throw new Error('assetDbQuery "missing" is not supported on this editor version (message added after 3.7.3)');
+                    throw e;
+                }
             }
 
             default:

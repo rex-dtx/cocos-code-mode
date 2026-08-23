@@ -312,8 +312,12 @@ export class EditorTools {
             case 'shared_settings':
                 return { result: await Editor.Message.request('programming', 'query-shared-settings' as any) };
             case 'sorted_plugins': {
-                const sorted = await Editor.Message.request('programming', 'query-sorted-plugins' as any);
-                return { result: sorted };
+                try {
+                    return { result: await Editor.Message.request('programming', 'query-sorted-plugins' as any) };
+                } catch (e: any) {
+                    if (/does not exist/i.test(String(e?.message ?? e))) throw new Error('editorQuery "sorted_plugins" is not supported on this editor version (message added after 3.7.3)');
+                    throw e;
+                }
             }
             default:
                 throw new Error(`Unknown introspect category: ${args.category}`);
