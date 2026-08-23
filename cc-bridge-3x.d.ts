@@ -153,8 +153,8 @@ declare namespace cc_bridge_3x {
     /** Find all nodes whose asset references are missing/broken. QA/health check for scene integrity. */
     function findNodesWithMissingAssets(): { references: InstanceReference[] };
 
-    /** Reset nodes or one component back to default property values. operation "node" (uuids) or "component" (single uuid). */
-    function nodeReset(args: { operation: "node" | "component", references: InstanceReference[] }): { success: boolean, error?: string };
+    /** Reset nodes, one component, or one property to defaults. operation property needs a single uuid + propertyPath. */
+    function nodeReset(args: { operation: "node" | "component" | "property", references: InstanceReference[], propertyPath?: string }): { success: boolean, error?: string };
 
     /** Execute a method on a component by its uuid. Arguments and return value must be JSON-serializable. Get the component uuid via nodeComponentsGet. */
     function callComponentMethod(args: { reference: InstanceReference, methodName: string, methodArgs?: any[] }): { result: any };

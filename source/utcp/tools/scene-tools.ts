@@ -106,24 +106,38 @@ export class SceneTools {
 
     @utcpTool(
         'nodeReset',
-        'Reset node or component properties to defaults. Operations: "node" (all nodes), "component" (single component).',
+        'Reset node or component properties to defaults. Operations: "node" (all), "component" (one component), "property" (one field by path).',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['node', 'component'] },
-                references: { type: 'array', items: InstanceReferenceSchema, description: 'For node: node uuids to reset. For component: exactly one component uuid.' }
+                operation: { type: 'string', enum: ['node', 'component', 'property'] },
+                references: { type: 'array', items: InstanceReferenceSchema, description: 'For node/component: node/component uuids. For property: exactly one node-or-component uuid.' },
+                propertyPath: { type: 'string', description: 'For property only: inspector path (e.g. "position", "__comps__.0.type").' }
             },
             required: ['operation', 'references']
         },
-        SuccessIndicatorSchema, "POST", ['scene', 'node', 'component', 'reset', 'default', 'revert']
+        SuccessIndicatorSchema, "POST", ['scene', 'node', 'component', 'reset', 'default', 'revert', 'property']
     )
-    async nodeReset(args: { operation: string, references: IInstanceReference[] }): Promise<ISuccessIndicator> {
+    async nodeReset(args: { operation: string, references: IInstanceReference[], propertyPath?: string }): Promise<ISuccessIndicator> {
         const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
         if (uuids.length === 0) {
             throw new Error('nodeReset requires non-empty references');
         }
 
-        if (args.operation === 'node') {
+        if (args.operation === 'property') {
+            if (uuids.length !== 1) {
+                throw new Error('nodeReset operation "property" requires exactly one uuid');
+            }
+            if (!args.propertyPath || !args.propertyPath.trim()) {
+                throw new Error('nodeReset operation "property" requires propertyPath');
+            }
+            // Typed facade reuses SetPropertyOptions (which marks `dump` required), but
+            // reset-property ignores dump: only uuid + path matter. Cast to satisfy tsc.
+            const ok = await Editor.Message.request('scene', 'reset-property', { uuid: uuids[0], path: args.propertyPath } as any);
+            if (!ok) {
+                throw new Error(`Failed to reset property ${args.propertyPath} on ${uuids[0]}`);
+            }
+        } else if (args.operation === 'node') {
             const ok = await Editor.Message.request('scene', 'reset-node', { uuid: uuids.length === 1 ? uuids[0] : uuids });
             if (!ok) {
                 throw new Error(`Failed to reset nodes ${uuids.join(', ')}`);
