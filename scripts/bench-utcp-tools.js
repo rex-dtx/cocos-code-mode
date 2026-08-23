@@ -28,7 +28,7 @@ async function discoverPort() {
         const raw2 = readFileSync(join(__dirname, '..', 'dist', 'build-info.json'), 'utf8');
         void raw2;
     } catch {}
-    throw new Error('Cannot discover UTCP port: is the editor running cocos-code-mode-3x7?');
+    throw new Error('Cannot discover UTCP port: is the editor running cc-bridge-3x?');
 }
 
 async function main() {

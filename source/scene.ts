@@ -44,7 +44,7 @@ export const methods = {
         if (_catchAllActive) return true;
         let fs: any;
         try { fs = require('fs'); } catch {
-            console.warn('[cocos-code-mode-3x7] startCatchAll: fs unavailable in scene context');
+            console.warn('[cc-bridge-3x] startCatchAll: fs unavailable in scene context');
             return false;
         }
         const path = require('path');

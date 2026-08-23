@@ -28,3 +28,6 @@ package-lock.json
 # Packaged extension
 *.zip
 _tmp_*
+
+# Generated visuals (scene screenshots via previewManage) — regenerate on demand
+plans/visuals/

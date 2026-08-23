@@ -1,4 +1,4 @@
-# CC Bridge 3x — Cocos Creator 3.7 remoter (UTCP)
+# CC Bridge 3x — Cocos Creator 3.7 bridge (UTCP)
 
 **CC Bridge 3x** (formerly `cocos-code-mode-3x7`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene manipulation, asset management, and property inspection as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents build, inspect, and modify Cocos Creator projects the same way a developer would through the UI.
 These tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) environment to achieve maximum performance and token efficiency for AI agents, letting them call the tools in isolated JS sandbox.
@@ -164,7 +164,7 @@ cd cocos-code-mode
 npm i
 npm run package
 ```
-4. If everything builds fine, `cocos-code-mode.zip` file should appear in repository root.
+4. If everything builds fine, `cc-bridge-3x.zip` file should appear in repository root.
 5. Install it in Cocos Creator with **Extension Manager**.
 
 ## Adding Custom Tools

@@ -122,11 +122,13 @@ declare namespace cc_bridge_3x {
         options?: { overwrite?: boolean, rename?: boolean }
     }): { reference: InstanceReference };
 
-    /** Perform operations on assets (move, copy, delete, open). */
+    /** Perform operations on assets (move, copy, delete, open, refresh, reimport, save_meta). */
     function assetOperate(args: {
-        operation: "move" | "copy" | "delete" | "open" | "refresh" | "reimport",
+        operation: "move" | "copy" | "delete" | "open" | "refresh" | "reimport" | "save_meta",
         reference: InstanceReference,
         targetAssetPath?: string,
+        /** save_meta only: meta object (or JSON string) read via assetDbQuery "meta", then mutated. */
+        meta?: any,
         options?: { overwrite?: boolean, rename?: boolean }
     }): { reference: InstanceReference };
 
@@ -279,9 +281,9 @@ declare namespace cc_bridge_3x {
         effectName?: string
     }): { result: any };
 
-    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data, db_info. Poll "busy" after a refresh before trusting asset queries. */
+    /** Introspect the asset database: mounted databases, import-busy state, asset mtime, raw imported data, db_info, asset meta. Poll "busy" after a refresh before trusting asset queries. */
     function assetDbQuery(args: {
-        operation: "databases" | "busy" | "mtime" | "data" | "db_info",
+        operation: "databases" | "busy" | "mtime" | "data" | "db_info" | "meta",
         reference?: InstanceReference,
         dbName?: string
     }): { result: any };

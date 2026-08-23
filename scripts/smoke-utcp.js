@@ -16,7 +16,7 @@ async function discoverBase() {
             if (m) return `http://localhost:${m[1]}`;
         }
     } catch {}
-    throw new Error('Cannot discover UTCP port: is cocos-code-mode-3x7 running? Pass port as arg.');
+    throw new Error('Cannot discover UTCP port: is cc-bridge-3x running? Pass port as arg.');
 }
 
 async function getJson(url) {

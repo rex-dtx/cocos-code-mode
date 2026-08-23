@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.1 — 2026-08-23 — clean break + asset meta parity
+
+- **Clean break:** bỏ hết compat `cc3x7`/`cc2x4` khỏi bootstrap/skill/smoke; `~/.utcp_config.json` chỉ nhận `cc-bridge-3x`/`ccb3x` + `cc-bridge-2x`/`ccb2x`. Xoá shim `scripts/code-mode-bootstrap.js`.
+- **Parity gap #1 đóng:** `assetOperate` +`save_meta` (`save-asset-meta`) và `assetDbQuery` +`meta` (`query-asset-meta`) — cặp read-modify-write, ngang `assetSaveMeta` của 2x. Vẫn **46 tools** (chỉ thêm op).
+- **Dọn tên sót:** `source/scene.ts` log tag, error message của `smoke-utcp.js`/`bench-utcp-tools.js`, README title/zip name → `cc-bridge-3x`.
+
 ## 2.1.0 — 2026-08-21 — game-complete enrich (CC Bridge 3x)
 
 - **Enrich 46:** `assetResolvePath` -> accepts `reference` OR `assetPath`, returns `exists`/`isDirectory`/`type`/`importer` alongside `filesystemPath`/`url`/`uuid` (verified `query-path`/`query-url`/`query-asset-info`/`query-uuid`).

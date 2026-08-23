@@ -72,14 +72,14 @@ export class MaterialTools {
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['databases', 'busy', 'mtime', 'data', 'db_info'] },
-                reference: { ...InstanceReferenceSchema, description: 'For mtime / data / db_info: the asset (db_info also accepts dbName)' },
+                operation: { type: 'string', enum: ['databases', 'busy', 'mtime', 'data', 'db_info', 'meta'] },
+                reference: { ...InstanceReferenceSchema, description: 'For mtime / data / meta / db_info: the asset (db_info also accepts dbName)' },
                 dbName: { type: 'string', description: 'For db_info: database name, e.g. assets or internal' }
             },
             required: ['operation']
         },
         { type: 'object', properties: { result: {} } }, "GET",
-        ['asset', 'database', 'db', 'mtime', 'busy', 'introspect', 'db-info']
+        ['asset', 'database', 'db', 'mtime', 'busy', 'introspect', 'db-info', 'meta']
     )
     async assetDbQuery(args: { operation: string, reference?: IInstanceReference, dbName?: string }): Promise<{ result: any }> {
         switch (args.operation) {
@@ -105,6 +105,13 @@ export class MaterialTools {
                 const name = args.dbName || args.reference?.id || 'assets';
                 return { result: await Editor.Message.request('asset-db', 'query-db-info' as any, name) };
             }
+
+            // Read side of assetOperate save_meta — meta writes are read-modify-write.
+            case 'meta':
+                if (!args.reference?.id) {
+                    throw new Error('assetDbQuery "meta" requires reference');
+                }
+                return { result: await Editor.Message.request('asset-db', 'query-asset-meta' as any, args.reference.id) };
 
             default:
                 throw new Error(`Unknown assetDbQuery operation: ${args.operation}`);
