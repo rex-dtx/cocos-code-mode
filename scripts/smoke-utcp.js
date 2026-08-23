@@ -111,39 +111,48 @@ async function main() {
 
     // 3d — nodeComponentsGet shape (if scene has nodes)
     try {
-        // need a node uuid: try to get one from nodeGetTree
-        const { body: tree } = await getJson(`${base}/tools/nodeGetTree?maxDepth=1`);
-        const firstRef = tree?.reference?.id || tree?.children?.[0]?.reference?.id;
-        if (!firstRef) { skipped('nodeComponentsGet', 'no node uuid'); }
+        // qs binds bracket-notation only: reference[id]=<uuid>. A JSON string value
+        // arrives as an opaque string and blows up server-side ("Node undefined").
+        const compsOf = (id) => getJson(`${base}/tools/nodeComponentsGet?reference%5Bid%5D=${encodeURIComponent(id)}`);
+        const { body: tree } = await getJson(`${base}/tools/nodeGetTree?maxDepth=2`);
+        // scene root usually holds no components (null response) — walk to first node that does
+        const cands = [tree?.reference?.id, ...(tree?.children || []).map(c => c?.reference?.id)].filter(Boolean);
+        if (!cands.length) { skipped('nodeComponentsGet', 'no node uuid'); }
         else {
-            const { body, ok: okComp } = await getJson(`${base}/tools/nodeComponentsGet?reference=${encodeURIComponent(JSON.stringify({id:firstRef}))}`);
-            // endpoint expects reference as JSON in query? try POST fallback is not covered here; skip if GET shape mismatch
-            if (!okComp) { skipped('nodeComponentsGet', 'GET not supported, try POST'); }
+            let hit = null, lastErr = null;
+            for (const id of cands) {
+                const { body, ok: okComp } = await compsOf(id);
+                if (!okComp) { lastErr = JSON.stringify(body).slice(0, 120); continue; }
+                if (body && Array.isArray(body.references) && body.references.length) { hit = body; break; }
+            }
+            if (!hit) { skipped('nodeComponentsGet', lastErr || 'no node with components in top 2 levels'); }
             else {
-                assert.ok(Array.isArray(body.references), 'references array');
                 // every reference must have type (catches undefined type bug)
-                const badRefs = body.references.filter(r => !r.type);
+                const badRefs = hit.references.filter(r => !r.type);
                 assert.equal(badRefs.length, 0, `all refs have type, bad ${badRefs.length}`);
-                ok('nodeComponentsGet refs have type');
+                ok(`nodeComponentsGet refs have type (${hit.references.map(r => r.type).join(',')})`);
             }
         }
-    } catch (e) { skipped('nodeComponentsGet', e.message); }
+    } catch (e) { bad('nodeComponentsGet', e.message); }
 
     // 3e — preview image must be valid JPEG not "data:," (via previewManage)
     try {
-        const { body: q } = await getJson(`${base}/tools/assetQuery?pattern=db://assets/**&limit=5`);
-        const img = q?.assets?.find(a => /\.(png|jpg)$/i.test(a.url || ''));
+        // importer=image also matches db://internal pngs (pattern db://assets/** misses them)
+        const { body: q } = await getJson(`${base}/tools/assetQuery?importer=image&limit=1`);
+        const img = q?.assets?.[0];
         if (!img) { skipped('previewManage asset_preview', 'no image asset found'); }
         else {
-            const { body, ok: okPrev } = await getJson(`${base}/tools/previewManage?operation=asset_preview&reference=${encodeURIComponent(JSON.stringify({id:img.uuid}))}`);
-            if (!okPrev) { skipped('previewManage asset_preview', JSON.stringify(body).slice(0,100)); }
+            // endpoint is POST + bracket-notation reference[id]
+            const r = await fetch(`${base}/tools/previewManage?operation=asset_preview&reference%5Bid%5D=${encodeURIComponent(img.uuid)}&imageSize=128`, { method: 'POST' });
+            const body = await r.json();
+            if (!r.ok) { bad('previewManage asset_preview', `POST ${r.status} ${JSON.stringify(body).slice(0,120)}`); }
             else {
                 assert.equal(body.type, 'image', 'preview type image');
                 assert.ok(typeof body.data === 'string' && body.data.startsWith('/9j/'), `data starts /9j/ (got ${String(body.data).slice(0,10)})`);
                 ok('previewManage asset_preview valid JPEG');
             }
         }
-    } catch (e) { skipped('previewManage asset_preview', e.message); }
+    } catch (e) { bad('previewManage asset_preview', e.message); }
 
     console.log(`\nresult: ${pass} pass, ${fail} fail, ${skip} skip`);
     if (fail) process.exit(1);
