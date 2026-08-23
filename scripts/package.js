@@ -10,8 +10,23 @@ if (!fs.existsSync(packageJsonPath)) {
 
 const packageJson = require(packageJsonPath);
 const packageName = packageJson.name;
-const zipFileName = `${packageName}.zip`;
 const projectRoot = path.join(__dirname, '..');
+
+// Zip name carries version + build timestamp so artifacts from different
+// sessions never silently collide: cc-bridge-3x-<version>-YYMMDD-HHMMSS.zip.
+// Timestamp comes from dist/build-info.json (stamped at build time) so the
+// name always matches the packaged build; falls back to now.
+function buildTimestamp() {
+    try {
+        const info = JSON.parse(fs.readFileSync(path.join(projectRoot, 'dist', 'build-info.json'), 'utf8'));
+        if (info.builtAt) return new Date(info.builtAt);
+    } catch { /* fall through to now */ }
+    return new Date();
+}
+const ts = buildTimestamp();
+const pad = (n) => String(n).padStart(2, '0');
+const stamp = `${String(ts.getFullYear()).slice(2)}${pad(ts.getMonth() + 1)}${pad(ts.getDate())}-${pad(ts.getHours())}${pad(ts.getMinutes())}${pad(ts.getSeconds())}`;
+const zipFileName = `${packageName}-v${packageJson.version.replace(/\./g, '')}-${stamp}.zip`;
 
 // Derive zip version from build-info.json stamped at build time, so the
 // Extensions Manager header shows which commit produced this artifact.
@@ -47,6 +62,14 @@ const filesToInclude = [
 ];
 
 const outputPath = path.join(projectRoot, zipFileName);
+
+// Each package run supersedes the previous build (dist/ is overwritten anyway),
+// so drop any leftover cc-bridge-3x*.zip first — artifacts must not pile up.
+for (const old of fs.readdirSync(projectRoot)) {
+    if (old === zipFileName || !/^cc-bridge-3x.*\.zip$/.test(old)) continue;
+    fs.unlinkSync(path.join(projectRoot, old));
+    console.log(`Removed old package: ${old}`);
+}
 
 console.log(`Packaging project into ${zipFileName}...`);
 

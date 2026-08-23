@@ -68,18 +68,18 @@ export class MaterialTools {
 
     @utcpTool(
         'assetDbQuery',
-        'Introspect asset-db: databases list, busy status, mtime, raw imported data.',
+        'Introspect asset-db: databases list, busy status, mtime, raw imported data, ready/missing.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['databases', 'busy', 'mtime', 'data', 'db_info', 'meta'] },
-                reference: { ...InstanceReferenceSchema, description: 'For mtime / data / meta / db_info: the asset (db_info also accepts dbName)' },
+                operation: { type: 'string', enum: ['databases', 'busy', 'mtime', 'data', 'db_info', 'meta', 'ready', 'missing'] },
+                reference: { ...InstanceReferenceSchema, description: 'For mtime / data / meta / db_info / missing: the asset (db_info also accepts dbName; missing accepts uuid or db:// path string via reference.id)' },
                 dbName: { type: 'string', description: 'For db_info: database name, e.g. assets or internal' }
             },
             required: ['operation']
         },
         { type: 'object', properties: { result: {} } }, "GET",
-        ['asset', 'database', 'db', 'mtime', 'busy', 'introspect', 'db-info', 'meta']
+        ['asset', 'database', 'db', 'mtime', 'busy', 'introspect', 'db-info', 'meta', 'ready', 'missing']
     )
     async assetDbQuery(args: { operation: string, reference?: IInstanceReference, dbName?: string }): Promise<{ result: any }> {
         switch (args.operation) {
@@ -112,6 +112,20 @@ export class MaterialTools {
                     throw new Error('assetDbQuery "meta" requires reference');
                 }
                 return { result: await Editor.Message.request('asset-db', 'query-asset-meta' as any, args.reference.id) };
+
+            case 'ready':
+                // Typed in creator-types (asset-db::query-ready) — polls whether the
+                // asset-db has finished its initial open.
+                return { result: await Editor.Message.request('asset-db', 'query-ready' as any) };
+
+            case 'missing': {
+                // Typed in creator-types (asset-db::query-missing-asset-info) —
+                // returns MissingAssetInfo for dangling refs in the asset graph.
+                if (!args.reference?.id) {
+                    throw new Error('assetDbQuery "missing" requires reference.id (uuid or db:// path string)');
+                }
+                return { result: await Editor.Message.request('asset-db', 'query-missing-asset-info' as any, args.reference.id) };
+            }
 
             default:
                 throw new Error(`Unknown assetDbQuery operation: ${args.operation}`);

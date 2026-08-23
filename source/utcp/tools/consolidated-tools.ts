@@ -138,7 +138,7 @@ export class ConsolidatedTools {
             properties: {
                 category: {
                     type: 'string',
-                    enum: ['scene_mode', 'ready', 'enum_values', 'layers', 'sorting_layers', 'script_info', 'has_script', 'creatable_assets', 'asset_types', 'importers']
+                    enum: ['scene_mode', 'ready', 'enum_values', 'layers', 'sorting_layers', 'script_info', 'has_script', 'creatable_assets', 'asset_types', 'importers', 'shared_settings', 'sorted_plugins']
                 },
                 enumPath: { type: 'string' },
                 className: { type: 'string' },
@@ -147,7 +147,7 @@ export class ConsolidatedTools {
             required: ['category']
         },
         { type: 'object', properties: { sceneMode: { type: 'string' }, ready: { type: 'boolean' }, values: { type: 'array', items: { type: 'object' } }, types: { type: 'array', items: { type: 'string' } }, scriptName: { type: 'string' }, scriptCid: { type: 'string' }, hasScript: { type: 'boolean' } } }, 'GET',
-        ['editor', 'introspect', 'query', 'consolidated']
+        ['editor', 'introspect', 'query', 'consolidated', 'programming', 'plugin']
     )
     async editorQuery(args: { category: string, enumPath?: string, className?: string, reference?: IInstanceReference }): Promise<any> {
         const { EditorTools } = await import('./editor-tools');

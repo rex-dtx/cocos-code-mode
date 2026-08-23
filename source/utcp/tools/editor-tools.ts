@@ -254,7 +254,7 @@ export class EditorTools {
 
     /** @deprecated use editorQuery({ category }) — not registered, kept for delegation */
     async editorIntrospect(args: { category: string, enumPath?: string, className?: string, reference?: IInstanceReference }):
-        Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string, hasScript?: boolean }> {
+        Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string, hasScript?: boolean, result?: any }> {
         // Enumerator / layer results are {name, value} lists but the exact item shape is
         // not guaranteed across versions - normalize defensively instead of asserting.
         const normalizeList = (raw: any): Array<{ name?: string, value?: any }> => {
@@ -308,6 +308,13 @@ export class EditorTools {
                 }
                 return { hasScript: !!(await Editor.Message.request('scene', 'query-component-has-script', args.className)) };
             }
+            // Typed but rarely needed — exposed so the typed audit goes to 0/2 here.
+            case 'shared_settings':
+                return { result: await Editor.Message.request('programming', 'query-shared-settings' as any) };
+            case 'sorted_plugins': {
+                const sorted = await Editor.Message.request('programming', 'query-sorted-plugins' as any);
+                return { result: sorted };
+            }
             default:
                 throw new Error(`Unknown introspect category: ${args.category}`);
         }
@@ -356,21 +363,25 @@ export class EditorTools {
 
     @utcpTool(
         'editorHistory',
-        'Undo/redo last scene operation (snapshot).',
+        'Undo/redo last scene operation (snapshot); abort discards a pending snapshot.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['undo', 'redo'] }
+                operation: { type: 'string', enum: ['undo', 'redo', 'abort'] }
             },
             required: ['operation']
         },
-        SuccessIndicatorSchema, "POST", ['editor', 'undo', 'redo', 'history', 'rollback', 'revert']
+        SuccessIndicatorSchema, "POST", ['editor', 'undo', 'redo', 'history', 'rollback', 'revert', 'abort', 'snapshot']
     )
     async editorHistory(args: { operation: string }): Promise<ISuccessIndicator> {
         if (args.operation === 'undo') {
             await Editor.Message.request('scene', 'undo');
         } else if (args.operation === 'redo') {
             await Editor.Message.request('scene', 'redo');
+        } else if (args.operation === 'abort') {
+            // Typed scene::snapshot-abort — drops the current pending snapshot so it
+            // never becomes an undo step. Safe to call when nothing is pending.
+            await Editor.Message.request('scene', 'snapshot-abort');
         } else {
             throw new Error(`Unknown history operation: ${args.operation}`);
         }
