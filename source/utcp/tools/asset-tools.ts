@@ -7,6 +7,7 @@ import fs from 'fs-extra';
 import packageJSON from '../../../package.json';
 import { AssetInfo, AssetOperationOption } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { AssetTreeItemSchema, IAssetTreeItem } from '../schemas';
+import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 
 // helpers (shared by previewManage + kept methods)
 async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }): Promise<any[]> {
@@ -39,7 +40,7 @@ function normalizePath(p?: string): string {
 
 export class AssetTools {
 
-    @utcpTool('assetGetTree','Get asset hierarchy tree. Supports maxDepth, maxNodes. Marks truncated branches.',{ type:'object', properties:{ reference: InstanceReferenceSchema, assetPath:{type:'string'}, maxDepth:{type:'number'}, maxNodes:{type:'number'} } }, AssetTreeItemSchema,"GET",['asset','file','tree','hierarchy','folder','subasset'])
+    @utcpTool('assetGetTree','Get asset hierarchy tree. Defaults maxDepth=4/maxNodes=200; pass larger values for the full tree. Marks truncated branches.',{ type:'object', properties:{ reference: InstanceReferenceSchema, assetPath:{type:'string'}, maxDepth:{type:'number'}, maxNodes:{type:'number'} } }, AssetTreeItemSchema,"GET",['asset','file','tree','hierarchy','folder','subasset'])
     async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number, maxNodes?: number }): Promise<IAssetTreeItem> {
         if (args.reference) {
             const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
@@ -56,8 +57,13 @@ export class AssetTools {
         assetsMap.set(rootPath, rootNode);
         assets.forEach((asset:any)=>{ if(asset.url===rootPath) return; assetsMap.set(asset.url,{ reference:{id:asset.uuid, type:asset.isDirectory?'folder':asset.type}, name:asset.name, children:[] }); });
         assets.forEach((asset:any)=>{ if(asset.url===rootPath) return; const ti=assetsMap.get(asset.url); if(!ti) return; const pu=asset.url.substring(0,asset.url.lastIndexOf('/')); const pi=assetsMap.get(pu); if(pi) pi.children.push(ti); });
-        if (args.maxDepth !== undefined){ const prune=(n:IAssetTreeItem,d:number)=>{ if(d>=args.maxDepth!){ (n as any).truncated='maxDepth'; (n as any).childrenOmitted=n.children.length; (n as any).childrenCount=n.children.length; n.children=[]; } else n.children.forEach(c=>prune(c,d+1)); }; prune(rootNode,0); }
-        if (args.maxNodes !== undefined){ const budget={left:args.maxNodes}; const trunc=(n:IAssetTreeItem,d:number)=>{ const ch=n.children; if(!ch||!ch.length) return; (n as any).childrenCount=ch.length; const kept:IAssetTreeItem[]=[]; for(let i=0;i<ch.length;i++){ if(budget.left<=0){ (n as any).truncated=(n as any).truncated||'nodeLimit'; (n as any).childrenOmitted=ch.length-i; break; } budget.left--; trunc(ch[i],d+1); kept.push(ch[i]); } if(kept.length!==ch.length) n.children=kept; }; trunc(rootNode,0); }
+        // ponytail: default budgets — a bare call must not dump the whole asset DB.
+        // Defaults apply per-param only when omitted; pass larger values for the full
+        // tree. Same truncated/childrenOmitted convention as nodeGetTree.
+        const maxDepth = args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH;
+        const maxNodes = args.maxNodes ?? DEFAULT_TREE_MAX_NODES;
+        const prune=(n:IAssetTreeItem,d:number)=>{ if(d>=maxDepth){ (n as any).truncated='maxDepth'; (n as any).childrenOmitted=n.children.length; (n as any).childrenCount=n.children.length; n.children=[]; } else n.children.forEach(c=>prune(c,d+1)); }; prune(rootNode,0);
+        const budget={left:maxNodes}; const trunc=(n:IAssetTreeItem,d:number)=>{ const ch=n.children; if(!ch||!ch.length) return; (n as any).childrenCount=ch.length; const kept:IAssetTreeItem[]=[]; for(let i=0;i<ch.length;i++){ if(budget.left<=0){ (n as any).truncated=(n as any).truncated||'nodeLimit'; (n as any).childrenOmitted=ch.length-i; break; } budget.left--; trunc(ch[i],d+1); kept.push(ch[i]); } if(kept.length!==ch.length) n.children=kept; }; trunc(rootNode,0);
         return rootNode;
     }
 

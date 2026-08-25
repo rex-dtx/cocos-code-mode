@@ -2,6 +2,13 @@ import { ImporterManager } from './asset-importers';
 import { INode, IProperty, IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { AssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 
+// ponytail: default tree budgets — a bare nodeGetTree()/assetGetTree() must NOT dump
+// an unbounded hierarchy (full scene measured ~43K tokens). These defaults apply per
+// param only when the caller omits it; pass explicit larger values for the full tree.
+// Independent so a deep-narrow or shallow-wide query is still bounded on both axes.
+export const DEFAULT_TREE_MAX_DEPTH = 4;
+export const DEFAULT_TREE_MAX_NODES = 200;
+
 export class ToolsUtils {
 
     static async inspectInstance(targetId: string, adaptNode: boolean = true): Promise<{ uuid: string, type: string, props: { [key: string]: IPropertyValueType } | null, assetInfo: AssetInfo | null } | null> {

@@ -30,8 +30,8 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
-| **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` supports `maxDepth`/`maxNodes`/`fields` |
-| **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetReadContent`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate` | Browse/search/create/import/mutate. *`maxDepth`/`maxNodes` |
+| **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` bounded `maxDepth`=4/`maxNodes`=200 by default; `fields` filter |
+| **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetReadContent`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate` | Browse/search/create/import/mutate. *`assetGetTree` bounded `maxDepth`=4/`maxNodes`=200 by default |
 | **Inspector** (3) | `inspectorGet`*, `inspectorSet`*, `inspectorGetDefinition`* | Dump/set + TS definitions. *`fields[]`/`section` |
 | **Components** (3) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentManage`* | Discover + attach |
 | **Editor** (4) | `editorEnvInfo`, `editorViewport`, `editorSelect`, `editorHistory` + `editorQuery`*, `sceneManage`* | Viewport, selection, lifecycle |

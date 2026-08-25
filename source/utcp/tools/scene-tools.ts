@@ -1,6 +1,7 @@
 import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
 import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
+import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 
 export class SceneTools {
 
@@ -350,13 +351,13 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetTree',
-        'Get node hierarchy tree. Supports maxDepth, maxNodes, fields filter. Marks truncated branches.',
+        'Get node hierarchy tree. Defaults maxDepth=4/maxNodes=200; pass larger values for the full tree. Supports fields filter. Marks truncated branches.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
-                maxDepth: { type: 'number', description: 'Optional: max recursion depth. 0 = root only, 1 = root + direct children, etc. Omit for full tree.' },
-                maxNodes: { type: 'number', description: 'Optional: max nodes to walk. Guards wide scenes where maxDepth alone does not bound. Omit for unlimited.' },
+                maxDepth: { type: 'number', description: 'Max recursion depth. 0 = root only, 1 = root + direct children. Default 4 when omitted.' },
+                maxNodes: { type: 'number', description: 'Max nodes to walk; guards wide scenes where maxDepth alone does not bound. Default 200 when omitted.' },
                 fields: { type: 'array', items: { type: 'string' }, description: 'Optional: only keep these node keys per node (e.g. ["name","active","components"]). reference+children always kept. Omit for all fields.' }
             }
         },
@@ -381,14 +382,17 @@ export class SceneTools {
             throw new Error(`Node tree not found for ${args.reference?.id || 'entire scene'}`);
         }
 
-        // ponytail: node budget — guards wide scenes where maxDepth alone does not bound.
-        // cc-2x port (ee0a888/6f98715): same truncated/childrenOmitted convention.
-        const budget = { left: args.maxNodes ?? Infinity };
+        // ponytail: default budgets — a bare call must not dump the full scene (~43K
+        // tokens). Defaults apply per-param only when omitted; pass larger values for
+        // the full tree. cc-2x port (ee0a888/6f98715): same truncated/childrenOmitted convention.
+        const maxDepth = args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH;
+        const maxNodes = args.maxNodes ?? DEFAULT_TREE_MAX_NODES;
+        const budget = { left: maxNodes };
 
         const formatNode = (node: any, depth: number): ISceneTreeItem => {
 
            // ponytail: depth cap — stop recursion past maxDepth, return empty children.
-           const atMaxDepth = args.maxDepth !== undefined && depth >= args.maxDepth;
+           const atMaxDepth = depth >= maxDepth;
 
            // ponytail: field whitelist — reference+children always kept so the
            // tree stays navigable; others only if user asked or no filter set.
