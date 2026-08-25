@@ -211,14 +211,14 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension registers itself in `~/.utcp_config.json` as a `cc-bridge-3x` entry (JS: `cc_bridge_3x`, short `ccb3x` (compat `ccb-3x`/`ccb_3x`)) pointing at the running server port, and rewrites the port when it changes.
+The extension registers itself in `~/.utcp_config.json` as a single `ccb3x` entry pointing at the running server port, and rewrites the port when it changes. Legacy names (`cc-bridge-3x`, `cc3x7`, `ccb-3x`/`ccb_3x`) are migrated to `ccb3x` on save — the file must hold exactly one template per running server, duplicates cause double tool registration.
 
 ## Agent Prompt Guidance
 
 When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
 
 ```text
-When returning data from ccb3x tools (manual `cc-bridge-3x`, short `ccb3x`):
+When returning data from ccb3x tools (manual `ccb3x`; legacy `cc-bridge-3x`/`cc3x7` migrated on save):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

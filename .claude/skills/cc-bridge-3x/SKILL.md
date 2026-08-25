@@ -19,7 +19,7 @@ Auto khi prompt chua mot trong: `code mode`, `cc-bridge-3x`, `cc_bridge_3x`, `cc
 
 ## Cache
 
-- **Nguon:** `~/.utcp_config.json` (extension ghi `cc-bridge-3x`/`ccb3x` / `cc-bridge-2x`/`ccb2x` → `http://localhost:<port>/utcp` moi lan start).
+- **Nguon:** `~/.utcp_config.json` — 1 template duy nhat `ccb3x` → `http://localhost:<port>/utcp` (legacy `cc-bridge-3x`/`cc3x7`/`ccb-3x` migrated, 2x la `ccb2x`). Moi Editor ghi de port moi lan start; duplicate URL gay dup tool registration → chi giu 1 entry per server.
 - **Bootstrap:** `SessionStart` hook chay `scripts/cc-bridge-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-bridge-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
 - **Persist:** file cache ton tai qua session; hook refresh moi session (port doi tu fix).
 
@@ -57,8 +57,8 @@ Chi retry 1 lan — tranh loop.
 
 ## Manual names
 
-- `cc-bridge-3x` (JS: `cc_bridge_3x`, **recommend** `ccb3x`, compat `ccb-3x`->`ccb_3x`) — Cocos Creator 3.7 (repo nay)
-- `cc-bridge-2x` (JS: `cc_bridge_2x`, **recommend** `ccb2x`, compat `ccb-2x`->`ccb_2x`) — Cocos Creator 2.4 (nhanh `cc-2x`, cung co che)
+- `ccb3x` — Cocos Creator 3.7 (repo nay). `ccb2x` — Creator 2.4 (nhanh `cc-2x`). JS bang `ccb3x`/`ccb2x` (goi `ccb3x.nodeGetTree(...)`). Legacy `cc-bridge-3x`/`cc3x7`/`ccb-3x` van doc duoc (bootstrap + ConfigManager tu migrate sang `ccb3x`).
+
 
 Tu dong theo `~/.utcp_config.json`; khong hardcode port.
 

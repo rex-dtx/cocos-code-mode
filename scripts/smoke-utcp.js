@@ -46,15 +46,21 @@ async function main() {
         assert.equal(n, 46, `tools.length expected 46 got ${n}`);
         // ensure no unknown keys (strict schema)
         ok(`manual valid: 46 tools, keys ${keys.join(',')}`);
-        // check cc-bridge-3x template exists in config
+        // check canonical ccb3x template exists in config (legacy cc-bridge-3x accepted
+        // for un-migrated installs) + no duplicate URL across cc-bridge names — that
+        // dup is what caused double tool registration (119 instead of 53).
         try {
             const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
             const raw = readFileSync(cfgPath, 'utf8');
             const cfg = JSON.parse(raw);
-            const names = (cfg.manual_call_templates || []).map(t => t.name);
-            assert.ok(names.includes('cc-bridge-3x') || names.includes('ccb3x'), `cc-bridge-3x template present, found ${names.join(',')}`);
-            ok('config has cc-bridge-3x template');
-        } catch (e) { skipped('config cc-bridge-3x check', e.message); }
+            const templates = cfg.manual_call_templates || [];
+            const names = templates.map(t => t.name);
+            assert.ok(names.includes('ccb3x') || names.includes('cc-bridge-3x'), `ccb3x template present, found ${names.join(',')}`);
+            const CCB = new Set(['ccb3x','cc-bridge-3x','cc3x7','ccb-3x','cc_bridge_3x','ccb_3x','ccb2x','cc-bridge-2x','cc2x4','ccb-2x','cc_bridge_2x','ccb_2x']);
+            const urls = templates.filter(t => CCB.has(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
+            assert.equal(new Set(urls).size, urls.length, `no duplicate URL among cc-bridge templates, got ${urls.join(',')}`);
+            ok('config has ccb3x template, no dup URL');
+        } catch (e) { skipped('config ccb3x check', e.message); }
     } catch (e) { bad('manual', e.message); }
 
     // 2 — build-info matches HEAD (catches stale dist)

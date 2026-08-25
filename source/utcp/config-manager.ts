@@ -78,63 +78,36 @@ export class UtcpConfigManager {
 
         const expectedUrl = `http://localhost:${port}/utcp`;
         const config = this.readConfig();
-
         if (!config.manual_call_templates) {
             config.manual_call_templates = [];
         }
 
-        const templates = config.manual_call_templates;
-        const NAME = 'cc-bridge-3x';
-        const SHORT = 'ccb3x';
-        let idx = templates.findIndex((t: any) => t.name === NAME);
+        // Single canonical name for this generation. The config file is a shared
+        // rendezvous (Editor -> N terminals) and must hold EXACTLY ONE template per
+        // running server — duplicates are what caused double tool registration.
+        // Legacy names are migrated to the canonical one and dropped on save.
+        const CANON = 'ccb3x';
+        const LEGACY = new Set(['cc-bridge-3x', 'cc3x7', 'ccb-3x', 'ccb_3x']);
 
-        let changed = false;
-        if (idx === -1) {
-            templates.push({
-                name: NAME,
-                call_template_type: 'http',
-                url: expectedUrl,
-                http_method: 'GET',
-                content_type: 'application/json',
-            });
-            changed = true;
-            console.log(`[UtcpConfigManager] Created ${NAME} template with port ${port}`);
-        } else {
-            if (templates[idx].url !== expectedUrl) {
-                templates[idx].url = expectedUrl;
-                changed = true;
-                console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
-            }
-        }
-        // migrate old short names (ccb-3x/ccb_3x) to ccb3x if present
-        for (const old of ['ccb-3x', 'ccb_3x']) {
-            const oi = templates.findIndex((t: any) => t.name === old);
-            if (oi !== -1 && !templates.some((t: any) => t.name === SHORT)) {
-                templates[oi].name = SHORT;
-                console.log(`[UtcpConfigManager] Migrated short alias ${old} -> ${SHORT}`);
-            }
-        }
-        let sIdx = templates.findIndex((t: any) => t.name === SHORT);
-        if (sIdx === -1) {
-            templates.push({
-                name: SHORT,
-                call_template_type: 'http',
-                url: expectedUrl,
-                http_method: 'GET',
-                content_type: 'application/json',
-            });
-            changed = true;
-            console.log(`[UtcpConfigManager] Created ${SHORT} alias with port ${port}`);
-        } else if (templates[sIdx].url !== expectedUrl) {
-            templates[sIdx].url = expectedUrl;
-            changed = true;
-            console.log(`[UtcpConfigManager] Updated ${SHORT} alias port to ${port}`);
-        }
+        const before = JSON.stringify(config.manual_call_templates);
+        // Remove every self/legacy entry and any entry pointing at this server's URL.
+        config.manual_call_templates = config.manual_call_templates.filter((t: any) =>
+            !(LEGACY.has(t.name) || t.name === CANON || t.url === expectedUrl)
+        );
+        // Push the single canonical entry.
+        config.manual_call_templates.push({
+            name: CANON,
+            call_template_type: 'http',
+            url: expectedUrl,
+            http_method: 'GET',
+            content_type: 'application/json',
+        });
 
+        const changed = JSON.stringify(config.manual_call_templates) !== before;
         if (changed) {
             this.writeConfig(config);
+            console.log(`[UtcpConfigManager] Ensured single ${CANON} template -> ${expectedUrl}`);
         }
-
         return changed;
     }
 
