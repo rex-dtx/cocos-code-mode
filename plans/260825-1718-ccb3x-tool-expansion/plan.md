@@ -17,7 +17,7 @@
 | Đợt 3: events + sceneSnapshot + meta | ✅ **XONG** — 69→83 |
 | Đợt 4: perf — batch-read + M1 parallelize + M4 memo | ✅ **XONG** — 83→85 |
 
-**Tổng:** 85 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2) + `8ffaecb` (đợt 3) + đợt 4 pending commit.
+**Tổng:** 85 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2) + `8ffaecb` (đợt 3) + `813bf20` (đợt 4). `docs/parity-v2-v3.md` sync: `batchSetProperties` gap đã đóng (nodeBatchSet/sceneBatchGet).
 
 ## 1. Mục tiêu
 

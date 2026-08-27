@@ -2,8 +2,8 @@
 
 Tham chiếu sống cho câu hỏi "bản kia có tool tương đương không". Cập nhật mỗi khi port xong một dòng.
 
-**v3** `cc-bridge-3x` (Creator 3.7.x, branch `cc-3x7`) = **46 tools** · **v2** `cc-bridge-2x` (Creator 2.4.15, branch `cc-2x`) = **53 tools**
-**Cập nhật:** 2026-08-23 (@`6645ba7`+ / 2x @`8a80bf5`) · **Snapshot audit:** `plans/reports/verify-260822-0926-v2-v3-tool-parity.md`
+**v3** `cc-bridge-3x` (Creator 3.7.x, branch `cc-3x7`) = **85 tools** · **v2** `cc-bridge-2x` (Creator 2.4.15, branch `cc-2x`) = **53 tools**
+**Cập nhật:** 2026-08-27 (@`813bf20` đợt 4 / 2x @`8a80bf5`) · **Snapshot audit:** `plans/reports/verify-260822-0926-v2-v3-tool-parity.md`
 **Đối chiếu message:** `docs/cc-3x7-message-registry.json` (416 msg / 20 module, dump 3.7.3) · coverage 131/416 xem `plans/reports/verify-260821-0939-cc3x7-api.md`
 
 ## Nguyên tắc đọc bảng
@@ -89,7 +89,7 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 | `assetResolve` core (uuid/url/fspath/exists) | `assetResolvePath` | ✅ |
 | `assetResolve mount_info` | `assetDbQuery databases/db_info` | ✅ |
 | `assetResolve` is_sub_asset/contains_sub_assets/relative_path/backup_path | — | ⚠️ mở rộng được từ `query-asset-info.isSubAsset` |
-| `batchSetProperties` (multi-node) | `inspectorSet` (single-target multi-path) → loop N lần | ⚠️ |
+| `batchSetProperties` (multi-node) | `nodeBatchSet` (batch write) + `sceneBatchGet` (batch read, M2) | ✅ |
 | `sceneNew` | `assetCreate {scene}` + `sceneManage open` | ⚠️ 3.7.3 không có `new-scene` |
 | `assetSaveMeta` | `assetOperate save_meta` (+ `assetDbQuery meta` để đọc trước) | ✅ |
 | `projectSaveConfig` | `projectManage set` → báo `unsupported` | ❌ 3.7.3 không có `project:set-config` (v2 mạnh hơn) |
@@ -116,7 +116,7 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 Không bản nào là superset:
 
 - **v3 mạnh:** inspector (get/set/gen d.ts runtime), viewport/gizmo, build, material/effect/render-pipeline, prefab ops đầy đủ, animation 10+8 ops, `assetCreate` 16 kiểu.
-- **v2 mạnh:** asset-db sync (`assetResolve` 10 ops, `exchangeUuid`), `projectSaveConfig`, `batchSetProperties` multi-node, escape hatch `sceneScript`.
+- **v2 mạnh:** asset-db sync (`assetResolve` 10 ops, `exchangeUuid`), `projectSaveConfig`, escape hatch `sceneScript`. Gap `batchSetProperties` multi-node đã đóng — v3 `nodeBatchSet`/`sceneBatchGet` ✅.
 
 Chênh lệch còn lại **toàn bộ là engine limit hai chiều**, không phải nợ code — mục #1 (`assetSaveMeta`) đã đóng.
 
