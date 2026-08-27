@@ -114,21 +114,25 @@ export class EditorTools {
                 }
                 await Editor.Message.request('scene', 'change-gizmo-coordinate', args.gizmoCoordinate);
                 return { success: true };
-            case 'query_gizmo':
-                return {
-                    success: true,
-                    gizmoTool: await Editor.Message.request('scene', 'query-gizmo-tool-name'),
-                    gizmoPivot: await Editor.Message.request('scene', 'query-gizmo-pivot'),
-                    gizmoCoordinate: await Editor.Message.request('scene', 'query-gizmo-coordinate')
-                };
-            case 'query_viewport':
-                return {
-                    success: true,
-                    is2D: !!(await Editor.Message.request('scene', 'query-is2D')),
-                    gridVisible: !!(await Editor.Message.request('scene', 'query-is-grid-visible')),
-                    iconGizmo3D: !!(await Editor.Message.request('scene', 'query-is-icon-gizmo-3d')),
-                    iconGizmoSize: await Editor.Message.request('scene', 'query-icon-gizmo-size')
-                };
+            case 'query_gizmo': {
+                // M1: 3 reads -> 1 round
+                const [gizmoTool, gizmoPivot, gizmoCoordinate] = await Promise.all([
+                    Editor.Message.request('scene', 'query-gizmo-tool-name'),
+                    Editor.Message.request('scene', 'query-gizmo-pivot'),
+                    Editor.Message.request('scene', 'query-gizmo-coordinate'),
+                ]);
+                return { success: true, gizmoTool, gizmoPivot, gizmoCoordinate };
+            }
+            case 'query_viewport': {
+                // M1: 4 reads -> 1 round
+                const [is2DRaw, gridRaw, iconGizmoRaw, iconGizmoSize] = await Promise.all([
+                    Editor.Message.request('scene', 'query-is2D'),
+                    Editor.Message.request('scene', 'query-is-grid-visible'),
+                    Editor.Message.request('scene', 'query-is-icon-gizmo-3d'),
+                    Editor.Message.request('scene', 'query-icon-gizmo-size'),
+                ]);
+                return { success: true, is2D: !!is2DRaw, gridVisible: !!gridRaw, iconGizmo3D: !!iconGizmoRaw, iconGizmoSize };
+            }
             case 'align_view_to_selected_node':
                 // Moves the camera to frame the currently selected node(s) - select first via editorSelect
                 await Editor.Message.request('scene', 'align-view-with-node');
@@ -295,8 +299,11 @@ export class EditorTools {
                 if (!args.reference || !args.reference.id) {
                     throw new Error('editorIntrospect category "script_info" requires reference.id (script asset uuid)');
                 }
-                const name = await Editor.Message.request('scene', 'query-script-name', args.reference.id);
-                const cid = await Editor.Message.request('scene', 'query-script-cid', args.reference.id);
+                // M1: 2 reads -> 1 round
+                const [name, cid] = await Promise.all([
+                    Editor.Message.request('scene', 'query-script-name', args.reference.id),
+                    Editor.Message.request('scene', 'query-script-cid', args.reference.id),
+                ]);
                 return {
                     scriptName: typeof name === 'string' ? name : undefined,
                     scriptCid: typeof cid === 'string' ? cid : undefined

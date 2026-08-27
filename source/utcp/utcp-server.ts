@@ -22,6 +22,7 @@ import './tools/file-tools';
 import './tools/ui-tools';
 import './tools/runtime-tools';
 import './tools/batch-tools';
+import './tools/batch-read-tools';
 import './tools/validation-tools';
 import './tools/screenshot-tools';
 import './tools/scene-snapshot-tools';
@@ -120,7 +121,14 @@ export class UtcpServerManager {
         );
 
         this.app.use(cors());
-        this.app.use(express.json());
+        this.app.use(express.json({ limit: '50mb' }));
+
+        // M1 timing baseline: stamp request start so handlers and clients can
+        // measure wall time (via X-Duration-Ms header) before/after batching.
+        this.app.use((req: any, _res: any, next: any) => {
+            req._t0 = Date.now();
+            next();
+        });
 
         const tools = ToolRegistry.getTools();
         const toolInstances = new Map<Function, any>();
@@ -188,7 +196,7 @@ export class UtcpServerManager {
                         return;
                     }
 
-                    const args = req.query;
+                    const args = { ...(req.query as any), ...((req as any).body || {}) } as any;
 
                     debugLog({
                         type: 'request',
@@ -201,12 +209,16 @@ export class UtcpServerManager {
                     let result = await toolMeta.method.apply(instance, [args]);
 
                     if (result === undefined || result === null) {
-                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: Date.now() - t0 });
+                        const ms = Date.now() - ((req as any)._t0 ?? t0);
+                        res.setHeader('X-Duration-Ms', String(ms));
+                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
                         return;
                     }
 
-                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: Date.now() - t0 });
+                    const ms = Date.now() - ((req as any)._t0 ?? t0);
+                    res.setHeader('X-Duration-Ms', String(ms));
+                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
 
                     // ponytail: trim null/undefined/empty containers before serializing.
                     // Reduces response payload ~15-30% for property dumps and nested objects.
@@ -221,7 +233,9 @@ export class UtcpServerManager {
 
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
-                    debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: Date.now() - t0 });
+                    const ms2 = Date.now() - ((req as any)._t0 ?? t0);
+                    res.setHeader('X-Duration-Ms', String(ms2));
+                    debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: ms2 });
                     res.status(500).json({ error: err.message });
                 }
             };

@@ -22,11 +22,11 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools (83 — 10 consolidated replaces 26 legacy + 2 additive + 16 đợt 1 + 6 đợt 2 + 14 đợt 3)
+## Tools (85 — 10 consolidated replaces 26 legacy + 2 additive + 16 đợt 1 + 6 đợt 2 + 14 đợt 3 + 2 đợt 4 batch-read)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
-> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod. **2.1:** +1 `assetReadContent` (text read) → 46. **2.2:** +1 `executeJavascript` (JS escape hatch, safety-guarded) → 47. **Đợt 1:** +2 diagnostics +6 files +4 UI +4 runtime → **63**. **Đợt 2:** +1 batch +2 validation +3 screenshot → **69**. **Đợt 3:** +1 sceneSnapshot +2 events +3 prefabJSON +2 instruction +2 preference +4 input → **83**.
+> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod. **2.1:** +1 `assetReadContent` (text read) → 46. **2.2:** +1 `executeJavascript` (JS escape hatch, safety-guarded) → 47. **Đợt 1:** +2 diagnostics +6 files +4 UI +4 runtime → **63**. **Đợt 2:** +1 batch +2 validation +3 screenshot → **69**. **Đợt 3:** +1 sceneSnapshot +2 events +3 prefabJSON +2 instruction +2 preference +4 input → **83**. **Đợt 4:** +2 `sceneBatchGet`/`assetBatchQuery` (batch-read) + perf (M1 parallel + M4 memo + `verbose=true` convention) → **85**.
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
@@ -47,7 +47,7 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 | **Files** (6) | `projectReadFile`, `projectWriteFile`, `projectSearchFiles`, `projectReplaceInFile`, `projectFileExists`, `projectListDirectory` | Project-scoped file ops with path-safety |
 | **UI** (4) | `createUiNode`, `createLabel`, `createButton`, `createSprite` | Create UI nodes from internal prefabs (Canvas/Label/Button/Sprite/etc.) |
 | **Runtime** (4) | `runtimePause`, `runtimeResume`, `runtimeSetTimeScale`, `runtimeGetState` | Pause/resume game loop, time scale control |
-| **Batch** (1) | `nodeBatchSet` | Multi-node batch property writes (single snapshot) |
+| **Batch** (3) | `nodeBatchSet` + `sceneBatchGet`*, `assetBatchQuery` | Batch writes/reads (single snapshot / 1 HTTP). *`fields` filter |
 | **Validation** (2) | `getPerformanceSnapshot`, `validateScene` | Scene health + perf counters |
 | **Snapshot** (1) | `sceneSnapshot` | Full dump/diff (unbounded, fields filter) |
 | **Events** (2) | `simulateButtonClick`, `bindButtonClickEvent` | Fire/attach cc.Button handlers |
@@ -58,7 +58,7 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 | **Screenshot** (3) | `captureSceneScreenshot`, `captureEditorScreenshot`, `listEditorWindows` | Scene/editor capture, window listing |
 | **Consolidated** (10) | `inspectorGet/Set/Definition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `previewManage`, `programManage`, `projectManage`, `buildManage` | Replaces 26 legacy — now the only surface |
 
-* QA: `scripts/smoke-utcp.js` (expects 83) · Perf: `a769a46` bench + `e419276` trim.
+* QA: `scripts/smoke-utcp.js` (expects 85) · Perf: `a769a46` bench + `e419276` trim.
 
 ### Verbose convention
 

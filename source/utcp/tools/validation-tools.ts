@@ -104,64 +104,51 @@ export class ValidationTools {
         const includeDiag = args.includeScriptDiagnostics !== false;
         const includeLogs = args.includeLogErrors !== false;
 
-        // Scene info
-        let scene: any = { error: 'No scene open' };
-        try {
-            const tree = await Editor.Message.request('scene', 'query-node-tree');
-            if (tree) {
-                scene = { uuid: tree.uuid, name: tree.name, childCount: (tree.children || []).length };
-            }
-        } catch (e: any) {
-            scene = { error: e.message };
-        }
-
-        // Runtime state
-        let runtime: any = { paused: false, timeScale: 1 };
-        try {
-            const state = await Editor.Message.request('scene', 'execute-scene-script', {
-                name: 'cc-bridge-3x', method: 'runtimeGetState', args: [],
-            });
-            runtime = state || runtime;
-        } catch (e: any) {
-            runtime = { error: e.message };
-        }
-
-        // Performance snapshot
-        let performance: any = {};
-        try {
-            performance = await this.getPerformanceSnapshot();
-        } catch (e: any) {
-            performance = { error: e.message };
-        }
-
-        // Diagnostics
-        let diagnostics: any = null;
-        if (includeDiag) {
+        // M1: 5 independent probes -> run concurrently instead of sequentially.
+        // Each probe keeps its own default + error fallback so the merged result
+        // shape is unchanged.
+        const probeScene = async () => {
+            try {
+                const tree = await Editor.Message.request('scene', 'query-node-tree') as any;
+                if (tree) return { uuid: tree.uuid, name: tree.name, childCount: (tree.children || []).length };
+                return { error: 'No scene open' };
+            } catch (e: any) { return { error: e.message }; }
+        };
+        const probeRuntime = async () => {
+            try {
+                const state = await Editor.Message.request('scene', 'execute-scene-script', {
+                    name: 'cc-bridge-3x', method: 'runtimeGetState', args: [],
+                });
+                return state || { paused: false, timeScale: 1 };
+            } catch (e: any) { return { error: e.message }; }
+        };
+        const probePerf = async () => {
+            try { return await this.getPerformanceSnapshot(); } catch (e: any) { return { error: e.message }; }
+        };
+        const probeDiag = async () => {
+            if (!includeDiag) return null;
             try {
                 const { DiagnosticsTools } = await import('./diagnostics-tools');
                 const diagTool = new DiagnosticsTools();
                 const result = await diagTool.runScriptDiagnostics({});
-                diagnostics = { ok: result.ok, errorCount: result.errorCount };
-            } catch (e: any) {
-                diagnostics = { error: e.message };
-            }
-        }
-
-        // Log errors
-        let logErrors: string[] = [];
-        if (includeLogs) {
+                return { ok: result.ok, errorCount: result.errorCount };
+            } catch (e: any) { return { error: e.message }; }
+        };
+        const probeLogs = async (): Promise<string[]> => {
+            if (!includeLogs) return [];
             try {
                 const logs = await Editor.Message.request('console', 'query-logs', { level: 'error', limit: 10 }) as any[];
-                if (Array.isArray(logs)) {
-                    logErrors = logs.map(l => l.message || String(l)).slice(0, 5);
-                }
-            } catch (e: any) {
-                // Console query may not be available
-            }
-        }
+                if (Array.isArray(logs)) return logs.map(l => l.message || String(l)).slice(0, 5);
+                return [];
+            } catch { return []; }
+        };
 
-        const ok = !scene.error && !runtime.error && !performance.error
-            && (!diagnostics || diagnostics.ok !== false)
+        const [scene, runtime, performance, diagnostics, logErrors] = await Promise.all([
+            probeScene(), probeRuntime(), probePerf(), probeDiag(), probeLogs(),
+        ]);
+
+        const ok = !(scene as any).error && !(runtime as any).error && !(performance as any).error
+            && (!diagnostics || (diagnostics as any).ok !== false)
             && logErrors.length === 0;
 
         return { ok, scene, runtime, performance, diagnostics, logErrors };

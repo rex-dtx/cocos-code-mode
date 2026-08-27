@@ -1,6 +1,7 @@
 import { IProperty, IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { ToolsUtils } from '../utils/tools-utils';
 import { IInstanceReference } from '../schemas';
+import { definitionMemo } from '../utils/memo-cache';
 
 export class GetClassInfoTool {
 
@@ -60,6 +61,11 @@ export class GetClassInfoTool {
 
     /** @deprecated use inspectorGetDefinition({ target: 'instance', reference }) — not registered, kept for delegation */
     async inspectorGetInstanceDefinition(params: { reference: IInstanceReference, section?: string }): Promise<{ definition: string, sections: string[], totalSections: number }> {
+        // M4 L1: definition structure is near-static (type-level, not value-level) — safe to cache 60s cross-request.
+        const cacheKey = `inst:${params.reference.id}:${params.section || ''}`;
+        const cached = definitionMemo.get<{ definition: string, sections: string[], totalSections: number }>(cacheKey);
+        if (cached) return cached;
+
         this._definitions = [];
         this._definedNames.clear();
 
@@ -87,9 +93,13 @@ export class GetClassInfoTool {
         if (params.section) {
             const idx = sections.findIndex(s => s === params.section);
             if (idx === -1) throw new Error(`Section '${params.section}' not found. Available: ${sections.join(', ')}`);
-            return { definition: this._definitions[idx], sections, totalSections: sections.length };
+            const result = { definition: this._definitions[idx], sections, totalSections: sections.length };
+            definitionMemo.set(cacheKey, result);
+            return result;
         }
-        return { definition: this._definitions.join('\n'), sections, totalSections: sections.length };
+        const result = { definition: this._definitions.join('\n'), sections, totalSections: sections.length };
+        definitionMemo.set(cacheKey, result);
+        return result;
     }
 
     private processClass(className: string, providedProps?: { [key: string]: IPropertyValueType }, extendsClass?: string) {

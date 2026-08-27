@@ -37,24 +37,22 @@ export class SceneTools {
         }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved', 'current']
     )
     async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, currentScene?: { uuid?: string, url?: string, name?: string } }> {
-        const bounds = await Editor.Message.request('scene', 'query-scene-bounds');
+        // M1: bounds/dirty/current are independent reads — run as 1 round instead of 3.
+        const [bounds, dirty, currentRaw] = await Promise.all([
+            Editor.Message.request('scene', 'query-scene-bounds'),
+            Editor.Message.request('scene', 'query-dirty'),
+            Editor.Message.request('scene', 'query-current-scene').catch(() => undefined),
+        ]);
         if (!bounds) {
             throw new Error('Failed to query scene bounds');
         }
-        const dirty = await Editor.Message.request('scene', 'query-dirty');
 
         // query-current-scene result shape varies by version (uuid string or info object)
         let currentScene: { uuid?: string, url?: string, name?: string } | undefined;
-        try {
-            const current = await Editor.Message.request('scene', 'query-current-scene');
-            if (typeof current === 'string' && current) {
-                currentScene = { uuid: current };
-            } else if (current && typeof current === 'object') {
-                currentScene = current as any;
-            }
-        } catch (e) {
-            // No scene open or message unavailable - bounds/dirty still valid
-            currentScene = undefined;
+        if (typeof currentRaw === 'string' && currentRaw) {
+            currentScene = { uuid: currentRaw };
+        } else if (currentRaw && typeof currentRaw === 'object') {
+            currentScene = currentRaw as any;
         }
 
         return { bounds, dirty: !!dirty, currentScene };

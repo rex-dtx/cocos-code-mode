@@ -15,12 +15,13 @@
 | Đợt 1: diagnostics + files + UI + runtime | ✅ **XONG** — 47→63 |
 | Đợt 2: batch + validation + screenshot | ✅ **XONG** — 63→69 |
 | Đợt 3: events + sceneSnapshot + meta | ✅ **XONG** — 69→83 |
+| Đợt 4: perf — batch-read + M1 parallelize + M4 memo | ✅ **XONG** — 83→85 |
 
-**Tổng:** 83 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2) + đợt 3 pending commit.
+**Tổng:** 85 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2) + `8ffaecb` (đợt 3) + đợt 4 pending commit.
 
 ## 1. Mục tiêu
 
-Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 83 tools hiện tại, giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín** (done), **DX compile+files** (done), **interaction+meta hoàn chỉnh** (done — đợt 3). Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
+Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 85 tools hiện tại, giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín** (done), **DX compile+files** (done), **interaction+meta hoàn chỉnh** (done — đợt 3), **perf: batch-read + parallel IPC + memo** (done — đợt 4). Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
 
 ## 2. Nguyên tắc chọn lọc
 
@@ -30,7 +31,7 @@ Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 83 tools hiệ
 | Pattern kiến trúc tái dùng (guard, envelope, profile) | Kéo dependency nặng (generate_image_asset → SD/DALL-E key) |
 | Engine 3.7.3 expose message / Node builtin | Engine 3.7.3 chặn (change-gizmo timeout, project:set-config) |
 
-## 3. Gap matrix — funplay FULL (105) vs ccb3x (83)
+## 3. Gap matrix — funplay FULL (105) vs ccb3x (85)
 
 Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
 
@@ -57,10 +58,11 @@ Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
 | Logs (3) | ⚠️ `editorGetLogs` | ⚠️ `search_project_logs` |
 | Broadcast (1) | ⚠️ `callComponentMethod`/`executeJavascript` | — (đủ thay) |
 | Updates (1) | ❌ | skip (ngoài phạm vi) |
-| **Batch** | ✅ `nodeBatchSet` | — |
+| **Batch** | ✅ `nodeBatchSet` + `sceneBatchGet`/`assetBatchQuery` (M2) | — |
 | **Snapshot** | ✅ `sceneSnapshot` | — |
+| **Perf/Memo** | ✅ M1 parallel IPC + M4 L1/L2 memo (60s/5s) | — |
 
-**Chốt:** Đợt 1+2 đã cover Diagnostics, Files, Screenshots (partial), Runtime, Perf/Validate, UI, Batch. Đợt 3 đóng nốt: sceneSnapshot, Events, Prefab JSON, Instructions, Preferences, Input-sim → 83 tools. Còn lại: `find_nodes` theo name/component, Preview screenshots, Logs search = backlog đợt 4 (nếu cần).
+**Chốt:** Đợt 1+2 đã cover Diagnostics, Files, Screenshots (partial), Runtime, Perf/Validate, UI, Batch. Đợt 3 đóng nốt: sceneSnapshot, Events, Prefab JSON, Instructions, Preferences, Input-sim → 83 tools. Đợt 4 (perf): `sceneBatchGet`/`assetBatchQuery` + M1 parallelize (`sceneGetInfo`, `editorViewport` gizmo/viewport, `script_info`, `validateScene`, `assetGetTree`/`assetResolvePath`/`createUiNode`) + M4 TTL memo (L1 definitions 60s, L2 asset query 5s) + verbose convention → 85 tools. Còn lại: `find_nodes` theo name/component, Preview screenshots, Logs search = low priority.
 
 ### 3.5 Local source synthesis — các repo MCP có sẵn source
 
@@ -142,6 +144,16 @@ Kèm đợt 1, chạy song song (không chặn): **spike probe Electron** → qu
 | 10b | Instructions (`readProjectInstruction`/`writeProjectInstruction`) | AGENTS.md/CLAUDE.md | ✅ `instruction-tools.ts` |
 | 10c | Preferences (`getEditorPreference`/`setEditorPreference`) | Editor.Profile | ✅ `preference-tools.ts` |
 | 10d | Input-sim (`simulateKeyPress/Combo/mouseClick/mouseDrag`) | Electron webContents probe | ✅ `input-tools.ts` (fail-fast nếu 3.7.3 không expose) |
+
+### Đợt 4 — perf (batch-read + M1 parallelize + M4 memo) → ✅ **XONG** (83→85)
+
+| # | Item | Gì | File |
+|---|---|---|---|
+| M2 | `sceneBatchGet` + `assetBatchQuery` | 1 HTTP thay N (`Promise.allSettled` + `fields` filter, qs-safe) | `batch-read-tools.ts` (POST) |
+| M1 | `sceneGetInfo` / `editorViewport` query_gizmo/viewport / `script_info` / `validateScene` / `assetGetTree` parallel | 3-5 round → 1 round (Promise.all) | `scene-tools.ts`, `editor-tools.ts`, `validation-tools.ts`, `asset-tools.ts` + `ui-tools.ts` (`createUiNode`) |
+| M4 | `definitionMemo` L1 (60s) + `assetQueryMemo` L2 (5s) + invalidate on writes | near-static TTL memo, eviction-cap 256 | `utils/memo-cache.ts`, `typescript-defenition.ts`, `asset-tools.ts` |
+| M1 | timing middleware + X-Duration-Ms + json 50mb + body merge (qs + body) | measure + large payload | `utcp-server.ts` |
+| — | `verbose=true` lift caps for capped tools | compact default, full on demand | `utils/verbose.ts` + `scene-tools.ts`/`asset-tools.ts`/`file-tools.ts`/`diagnostics-tools.ts`/`prefab-json-tools.ts`/`instruction-tools.ts` |
 
 ### Foundation (không phải tool, chèn theo thời điểm)
 

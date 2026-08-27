@@ -44,7 +44,11 @@ export class UiTools {
             throw new Error(`Unknown UI type: ${args.uiType}. Available: ${Object.keys(UI_PREFABS).join(', ')}`);
         }
 
-        const assetUuid = await Editor.Message.request('asset-db', 'query-uuid', prefabUrl);
+        // M1: prefab uuid lookup + (if no parent) scene-root lookup are independent -> 1 round
+        const [assetUuid, sceneRoot] = await Promise.all([
+            Editor.Message.request('asset-db', 'query-uuid', prefabUrl),
+            args.parentReference?.id ? Promise.resolve(null) : Editor.Message.request('scene', 'query-node-tree'),
+        ]) as [string | null, any];
         if (!assetUuid) {
             throw new Error(`UI prefab not found at ${prefabUrl} — editor version may not include it.`);
         }
@@ -59,8 +63,7 @@ export class UiTools {
         if (args.parentReference?.id) {
             options.parent = args.parentReference.id;
         } else {
-            const tree = await Editor.Message.request('scene', 'query-node-tree') as any;
-            options.parent = tree?.uuid;
+            options.parent = sceneRoot?.uuid;
         }
 
         const result = await Editor.Message.request('scene', 'create-node', options);

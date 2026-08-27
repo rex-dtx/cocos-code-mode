@@ -44,9 +44,9 @@ async function main() {
         const keys = Object.keys(m).sort();
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
-        assert.equal(n, 83, `tools.length expected 83 got ${n}`);
+        assert.equal(n, 85, `tools.length expected 85 got ${n}`);
         // ensure no unknown keys (strict schema)
-        ok(`manual valid: 83 tools, keys ${keys.join(',')}`);
+        ok(`manual valid: 85 tools, keys ${keys.join(',')}`);
         // check ccb3x template present (bare or per-port) + no duplicate URL among
         // new-format ccb* names — dup URL is what caused double tool registration.
         // Legacy names are purged by ConfigManager on read, so they never appear here.
