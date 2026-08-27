@@ -1,6 +1,6 @@
 # ccb3x Tool Expansion — Roadmap mượn điểm mạnh funplay/cocos-mcp/DaxianLee
 
-> **Ngày:** 2026-08-25 · **Branch:** `cc-3x7` · **Type:** roadmap / T1 khi implement
+> **Ngày:** 2026-08-25 → 2026-08-27 · **Branch:** `cc-3x7` · **Type:** roadmap / T1 khi implement
 > **Nguồn:** funplay-cocos-mcp (105 full / 39 core, MIT, 3.8+), RomaRogov/cocos-mcp (16), DaxianLee/cocos-mcp-server (50), `docs/parity-v2-v3.md`
 
 ## 0. Status
@@ -10,14 +10,17 @@
 | Safety layer (`javascript-safety.ts` + `path-safety.ts`) | ✅ **XONG** |
 | Guard registry + pipeline (`execute/` infra) | ✅ **XONG** |
 | `executeJavascript` (scene+editor, safety-guarded) | ✅ **XONG** — tool 47th |
-| Result envelope + auto-refs | ⏳ chưa làm |
-| Tool profiles (core/full) + annotations | ⏳ chưa làm |
+| Result envelope + auto-refs | ✅ **XONG** — server-level, opt-in |
+| Tool profiles (core/full) + annotations | ✅ **XONG** — server-level filter |
+| Đợt 1: diagnostics + files + UI + runtime | ✅ **XONG** — 47→63 |
+| Đợt 2: batch + validation + screenshot | ✅ **XONG** — 63→69 |
+| Đợt 3: events + sceneSnapshot + meta | ⏳ backlog |
 
-Các tool còn lại trong bảng §4/§5 = backlog, chưa setup.
+**Tổng:** 69 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2).
 
 ## 1. Mục tiêu
 
-Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín**, **DX compile+files**. Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
+Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 69 tools hiện tại, giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín** (done), **DX compile+files** (done). Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
 
 ## 2. Nguyên tắc chọn lọc
 
@@ -27,7 +30,7 @@ Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → giữ hướng
 | Pattern kiến trúc tái dùng (guard, envelope, profile) | Kéo dependency nặng (generate_image_asset → SD/DALL-E key) |
 | Engine 3.7.3 expose message / Node builtin | Engine 3.7.3 chặn (change-gizmo timeout, project:set-config) |
 
-## 3. Gap matrix — funplay FULL (105) vs ccb3x (47)
+## 3. Gap matrix — funplay FULL (105) vs ccb3x (69)
 
 Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
 
@@ -41,21 +44,22 @@ Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
 | Scene (9) | ✅ `nodeCreate`/`nodeOperate`/`nodeGetTree`/`nodeGetAtPath`/`sceneGetInfo`/`sceneManage` | ⚠️ `find_nodes` (theo name/component — ccb3x chỉ path) |
 | Assets (11) | ✅ `assetCreate`/`assetImport`/`assetOperate`/`assetQuery`/`assetResolvePath`/`assetFindReferences` | ⚠️ `inspect_asset_dependencies` (UUID deps) |
 | Prefabs (10) | ⚠️ `nodeOperate` prefab ops (apply/revert/link/unwrap) | ❌ `edit_prefab_json`/`duplicate_prefab`/`inspect_prefab_instance` (file-level) |
-| **Diagnostics (5)** | ❌ chỉ `editorGetLogs` | ❌ **`run_script_diagnostics` + `get_script_diagnostic_context` + `validate_scene/asset/prefab`** |
-| **Files (8)** | ⚠️ `assetReadContent/assetSaveContent` (asset-scoped) | ❌ **`read_file/write_file/search_files/replace_in_file/exists/list_directory`** |
-| **Screenshots (5)** | ⚠️ `previewManage` scene/asset_preview (base64) | ❌ **editor/game/desktop window capture** + `list_editor_windows` |
-| **Runtime (4)** | ❌ | ❌ **`pause/resume/set_time_scale/get_runtime_state`** |
-| **Other — perf (2)** | ❌ | ❌ **`get_performance_snapshot`** + `list_editor_windows` |
-| **Input (5)** | ❌ | ❌ **`simulate_key/mouse`** (Electron) |
-| **Events (4)** | ⚠️ `callComponentMethod` | ❌ **`simulate_button_click`/`bind_button_click_event`** |
-| **UI (4)** | ⚠️ `nodeCreatePrimitive` (3D only) | ❌ **`create_canvas/label/button/sprite`** |
+| Diagnostics (5) | ✅ `runScriptDiagnostics`/`getScriptDiagnosticContext` | ⚠️ `validate_scene/asset/prefab` (validateScene done) |
+| Files (8) | ✅ `projectReadFile`/`projectWriteFile`/`projectSearchFiles`/`projectReplaceInFile`/`projectFileExists`/`projectListDirectory` | — |
+| Screenshots (5) | ✅ `captureSceneScreenshot`/`captureEditorScreenshot`/`listEditorWindows` | ⚠️ `capturePreviewScreenshot`/`captureGameScreenshot` (chưa) |
+| Runtime (4) | ✅ `runtimePause`/`runtimeResume`/`runtimeSetTimeScale`/`runtimeGetState` | — |
+| Other — perf (2) | ✅ `getPerformanceSnapshot` + `validateScene` | — |
+| Input (5) | ❌ | ❌ **`simulate_key/mouse`** (Electron) |
+| Events (4) | ⚠️ `callComponentMethod` | ❌ **`simulate_button_click`/`bind_button_click_event`** |
+| UI (4) | ✅ `createUiNode`/`createLabel`/`createButton`/`createSprite` | — |
 | Instructions (5) | ❌ | ❌ `read/write_project_instruction` (AGENTS.md/CLAUDE.md) |
 | Preferences (2) | ⚠️ `projectManage` (project settings) | ⚠️ `get/set_editor_preference` (Editor.Profile) |
 | Logs (3) | ⚠️ `editorGetLogs` | ⚠️ `search_project_logs` |
 | Broadcast (1) | ⚠️ `callComponentMethod`/`executeJavascript` | — (đủ thay) |
 | Updates (1) | ❌ | skip (ngoài phạm vi) |
+| **Batch** | ✅ `nodeBatchSet` | — |
 
-**Chốt:** 6 cluster thiếu thật sự = **Diagnostics, Files, Screenshots, Runtime, Perf/Validate, UI/Events/Input**. Còn lại đã cover hoặc skip.
+**Chốt:** Đợt 1+2 đã cover Diagnostics, Files, Screenshots (partial), Runtime, Perf/Validate, UI, Batch. Còn lại: Input sim, Events, Prefab JSON, Instructions, Preferences = backlog đợt 3.
 
 ### 3.5 Local source synthesis — các repo MCP có sẵn source
 
