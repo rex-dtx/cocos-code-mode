@@ -1,5 +1,5 @@
 import packageJSON from '../package.json';
-import { UtcpServerManager } from './utcp/utcp-server';
+import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
 import { exec } from 'child_process';
@@ -140,6 +140,10 @@ export async function load() {
     // Initialize config manager
     const configManager = getConfigManager();
     await configManager.initialize();
+
+    // Load and apply tool profile config
+    const profileConfig = await configManager.getToolProfileConfig();
+    setServerProfile(profileConfig.profile as any, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
 
     utcpServer = new UtcpServerManager();
 

@@ -1,5 +1,6 @@
 import { HttpCallTemplate } from '@utcp/http';
 import { JsonSchema, Tool } from '@utcp/sdk';
+import { inferAnnotations, registerToolProfile } from './tool-profiles';
 
 export interface ToolMetadata {
     method: Function;
@@ -19,7 +20,7 @@ export class ToolRegistry {
     }
 }
 
-export function utcpTool(name: string, description: string, inputs: JsonSchema, outputs: JsonSchema, httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', tags: string[] = []) {
+export function utcpTool(name: string, description: string, inputs: JsonSchema, outputs: JsonSchema, httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', tags: string[] = [], options: { profile?: 'core' | 'full' } = {}) {
     return function (target: any, propertyKey: string, descriptor?: PropertyDescriptor) {
         if (!descriptor) return;
 
@@ -40,6 +41,13 @@ export function utcpTool(name: string, description: string, inputs: JsonSchema, 
                     content_type: "application/json"
                 } as HttpCallTemplate,
             }
+        });
+
+        // Register profile metadata separately (keeps UTCP manual strict-schema compliant)
+        const annotations = inferAnnotations(name, httpMethod);
+        registerToolProfile(name, {
+            profile: options.profile || 'full',
+            annotations,
         });
     };
 }

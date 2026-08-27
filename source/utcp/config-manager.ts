@@ -213,6 +213,23 @@ export class UtcpConfigManager {
         await Editor.Profile.setConfig(packageJSON.name, 'serverPort', port);
         await this.ensureCocosEditorTemplate(port);
     }
+
+    // Tool profile config persistence
+    async getToolProfileConfig(): Promise<{ profile: string, enabled: string[], disabled: string[], envelope: boolean }> {
+        const profile = await Editor.Profile.getConfig(packageJSON.name, 'toolProfile') as string || 'full';
+        const enabled = await Editor.Profile.getConfig(packageJSON.name, 'enabledTools') as string[] || [];
+        const disabled = await Editor.Profile.getConfig(packageJSON.name, 'disabledTools') as string[] || [];
+        const envelope = await Editor.Profile.getConfig(packageJSON.name, 'responseEnvelope') as boolean || false;
+        return { profile, enabled, disabled, envelope };
+    }
+
+    async setToolProfileConfig(config: { profile: string, enabled: string[], disabled: string[], envelope: boolean }): Promise<void> {
+        await Editor.Profile.setConfig(packageJSON.name, 'toolProfile', config.profile);
+        await Editor.Profile.setConfig(packageJSON.name, 'enabledTools', config.enabled);
+        await Editor.Profile.setConfig(packageJSON.name, 'disabledTools', config.disabled);
+        await Editor.Profile.setConfig(packageJSON.name, 'responseEnvelope', config.envelope);
+        console.log(`[UtcpConfigManager] Tool profile config saved: profile=${config.profile}, envelope=${config.envelope}`);
+    }
 }
 
 export function getConfigManager(): UtcpConfigManager {

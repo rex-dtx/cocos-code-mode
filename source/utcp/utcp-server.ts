@@ -21,6 +21,9 @@ import './tools/diagnostics-tools';
 import './tools/file-tools';
 import './tools/ui-tools';
 import './tools/runtime-tools';
+import './tools/batch-tools';
+import './tools/validation-tools';
+import './tools/screenshot-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';
@@ -30,6 +33,8 @@ import { getBuildInfo } from '../build-info';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { getToolProfileMeta, isToolExposed, ToolProfile } from './tool-profiles';
+import { createResultEnvelope } from './response-envelope';
 
 // ponytail: debug log to file, not console — avoid polluting editor output.
 // Mutable so the menu toggle (toggleDebug) can flip it at runtime, not just via env var.
@@ -50,6 +55,24 @@ function debugLog(entry: Record<string, any>): void {
         const line = JSON.stringify({ ts: new Date().toISOString(), ...entry });
         appendFileSync(debugLogFile, line + '\n');
     } catch {}
+}
+
+// Profile config — mutable at runtime via panel.
+let activeProfile: ToolProfile = 'full'; // default: expose everything (backward compat)
+let enabledTools = new Set<string>();
+let disabledTools = new Set<string>();
+let envelopeEnabled = false; // default OFF for backward compat
+
+export function getServerProfile(): { profile: ToolProfile, enabled: string[], disabled: string[], envelope: boolean } {
+    return { profile: activeProfile, enabled: [...enabledTools], disabled: [...disabledTools], envelope: envelopeEnabled };
+}
+
+export function setServerProfile(profile: ToolProfile, enabled: string[] = [], disabled: string[] = [], envelope: boolean = false): void {
+    activeProfile = profile;
+    enabledTools = new Set(enabled);
+    disabledTools = new Set(disabled);
+    envelopeEnabled = envelope;
+    console.log(`[UTCP] Profile set to '${profile}', envelope=${envelope}, enabled=${enabled.length}, disabled=${disabled.length}`);
 }
 
 export class UtcpServerManager {
@@ -141,12 +164,24 @@ export class UtcpServerManager {
 
             toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;
 
+            // Add annotations for agent awareness (read-only vs mutating)
+            const meta = getToolProfileMeta(toolDef.name);
+            if (meta?.annotations) {
+                toolDef.annotations = meta.annotations;
+            }
+
             utcpTools.push(toolDef);
 
             // Register specific endpoint
             const handler = async (req: Request, res: Response) => {
                 const t0 = Date.now();
                 try {
+                    // Check profile exposure
+                    if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
+                        res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
+                        return;
+                    }
+
                     const args = req.query;
 
                     debugLog({
@@ -170,7 +205,13 @@ export class UtcpServerManager {
                     // ponytail: trim null/undefined/empty containers before serializing.
                     // Reduces response payload ~15-30% for property dumps and nested objects.
                     const trimmed = trimResponse(result);
-                    res.json(trimmed ?? null);
+
+                    // Wrap in envelope if enabled
+                    if (envelopeEnabled) {
+                        res.json(createResultEnvelope(toolDef.name, args, trimmed ?? null));
+                    } else {
+                        res.json(trimmed ?? null);
+                    }
 
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
@@ -199,10 +240,12 @@ export class UtcpServerManager {
 
         // Serve UTCP Manual
         this.app.get('/utcp', (req, res) => {
+            // Filter tools based on active profile
+            const filteredTools = utcpTools.filter(t => isToolExposed(t.name, activeProfile, enabledTools, disabledTools));
             const manual: UtcpManual = {
                 utcp_version: "1.0.1",
                 manual_version: "1.0.0",
-                tools: utcpTools
+                tools: filteredTools
             };
             // Do NOT add fields here. The UTCP SDK validates the manual with a strict
             // schema: an extra key fails registration for EVERY tool, not just itself.
