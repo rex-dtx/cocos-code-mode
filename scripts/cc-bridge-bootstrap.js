@@ -28,27 +28,30 @@ async function main() {
     return;
   }
 
-  // Canonical manual name is the SHORT one (ccb3x/ccb2x) — it matches the JS
-  // binding used in call_tool_chain, so there is no hyphen/underscore mismatch.
-  // Legacy names are accepted for READ (un-migrated configs) but always collapse
-  // to the canonical cache key. One running server == one cache entry.
+  // STRICT new-format only: ccb3x / ccb2x (latest pointer) plus per-port
+  // ccb3x_<port> / ccb2x_<port> for multi-editor. Legacy names (cc-bridge-3x,
+  // cc3x7, cc-bridge-2x, cc2x4, ...) are NOT read — the extension purges them
+  // from the config on start, so they must never reach registration here.
   const CANON_3X = 'ccb3x';
-  const ALIASES_3X = new Set(['ccb3x', 'cc-bridge-3x', 'cc3x7', 'ccb-3x', 'cc_bridge_3x', 'ccb_3x']);
   const CANON_2X = 'ccb2x';
-  const ALIASES_2X = new Set(['ccb2x', 'cc-bridge-2x', 'cc2x4', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x']);
-  const manuals = utcp.manual_call_templates.filter((m) => ALIASES_3X.has(m.name) || ALIASES_2X.has(m.name));
+  const PERPORT_3X = /^ccb3x_\d+$/;
+  const PERPORT_2X = /^ccb2x_\d+$/;
+  const is3x = (m) => m.name === CANON_3X || PERPORT_3X.test(m.name);
+  const is2x = (m) => m.name === CANON_2X || PERPORT_2X.test(m.name);
+  const manuals = utcp.manual_call_templates.filter((m) => is3x(m) || is2x(m));
   if (manuals.length === 0) return;
 
-  // Dedup by URL FIRST: the shared ~/.utcp_config.json may still carry several
-  // name aliases for the same server (the old bug). Collapse to one entry per
-  // unique base URL so we fetch + register each server exactly once.
+  // Dedup by URL FIRST: the shared ~/.utcp_config.json may still carry a stale
+  // alias + per-port entry for the same server. Collapse to one entry per unique
+  // base URL so we fetch + register each server exactly once. Distinct editors
+  // have distinct ports, so they survive as separate cache keys below.
   const byUrl = new Map();
   for (const m of manuals) {
     const base = (m.url || '').replace(/\/utcp\/?$/, '');
     if (!base) continue;
-    const canon = ALIASES_3X.has(m.name) ? CANON_3X : CANON_2X;
+    const canon = is3x(m) ? CANON_3X : CANON_2X;
     const existing = byUrl.get(base);
-    // Prefer the entry whose raw name already equals the canonical short name.
+    // Prefer the bare canonical name over a per-port/legacy name for the same URL.
     if (!existing || (m.name === canon && existing.name !== canon)) byUrl.set(base, m);
   }
 
@@ -58,10 +61,12 @@ async function main() {
     const toolDefs = manual && Array.isArray(manual.tools) ? manual.tools : [];
     const tools = toolDefs.map((t) => t.name);
     const buildInfo = await fetchJson(`${base}/build-info`);
-    const cacheKey = ALIASES_3X.has(m.name) ? CANON_3X : CANON_2X;
-    // Same generation can still appear under several URLs while stale legacy
-    // entries linger in the config (cc3x7 dead + ccb3x alive). Prefer the URL
-    // that actually answers over a dead one, regardless of file order.
+    const three = is3x(m);
+    const perPort = (three ? PERPORT_3X : PERPORT_2X).test(m.name);
+    // Per-port editors keep their unique key; bare/legacy collapse to canonical.
+    const cacheKey = perPort ? m.name : (three ? CANON_3X : CANON_2X);
+    // A stale legacy entry for the same generation may still linger dead; prefer
+    // a URL that actually answers over a dead one for the SAME cache key.
     const existing = cache.manuals[cacheKey];
     if (existing && existing.toolCount > 0 && tools.length === 0) continue;
     cache.manuals[cacheKey] = { url: m.url, toolCount: tools.length, tools, toolDefs, buildInfo: buildInfo || null, aliasOf: m.name !== cacheKey ? m.name : undefined };

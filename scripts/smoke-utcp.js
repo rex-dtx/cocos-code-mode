@@ -11,10 +11,11 @@ async function discoverBase() {
         const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
         const raw = readFileSync(cfgPath, 'utf8');
         const cfg = JSON.parse(raw);
-        for (const t of cfg.manual_call_templates || []) {
-            const m = String(t.url || '').match(/localhost:(\d+)/);
-            if (m) return `http://localhost:${m[1]}`;
-        }
+        // Prefer the bare canonical (latest) entry; fall back to any cc-bridge template.
+        const tpls = cfg.manual_call_templates || [];
+        const canon = tpls.find(t => /^(ccb3x|ccb2x)$/.test(t.name)) || tpls[0];
+        const m = String(canon?.url || '').match(/localhost:(\d+)/);
+        if (m) return `http://localhost:${m[1]}`;
     } catch {}
     throw new Error('Cannot discover UTCP port: is cc-bridge-3x running? Pass port as arg.');
 }
@@ -43,22 +44,23 @@ async function main() {
         const keys = Object.keys(m).sort();
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
-        assert.equal(n, 46, `tools.length expected 46 got ${n}`);
+        assert.equal(n, 63, `tools.length expected 63 got ${n}`);
         // ensure no unknown keys (strict schema)
-        ok(`manual valid: 46 tools, keys ${keys.join(',')}`);
-        // check canonical ccb3x template exists in config (legacy cc-bridge-3x accepted
-        // for un-migrated installs) + no duplicate URL across cc-bridge names — that
-        // dup is what caused double tool registration (119 instead of 53).
+        ok(`manual valid: 63 tools, keys ${keys.join(',')}`);
+        // check ccb3x template present (bare or per-port) + no duplicate URL among
+        // new-format ccb* names — dup URL is what caused double tool registration.
+        // Legacy names are purged by ConfigManager on read, so they never appear here.
         try {
             const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
             const raw = readFileSync(cfgPath, 'utf8');
             const cfg = JSON.parse(raw);
             const templates = cfg.manual_call_templates || [];
             const names = templates.map(t => t.name);
-            assert.ok(names.includes('ccb3x') || names.includes('cc-bridge-3x'), `ccb3x template present, found ${names.join(',')}`);
-            const CCB = new Set(['ccb3x','cc-bridge-3x','cc3x7','ccb-3x','cc_bridge_3x','ccb_3x','ccb2x','cc-bridge-2x','cc2x4','ccb-2x','cc_bridge_2x','ccb_2x']);
-            const urls = templates.filter(t => CCB.has(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
-            assert.equal(new Set(urls).size, urls.length, `no duplicate URL among cc-bridge templates, got ${urls.join(',')}`);
+            const has3x = names.some(n => /^ccb3x(_\d+)?$/.test(n));
+            assert.ok(has3x, `ccb3x template present, found ${names.join(',')}`);
+            const isCcb = (n) => /^ccb[23]x(_\d+)?$/.test(n);
+            const urls = templates.filter(t => isCcb(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
+            assert.equal(new Set(urls).size, urls.length, `ccb* dup URL, got ${urls.join(',')}`);
             ok('config has ccb3x template, no dup URL');
         } catch (e) { skipped('config ccb3x check', e.message); }
     } catch (e) { bad('manual', e.message); }

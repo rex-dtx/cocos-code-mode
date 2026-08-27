@@ -1,0 +1,174 @@
+# ccb3x Tool Expansion — Roadmap mượn điểm mạnh funplay/cocos-mcp/DaxianLee
+
+> **Ngày:** 2026-08-25 · **Branch:** `cc-3x7` · **Type:** roadmap / T1 khi implement
+> **Nguồn:** funplay-cocos-mcp (105 full / 39 core, MIT, 3.8+), RomaRogov/cocos-mcp (16), DaxianLee/cocos-mcp-server (50), `docs/parity-v2-v3.md`
+
+## 0. Status
+
+| Hạng mục | Status |
+|---|---|
+| Safety layer (`javascript-safety.ts` + `path-safety.ts`) | ✅ **XONG** |
+| Guard registry + pipeline (`execute/` infra) | ✅ **XONG** |
+| `executeJavascript` (scene+editor, safety-guarded) | ✅ **XONG** — tool 47th |
+| Result envelope + auto-refs | ⏳ chưa làm |
+| Tool profiles (core/full) + annotations | ⏳ chưa làm |
+
+Các tool còn lại trong bảng §4/§5 = backlog, chưa setup.
+
+## 1. Mục tiêu
+
+Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín**, **DX compile+files**. Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
+
+## 2. Nguyên tắc chọn lọc
+
+| Mượn khi | Không mượn |
+|---|---|
+| Mở workflow mới (visual verify, fix compile, refactor script, interaction test) | ccb3x đã cover tốt hơn (inspector, animation, asset-db, prefab msg) |
+| Pattern kiến trúc tái dùng (guard, envelope, profile) | Kéo dependency nặng (generate_image_asset → SD/DALL-E key) |
+| Engine 3.7.3 expose message / Node builtin | Engine 3.7.3 chặn (change-gizmo timeout, project:set-config) |
+
+## 3. Gap matrix — funplay FULL (105) vs ccb3x (47)
+
+Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
+
+| funplay category (count) | ccb3x hiện có | GAP |
+|---|---|---|
+| Execution (3) | ✅ `executeJavascript` (gộp 3→1) | — |
+| Animation (4) | ✅ `animationQuery/Edit` (giàu hơn) | — |
+| Components (7) | ✅ `nodeComponentManage`/`nodeComponentsGet`/`callComponentMethod`/`inspector*`/`nodeReset` | — |
+| Selection (3) | ✅ `editorSelect` (7 ops) | — |
+| Build (6) | ✅ `buildManage` (tasks/trigger/control) | ⚠️ `run_project_preview`/`get_preview_mode`/`set_preview_mode` |
+| Scene (9) | ✅ `nodeCreate`/`nodeOperate`/`nodeGetTree`/`nodeGetAtPath`/`sceneGetInfo`/`sceneManage` | ⚠️ `find_nodes` (theo name/component — ccb3x chỉ path) |
+| Assets (11) | ✅ `assetCreate`/`assetImport`/`assetOperate`/`assetQuery`/`assetResolvePath`/`assetFindReferences` | ⚠️ `inspect_asset_dependencies` (UUID deps) |
+| Prefabs (10) | ⚠️ `nodeOperate` prefab ops (apply/revert/link/unwrap) | ❌ `edit_prefab_json`/`duplicate_prefab`/`inspect_prefab_instance` (file-level) |
+| **Diagnostics (5)** | ❌ chỉ `editorGetLogs` | ❌ **`run_script_diagnostics` + `get_script_diagnostic_context` + `validate_scene/asset/prefab`** |
+| **Files (8)** | ⚠️ `assetReadContent/assetSaveContent` (asset-scoped) | ❌ **`read_file/write_file/search_files/replace_in_file/exists/list_directory`** |
+| **Screenshots (5)** | ⚠️ `previewManage` scene/asset_preview (base64) | ❌ **editor/game/desktop window capture** + `list_editor_windows` |
+| **Runtime (4)** | ❌ | ❌ **`pause/resume/set_time_scale/get_runtime_state`** |
+| **Other — perf (2)** | ❌ | ❌ **`get_performance_snapshot`** + `list_editor_windows` |
+| **Input (5)** | ❌ | ❌ **`simulate_key/mouse`** (Electron) |
+| **Events (4)** | ⚠️ `callComponentMethod` | ❌ **`simulate_button_click`/`bind_button_click_event`** |
+| **UI (4)** | ⚠️ `nodeCreatePrimitive` (3D only) | ❌ **`create_canvas/label/button/sprite`** |
+| Instructions (5) | ❌ | ❌ `read/write_project_instruction` (AGENTS.md/CLAUDE.md) |
+| Preferences (2) | ⚠️ `projectManage` (project settings) | ⚠️ `get/set_editor_preference` (Editor.Profile) |
+| Logs (3) | ⚠️ `editorGetLogs` | ⚠️ `search_project_logs` |
+| Broadcast (1) | ⚠️ `callComponentMethod`/`executeJavascript` | — (đủ thay) |
+| Updates (1) | ❌ | skip (ngoài phạm vi) |
+
+**Chốt:** 6 cluster thiếu thật sự = **Diagnostics, Files, Screenshots, Runtime, Perf/Validate, UI/Events/Input**. Còn lại đã cover hoặc skip.
+
+### 3.5 Local source synthesis — các repo MCP có sẵn source
+
+Ngoài funplay, đối chiếu 4 repo local có tool surface (đều là fork/variant `cocos-code-mode`):
+
+| Repo | Tool đăng ký | Bản chất |
+|---|---|---|
+| `cocos-code-mode` (upstream) | 24 | tổ tiên — granular gốc |
+| `cocos-code-mode-custom` | 24 | copy upstream |
+| `cc-code-mode-cst` (3x trung gian) | 59 | 3x pre-consolidation (A1 shims) |
+| `cc-code-mode-cst-2x` (ccb2x) | 108 (53 thật) | full 2x surface |
+
+`code-mode/`, `rs-utcp/`, `typescript-utcp/`, `utcp-mcp/` = SDK/protocol/client — KHÔNG phải editor tool, bỏ qua.
+
+**Kết luận:**
+
+1. **Consolidation 59→47 KHÔNG mất capability** — granular cũ (`assetGetPreview`/`preview*`/`program*`/`project*`/`build*`/`sceneOpen`) đều map vào `*Manage`/`*Operate`. Xác nhận README "10 consolidated replaces 26 legacy".
+
+2. **Item mới duy nhất giá trị cao từ 2x: `batchSetProperties`** — multi-node batch write. 2x có native, 3x phải loop N lần `inspectorSet` (parity ⚠️). Corroborate với funplay `modify_nodes`/`create_nodes` bulk → 2 nguồn cùng xác nhận. **Setup:** mở rộng `inspectorSet` nhận `references[]` (multi-target) hoặc tool mới `nodeBatchSet`, loop `set-property` + 1 `snapshot` cuối. Effort M. **P1.**
+
+3. **`sceneSnapshot`** (2x) — full serialized scene dump (unbounded, giàu hơn `nodeGetTree` transform/size/components). Use-case: "đưa toàn bộ scene state" / diff. Setup: `query-node-tree` không bound + dump đầy đủ props. Effort S. **P2.**
+
+4. **Engine-limited đã xác nhận (không port được):** `assetExchangeUuid` (❌ msg), `projectSaveConfig` (❌ msg), `editorSelect` set_context/patch/filter (❌ module selection 3.7), `assetResolve` 4 ops phụ (backlog).
+
+5. **Pattern insight:** 2x có `nodeSetPropertyUndo` (undo explicit); 3x bỏ bằng `snapshot()` implicit — 3x sạch hơn, giữ nguyên.
+
+## 4. Setup plan — từng cluster
+
+| # | Cluster | Tool | Setup (API/msg) | File mới | Effort | 3.7.3 risk | Ưu tiên |
+|---|---|---|---|---|---|---|---|
+| 1 | **Diagnostics** | `runScriptDiagnostics` + `getScriptDiagnosticContext` | `child_process.spawn('npx', ['tsc','--noEmit','-p',tsconfig])` → parse JSON; snippet ±3 dòng | `tools/diagnostics-tools.ts` + `utils/tsc-runner.ts` | M | thấp (subprocess thuần) | **P1** |
+| 2 | **Files** | `readFile/writeFile/searchFiles/replaceInFile/exists/listDirectory/getFileSnippet` | `fs-extra` + `path-safety.isPathInside` (đã có); sau write `asset-db refresh-asset` | `tools/file-tools.ts` | M | thấp | **P1** |
+| 3 | **Screenshots** | `captureEditor/Scene/Game/PreviewScreenshot` + `listEditorWindows` | `require('electron').desktopCapturer` + `BrowserWindow.capturePage()` | `tools/screenshot-tools.ts` | L | **CAO — probe trước** | P2 |
+| 4 | **Runtime** | `pauseRuntime/resumeRuntime/setTimeScale/getRuntimeState` | scene handler: `cc.director.pause()/resume()` + `getScheduler().setTimeScale()` | `scene.ts` + `tools/runtime-tools.ts` | S | thấp | **P1** |
+| 5 | **Perf/Validate** | `getPerformanceSnapshot` + `validateScene` | walk `query-node-tree` đếm node/comp/UI/depth; `validateScene` gộp scene+runtime+diagnostics+logs | `tools/validation-tools.ts` | M | thấp | P2 |
+| 6 | **UI helpers** | `createCanvas/createLabel/createButton/createSprite` | `create-node` + prefab URL `db://internal/default_prefab/ui/*.prefab` (như `nodeCreatePrimitive`) | `tools/ui-tools.ts` | S | thấp | **P1** (slot 2D) |
+| 7 | **Events** | `simulateButtonClick` + `bindButtonClickEvent` | scene handler: tìm `cc.Button`, emit click / gán handler | `scene.ts` + `tools/event-tools.ts` | S | thấp | P2 |
+| 8 | **Prefab JSON** | `editPrefabJson` + `duplicatePrefab` | fs read/write `.prefab` + validate UUID qua `query-asset-info` | `tools/prefab-json-tools.ts` | M | thấp | P3 |
+| 9 | **Instructions** | `readProjectInstruction/writeProjectInstruction` | fs AGENTS.md/CLAUDE.md/.codex | `tools/instruction-tools.ts` | S | thấp | P3 |
+| 10 | **Preferences** | `getEditorPreference/setEditorPreference` | `Editor.Profile.getConfig/setConfig` | `tools/preference-tools.ts` | S | thấp | P3 |
+| 11 | **Input sim** | `simulateKeyCombo/keyPress/mouseClick/mouseDrag` | Electron `webContents.sendInputEvent` | `tools/input-tools.ts` | L | **CAO — probe trước** | P3 |
+
+## 5. Thứ tự ưu tiên — quan trọng/hữu ích trước
+
+Xếp hạng theo `value = impact × (1/effort) × (1/risk)`, ưu tiên thứ **đóng vòng lặp** AI dev slot-game:
+
+```
+viết code ─► check compile ─► sửa ─► thấy kết quả ─► lặp
+```
+
+### Đợt 1 — đóng vòng "code → compile → fix" (build ngay, risk thấp)
+
+| # | Tool | Vì sao trước | Effort | Risk |
+|---|---|---|---|---|
+| 1 | `runScriptDiagnostics` + `getScriptDiagnosticContext` | AI sinh TS hay lỗi compile — nút thắt #1 mọi workflow code-gen | M | thấp |
+| 2 | `readFile/writeFile/searchFiles/replaceInFile` | refactor + đọc non-asset; pair #1 → vòng fix-compile khép kín | M | thấp |
+| 3 | `createCanvas/createLabel/createButton/createSprite` | slot game UI-heavy — task "build panel" phổ biến nhất | S | thấp |
+| 4 | `pauseRuntime/resumeRuntime/setTimeScale` | test logic game, rẻ nhất trong list | S | thấp |
+
+Kèm đợt 1, chạy song song (không chặn): **spike probe Electron** → quyết định #5 (screenshots) khả thi không.
+
+### Đợt 2 — đóng vòng "thấy kết quả" + tăng tốc (sau khi ~53 tool)
+
+| # | Tool | Vì sao | Effort | Risk |
+|---|---|---|---|---|
+| 5 | Screenshots `captureEditor/Scene/Game/Preview` | visual verify — đóng vòng "có đúng không" | L | CAO (probe) |
+| 6 | `batchSetProperties` | bulk multi-node — build UI hàng loạt | M | thấp |
+| 7 | `getPerformanceSnapshot` + `validateScene` | health check scene | M | thấp |
+
+**Gate trước đợt 2:** tool profiles (core/full) — ở 53+ tool, LLM thấy quá nhiều tool def gây noise.
+
+### Đợt 3 — nice-to-have
+
+| # | Tool | Vì sao | Effort |
+|---|---|---|---|
+| 8 | `simulateButtonClick` + events | test interaction UI | S |
+| 9 | `sceneSnapshot` | full dump/diff | S |
+| 10 | Prefab JSON + Instructions + Preferences + Input-sim | meta / tiện ích | S-M |
+
+### Foundation (không phải tool, chèn theo thời điểm)
+
+| Item | Khi nào | Lý do |
+|---|---|---|
+| Tool profiles (core/full) | trước đợt 2 | chặn context bloat ở 53+ tool |
+| Result envelope + auto-refs | đầu đợt 2 | đổi output contract sớm để khỏi retrofit |
+
+**ĐÃ XONG:** safety layer + `executeJavascript` (escape hatch).
+
+## 6. Kiến trúc nền còn thiếu (không phải tool)
+
+1. **Result envelope + auto-refs** — mọi tool trả `{ ok, tool, callId, summary, data, refs[] }`, `refs` auto-collect từ result (uuid/url/path, depth≤5). Giảm round-trip "tìm id" cho agent. Mượn funplay `createResultEnvelope`/`collectRefs`.
+2. **Tool profiles (core/full) + annotations** (`readOnly/stateful/mutating`) — graduated exposure + security tiering. Mượn funplay `tool-profiles.js` + `inferToolAnnotations`.
+
+Cả 2 là foundation, nên làm trước khi thêm ồ ạt tool mới — để surface 60+ tool không làm nghẹt context LLM.
+
+## 7. Quyết định cần chốt
+
+1. **`executeJavascript` opt-in hay default-on?** (đã chốt opt-in qua `safety_checks` default ON; profile gating chờ #6.2)
+2. **Filesystem: raw fs hay asset-db scoped?** → đề xuất: asset-db cho asset, raw-fs riêng cho non-asset (script .ts, AGENTS.md) + `path-safety` + auto `refresh-asset`.
+3. **Screenshot/input-sim có chấp nhận probe-spike trước không?** Electron API trong editor 3.7.3 chưa verify.
+
+## 8. Rủi ro
+
+| Rủi ro | Mức | Mitigate |
+|---|---|---|
+| `executeJavascript` mất kiểm soát | Cao | safety layer (done) + opt-in + profile gating |
+| Screenshot/input-sim Electron không expose trong 3.7.3 | Cao | probe trước, gate đóng nếu fail |
+| Raw fs lệch asset-db cache | Trung | auto `refresh-asset` sau write |
+| 60+ tool nghẹt context LLM | Trung | profile core/full (#6.2) trước khi ồ ạt thêm |
+
+## 9. Chưa rõ
+
+- `tsc --noEmit` spawn trong editor main process có khả dụng không (node version, `npx` path)? Cần spike #1.
+- `require('electron').desktopCapturer`/`sendInputEvent` có hoạt động trong editor 3.7.3 main process không? Probe #3/#11.
+- `runCode` scene context: `require` có resolve `fs` trong scene panel 3.7.3 không? (đang guard — cần test thật.)
+- Đăng ký plan lên central kanban (Notes vault) hay giữ local `plans/` đủ?

@@ -22,11 +22,11 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools (46 — 10 consolidated replaces 26 legacy + 1 additive)
+## Tools (63 — 10 consolidated replaces 26 legacy + 2 additive + 16 đợt 1)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
-> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod. **2.1:** +1 `assetReadContent` (text read) → 46.
+> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod. **2.1:** +1 `assetReadContent` (text read) → 46. **2.2:** +1 `executeJavascript` (JS escape hatch, safety-guarded) → 47. **Đợt 1:** +2 diagnostics +6 files +4 UI +4 runtime → **63**.
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
@@ -42,9 +42,14 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 | **Animation** (2) | `animationQuery`, `animationEdit` | Slim clip dumps |
 | **Material/DB** (2) | `materialQuery`, `assetDbQuery` | Effects/pipeline |
 | **System** (2) | `editorGetLogs`, `propertyArrayElement` | Logs, array ops |
+| **Execute** (1) | `executeJavascript`* | Run JS in scene/editor context. *`safety_checks` regex guard on by default |
+| **Diagnostics** (2) | `runScriptDiagnostics`, `getScriptDiagnosticContext` | TS compile check + source snippets for error triage |
+| **Files** (6) | `projectReadFile`, `projectWriteFile`, `projectSearchFiles`, `projectReplaceInFile`, `projectFileExists`, `projectListDirectory` | Project-scoped file ops with path-safety |
+| **UI** (4) | `createUiNode`, `createLabel`, `createButton`, `createSprite` | Create UI nodes from internal prefabs (Canvas/Label/Button/Sprite/etc.) |
+| **Runtime** (4) | `runtimePause`, `runtimeResume`, `runtimeSetTimeScale`, `runtimeGetState` | Pause/resume game loop, time scale control |
 | **Consolidated** (10) | `inspectorGet/Set/Definition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `previewManage`, `programManage`, `projectManage`, `buildManage` | Replaces 26 legacy — now the only surface |
 
-* QA: `scripts/smoke-utcp.js` (expects 46) · Perf: `a769a46` bench + `e419276` trim.
+* QA: `scripts/smoke-utcp.js` (expects 63) · Perf: `a769a46` bench + `e419276` trim.
 
 
 ## How It Works
@@ -211,14 +216,14 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension registers itself in `~/.utcp_config.json` as a single `ccb3x` entry pointing at the running server port, and rewrites the port when it changes. Legacy names (`cc-bridge-3x`, `cc3x7`, `ccb-3x`/`ccb_3x`) are migrated to `ccb3x` on save — the file must hold exactly one template per running server, duplicates cause double tool registration.
+The extension registers itself in `~/.utcp_config.json` as a `ccb3x` entry (latest pointer) plus a `ccb3x_<port>` entry per running editor, so two Cocos projects opened at once each stay reachable without colliding. The file must hold at most one template per URL — duplicates cause double tool registration. Only the new-format names (`ccb3x`, `ccb3x_<port>`, `ccb2x`, `ccb2x_<port>`) are supported; legacy names (`cc-bridge-3x`, `cc3x7`, `ccb-3x`, etc.) are purged on read.
 
 ## Agent Prompt Guidance
 
 When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
 
 ```text
-When returning data from ccb3x tools (manual `ccb3x`; legacy `cc-bridge-3x`/`cc3x7` migrated on save):
+When returning data from ccb3x tools (manual `ccb3x`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

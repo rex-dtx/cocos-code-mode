@@ -106,7 +106,7 @@ module.exports = Editor.Panel.define({
             } else {
                 let html = '';
                 templates.forEach((t: any) => {
-                const isCocos = ['ccb3x','cc-bridge-3x','ccb-3x','cc_bridge_3x','ccb_3x','cc3x7'].includes(t.name) || ['ccb2x','cc-bridge-2x','ccb-2x','cc_bridge_2x','ccb_2x','cc2x4'].includes(t.name);
+                const isCocos = /^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(t.name);
                     const delBtn = isCocos
                         ? `` // No delete for Cocos
                         : `<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove Template">
@@ -171,7 +171,7 @@ module.exports = Editor.Panel.define({
         },
 
         removeBridge(name: string) {
-            if (['ccb3x','cc-bridge-3x','ccb-3x','cc_bridge_3x','ccb_3x','cc3x7','ccb2x','cc-bridge-2x','ccb-2x','cc_bridge_2x','ccb_2x','cc2x4'].includes(name)) return;
+            if (/^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(name)) return;
             if (!confirm(`Remove template ${name}?`)) return;
 
             const configManager = getConfigManager();

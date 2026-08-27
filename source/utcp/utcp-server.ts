@@ -16,6 +16,11 @@ import './tools/animation-tools';
 import './tools/property-array-tools';
 import './tools/material-tools';
 import './tools/consolidated-tools';
+import './execute/execute-tool';
+import './tools/diagnostics-tools';
+import './tools/file-tools';
+import './tools/ui-tools';
+import './tools/runtime-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';
@@ -50,6 +55,8 @@ function debugLog(entry: Record<string, any>): void {
 export class UtcpServerManager {
     private app: express.Application;
     private server: any;
+    // Resolved port after start(); used by unload to GC the config entry.
+    public port: number = 0;
 
     constructor() {
         this.app = express();
@@ -101,6 +108,7 @@ export class UtcpServerManager {
                 }
 
                 // Now register tools with the correct port
+                this.port = currentPort;
                 this.registerTools(currentPort, tools, toolInstances, utcpTools);
 
                 resolve(currentPort);

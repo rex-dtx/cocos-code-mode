@@ -24,6 +24,18 @@ function _writeSceneLog(level: 'log' | 'warn' | 'error', data: unknown[]): void 
     } catch {}
 }
 
+function getSceneExecuteGlobals(): Record<string, any> {
+    // Inject scene-renderer globals explicitly — new Function has no closure access.
+    // `cc`/`cce`/`document` are reliably present in the editor scene; `require` is
+    // guarded because fs may be unavailable in some scene sub-contexts.
+    return {
+        cc: (globalThis as any)['cc'],
+        cce: (globalThis as any)['cce'],
+        document,
+        require: typeof require === 'function' ? require : undefined,
+    };
+}
+
 export const methods = {
     async startCatchLogging() {
         _caughtLogs = [];
@@ -235,5 +247,51 @@ export const methods = {
                 }
             });
         });
+    },
+
+    async runCode(code: string, args?: any): Promise<any> {
+        // Generic JS execution escape hatch in the scene renderer. Globals are injected
+        // explicitly and kept in getSceneExecuteGlobals so future globals are a one-line
+        // add. Uses an async wrapper so the agent can `await` and `return <expr>`.
+        const globals = getSceneExecuteGlobals();
+        const names = Object.keys(globals);
+        const values = Object.values(globals);
+        const fn = new Function('args', ...names, `return (async () => { ${code} })();`) as (...v: any[]) => Promise<any>;
+        const result = await fn(args, ...values);
+        return result === undefined ? null : result;
+    },
+
+    async runtimePause(): Promise<boolean> {
+        const cc = (globalThis as any)['cc'];
+        if (!cc?.game) return false;
+        cc.game.pause();
+        return true;
+    },
+
+    async runtimeResume(): Promise<boolean> {
+        const cc = (globalThis as any)['cc'];
+        if (!cc?.game) return false;
+        cc.game.resume();
+        return true;
+    },
+
+    async runtimeSetTimeScale(scale: number): Promise<boolean> {
+        const cc = (globalThis as any)['cc'];
+        if (!cc?.director) return false;
+        const scheduler = cc.director.getScheduler();
+        if (!scheduler) return false;
+        scheduler.setTimeScale(scale);
+        return true;
+    },
+
+    async runtimeGetState(): Promise<{ paused: boolean, timeScale: number, frameCount: number }> {
+        const cc = (globalThis as any)['cc'];
+        const game = cc?.game;
+        const director = cc?.director;
+        return {
+            paused: game?.paused ?? false,
+            timeScale: director?.getScheduler()?.getTimeScale?.() ?? 1,
+            frameCount: director?.totalFrames ?? 0,
+        };
     }
 };

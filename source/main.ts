@@ -170,7 +170,10 @@ export async function load() {
 export function unload() {
     if (utcpServer) {
         console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
+        const port = (utcpServer as any).port ?? 0;
         utcpServer.stop();
         utcpServer = null;
+        // Best-effort: don't block unload on config I/O.
+        getConfigManager().removeCocosEditorTemplate(port).catch(() => {});
     }
 }
