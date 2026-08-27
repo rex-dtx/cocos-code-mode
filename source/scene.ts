@@ -284,6 +284,80 @@ export const methods = {
         return true;
     },
 
+    // Finds a live runtime node by uuid in the editor scene graph. The scene panel
+    // runs the full engine, so cc.director.getScene() holds real cc.Node instances
+    // (distinct from the editor-side dump returned by query-node).
+    async findRuntimeNodeUuid(nodeUuid: string): Promise<any | null> {
+        const cc = (globalThis as any)['cc'];
+        const scene = cc?.director?.getScene?.();
+        if (!scene) return null;
+        const stack: any[] = [scene];
+        while (stack.length) {
+            const node = stack.pop();
+            if (node?.uuid === nodeUuid) return node;
+            for (const child of node?.children || []) stack.push(child);
+        }
+        return null;
+    },
+
+    async simulateButtonClick(nodeUuid: string): Promise<{ handlersFired: number, method: string }> {
+        const cc = (globalThis as any)['cc'];
+        const node = await methods.findRuntimeNodeUuid(nodeUuid);
+        if (!node) {
+            throw new Error(`Runtime node ${nodeUuid} not found in the live scene`);
+        }
+        const button = node.getComponent?.(cc.Button);
+        if (!button) {
+            throw new Error(`Node ${nodeUuid} has no cc.Button component`);
+        }
+
+        // Fire every editor-bound click handler (the same ones the UI would run).
+        let handlersFired = 0;
+        for (const ev of button.clickEvents || []) {
+            try {
+                ev.emit([button]);
+                handlersFired++;
+            } catch (e: any) {
+                console.warn(`[simulateButtonClick] handler failed: ${e?.message || e}`);
+            }
+        }
+        return { handlersFired, method: 'clickEvents' };
+    },
+
+    async bindButtonClickEvent(nodeUuid: string, componentType: string, handlerName: string, customEventData?: string): Promise<{ handlerCount: number }> {
+        const cc = (globalThis as any)['cc'];
+        const node = await methods.findRuntimeNodeUuid(nodeUuid);
+        if (!node) {
+            throw new Error(`Runtime node ${nodeUuid} not found in the live scene`);
+        }
+        const button = node.getComponent?.(cc.Button);
+        if (!button) {
+            throw new Error(`Node ${nodeUuid} has no cc.Button component`);
+        }
+
+        // Resolve the target component on the same node (or its children) by type name.
+        const candidates = [
+            node.getComponent?.(componentType),
+            ...(node.getComponentsInChildren?.(componentType) || []),
+        ].filter(Boolean);
+        const target = candidates[0];
+        if (!target) {
+            throw new Error(`No component of type '${componentType}' found on node ${nodeUuid} or its children`);
+        }
+        if (typeof target[handlerName] !== 'function') {
+            throw new Error(`Component '${componentType}' has no method '${handlerName}'`);
+        }
+
+        const handler = new cc.EventHandler();
+        handler.target = target;
+        handler.component = componentType;
+        handler.handler = handlerName;
+        handler.customEventData = customEventData || '';
+        button.clickEvents = button.clickEvents || [];
+        button.clickEvents.push(handler);
+        return { handlerCount: button.clickEvents.length };
+    },
+
     async runtimeGetState(): Promise<{ paused: boolean, timeScale: number, frameCount: number }> {
         const cc = (globalThis as any)['cc'];
         const game = cc?.game;

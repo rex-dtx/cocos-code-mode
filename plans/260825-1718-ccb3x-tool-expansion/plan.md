@@ -14,13 +14,13 @@
 | Tool profiles (core/full) + annotations | ✅ **XONG** — server-level filter |
 | Đợt 1: diagnostics + files + UI + runtime | ✅ **XONG** — 47→63 |
 | Đợt 2: batch + validation + screenshot | ✅ **XONG** — 63→69 |
-| Đợt 3: events + sceneSnapshot + meta | ⏳ backlog |
+| Đợt 3: events + sceneSnapshot + meta | ✅ **XONG** — 69→83 |
 
-**Tổng:** 69 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2).
+**Tổng:** 83 tools. Commit `082e957` (đợt 1) + `af828f7` (đợt 2) + đợt 3 pending commit.
 
 ## 1. Mục tiêu
 
-Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 69 tools hiện tại, giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín** (done), **DX compile+files** (done). Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
+Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 83 tools hiện tại, giữ hướng "discover → act", mượn funplay ở 3 tầng: **escape hatch an toàn** (done), **vòng verify khép kín** (done), **DX compile+files** (done), **interaction+meta hoàn chỉnh** (done — đợt 3). Không chạy parity tool-đếm — chỉ mượn thứ mở workflow mới hoặc là pattern kiến trúc.
 
 ## 2. Nguyên tắc chọn lọc
 
@@ -30,7 +30,7 @@ Nâng ccb3x từ 47 tool (granular, vừa thêm escape hatch) → 69 tools hiệ
 | Pattern kiến trúc tái dùng (guard, envelope, profile) | Kéo dependency nặng (generate_image_asset → SD/DALL-E key) |
 | Engine 3.7.3 expose message / Node builtin | Engine 3.7.3 chặn (change-gizmo timeout, project:set-config) |
 
-## 3. Gap matrix — funplay FULL (105) vs ccb3x (69)
+## 3. Gap matrix — funplay FULL (105) vs ccb3x (83)
 
 Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
 
@@ -41,25 +41,26 @@ Ký hiệu: ✅ cover · ⚠️ một phần · ❌ thiếu
 | Components (7) | ✅ `nodeComponentManage`/`nodeComponentsGet`/`callComponentMethod`/`inspector*`/`nodeReset` | — |
 | Selection (3) | ✅ `editorSelect` (7 ops) | — |
 | Build (6) | ✅ `buildManage` (tasks/trigger/control) | ⚠️ `run_project_preview`/`get_preview_mode`/`set_preview_mode` |
-| Scene (9) | ✅ `nodeCreate`/`nodeOperate`/`nodeGetTree`/`nodeGetAtPath`/`sceneGetInfo`/`sceneManage` | ⚠️ `find_nodes` (theo name/component — ccb3x chỉ path) |
+| Scene (9) | ✅ `nodeCreate`/`nodeOperate`/`nodeGetTree`/`nodeGetAtPath`/`sceneGetInfo`/`sceneManage`/`sceneSnapshot` | ⚠️ `find_nodes` (theo name/component — ccb3x chỉ path) |
 | Assets (11) | ✅ `assetCreate`/`assetImport`/`assetOperate`/`assetQuery`/`assetResolvePath`/`assetFindReferences` | ⚠️ `inspect_asset_dependencies` (UUID deps) |
-| Prefabs (10) | ⚠️ `nodeOperate` prefab ops (apply/revert/link/unwrap) | ❌ `edit_prefab_json`/`duplicate_prefab`/`inspect_prefab_instance` (file-level) |
+| Prefabs (10) | ✅ `nodeOperate` prefab ops + `readPrefabJson`/`editPrefabJson`/`duplicatePrefab` (file-level) | ⚠️ `inspect_prefab_instance` |
 | Diagnostics (5) | ✅ `runScriptDiagnostics`/`getScriptDiagnosticContext` | ⚠️ `validate_scene/asset/prefab` (validateScene done) |
 | Files (8) | ✅ `projectReadFile`/`projectWriteFile`/`projectSearchFiles`/`projectReplaceInFile`/`projectFileExists`/`projectListDirectory` | — |
 | Screenshots (5) | ✅ `captureSceneScreenshot`/`captureEditorScreenshot`/`listEditorWindows` | ⚠️ `capturePreviewScreenshot`/`captureGameScreenshot` (chưa) |
 | Runtime (4) | ✅ `runtimePause`/`runtimeResume`/`runtimeSetTimeScale`/`runtimeGetState` | — |
 | Other — perf (2) | ✅ `getPerformanceSnapshot` + `validateScene` | — |
-| Input (5) | ❌ | ❌ **`simulate_key/mouse`** (Electron) |
-| Events (4) | ⚠️ `callComponentMethod` | ❌ **`simulate_button_click`/`bind_button_click_event`** |
+| Input (5) | ✅ `simulateKeyPress`/`simulateKeyCombo`/`simulateMouseClick`/`simulateMouseDrag` (Electron probe) | ⚠️ runtime-gated (fail-fast nếu 3.7.3 không expose webContents) |
+| Events (4) | ✅ `simulateButtonClick`/`bindButtonClickEvent` + `callComponentMethod` | — |
 | UI (4) | ✅ `createUiNode`/`createLabel`/`createButton`/`createSprite` | — |
-| Instructions (5) | ❌ | ❌ `read/write_project_instruction` (AGENTS.md/CLAUDE.md) |
-| Preferences (2) | ⚠️ `projectManage` (project settings) | ⚠️ `get/set_editor_preference` (Editor.Profile) |
+| Instructions (5) | ✅ `readProjectInstruction`/`writeProjectInstruction` | — |
+| Preferences (2) | ✅ `getEditorPreference`/`setEditorPreference` | — |
 | Logs (3) | ⚠️ `editorGetLogs` | ⚠️ `search_project_logs` |
 | Broadcast (1) | ⚠️ `callComponentMethod`/`executeJavascript` | — (đủ thay) |
 | Updates (1) | ❌ | skip (ngoài phạm vi) |
 | **Batch** | ✅ `nodeBatchSet` | — |
+| **Snapshot** | ✅ `sceneSnapshot` | — |
 
-**Chốt:** Đợt 1+2 đã cover Diagnostics, Files, Screenshots (partial), Runtime, Perf/Validate, UI, Batch. Còn lại: Input sim, Events, Prefab JSON, Instructions, Preferences = backlog đợt 3.
+**Chốt:** Đợt 1+2 đã cover Diagnostics, Files, Screenshots (partial), Runtime, Perf/Validate, UI, Batch. Đợt 3 đóng nốt: sceneSnapshot, Events, Prefab JSON, Instructions, Preferences, Input-sim → 83 tools. Còn lại: `find_nodes` theo name/component, Preview screenshots, Logs search = backlog đợt 4 (nếu cần).
 
 ### 3.5 Local source synthesis — các repo MCP có sẵn source
 
@@ -131,13 +132,16 @@ Kèm đợt 1, chạy song song (không chặn): **spike probe Electron** → qu
 
 **Gate trước đợt 2:** tool profiles (core/full) — ở 53+ tool, LLM thấy quá nhiều tool def gây noise.
 
-### Đợt 3 — nice-to-have
+### Đợt 3 — nice-to-have → ✅ **XONG** (83 — 69→83)
 
-| # | Tool | Vì sao | Effort |
+| # | Tool | Vì sao | Trạng thái |
 |---|---|---|---|
-| 8 | `simulateButtonClick` + events | test interaction UI | S |
-| 9 | `sceneSnapshot` | full dump/diff | S |
-| 10 | Prefab JSON + Instructions + Preferences + Input-sim | meta / tiện ích | S-M |
+| 8 | `simulateButtonClick` + `bindButtonClickEvent` | test interaction UI | ✅ `scene.ts` + `event-tools.ts` |
+| 9 | `sceneSnapshot` | full dump/diff | ✅ `scene-snapshot-tools.ts` |
+| 10a | Prefab JSON (`readPrefabJson`/`editPrefabJson`/`duplicatePrefab`) | file-level prefab | ✅ `prefab-json-tools.ts` |
+| 10b | Instructions (`readProjectInstruction`/`writeProjectInstruction`) | AGENTS.md/CLAUDE.md | ✅ `instruction-tools.ts` |
+| 10c | Preferences (`getEditorPreference`/`setEditorPreference`) | Editor.Profile | ✅ `preference-tools.ts` |
+| 10d | Input-sim (`simulateKeyPress/Combo/mouseClick/mouseDrag`) | Electron webContents probe | ✅ `input-tools.ts` (fail-fast nếu 3.7.3 không expose) |
 
 ### Foundation (không phải tool, chèn theo thời điểm)
 
