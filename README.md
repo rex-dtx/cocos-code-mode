@@ -60,6 +60,21 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 
 * QA: `scripts/smoke-utcp.js` (expects 83) · Perf: `a769a46` bench + `e419276` trim.
 
+### Verbose convention
+
+Query/read tools return a compact default view; pass `verbose: true` to lift the cap and get the full output. Explicit numeric params (`maxDepth`, `maxNodes`, `limit`, `maxBytes`, `count`) still win when set.
+
+| Tool | Default | `verbose=true` |
+|------|---------|----------------|
+| `nodeGetTree` / `assetGetTree` | depth 4 / 200 nodes | depth 99 / 10 000 nodes |
+| `projectReadFile` / `readProjectInstruction` | 512 KB | 10 MB |
+| `readPrefabJson` | 4 MB | 10 MB |
+| `assetReadContent` | 512 KB | 10 MB |
+| `projectSearchFiles` | 100 results | 1 000 |
+| `getScriptDiagnosticContext` | limit 10 (ceiling 50) | ceiling 100 |
+
+Caps live in `source/utcp/utils/verbose.ts`. Tools already exposing a caller-controlled knob (`assetQuery.limit`, `editorGetLogs.count`, `sceneSnapshot` 99/5000) need no flag — pass the number.
+
 
 ## How It Works
 
