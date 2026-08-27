@@ -8,6 +8,7 @@ import packageJSON from '../../../package.json';
 import { AssetInfo, AssetOperationOption } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { AssetTreeItemSchema, IAssetTreeItem } from '../schemas';
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
+import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES, VERBOSE_FILE_BYTES } from '../utils/verbose';
 
 // helpers (shared by previewManage + kept methods)
 async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }): Promise<any[]> {
@@ -40,8 +41,8 @@ function normalizePath(p?: string): string {
 
 export class AssetTools {
 
-    @utcpTool('assetGetTree','Get asset hierarchy tree. Defaults maxDepth=4/maxNodes=200; pass larger values for the full tree. Marks truncated branches.',{ type:'object', properties:{ reference: InstanceReferenceSchema, assetPath:{type:'string'}, maxDepth:{type:'number'}, maxNodes:{type:'number'} } }, AssetTreeItemSchema,"GET",['asset','file','tree','hierarchy','folder','subasset'])
-    async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number, maxNodes?: number }): Promise<IAssetTreeItem> {
+    @utcpTool('assetGetTree','Get asset hierarchy tree. Defaults maxDepth=4/maxNodes=200; verbose=true for verbose caps. Marks truncated branches.',{ type:'object', properties:{ reference: InstanceReferenceSchema, assetPath:{type:'string'}, maxDepth:{type:'number'}, maxNodes:{type:'number'}, verbose:{type:'boolean', description:'When true, lifts caps to verbose ceilings unless maxDepth/maxNodes explicitly set'} } }, AssetTreeItemSchema,"GET",['asset','file','tree','hierarchy','folder','subasset'])
+    async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number, maxNodes?: number, verbose?: boolean }): Promise<IAssetTreeItem> {
         if (args.reference) {
             const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
             if (!info) throw new Error(`Asset with UUID ${args.reference.id} not found.`);
@@ -60,8 +61,8 @@ export class AssetTools {
         // ponytail: default budgets — a bare call must not dump the whole asset DB.
         // Defaults apply per-param only when omitted; pass larger values for the full
         // tree. Same truncated/childrenOmitted convention as nodeGetTree.
-        const maxDepth = args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH;
-        const maxNodes = args.maxNodes ?? DEFAULT_TREE_MAX_NODES;
+        const maxDepth = args.verbose ? (args.maxDepth ?? VERBOSE_TREE_DEPTH) : (args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH);
+        const maxNodes = args.verbose ? (args.maxNodes ?? VERBOSE_TREE_NODES) : (args.maxNodes ?? DEFAULT_TREE_MAX_NODES);
         const prune=(n:IAssetTreeItem,d:number)=>{ if(d>=maxDepth){ (n as any).truncated='maxDepth'; (n as any).childrenOmitted=n.children.length; (n as any).childrenCount=n.children.length; n.children=[]; } else n.children.forEach(c=>prune(c,d+1)); }; prune(rootNode,0);
         const budget={left:maxNodes}; const trunc=(n:IAssetTreeItem,d:number)=>{ const ch=n.children; if(!ch||!ch.length) return; (n as any).childrenCount=ch.length; const kept:IAssetTreeItem[]=[]; for(let i=0;i<ch.length;i++){ if(budget.left<=0){ (n as any).truncated=(n as any).truncated||'nodeLimit'; (n as any).childrenOmitted=ch.length-i; break; } budget.left--; trunc(ch[i],d+1); kept.push(ch[i]); } if(kept.length!==ch.length) n.children=kept; }; trunc(rootNode,0);
         return rootNode;
@@ -118,13 +119,14 @@ export class AssetTools {
 
     @utcpTool(
         'assetReadContent',
-        'Read text content of an asset by uuid or db:// path. Rejects binary/oversized files; use maxBytes to raise the cap.',
+        'Read text content of an asset by uuid or db:// path. Rejects binary/oversized files; maxBytes or verbose=true (10MB) to raise the cap.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
                 assetPath: { type: 'string', description: 'db:// url or path' },
-                maxBytes: { type: 'number', description: 'Size cap in bytes, default 512KB' }
+                maxBytes: { type: 'number', description: 'Size cap in bytes, default 512KB' },
+                verbose: { type: 'boolean', description: 'When true, lifts cap to 10MB (overrides default 512KB; explicit maxBytes still wins).' }
             },
             required: []
         },
@@ -141,7 +143,7 @@ export class AssetTools {
         "GET",
         ['asset', 'read', 'content', 'text', 'file', 'source']
     )
-    async assetReadContent(args: { reference?: IInstanceReference, assetPath?: string, maxBytes?: number }): Promise<{ content: string, filesystemPath: string, bytes: number, truncated: boolean }> {
+    async assetReadContent(args: { reference?: IInstanceReference, assetPath?: string, maxBytes?: number, verbose?: boolean }): Promise<{ content: string, filesystemPath: string, bytes: number, truncated: boolean }> {
         const ident = args.reference?.id || (args.assetPath ? normalizePath(args.assetPath) : undefined);
         if (!ident) throw new Error('assetReadContent requires reference.id or assetPath');
         const asUuid2 = !ident.startsWith('db://');
@@ -159,8 +161,8 @@ export class AssetTools {
         if ((BINARY as string[]).includes(extR)) throw new Error('Extension ' + extR + ' is binary and not readable as text.');
         const stat: any = await (fs as any).stat(fpResolved).catch(() => null);
         if (!stat) throw new Error('File not found on disk: ' + fpResolved);
-        const cap = args.maxBytes ?? 512 * 1024;
-        if (stat.size > cap) throw new Error('File is ' + stat.size + ' bytes, over the ' + cap + ' byte cap. Pass maxBytes to raise it.');
+        const cap = args.maxBytes ?? (args.verbose ? VERBOSE_FILE_BYTES : 512 * 1024);
+        if (stat.size > cap) throw new Error('File is ' + stat.size + ' bytes, over the ' + cap + ' byte cap. ' + (args.verbose ? 'Already at verbose cap (10MB).' : 'Pass verbose=true or maxBytes to raise it.'));
         const content = await (fs as any).readFile(fpResolved, 'utf8');
         return { content, filesystemPath: fpResolved, bytes: stat.size, truncated: false };
     }

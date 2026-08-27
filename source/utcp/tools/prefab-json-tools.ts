@@ -2,6 +2,7 @@ import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import fs from 'fs-extra';
 import path from 'path';
+import { VERBOSE_PREFAB_BYTES } from '../utils/verbose';
 
 function normalizePrefabPath(p?: string): string {
     if (!p) return '';
@@ -45,12 +46,13 @@ export class PrefabJsonTools {
 
     @utcpTool(
         'readPrefabJson',
-        'Read the raw JSON content of a .prefab asset (via uuid or db:// path). Returns the parsed JSON string and metadata.',
+        'Read the raw JSON content of a .prefab asset (via uuid or db:// path). Returns the parsed JSON string and metadata. Default 4MB; verbose=true lifts to 10MB.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
                 assetPath: { type: 'string', description: 'db:// path to the .prefab, alternative to reference.id' },
+                verbose: { type: 'boolean', description: 'When true, lifts size cap to 10MB.' },
             },
         },
         {
@@ -66,13 +68,14 @@ export class PrefabJsonTools {
         'GET',
         ['prefab', 'json', 'read', 'asset', 'file', 'inspect']
     )
-    async readPrefabJson(args: { reference?: IInstanceReference, assetPath?: string }): Promise<{ content: string, url: string, uuid: string, filesystemPath: string }> {
+    async readPrefabJson(args: { reference?: IInstanceReference, assetPath?: string, verbose?: boolean }): Promise<{ content: string, url: string, uuid: string, filesystemPath: string }> {
         const ident = args.reference?.id || (args.assetPath ? normalizePrefabPath(args.assetPath) : undefined);
         if (!ident) throw new Error('readPrefabJson requires reference.id or assetPath');
         const { url, uuid, file } = await resolvePrefab(ident);
         const stat = await (fs as any).stat(file).catch(() => null);
         if (!stat) throw new Error(`Prefab file not found on disk: ${file}`);
-        if (stat.size > 4 * 1024 * 1024) throw new Error(`Prefab file too large (${stat.size} bytes)`);
+        const cap = args.verbose ? VERBOSE_PREFAB_BYTES : 4 * 1024 * 1024;
+        if (stat.size > cap) throw new Error(`Prefab file too large (${stat.size} bytes, cap ${cap}). ${args.verbose ? 'Already at verbose cap (10MB).' : 'Pass verbose=true to lift to 10MB.'}`);
         const content = await (fs as any).readFile(file, 'utf8');
         // Validate JSON
         try { JSON.parse(content); } catch (e: any) { throw new Error(`Prefab JSON parse error: ${e.message}`); }

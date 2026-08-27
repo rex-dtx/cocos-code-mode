@@ -3,6 +3,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs-extra';
 import path from 'path';
+import { VERBOSE_DIAGNOSTICS_LIMIT } from '../utils/verbose';
 
 const execFileAsync = promisify(execFile);
 
@@ -103,13 +104,14 @@ export class DiagnosticsTools {
 
     @utcpTool(
         'getScriptDiagnosticContext',
-        'Run TypeScript diagnostics and attach source snippets (±N lines) around each error for immediate triage without separate file reads.',
+        'Run TypeScript diagnostics and attach source snippets (±N lines) around each error for immediate triage without separate file reads. Default 10 diagnostics; verbose=true lifts to 100.',
         {
             type: 'object',
             properties: {
                 tsconfigPath: { type: 'string', description: 'Optional tsconfig path relative to project root.' },
                 contextLines: { type: 'number', description: 'Lines of context around each error (default 3).' },
                 limit: { type: 'number', description: 'Max diagnostics to include (default 10).' },
+                verbose: { type: 'boolean', description: 'When true, lifts limit ceiling from 50 to 100.' },
             },
         },
         {
@@ -124,8 +126,9 @@ export class DiagnosticsTools {
         'POST',
         ['diagnostics', 'typescript', 'compile', 'error', 'snippet', 'context', 'triage']
     )
-    async getScriptDiagnosticContext(args: { tsconfigPath?: string, contextLines?: number, limit?: number }): Promise<{ ok: boolean, errorCount: number, diagnostics: (TscDiagnostic & { snippet: string })[] }> {
-        const limit = Math.max(1, Math.min(args.limit ?? 10, 50));
+    async getScriptDiagnosticContext(args: { tsconfigPath?: string, contextLines?: number, limit?: number, verbose?: boolean }): Promise<{ ok: boolean, errorCount: number, diagnostics: (TscDiagnostic & { snippet: string })[] }> {
+        const ceiling = args.verbose ? VERBOSE_DIAGNOSTICS_LIMIT : 50;
+        const limit = Math.max(1, Math.min(args.limit ?? 10, ceiling));
         const contextLines = Math.max(0, Math.min(args.contextLines ?? 3, 20));
 
         // Reuse runScriptDiagnostics logic

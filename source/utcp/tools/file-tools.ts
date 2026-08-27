@@ -1,6 +1,7 @@
 import { utcpTool } from '../decorators';
 import fs from 'fs-extra';
 import path from 'path';
+import { VERBOSE_FILE_BYTES, VERBOSE_SEARCH_LIMIT } from '../utils/verbose';
 
 const MAX_FILE_BYTES = 512 * 1024; // 512KB read cap
 const MAX_SEARCH_RESULTS = 100;
@@ -18,11 +19,12 @@ export class FileTools {
 
     @utcpTool(
         'projectReadFile',
-        'Read a text file from the project directory. Returns content string. Rejects files > 512KB.',
+        'Read a text file from the project directory. Returns content string. Default 512KB; verbose=true lifts to 10MB.',
         {
             type: 'object',
             properties: {
                 filePath: { type: 'string', description: 'Project-relative path, e.g. "assets/scripts/Game.ts"' },
+                verbose: { type: 'boolean', description: 'When true, lifts size cap to 10MB.' },
             },
             required: ['filePath'],
         },
@@ -30,12 +32,13 @@ export class FileTools {
         'GET',
         ['file', 'read', 'project', 'script', 'text']
     )
-    async projectReadFile(args: { filePath: string }): Promise<{ content: string, bytes: number }> {
+    async projectReadFile(args: { filePath: string, verbose?: boolean }): Promise<{ content: string, bytes: number }> {
         const projectPath = (Editor.Project as any).path as string;
         const resolved = resolveSafePath(projectPath, args.filePath);
         if (!fs.existsSync(resolved)) throw new Error(`File not found: ${args.filePath}`);
         const stat = fs.statSync(resolved);
-        if (stat.size > MAX_FILE_BYTES) throw new Error(`File too large (${stat.size} bytes, cap ${MAX_FILE_BYTES}). Read a smaller portion.`);
+        const cap = args.verbose ? VERBOSE_FILE_BYTES : MAX_FILE_BYTES;
+        if (stat.size > cap) throw new Error(`File too large (${stat.size} bytes, cap ${cap}). ${args.verbose ? 'Already at verbose cap (10MB).' : 'Pass verbose=true to lift to 10MB.'} Read a smaller portion.`);
         const content = fs.readFileSync(resolved, 'utf-8');
         return { content, bytes: stat.size };
     }
@@ -77,12 +80,13 @@ export class FileTools {
 
     @utcpTool(
         'projectSearchFiles',
-        'Search project files by glob-like pattern (supports * wildcard). Returns matching relative paths.',
+        'Search project files by glob-like pattern (supports * wildcard). Returns matching relative paths. Default 100 results; verbose=true lifts to 1000.',
         {
             type: 'object',
             properties: {
                 pattern: { type: 'string', description: 'Glob pattern, e.g. "assets/**/*.ts" or "*.json"' },
                 limit: { type: 'number', description: 'Max results (default 100)' },
+                verbose: { type: 'boolean', description: 'When true, lifts default to 1000 results.' },
             },
             required: ['pattern'],
         },
@@ -90,9 +94,11 @@ export class FileTools {
         'GET',
         ['file', 'search', 'find', 'glob', 'pattern', 'project']
     )
-    async projectSearchFiles(args: { pattern: string, limit?: number }): Promise<{ files: string[], total: number }> {
+    async projectSearchFiles(args: { pattern: string, limit?: number, verbose?: boolean }): Promise<{ files: string[], total: number }> {
         const projectPath = (Editor.Project as any).path as string;
-        const limit = Math.max(1, Math.min(args.limit ?? MAX_SEARCH_RESULTS, 500));
+        const limit = args.verbose
+            ? Math.max(1, Math.min(args.limit ?? VERBOSE_SEARCH_LIMIT, VERBOSE_SEARCH_LIMIT))
+            : Math.max(1, Math.min(args.limit ?? MAX_SEARCH_RESULTS, 500));
 
         // Convert glob to regex: * = any chars except /, ** = any chars including /
         const regexStr = args.pattern

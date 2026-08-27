@@ -2,6 +2,7 @@ import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
 import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
+import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
 export class SceneTools {
 
@@ -351,19 +352,20 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetTree',
-        'Get node hierarchy tree. Defaults maxDepth=4/maxNodes=200; pass larger values for the full tree. Supports fields filter. Marks truncated branches.',
+        'Get node hierarchy tree. Defaults maxDepth=4/maxNodes=200; pass larger values or verbose=true for the full tree. Supports fields filter. Marks truncated branches.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
                 maxDepth: { type: 'number', description: 'Max recursion depth. 0 = root only, 1 = root + direct children. Default 4 when omitted.' },
                 maxNodes: { type: 'number', description: 'Max nodes to walk; guards wide scenes where maxDepth alone does not bound. Default 200 when omitted.' },
+                verbose: { type: 'boolean', description: 'When true, lifts caps to verbose ceilings (depth 99, nodes 10000) unless maxDepth/maxNodes are explicitly set.' },
                 fields: { type: 'array', items: { type: 'string' }, description: 'Optional: only keep these node keys per node (e.g. ["name","active","components"]). reference+children always kept. Omit for all fields.' }
             }
         },
         SceneTreeItemSchema, "GET",  ['scene', 'graph', 'node', 'hierarchy', 'tree']
     )
-    async nodeGetTree(args: { reference?: IInstanceReference, maxDepth?: number, maxNodes?: number, fields?: string[] }): Promise<ISceneTreeItem> {
+    async nodeGetTree(args: { reference?: IInstanceReference, maxDepth?: number, maxNodes?: number, verbose?: boolean, fields?: string[] }): Promise<ISceneTreeItem> {
         let treeBase;
         if (args.reference) {
              treeBase = await Editor.Message.request('scene', 'query-node-tree', args.reference.id);
@@ -385,8 +387,8 @@ export class SceneTools {
         // ponytail: default budgets — a bare call must not dump the full scene (~43K
         // tokens). Defaults apply per-param only when omitted; pass larger values for
         // the full tree. cc-2x port (ee0a888/6f98715): same truncated/childrenOmitted convention.
-        const maxDepth = args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH;
-        const maxNodes = args.maxNodes ?? DEFAULT_TREE_MAX_NODES;
+        const maxDepth = args.verbose ? (args.maxDepth ?? VERBOSE_TREE_DEPTH) : (args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH);
+        const maxNodes = args.verbose ? (args.maxNodes ?? VERBOSE_TREE_NODES) : (args.maxNodes ?? DEFAULT_TREE_MAX_NODES);
         const budget = { left: maxNodes };
 
         const formatNode = (node: any, depth: number): ISceneTreeItem => {
