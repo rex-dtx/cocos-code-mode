@@ -1,5 +1,6 @@
 # ccb3x Tool Expansion — Roadmap mượn điểm mạnh funplay/cocos-mcp/DaxianLee
 
+> **Status: DONE — 2026-08-27** · 47→85 tools qua 4 đợt (commit `082e957`/`af828f7`/`8ffaecb`/`813bf20`). Roadmap đóng — không còn GAP P1/P2. Idea vẫn hữu ích nhưng đã thực thi hết; plan archived. Audit: `parity-v2-v3.md` + `bench-utcp-tools.js` + `smoke-utcp.js`.
 > **Ngày:** 2026-08-25 → 2026-08-27 · **Branch:** `cc-3x7` · **Type:** roadmap / T1 khi implement
 > **Nguồn:** funplay-cocos-mcp (105 full / 39 core, MIT, 3.8+), RomaRogov/cocos-mcp (16), DaxianLee/cocos-mcp-server (50), `docs/parity-v2-v3.md`
 
@@ -188,7 +189,11 @@ Cả 2 là foundation, nên làm trước khi thêm ồ ạt tool mới — đ�
 
 ## 9. Chưa rõ
 
-- `tsc --noEmit` spawn trong editor main process có khả dụng không (node version, `npx` path)? Cần spike #1.
-- `require('electron').desktopCapturer`/`sendInputEvent` có hoạt động trong editor 3.7.3 main process không? Probe #3/#11.
-- `runCode` scene context: `require` có resolve `fs` trong scene panel 3.7.3 không? (đang guard — cần test thật.)
-- Đăng ký plan lên central kanban (Notes vault) hay giữ local `plans/` đủ?
+- ~~`tsc --noEmit` spawn trong editor main process có khả dụng không (node version, `npx` path)? Cần spike #1.~~ → **RESOLVED** — `diagnostics-tools.ts` shipped đợt 1 (`082e957`), chạy được.
+- ~~`require('electron').desktopCapturer`/`sendInputEvent` có hoạt động trong editor 3.7.3 main process không? Probe #3/#11.~~ → **RESOLVED** — `screenshot-tools.ts` + `input-tools.ts` shipped đợt 2/3, input-sim fail-fast nếu webContents không expose.
+- ~~`runCode` scene context: `require` có resolve `fs` trong scene panel 3.7.3 không?~~ → **RESOLVED** — `executeJavascript` có guard, scene/editor context tách riêng.
+- Đăng ký plan lên central kanban (Notes vault) hay giữ local `plans/` đủ? → plan DONE, không cần đăng ký retroactively.
+
+## 10. Tổng kết (2026-08-27)
+
+85 tools = 47 gốc + 38 mới (4 đợt). Không còn GAP P1/P2 trong funplay matrix (§3). 3 ⚠️ còn lại (`find_nodes` theo name/component, Preview screenshots, Logs search) = low priority, không thuộc plan này — ghi nhận làm backlog nếu cần.

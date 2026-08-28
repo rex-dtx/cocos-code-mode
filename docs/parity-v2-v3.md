@@ -2,8 +2,8 @@
 
 Tham chiếu sống cho câu hỏi "bản kia có tool tương đương không". Cập nhật mỗi khi port xong một dòng.
 
-**v3** `cc-bridge-3x` (Creator 3.7.x, branch `cc-3x7`) = **85 tools** · **v2** `cc-bridge-2x` (Creator 2.4.15, branch `cc-2x`) = **53 tools**
-**Cập nhật:** 2026-08-27 (@`813bf20` đợt 4 / 2x @`8a80bf5`) · **Snapshot audit:** `plans/reports/verify-260822-0926-v2-v3-tool-parity.md`
+**v3** `cc-bridge-3x` (Creator 3.7.x, branch `cc-3x7`) = **86 tools** · **v2** `cc-bridge-2x` (Creator 2.4.15, branch `cc-2x`) = **53 tools**
+**Cập nhật:** 2026-08-28 (@`8c08955`+dirty — gap-closure G1+G3, probe G2 / 2x @`8a80bf5`) · **Snapshot audit:** `plans/reports/verify-260822-0926-v2-v3-tool-parity.md`
 **Đối chiếu message:** `docs/cc-3x7-message-registry.json` (416 msg / 20 module, dump 3.7.3) · coverage 131/416 xem `plans/reports/verify-260821-0939-cc3x7-api.md`
 
 ## Nguyên tắc đọc bảng
@@ -45,6 +45,7 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 | `editorQuery` scene_mode/ready/enum_values/layers/sorting_layers/script_info/has_script | `sceneInfo` (một phần) | ⚠️ thiếu 7 ops |
 | `editorViewport` (12 ops gizmo/2d/align) | — | ❌ `scene:change-gizmo-*` timeout (Probe 4: 14/14 fire-and-forget) |
 | `findNodesByAsset` | `sceneSnapshot` + filter client-side | ⚠️ |
+| `findNodes` (by name/component, G3) | — (mới, v2 không có) | ✅ walk `nodeGetTree` in-memory (2026-08-28) |
 | `findNodesWithMissingAssets` | `sceneSnapshot` + scan null ref | ⚠️ |
 | `inspectorGet` | `nodeQuery dump` + `componentQuery props` | ✅ |
 | `inspectorSet` | `nodeSetProperty` / `nodeSetPropertyUndo` | ✅ |
@@ -88,9 +89,9 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 | `projectGetConfig` | `projectManage get` | ✅ |
 | `assetResolve` core (uuid/url/fspath/exists) | `assetResolvePath` | ✅ |
 | `assetResolve mount_info` | `assetDbQuery databases/db_info` | ✅ |
-| `assetResolve` is_sub_asset/contains_sub_assets/relative_path/backup_path | — | ⚠️ mở rộng được từ `query-asset-info.isSubAsset` |
+| `assetResolve` is_sub_asset/contains_sub_assets/relative_path/backup_path | — | ✅ `assetResolvePath` +4 fields (2026-08-28 — G1) |
 | `batchSetProperties` (multi-node) | `nodeBatchSet` (batch write) + `sceneBatchGet` (batch read, M2) | ✅ |
-| `sceneNew` | `assetCreate {scene}` + `sceneManage open` | ⚠️ 3.7.3 không có `new-scene` |
+| `sceneNew` | `assetCreate {scene}` + `sceneManage open` | ❌ 3.7.3 không có `new-scene` (probe 2026-08-28: `Message does not exist: scene - new-scene`, registry 0/191) |
 | `assetSaveMeta` | `assetOperate save_meta` (+ `assetDbQuery meta` để đọc trước) | ✅ |
 | `projectSaveConfig` | `projectManage set` → báo `unsupported` | ❌ 3.7.3 không có `project:set-config` (v2 mạnh hơn) |
 | `assetExchangeUuid` | — | ❌ không có msg `exchange-uuid` trong 416 msg 3.7.3 |
@@ -105,11 +106,13 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 | 2 | v3 | `projectManage set` | 3.7.3 không có `project:set-config` | giữ `unsupported` — map bừa = ghi sai key im lặng |
 | 3 | v3 | `assetExchangeUuid` | không có message | không port |
 | 4 | v3 | `editorSelect` set_context/patch/filter/confirm/cancel | module `selection` 3.7 không có | backlog, mở khi agent cần |
-| 5 | v3 | `assetResolve` 4 op phụ | mở rộng được từ `query-asset-info` | backlog |
+| 5 | ~~v3~~ | ~~`assetResolve` 4 op phụ~~ | — | ✅ **XONG** — `assetResolvePath` +`isSubAsset/containsSubAssets/relativePath/backupPath` (G1, 2026-08-28) |
 | 6 | v2 | `editorViewport` | `scene:change-gizmo-*` timeout | chặn cứng |
 | 7 | v2 | `nodeOperate` lock + prefab ops | `scene:*` prefab IPC timeout | chặn cứng |
 | 8 | v2 | `buildManage` · `materialQuery` | 2.4 không có API | N/A vĩnh viễn |
 | 9 | v2 | `editorQuery` 7 ops · `animation*` 10 ops · `sceneManage` save_as/close/soft_reload · `propertyArrayElement` · `findNodesWithMissingAssets` · `assetCreate` typed | chưa port, có đường làm | ledger P2 — ưu tiên `editorQuery` + `animation*` |
+| 10 | ~~v3~~ | ~~`sceneNew`~~ | — | ✅ **Chốt NOT-EXPOSED** — probe live 2026-08-28 `scene - new-scene` = "Message does not exist"; giữ workaround `assetCreate {scene}`+`sceneManage open` |
+| 11 | ~~v3~~ | ~~`find_nodes` by name/component~~ | — | ✅ **XONG** — tool `findNodes` (G3, 2026-08-28), walk `nodeGetTree` in-memory |
 
 ## Chốt
 

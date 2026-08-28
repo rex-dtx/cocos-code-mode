@@ -105,6 +105,53 @@ export class SceneTools {
     }
 
     @utcpTool(
+        'findNodes',
+        'Find nodes by name and/or component type. In-memory walk of query-node-tree; substring match on name, exact match on component class.',
+        {
+            type: 'object',
+            properties: {
+                name: { type: 'string', description: 'Substring match on node name (case-insensitive).' },
+                componentType: { type: 'string', description: 'Exact component class, e.g. cc.Sprite, cc.Label.' },
+                maxResults: { type: 'number', description: 'Cap results, default 200.' }
+            },
+            required: []
+        },
+        { type: 'object', properties: { nodes: { type: 'array', items: { type: 'object', properties: { reference: InstanceReferenceSchema, name: { type: 'string' }, path: { type: 'string' } } } }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['nodes', 'total'] }, "GET", ['scene', 'node', 'find', 'search', 'name', 'component', 'filter']
+    )
+    async findNodes(args: { name?: string, componentType?: string, maxResults?: number }): Promise<{ nodes: Array<{ reference: IInstanceReference, name: string, path: string }>, total: number, truncated: boolean }> {
+        if (!args.name && !args.componentType) throw new Error('findNodes requires at least one of name or componentType');
+        let treeBase: any = await Editor.Message.request('scene', 'query-node-tree');
+        if (!treeBase) throw new Error('Scene is empty or could not retrieve scene tree.');
+        treeBase = (await this.findPrefabEditRoot(treeBase)) ?? treeBase;
+        const nameNeedle = args.name ? args.name.toLowerCase() : null;
+        const compNeedle = args.componentType || null;
+        const limit = args.maxResults && args.maxResults > 0 ? args.maxResults : 200;
+        const hits: Array<{ reference: IInstanceReference, name: string, path: string }> = [];
+        let truncated = false;
+        // Iterative DFS to avoid call-stack blowup on deep scenes; build path on the fly.
+        const stack: Array<{ node: any, path: string }> = [{ node: treeBase, path: treeBase.name || '' }];
+        while (stack.length) {
+            const { node, path: curPath } = stack.pop()!;
+            const nodeName: string = node.name || '';
+            const comps: any[] = node.components || [];
+            const nameOk = !nameNeedle || nodeName.toLowerCase().includes(nameNeedle);
+            const compOk = !compNeedle || comps.some((c: any) => c.type === compNeedle);
+            if (nameOk && compOk) {
+                hits.push({ reference: { id: node.uuid, type: 'cc.Node' }, name: nodeName, path: curPath });
+                if (hits.length >= limit) { truncated = true; break; }
+            }
+            const children: any[] = node.children || [];
+            // push reverse so traversal is in natural order
+            for (let i = children.length - 1; i >= 0; i--) {
+                const ch = children[i];
+                const childPath = curPath ? `${curPath}/${ch.name || ''}` : (ch.name || '');
+                stack.push({ node: ch, path: childPath });
+            }
+        }
+        return { nodes: hits, total: hits.length, truncated };
+    }
+
+    @utcpTool(
         'nodeReset',
         'Reset node or component properties to defaults. Operations: "node" (all), "component" (one component), "property" (one field by path).',
         {

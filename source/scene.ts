@@ -257,8 +257,31 @@ export const methods = {
         const names = Object.keys(globals);
         const values = Object.values(globals);
         const fn = new Function('args', ...names, `return (async () => { ${code} })();`) as (...v: any[]) => Promise<any>;
-        const result = await fn(args, ...values);
-        return result === undefined ? null : result;
+        const result = await fn(args ?? {}, ...values);
+        if (result === undefined || result === null) return null;
+        // Coerce to JSON-safe BEFORE crossing IPC: the Editor.Message transport
+        // JSON-serializes this return value in the scene process, so a circular
+        // object or live cc.Node would throw "Converting circular structure to JSON"
+        // where the editor-side serializeGuard cannot intercept it. Mirror that guard
+        // here so scene-context returns are as safe as editor-context returns.
+        try {
+            JSON.stringify(result);
+            return result; // already serializable — skip the extra round-trip
+        } catch {
+            const seen = new WeakSet();
+            try {
+                return JSON.parse(JSON.stringify(result, (_key, val) => {
+                    if (typeof val === 'function' || typeof val === 'bigint' || typeof val === 'symbol') return undefined;
+                    if (val && typeof val === 'object') {
+                        if (seen.has(val)) return undefined; // circular
+                        seen.add(val);
+                    }
+                    return val;
+                }));
+            } catch {
+                return null; // pathologically non-serializable — fail soft, not crash
+            }
+        }
     },
 
     async runtimePause(): Promise<boolean> {

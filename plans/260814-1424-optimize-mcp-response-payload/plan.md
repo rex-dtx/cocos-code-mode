@@ -1,5 +1,7 @@
 # Optimize MCP Response Payload Size
 
+> **Status: DONE — 2026-08-27** · Audit `cc-3x7` branch (`utcp-server.ts:35-36,175,225`). All 4 phases verified wired in code. No pending idea; plan archived as completed. See Verification below.
+
 ## Context
 
 MCP tools return verbose JSON responses that consume excessive LLM context tokens. Debug logging (`feat: add debug logging toggle`) now provides full visibility into request/response payloads and sizes. This plan targets reducing response payload size at the tool level.
@@ -93,6 +95,17 @@ Target: **50%+ average reduction** across all tool responses after Phase 1+2.
 
 ## Open Questions
 
-1. Should Phase 1 stripping be opt-in per-tool or global default?
-2. For Phase 2, should we also support dot-notation paths (`position.x`, `__comps__.0.type`) for nested field selection?
-3. Should we add a `/debug-stats` endpoint that aggregates log data (avg size per tool, top-N heaviest) automatically?
+1. Should Phase 1 stripping be opt-in per-tool or global default? → global `trimResponse()` in `utcp-server.ts:225`.
+2. For Phase 2, should we also support dot-notation paths (`position.x`, `__comps__.0.type`) for nested field selection? → supported via `fields/propertyPaths`.
+3. Should we add a `/debug-stats` endpoint that aggregates log data (avg size per tool, top-N heaviest) automatically? → superseded by `verbose=true` + `verbose.ts`.
+
+## Verification (2026-08-27)
+
+| Phase | What | Where | Status |
+|---|---|---|---|
+| 1 | Response trimming | `utils/response-trimmer.ts` → `utcp-server.ts:225 trimResponse()` | ✅ wired |
+| 2 | Selective inspection (`fields`) | `consolidated-tools.ts:inspectorGet` | ✅ wired |
+| 3 | Definition pagination (`section`) | `typescript-defenition.ts:31 section/totalSections` | ✅ wired |
+| 4 | Scene pruning (`maxDepth/maxNodes`) | `scene-tools.ts:358 fields/maxDepth/maxNodes/verbose` | ✅ wired |
+
+> **No pending idea:** every direction closed in code. `verbose` (`utils/verbose.ts`) + prompt guidance (`README.md:251`) subsume the token-saving goal going forward.

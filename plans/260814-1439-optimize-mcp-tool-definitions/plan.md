@@ -1,5 +1,7 @@
 # Optimize MCP Tool Definitions (Request-Side Token Cost)
 
+> **Status: DONE — 2026-08-27** · Audit `cc-3x7` branch (`utcp-server.ts:35,43,68,175`). All 4 phases verified. Idea still relevant (now 85 tools vs 61) but already addressed by `slimOutputsSchema` + core/full profiles — nothing pending. See Verification below.
+
 ## Context
 
 MCP tool definitions are sent as part of Claude's `tools[]` parameter on **every API call** in a conversation. With 61 registered tools, this is a fixed per-turn overhead that multiplies across the session. Debug logging (`77bbfa9`) now provides visibility into actual payloads. This plan targets reducing the static token cost of tool schemas and descriptions.
@@ -95,7 +97,18 @@ Target: **50%+ reduction in manual token cost** after Phase 1+2.
 
 ## Open Questions
 
-1. Does code-mode MCP validate tool outputs against the schema? Determines how aggressively Phase 1 can trim.
-2. Which of the 61 tools are actually called most frequently? Data-driven consolidation needs debug log analysis first.
-3. Should Phase 1 and Phase 2 be combined into a single commit since both touch same files?
-4. Is there a way to A/B test trimmed descriptions without deploying a new extension version?
+1. Does code-mode MCP validate tool outputs against the schema? → yes, slimmed schemas validated via utcp-server.ts:175; detailed check complete.
+2. Which of the 61 tools are actually called most frequently? → now 85 tools; profiles (core/full) address frequency-based exposure instead of hard trimming; data-driven log analysis can refine core set when needed.
+3. Should Phase 1 and Phase 2 be combined into a single commit since both touch same files? → resolved through incremental commits (slimmer + descriptions + profiles).
+4. Is there a way to A/B test trimmed descriptions without deploying a new extension version? → profiles toggle covers experiment surface.
+
+## Verification (2026-08-27)
+
+| Phase | What | Where | Status |
+|---|---|---|---|
+| 1 | Slim outputs schemas | `utils/schema-slimmer.ts` → `utcp-server.ts:175` | ✅ wired |
+| 2 | Compressed descriptions | `consolidated-tools.ts` (one-liners) + `asset-tools.ts` | ✅ done |
+| 3 | Consolidations (4 mergers) | `consolidated-tools.ts` (sceneManage/editorQuery/inspectorGet/nodeComponentManage) | ✅ wired |
+| 4 | Lazy-load / profiles | `tool-profiles.ts` (`isToolExposed`) + `utcp-server.ts:43,68` core/full | ✅ wired |
+
+> **No pending idea.** The 61-tool baseline is outdated (now 85) but that makes the fix *more* valuable, not stale. Ongoing lever is narrowing the `core` profile based on real usage.

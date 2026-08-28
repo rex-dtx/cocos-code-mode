@@ -100,14 +100,18 @@ export class AssetTools {
                 exists: { type: 'boolean' },
                 isDirectory: { type: 'boolean' },
                 type: { type: 'string' },
-                importer: { type: 'string' }
+                importer: { type: 'string' },
+                isSubAsset: { type: 'boolean', description: 'True if this asset is a sub-asset (e.g. sprite-frame inside a texture). Sourced from AssetInfo.isSubAsset.' },
+                containsSubAssets: { type: 'boolean', description: 'True if this asset contains sub-assets.' },
+                relativePath: { type: 'string', description: 'Path relative to project root (Editor.Project.path).' },
+                backupPath: { type: 'string', description: 'Filesystem path of the .meta sidecar (fspath + .meta).' }
             },
             required: ['filesystemPath']
         },
         "GET",
         ['asset', 'resolve', 'path', 'url', 'filesystem', 'uuid', 'exists']
     )
-    async assetResolvePath(args: { reference?: IInstanceReference, assetPath?: string }): Promise<{ filesystemPath: string, url?: string, uuid?: string, exists: boolean, isDirectory?: boolean, type?: string, importer?: string }> {
+    async assetResolvePath(args: { reference?: IInstanceReference, assetPath?: string }): Promise<{ filesystemPath: string, url?: string, uuid?: string, exists: boolean, isDirectory?: boolean, type?: string, importer?: string, isSubAsset?: boolean, containsSubAssets?: boolean, relativePath?: string, backupPath?: string }> {
         const id = args.reference?.id || (args.assetPath ? normalizePath(args.assetPath) : undefined);
         if (!id) throw new Error('assetResolvePath requires reference.id or assetPath');
         const asUuid = !id.startsWith('db://');
@@ -136,7 +140,22 @@ export class AssetTools {
 
         if (!fp2) return { filesystemPath: '', url: asUuid ? undefined : id, uuid: asUuid ? id : undefined, exists: false };
         const uuidResolved = inf3?.uuid || (asUuid ? id : await Editor.Message.request('asset-db', 'query-uuid', id).catch(() => undefined) || undefined);
-        return { filesystemPath: fp2, url: url2 || inf3?.url || undefined, uuid: uuidResolved, exists: !!inf3, isDirectory: inf3?.isDirectory, type: inf3?.type, importer: inf3?.importer };
+        // G1 parity: isSubAsset/containsSubAssets from AssetInfo, relativePath/backupPath derived.
+        // 3.7.3 asset-db exposes no dedicated message for these (registry 45 msgs), so derive — guard
+        // every field because AssetInfo shape is version-dependent.
+        const subAssets3 = inf3?.subAssets;
+        const containsSubAssets = subAssets3 ? (Array.isArray(subAssets3) ? subAssets3.length > 0 : Object.keys(subAssets3).length > 0) : false;
+        // relativePath only makes sense inside the project — internal/engine assets
+        // resolve outside projectPath and path.relative would return the absolute path.
+        const projectPath3 = (Editor.Project as any)?.path;
+        let relativePath: string | undefined;
+        if (projectPath3 && fp2) {
+            const rel = path.relative(projectPath3, fp2);
+            if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) relativePath = rel;
+        }
+        const backupCandidate = fp2 + '.meta';
+        const backupPath = fs.existsSync(backupCandidate) ? backupCandidate : undefined;
+        return { filesystemPath: fp2, url: url2 || inf3?.url || undefined, uuid: uuidResolved, exists: !!inf3, isDirectory: inf3?.isDirectory, type: inf3?.type, importer: inf3?.importer, isSubAsset: inf3?.isSubAsset ?? false, containsSubAssets, relativePath, backupPath };
     }
 
     @utcpTool(

@@ -21,6 +21,27 @@ async function runEditorCode(code: string, args: Record<string, any> | undefined
     return result === undefined ? null : result;
 }
 
+// P1 timeout guard: rejects the HTTP request if execution exceeds timeoutMs so the
+// caller is not hung. IMPORTANT LIMITATION: Promise.race cannot interrupt a synchronous
+// infinite loop inside the evaluated code — that loop blocks the editor event loop and
+// the race timer never gets a chance to fire. This guard protects against *async* hangs
+// (an await that never resolves); only out-of-process isolation could stop a sync spin.
+const DEFAULT_TIMEOUT_MS = 10_000;
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+    if (!timeoutMs || timeoutMs <= 0) return promise;
+    let timer: NodeJS.Timeout | undefined;
+    try {
+        return await Promise.race([
+            promise,
+            new Promise<never>((_resolve, reject) => {
+                timer = setTimeout(() => reject(new Error(`executeJavascript ${label} timed out after ${timeoutMs}ms`)), timeoutMs);
+            }),
+        ]);
+    } finally {
+        if (timer) clearTimeout(timer);
+    }
+}
+
 export class ExecuteTools {
 
     @utcpTool(
@@ -33,6 +54,7 @@ export class ExecuteTools {
                 code: { type: 'string', description: 'JavaScript to execute. Use `return <expr>` to produce a value; `args` holds the args object.' },
                 args: { type: 'object', description: 'Optional JSON object passed to the script as `args`.' },
                 safety_checks: { type: 'boolean', description: 'Set false to skip the safety regex guard for this call (default true).' },
+                timeout_ms: { type: 'number', description: 'Timeout in milliseconds (default 10000). Guards async hangs (await that never resolves); cannot interrupt a synchronous infinite loop — that blocks the editor event loop and only out-of-process isolation could stop it.' },
             },
             required: ['context', 'code']
         },
@@ -40,7 +62,7 @@ export class ExecuteTools {
         'POST',
         ['execute', 'javascript', 'code', 'scene', 'editor', 'runtime', 'eval']
     )
-    async executeJavascript(args: { context: string, code: string, args?: Record<string, any>, safety_checks?: boolean }): Promise<{ result: any }> {
+    async executeJavascript(args: { context: string, code: string, args?: Record<string, any>, safety_checks?: boolean, timeout_ms?: number }): Promise<{ result: any }> {
         const projectPath = (Editor.Project as any).path;
         let ctx: ExecuteContext = {
             context: args.context === 'editor' ? 'editor' : 'scene',
@@ -55,20 +77,28 @@ export class ExecuteTools {
         }
 
         let result: any;
+        const timeoutMs = args.timeout_ms ?? DEFAULT_TIMEOUT_MS;
         if (ctx.context === 'scene') {
-            result = await Editor.Message.request('scene', 'execute-scene-script', {
+            result = await withTimeout(Editor.Message.request('scene', 'execute-scene-script', {
                 name: packageJSON.name,
                 method: 'runCode',
                 args: [ctx.code, ctx.args],
-            });
+            }), timeoutMs, 'scene');
             // Arbitrary code may mutate the scene — snapshot so undo covers it.
             await Editor.Message.request('scene', 'snapshot');
         } else {
-            result = await runEditorCode(ctx.code, ctx.args);
+            result = await withTimeout(runEditorCode(ctx.code, ctx.args), timeoutMs, 'editor');
         }
 
         for (const guard of getExecuteGuards()) {
-            if (guard.after) result = (await guard.after(ctx, result)) ?? result;
+            if (guard.after) {
+                // Deliberate `!== undefined` (not `??`): serializeGuard returns null to
+                // coerce non-serializable values (function/BigInt/circular). `?? result`
+                // would treat that null as "no change" and resurrect the original value,
+                // which then blows up res.json() downstream.
+                const guarded = await guard.after(ctx, result);
+                if (guarded !== undefined) result = guarded;
+            }
         }
 
         return { result: result === undefined ? null : result };
