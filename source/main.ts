@@ -4,7 +4,7 @@ import { formatBuildInfo, getBuildInfo } from './build-info';
 import { exec } from 'child_process';
 import { homedir } from 'os';
 import { join } from 'path';
-import { readdirSync, unlinkSync } from 'fs';
+import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
@@ -28,17 +28,22 @@ module.exports = {
         const port = await configManager.getCurrentPort();
         try {
             const actualPort = await utcpServer.start(port);
-            Editor.log(`[${PKG_NAME}] UTCP Server started on port ${actualPort}`);
+            const url = `http://localhost:${actualPort}/utcp`;
             await configManager.updatePort(actualPort);
+            Editor.log(
+                `[${PKG_NAME}] Ready: UTCP server listening at ${url}\n` +
+                `[${PKG_NAME}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
+                `[${PKG_NAME}] New AI sessions discover ccb2x automatically; reconnect an existing Code Mode MCP session to refresh it.`
+            );
         } catch (err) {
             Editor.error(`[${PKG_NAME}] Failed to start UTCP Server: ${err}`);
         }
     },
 
-    unload() {
+    async unload() {
         if (utcpServer) {
             Editor.log(`[${PKG_NAME}] Stopping UTCP Server...`);
-            utcpServer.stop();
+            await utcpServer.stop();
             utcpServer = null;
         }
     },
@@ -51,21 +56,26 @@ module.exports = {
             // ponytail: alias kept for compat, menu no longer exposes it — delegates to show-build-info
             (module.exports as any).messages['show-build-info']();
         },
-        async 'restart-server'(event: any, newPort: number) {
+        async 'restart-server'(_event: unknown, newPort: number) {
             if (!utcpServer) {
+                Editor.warn(`[${PKG_NAME}] UTCP Server is not running.`);
                 return;
             }
             // Menu click khong truyen port -> restart voi port hien tai (0 = auto)
             if (typeof newPort !== 'number' || !newPort) {
                 newPort = await getConfigManager().getCurrentPort();
             }
-            utcpServer.stop();
+            const previousServer = utcpServer;
             try {
-                const actualPort = await utcpServer.start(newPort);
+                await previousServer.stop();
+                const nextServer = new UtcpServerManager();
+                const actualPort = await nextServer.start(newPort);
+                utcpServer = nextServer;
                 Editor.log(`[${PKG_NAME}] UTCP Server restarted on port ${actualPort}`);
                 await getConfigManager().updatePort(actualPort);
-            } catch (err) {
-                Editor.error(`[${PKG_NAME}] Failed to restart UTCP Server: ${err}`);
+            } catch (err: unknown) {
+                utcpServer = null;
+                Editor.error(`[${PKG_NAME}] Failed to restart UTCP Server: ${err instanceof Error ? err.message : String(err)}`);
             }
         },
         'reload'() {
@@ -135,6 +145,12 @@ module.exports = {
             });
         },
         'open-debug-folder'() {
+            try {
+                mkdirSync(DEBUG_LOG_DIR, { recursive: true });
+            } catch (err: unknown) {
+                Editor.error(`[${PKG_NAME}] Failed to create debug folder: ${err instanceof Error ? err.message : String(err)}`);
+                return;
+            }
             const cmd = process.platform === 'win32' ? `start "" "${DEBUG_LOG_DIR}"` : process.platform === 'darwin' ? `open "${DEBUG_LOG_DIR}"` : `xdg-open "${DEBUG_LOG_DIR}"`;
             exec(cmd, (err) => { if (err) Editor.error(`[${PKG_NAME}] Failed to open debug folder: ${err.message}`); });
         },

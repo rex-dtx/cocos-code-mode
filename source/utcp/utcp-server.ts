@@ -208,10 +208,17 @@ export class UtcpServerManager {
         return debugEnabled;
     }
 
-    stop() {
-        if (this.server) {
-            this.server.close();
-            console.log("UTCP Server stopped");
-        }
+    async stop(): Promise<void> {
+        const server = this.server;
+        if (!server) return;
+
+        await new Promise<void>((resolve, reject) => {
+            server.close((err?: Error) => {
+                this.server = null;
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+        console.log("UTCP Server stopped");
     }
 }
