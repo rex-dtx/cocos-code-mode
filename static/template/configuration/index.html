@@ -34,14 +34,21 @@
         </div>
     </ui-section>
 
-    <!-- MCP Integration Section -->
-    <ui-section class="config" header="MCP Agent Integration" expand>
+    <!-- CC Bridge MCP Integration Section -->
+    <ui-section class="config" header="CC Bridge MCP Integration" expand>
         <div class="desc-container">
-            <span class="desc">Configure your AI agent by adding this server to MCP config
-                config. Config example:</span>
+            <span class="desc">Add CC Bridge to your AI client's MCP configuration. The MCP adapter loads this extension's UTCP manual from the configured file.</span>
         </div>
         <div class="code-container">
             <ui-code language="json" id="mcp-config-code"></ui-code>
+        </div>
+
+        <div class="group-header mt-10">AI Instruction</div>
+        <div class="desc-container">
+            <span class="desc">Paste this into your AI agent's instructions:</span>
+        </div>
+        <div class="code-container">
+            <ui-code language="text" id="agent-instruction-code">CC Bridge controls Cocos Creator 3.x through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project/build/preview, diagnostics, files, runtime input, and screenshots. Discover first, then act: inspect current state before mutations, retain returned references, use batch operations where available, and use executeJavascript only when no dedicated tool fits.</ui-code>
         </div>
     </ui-section>
 
