@@ -5,7 +5,7 @@ import { formatBuildInfo, getBuildInfo } from './build-info';
 import { exec } from 'child_process';
 import { homedir } from 'os';
 import { join } from 'path';
-import { readdirSync, unlinkSync } from 'fs';
+import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 
 let utcpServer: UtcpServerManager | null = null;
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
@@ -78,7 +78,14 @@ export const methods: { [key: string]: (...any: any) => any } = {
             .catch((err: any) => console.warn(`[${packageJSON.name}] Scene console capture not toggled: ${err?.message || err}`));
     },
 
+    // The folder may not exist until debug logging is first enabled.
     openDebugFolder() {
+        try {
+            mkdirSync(DEBUG_LOG_DIR, { recursive: true });
+        } catch (err: unknown) {
+            console.error(`[${packageJSON.name}] Failed to create debug folder:`, err instanceof Error ? err.message : String(err));
+            return;
+        }
         // ponytail: cross-platform open — works on Windows/macOS/Linux
         const cmd = process.platform === 'win32'
             ? `start "" "${DEBUG_LOG_DIR}"`
