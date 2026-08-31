@@ -309,11 +309,19 @@ export class UtcpServerManager {
         });
     }
 
-    stop() {
-        if (this.server) {
-            this.server.close();
-            console.log("UTCP Server stopped");
-        }
+    async stop(): Promise<void> {
+        const server = this.server;
+        if (!server) return;
+
+        await new Promise<void>((resolve, reject) => {
+            server.close((err?: Error) => {
+                this.server = null;
+                this.port = 0;
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+        console.log("UTCP Server stopped");
     }
 
     // ponytail: runtime toggle for debug logging — no restart needed

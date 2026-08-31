@@ -26,44 +26,29 @@ export const methods: { [key: string]: (...any: any) => any } = {
         return (methods as any).showBuildInfo();
     },
 
-    async restartServer(newPort: number) {
-        if (!utcpServer) return;
+    async restartServer(newPort?: number) {
+        if (!utcpServer) {
+            console.warn(`[${packageJSON.name}] UTCP Server is not running.`);
+            return;
+        }
         if (typeof newPort !== 'number' || !newPort) {
             newPort = await getConfigManager().getCurrentPort().catch(() => 0);
         }
-        console.log(`[${packageJSON.name}] Restarting UTCP Server on port ${newPort}...`);
-        utcpServer.stop();
+
+        const previousServer = utcpServer;
         try {
-            const actualPort = await utcpServer.start(newPort);
+            await previousServer.stop();
+            const nextServer = new UtcpServerManager();
+            const actualPort = await nextServer.start(newPort);
+            utcpServer = nextServer;
+            await getConfigManager().updatePort(actualPort);
             console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
-            const configManager = getConfigManager();
-            await configManager.updatePort(actualPort);
         } catch (err) {
+            utcpServer = null;
             console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
         }
     },
 
-    reloadExtension() {
-        try {
-            const pkg = (Editor as any).Package;
-            if (pkg && typeof pkg.reload === 'function') {
-                pkg.reload(packageJSON.name);
-                console.log(`[${packageJSON.name}] Reloading...`);
-                return;
-            }
-        } catch (e) { /* fallback */ }
-        try {
-            const Ipc = (Editor as any).Ipc;
-            if (Ipc && typeof Ipc.sendToMain === 'function') {
-                Ipc.sendToMain('package:reload', packageJSON.name, (err: any) => {
-                    if (err) console.warn(`[${packageJSON.name}] Auto-reload not available, please restart Creator (Ctrl+R or reopen project).`);
-                    else console.log(`[${packageJSON.name}] Reloading...`);
-                });
-                return;
-            }
-        } catch (e) { /* fallback */ }
-        console.warn(`[${packageJSON.name}] Auto-reload not available, please restart Creator (Ctrl+R or reopen project).`);
-    },
 
     toggleDebug() {
         if (!utcpServer) return;

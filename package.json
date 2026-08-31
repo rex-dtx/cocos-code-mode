@@ -77,11 +77,6 @@
       },
       {
         "path": "CC Bridge 3x",
-        "label": "Reload Extension",
-        "message": "reload-extension"
-      },
-      {
-        "path": "CC Bridge 3x",
         "label": "Toggle Debug Logging",
         "message": "toggle-debug"
       },
@@ -150,11 +145,6 @@
       "show-info": {
         "methods": [
           "showInfo"
-        ]
-      },
-      "reload-extension": {
-        "methods": [
-          "reloadExtension"
         ]
       }
     }
