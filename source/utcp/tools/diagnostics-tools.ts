@@ -33,6 +33,24 @@ function parseTscOutput(output: string, projectPath: string): TscDiagnostic[] {
     return diagnostics;
 }
 
+export function createTscFailureDiagnostic(output: string, fallbackMessage: string, tsconfig: string): TscDiagnostic[] {
+    const message = output.trim() || fallbackMessage.trim() || 'TypeScript compiler exited without diagnostic output.';
+    return [{
+        file: tsconfig,
+        line: 1,
+        column: 1,
+        code: 'TSCCMD',
+        message,
+    }];
+}
+
+function readCommandErrorField(error: unknown, field: 'stdout' | 'stderr' | 'message'): string {
+    if (!error || typeof error !== 'object' || !(field in error)) return '';
+    const value: unknown = Reflect.get(error, field);
+    if (typeof value === 'string') return value;
+    return Buffer.isBuffer(value) ? value.toString('utf-8') : '';
+}
+
 function buildSnippet(filePath: string, line: number, contextLines: number): string {
     try {
         const content = fs.readFileSync(filePath, 'utf-8');
@@ -90,15 +108,16 @@ export class DiagnosticsTools {
             // tsc exits 0 with no output when clean
             const diagnostics = parseTscOutput(stdout, projectPath);
             return { ok: diagnostics.length === 0, errorCount: diagnostics.length, diagnostics };
-        } catch (err: any) {
-            // tsc exits non-zero on errors — stdout still has the diagnostic lines
-            const output = (err.stdout || '') + (err.stderr || '');
+        } catch (err: unknown) {
+            // TypeScript uses a non-zero exit for compiler errors, but project-level
+            // failures (for example no inputs or a missing compiler) have no file location.
+            const output = readCommandErrorField(err, 'stdout') + readCommandErrorField(err, 'stderr');
             const diagnostics = parseTscOutput(output, projectPath);
             if (diagnostics.length > 0) {
                 return { ok: false, errorCount: diagnostics.length, diagnostics };
             }
-            // No parseable output — surface raw error
-            throw new Error(`tsc failed: ${output.slice(0, 2000)}`);
+            const failure = createTscFailureDiagnostic(output, readCommandErrorField(err, 'message'), tsconfig);
+            return { ok: false, errorCount: failure.length, diagnostics: failure };
         }
     }
 
