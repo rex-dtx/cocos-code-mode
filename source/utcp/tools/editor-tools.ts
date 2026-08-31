@@ -53,7 +53,7 @@ export class EditorTools {
                 gizmoPivot: { type: 'string', enum: ['center', 'pivot'], description: 'For set_gizmo_pivot: transform around the bounding-box center or the node pivot' },
                 gizmoCoordinate: { type: 'string', enum: ['local', 'global'], description: 'For set_gizmo_coordinate: gizmo axes in node-local or world space' }
             },
-            required: ['operation']
+            required: []
         },
         {
             type: 'object',
@@ -71,9 +71,10 @@ export class EditorTools {
             required: ['success']
         }, "POST", ['editor', 'viewport', 'camera', 'focus', '2d', 'grid', 'gizmo', 'pivot', 'coordinate', 'frame', 'align', 'icon', 'query', 'state']
     )
-    async editorViewport(args: { operation: string, references?: IInstanceReference[], enabled?: boolean, size?: number, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }):
+    async editorViewport(args: { operation?: string, references?: IInstanceReference[], enabled?: boolean, size?: number, gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string }):
         Promise<ISuccessIndicator & { gizmoTool?: string, gizmoPivot?: string, gizmoCoordinate?: string, is2D?: boolean, gridVisible?: boolean, iconGizmo3D?: boolean, iconGizmoSize?: number }> {
-        switch (args.operation) {
+        const operation = args.operation ?? 'query_viewport';
+        switch (operation) {
             case 'focus': {
                 const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
                 if (uuids.length === 0) {

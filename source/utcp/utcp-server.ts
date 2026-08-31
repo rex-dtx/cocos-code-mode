@@ -34,7 +34,7 @@ import './tools/input-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';
-import { Tool, UtcpManual } from '@utcp/sdk';
+import { JsonSchema, Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
@@ -42,6 +42,10 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
+
+export function findMissingRequiredInputs(schema: JsonSchema, args: Record<string, unknown>): string[] {
+    return (schema.required ?? []).filter((field) => args[field] === undefined);
+}
 
 // ponytail: debug log to file, not console — avoid polluting editor output.
 // Mutable so the menu toggle (toggleDebug) can flip it at runtime, not just via env var.
@@ -194,6 +198,15 @@ export class UtcpServerManager {
                     }
 
                     const args = { ...(req.query as any), ...((req as any).body || {}) } as any;
+                    const missingInputs = findMissingRequiredInputs(toolDef.inputs, args);
+                    if (missingInputs.length > 0) {
+                        const plural = missingInputs.length === 1 ? '' : 's';
+                        res.status(400).json({
+                            error: `Missing required input${plural}: ${missingInputs.join(', ')}`,
+                            missingInputs,
+                        });
+                        return;
+                    }
 
                     debugLog({
                         type: 'request',

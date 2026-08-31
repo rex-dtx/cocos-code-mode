@@ -208,8 +208,46 @@ export class AssetTools {
         return { content, filesystemPath: fpResolved, bytes: stat.size, truncated: false };
     }
 
-    @utcpTool('assetFindReferences','Find asset references: used_by / depends_on.',{type:'object',properties:{direction:{type:'string',enum:['used_by','depends_on']},reference:InstanceReferenceSchema,assetKind:{type:'string',enum:['asset','script','all'],default:'all'},resolveUrls:{type:'boolean',default:false}},required:['direction','reference']},{type:'object',properties:{references:{type:'array',items:InstanceReferenceSchema},assets:{type:'array',items:{type:'object',properties:{uuid:{type:'string'},url:{type:'string'},type:{type:'string'}}}},total:{type:'number'}},required:['references','total']},"GET",['asset','reference','dependency','used','usage','impact'])
-    async assetFindReferences(args:{direction:string,reference:IInstanceReference,assetKind?:string,resolveUrls?:boolean}):Promise<{references:IInstanceReference[],assets?:Array<{uuid:string,url?:string,type?:string}>,total:number}>{ if(!args.reference||!args.reference.id) throw new Error('assetFindReferences requires reference.id'); const kind=args.assetKind||'all'; const cands=args.direction==='used_by'?['query-asset-users','query-asset-used']:args.direction==='depends_on'?['query-asset-dependencies','query-asset-dependinces']:[]; if(!cands.length) throw new Error(`Unknown direction: ${args.direction}`); let raw:any, lastError:any; for(const m of cands){ try{ raw=await Editor.Message.request('asset-db',m as any,args.reference.id,kind); lastError=undefined; break;}catch(e){lastError=e;}} if(lastError) throw new Error(`Failed to query asset ${args.direction}: ${(lastError as any)?.message||lastError}`); const list:any[]=Array.isArray(raw)?raw:[]; const uuids=list.map((it:any)=>typeof it==='string'?it:(it?.uuid||it?.id)).filter((u:any):u is string=>typeof u==='string'&&!!u); const refs: IInstanceReference[]=uuids.map((u:string)=>({id:u} as any)); if(!args.resolveUrls) return {references:refs,total:refs.length}; const assets:Array<{uuid:string,url?:string,type?:string}>=[]; for(const u of uuids){ const info:AssetInfo|null=await Editor.Message.request('asset-db','query-asset-info',u); assets.push({uuid:u, url:info?.url, type:info?.type}); } return {references:refs,assets,total:refs.length}; }
+    @utcpTool('assetFindReferences','Find asset references. Defaults direction to used_by; pass depends_on for assets this asset references.',{type:'object',properties:{direction:{type:'string',enum:['used_by','depends_on'],default:'used_by'},reference:InstanceReferenceSchema,assetKind:{type:'string',enum:['asset','script','all'],default:'all'},resolveUrls:{type:'boolean',default:false}},required:['reference']},{type:'object',properties:{references:{type:'array',items:InstanceReferenceSchema},assets:{type:'array',items:{type:'object',properties:{uuid:{type:'string'},url:{type:'string'},type:{type:'string'}}}},total:{type:'number'}},required:['references','total']},"GET",['asset','reference','dependency','used','usage','impact'])
+    async assetFindReferences(args: { direction?: 'used_by' | 'depends_on', reference: IInstanceReference, assetKind?: string, resolveUrls?: boolean }): Promise<{ references: IInstanceReference[], assets?: Array<{ uuid: string, url?: string, type?: string }>, total: number }> {
+        if (!args.reference?.id) throw new Error('assetFindReferences requires reference.id');
+        const direction = args.direction ?? 'used_by';
+        if (direction !== 'used_by' && direction !== 'depends_on') throw new Error(`Unknown direction: ${direction}`);
+        const kind = args.assetKind ?? 'all';
+        const candidates = direction === 'used_by'
+            ? ['query-asset-users', 'query-asset-used']
+            : ['query-asset-dependencies', 'query-asset-dependinces'];
+        let raw: unknown;
+        let lastError: unknown;
+        for (const method of candidates) {
+            try {
+                raw = await Editor.Message.request('asset-db', method, args.reference.id, kind);
+                lastError = undefined;
+                break;
+            } catch (error: unknown) {
+                lastError = error;
+            }
+        }
+        if (lastError) {
+            const reason = lastError instanceof Error ? lastError.message : String(lastError);
+            throw new Error(`Failed to query asset ${direction}: ${reason}`);
+        }
+        const list: unknown[] = Array.isArray(raw) ? raw : [];
+        const uuids = list.flatMap((item): string[] => {
+            if (typeof item === 'string') return item ? [item] : [];
+            if (!item || typeof item !== 'object') return [];
+            const uuid: unknown = Reflect.get(item, 'uuid') ?? Reflect.get(item, 'id');
+            return typeof uuid === 'string' && uuid ? [uuid] : [];
+        });
+        const references = uuids.map((id): IInstanceReference => ({ id }));
+        if (!args.resolveUrls) return { references, total: references.length };
+        const assets: Array<{ uuid: string, url?: string, type?: string }> = [];
+        for (const uuid of uuids) {
+            const info: AssetInfo | null = await Editor.Message.request('asset-db', 'query-asset-info', uuid);
+            assets.push({ uuid, url: info?.url, type: info?.type });
+        }
+        return { references, assets, total: references.length };
+    }
 
     @utcpTool('assetQuery','Search asset database by glob, ccType, importer, extname or isBundle. At least one filter required.',{type:'object',properties:{pattern:{type:'string'},ccType:{type:'string'},importer:{type:'string'},extname:{type:'string'},isBundle:{type:'boolean'},limit:{type:'number',default:200}},required:[]},{type:'object',properties:{assets:{type:'array',items:{type:'object',properties:{uuid:{type:'string'},name:{type:'string'},url:{type:'string'},type:{type:'string'},importer:{type:'string'},isDirectory:{type:'boolean'}}}},total:{type:'number'},truncated:{type:'boolean'}},required:['assets','total','truncated']},"GET",['asset','query','search','find','filter','list','discover','bundle','spine','prefab'])
     async assetQuery(args:{pattern?:string,ccType?:string,importer?:string,extname?:string,isBundle?:boolean,limit?:number}):Promise<{assets:{uuid:string,name:string,url:string,type:string,importer?:string,isDirectory:boolean}[],total:number,truncated:boolean}>{ const opts:any={}; if(args.pattern) opts.pattern=normalizePath(args.pattern); if(args.ccType) opts.ccType=args.ccType; if(args.importer) opts.importer=args.importer; if(args.extname) opts.extname=args.extname; if(args.isBundle!==undefined) opts.isBundle=args.isBundle; if(Object.keys(opts).length===0) throw new Error('assetQuery requires at least one filter'); const raw=await queryAssetsCompat(opts); const filtered=raw.filter((a:any)=>{ if(opts.ccType&&a.type!==opts.ccType) return false; if(opts.importer&&a.importer!==opts.importer) return false; if(opts.extname&&extname(a.url||a.name||'')!==opts.extname) return false; if(opts.isBundle!==undefined&&!!a.isBundle!==opts.isBundle) return false; return true; }); const limit=args.limit&&args.limit>0?args.limit:200; const sliced=filtered.slice(0,limit); return {assets:sliced.map((a:any)=>({uuid:a.uuid,name:a.name,url:a.url,type:a.isDirectory?'folder':a.type,importer:a.importer,isDirectory:!!a.isDirectory})),total:filtered.length,truncated:filtered.length>limit}; }
