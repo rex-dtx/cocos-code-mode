@@ -43,7 +43,9 @@
   "scripts": {
     "build": "node ./scripts/generate-build-info.js && npx tsc",
     "check": "npm run build && node ./scripts/check-node-budget.js",
-    "package": "npm run check && node ./scripts/package.js"
+    "package": "npm run check && node ./scripts/package.js",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "link:project": "node ./scripts/link-project-extension.js"
   },
   "dependencies": {
     "@types/sharp": "^0.31.1",
