@@ -8,5 +8,6 @@ describe('extension startup status', () => {
     const source = readSource('main.ts');
     assert.match(source, /Ready: UTCP server listening at \$\{url\}/);
     assert.match(source, /New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it\./);
+    assert.match(source, /===========Loaded cc-bridge-3x===========/);
   });
 });

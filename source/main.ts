@@ -114,8 +114,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
 };
 
 export async function load() {
-    // Log provenance before anything else: if the editor is running a stale dist/,
-    // this is the line that says so.
+    console.log('===========Loaded cc-bridge-3x===========');
     console.log(`[${packageJSON.name}] build ${formatBuildInfo()}`);
 
     // Initialize config manager
