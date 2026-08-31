@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// cc-bridge-bootstrap — SessionStart hook: register cc-bridge manuals from ~/.utcp_config.json
-// and cache tool list to .claude/cc-bridge-cache.json (cc-bridge-cache only). Fail-open: never blocks session.
+// cc-bridge-bootstrap — SessionStart hook: fetch live cc-bridge manuals from
+// ~/.utcp_config.json and cache tool metadata to .claude/cc-bridge-cache.json.
+// It never registers manuals in the Code Mode MCP process; agents do that per session.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');

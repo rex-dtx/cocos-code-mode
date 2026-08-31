@@ -1,15 +1,14 @@
 ---
 name: cc-bridge-3x
 description: >
-  Cache-first Code Mode UX — dung manual ccb3x (ccb2x cho 2.4) nhu tool thuong.
-  Bat khi prompt chua "code mode", "ccb3x", "ccb2x", "cocos", "set vi tri",
-  "node", "scene", "prefab", "inspector" hoac bat ky tac vu nao can
-  thao tac Cocos Editor qua UTCP. Khong can register/search lai neu cache hit.
+  Use when a task mentions Code Mode, ccb3x, ccb2x, Cocos, scene, prefab,
+  inspector, assets, components, preview, or build and needs Cocos Editor
+  control through UTCP.
 ---
 
-# cc-bridge-3x — Cache Skill
+# cc-bridge-3x
 
-Dung Code Mode nhu tool thuong, khong `register_manual`/`search_tools` lai moi lan.
+Use CC Bridge through Code Mode MCP. Cache is tool metadata only; it never proves that the current MCP process registered a manual.
 
 ## Khi nao kich hoat
 
@@ -17,34 +16,29 @@ Auto khi prompt chua mot trong: `code mode`, `ccb3x`/`ccb3x_<port>`, `ccb2x`/`cc
 `set vi tri`, `node`, `scene`, `prefab`, `inspector`, `asset`, `component`,
 `preview`, `build` — hoac agent dinh goi `call_tool_chain`.
 
-## Cache
+## Bootstrap and cache
 
-- **Nguon:** `~/.utcp_config.json` — multi-editor rendezvous. Moi Editor dang chay ghi 1 entry `ccb3x_<port>`; bare `ccb3x` la pointer toi Editor **latest** (moi start nhat). Mo 2 project Cocos cung luc → 2 entries port khac nhau, khong dup (invariant: max 1 entry per URL). Editor unload tu GC entry cua no; 2x tuong tu voi `ccb2x`/`ccb2x_<port>`.
-- **Bootstrap:** `SessionStart` hook chay `scripts/cc-bridge-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-bridge-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
-- **Persist:** file cache ton tai qua session; hook refresh moi session (port doi tu fix).
+- **Source:** `~/.utcp_config.json`. Each running Cocos Editor writes `ccb3x_<port>`; bare `ccb3x` targets the latest editor. Creator 2.4 uses the parallel `ccb2x` names.
+- **Cache:** `scripts/cc-bridge-bootstrap.js` fetches each live `/utcp` manual into `.claude/cc-bridge-cache.json`. It is schema/discovery metadata; it does not register manuals in the Code Mode MCP process.
 
-### Doc cache
+### Required session bootstrap
 
-Cache luu `manuals.<name>.toolDefs[]` — full JSON Schema tung tool (de so sanh khi them/sua tool, khong chi ten). `tools[]` la ten rut gon de check nhanh.
-`cat .claude/cc-bridge-cache.json | jq '.manuals."ccb3x".toolDefs[] | .name'` hoac theo port `jq '.manuals."ccb3x_49650".toolDefs'`. Hoac `echo $CK_CODE_MODE`.
+1. Read the current template from `~/.utcp_config.json`; choose `ccb3x` or `ccb2x` unless a specific `ccb3x_<port>` or `ccb2x_<port>` editor is required.
+2. Call `register_manual` with that complete template.
+3. Call `list_tools`; confirm it contains at least one tool under the selected manual's namespace.
+4. Only then call `call_tool_chain` with `<selected-manual>.<tool>(args)`.
 
-## Quy tac goi tool
+Never infer registration from `CK_CODE_MODE`, `.claude/cc-bridge-cache.json`, or a tool list from an earlier MCP session.
 
-1. **Cache hit** (`CK_CODE_MODE=ready` hoac `.claude/cc-bridge-cache.json` co `tools[]`): goi thang
-   `call_tool_chain("ccb3x.<tool>({ ... })")` hoac `ccb3x_<port>.*` cho target cu the — KHONG `register_manual`, KHONG `search_tools`/`list_tools`/`tools_info`.
-2. **Cache miss** (file khong co, hoac Cocos chua mo luc SessionStart): lam 1 lan
-   `register_manual` tu `~/.utcp_config.json` → `list_tools` 1 lan → tiep tuc nhu (1).
-3. **Port doi / extension restart:** hook doc lai `~/.utcp_config.json` moi session — tu fix, khong can lam gi.
+### Retry
 
-## Retry (stale cache)
+On `manual not found` or `tool not found`:
 
-Neu `call_tool_chain` tra ve `manual not found` / `tool not found`:
+1. Re-read `~/.utcp_config.json`, because the editor may have restarted on a different port.
+2. Re-register the selected current template and confirm it with `list_tools`.
+3. Retry the original `call_tool_chain` once.
 
-1. Re-`register_manual` tu `~/.utcp_config.json` (doc lai file — port co the doi).
-2. Refresh cache: fetch `/utcp` lai, ghi `.claude/cc-bridge-cache.json`.
-3. Retry `call_tool_chain` 1 lan. Van fail → bao loi + goi `editorGetLogs`.
-
-Chi retry 1 lan — tranh loop.
+If it still fails, report the error and call `editorGetLogs`; do not retry in a loop.
 
 ## Scene preview (chup layout scene)
 
