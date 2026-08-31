@@ -45,7 +45,8 @@ async function main() {
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
         assert.equal(n, 86, `tools.length expected 86 got ${n}`);
-        // ensure no unknown keys (strict schema)
+        // Code Mode validates each tool with a strict schema; metadata must stay in the profile registry.
+        assert.ok(m.tools.every((tool) => !Object.hasOwn(tool, 'annotations')), 'manual tools must not expose annotations');
         ok(`manual valid: 86 tools, keys ${keys.join(',')}`);
         // check ccb3x template present (bare or per-port) + no duplicate URL among
         // new-format ccb* names — dup URL is what caused double tool registration.

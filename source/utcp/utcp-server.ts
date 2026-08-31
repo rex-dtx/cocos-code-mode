@@ -40,7 +40,7 @@ import { getBuildInfo } from '../build-info';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
-import { getToolProfileMeta, isToolExposed, ToolProfile } from './tool-profiles';
+import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
 
 // ponytail: debug log to file, not console — avoid polluting editor output.
@@ -178,11 +178,8 @@ export class UtcpServerManager {
 
             toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;
 
-            // Add annotations for agent awareness (read-only vs mutating)
-            const meta = getToolProfileMeta(toolDef.name);
-            if (meta?.annotations) {
-                toolDef.annotations = meta.annotations;
-            }
+            // Profile annotations remain in ToolProfileRegistry. The Code Mode manual parser
+            // rejects unknown per-tool fields, so do not expose them in the UTCP manual.
 
             utcpTools.push(toolDef);
 
