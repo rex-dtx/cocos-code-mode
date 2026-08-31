@@ -250,7 +250,7 @@ Register the class by importing it in `utcp-server.ts`. Tools are served automat
 
 ## UTCP Call Templates Configuration
 
-The extension provides a **Configuration** panel accessible from the **Code Mode** top menu. It shows the current server port, the path to the UTCP config file, and lets you manage additional UTCP call templates to connect other UTCP-compatible tool providers (including MCP servers) into the same Code Mode execution context.
+The extension provides a **Configuration** panel in the **CC Bridge 3x** menu. It shows the current server port, the path to the UTCP config file, and lets you manage additional UTCP call templates for the Code Mode MCP bridge.
 
 You can find Call Template structures in [UTCP documentation](https://www.utcp.io/protocols):
 - [MCP Call Template](https://utcp.io/protocols/mcp#call-template-structure)
@@ -262,7 +262,7 @@ The extension registers itself in `~/.utcp_config.json` as a `ccb3x` entry (late
 
 ## Agent Prompt Guidance
 
-When you wire this extension to an AI agent, add the following instructions to the agent's system prompt. It cuts 50-80% of response tokens by preventing raw tree dumps, and costs at most one extra round-trip when a summary needs to be materialized into ids.
+Use the copy-ready instruction and mandatory `register_manual` bootstrap in the [CC Bridge with Code Mode MCP guide](docs/cc-bridge-code-mode-usage.md). The output rules below further reduce raw tree dumps by 50-80% while retaining useful references.
 
 ```text
 When returning data from ccb3x tools (manual `ccb3x`):
@@ -276,16 +276,18 @@ When returning data from ccb3x tools (manual `ccb3x`):
 Full failure-mode analysis and trade-offs: [`docs/prompt-guidance-risks.md`](docs/prompt-guidance-risks.md).
 Migration for consolidated tools (A1 shims → 45): [`docs/consolidated-migration.md`](docs/consolidated-migration.md).
 
-## Integration
+See [CC Bridge with Code Mode MCP](docs/cc-bridge-code-mode-usage.md) for connection setup, manual registration, workflows, and troubleshooting.
 
-Code Mode works with any UTCP-compatible client, including the [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) for AI assistants.
+## Code Mode MCP Integration
+
+CC Bridge exposes its Cocos Creator tools through a UTCP manual. The [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) registers that manual for an AI client. Configure the bridge, then have the agent call `register_manual` and verify with `list_tools`.
 
 ### MCP Server Config
 
 ```json
 {
   "mcpServers": {
-    "code-mode": {
+    "cc-bridge": {
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
       "env": {
@@ -298,14 +300,14 @@ Code Mode works with any UTCP-compatible client, including the [Code Mode MCP se
 
 ### Claude Code Configuration
 
-To set up a Claude Code agent to use Code Mode, open your project and run:
+To register Code Mode MCP for a Claude Code agent, open your project and run:
 
 Linux/MacOS:
 ``` bash
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- code-mode npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- cc-bridge npx @utcp/code-mode-mcp
 ```
 
 Windows:
 ``` powershell
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- code-mode cmd /c npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- cc-bridge cmd /c npx @utcp/code-mode-mcp
 ```
