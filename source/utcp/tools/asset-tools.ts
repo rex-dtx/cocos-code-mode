@@ -44,10 +44,24 @@ function normalizePath(p?: string): string {
     if (path2.endsWith('/')) path2=path2.slice(0,-1);
     return `db://assets/${path2}`;
 }
+function boundedPositive(value: unknown, fallback: number, maximum: number): number {
+    return typeof value === 'number' && Number.isFinite(value) && value > 0
+        ? Math.min(value, maximum)
+        : fallback;
+}
 
 export class AssetTools {
 
-    @utcpTool('assetGetTree','Get asset hierarchy tree. Defaults maxDepth=4/maxNodes=200; verbose=true for verbose caps. Marks truncated branches.',{ type:'object', properties:{ reference: InstanceReferenceSchema, assetPath:{type:'string'}, maxDepth:{type:'number'}, maxNodes:{type:'number'}, verbose:{type:'boolean', description:'When true, lifts caps to verbose ceilings unless maxDepth/maxNodes explicitly set'} } }, AssetTreeItemSchema,"GET",['asset','file','tree','hierarchy','folder','subasset'])
+    @utcpTool('assetGetTree', 'Get asset hierarchy tree. Defaults maxDepth=4/maxNodes=200; explicit values are capped at depth 99 and 10,000 nodes. Marks truncated branches.', {
+        type: 'object',
+        properties: {
+            reference: InstanceReferenceSchema,
+            assetPath: { type: 'string' },
+            maxDepth: { type: 'number', minimum: 1, maximum: VERBOSE_TREE_DEPTH },
+            maxNodes: { type: 'number', minimum: 1, maximum: VERBOSE_TREE_NODES },
+            verbose: { type: 'boolean', description: 'When true, lifts omitted caps to verbose ceilings unless maxDepth/maxNodes explicitly set' }
+        }
+    }, AssetTreeItemSchema, "GET", ['asset', 'file', 'tree', 'hierarchy', 'folder', 'subasset'])
     async assetGetTree(args: { reference?: IInstanceReference, assetPath?: string, maxDepth?: number, maxNodes?: number, verbose?: boolean }): Promise<IAssetTreeItem> {
         if (args.reference) {
             const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
@@ -70,8 +84,8 @@ export class AssetTools {
         // ponytail: default budgets — a bare call must not dump the whole asset DB.
         // Defaults apply per-param only when omitted; pass larger values for the full
         // tree. Same truncated/childrenOmitted convention as nodeGetTree.
-        const maxDepth = args.verbose ? (args.maxDepth ?? VERBOSE_TREE_DEPTH) : (args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH);
-        const maxNodes = args.verbose ? (args.maxNodes ?? VERBOSE_TREE_NODES) : (args.maxNodes ?? DEFAULT_TREE_MAX_NODES);
+        const maxDepth = boundedPositive(args.maxDepth, args.verbose ? VERBOSE_TREE_DEPTH : DEFAULT_TREE_MAX_DEPTH, VERBOSE_TREE_DEPTH);
+        const maxNodes = boundedPositive(args.maxNodes, args.verbose ? VERBOSE_TREE_NODES : DEFAULT_TREE_MAX_NODES, VERBOSE_TREE_NODES);
         const prune=(n:IAssetTreeItem,d:number)=>{ if(d>=maxDepth){ (n as any).truncated='maxDepth'; (n as any).childrenOmitted=n.children.length; (n as any).childrenCount=n.children.length; n.children=[]; } else n.children.forEach(c=>prune(c,d+1)); }; prune(rootNode,0);
         const budget={left:maxNodes}; const trunc=(n:IAssetTreeItem,d:number)=>{ const ch=n.children; if(!ch||!ch.length) return; (n as any).childrenCount=ch.length; const kept:IAssetTreeItem[]=[]; for(let i=0;i<ch.length;i++){ if(budget.left<=0){ (n as any).truncated=(n as any).truncated||'nodeLimit'; (n as any).childrenOmitted=ch.length-i; break; } budget.left--; trunc(ch[i],d+1); kept.push(ch[i]); } if(kept.length!==ch.length) n.children=kept; }; trunc(rootNode,0);
         return rootNode;
@@ -89,7 +103,10 @@ export class AssetTools {
                 reference: InstanceReferenceSchema,
                 assetPath: { type: 'string', description: 'db:// url or path, alternative to reference.id' }
             },
-            required: []
+            anyOf: [
+                { required: ['reference'] },
+                { required: ['assetPath'] },
+            ]
         },
         {
             type: 'object',
@@ -166,10 +183,13 @@ export class AssetTools {
             properties: {
                 reference: InstanceReferenceSchema,
                 assetPath: { type: 'string', description: 'db:// url or path' },
-                maxBytes: { type: 'number', description: 'Size cap in bytes, default 512KB' },
-                verbose: { type: 'boolean', description: 'When true, lifts cap to 10MB (overrides default 512KB; explicit maxBytes still wins).' }
+                maxBytes: { type: 'number', minimum: 1, maximum: VERBOSE_FILE_BYTES, description: 'Size cap in bytes, default 512KB; maximum 10MB' },
+                verbose: { type: 'boolean', description: 'When true, lifts the omitted cap to 10MB; explicit maxBytes still wins.' }
             },
-            required: []
+            anyOf: [
+                { required: ['reference'] },
+                { required: ['assetPath'] },
+            ]
         },
         {
             type: 'object',
@@ -202,14 +222,33 @@ export class AssetTools {
         if ((BINARY as string[]).includes(extR)) throw new Error('Extension ' + extR + ' is binary and not readable as text.');
         const stat: any = await (fs as any).stat(fpResolved).catch(() => null);
         if (!stat) throw new Error('File not found on disk: ' + fpResolved);
-        const cap = args.maxBytes ?? (args.verbose ? VERBOSE_FILE_BYTES : 512 * 1024);
+        const cap = boundedPositive(args.maxBytes, args.verbose ? VERBOSE_FILE_BYTES : 512 * 1024, VERBOSE_FILE_BYTES);
         if (stat.size > cap) throw new Error('File is ' + stat.size + ' bytes, over the ' + cap + ' byte cap. ' + (args.verbose ? 'Already at verbose cap (10MB).' : 'Pass verbose=true or maxBytes to raise it.'));
         const content = await (fs as any).readFile(fpResolved, 'utf8');
         return { content, filesystemPath: fpResolved, bytes: stat.size, truncated: false };
     }
 
-    @utcpTool('assetFindReferences','Find asset references. Defaults direction to used_by; pass depends_on for assets this asset references.',{type:'object',properties:{direction:{type:'string',enum:['used_by','depends_on'],default:'used_by'},reference:InstanceReferenceSchema,assetKind:{type:'string',enum:['asset','script','all'],default:'all'},resolveUrls:{type:'boolean',default:false}},required:['reference']},{type:'object',properties:{references:{type:'array',items:InstanceReferenceSchema},assets:{type:'array',items:{type:'object',properties:{uuid:{type:'string'},url:{type:'string'},type:{type:'string'}}}},total:{type:'number'}},required:['references','total']},"GET",['asset','reference','dependency','used','usage','impact'])
-    async assetFindReferences(args: { direction?: 'used_by' | 'depends_on', reference: IInstanceReference, assetKind?: string, resolveUrls?: boolean }): Promise<{ references: IInstanceReference[], assets?: Array<{ uuid: string, url?: string, type?: string }>, total: number }> {
+    @utcpTool('assetFindReferences', 'Find asset references. Defaults direction to used_by; pass depends_on for assets this asset references. Returns at most 200 results by default and 1,000 at most.', {
+        type: 'object',
+        properties: {
+            direction: { type: 'string', enum: ['used_by', 'depends_on'], default: 'used_by' },
+            reference: InstanceReferenceSchema,
+            assetKind: { type: 'string', enum: ['asset', 'script', 'all'], default: 'all' },
+            resolveUrls: { type: 'boolean', default: false },
+            limit: { type: 'number', minimum: 1, maximum: 1000, default: 200 },
+        },
+        required: ['reference'],
+    }, {
+        type: 'object',
+        properties: {
+            references: { type: 'array', items: InstanceReferenceSchema },
+            assets: { type: 'array', items: { type: 'object', properties: { uuid: { type: 'string' }, url: { type: 'string' }, type: { type: 'string' } } } },
+            total: { type: 'number' },
+            truncated: { type: 'boolean' },
+        },
+        required: ['references', 'total', 'truncated'],
+    }, "GET", ['asset', 'reference', 'dependency', 'used', 'usage', 'impact'])
+    async assetFindReferences(args: { direction?: 'used_by' | 'depends_on', reference: IInstanceReference, assetKind?: string, resolveUrls?: boolean, limit?: number }): Promise<{ references: IInstanceReference[], assets?: Array<{ uuid: string, url?: string, type?: string }>, total: number, truncated: boolean }> {
         if (!args.reference?.id) throw new Error('assetFindReferences requires reference.id');
         const direction = args.direction ?? 'used_by';
         if (direction !== 'used_by' && direction !== 'depends_on') throw new Error(`Unknown direction: ${direction}`);
@@ -239,20 +278,88 @@ export class AssetTools {
             const uuid: unknown = Reflect.get(item, 'uuid') ?? Reflect.get(item, 'id');
             return typeof uuid === 'string' && uuid ? [uuid] : [];
         });
-        const references = uuids.map((id): IInstanceReference => ({ id }));
-        if (!args.resolveUrls) return { references, total: references.length };
+        const total = uuids.length;
+        const limit = boundedPositive(args.limit, 200, 1000);
+        const limitedUuids = uuids.slice(0, limit);
+        const references = limitedUuids.map((id): IInstanceReference => ({ id }));
+        const truncated = total > references.length;
+        if (!args.resolveUrls) return { references, total, truncated };
         const assets: Array<{ uuid: string, url?: string, type?: string }> = [];
-        for (const uuid of uuids) {
+        for (const uuid of limitedUuids) {
             const info: AssetInfo | null = await Editor.Message.request('asset-db', 'query-asset-info', uuid);
             assets.push({ uuid, url: info?.url, type: info?.type });
         }
-        return { references, assets, total: references.length };
+        return { references, assets, total, truncated };
     }
 
-    @utcpTool('assetQuery','Search asset database by glob, ccType, importer, extname or isBundle. At least one filter required.',{type:'object',properties:{pattern:{type:'string'},ccType:{type:'string'},importer:{type:'string'},extname:{type:'string'},isBundle:{type:'boolean'},limit:{type:'number',default:200}},required:[]},{type:'object',properties:{assets:{type:'array',items:{type:'object',properties:{uuid:{type:'string'},name:{type:'string'},url:{type:'string'},type:{type:'string'},importer:{type:'string'},isDirectory:{type:'boolean'}}}},total:{type:'number'},truncated:{type:'boolean'}},required:['assets','total','truncated']},"GET",['asset','query','search','find','filter','list','discover','bundle','spine','prefab'])
-    async assetQuery(args:{pattern?:string,ccType?:string,importer?:string,extname?:string,isBundle?:boolean,limit?:number}):Promise<{assets:{uuid:string,name:string,url:string,type:string,importer?:string,isDirectory:boolean}[],total:number,truncated:boolean}>{ const opts:any={}; if(args.pattern) opts.pattern=normalizePath(args.pattern); if(args.ccType) opts.ccType=args.ccType; if(args.importer) opts.importer=args.importer; if(args.extname) opts.extname=args.extname; if(args.isBundle!==undefined) opts.isBundle=args.isBundle; if(Object.keys(opts).length===0) throw new Error('assetQuery requires at least one filter'); const raw=await queryAssetsCompat(opts); const filtered=raw.filter((a:any)=>{ if(opts.ccType&&a.type!==opts.ccType) return false; if(opts.importer&&a.importer!==opts.importer) return false; if(opts.extname&&extname(a.url||a.name||'')!==opts.extname) return false; if(opts.isBundle!==undefined&&!!a.isBundle!==opts.isBundle) return false; return true; }); const limit=args.limit&&args.limit>0?args.limit:200; const sliced=filtered.slice(0,limit); return {assets:sliced.map((a:any)=>({uuid:a.uuid,name:a.name,url:a.url,type:a.isDirectory?'folder':a.type,importer:a.importer,isDirectory:!!a.isDirectory})),total:filtered.length,truncated:filtered.length>limit}; }
+    @utcpTool('assetQuery', 'Search asset database by glob, ccType, importer, extname or isBundle. At least one filter is required. Returns at most 200 results by default and 1,000 at most.', {
+        type: 'object',
+        properties: {
+            pattern: { type: 'string' },
+            ccType: { type: 'string' },
+            importer: { type: 'string' },
+            extname: { type: 'string' },
+            isBundle: { type: 'boolean' },
+            limit: { type: 'number', minimum: 1, maximum: 1000, default: 200 },
+        },
+        anyOf: [
+            { required: ['pattern'] },
+            { required: ['ccType'] },
+            { required: ['importer'] },
+            { required: ['extname'] },
+            { required: ['isBundle'] },
+        ],
+    }, {
+        type: 'object',
+        properties: {
+            assets: { type: 'array', items: { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' }, url: { type: 'string' }, type: { type: 'string' }, importer: { type: 'string' }, isDirectory: { type: 'boolean' } } } },
+            total: { type: 'number' },
+            truncated: { type: 'boolean' },
+        },
+        required: ['assets', 'total', 'truncated'],
+    }, "GET", ['asset', 'query', 'search', 'find', 'filter', 'list', 'discover', 'bundle', 'spine', 'prefab'])
+    async assetQuery(args: { pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean, limit?: number }): Promise<{ assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean }> {
+        const opts: { pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean } = {};
+        if (args.pattern) opts.pattern = normalizePath(args.pattern);
+        if (args.ccType) opts.ccType = args.ccType;
+        if (args.importer) opts.importer = args.importer;
+        if (args.extname) opts.extname = args.extname;
+        if (args.isBundle !== undefined) opts.isBundle = args.isBundle;
+        if (Object.keys(opts).length === 0) throw new Error('assetQuery requires at least one filter');
 
-    @utcpTool('assetSaveContent','Overwrite content of a text-based asset (TS, JSON, effect, txt). Identify by db:// path or uuid. No binary.',{type:'object',properties:{assetPath:{type:'string'},reference:InstanceReferenceSchema,content:{type:'string'}},required:['content']},{type:'object',properties:{reference:InstanceReferenceSchema,filesystemPath:{type:'string'}},required:['reference']},"POST",['asset','save','write','content','script','text','edit','generate'])
+        const raw = await queryAssetsCompat(opts) as Array<{ uuid: string, name: string, url: string, type: string, importer?: string, isDirectory?: boolean, isBundle?: boolean }>;
+        const filtered = raw.filter((asset) => {
+            if (opts.ccType && asset.type !== opts.ccType) return false;
+            if (opts.importer && asset.importer !== opts.importer) return false;
+            if (opts.extname && extname(asset.url || asset.name || '') !== opts.extname) return false;
+            if (opts.isBundle !== undefined && !!asset.isBundle !== opts.isBundle) return false;
+            return true;
+        });
+        const limit = boundedPositive(args.limit, 200, 1000);
+        const assets = filtered.slice(0, limit).map((asset) => ({
+            uuid: asset.uuid,
+            name: asset.name,
+            url: asset.url,
+            type: asset.isDirectory ? 'folder' : asset.type,
+            importer: asset.importer,
+            isDirectory: !!asset.isDirectory,
+        }));
+        return { assets, total: filtered.length, truncated: filtered.length > assets.length };
+    }
+
+    @utcpTool('assetSaveContent', 'Overwrite content of a text-based asset (TS, JSON, effect, txt). Identify by db:// path or uuid. No binary.', {
+        type: 'object',
+        properties: {
+            assetPath: { type: 'string' },
+            reference: InstanceReferenceSchema,
+            content: { type: 'string' },
+        },
+        required: ['content'],
+        anyOf: [
+            { required: ['reference'] },
+            { required: ['assetPath'] },
+        ],
+    }, { type: 'object', properties: { reference: InstanceReferenceSchema, filesystemPath: { type: 'string' } }, required: ['reference'] }, "POST", ['asset', 'save', 'write', 'content', 'script', 'text', 'edit', 'generate'])
     async assetSaveContent(args:{assetPath?:string,reference?:IInstanceReference,content:string}):Promise<{reference:IInstanceReference,filesystemPath?:string}>{ let url:string|null=null; if(args.reference&&args.reference.id){ const info=await Editor.Message.request('asset-db','query-asset-info',args.reference.id); if(!info) throw new Error(`Asset ${args.reference.id} not found`); url=info.url; } else if(args.assetPath) url=normalizePath(args.assetPath); if(!url) throw new Error('assetSaveContent requires assetPath or reference.id'); const result=await Editor.Message.request('asset-db','save-asset',url,args.content??''); if(!result) throw new Error(`Failed to save content to ${url}`); assetQueryMemo.invalidate(); return {reference:{id:result.uuid,type:result.type},filesystemPath:result.file||undefined}; }
 
     @utcpTool('assetGetAvailableUrl','Return a non-colliding db:// url for the given path (appends suffix if exists). Use before assetCreate.',{type:'object',properties:{assetPath:{type:'string'}},required:['assetPath']},{type:'object',properties:{url:{type:'string'}},required:['url']},"GET",['asset','available','url','collision','unique','name'])
@@ -264,7 +371,26 @@ export class AssetTools {
     @utcpTool('assetImport','Import external file as asset.',{type:'object',properties:{sourceFilesystemPath:{type:'string'},targetAssetPath:{type:'string'},imageType:{type:'string',enum:['raw','texture','normal-map','sprite-frame','texture-cube']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}}}},required:['sourceFilesystemPath','targetAssetPath']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','import','file','external','image'])
     async assetImport(args:{sourceFilesystemPath:string,targetAssetPath:string,imageType?:string,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ let targetPath=normalizePath(args.targetAssetPath); const assetOptions:AssetOperationOption={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; if(args.sourceFilesystemPath.startsWith('~')) args.sourceFilesystemPath=path.join(os.homedir(),args.sourceFilesystemPath.slice(1)); args.sourceFilesystemPath=path.resolve(args.sourceFilesystemPath); args.sourceFilesystemPath=await fs.realpath(args.sourceFilesystemPath); let existingAssetInfo:AssetInfo|null=null; if(`${(Editor.Project as any).path}${targetPath.slice('db:/'.length)}`===args.sourceFilesystemPath){ await Editor.Message.request('asset-db','refresh-asset',targetPath); existingAssetInfo=await Editor.Message.request('asset-db','query-asset-info',targetPath);} const assetInfo=existingAssetInfo?existingAssetInfo:await Editor.Message.request('asset-db','import-asset',args.sourceFilesystemPath,targetPath,assetOptions); if(!assetInfo) throw new Error(`Failed to import asset to ${targetPath}`); if(assetInfo.extends&&assetInfo.importer==='image'&&args.imageType){ const meta=await Editor.Message.request('asset-db','query-asset-meta',assetInfo.uuid); if(meta&&meta.userData){ let t=args.imageType; if(t==='normal-map') t='normal map'; if(t==='texture-cube') t='texture cube'; meta.userData.type=t; await Editor.Message.request('asset-db','save-asset-meta',assetInfo.uuid,JSON.stringify(meta)); }} assetQueryMemo.invalidate(); return {reference:{id:assetInfo.uuid,type:assetInfo.type}}; }
 
-    @utcpTool('assetOperate','Move/copy/delete/open/refresh/reimport asset, or save_meta (read meta via assetDbQuery meta first).',{type:'object',properties:{operation:{type:'string',enum:['move','copy','delete','open','refresh','reimport','save_meta']},reference:InstanceReferenceSchema,targetAssetPath:{type:'string'},meta:{description:'For save_meta: full meta object (or JSON string) from assetDbQuery meta, mutated'},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}},nullable:true}},required:['operation','reference']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','operate','move','copy','delete','open','refresh','reimport','meta'])
+    @utcpTool('assetOperate', 'Move/copy/delete/open/refresh/reimport asset, or save_meta (read meta via assetDbQuery meta first).', {
+        type: 'object',
+        properties: {
+            operation: { type: 'string', enum: ['move', 'copy', 'delete', 'open', 'refresh', 'reimport', 'save_meta'] },
+            reference: InstanceReferenceSchema,
+            targetAssetPath: { type: 'string' },
+            meta: { description: 'For save_meta: full meta object (or JSON string) from assetDbQuery meta, mutated' },
+            options: { type: 'object', properties: { overwrite: { type: 'boolean' }, rename: { type: 'boolean' } }, nullable: true },
+        },
+        required: ['operation', 'reference'],
+        anyOf: [
+            { properties: { operation: { const: 'move' } }, required: ['targetAssetPath'] },
+            { properties: { operation: { const: 'copy' } }, required: ['targetAssetPath'] },
+            { properties: { operation: { const: 'save_meta' } }, required: ['meta'] },
+            { properties: { operation: { const: 'delete' } } },
+            { properties: { operation: { const: 'open' } } },
+            { properties: { operation: { const: 'refresh' } } },
+            { properties: { operation: { const: 'reimport' } } },
+        ],
+    }, { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, "POST", ['asset', 'operate', 'move', 'copy', 'delete', 'open', 'refresh', 'reimport', 'meta'])
     async assetOperate(args:{operation:string,reference:IInstanceReference,targetAssetPath?:string,meta?:any,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ const assetOptions={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; const sourceUrl=await toAssetUrl(args.reference.id); const hasTarget=!!args.targetAssetPath; args.targetAssetPath=normalizePath(args.targetAssetPath); let result:AssetInfo|null=null; switch(args.operation){ case 'move': if(!hasTarget) throw new Error('targetAssetPath is required for move'); result=await Editor.Message.request('asset-db','move-asset',sourceUrl,args.targetAssetPath,assetOptions); break; case 'copy': if(!hasTarget) throw new Error('targetAssetPath is required for copy'); result=await Editor.Message.request('asset-db','copy-asset',sourceUrl,args.targetAssetPath,assetOptions); break; case 'delete': result=await Editor.Message.request('asset-db','delete-asset',sourceUrl); break; case 'open': await Editor.Message.request('asset-db','open-asset',args.reference.id); result=null; break; case 'refresh': await Editor.Message.request('asset-db','refresh-asset',sourceUrl); result=null; break; case 'reimport': await Editor.Message.request('asset-db','reimport-asset',sourceUrl); result=null; break; case 'save_meta': { if(args.meta===undefined||args.meta===null) throw new Error('save_meta requires meta (read it with assetDbQuery meta, mutate, pass back)'); const payload=typeof args.meta==='string'?args.meta:JSON.stringify(args.meta); const saved=await Editor.Message.request('asset-db','save-asset-meta',args.reference.id,payload); if(!saved) throw new Error(`Failed to save meta for ${args.reference.id}`); result=null; break; } default: throw new Error(`Unknown operation: ${args.operation}`);} if (result || ['move','copy','delete','refresh','reimport'].includes(args.operation)) assetQueryMemo.invalidate(); return {reference:{id:result?.uuid??args.reference.id, type:result?.type??args.reference.type??''}}; }
 
     // assetGetPreview is now via previewManage (consolidated) — method kept for delegation, no @utcpTool

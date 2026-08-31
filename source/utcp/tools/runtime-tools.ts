@@ -41,7 +41,7 @@ export class RuntimeTools {
         {
             type: 'object',
             properties: {
-                scale: { type: 'number', description: 'Time scale multiplier (0-10)' },
+                scale: { type: 'number', minimum: 0, maximum: 10, description: 'Time scale multiplier (0-10)' },
             },
             required: ['scale'],
         },
@@ -50,6 +50,9 @@ export class RuntimeTools {
         ['runtime', 'time', 'scale', 'speed', 'slow', 'fast', 'game']
     )
     async runtimeSetTimeScale(args: { scale: number }): Promise<{ success: boolean, scale: number }> {
+        if (!Number.isFinite(args.scale)) {
+            throw new Error('runtimeSetTimeScale requires a finite number');
+        }
         const scale = Math.max(0, Math.min(args.scale, 10));
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: 'cc-bridge-3x', method: 'runtimeSetTimeScale', args: [scale],

@@ -1,10 +1,14 @@
 export class ProjectTools {
 
     // via projectManage — kept for delegation
-    async projectGetConfig(args: { type?: string, key?: string }): Promise<{ config: any }> {
+    async projectGetConfig(args: { type?: string, key?: string, limit?: number }): Promise<{ config: any, total?: number, truncated?: boolean }> {
         const all = await Editor.Message.request('project', 'query-config', 'project');
         if (all===undefined||all===null) throw new Error('Failed to read project settings');
-        if (!args.type) return { config: all };
+        if (!args.type) {
+            const entries = Object.entries(all);
+            const limit = Math.min(Math.max(args.limit ?? 200, 1), 1000);
+            return { config: Object.fromEntries(entries.slice(0, limit)), total: entries.length, truncated: entries.length > limit };
+        }
         const category=(all as any)[args.type];
         if(category===undefined) throw new Error(`Unknown project settings type "${args.type}". Available: ${Object.keys(all as any).join(', ')}`);
         if(!args.key) return {config:category};

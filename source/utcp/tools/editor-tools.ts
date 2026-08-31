@@ -407,27 +407,26 @@ export class EditorTools {
         {
             type: 'object',
             properties: {
-                count: { type: 'number', description: 'Number of log entries to retrieve', default: 10 },
-                showStack: { type: 'boolean', description: 'Return full stack trace for each log entry' },
+                count: { type: 'number', minimum: 1, maximum: 1000, description: 'Number of log entries to retrieve', default: 10 },
+                showStack: { type: 'boolean', description: 'Return full stack trace for each log entry', default: false },
                 order: { type: 'string', enum: ['newest-to-oldest', 'oldest-to-newest'], description: 'Order of logs', default: 'newest-to-oldest' }
-            },
-            required: ['count', 'order']
+            }
         },
-        { type: 'object', properties: { logLines: { type: 'array', items: { type: 'string' } } }, required: ['logLines'] }, "GET",  ['editor', 'logs', 'debug', 'info']
+        { type: 'object', properties: { logLines: { type: 'array', items: { type: 'string' } }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['logLines', 'total', 'truncated'] }, "GET",  ['editor', 'logs', 'debug', 'info']
     )
-    async editorGetLogs(args: { count: number, showStack: boolean, order: 'newest-to-oldest' | 'oldest-to-newest' }): Promise<{ logLines: string[] }> {
+    async editorGetLogs(args: { count?: number, showStack?: boolean, order?: 'newest-to-oldest' | 'oldest-to-newest' } = {}): Promise<{ logLines: string[], total: number, truncated: boolean }> {
         const projectPath = Editor.Project.path;
         const logPath = path.join(projectPath, 'temp', 'logs', 'project.log');
-
-        if (args.showStack === undefined) {
-            args.showStack = false;
-        }
+        const count = Math.min(Math.max(args.count ?? 10, 1), 1000);
+        const showStack = args.showStack ?? false;
+        const order = args.order ?? 'newest-to-oldest';
 
         if (!fs.existsSync(logPath)) {
             throw new Error(`Log file not found at ${logPath}`);
         }
 
         const entries: string[] = [];
+        let total = 0;
         const fd = fs.openSync(logPath, 'r');
         
         try {
@@ -446,60 +445,51 @@ export class EditorTools {
             let lastContent: string | null = null;
             let lastCount = 0;
 
-            while (position > 0 && entries.length < args.count) {
+            while (position > 0) {
                 const readSize = Math.min(bufferSize, position);
                 const readPos = position - readSize;
-                
+
                 fs.readSync(fd, buffer, 0, readSize, readPos);
                 position -= readSize;
-                
+
                 const chunk = buffer.toString('utf-8', 0, readSize);
                 const combined = chunk + leftover;
-                
-                // Split by newline
                 const lines = combined.split(/\r?\n/);
-                
+
                 if (position > 0) {
                     leftover = lines.shift() || '';
                 } else {
-                    leftover = ''; // Process all
+                    leftover = '';
                 }
 
-                // Process lines in reverse (bottom to top of the chunk)
                 for (let i = lines.length - 1; i >= 0; i--) {
                     const line = lines[i];
-                    
-                    // Check if this line is a Header (Start of Entry)
                     if (regex.test(line)) {
                         let entry = line;
-                        if (args.showStack && accumulatedBody.length > 0) {
+                        if (showStack && accumulatedBody.length > 0) {
                             entry += '\n' + accumulatedBody;
                         }
-                        
+
                         const cleaned = entry.replace(timestampRegex, '');
-                        
                         if (cleaned === lastContent) {
                             lastCount++;
-                            entries[entries.length - 1] = `(${lastCount}) ${cleaned}`;
-                        } else {
-                            if (entries.length >= args.count) {
-                                // Found a new group but we already have enough
-                                position = 0; // Stop reading file loop
-                                break; // Stop lines loop
+                            if (total <= count) {
+                                entries[entries.length - 1] = `(${lastCount}) ${cleaned}`;
                             }
+                        } else {
                             lastContent = cleaned;
                             lastCount = 1;
-                            entries.push(cleaned);
+                            total++;
+                            if (entries.length < count) {
+                                entries.push(cleaned);
+                            }
                         }
-                        
-                        accumulatedBody = ''; // Reset for the next entry (upwards)
+
+                        accumulatedBody = '';
+                    } else if (showStack && accumulatedBody.length > 0) {
+                        accumulatedBody = line + '\n' + accumulatedBody;
                     } else {
-                        // This identifies as body text (or empty line) belonging to the entry "above" it
-                        if (args.showStack && accumulatedBody.length > 0) {
-                            accumulatedBody = line + '\n' + accumulatedBody;
-                        } else {
-                            accumulatedBody = line;
-                        }
+                        accumulatedBody = line;
                     }
                 }
             }
@@ -509,11 +499,11 @@ export class EditorTools {
         }
 
         // We pushed entries in reverse order (newest first).
-        if (args.order === 'oldest-to-newest') {
-             return { logLines: entries.reverse() };
-        } 
+        if (order === 'oldest-to-newest') {
+             return { logLines: entries.reverse(), total, truncated: total > count };
+        }
         
-        return { logLines: entries };
+        return { logLines: entries, total, truncated: total > count };
     }
 
     // via previewManage — kept for delegation

@@ -55,6 +55,7 @@ export class AnimationTools {
                 nodeReference: InstanceReferenceSchema,
                 clipReference: InstanceReferenceSchema,
                 includeCurves: { type: 'boolean', description: 'For clip_dump: return the full curve/keyframe data instead of a track summary. Can be very large.', default: false },
+                maxCurves: { type: 'number', minimum: 1, maximum: 1000, default: 200, description: 'For clip_dump with includeCurves: maximum raw curves to return.' },
                 nodePath: { type: 'string', description: 'For value_at_frame: path of the animated node relative to the animation root, e.g. "/Body/Arm"' },
                 propKey: { type: 'string', description: 'For value_at_frame: animated property key, e.g. "position"' },
                 frame: { type: 'number', description: 'For value_at_frame: frame index' }
@@ -66,7 +67,7 @@ export class AnimationTools {
     )
     async animationQuery(args: {
         operation: string, nodeReference?: IInstanceReference, clipReference?: IInstanceReference,
-        includeCurves?: boolean, nodePath?: string, propKey?: string, frame?: number
+        includeCurves?: boolean, maxCurves?: number, nodePath?: string, propKey?: string, frame?: number
     }): Promise<{ result: any }> {
         let result: any;
         switch (args.operation) {
@@ -85,7 +86,12 @@ export class AnimationTools {
             case 'clip_dump': {
                 const dump = await Editor.Message.request('scene', 'query-animation-clip',
                     requireRef(args.nodeReference, 'nodeReference'), requireRef(args.clipReference, 'clipReference'));
-                result = args.includeCurves ? dump : slimClipDump(dump);
+                if (!args.includeCurves || !dump || typeof dump !== 'object' || !Array.isArray(dump.curves)) {
+                    result = args.includeCurves ? dump : slimClipDump(dump);
+                    break;
+                }
+                const maxCurves = Math.min(Math.max(args.maxCurves ?? 200, 1), 1000);
+                result = { ...dump, curves: dump.curves.slice(0, maxCurves), totalCurves: dump.curves.length, truncated: dump.curves.length > maxCurves };
                 break;
             }
             case 'properties':
@@ -129,7 +135,7 @@ export class AnimationTools {
                 clipState: { type: 'string', enum: ['play', 'pause', 'resume', 'stop'], description: 'For clip_state' },
                 operations: {
                     type: 'array',
-                    description: 'For operate: list of clip operations applied in order. funcName is a method of the editor clip, e.g. createProp(nodePath, propKey), removeProp(nodePath, propKey), createKey(nodePath, propKey, frame, customData), removeKey(nodePath, propKey, frames[]), moveKeys(nodePath, propKey, frames[], offsets), clearKeys(nodePath, propKey), changeSample(sample), changeSpeed(speed), changeWrapMode(mode), addEvent(frame, funcName, params[]), deleteEvent(frames[]), removeNode(nodePath). args is the positional argument list of that method.',
+                    maxItems: 100,
                     items: {
                         type: 'object',
                         properties: {
@@ -204,6 +210,9 @@ export class AnimationTools {
             case 'operate': {
                 if (!Array.isArray(args.operations) || args.operations.length === 0) {
                     throw new Error('operate requires a non-empty operations array');
+                }
+                if (args.operations.length > 100) {
+                    throw new Error('operate supports at most 100 operations per request');
                 }
                 for (const op of args.operations) {
                     if (!op || !op.funcName || !Array.isArray(op.args)) {

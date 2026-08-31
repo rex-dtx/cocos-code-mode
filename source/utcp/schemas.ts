@@ -34,10 +34,13 @@ export interface IAssetTreeItem {
 export interface ISceneTreeItem {
     path?: string;
     reference: IInstanceReference;
-    name: string;
-    active: boolean;
-    components: Array<IInstanceReference>;
+    name?: string;
+    active?: boolean;
+    components?: Array<IInstanceReference>;
     children: Array<ISceneTreeItem>;
+    truncated?: 'maxDepth' | 'nodeLimit';
+    childrenOmitted?: number;
+    childrenCount?: number;
 }
 
 // -=-=-=-=-=- Zod schemas for different result types -=-=-=-=-=-
@@ -53,7 +56,7 @@ export const AssetTreeItemSchema: JsonSchema = {
         reference: InstanceReferenceSchema,
         name: { type: 'string' },
         children: { type: 'array', items: { type: 'object' } }
-    }, required: ['reference', 'name', 'type', 'children']
+    }, required: ['reference', 'name', 'children']
 };
 
 export const SceneTreeItemSchema: JsonSchema = {
@@ -63,10 +66,13 @@ export const SceneTreeItemSchema: JsonSchema = {
         reference: InstanceReferenceSchema,
         name: { type: 'string' },
         active: { type: 'boolean' },
-        components: { 
+        components: {
             type: 'array',
             items: InstanceReferenceSchema
-         },
-        children: { type: 'array', items: { type: 'object' } }
-    }, required: ['reference', 'name', 'active', 'components', 'children']
+        },
+        children: { type: 'array', items: { type: 'object' } },
+        truncated: { type: 'string', enum: ['maxDepth', 'nodeLimit'] },
+        childrenOmitted: { type: 'number' },
+        childrenCount: { type: 'number' }
+    }, required: ['reference', 'children']
 };

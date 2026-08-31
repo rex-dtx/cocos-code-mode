@@ -17,10 +17,14 @@ export class PropertyArrayTools {
                 operation: { type: 'string', enum: ['remove', 'move'] },
                 reference: InstanceReferenceSchema,
                 propertyPath: { type: 'string', description: 'Path of the array property on the target, e.g. "sharedMaterials", "children", "myClips"' },
-                index: { type: 'integer', description: 'Index of the element to remove or move (0-based)' },
-                toIndex: { type: 'integer', description: 'For move: destination index (0-based)' }
+                index: { type: 'integer', minimum: 0, description: 'Index of the element to remove or move (0-based)' },
+                toIndex: { type: 'integer', minimum: 0, description: 'For move: destination index (0-based)' }
             },
-            required: ['operation', 'reference', 'propertyPath', 'index']
+            required: ['operation', 'reference', 'propertyPath', 'index'],
+            anyOf: [
+                { properties: { operation: { const: 'remove' } }, required: ['operation'] },
+                { properties: { operation: { const: 'move' } }, required: ['operation', 'toIndex'] },
+            ]
         },
         SuccessIndicatorSchema, "POST", ['property', 'array', 'element', 'remove', 'delete', 'move', 'reorder', 'index', 'list']
     )

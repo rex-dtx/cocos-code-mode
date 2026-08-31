@@ -17,14 +17,16 @@ export class ConsolidatedTools {
             properties: {
                 target: { type: 'string', enum: ['instance', 'CurrentSceneGlobals', 'ProjectSettings'], description: 'instance = node/component/asset by reference; settings = scene/project globals' },
                 reference: InstanceReferenceSchema,
-                fields: { type: 'array', items: { type: 'string' }, description: 'Only return these top-level keys. Omit for full dump.' }
+                fields: { type: 'array', items: { type: 'string' }, description: 'Only return these top-level keys. Omit for full dump.' },
+                maxProperties: { type: 'number', minimum: 1, maximum: 1000, default: 200, description: 'Maximum top-level properties to return.' }
             },
-            required: ['target']
+            required: ['target'],
+            allOf: [{ if: { properties: { target: { const: 'instance' } }, required: ['target'] }, then: { required: ['reference'] } }]
         },
-        { type: 'object', properties: { dump: { type: 'object' } }, required: ['dump'] }, 'GET',
+        { type: 'object', properties: { dump: { type: 'object' }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['dump', 'total', 'truncated'] }, 'GET',
         ['inspect', 'properties', 'consolidated', 'inspector']
     )
-    async inspectorGet(args: { target: string, reference?: IInstanceReference, fields?: string[] }): Promise<{ dump: any }> {
+    async inspectorGet(args: { target: string, reference?: IInstanceReference, fields?: string[], maxProperties?: number }): Promise<{ dump: any, total: number, truncated: boolean }> {
         const id = args.target === 'instance'
             ? (args.reference?.id ?? (() => { throw new Error('inspectorGet target=instance requires reference.id'); })())
             : args.target;
@@ -38,7 +40,9 @@ export class ConsolidatedTools {
             for (const key of args.fields) if (key in props) filteredProps[key] = (props as any)[key];
         }
         const parsed = ToolsUtils.unwrapProperties(filteredProps);
-        return { dump: parsed };
+        const entries = Object.entries(parsed);
+        const maxProperties = Math.min(Math.max(args.maxProperties ?? 200, 1), 1000);
+        return { dump: Object.fromEntries(entries.slice(0, maxProperties)), total: entries.length, truncated: entries.length > maxProperties };
     }
 
     // ── inspectorSet: instance + settings ─────────────────────────────
@@ -52,11 +56,12 @@ export class ConsolidatedTools {
                 reference: InstanceReferenceSchema,
                 propertyPaths: { type: 'array', items: { type: 'string' }, description: 'Property paths, e.g. ["position.x"]' },
                 values: { type: 'array', items: {} },
-                // compat singular form
                 propertyPath: { type: 'string' },
                 value: {}
             },
-            required: ['target']
+            required: ['target'],
+            allOf: [{ if: { properties: { target: { const: 'instance' } }, required: ['target'] }, then: { required: ['reference'] } }],
+            oneOf: [{ required: ['propertyPaths', 'values'] }, { required: ['propertyPath', 'value'] }]
         },
         SuccessIndicatorSchema, 'POST',
         ['property', 'set', 'consolidated', 'inspector']
@@ -87,7 +92,8 @@ export class ConsolidatedTools {
                 reference: InstanceReferenceSchema,
                 section: { type: 'string', description: 'Class/enum name to return only that section.' }
             },
-            required: ['target']
+            required: ['target'],
+            allOf: [{ if: { properties: { target: { const: 'instance' } }, required: ['target'] }, then: { required: ['reference'] } }]
         },
         { type: 'object', properties: { definition: { type: 'string' }, sections: { type: 'array', items: { type: 'string' } }, totalSections: { type: 'number' } }, required: ['definition'] }, 'GET',
         ['code', 'typescript', 'definition', 'consolidated']
@@ -113,7 +119,8 @@ export class ConsolidatedTools {
                 reference: InstanceReferenceSchema,
                 componentType: { type: 'string', description: 'For add: component class name' }
             },
-            required: ['operation', 'reference']
+            required: ['operation', 'reference'],
+            allOf: [{ if: { properties: { operation: { const: 'add' } }, required: ['operation'] }, then: { required: ['componentType'] } }]
         },
         { type: 'object', properties: { reference: InstanceReferenceSchema, success: { type: 'boolean' } } }, 'POST',
         ['scene', 'node', 'component', 'consolidated']
@@ -144,7 +151,12 @@ export class ConsolidatedTools {
                 className: { type: 'string' },
                 reference: InstanceReferenceSchema
             },
-            required: ['category']
+            required: ['category'],
+            allOf: [
+                { if: { properties: { category: { const: 'enum_values' } }, required: ['category'] }, then: { required: ['enumPath'] } },
+                { if: { properties: { category: { const: 'script_info' } }, required: ['category'] }, then: { required: ['reference'] } },
+                { if: { properties: { category: { const: 'has_script' } }, required: ['category'] }, then: { required: ['className'] } }
+            ]
         },
         { type: 'object', properties: { sceneMode: { type: 'string' }, ready: { type: 'boolean' }, values: { type: 'array', items: { type: 'object' } }, types: { type: 'array', items: { type: 'string' } }, scriptName: { type: 'string' }, scriptCid: { type: 'string' }, hasScript: { type: 'boolean' } } }, 'GET',
         ['editor', 'introspect', 'query', 'consolidated', 'programming', 'plugin']
@@ -167,7 +179,8 @@ export class ConsolidatedTools {
                 operation: { type: 'string', enum: ['open', 'save', 'save_as', 'close', 'soft_reload'] },
                 reference: InstanceReferenceSchema
             },
-            required: ['operation']
+            required: ['operation'],
+            allOf: [{ if: { properties: { operation: { const: 'open' } }, required: ['operation'] }, then: { required: ['reference'] } }]
         },
         { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' }, reference: InstanceReferenceSchema } }, 'POST',
         ['scene', 'lifecycle', 'consolidated']
@@ -200,19 +213,25 @@ export class ConsolidatedTools {
                 panel: { type: 'string', enum: ['default', 'build-bundle'] },
                 taskId: { type: 'string' },
                 options: { type: 'object', description: 'Build options for trigger' },
-                control: { type: 'string', enum: ['break', 'remove', 'recompile'] }
+                control: { type: 'string', enum: ['break', 'remove', 'recompile'] },
+                limit: { type: 'number', minimum: 1, maximum: 1000, default: 200, description: 'For tasks_info: maximum tasks to return.' }
             },
-            required: ['operation']
+            required: ['operation'],
+            allOf: [
+                { if: { properties: { operation: { const: 'get_task' } }, required: ['operation'] }, then: { required: ['taskId'] } },
+                { if: { properties: { operation: { const: 'trigger' } }, required: ['operation'] }, then: { required: ['options'] } },
+                { if: { properties: { operation: { const: 'control' } }, required: ['operation'] }, then: { required: ['taskId', 'control'] } }
+            ]
         },
-        { type: 'object', properties: { success: { type: 'boolean' }, workerReady: { type: 'boolean' }, free: { type: 'boolean' }, tasks: { type: 'array', items: { type: 'object' } }, task: { type: 'object' }, options: { type: 'object' }, taskId: { type: 'string' } } }, 'POST',
+        { type: 'object', properties: { success: { type: 'boolean' }, workerReady: { type: 'boolean' }, free: { type: 'boolean' }, tasks: { type: 'array', items: { type: 'object' } }, total: { type: 'number' }, truncated: { type: 'boolean' }, task: { type: 'object' }, options: { type: 'object' }, taskId: { type: 'string' } } }, 'POST',
         ['build', 'consolidated']
     )
-    async buildManage(args: { operation: string, panel?: string, taskId?: string, options?: any, control?: string }): Promise<any> {
+    async buildManage(args: { operation: string, panel?: string, taskId?: string, options?: unknown, control?: string, limit?: number }): Promise<unknown> {
         const { BuildTools } = await import('./build-tools');
         const tool = new (BuildTools as any)();
         switch (args.operation) {
             case 'panel_open': return tool.buildPanelOpen({ panel: args.panel });
-            case 'tasks_info': return tool.buildGetTasksInfo();
+            case 'tasks_info': return tool.buildGetTasksInfo({ limit: args.limit });
             case 'get_task': return tool.buildGetTask({ taskId: args.taskId as string });
             case 'trigger': return tool.buildTrigger({ options: args.options });
             case 'control': return tool.buildTaskControl({ operation: args.control as string, taskId: args.taskId as string });
@@ -221,7 +240,7 @@ export class ConsolidatedTools {
     }
 
     // ── previewManage: 4→1 (previewGetUrl, previewOpenInBrowser, assetGetPreview, editorGetScenePreview) ──
-    @utcpTool('previewManage','Preview: get url/open browser/asset preview/scene capture.',{type:'object',properties:{operation:{type:'string',enum:['get_url','open_browser','asset_preview','scene_preview']},reference:InstanceReferenceSchema,imageSize:{oneOf:[{type:'number'},{type:'object',properties:{width:{type:'number'},height:{type:'number'}},required:['width','height']}],description:'number = square; pass {width,height} for exact aspect ratio (scene_preview)'},jpegQuality:{type:'number'},transparentColor:{type:'object',properties:{r:{type:'integer'},g:{type:'integer'},b:{type:'integer'}}},cameraPosition:{type:'object',properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},targetPosition:{type:'object',properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},orthographic:{type:'boolean'},orthographicSize:{type:'number'}},required:['operation']},{type:'object',properties:{url:{type:'string'},success:{type:'boolean'},type:{type:'string'},data:{type:'string'},mimeType:{type:'string'}}},'POST',['preview','consolidated'])
+    @utcpTool('previewManage','Preview: get url/open browser/asset preview/scene capture.',{type:'object',properties:{operation:{type:'string',enum:['get_url','open_browser','asset_preview','scene_preview']},reference:InstanceReferenceSchema,imageSize:{oneOf:[{type:'number'},{type:'object',properties:{width:{type:'number'},height:{type:'number'}},required:['width','height']}],description:'number = square; pass {width,height} for exact aspect ratio (scene_preview)'},jpegQuality:{type:'number'},transparentColor:{type:'object',properties:{r:{type:'integer'},g:{type:'integer'},b:{type:'integer'}}},cameraPosition:{type:'object',properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},targetPosition:{type:'object',properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},orthographic:{type:'boolean'},orthographicSize:{type:'number'}},required:['operation'],allOf:[{if:{properties:{operation:{const:'asset_preview'}},required:['operation']},then:{required:['reference']}},{if:{properties:{operation:{const:'scene_preview'}},required:['operation']},then:{required:['cameraPosition','targetPosition']}}]},{type:'object',properties:{url:{type:'string'},success:{type:'boolean'},type:{type:'string'},data:{type:'string'},mimeType:{type:'string'}}},'POST',['preview','consolidated'])
     async previewManage(args:any):Promise<any>{
         const { PreviewTools } = await import('./preview-tools');
         const { AssetTools } = await import('./asset-tools');
@@ -242,7 +261,7 @@ export class ConsolidatedTools {
     }
 
     // ── programManage: 3→1 (programGetInfo, programOpen, urlOpen) ──
-    @utcpTool('programManage','External programs and URL open.',{type:'object',properties:{operation:{type:'string',enum:['get_info','open','open_url']},programName:{type:'string'},commandArguments:{type:'object'},url:{type:'string'}},required:['operation']},{type:'object',properties:{success:{type:'boolean'},path:{type:'string'},commandArgument:{type:'string'}}},'POST',['program','consolidated'])
+    @utcpTool('programManage','External programs and URL open.',{type:'object',properties:{operation:{type:'string',enum:['get_info','open','open_url']},programName:{type:'string'},commandArguments:{type:'object'},url:{type:'string'}},required:['operation'],allOf:[{if:{properties:{operation:{enum:['get_info','open']}},required:['operation']},then:{required:['programName']}},{if:{properties:{operation:{const:'open_url'}},required:['operation']},then:{required:['url']}}]},{type:'object',properties:{success:{type:'boolean'},path:{type:'string'},commandArgument:{type:'string'}}},'POST',['program','consolidated'])
     async programManage(args:any):Promise<any>{
         const { ProgramTools } = await import('./program-tools');
         const t=new (ProgramTools as any)();
@@ -255,11 +274,11 @@ export class ConsolidatedTools {
     }
 
     // ── projectManage: 2→1 (projectGetConfig, projectSetConfig) ──
-    @utcpTool('projectManage','Read/write project settings.',{type:'object',properties:{operation:{type:'string',enum:['get','set']},type:{type:'string'},key:{type:'string'},path:{type:'string'},value:{}},required:['operation']},{type:'object',properties:{config:{},success:{type:'boolean'}}},'POST',['project','consolidated'])
+    @utcpTool('projectManage','Read/write project settings.',{type:'object',properties:{operation:{type:'string',enum:['get','set']},type:{type:'string'},key:{type:'string'},path:{type:'string'},value:{},limit:{type:'number',minimum:1,maximum:1000,default:200}},required:['operation'],allOf:[{if:{properties:{operation:{const:'set'}},required:['operation']},then:{required:['path']}}]},{type:'object',properties:{config:{},success:{type:'boolean'},total:{type:'number'},truncated:{type:'boolean'}}},'POST',['project','consolidated'])
     async projectManage(args:any):Promise<any>{
         const { ProjectTools } = await import('./project-tools');
         const t=new (ProjectTools as any)();
-        if(args.operation==='get') return t.projectGetConfig({ type:args.type, key:args.key });
+        if(args.operation==='get') return t.projectGetConfig({ type:args.type, key:args.key, limit:args.limit });
         if(args.operation==='set'){ if(!args.path) throw new Error('projectManage set requires path'); return t.projectSetConfig({ path:args.path, value:args.value }); }
         throw new Error(`Unknown projectManage operation: ${args.operation}`);
     }

@@ -54,6 +54,10 @@ export class PrefabJsonTools {
                 assetPath: { type: 'string', description: 'db:// path to the .prefab, alternative to reference.id' },
                 verbose: { type: 'boolean', description: 'When true, lifts size cap to 10MB.' },
             },
+            anyOf: [
+                { required: ['reference'] },
+                { required: ['assetPath'] },
+            ],
         },
         {
             type: 'object',
@@ -93,6 +97,10 @@ export class PrefabJsonTools {
                 content: { type: 'string', description: 'New JSON text for the prefab file (must be valid JSON)' },
             },
             required: ['content'],
+            anyOf: [
+                { required: ['reference'] },
+                { required: ['assetPath'] },
+            ],
         },
         {
             type: 'object',
@@ -129,6 +137,10 @@ export class PrefabJsonTools {
                 overwrite: { type: 'boolean', description: 'Overwrite if target exists (default false)' },
             },
             required: ['targetAssetPath'],
+            anyOf: [
+                { required: ['reference'] },
+                { required: ['assetPath'] },
+            ],
         },
         {
             type: 'object',

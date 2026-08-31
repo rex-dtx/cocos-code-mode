@@ -11,13 +11,13 @@ export class ComponentTools {
             type: 'object',
             properties: {
                 includeInternal: { type: 'boolean', default: false, description: 'Whether to include internal engine components.' },
-                filter: { type: 'string', description: 'Optional filter string to match component types or categories (case-insensitive substring match).' }
-            },
-            required: ['includeInternal']
+                filter: { type: 'string', description: 'Optional filter string to match component types or categories (case-insensitive substring match).' },
+                limit: { type: 'number', minimum: 1, maximum: 1000, default: 200, description: 'Maximum component types to return.' }
+            }
         },
-        { type: 'object', properties: { componentTypes: { type: 'array', items: { type: 'string' } } }, required: ['componentTypes'] }, "GET",  ['scene', 'node', 'component', 'types', 'inspection']
+        { type: 'object', properties: { componentTypes: { type: 'array', items: { type: 'string' } }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['componentTypes', 'total', 'truncated'] }, "GET",  ['scene', 'node', 'component', 'types', 'inspection']
     )
-    async nodeGetAvailableComponentTypes(args: { includeInternal: boolean, filter?: string }): Promise<{ componentTypes: string[] }> {
+    async nodeGetAvailableComponentTypes(args: { includeInternal?: boolean, filter?: string, limit?: number } = {}): Promise<{ componentTypes: string[], total: number, truncated: boolean }> {
         const allComponents = await Editor.Message.request('scene', 'query-components');
 
         if (!Array.isArray(allComponents)) {
@@ -37,8 +37,9 @@ export class ComponentTools {
         });
 
         const names = filtered.map((comp: any) => comp.name).filter((name: any) => typeof name === 'string');
+        const limit = Math.min(Math.max(args.limit ?? 200, 1), 1000);
 
-        return { componentTypes: names };
+        return { componentTypes: names.slice(0, limit), total: names.length, truncated: names.length > limit };
     }
 
     @utcpTool(

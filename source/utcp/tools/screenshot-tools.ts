@@ -1,5 +1,37 @@
 import { utcpTool } from '../decorators';
 
+const MAX_SCREENSHOT_DIMENSION = 4096;
+const MAX_SCREENSHOT_PIXELS = MAX_SCREENSHOT_DIMENSION * MAX_SCREENSHOT_DIMENSION;
+
+function validateScreenshotSize(imageSize: unknown): { width: number, height: number } {
+    if (imageSize === undefined) return { width: 512, height: 512 };
+
+    const dimensions = typeof imageSize === 'number'
+        ? { width: imageSize, height: imageSize }
+        : imageSize;
+    if (!dimensions || typeof dimensions !== 'object') {
+        throw new Error('captureSceneScreenshot imageSize must be a positive integer or { width, height }');
+    }
+
+    const candidate = dimensions as { width?: unknown, height?: unknown };
+    const { width, height } = candidate;
+    if (typeof width !== 'number' || typeof height !== 'number' || !Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1) {
+        throw new Error('captureSceneScreenshot imageSize width and height must be positive integers');
+    }
+    if (width > MAX_SCREENSHOT_DIMENSION || height > MAX_SCREENSHOT_DIMENSION || width * height > MAX_SCREENSHOT_PIXELS) {
+        throw new Error(`captureSceneScreenshot imageSize exceeds ${MAX_SCREENSHOT_DIMENSION}px per side or ${MAX_SCREENSHOT_PIXELS} pixels`);
+    }
+    return { width, height };
+}
+
+function validateJpegQuality(jpegQuality: unknown): number {
+    if (jpegQuality === undefined) return 80;
+    if (typeof jpegQuality !== 'number' || !Number.isInteger(jpegQuality) || jpegQuality < 0 || jpegQuality > 100) {
+        throw new Error('captureSceneScreenshot jpegQuality must be an integer from 0 to 100');
+    }
+    return jpegQuality;
+}
+
 // Screenshot tools — capture scene canvas and editor windows.
 // Scene capture reuses the existing captureScreenshot in scene.ts.
 // Editor capture uses Electron BrowserWindow API (may not be available in all contexts).
@@ -14,12 +46,20 @@ export class ScreenshotTools {
             properties: {
                 imageSize: {
                     oneOf: [
-                        { type: 'number', description: 'Square size (width=height)' },
-                        { type: 'object', properties: { width: { type: 'number' }, height: { type: 'number' } }, required: ['width', 'height'] },
+                        { type: 'integer', minimum: 1, maximum: MAX_SCREENSHOT_DIMENSION, description: 'Square size (width=height)' },
+                        {
+                            type: 'object',
+                            properties: {
+                                width: { type: 'integer', minimum: 1, maximum: MAX_SCREENSHOT_DIMENSION },
+                                height: { type: 'integer', minimum: 1, maximum: MAX_SCREENSHOT_DIMENSION },
+                            },
+                            required: ['width', 'height'],
+                            description: `Exact dimensions; maximum ${MAX_SCREENSHOT_PIXELS} pixels`,
+                        },
                     ],
-                    description: 'Image size (default 512)',
+                    description: `Image size (default 512; maximum ${MAX_SCREENSHOT_DIMENSION}px per side and ${MAX_SCREENSHOT_PIXELS} pixels)`,
                 },
-                jpegQuality: { type: 'number', description: 'JPEG quality 0-100 (default 80)' },
+                jpegQuality: { type: 'integer', minimum: 0, maximum: 100, description: 'JPEG quality 0-100 (default 80)' },
             },
         },
         {
@@ -35,10 +75,8 @@ export class ScreenshotTools {
         ['screenshot', 'capture', 'scene', 'image', 'visual', 'verify']
     )
     async captureSceneScreenshot(args: { imageSize?: number | { width: number, height: number }, jpegQuality?: number }): Promise<{ type: string, data: string, mimeType: string }> {
-        const imageSize = typeof args.imageSize === 'number'
-            ? { width: args.imageSize, height: args.imageSize }
-            : args.imageSize || { width: 512, height: 512 };
-        const jpegQuality = args.jpegQuality ?? 80;
+        const imageSize = validateScreenshotSize(args.imageSize);
+        const jpegQuality = validateJpegQuality(args.jpegQuality);
 
         const base64 = await Editor.Message.request('scene', 'execute-scene-script', {
             name: 'cc-bridge-3x',

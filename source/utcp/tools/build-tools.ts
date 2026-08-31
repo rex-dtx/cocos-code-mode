@@ -57,12 +57,13 @@ export class BuildTools {
     }
 
     /** @deprecated Use buildManage({ operation: 'tasks_info' }) — not registered, kept for delegation */
-    async buildGetTasksInfo(): Promise<{ workerReady: boolean, free: boolean, tasks: IBuildTaskSummary[] }> {
+    async buildGetTasksInfo(args: { limit?: number } = {}): Promise<{ workerReady: boolean, free: boolean, tasks: IBuildTaskSummary[], total: number, truncated: boolean }> {
         const workerReady = await Editor.Message.request('builder', 'query-worker-ready');
         const info = await Editor.Message.request('builder', 'query-tasks-info');
         const queue = (info && info.queue) || {};
         const tasks = Object.values(queue).map((task: any) => slimTask(task));
-        return { workerReady: !!workerReady, free: !!(info && info.free), tasks };
+        const limit = Math.min(Math.max(args.limit ?? 200, 1), 1000);
+        return { workerReady: !!workerReady, free: !!(info && info.free), tasks: tasks.slice(0, limit), total: tasks.length, truncated: tasks.length > limit };
     }
 
     /** @deprecated Use buildManage({ operation: 'get_task' }) — not registered, kept for delegation */

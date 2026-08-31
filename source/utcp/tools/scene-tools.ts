@@ -4,6 +4,13 @@ import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, I
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
+const DEFAULT_LIST_LIMIT = 200;
+const MAX_LIST_LIMIT = 1000;
+
+function boundedListLimit(limit: number | undefined): number {
+    return Math.min(Math.max(limit ?? DEFAULT_LIST_LIMIT, 1), MAX_LIST_LIMIT);
+}
+
 export class SceneTools {
 
     /** @deprecated use sceneManage({ operation: 'open', reference }) — not registered, kept for delegation */
@@ -64,13 +71,14 @@ export class SceneTools {
         {
             type: 'object',
             properties: {
-                reference: InstanceReferenceSchema
+                reference: InstanceReferenceSchema,
+                limit: { type: 'number', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT, description: 'Maximum references to return.' }
             },
             required: ['reference']
         },
-        { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET", ['scene', 'node', 'find', 'asset', 'reference', 'usage', 'impact']
+        { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['references', 'total', 'truncated'] }, "GET", ['scene', 'node', 'find', 'asset', 'reference', 'usage', 'impact']
     )
-    async findNodesByAsset(args: { reference: IInstanceReference }): Promise<{ references: IInstanceReference[] }> {
+    async findNodesByAsset(args: { reference: IInstanceReference, limit?: number }): Promise<{ references: IInstanceReference[], total: number, truncated: boolean }> {
         if (!args.reference || !args.reference.id) {
             throw new Error('findNodesByAsset requires reference.id (asset uuid)');
         }
@@ -78,30 +86,39 @@ export class SceneTools {
         if (!Array.isArray(nodeUuids)) {
             throw new Error(`Unexpected result querying nodes for asset ${args.reference.id}`);
         }
-        return { references: nodeUuids.map((uuid: string) => ({ id: uuid, type: 'cc.Node' })) };
+        const limit = boundedListLimit(args.limit);
+        return {
+            references: nodeUuids.slice(0, limit).map((uuid: string) => ({ id: uuid, type: 'cc.Node' })),
+            total: nodeUuids.length,
+            truncated: nodeUuids.length > limit
+        };
     }
 
     @utcpTool(
         'findNodesWithMissingAssets',
         'Find nodes with missing/broken asset references. QA/health check for scene integrity.',
-        { type: 'object', properties: {} },
-        { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET", ['scene', 'node', 'missing', 'broken', 'asset', 'qa', 'health', 'integrity']
+        {
+            type: 'object',
+            properties: {
+                limit: { type: 'number', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT, description: 'Maximum references to return.' }
+            }
+        },
+        { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['references', 'total', 'truncated'] }, "GET", ['scene', 'node', 'missing', 'broken', 'asset', 'qa', 'health', 'integrity']
     )
-    async findNodesWithMissingAssets(): Promise<{ references: IInstanceReference[] }> {
+    async findNodesWithMissingAssets(args: { limit?: number } = {}): Promise<{ references: IInstanceReference[], total: number, truncated: boolean }> {
         const result = await Editor.Message.request('scene', 'query-nodes-miss-assets');
         if (!result) {
-            return { references: [] };
+            return { references: [], total: 0, truncated: false };
         }
         if (!Array.isArray(result)) {
             throw new Error('Unexpected result from query-nodes-miss-assets');
         }
-        // Items may be uuid strings or objects with uuid/name depending on version
-        return {
-            references: result.map((item: any) => ({
-                id: typeof item === 'string' ? item : (item.uuid || item.id),
-                type: 'cc.Node'
-            })).filter((ref: IInstanceReference) => !!ref.id)
-        };
+        const references = result.map((item: any) => ({
+            id: typeof item === 'string' ? item : (item.uuid || item.id),
+            type: 'cc.Node'
+        })).filter((ref: IInstanceReference) => !!ref.id);
+        const limit = boundedListLimit(args.limit);
+        return { references: references.slice(0, limit), total: references.length, truncated: references.length > limit };
     }
 
     @utcpTool(
@@ -112,7 +129,7 @@ export class SceneTools {
             properties: {
                 name: { type: 'string', description: 'Substring match on node name (case-insensitive).' },
                 componentType: { type: 'string', description: 'Exact component class, e.g. cc.Sprite, cc.Label.' },
-                maxResults: { type: 'number', description: 'Cap results, default 200.' }
+                maxResults: { type: 'number', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT, description: 'Cap results.' }
             },
             required: []
         },
@@ -125,10 +142,9 @@ export class SceneTools {
         treeBase = (await this.findPrefabEditRoot(treeBase)) ?? treeBase;
         const nameNeedle = args.name ? args.name.toLowerCase() : null;
         const compNeedle = args.componentType || null;
-        const limit = args.maxResults && args.maxResults > 0 ? args.maxResults : 200;
+        const limit = boundedListLimit(args.maxResults);
         const hits: Array<{ reference: IInstanceReference, name: string, path: string }> = [];
-        let truncated = false;
-        // Iterative DFS to avoid call-stack blowup on deep scenes; build path on the fly.
+        let total = 0;
         const stack: Array<{ node: any, path: string }> = [{ node: treeBase, path: treeBase.name || '' }];
         while (stack.length) {
             const { node, path: curPath } = stack.pop()!;
@@ -137,18 +153,17 @@ export class SceneTools {
             const nameOk = !nameNeedle || nodeName.toLowerCase().includes(nameNeedle);
             const compOk = !compNeedle || comps.some((c: any) => c.type === compNeedle);
             if (nameOk && compOk) {
-                hits.push({ reference: { id: node.uuid, type: 'cc.Node' }, name: nodeName, path: curPath });
-                if (hits.length >= limit) { truncated = true; break; }
+                total++;
+                if (hits.length < limit) hits.push({ reference: { id: node.uuid, type: 'cc.Node' }, name: nodeName, path: curPath });
             }
             const children: any[] = node.children || [];
-            // push reverse so traversal is in natural order
             for (let i = children.length - 1; i >= 0; i--) {
                 const ch = children[i];
                 const childPath = curPath ? `${curPath}/${ch.name || ''}` : (ch.name || '');
                 stack.push({ node: ch, path: childPath });
             }
         }
-        return { nodes: hits, total: hits.length, truncated };
+        return { nodes: hits, total, truncated: total > limit };
     }
 
     @utcpTool(
@@ -397,14 +412,14 @@ export class SceneTools {
 
     @utcpTool(
         'nodeGetTree',
-        'Get node hierarchy tree. Defaults maxDepth=4/maxNodes=200; pass larger values or verbose=true for the full tree. Supports fields filter. Marks truncated branches.',
+        'Get node hierarchy tree. Defaults maxDepth=4/maxNodes=200; verbose=true raises caps to depth 99/nodes 10000. Supports fields filter. Marks truncated branches.',
         {
             type: 'object',
             properties: {
                 reference: InstanceReferenceSchema,
-                maxDepth: { type: 'number', description: 'Max recursion depth. 0 = root only, 1 = root + direct children. Default 4 when omitted.' },
-                maxNodes: { type: 'number', description: 'Max nodes to walk; guards wide scenes where maxDepth alone does not bound. Default 200 when omitted.' },
-                verbose: { type: 'boolean', description: 'When true, lifts caps to verbose ceilings (depth 99, nodes 10000) unless maxDepth/maxNodes are explicitly set.' },
+                maxDepth: { type: 'number', minimum: 0, maximum: VERBOSE_TREE_DEPTH, default: DEFAULT_TREE_MAX_DEPTH, description: 'Max recursion depth. 0 = root only, 1 = root + direct children.' },
+                maxNodes: { type: 'number', minimum: 1, maximum: VERBOSE_TREE_NODES, default: DEFAULT_TREE_MAX_NODES, description: 'Max descendant nodes to walk; guards wide scenes where maxDepth alone does not bound.' },
+                verbose: { type: 'boolean', description: 'When true, raises omitted caps to depth 99/nodes 10000.' },
                 fields: { type: 'array', items: { type: 'string' }, description: 'Optional: only keep these node keys per node (e.g. ["name","active","components"]). reference+children always kept. Omit for all fields.' }
             }
         },
@@ -415,13 +430,7 @@ export class SceneTools {
         if (args.reference) {
              treeBase = await Editor.Message.request('scene', 'query-node-tree', args.reference.id);
         } else {
-             // Default queries the whole scene
              treeBase = await Editor.Message.request('scene', 'query-node-tree');
-             // In prefab-edit mode the editor wraps the prefab in a throwaway scene:
-             // an unnamed virtual root ("New Node", which query-node cannot even
-             // resolve) holding a locked Canvas, with the real prefab root beneath.
-             // Returning that wrapper makes a correctly-serialized prefab look
-             // renamed and empty. Descend to the root the user actually opened.
              treeBase = (await this.findPrefabEditRoot(treeBase)) ?? treeBase;
         }
 
@@ -429,11 +438,8 @@ export class SceneTools {
             throw new Error(`Node tree not found for ${args.reference?.id || 'entire scene'}`);
         }
 
-        // ponytail: default budgets — a bare call must not dump the full scene (~43K
-        // tokens). Defaults apply per-param only when omitted; pass larger values for
-        // the full tree. cc-2x port (ee0a888/6f98715): same truncated/childrenOmitted convention.
-        const maxDepth = args.verbose ? (args.maxDepth ?? VERBOSE_TREE_DEPTH) : (args.maxDepth ?? DEFAULT_TREE_MAX_DEPTH);
-        const maxNodes = args.verbose ? (args.maxNodes ?? VERBOSE_TREE_NODES) : (args.maxNodes ?? DEFAULT_TREE_MAX_NODES);
+        const maxDepth = Math.min(Math.max(args.maxDepth ?? (args.verbose ? VERBOSE_TREE_DEPTH : DEFAULT_TREE_MAX_DEPTH), 0), VERBOSE_TREE_DEPTH);
+        const maxNodes = Math.min(Math.max(args.maxNodes ?? (args.verbose ? VERBOSE_TREE_NODES : DEFAULT_TREE_MAX_NODES), 1), VERBOSE_TREE_NODES);
         const budget = { left: maxNodes };
 
         const formatNode = (node: any, depth: number): ISceneTreeItem => {

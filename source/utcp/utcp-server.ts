@@ -43,8 +43,206 @@ import { homedir } from 'os';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
 
+export interface SchemaValidationError {
+    path: string;
+    keyword: string;
+    message: string;
+}
+
+function isPlainJsonObject(value: unknown): value is object {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isSchema(value: unknown): value is JsonSchema {
+    return isPlainJsonObject(value);
+}
+
+function schemaKeywordNumber(schema: JsonSchema, keyword: string): number | undefined {
+    const value = schema[keyword];
+    return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function schemaKeywordSchemas(schema: JsonSchema, keyword: string): JsonSchema[] {
+    const value = schema[keyword];
+    return Array.isArray(value) ? value.filter(isSchema) : [];
+}
+
+function schemaKeywordSchema(schema: JsonSchema, keyword: string): JsonSchema | undefined {
+    const value = schema[keyword];
+    return isSchema(value) ? value : undefined;
+}
+
+function propertyPath(path: string, property: string): string {
+    if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(property)) {
+        return path === '$' ? property : `${path}.${property}`;
+    }
+    return `${path}[${JSON.stringify(property)}]`;
+}
+
+
+function matchesJsonValue(left: unknown, right: unknown): boolean {
+    if (left === right) {
+        return true;
+    }
+    if (Array.isArray(left) && Array.isArray(right)) {
+        return left.length === right.length && left.every((value, index) => matchesJsonValue(value, right[index]));
+    }
+    if (isPlainJsonObject(left) && isPlainJsonObject(right)) {
+        const leftObject = left as Record<string, unknown>;
+        const rightObject = right as Record<string, unknown>;
+        const leftKeys = Object.keys(leftObject);
+        const rightKeys = Object.keys(rightObject);
+        return leftKeys.length === rightKeys.length
+            && leftKeys.every((key) => Object.prototype.hasOwnProperty.call(rightObject, key) && matchesJsonValue(leftObject[key], rightObject[key]));
+    }
+    return false;
+}
+
+function matchesSchemaType(value: unknown, type: string): boolean {
+    switch (type) {
+        case 'object':
+            return isPlainJsonObject(value);
+        case 'array':
+            return Array.isArray(value);
+        case 'string':
+            return typeof value === 'string';
+        case 'number':
+            return typeof value === 'number' && Number.isFinite(value);
+        case 'integer':
+            return typeof value === 'number' && Number.isInteger(value);
+        case 'boolean':
+            return typeof value === 'boolean';
+        case 'null':
+            return value === null;
+        default:
+            return true;
+    }
+}
+
+function schemaTypes(schema: JsonSchema): string[] {
+    if (typeof schema.type === 'string') {
+        return [schema.type];
+    }
+    return Array.isArray(schema.type) ? schema.type.filter((type): type is string => typeof type === 'string') : [];
+}
+
+function validateSchemaValue(schema: JsonSchema, value: unknown, path: string): SchemaValidationError[] {
+    const errors: SchemaValidationError[] = [];
+    const types = schemaTypes(schema);
+
+    if (types.length > 0 && !types.some((type) => matchesSchemaType(value, type))) {
+        errors.push({
+            path,
+            keyword: 'type',
+            message: `Expected ${types.join(' or ')}.`,
+        });
+        return errors;
+    }
+
+    if (schema.const !== undefined && !matchesJsonValue(value, schema.const)) {
+        errors.push({ path, keyword: 'const', message: 'Must equal the declared constant.' });
+    }
+
+    if (Array.isArray(schema.enum) && !schema.enum.some((candidate) => matchesJsonValue(value, candidate))) {
+        errors.push({ path, keyword: 'enum', message: 'Must equal one of the declared values.' });
+    }
+
+    if (typeof value === 'number' && Number.isFinite(value)) {
+        const minimum = schemaKeywordNumber(schema, 'minimum');
+        const maximum = schemaKeywordNumber(schema, 'maximum');
+        if (minimum !== undefined && value < minimum) {
+            errors.push({ path, keyword: 'minimum', message: `Must be at least ${minimum}.` });
+        }
+        if (maximum !== undefined && value > maximum) {
+            errors.push({ path, keyword: 'maximum', message: `Must be at most ${maximum}.` });
+        }
+    }
+
+    if (typeof value === 'string') {
+        const minLength = schemaKeywordNumber(schema, 'minLength');
+        const maxLength = schemaKeywordNumber(schema, 'maxLength');
+        if (minLength !== undefined && value.length < minLength) {
+            errors.push({ path, keyword: 'minLength', message: `Must contain at least ${minLength} characters.` });
+        }
+        if (maxLength !== undefined && value.length > maxLength) {
+            errors.push({ path, keyword: 'maxLength', message: `Must contain at most ${maxLength} characters.` });
+        }
+    }
+
+    if (Array.isArray(value)) {
+        const minItems = schemaKeywordNumber(schema, 'minItems');
+        const maxItems = schemaKeywordNumber(schema, 'maxItems');
+        if (minItems !== undefined && value.length < minItems) {
+            errors.push({ path, keyword: 'minItems', message: `Must contain at least ${minItems} items.` });
+        }
+        if (maxItems !== undefined && value.length > maxItems) {
+            errors.push({ path, keyword: 'maxItems', message: `Must contain at most ${maxItems} items.` });
+        }
+        const itemSchema = schema.items;
+        if (isSchema(itemSchema)) {
+            value.forEach((item, index) => errors.push(...validateSchemaValue(itemSchema, item, `${path}[${index}]`)));
+        } else if (Array.isArray(itemSchema)) {
+            itemSchema.forEach((tupleItemSchema, index) => {
+                if (isSchema(tupleItemSchema) && index < value.length) {
+                    errors.push(...validateSchemaValue(tupleItemSchema, value[index], `${path}[${index}]`));
+                }
+            });
+        }
+    }
+
+    if (isPlainJsonObject(value)) {
+        const objectValue = value as Record<string, unknown>;
+        const required = Array.isArray(schema.required) ? schema.required.filter((property): property is string => typeof property === 'string') : [];
+        for (const property of required) {
+            if (!Object.prototype.hasOwnProperty.call(objectValue, property) || objectValue[property] === undefined) {
+                errors.push({ path: propertyPath(path, property), keyword: 'required', message: 'Required property is missing.' });
+            }
+        }
+
+        if (isPlainJsonObject(schema.properties)) {
+            for (const [property, propertySchema] of Object.entries(schema.properties)) {
+                if (Object.prototype.hasOwnProperty.call(objectValue, property) && objectValue[property] !== undefined && isSchema(propertySchema)) {
+                    errors.push(...validateSchemaValue(propertySchema, objectValue[property], propertyPath(path, property)));
+                }
+            }
+        }
+    }
+
+    for (const variant of schemaKeywordSchemas(schema, 'allOf')) {
+        errors.push(...validateSchemaValue(variant, value, path));
+    }
+
+    const anyOf = schemaKeywordSchemas(schema, 'anyOf');
+    if (anyOf.length > 0 && !anyOf.some((variant) => validateSchemaValue(variant, value, path).length === 0)) {
+        errors.push({ path, keyword: 'anyOf', message: 'Value must match at least one schema.' });
+    }
+
+    const oneOf = schemaKeywordSchemas(schema, 'oneOf');
+    if (oneOf.length > 0 && oneOf.filter((variant) => validateSchemaValue(variant, value, path).length === 0).length !== 1) {
+        errors.push({ path, keyword: 'oneOf', message: 'Value must match exactly one schema.' });
+    }
+
+    const condition = schemaKeywordSchema(schema, 'if');
+    if (condition) {
+        const branch = validateSchemaValue(condition, value, path).length === 0
+            ? schemaKeywordSchema(schema, 'then')
+            : schemaKeywordSchema(schema, 'else');
+        if (branch) {
+            errors.push(...validateSchemaValue(branch, value, path));
+        }
+    }
+
+    return errors;
+}
+
+export function validateSchemaArguments(schema: JsonSchema, args: unknown): SchemaValidationError[] {
+    return validateSchemaValue(schema, args, '$');
+}
+
 export function findMissingRequiredInputs(schema: JsonSchema, args: Record<string, unknown>): string[] {
-    return (schema.required ?? []).filter((field) => args[field] === undefined);
+    return validateSchemaArguments(schema, args)
+        .filter((error) => error.keyword === 'required' && !error.path.includes('.') && !error.path.includes('['))
+        .map((error) => error.path);
 }
 
 // ponytail: debug log to file, not console — avoid polluting editor output.
@@ -197,13 +395,26 @@ export class UtcpServerManager {
                         return;
                     }
 
-                    const args = { ...(req.query as any), ...((req as any).body || {}) } as any;
-                    const missingInputs = findMissingRequiredInputs(toolDef.inputs, args);
-                    if (missingInputs.length > 0) {
+                    const body = req.body as unknown;
+                    const bodyArgs = isPlainJsonObject(body) ? body as Record<string, unknown> : {};
+                    const args: Record<string, unknown> = {
+                        ...(req.query as unknown as Record<string, unknown>),
+                        ...bodyArgs,
+                    };
+                    const validationErrors = body === undefined || isPlainJsonObject(body)
+                        ? validateSchemaArguments(toolDef.inputs, args)
+                        : validateSchemaArguments(toolDef.inputs, body);
+                    if (validationErrors.length > 0) {
+                        const missingInputs = validationErrors
+                            .filter((error) => error.keyword === 'required' && !error.path.includes('.') && !error.path.includes('['))
+                            .map((error) => error.path);
                         const plural = missingInputs.length === 1 ? '' : 's';
                         res.status(400).json({
-                            error: `Missing required input${plural}: ${missingInputs.join(', ')}`,
-                            missingInputs,
+                            error: missingInputs.length > 0
+                                ? `Missing required input${plural}: ${missingInputs.join(', ')}`
+                                : 'Invalid tool input.',
+                            ...(missingInputs.length > 0 ? { missingInputs } : {}),
+                            validationErrors,
                         });
                         return;
                     }

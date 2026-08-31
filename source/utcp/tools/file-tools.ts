@@ -5,6 +5,14 @@ import { VERBOSE_FILE_BYTES, VERBOSE_SEARCH_LIMIT } from '../utils/verbose';
 
 const MAX_FILE_BYTES = 512 * 1024; // 512KB read cap
 const MAX_SEARCH_RESULTS = 100;
+const DEFAULT_DIRECTORY_ENTRIES = 200;
+const MAX_DIRECTORY_ENTRIES = 1000;
+function boundedPositive(value: unknown, fallback: number, maximum: number): number {
+    return typeof value === 'number' && Number.isFinite(value) && value > 0
+        ? Math.min(value, maximum)
+        : fallback;
+}
+
 
 function resolveSafePath(projectPath: string, relPath: string): string {
     const resolved = path.resolve(projectPath, relPath);
@@ -203,23 +211,37 @@ export class FileTools {
 
     @utcpTool(
         'projectListDirectory',
-        'List files and directories in a project directory.',
+        'List files and directories in a project directory. Returns at most 200 entries by default and 1,000 at most.',
         {
             type: 'object',
             properties: {
                 dirPath: { type: 'string', description: 'Project-relative directory path (default ".")' },
+                limit: { type: 'number', minimum: 1, maximum: MAX_DIRECTORY_ENTRIES, default: DEFAULT_DIRECTORY_ENTRIES },
             },
         },
-        { type: 'object', properties: { entries: { type: 'array', items: { type: 'object' } } }, required: ['entries'] },
+        {
+            type: 'object',
+            properties: {
+                entries: { type: 'array', items: { type: 'object' } },
+                total: { type: 'number' },
+                truncated: { type: 'boolean' },
+            },
+            required: ['entries', 'total', 'truncated'],
+        },
         'GET',
         ['file', 'list', 'directory', 'folder', 'project']
     )
-    async projectListDirectory(args: { dirPath?: string }): Promise<{ entries: { name: string, type: 'file' | 'directory', size?: number }[] }> {
-        const projectPath = (Editor.Project as any).path as string;
+    async projectListDirectory(args: { dirPath?: string, limit?: number }): Promise<{ entries: { name: string, type: 'file' | 'directory', size?: number }[], total: number, truncated: boolean }> {
+        const project = Reflect.get(Editor, 'Project');
+        const projectPath = project && typeof project === 'object' ? Reflect.get(project, 'path') : undefined;
+        if (typeof projectPath !== 'string') throw new Error('Editor project path is unavailable');
         const resolved = resolveSafePath(projectPath, args.dirPath || '.');
         if (!fs.existsSync(resolved)) throw new Error(`Directory not found: ${args.dirPath || '.'}`);
 
-        const entries = fs.readdirSync(resolved, { withFileTypes: true }).map(entry => {
+        const allEntries = fs.readdirSync(resolved, { withFileTypes: true });
+        const total = allEntries.length;
+        const limit = boundedPositive(args.limit, DEFAULT_DIRECTORY_ENTRIES, MAX_DIRECTORY_ENTRIES);
+        const entries = allEntries.slice(0, limit).map(entry => {
             const fullPath = path.join(resolved, entry.name);
             const stat = fs.statSync(fullPath);
             return {
@@ -228,6 +250,6 @@ export class FileTools {
                 size: entry.isFile() ? stat.size : undefined,
             };
         });
-        return { entries };
+        return { entries, total, truncated: total > entries.length };
     }
 }
