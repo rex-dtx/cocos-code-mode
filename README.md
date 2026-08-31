@@ -131,7 +131,7 @@ Agent-facing TypeScript surface: [cc-bridge-2x.d.ts](cc-bridge-2x.d.ts) (hand-wr
 | Asset dep graph | `assetFindReferences` | No reference/dependency query API |
 | Console read | old `editorGetLogs` via IPC | `console:query-logs` does not exist — new impl reads `temp/logs/project.log` |
 
-Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runtime traps, probe3 gate), [docs/api-2x-reference.md](docs/api-2x-reference.md) (forum API 92605 mapped to verified runtime + actual tool surface), [docs/forum-92605-cocos-2x-api.md](docs/forum-92605-cocos-2x-api.md) (forum 92605 raw dump offline), [docs/cocos-2x-port-architecture.md](docs/cocos-2x-port-architecture.md) (delta 2.4 vs 3.x).
+Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runtime traps, probe3 gate), [docs/api-2x-reference.md](docs/api-2x-reference.md) (forum API 92605 mapped to verified runtime + actual tool surface), [docs/forum-92605-cocos-2x-api.md](docs/forum-92605-cocos-2x-api.md) (forum 92605 raw dump offline), [docs/cocos-2x-port-architecture.md](docs/cocos-2x-port-architecture.md) (delta 2.4 vs 3.x), and [docs/cc-bridge-code-mode-usage.md](docs/cc-bridge-code-mode-usage.md) (required Code Mode registration and agent workflow).
 
 ## How It Works
 
@@ -249,7 +249,13 @@ npm run package
 
 `npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies tree-walk limits without Creator open. Run `npm run check` while developing.
 
-For development, a junction from `<project>/packages/cc-bridge-2x` (legacy `cocos-code-mode-2x` still works) to the repo works and does not trigger a reload loop.
+For development, link the extension into the project (legacy `cocos-code-mode-2x` still works):
+
+```bash
+npm run link:project -- <path-to-cocos-project>
+```
+
+This creates a junction at `<project>/packages/cc-bridge-2x`. If an imported extension already exists there, rerun with `--replace`; it is renamed to a timestamped backup rather than deleted. Reload the extension or restart Creator after rebuilding.
 
 ## Adding Custom Tools
 

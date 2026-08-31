@@ -1,68 +1,60 @@
 ---
 name: cc-bridge-2x
 description: >
-  Cache-first Code Mode UX — dung cc3x7/ccb2x (manual cc-bridge-2x, short ccb2x) nhu tool thuong.
-  Bat khi prompt chua "code mode", "cc3x7", "cc-bridge-2x", "ccb2x", "cc_bridge_2x", "ccb-2x", "ccb_2x", "cocos", "set vi tri",
-  "node", "scene", "prefab", "inspector" hoac bat ky tac vu nao can
-  thao tac Cocos Editor qua UTCP. Khong can register/search lai neu cache hit.
+  Use when a task mentions Code Mode, ccb2x, Cocos, scene, prefab, inspector,
+  assets, components, preview, or build and needs Cocos Creator 2.4 control through UTCP.
 ---
 
-# cc-bridge-2x — Cache Skill
+# CC Bridge 2x
 
-Dung Code Mode nhu tool thuong, khong `register_manual`/`search_tools` lai moi lan.
+Use CC Bridge through Code Mode MCP. The cache holds discovery metadata only; it never proves the current MCP process registered a manual.
 
-## Khi nao kich hoat
+## Khi nào kích hoạt
 
-Auto khi prompt chua mot trong: `code mode`, `cc3x7`, `cc-bridge-2x`, `ccb2x`, `cc_bridge_2x`, `ccb-2x`, `ccb_2x`, `cocos`,
-`set vi tri`, `node`, `scene`, `prefab`, `inspector`, `asset`, `component`,
-`preview`, `build` — hoac agent dinh goi `call_tool_chain`.
+Khi prompt chứa `code mode`, `ccb2x`, `cc-bridge-2x`, `cocos`, `node`, `scene`,
+`prefab`, `inspector`, `asset`, `component`, `preview`, `build` — hoặc cần gọi
+`call_tool_chain`.
 
-## Cache
+## Bootstrap bắt buộc mỗi session
 
-- **Nguon:** `~/.utcp_config.json` (extension ghi `cc3x7`/`cc-bridge-2x` (+ `ccb2x`) → `http://localhost:<port>/utcp` moi lan start).
-- **Bootstrap:** `SessionStart` hook chay `scripts/cc-bridge-bootstrap.js` — doc config, fetch `/utcp` lay **full toolDefs** (`name`+`description`+`inputs`/`outputs`/`tags`/`tool_call_template`), ghi `.claude/cc-bridge-cache.json` + inject `CK_CODE_MODE=ready` vao env. **1 fetch = full detail, khong can `tools_info` tung tool.** Fail-open (khong block session neu Cocos chua mo).
-- **Persist:** file cache ton tai qua session; hook refresh moi session (port doi tu fix).
+1. Đọc template hiện tại trong `~/.utcp_config.json`; dùng `ccb2x` (short alias) hoặc `cc-bridge-2x` (canonical).
+2. Gọi `register_manual` với **toàn bộ template** đó.
+3. Gọi `list_tools`; xác nhận có ít nhất một tool thuộc namespace đã chọn.
+4. Chỉ sau đó gọi `call_tool_chain` với `<manual>.<tool>(args)`.
 
-### Doc cache
+Không suy ra manual đã registered từ `CK_CODE_MODE`, `.claude/cc-bridge-cache.json`, hay tool list của MCP session trước. Cache chỉ tránh phải đọc từng schema từ manual; live manual mới là source of truth.
 
-Cache luu `manuals.<name>.toolDefs[]` — full JSON Schema tung tool (de so sanh khi them/sua tool, khong chi ten). `tools[]` la ten rut gon de check nhanh.
-`cat .claude/cc-bridge-cache.json` | jq '.manuals.cc3x7.toolDefs[] | .name'` hoac `echo $CK_CODE_MODE`.
+## Retry
 
-## Quy tac goi tool
+Khi `call_tool_chain` trả `manual not found` hoặc `tool not found`:
 
-1. **Cache hit** (`CK_CODE_MODE=ready` hoac `.claude/cc-bridge-cache.json` co `tools[]`): goi thang
-   `call_tool_chain("ccb2x.<tool>({ ... })")` (recommend) hoac `cc_bridge_2x.*` / `ccb_2x.*` (compat) — KHONG `register_manual`, KHONG `search_tools`/`list_tools`/`tools_info`.
-2. **Cache miss** (file khong co, hoac Cocos chua mo luc SessionStart): lam 1 lan
-   `register_manual` tu `~/.utcp_config.json` → `list_tools` 1 lan → tiep tuc nhu (1).
-3. **Port doi / extension restart:** hook doc lai `~/.utcp_config.json` moi session — tu fix, khong can lam gi.
+1. Đọc lại `~/.utcp_config.json`; Cocos có thể vừa restart và đổi port.
+2. Re-register template hiện tại, rồi xác nhận bằng `list_tools`.
+3. Retry đúng một lần.
 
-## Retry (stale cache)
+Vẫn lỗi: báo lỗi và gọi `editorGetLogs`. Không retry loop.
 
-Neu `call_tool_chain` tra ve `manual not found` / `tool not found`:
+## Discover trước khi mutate
 
-1. Re-`register_manual` tu `~/.utcp_config.json` (doc lai file — port co the doi).
-2. Refresh cache: fetch `/utcp` lai, ghi `.claude/cc-bridge-cache.json`.
-3. Retry `call_tool_chain` 1 lan. Van fail → bao loi + goi `editorGetLogs`.
+1. `sceneSnapshot` để lấy hierarchy và giữ `uuid` node cần sửa.
+2. `componentQuery` hoặc `nodeQuery` để khám phá component/property thực tế.
+3. Gọi tool mutation chuyên biệt (`nodeSetProperty`, `nodeComponentManage`, `nodeMove`, …).
+4. Re-read field đã đổi khi task cần xác nhận.
 
-Chi retry 1 lan — tranh loop.
+Ưu tiên batch tools cho nhiều mutation độc lập. Dùng `sceneScript` chỉ để probe handler đã biết; không đoán message hay property.
 
-## Scene preview (chup layout scene)
+## Preview
 
-`previewManage` op `scene_preview` chup anh scene hien tai. 2 gotcha tranh loi:
-
-1. `imageSize` phai la **object** `{width,height}` (vd `{width:1280,height:720}`) — number se ep vuong.
-2. `cameraPosition`/`targetPosition` dat tai **tam Canvas** (khong phai `(0,0)`). Lay tam:
-   `inspectorGet` node `Canvas` → `position`. Design 1280x720 fitHeight → Canvas tai `(640,360)`,
-   `orthographicSize` = `designHeight/2` (=360). Design resolution: `projectManage get` → `general.designResolution`.
+Creator 2.4 dùng `editorGetScenePreview`; tool trả screenshot hoặc fallback note nếu `scene:capture-screenshot` không tồn tại. Không dùng workflow camera/viewport của 3.x.
 
 ## Manual names
 
-- `cc3x7` — Cocos Creator 3.7 (repo nay)
-- `cc-bridge-2x` (JS: `cc_bridge_2x`, **recommend** `ccb2x`, compat `ccb-2x`->`ccb_2x`) — Cocos Creator 2.4 (nhanh `cc-2x`, cung co che)
+- `ccb2x` — short alias khuyến nghị.
+- `cc-bridge-2x` — canonical template.
 
-Tu dong theo `~/.utcp_config.json`; khong hardcode port.
+Extension tự cập nhật URL hiện tại trong `~/.utcp_config.json`; không hard-code port. Alias legacy `ccb-2x`/`ccb_2x` được migrate sang `ccb2x`, không dùng cho registration mới.
 
-## Khong lam
+## Không làm
 
-- Khong tach moi Cocos tool thanh MCP tool rieng — giu JS batch (`call_tool_chain`) vi tiet kiem token.
-- Khong sua `source/utcp/*` hay fork `@utcp/code-mode-mcp`.
+- Không tách mỗi Cocos tool thành MCP tool riêng; giữ JS batch trong `call_tool_chain`.
+- Không sửa `source/utcp/*` hoặc fork `@utcp/code-mode-mcp` chỉ để đổi workflow agent.
