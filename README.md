@@ -196,6 +196,24 @@ npm run package
 4. If everything builds fine, `cc-bridge-3x.zip` file should appear in repository root.
 5. Install it in Cocos Creator with **Extension Manager**.
 
+### Development testing
+
+For rapid iteration, link the project extension directory directly to this repository instead of repeatedly importing the packaged zip:
+
+```powershell
+npm run link:project -- "G:\path\to\cocos-project"
+```
+
+If the project already has an imported `cc-bridge-3x`, preserve it as a timestamped backup while replacing it:
+
+```powershell
+npm run link:project -- "G:\path\to\cocos-project" --replace
+```
+
+Then build from this repository with `npm run build`. Reload the extension from **Extension Manager** for ordinary changes. Restart Creator before testing changes that touch tool modules and scene scripts together: their module caches do not reload as one unit.
+
+Do not use **Delete** in Extension Manager while the extension path is a junction; remove the junction from the filesystem instead.
+
 ## Adding Custom Tools
 
 You should add custom tools right in extension package and build it from source as described above.
