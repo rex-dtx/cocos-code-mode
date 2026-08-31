@@ -1,8 +1,7 @@
 # ccb3x Gap Closure — parity + funplay leftover (2-3 tasks, T2)
 
 > **Ngày:** 2026-08-28 · **Branch:** `cc-3x7` · **Type:** gap-closure / T2
-> **Nguồn:** `docs/parity-v2-v3.md` (85 vs 78 — 34 chung), `docs/cc-3x7-message-registry.json` (416 msg, 20 module, 3.7.3 dump), `plans/260825-1718-ccb3x-tool-expansion` (funplay matrix)
-> **Trạng thái:** G1 ✅ · G2 ✅ (NOT-EXPOSED, không implement) · G3 ✅ — 85→86 tools
+> **Trạng thái:** DONE — G1 ✅ · G2 ✅ (NOT-EXPOSED, không implement) · G3 ✅; live smoke trên build `f249e87` xác nhận 86 tools, 8 pass / 0 fail / 0 skip; parity doc đã đồng bộ
 
 ## 0. Bối cảnh
 
