@@ -118,17 +118,6 @@ export const methods: { [key: string]: (...any: any) => any } = {
             `Built at: ${b.builtAt}`,
         ];
         console.log(`[${packageJSON.name}] Build info:\n${lines.join('\n')}`);
-        try {
-            (Editor as any).Dialog.messageBox({
-                type: 'info',
-                title: `${packageJSON.name} Build Info`,
-                message: lines.join('\n'),
-                buttons: ['OK'],
-                defaultId: 0,
-            });
-        } catch {
-            try { (Editor as any).Dialog.info(lines.join('\n'), { title: `${packageJSON.name} Build Info` }); } catch { /* logged above */ }
-        }
     }
 };
 
