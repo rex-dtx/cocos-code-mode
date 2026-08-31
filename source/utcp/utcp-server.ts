@@ -42,6 +42,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
+import { toToolErrorResponse } from './tool-error';
 
 export interface SchemaValidationError {
     path: string;
@@ -455,9 +456,10 @@ export class UtcpServerManager {
                 } catch (err: any) {
                     console.error(`Error in tool ${toolDef.name}:`, err);
                     const ms2 = Date.now() - ((req as any)._t0 ?? t0);
+                    const response = toToolErrorResponse(err);
                     res.setHeader('X-Duration-Ms', String(ms2));
-                    debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: ms2 });
-                    res.status(500).json({ error: err.message });
+                    debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, durationMs: ms2 });
+                    res.status(response.status).json(response.body);
                 }
             };
 

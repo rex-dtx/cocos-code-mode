@@ -3,6 +3,7 @@ import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import fs from 'fs-extra';
 import path from 'path';
 import { VERBOSE_PREFAB_BYTES } from '../utils/verbose';
+import { ToolError } from '../tool-error';
 
 function normalizePrefabPath(p?: string): string {
     if (!p) return '';
@@ -32,7 +33,16 @@ async function resolvePrefab(ident: string): Promise<{ url: string, uuid: string
     if (info && info.type !== 'cc.Prefab' && info.ext !== '.prefab' && !resolvedUrl.endsWith('.prefab')) {
         // Still allow — Cocos sometimes reports type differently, but warn via error if clearly wrong
         if (info.type && info.type !== 'cc.Prefab') {
-            throw new Error(`Asset ${resolvedUrl} is type '${info.type}', not a prefab`);
+            throw new ToolError({
+                code: 'ASSET_TYPE_MISMATCH',
+                message: `readPrefabJson accepts cc.Prefab; received ${info.type}.`,
+                details: {
+                    assetPath: resolvedUrl,
+                    expectedTypes: ['cc.Prefab'],
+                    actualType: info.type,
+                },
+                recovery: 'Use sceneSnapshot, nodeGetTree, or inspectorGet for a scene.',
+            });
         }
     }
 

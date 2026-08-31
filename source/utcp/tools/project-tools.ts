@@ -1,3 +1,4 @@
+import { ToolError } from '../tool-error';
 export class ProjectTools {
 
     // via projectManage — kept for delegation
@@ -24,7 +25,18 @@ export class ProjectTools {
             const ok=await Editor.Message.request('project','set-config','project',args.path,args.value);
             if(ok===false) throw new Error(`Failed to set project config at "${args.path}"`);
         }catch(e:any){
-            if(/does not exist/i.test(String(e?.message??e))) throw new Error(`projectSetConfig is not supported on this editor version - 'project/set-config' does not exist (added in 3.8.x). Reading via projectGetConfig still works; edit settings/v2/packages/*.json directly to change them.`);
+            if(/does not exist/i.test(String(e?.message??e))) {
+                throw new ToolError({
+                    code: 'UNSUPPORTED_EDITOR_API',
+                    message: "projectManage set is unavailable: Cocos Creator 3.7 does not expose 'project/set-config'.",
+                    details: {
+                        api: 'project/set-config',
+                        requiredEditorVersion: '3.8.x',
+                        requestedPath: args.path,
+                    },
+                    recovery: 'Edit settings/v2/packages/*.json directly to change project settings.',
+                });
+            }
             throw e;
         }
         return { success: true };
