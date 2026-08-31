@@ -138,11 +138,13 @@ export async function load() {
 
     try {
         const actualPort = await utcpServer.start(port);
-        console.log(`[${packageJSON.name}] UTCP Server started on port ${actualPort}`);
-
-        // Automatically update the port in the configuration on startup
+        const url = `http://localhost:${actualPort}/utcp`;
         await configManager.updatePort(actualPort);
-        console.log(`[${packageJSON.name}] UTCP config automatically updated with port ${actualPort}`);
+        console.log(
+            `[${packageJSON.name}] Ready: UTCP server listening at ${url}\n` +
+            `[${packageJSON.name}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
+            `[${packageJSON.name}] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
+        );
     } catch (err) {
         console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);
     }
