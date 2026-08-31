@@ -24,16 +24,17 @@ export class EditorTools {
         }, "GET", ['editor', 'env', 'info', 'version', 'engine', 'project']
     )
     async editorEnvInfo(): Promise<{ editor: string, engineVersion: string, enginePath?: string, nativeVersion?: string, nativePath?: string, projectPath: string }> {
-        const info = await Editor.Message.request('engine', 'query-info');
+        const info = await Editor.Message.request('engine', 'query-engine-info');
         if (!info) {
             throw new Error('Failed to query engine info');
         }
+        const version = Editor.App.version;
         return {
-            editor: info.editor,
-            engineVersion: info.version,
-            enginePath: info.path,
-            nativeVersion: info.nativeVersion,
-            nativePath: info.nativePath,
+            editor: version,
+            engineVersion: version,
+            enginePath: info.typescript.path || undefined,
+            nativeVersion: info.native.path ? version : undefined,
+            nativePath: info.native.path || undefined,
             projectPath: Editor.Project.path
         };
     }
