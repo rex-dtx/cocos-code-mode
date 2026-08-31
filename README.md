@@ -257,6 +257,16 @@ npm run link:project -- <path-to-cocos-project>
 
 This creates a junction at `<project>/packages/cc-bridge-2x`. If an imported extension already exists there, rerun with `--replace`; it is renamed to a timestamped backup rather than deleted. Reload the extension or restart Creator after rebuilding.
 
+With Creator open, validate the live UTCP surface:
+
+```bash
+npm run smoke:utcp
+# or target a known running server
+node scripts/smoke-utcp.js <port>
+```
+
+The smoke test verifies the strict manual envelope, build provenance, and `editorEnvInfo`. It reads the live `ccb2x` template when no port is supplied.
+
 ## Adding Custom Tools
 
 Add tools in `source/utcp/tools-2x/` and build from source. Keep the 3.x tools in `source/utcp/tools/` — they are excluded from the build and kept as porting reference.

@@ -33,6 +33,7 @@ import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
 import { trimResponse } from './utils/response-trimmer';
+import { slimOutputsSchema } from './utils/schema-slimmer';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -123,6 +124,9 @@ export class UtcpServerManager {
             }
 
             const toolDef = JSON.parse(JSON.stringify(toolMeta.tool));
+            if (toolDef.outputs) {
+                toolDef.outputs = slimOutputsSchema(toolDef.outputs);
+            }
             const toolUrlPath = toolDef.tool_call_template.url;
 
             toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;
