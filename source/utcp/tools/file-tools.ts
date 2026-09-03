@@ -1,4 +1,5 @@
 import { utcpTool } from '../decorators';
+import { invalidateAfterWrite } from '../utils/memo-cache';
 import fs from 'fs-extra';
 import path from 'path';
 import { VERBOSE_FILE_BYTES, VERBOSE_SEARCH_LIMIT } from '../utils/verbose';
@@ -81,6 +82,7 @@ export class FileTools {
         if (relToProject.startsWith('assets/')) {
             const dbUrl = `db://${relToProject}`;
             try { await Editor.Message.request('asset-db', 'refresh-asset', dbUrl); } catch {}
+            invalidateAfterWrite();
         }
 
         return { success: true, bytesWritten: Buffer.byteLength(args.content, 'utf-8') };
@@ -182,6 +184,7 @@ export class FileTools {
         const relToProject = path.relative(projectPath, resolved).replace(/\\/g, '/');
         if (relToProject.startsWith('assets/')) {
             try { await Editor.Message.request('asset-db', 'refresh-asset', `db://${relToProject}`); } catch {}
+            invalidateAfterWrite();
         }
 
         return { success: true, replacements: count };
