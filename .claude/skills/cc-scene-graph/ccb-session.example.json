@@ -1,0 +1,9 @@
+{
+  "bundle": "cc-release-slot",
+  "sceneUuid": "80dddede-0000-0000-0000-000000000000",
+  "workingPath": "/Canvas/Player",
+  "task": "swap texture X -> Y on cc.Sprite",
+  "updatedAt": "2026-09-03T10:12:03.122Z",
+  "age_ms": 1200,
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one"
+}
