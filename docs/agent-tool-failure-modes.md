@@ -243,7 +243,8 @@ Hai lỗi runtime 2026-09-01 cho thấy fail-loud chỉ là nửa contract:
 |---|---|---|---|
 | `readPrefabJson` | `.scene` / `cc.SceneAsset` | `not a prefab` string | `sceneSnapshot`, `nodeGetTree`, hoặc `inspectorGet` |
 | `projectManage({ operation: 'set' })` | Creator 3.7 không có `project/set-config` | stack + message dài | chỉnh `settings/v2/packages/*.json`; chỉ dùng IPC write trên Creator 3.8 sau live verify |
-
+| `nodeGetTree` | Node UUID không thuộc scene đang mở (hoặc trong prefab đóng) | generic 500 "Node tree not found for ..." | `TARGET_NOT_FOUND` (404): kiểm tra `sceneGetInfo`, chuyển scene qua `sceneOpen`, hoặc đọc offline qua `readPrefabJson` / `cocos-graph navigate` |
+| `nodeGetTree` | Truyền nhầm composite handle (`file#uuid`) từ cache | 500 không tìm thấy | `COMPOSITE_HANDLE_NOT_SUPPORTED` (400): tách `file` và truyền bare engine UUID |
 Agent không nên parse stack trace hay suy luận từ English message. CC Bridge trả lỗi domain có shape ổn định:
 
 ```json
@@ -256,6 +257,18 @@ Agent không nên parse stack trace hay suy luận từ English message. CC Brid
     "actualType": "cc.SceneAsset"
   },
   "recovery": "Use sceneSnapshot, nodeGetTree, or inspectorGet for a scene."
+}
+```
+
+```json
+{
+  "error": "Node tree not found for node \"c8iLDUCc9N4asmC+1q87Xn\" in the currently open scene.",
+  "code": "TARGET_NOT_FOUND",
+  "details": {
+    "requestedId": "c8iLDUCc9N4asmC+1q87Xn",
+    "currentSceneUuid": "9a1fafde-45df-4d82-9cd1-7f55dc30dcf8"
+  },
+  "recovery": "The node may belong to an unopened prefab or a different scene file. (1) Call sceneGetInfo to check the active scene. (2) If it belongs to another scene, call sceneOpen. (3) If it is inside an offline prefab, use readPrefabJson or offline cocos-graph navigate instead of live nodeGetTree."
 }
 ```
 

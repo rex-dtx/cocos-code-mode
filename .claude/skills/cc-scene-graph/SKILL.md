@@ -74,6 +74,15 @@ node tools/cocos-graph/bin/cocos-graph.mjs session-record \
 
 `session-record` rejects calls without `--verified`; it writes `.claude/ccb-session.json` atomically with `age_ms:0`.
 
+
+### Tool Selection Matrix (Avoiding "Node tree not found")
+
+| Target Source | Tool to Read Structure | Tool to Inspect Properties | Live nodeGetTree Allowed? |
+|---|---|---|---|
+| Open Scene (`sceneGetInfo` matches) | `nodeGetTree` | `inspectorGet` | **YES** |
+| Unopened `.scene` file | `cocos-graph navigate` or open via `sceneOpen` | `sceneOpen` then `inspectorGet` | **NO** (Must call `sceneOpen` first) |
+| `.prefab` file on disk | `readPrefabJson` or `cocos-graph navigate` | `inspectorGet` with asset UUID | **NO** (Prefab is not active scene; `nodeGetTree` will throw 404 `TARGET_NOT_FOUND`) |
+| Composite handle (`file#uuid`) | Strip to bare `uuid` only after verifying `file` is open | `inspectorGet` with bare `uuid` | **NO** (Must strip `file#` prefix) |
 ## Live snapshot contract
 
 ```json

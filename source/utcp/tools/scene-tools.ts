@@ -435,6 +435,17 @@ export class SceneTools {
         SceneTreeItemSchema, "GET",  ['scene', 'graph', 'node', 'hierarchy', 'tree']
     )
     async nodeGetTree(args: { reference?: IInstanceReference, maxDepth?: number, maxNodes?: number, verbose?: boolean, fields?: string[] }): Promise<ISceneTreeItem> {
+        if (args.reference?.id && args.reference.id.includes('#')) {
+            const [file, uuid] = args.reference.id.split('#');
+            throw new ToolError({
+                code: 'COMPOSITE_HANDLE_NOT_SUPPORTED',
+                status: 400,
+                message: `Composite graph handle "${args.reference.id}" passed to live tool nodeGetTree. Pass bare engine UUID only.`,
+                details: { file, uuid, reference: args.reference },
+                recovery: `Node belongs to "${file}". Check if this file is currently open via sceneGetInfo. If it is a prefab, inspect offline via readPrefabJson or cocos-graph navigate. Otherwise pass bare uuid "${uuid}".`
+            });
+        }
+
         let treeBase;
         if (args.reference) {
              treeBase = await Editor.Message.request('scene', 'query-node-tree', args.reference.id);
@@ -444,7 +455,29 @@ export class SceneTools {
         }
 
         if (!treeBase) {
-            throw new Error(`Node tree not found for ${args.reference?.id || 'entire scene'}`);
+            const currentRaw = (await Editor.Message.request('scene', 'query-current-scene').catch(() => undefined)) as unknown;
+            let currentSceneUuid = 'unknown';
+            if (typeof currentRaw === 'string') {
+                currentSceneUuid = currentRaw;
+            } else if (currentRaw && typeof currentRaw === 'object' && 'uuid' in currentRaw) {
+                const candidate = (currentRaw as Record<string, unknown>).uuid;
+                if (typeof candidate === 'string') currentSceneUuid = candidate;
+            }
+            const isRootQuery = !args.reference?.id;
+            throw new ToolError({
+                code: 'TARGET_NOT_FOUND',
+                status: 404,
+                message: isRootQuery
+                    ? 'Node tree not found: no active scene or prefab is currently open in the editor.'
+                    : `Node tree not found for node "${args.reference?.id}" in the currently open scene.`,
+                details: {
+                    requestedId: args.reference?.id ?? null,
+                    currentSceneUuid
+                },
+                recovery: isRootQuery
+                    ? "Open a scene first using sceneOpen({ assetPath: 'db://assets/.../scene_name.scene' })."
+                    : "The node may belong to an unopened prefab or a different scene file. (1) Call sceneGetInfo to check the active scene. (2) If it belongs to another scene, call sceneOpen. (3) If it is inside an offline prefab, use readPrefabJson or offline cocos-graph navigate instead of live nodeGetTree."
+            });
         }
 
         const maxDepth = Math.min(Math.max(args.maxDepth ?? (args.verbose ? VERBOSE_TREE_DEPTH : DEFAULT_TREE_MAX_DEPTH), 0), VERBOSE_TREE_DEPTH);
