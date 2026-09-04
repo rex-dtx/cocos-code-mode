@@ -1,4 +1,5 @@
 import { ISuccessIndicator } from '../schemas';
+import { isMessageNotExposed } from '../utils/editor-message-error';
 
 export class ProgramTools {
 
@@ -21,7 +22,7 @@ export class ProgramTools {
     private async requestFirst(candidates: [string, any[]][], what: string): Promise<any> {
         const errors: string[] = [];
         for (const [message, params] of candidates) {
-            try { return await Editor.Message.request('program', message as any, ...params); } catch(e:any){ const t=String(e?.message??e); if(!/does not exist/i.test(t)) throw e; errors.push(`${message}: ${t}`); }
+            try { return await Editor.Message.request('program', message as any, ...params); } catch(e:any){ if(!isMessageNotExposed(e, 'program', message)) throw e; errors.push(`${message}: ${String(e?.message ?? e)}`); }
         }
         throw new Error(`Cannot ${what} - no supported message on this editor version (${errors.join('; ')})`);
     }
@@ -31,7 +32,7 @@ export class ProgramTools {
         if (!args.url) throw new Error('urlOpen requires url');
         let parsed: URL; try{ parsed=new URL(args.url);} catch{ throw new Error(`urlOpen requires an absolute URL, got "${args.url}"`); }
         if (parsed.protocol!=='http:'&&parsed.protocol!=='https:') throw new Error(`urlOpen only opens http(s) URLs, got "${parsed.protocol}"`);
-        try{ const ok=await Editor.Message.request('program','open-url' as any, parsed.href); if(ok) return {success:true}; }catch(e:any){ if(!/does not exist/i.test(String(e?.message??e))) throw e; }
+        try{ const ok=await Editor.Message.request('program','open-url' as any, parsed.href); if(ok) return {success:true}; }catch(e:any){ if(!isMessageNotExposed(e, 'program', 'open-url')) throw e; }
         const { execFile } = require('child_process');
         const [command, argv]: [string,string[]] = process.platform==='win32'?['cmd',['/c','start','',parsed.href]]:process.platform==='darwin'?['open',[parsed.href]]:['xdg-open',[parsed.href]];
         await new Promise<void>((resolve,reject)=> execFile(command,argv,(err:any)=> err?reject(err):resolve()));

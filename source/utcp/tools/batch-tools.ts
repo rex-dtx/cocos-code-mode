@@ -1,6 +1,7 @@
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
 import { SetPropertyTool } from './set-properties-tool';
+import { invalidateAfterWrite } from '../utils/memo-cache';
 
 const MAX_BATCH_SET_ENTRIES = 100;
 const MAX_BATCH_PROPERTIES = 100;
@@ -88,6 +89,7 @@ export class BatchTools {
 
         // Single snapshot for the whole batch
         await Editor.Message.request('scene', 'snapshot');
+        invalidateAfterWrite();
 
         if (errors.length > 0 && successCount === 0) {
             throw new Error(`All entries failed: ${errors.join('; ')}`);

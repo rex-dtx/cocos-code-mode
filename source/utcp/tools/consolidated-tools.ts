@@ -1,3 +1,4 @@
+import { ToolError } from '../tool-error';
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
 import { ToolsUtils } from '../utils/tools-utils';
@@ -31,13 +32,34 @@ export class ConsolidatedTools {
             ? (args.reference?.id ?? (() => { throw new Error('inspectorGet target=instance requires reference.id'); })())
             : args.target;
         const info = await ToolsUtils.inspectInstance(id);
-        if (!info) throw new Error(`Target ${id} not found or not supported.`);
+        if (!info) {
+            throw new ToolError({
+                code: 'TARGET_NOT_FOUND',
+                status: 404,
+                message: `inspectorGet: Target "${id}" not found or not supported.`,
+                details: { target: args.target, id },
+                recovery: 'Target ID must be a valid node/component/asset UUID, CurrentSceneGlobals, or ProjectSettings. Use nodeGetTree or assetResolvePath to obtain valid UUIDs.',
+            });
+        }
         const { props, type } = info;
         if (!props) throw new Error(`Could not retrieve properties for ${type} (${id}).`);
         let filteredProps: any = props;
         if (args.fields && args.fields.length > 0) {
             filteredProps = {};
-            for (const key of args.fields) if (key in props) filteredProps[key] = (props as any)[key];
+            // Same guard as the delegation path (docs §2 mask-required): unknown /
+            // typo'd fields must not vanish — that reads as a healthy empty dump.
+            const hasOwn = (key: string) => Object.prototype.hasOwnProperty.call(props, key);
+            const unknown = args.fields.filter((key) => !hasOwn(key));
+            if (unknown.length > 0) {
+                throw new ToolError({
+                    code: 'INVALID_ARGUMENT',
+                    status: 400,
+                    message: `inspectorGet: fields not present on ${type} (${id}): ${unknown.join(', ')}`,
+                    details: { type, id, requestedFields: args.fields, unknownFields: unknown },
+                    recovery: 'Omit fields[] to inspect all available properties on this instance.',
+                });
+            }
+            for (const key of args.fields) filteredProps[key] = (props as any)[key];
         }
         const parsed = ToolsUtils.unwrapProperties(filteredProps);
         const entries = Object.entries(parsed);

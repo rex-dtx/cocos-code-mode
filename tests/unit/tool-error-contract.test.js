@@ -41,4 +41,16 @@ describe('typed UTCP tool errors', () => {
     assert.match(source, /code: 'UNSUPPORTED_EDITOR_API'/);
     assert.match(source, /recovery: 'Edit settings\/v2\/packages\/\*\.json directly to change project settings\.'/);
   });
+
+  it('classifies nodeGetTree target not found and composite handles with recovery', () => {
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const source = fs.readFileSync(path.resolve(__dirname, '../../source/utcp/tools/scene-tools.ts'), 'utf8');
+
+    assert.match(source, /code: 'TARGET_NOT_FOUND'/);
+    assert.match(source, /status: 404/);
+    assert.match(source, /code: 'COMPOSITE_HANDLE_NOT_SUPPORTED'/);
+    assert.match(source, /status: 400/);
+    assert.match(source, /recovery:[\s\S]*?sceneGetInfo/);
+  });
 });

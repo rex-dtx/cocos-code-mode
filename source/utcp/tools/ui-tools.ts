@@ -1,4 +1,5 @@
 import { utcpTool } from '../decorators';
+import { ToolError } from '../tool-error';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
@@ -129,16 +130,46 @@ export class UiTools {
     async createButton(args: { name?: string, text?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
         const { reference } = await this.createUiNode({ uiType: 'Button', name: args.name || 'Button', parentReference: args.parentReference });
 
-        // Button prefab has a child Label node — set its text
+        // Button prefab has a child Label node — set its text. No swallow: a requested
+        // label that was not applied must fail loudly, otherwise the agent believes
+        // the button reads its text (docs §2 "trả sai còn tệ hơn ném lỗi").
         if (args.text !== undefined) {
             try {
                 const node = await Editor.Message.request('scene', 'query-node', reference.id) as any;
-                const labelChild = (node.children || []).find((c: any) => c.name === 'Label');
-                if (labelChild?.uuid) {
-                    await Editor.Message.request('scene', 'set-property', { uuid: labelChild.uuid, path: '__comps__.0.string', dump: { value: args.text, type: 'cc.String' } });
+                const labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
+                if (!labelChild?.uuid) {
+                    const rbErr = await this.rollbackNode(reference.id);
+                    throw new ToolError({
+                        code: 'PARTIAL_MUTATION',
+                        status: 500,
+                        message: `createButton: no Label child on ${reference.id} — text "${args.text}" was not applied${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                        details: { createdNodeId: reference.id, reason: 'no Label child' },
+                        recovery: 'Node was rolled back, safe to retry; or query-node to verify structure',
+                    });
                 }
-            } catch {}
-            await Editor.Message.request('scene', 'snapshot');
+                const ok = await Editor.Message.request('scene', 'set-property', { uuid: labelChild.uuid, path: '__comps__.0.string', dump: { value: args.text, type: 'cc.String' } }) as boolean;
+                if (ok === false) {
+                    const rbErr = await this.rollbackNode(reference.id);
+                    throw new ToolError({
+                        code: 'PARTIAL_MUTATION',
+                        status: 500,
+                        message: `createButton: set-property refused for label text on ${labelChild.uuid} (button ${reference.id})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; button was rolled back, safe to retry'}`,
+                        details: { createdNodeId: reference.id, labelChildUuid: labelChild.uuid },
+                        recovery: 'Button was rolled back, safe to retry',
+                    });
+                }
+                await Editor.Message.request('scene', 'snapshot');
+            } catch (err: any) {
+                if (err instanceof ToolError) throw err;
+                const rbErr = await this.rollbackNode(reference.id);
+                throw new ToolError({
+                    code: 'PARTIAL_MUTATION',
+                    status: 500,
+                    message: `createButton: follow-up IPC failed for button ${reference.id} (${err?.message || err})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, error: err?.message || String(err) },
+                    recovery: 'Button was rolled back, safe to retry',
+                });
+            }
         }
 
         return { reference };
@@ -162,17 +193,42 @@ export class UiTools {
     async createSprite(args: { name?: string, spriteFrameUuid?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
         const { reference } = await this.createUiNode({ uiType: 'Sprite', name: args.name || 'Sprite', parentReference: args.parentReference });
 
+        // No swallow: an unassigned spriteFrame must not read as a successful create.
         if (args.spriteFrameUuid) {
-            try {
-                await Editor.Message.request('scene', 'set-property', {
-                    uuid: reference.id,
-                    path: '__comps__.0.spriteFrame',
-                    dump: { value: { uuid: args.spriteFrameUuid }, type: 'cc.SpriteFrame' },
+            const ok = await Editor.Message.request('scene', 'set-property', {
+                uuid: reference.id,
+                path: '__comps__.0.spriteFrame',
+                dump: { value: { uuid: args.spriteFrameUuid }, type: 'cc.SpriteFrame' },
+            }) as boolean;
+            if (ok === false) {
+                const rbErr = await this.rollbackNode(reference.id);
+                throw new ToolError({
+                    code: 'PARTIAL_MUTATION',
+                    status: 500,
+                    message: `createSprite: set-property refused for spriteFrame ${args.spriteFrameUuid} on ${reference.id}${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, spriteFrameUuid: args.spriteFrameUuid },
+                    recovery: 'Sprite node was rolled back, safe to retry; verify the SpriteFrame uuid with query-asset',
                 });
-                await Editor.Message.request('scene', 'snapshot');
-            } catch {}
+            }
+            await Editor.Message.request('scene', 'snapshot');
         }
 
         return { reference };
+    }
+
+    /**
+     * Best-effort undo for a partially applied create* helper: remove the node we
+     * just created and snapshot the scene. Returns null when the node is gone, or
+     * the rollback error message so the caller can tell the agent to delete it
+     * manually before retrying (a leaked half-configured node is worse than a throw).
+     */
+    private async rollbackNode(uuid: string): Promise<string | null> {
+        try {
+            await Editor.Message.request('scene', 'remove-node', { uuid });
+            await Editor.Message.request('scene', 'snapshot');
+            return null;
+        } catch (e) {
+            return e instanceof Error ? e.message : String(e);
+        }
     }
 }

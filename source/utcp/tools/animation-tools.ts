@@ -220,11 +220,15 @@ export class AnimationTools {
                     }
                 }
                 const res: any = await Editor.Message.request('scene', 'animation-operation', args.operations, { recordUndo: true });
-                // IAniResultBase: { state: 'success' | 'failure', result, reason? }
+                // IAniResultBase: { state: 'success' | 'failure', result, reason? }.
+                // Whitelist success — an absent or unknown state is a refused/lost write.
                 if (res && res.state === 'failure') {
                     return { success: false, error: res.reason || 'animation operation failed', result: res.result ?? null };
                 }
-                return { success: true, result: res && 'result' in res ? res.result : (res ?? null) };
+                if (!res || res.state !== 'success') {
+                    throw new Error(`animation-operation returned an unexpected payload: ${JSON.stringify(res ?? null)}`);
+                }
+                return { success: true, result: 'result' in res ? res.result : null };
             }
             default:
                 throw new Error(`Unknown animation edit operation: ${args.operation}`);

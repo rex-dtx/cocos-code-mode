@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { VERBOSE_PREFAB_BYTES } from '../utils/verbose';
 import { ToolError } from '../tool-error';
+import { invalidateAfterWrite } from '../utils/memo-cache';
 
 function normalizePrefabPath(p?: string): string {
     if (!p) return '';
@@ -131,7 +132,8 @@ export class PrefabJsonTools {
         try { JSON.parse(args.content); } catch (e: any) { throw new Error(`Invalid JSON: ${e.message}`); }
         const { url, uuid, file } = await resolvePrefab(ident);
         await (fs as any).writeFile(file, args.content, 'utf8');
-        try { await Editor.Message.request('asset-db', 'refresh-asset', url); } catch {}
+        try { await Editor.Message.request('asset-db', 'refresh-asset', url); } catch { /* best-effort hint: the write itself was verified; asset-db re-import is owned by the editor */ }
+        invalidateAfterWrite();
         return { success: true, url, uuid };
     }
 

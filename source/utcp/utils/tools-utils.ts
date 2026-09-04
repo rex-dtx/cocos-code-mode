@@ -57,17 +57,37 @@ export class ToolsUtils {
         
         // Try Asset
         try {
-             const assetInfo = await Editor.Message.request('asset-db', 'query-asset-info', targetId);
-             const props = assetInfo ? await ImporterManager.getInstance().getImporter(assetInfo.importer)?.getProperties(assetInfo) : null;
-             if (assetInfo) {
-                 return {
-                     uuid: targetId,
-                     type: assetInfo.type, 
-                     props: props || null,
-                     assetInfo: assetInfo
-                 };
-             }
-        } catch (e) { console.warn('Failed to inspect asset:', e); }
+            const assetInfo = await Editor.Message.request('asset-db', 'query-asset-info', targetId);
+            if (assetInfo) {
+                let props: { [key: string]: IPropertyValueType } | undefined;
+                const importer = ImporterManager.getInstance().getImporter(assetInfo.importer);
+                if (importer) {
+                    try {
+                        props = await importer.getProperties(assetInfo);
+                    } catch (error) {
+                        console.warn(`Failed to inspect ${assetInfo.importer} metadata for asset ${targetId}; returning identity properties.`, error);
+                    }
+                }
+                if (!props) {
+                    // Asset identity remains inspectable even when its optional importer metadata is unavailable.
+                    props = {
+                        uuid: { value: assetInfo.uuid, type: 'String', readonly: true },
+                        type: { value: assetInfo.type, type: 'String', readonly: true },
+                        name: { value: assetInfo.name || '', type: 'String', readonly: true },
+                        url: { value: assetInfo.url || '', type: 'String', readonly: true },
+                        importer: { value: assetInfo.importer || '', type: 'String', readonly: true },
+                    };
+                }
+                return {
+                    uuid: targetId,
+                    type: assetInfo.type,
+                    props,
+                    assetInfo
+                };
+            }
+        } catch (error) {
+            console.warn(`Failed to query asset ${targetId}:`, error);
+        }
 
         return null; 
     }

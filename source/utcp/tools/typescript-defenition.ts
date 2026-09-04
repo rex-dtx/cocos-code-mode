@@ -61,10 +61,14 @@ export class GetClassInfoTool {
 
     /** @deprecated use inspectorGetDefinition({ target: 'instance', reference }) — not registered, kept for delegation */
     async inspectorGetInstanceDefinition(params: { reference: IInstanceReference, section?: string }): Promise<{ definition: string, sections: string[], totalSections: number }> {
-        // M4 L1: definition structure is near-static (type-level, not value-level) — safe to cache 60s cross-request.
-        const cacheKey = `inst:${params.reference.id}:${params.section || ''}`;
-        const cached = definitionMemo.get<{ definition: string, sections: string[], totalSections: number }>(cacheKey);
-        if (cached) return cached;
+        const sectionSuffix = params.section ?? '';
+        // Fast path: caller provided type — zero IPC on hit
+        const fastType = params.reference.type;
+        if (fastType) {
+            const fastKey = `${fastType}:${sectionSuffix}`;
+            const fastCached = definitionMemo.get<{ definition: string, sections: string[], totalSections: number }>(fastKey);
+            if (fastCached) return fastCached;
+        }
 
         this._definitions = [];
         this._definedNames.clear();
@@ -80,12 +84,20 @@ export class GetClassInfoTool {
             if (instanceInfo.props) {
                 props = instanceInfo.props;
             }
-            this.processClass(className, props);
         } else {
             throw new Error(`Class, Instance or special keyword not found: '${params.reference.id}'.`);
         }
 
-        // ponytail: pagination — sections are exported class/enum names
+        // Second-level: className hit (saves definition generation even though we paid one IPC)
+        const classKey = `${className}:${sectionSuffix}`;
+        const classCached = definitionMemo.get<{ definition: string, sections: string[], totalSections: number }>(classKey);
+        if (classCached) {
+            if (fastType && fastType !== className) definitionMemo.set(`${fastType}:${sectionSuffix}`, classCached);
+            return classCached;
+        }
+
+        this.processClass(className, props);
+
         const sections = this._definitions.map(d => {
             const m = d.match(/export\s+(?:class|enum)\s+(\w+)/);
             return m ? m[1] : '';
@@ -94,11 +106,13 @@ export class GetClassInfoTool {
             const idx = sections.findIndex(s => s === params.section);
             if (idx === -1) throw new Error(`Section '${params.section}' not found. Available: ${sections.join(', ')}`);
             const result = { definition: this._definitions[idx], sections, totalSections: sections.length };
-            definitionMemo.set(cacheKey, result);
+            definitionMemo.set(classKey, result);
+            if (fastType && fastType !== className) definitionMemo.set(`${fastType}:${sectionSuffix}`, result);
             return result;
         }
         const result = { definition: this._definitions.join('\n'), sections, totalSections: sections.length };
-        definitionMemo.set(cacheKey, result);
+        definitionMemo.set(classKey, result);
+        if (fastType && fastType !== className) definitionMemo.set(`${fastType}:${sectionSuffix}`, result);
         return result;
     }
 

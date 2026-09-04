@@ -98,6 +98,18 @@ Chưa audit hết. Pattern cần soi trong `source/utcp/tools/`:
 - normalize/default chạy **trước** guard bắt buộc
 - tool trả `{success:true}` mà không kiểm tra kết quả thật
 
+<!-- §2-audited -->
+**Đã audit 2026-09-04** (`feat/ccb3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`):
+quét toàn bộ `source/utcp/tools/` theo 4 mẫu trên. Kết quả: 0 `catch {}` rỗng còn lại
+(best-effort/probe gắn comment chủ ý); false-success bịt ở `set-property`,
+`restore-prefab`, `move-array-element`, `add-task`, `animation-operation`,
+`validateScene` diagnostics; payload nullish không còn đọc là “rỗng mà khoẻ”
+(`query-nodes-miss-assets`, `query-component-function-of-node`, `editorListTypes`,
+layers, `scene_mode`, `script_info`, `editorGetLogs`); ảnh verify magic bytes
+(`/9j/`, `iVBORw0KGgo`); `simulateKeyCombo` reject input sai thay vì echo success;
+prediction “does not exist” neo qua `utils/editor-message-error.ts`.
+Guard hồi quy: `tests/unit/fail-loud-contract.test.js` + tier 4 `scripts/smoke-utcp.js`.
+
 ---
 
 ## 3. Regression tôi tự gây: `build_info` giết cả 61 tool
@@ -184,6 +196,12 @@ Suite này unblock việc khác: port fix sang branch mới → chạy suite tha
 
 Ước lượng ~200 LOC, không framework, không fixture. Chạy sau mỗi lần restart editor.
 
+<!-- §5-built -->
+**Đã dựng 2026-09-04** (`feat/ccb3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`): cả 2 tầng
+trên nằm trong `scripts/smoke-utcp.js` (tier manual + tier fail-loud typed-body) kèm stale-build
+assert `/build-info` vs `git rev-parse --short HEAD`; guard chạy CI:
+`tests/unit/fail-loud-contract.test.js`.
+
 ---
 
 ## 6. Ghi chú về surface
@@ -216,6 +234,50 @@ Cái phân biệt chất lượng không phải version editor — mà là **đ�
 | `nodeComponentsGet` type | `["cc.UITransform","cc.Sprite","SettingsUI"]` — user script resolve đúng |
 | manual sau `fbdfd64` | 3 key, register lại 61 tool |
 
+
+## 7. Typed recovery errors — agent cần biết cách thoát lỗi
+
+Hai lỗi runtime 2026-09-01 cho thấy fail-loud chỉ là nửa contract:
+
+| Tool | Input/runtime state | Trước fix | Recovery đúng |
+|---|---|---|---|
+| `readPrefabJson` | `.scene` / `cc.SceneAsset` | `not a prefab` string | `sceneSnapshot`, `nodeGetTree`, hoặc `inspectorGet` |
+| `projectManage({ operation: 'set' })` | Creator 3.7 không có `project/set-config` | stack + message dài | chỉnh `settings/v2/packages/*.json`; chỉ dùng IPC write trên Creator 3.8 sau live verify |
+| `nodeGetTree` | Node UUID không thuộc scene đang mở (hoặc trong prefab đóng) | generic 500 "Node tree not found for ..." | `TARGET_NOT_FOUND` (404): kiểm tra `sceneGetInfo`, chuyển scene qua `sceneOpen`, hoặc đọc offline qua `readPrefabJson` / `cocos-graph navigate` |
+| `nodeGetTree` | Truyền nhầm composite handle (`file#uuid`) từ cache | 500 không tìm thấy | `COMPOSITE_HANDLE_NOT_SUPPORTED` (400): tách `file` và truyền bare engine UUID |
+Agent không nên parse stack trace hay suy luận từ English message. CC Bridge trả lỗi domain có shape ổn định:
+
+```json
+{
+  "error": "readPrefabJson accepts cc.Prefab; received cc.SceneAsset.",
+  "code": "ASSET_TYPE_MISMATCH",
+  "details": {
+    "assetPath": "db://.../g9664H.scene",
+    "expectedTypes": ["cc.Prefab"],
+    "actualType": "cc.SceneAsset"
+  },
+  "recovery": "Use sceneSnapshot, nodeGetTree, or inspectorGet for a scene."
+}
+```
+
+```json
+{
+  "error": "Node tree not found for node \"c8iLDUCc9N4asmC+1q87Xn\" in the currently open scene.",
+  "code": "TARGET_NOT_FOUND",
+  "details": {
+    "requestedId": "c8iLDUCc9N4asmC+1q87Xn",
+    "currentSceneUuid": "9a1fafde-45df-4d82-9cd1-7f55dc30dcf8"
+  },
+  "recovery": "The node may belong to an unopened prefab or a different scene file. (1) Call sceneGetInfo to check the active scene. (2) If it belongs to another scene, call sceneOpen. (3) If it is inside an offline prefab, use readPrefabJson or offline cocos-graph navigate instead of live nodeGetTree."
+}
+```
+
+`error` vẫn là string để HTTP/Code Mode client cũ hiển thị được; `code`, `details`, `recovery` là machine-readable context cho MCP/agent report và chọn đường thay thế. Expected caller/capability errors dùng HTTP `422`; invalid schema input dùng `400`; lỗi không phân loại trả `500` với `{ "error": "Internal tool error.", "code": "INTERNAL_ERROR" }` để không leak implementation detail.
+
+**Rule:** tool chỉ ném `ToolError` khi biết chính xác error class, input/resource state, và recovery. Không wrap error mơ hồ thành một code giả. Generic Cocos/extension failure vẫn cần full console/debug log để người vận hành điều tra.
+
+**Follow-up:** support `project/set-config` cho Creator 3.8 được queue tại master plan `Cocos 3.8 Project Config Support`; không giả lập bằng filesystem write ở 3.7 vì import/serialization phải do editor sở hữu.
+
 ---
 
 ## Unresolved
@@ -225,9 +287,10 @@ Cái phân biệt chất lượng không phải version editor — mà là **đ�
    `Editor._Module.require('PreviewExtends')` + `scene:prefab-preview` / `query-prefab-preview-data`
    — cụm này là API **3.8-only**. Ảnh qua `sharp` (texture/sprite-frame) vẫn chạy.
    Cần quyết: port sang API preview 3.7.3, hay bỏ preview prefab/material/mesh ở branch này?
-2. **Fail-loud audit chưa chạy.** §2 mới nêu pattern, chưa quét hết `source/utcp/tools/`.
-   Chưa biết còn bao nhiêu chỗ `?? default` che input sai.
-3. **Smoke suite chưa viết.** §5 là đề xuất, chưa có code.
+2. ~~**Fail-loud audit chưa chạy.**~~ ✅ Đã quét xong 2026-09-04 + sửa + guard —
+   xem ghi chú §2; `tests/unit/fail-loud-contract.test.js`.
+3. ~~**Smoke suite chưa viết.**~~ ✅ `scripts/smoke-utcp.js` thêm stale-build assert
+   (§4 rule 1, so `/build-info` với `git rev-parse --short HEAD`) + tier fail-loud (§5).
 4. **`custom` có 8 fix nhưng chưa runtime-test trên 3.8.x** — cùng loại rủi ro đã tạo ra
    nhóm bug này ngay từ đầu.
 5. **`origin` = `rex-dtx/cocos-code-mode`, repo người khác.** Cả 3 branch đang push lên đó.

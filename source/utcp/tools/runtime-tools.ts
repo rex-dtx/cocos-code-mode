@@ -80,10 +80,12 @@ export class RuntimeTools {
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: 'cc-bridge-3x', method: 'runtimeGetState', args: [],
         }) as any;
-        return {
-            paused: result?.paused ?? false,
-            timeScale: result?.timeScale ?? 1,
-            frameCount: result?.frameCount ?? 0,
-        };
+        if (!result || typeof result !== 'object') throw new Error('runtimeGetState: no runtime state — is the preview/game running?');
+        // Reject partial payloads outright: field-level coercion would fabricate
+        // false/1/0 again — the exact false-success class this audit removes (docs §2).
+        if (typeof result.paused !== 'boolean' || typeof result.timeScale !== 'number' || typeof result.frameCount !== 'number') {
+            throw new Error(`runtimeGetState: malformed runtime payload ${JSON.stringify(result).slice(0, 160)}`);
+        }
+        return { paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
     }
 }

@@ -84,8 +84,11 @@ export class ScreenshotTools {
             args: [imageSize, jpegQuality],
         }) as string;
 
-        if (!base64 || typeof base64 !== 'string') {
-            throw new Error('Failed to capture scene screenshot');
+        // JPEG base64 always begins /9j/. Anything else (notably "data:," from a
+        // zero-sized canvas) is a failed capture masquerading as an image — the
+        // docs §1 canonical silent failure. Plain Error: ambiguous engine output.
+        if (typeof base64 !== 'string' || !base64.startsWith('/9j/')) {
+            throw new Error(`Scene capture returned no image data (got ${JSON.stringify(String(base64).slice(0, 32))}). The scene view may not be rendering.`);
         }
 
         return { type: 'image', data: base64, mimeType: 'image/jpeg' };
@@ -140,8 +143,12 @@ export class ScreenshotTools {
 
         try {
             const image = await targetWindow.capturePage();
+            if (image.isEmpty()) throw new Error('Editor window capture produced an empty image');
             const buffer = image.toPNG();
+            if (!buffer.length) throw new Error('Editor window capture produced no PNG bytes');
             const base64 = buffer.toString('base64');
+            // PNG base64 always begins iVBORw0KGgo
+            if (!base64.startsWith('iVBORw0KGgo')) throw new Error(`Editor window capture produced invalid PNG (got ${JSON.stringify(base64.slice(0, 16))})`);
             return { type: 'image', data: base64, mimeType: 'image/png' };
         } catch (e: any) {
             throw new Error(`Failed to capture editor window: ${e.message}`);

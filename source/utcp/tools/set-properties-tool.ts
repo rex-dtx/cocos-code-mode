@@ -98,6 +98,7 @@ export class SetPropertyTool {
                 throw new Error(`Parent Node ${nodeUuid} for Component ${uuid} not found.`);
             }
             const componentIndex = nodeInfo.__comps__.findIndex((comp: any) => comp.value.uuid.value === uuid);
+            if (componentIndex === -1) throw new Error(`Component ${uuid} not found on node ${nodeUuid}`);
             propertyPath = `__comps__.${componentIndex}.${propertyPath}`;
             uuid = nodeUuid;
         }
@@ -119,11 +120,38 @@ export class SetPropertyTool {
                 }
 
                 if ((t.startsWith('{') || t.startsWith('[')) && (t.endsWith('}') || t.endsWith(']'))) {
-                    try { return JSON.parse(t); } catch (e) { }
+                    try { return JSON.parse(t); } catch (e) { /* probe: string is not JSON, keep original */ }
                 }
             }
         }
         return value;
+    }
+
+    private async applyValue(uuid: string, path: string, prop: IProperty, value: any) {
+        // Handle direct references
+        if (prop.extends?.includes('cc.Object')) {
+            value = await this.convertObjectReferenceToCocos(value, prop);
+        }
+
+        // Handle array of references — must await each conversion so a bad uuid fails the write
+        if (Array.isArray(value) && prop.elementTypeData?.extends?.includes('cc.Object')) {
+            const convertedArray: any[] = [];
+            for (let i = 0; i < value.length; i++) {
+                convertedArray[i] = await this.convertObjectReferenceToCocos(value[i], prop.elementTypeData!);
+            }
+            value = convertedArray;
+        }
+
+        const dump = { value, type: prop.type };
+
+        const ok = await Editor.Message.request('scene', 'set-property', {
+            uuid,
+            path,
+            dump
+        }) as boolean;
+        if (ok === false) throw new Error(`set-property refused for ${uuid} at ${path} (type ${prop.type})`);
+
+        await Editor.Message.request('scene', 'snapshot');
     }
 
     private findPropertyInDump(root: { [key: string]: IPropertyValueType } | AssetInfo | null, path: string): IProperty | null {
@@ -214,31 +242,6 @@ export class SetPropertyTool {
         return current as IProperty;
     }
 
-    private async applyValue(uuid: string, path: string, prop: IProperty, value: any) {
-        // Handle direct references
-        if (prop.extends?.includes('cc.Object')) {
-            value = await this.convertObjectReferenceToCocos(value, prop);
-        }
-
-        // Handle array of references
-        if (Array.isArray(value) && prop.elementTypeData?.extends?.includes('cc.Object')) {
-            const convertedArray: any[] = [];
-            value.forEach(async (item, index) => {
-                convertedArray[index] = await this.convertObjectReferenceToCocos(item, prop.elementTypeData!);
-            });
-            value = convertedArray;
-        }
-
-        const dump = { value, type: prop.type };
-
-        await Editor.Message.request('scene', 'set-property', {
-            uuid,
-            path,
-            dump
-        });
-
-        await Editor.Message.request('scene', 'snapshot');
-    }
 
     private async convertObjectReferenceToCocos(value: any, prop: IProperty): Promise<{ uuid: string }> {
         const extendsInfo = prop.extends || [];
