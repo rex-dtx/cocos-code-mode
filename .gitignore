@@ -31,3 +31,6 @@ _tmp_*
 
 # Generated visuals (scene screenshots via previewManage) — regenerate on demand
 plans/visuals/
+
+# Cocos scene graph offline cache
+.cocos-graph*/

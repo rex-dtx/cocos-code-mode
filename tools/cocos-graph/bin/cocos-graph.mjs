@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, basename } from 'node:path';
+import { execSync } from 'node:child_process';
 import { buildAll } from '../src/builder.mjs';
 import { loadShard, queryShard } from '../src/query.mjs';
 
@@ -41,8 +42,27 @@ function has(name) { return process.argv.includes(`--${name}`); }
 const cmd = process.argv[2];
 if (!cmd || has('help') || has('h')) usage(0);
 
+function getWorktreeSlug() {
+  if (process.env.CC_GRAPH_SLUG) return process.env.CC_GRAPH_SLUG.trim();
+  try {
+    const branch = execSync('git rev-parse --abbrev-ref HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    if (branch && branch !== 'HEAD') {
+      return branch.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').toLowerCase();
+    }
+  } catch {}
+  return basename(process.cwd()).replace(/[^a-zA-Z0-9_-]/g, '-').toLowerCase();
+}
+
 const project = arg('project') ? resolve(arg('project')) : (process.env.CC_PROJECT_DIR ? resolve(process.env.CC_PROJECT_DIR) : process.cwd());
-const outRelative = arg('out') ?? '.cocos-graph';
+
+// Multi-worktree / Multi-agent isolation:
+// 1. Explicit CLI --out takes absolute precedence
+// 2. Explicit CC_GRAPH_OUT env takes second precedence
+// 3. If --isolate is passed or CC_GRAPH_ISOLATE=1, suffix folder with worktree/branch slug
+// 4. Fallback to default .cocos-graph
+const isolate = has('isolate') || process.env.CC_GRAPH_ISOLATE === '1';
+const defaultDir = isolate ? `.cocos-graph-${getWorktreeSlug()}` : '.cocos-graph';
+const outRelative = arg('out') ?? process.env.CC_GRAPH_OUT ?? defaultDir;
 const outDir = resolve(project, outRelative);
 
 if (cmd === 'build') {

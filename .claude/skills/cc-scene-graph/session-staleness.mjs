@@ -67,9 +67,11 @@ function main() {
     return { banner, stale };
   }
 
-  const manifest = readJson(path.join(project, '.cocos-graph', '_manifest.json'));
+  // Respect custom or isolated out directory:
+  const graphOutName = process.env.CC_GRAPH_OUT || (process.env.CC_GRAPH_ISOLATE === '1' ? `.cocos-graph-${path.basename(ROOT).replace(/[^a-zA-Z0-9_-]/g, '-').toLowerCase()}` : '.cocos-graph');
+  const manifest = readJson(path.join(project, graphOutName, '_manifest.json'));
   if (!manifest || !Array.isArray(manifest.shards)) {
-    note(`index NOT BUILT for ${project} — run cocos-graph build --project "${project}" --bundle <name> before any structural query`);
+    note(`index NOT BUILT for ${project} (${graphOutName}) — run cocos-graph build --project "${project}" --out "${graphOutName}" --bundle <name> before any structural query`);
     return { banner, stale };
   }
 
