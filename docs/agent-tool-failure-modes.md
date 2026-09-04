@@ -98,6 +98,18 @@ Chưa audit hết. Pattern cần soi trong `source/utcp/tools/`:
 - normalize/default chạy **trước** guard bắt buộc
 - tool trả `{success:true}` mà không kiểm tra kết quả thật
 
+<!-- §2-audited -->
+**Đã audit 2026-09-04** (`feat/ccb3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`):
+quét toàn bộ `source/utcp/tools/` theo 4 mẫu trên. Kết quả: 0 `catch {}` rỗng còn lại
+(best-effort/probe gắn comment chủ ý); false-success bịt ở `set-property`,
+`restore-prefab`, `move-array-element`, `add-task`, `animation-operation`,
+`validateScene` diagnostics; payload nullish không còn đọc là “rỗng mà khoẻ”
+(`query-nodes-miss-assets`, `query-component-function-of-node`, `editorListTypes`,
+layers, `scene_mode`, `script_info`, `editorGetLogs`); ảnh verify magic bytes
+(`/9j/`, `iVBORw0KGgo`); `simulateKeyCombo` reject input sai thay vì echo success;
+prediction “does not exist” neo qua `utils/editor-message-error.ts`.
+Guard hồi quy: `tests/unit/fail-loud-contract.test.js` + tier 4 `scripts/smoke-utcp.js`.
+
 ---
 
 ## 3. Regression tôi tự gây: `build_info` giết cả 61 tool
@@ -225,10 +237,10 @@ Cái phân biệt chất lượng không phải version editor — mà là **đ�
    `Editor._Module.require('PreviewExtends')` + `scene:prefab-preview` / `query-prefab-preview-data`
    — cụm này là API **3.8-only**. Ảnh qua `sharp` (texture/sprite-frame) vẫn chạy.
    Cần quyết: port sang API preview 3.7.3, hay bỏ preview prefab/material/mesh ở branch này?
-2. **Fail-loud audit chưa chạy.** §2 mới nêu pattern, chưa quét hết `source/utcp/tools/`.
-   Chưa biết còn bao nhiêu chỗ `?? default` che input sai.
-3. **Smoke suite chưa viết.** §5 là đề xuất, chưa có code.
-4. **`custom` có 8 fix nhưng chưa runtime-test trên 3.8.x** — cùng loại rủi ro đã tạo ra
+2. ~~**Fail-loud audit chưa chạy.**~~ ✅ Đã quét xong 2026-09-04 + sửa + guard —
+   xem ghi chú §2; `tests/unit/fail-loud-contract.test.js`.
+3. ~~**Smoke suite chưa viết.**~~ ✅ `scripts/smoke-utcp.js` thêm stale-build assert
+   (§4 rule 1, so `/build-info` với `git rev-parse --short HEAD`) + tier fail-loud (§5).
    nhóm bug này ngay từ đầu.
 5. **`origin` = `rex-dtx/cocos-code-mode`, repo người khác.** Cả 3 branch đang push lên đó.
    Nếu không chủ ý → fork riêng + `remote set-url` trước khi push thêm. Câu này tồn qua 2 card chưa ai trả lời.

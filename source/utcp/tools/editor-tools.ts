@@ -3,6 +3,7 @@ import { utcpTool } from '../decorators';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Base64ImageSchema, IBase64Image, ISuccessIndicator, SuccessIndicatorSchema, InstanceReferenceSchema, IInstanceReference } from '../schemas';
+import { isMessageNotExposed } from '../utils/editor-message-error';
 
 export class EditorTools {
 
@@ -241,8 +242,8 @@ export class EditorTools {
             default:
                 throw new Error(`Unknown type category: ${args.category}`);
         }
-        if (!raw) {
-            return { types: [] };
+        if (raw === null || raw === undefined) {
+            throw new Error(`editorListTypes: query for "${args.category}" returned no payload — is a scene/project open?`);
         }
         // Result shape of these runtime messages is not typed: string[], object[],
         // or a record (which may be name-keyed OR id-keyed with the name in the value).
@@ -263,9 +264,12 @@ export class EditorTools {
         Promise<{ sceneMode?: string, ready?: boolean, values?: Array<{ name?: string, value?: any }>, scriptName?: string, scriptCid?: string, hasScript?: boolean, result?: any }> {
         // Enumerator / layer results are {name, value} lists but the exact item shape is
         // not guaranteed across versions - normalize defensively instead of asserting.
+        // Only helper: normalizeList. The caller must prove `raw` exists before invoking — an
+        // absent payload (nullish from an untyped runtime message) must fail loud, not turn
+        // into an empty list. See caller guards: layers / sorting_layers / enum_values.
         const normalizeList = (raw: any): Array<{ name?: string, value?: any }> => {
             if (!raw) {
-                return [];
+                throw new Error('normalizeList called on nullish payload — caller should have thrown before normalizing');
             }
             const items: any[] = Array.isArray(raw) ? raw : Object.entries(raw).map(([name, value]) => ({ name, value }));
             return items.map((item: any) => typeof item === 'object' && item !== null
@@ -276,7 +280,10 @@ export class EditorTools {
         switch (args.category) {
             case 'scene_mode': {
                 const mode = await Editor.Message.request('scene', 'query-scene-mode');
-                return { sceneMode: typeof mode === 'string' ? mode : String(mode ?? '') };
+                if (mode === null || mode === undefined) {
+                    throw new Error('scene_mode: query-scene-mode returned no payload');
+                }
+                return { sceneMode: typeof mode === 'string' ? mode : String(mode) };
             }
             case 'ready':
                 return { ready: !!(await Editor.Message.request('scene', 'query-is-ready')) };
@@ -291,12 +298,20 @@ export class EditorTools {
                 }
                 return { values: normalizeList(raw) };
             }
-            case 'layers':
-                return { values: normalizeList(await Editor.Message.request('scene', 'query-layer-builtin')) };
-
-            case 'sorting_layers':
-                return { values: normalizeList(await Editor.Message.request('scene', 'query-sorting-layer-builtin')) };
-
+            case 'layers': {
+                const raw = await Editor.Message.request('scene', 'query-layer-builtin');
+                if (raw === null || raw === undefined) {
+                    throw new Error('layers: query-layer-builtin returned no payload');
+                }
+                return { values: normalizeList(raw) };
+            }
+            case 'sorting_layers': {
+                const raw = await Editor.Message.request('scene', 'query-sorting-layer-builtin');
+                if (raw === null || raw === undefined) {
+                    throw new Error('sorting_layers: query-sorting-layer-builtin returned no payload');
+                }
+                return { values: normalizeList(raw) };
+            }
             case 'script_info': {
                 if (!args.reference || !args.reference.id) {
                     throw new Error('editorIntrospect category "script_info" requires reference.id (script asset uuid)');
@@ -306,6 +321,9 @@ export class EditorTools {
                     Editor.Message.request('scene', 'query-script-name', args.reference.id),
                     Editor.Message.request('scene', 'query-script-cid', args.reference.id),
                 ]);
+                if (name == null && cid == null) {
+                    throw new Error(`script_info: no script found for reference ${args.reference.id}`);
+                }
                 return {
                     scriptName: typeof name === 'string' ? name : undefined,
                     scriptCid: typeof cid === 'string' ? cid : undefined
@@ -324,7 +342,7 @@ export class EditorTools {
                 try {
                     return { result: await Editor.Message.request('programming', 'query-sorted-plugins' as any) };
                 } catch (e: any) {
-                    if (/does not exist/i.test(String(e?.message ?? e))) throw new Error('editorQuery "sorted_plugins" is not supported on this editor version (message added after 3.7.3)');
+                    if (isMessageNotExposed(e, 'programming', 'query-sorted-plugins')) throw new Error('editorQuery "sorted_plugins" is not supported on this editor version (message added after 3.7.3)');
                     throw e;
                 }
             }
@@ -497,12 +515,18 @@ export class EditorTools {
         } finally {
             fs.closeSync(fd);
         }
-
+        // Non-empty file that yields zero entries is a parse/format drift, not "no logs".
+        let outerFileSize: number = -1;
+        try { outerFileSize = fs.statSync(logPath).size; } catch { outerFileSize = -1; }
+        if (outerFileSize > 0 && total === 0) {
+            const head = fs.readFileSync(logPath, 'utf-8').slice(0, 220).replace(/\r?\n/g, '\\n');
+            throw new Error(`Log file at ${logPath} has ${outerFileSize} bytes but parsed 0 entries (head: ${JSON.stringify(head)}). Expected timestamp-prefixed lines like "M-D-YYYY hh:mm:ss - log/error:"`);
+        }
         // We pushed entries in reverse order (newest first).
         if (order === 'oldest-to-newest') {
              return { logLines: entries.reverse(), total, truncated: total > count };
         }
-        
+
         return { logLines: entries, total, truncated: total > count };
     }
 

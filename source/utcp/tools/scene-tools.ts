@@ -2,6 +2,7 @@ import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
 import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
+import { ToolError } from '../tool-error';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
 const DEFAULT_LIST_LIMIT = 200;
@@ -107,8 +108,10 @@ export class SceneTools {
     )
     async findNodesWithMissingAssets(args: { limit?: number } = {}): Promise<{ references: IInstanceReference[], total: number, truncated: boolean }> {
         const result = await Editor.Message.request('scene', 'query-nodes-miss-assets');
-        if (!result) {
-            return { references: [], total: 0, truncated: false };
+        // Null payload is not "no missing assets": query-nodes-miss-assets is an
+        // untyped runtime message — absence must never read as a healthy scene.
+        if (result === null || result === undefined) {
+            throw new Error('findNodesWithMissingAssets: query-nodes-miss-assets returned no payload — is a scene open?');
         }
         if (!Array.isArray(result)) {
             throw new Error('Unexpected result from query-nodes-miss-assets');
@@ -151,7 +154,14 @@ export class SceneTools {
             const nodeName: string = node.name || '';
             const comps: any[] = node.components || [];
             const nameOk = !nameNeedle || nodeName.toLowerCase().includes(nameNeedle);
-            const compOk = !compNeedle || comps.some((c: any) => c.type === compNeedle);
+            // docs §1 bug class, second site: the dump's component type is inconsistent
+            // and user scripts may carry it as __type__/cid. Match with the same tolerance
+            // nodeComponentsGet uses rather than a bare equality.
+            const compOk = !compNeedle || comps.some((c: any) => {
+                const declared: string | undefined = c?.type ?? c?.__type__ ?? c?.cid;
+                if (!declared) return false;
+                return declared === compNeedle || declared === `cc.${compNeedle}` || declared.replace(/^cc\./, '') === compNeedle.replace(/^cc\./, '');
+            });
             if (nameOk && compOk) {
                 total++;
                 if (hits.length < limit) hits.push({ reference: { id: node.uuid, type: 'cc.Node' }, name: nodeName, path: curPath });
@@ -279,10 +289,9 @@ export class SceneTools {
         if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
             throw new Error(`Node ${args.reference.id} not found`);
         }
-
         const raw = await Editor.Message.request('scene', 'query-component-function-of-node', args.reference.id);
-        if (!raw) {
-            return { components: [] };
+        if (raw === null || raw === undefined) {
+            throw new Error(`listComponentMethods: query-component-function-of-node returned no payload for ${args.reference.id}`);
         }
 
         // Result is untyped (facade returns `any`). Observed shape is a record keyed by
@@ -484,9 +493,10 @@ export class SceneTools {
            if (want('name')) item.name = node.name;
            if (want('active')) item.active = node.active;
            if (want('components')) {
-               item.components = node.components ? node.components.map((c: any) => ({
-                   reference: { id: c.value, type: c.type }
-               })) : [];
+               item.components = node.components ? node.components.map((c: any) => {
+                   const t = c?.type ?? c?.__type__ ?? c?.cid ?? c?.value?.__type__ ?? c?.value?.cid;
+                   return { reference: { id: c.value, type: t } };
+               }) : [];
            }
            if (node.path && want('path')) item.path = node.path;
            if (truncated) (item as any).truncated = truncated;
@@ -795,13 +805,15 @@ export class SceneTools {
                 await Editor.Message.request('scene', 'snapshot');
                 return { success: true };
             }
-
             case 'revert_prefab':
+                // restore-prefab is result: boolean — a false/undefined return means the node
+                // was NOT reverted; reporting it as opaque data is a docs §2 silent failure.
                 const revertSuccess = await Editor.Message.request('scene', 'restore-prefab', { uuid: args.reference.id });
-
+                if (revertSuccess !== true) {
+                    throw new Error(`revert_prefab failed: restore-prefab returned ${JSON.stringify(revertSuccess ?? null)} for ${args.reference.id}`);
+                }
                 await Editor.Message.request('scene', 'snapshot');
-
-                return { success: revertSuccess };
+                return { success: true };
 
             case 'apply_prefab':
                 const applyError = await Editor.Message.request('scene', 'execute-scene-script', {
@@ -956,22 +968,30 @@ export class SceneTools {
 
         if (currentIndex === index) return true;
 
-        // Calculate offset
-        // We need to move the element at currentIndex to targetIndex.
-        // The API move-array-element works with offset from current position.
-        
-        // Ensure index is within bounds [0, length-1]
-        const targetIndex = Math.max(0, Math.min(index, childrenArray.length - 1));
-        const offset = targetIndex - currentIndex;
-        
+        // Clamp hid an out-of-range request: the agent asked for index N, got the last
+        // slot, and read `success`. Reject it — class, state and recovery are all known.
+        if (index < 0 || index > childrenArray.length - 1) {
+            throw new ToolError({
+                code: 'INDEX_OUT_OF_RANGE',
+                status: 422,
+                message: `siblingIndex ${index} is out of range for parent ${parentUuid} (0..${childrenArray.length - 1})`,
+                details: { index, maxIndex: childrenArray.length - 1, parentUuid },
+                recovery: 'Pass siblingIndex between 0 and the parent child count minus one, or query nodeGetTree first.',
+            });
+        }
+
+        const offset = index - currentIndex;
+
         if (offset === 0) return true;
 
-        return await Editor.Message.request('scene', 'move-array-element', {
+        const moved = await Editor.Message.request('scene', 'move-array-element', {
             uuid: parentUuid,
             path: 'children',
             target: currentIndex,
             offset: offset,
         });
+        if (moved === false) throw new Error(`move-array-element refused for ${uuid} (offset ${offset})`);
+        return moved;
     }
 
     private async getParentAndSiblingIndex(uuid: string): Promise<{ parentUuid: string, siblingIndex: number }> {

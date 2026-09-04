@@ -1,6 +1,7 @@
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { TextDecoder } from 'util';
+import { isMessageNotExposed } from '../utils/editor-message-error';
 const DEFAULT_EFFECT_RESULTS = 200;
 const MAX_EFFECT_RESULTS = 1000;
 const DEFAULT_RAW_DATA_BYTES = 512 * 1024;
@@ -184,7 +185,7 @@ export class MaterialTools {
                 try {
                     return { result: await Editor.Message.request('asset-db', 'query-missing-asset-info' as any, args.reference.id) };
                 } catch (e: any) {
-                    if (/does not exist/i.test(String(e?.message ?? e))) throw new Error('assetDbQuery "missing" is not supported on this editor version (message added after 3.7.3)');
+                    if (isMessageNotExposed(e, 'asset-db', 'query-missing-asset-info')) throw new Error('assetDbQuery "missing" is not supported on this editor version (message added after 3.7.3)');
                     throw e;
                 }
             }

@@ -71,7 +71,15 @@ async function main() {
         const { body: bi, ok: okBi } = await getJson(`${base}/build-info`);
         assert.ok(okBi, 'GET /build-info ok');
         assert.ok(bi.commit && bi.branch, `build-info has commit/branch ${JSON.stringify(bi).slice(0,80)}`);
-        ok(`build-info ${bi.commit}${bi.dirty ? '-dirty' : ''} on ${bi.branch}`);
+        // docs §4 rule 1: verify the RUNNING build matches HEAD before trusting any result.
+        const head = (() => {
+            try { return require('child_process').execSync('git rev-parse --short HEAD', { cwd: join(__dirname, '..') }).toString().trim(); } catch { return null; }
+        })();
+        if (head && bi.commit && bi.commit !== head && !bi.dirty) {
+            bad('build-info stale', `editor serves ${bi.commit} but HEAD is ${head} — rebuild + restart editor (docs §4 rule 1)`);
+        } else {
+            ok(`build-info ${bi.commit}${bi.dirty ? '-dirty' : ''} on ${bi.branch}${head ? ` (HEAD ${head})` : ''}`);
+        }
     } catch (e) { skipped('build-info', e.message); }
 
     // 3 — shape asserts (fail-loud, not just "no throw")
@@ -163,6 +171,26 @@ async function main() {
         }
     } catch (e) { bad('previewManage asset_preview', e.message); }
 
+    // 4 — fail-loud contract (docs §5 tier 2 / §7): wrong input must come back as a
+    // typed error body, never a 2xx fake success (deterministic: fails pre-IPC).
+    try {
+        const r = await fetch(`${base}/tools/simulateKeyCombo?combo=${encodeURIComponent('Super+D')}`, { method: 'POST' });
+        const body = await r.json().catch(() => ({}));
+        assert.ok(!r.ok, `unknown modifier combo must not 2xx (got ${r.status} ${JSON.stringify(body).slice(0,120)})`);
+        assert.ok(typeof body.code === 'string' && typeof body.error === 'string', `error body ${JSON.stringify(body).slice(0,120)}`);
+        ok('fail-loud: simulateKeyCombo Super+D rejected');
+    } catch (e) { bad('fail-loud simulateKeyCombo', e.message); }
+    try {
+        const r = await fetch(`${base}/tools/projectManage?operation=set&path=test.failLoud&value=1`, { method: 'POST' });
+        const body = await r.json().catch(() => ({}));
+        assert.ok(!r.ok, `projectManage set must not succeed on Creator 3.7 (got ${r.status} ${JSON.stringify(body).slice(0,120)})`);
+        if (r.status === 422) {
+            assert.equal(body.code, 'UNSUPPORTED_EDITOR_API');
+            assert.ok(typeof body.recovery === 'string' && body.recovery.length > 10, 'recovery present');
+        }
+        ok(`fail-loud: projectManage set rejected (${r.status} ${body.code || ''})`);
+    } catch (e) { bad('fail-loud projectManage set', e.message); }
+    
     console.log(`\nresult: ${pass} pass, ${fail} fail, ${skip} skip`);
     if (fail) process.exit(1);
 }

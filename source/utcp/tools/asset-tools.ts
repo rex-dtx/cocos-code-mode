@@ -20,7 +20,7 @@ async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }
     try {
         const result = await Editor.Message.request('asset-db', 'query-assets', options as any);
         if (Array.isArray(result)) { assetQueryMemo.set(cacheKey, result); return result; }
-    } catch (e) {}
+    } catch (e) { /* probe: options variant unsupported here — the pattern-only fallback below propagates */ }
     const result = await Editor.Message.request('asset-db', 'query-assets', (options.pattern ?? 'db://assets/**') as any);
     if (Array.isArray(result)) assetQueryMemo.set(cacheKey, result);
     return Array.isArray(result) ? result : [];

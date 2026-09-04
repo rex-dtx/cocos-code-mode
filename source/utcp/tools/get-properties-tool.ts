@@ -25,10 +25,14 @@ export class GetPropertiesTool {
         let filteredProps = props;
         if (args.fields && args.fields.length > 0) {
             filteredProps = {};
+            // A typo'd field used to vanish silently — indistinguishable from "the
+            // target has no such property". Name the offenders instead.
+            const unknown = args.fields.filter((key) => !(key in props));
+            if (unknown.length > 0) {
+                throw new Error(`inspectorGet: fields not present on ${type} (${args.reference.id}): ${unknown.join(', ')}`);
+            }
             for (const key of args.fields) {
-                if (key in props) {
-                    filteredProps[key] = props[key];
-                }
+                filteredProps[key] = props[key];
             }
         }
 

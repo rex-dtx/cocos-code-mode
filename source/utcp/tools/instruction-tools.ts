@@ -84,7 +84,7 @@ export class InstructionTools {
         fs.writeFileSync(resolved, args.content, 'utf-8');
         const relToProject = path.relative(projectPath, resolved).replace(/\\/g, '/');
         if (relToProject.startsWith('assets/')) {
-            try { await Editor.Message.request('asset-db', 'refresh-asset', `db://${relToProject}`); } catch {}
+            try { await Editor.Message.request('asset-db', 'refresh-asset', `db://${relToProject}`); } catch { /* best-effort hint: the write itself was verified; asset-db re-import is owned by the editor */ }
         }
         return { success: true, filePath: args.filePath, bytesWritten: Buffer.byteLength(args.content, 'utf-8') };
     }

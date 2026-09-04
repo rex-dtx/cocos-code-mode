@@ -41,8 +41,9 @@ export class EventTools {
         await ensureRuntimeNode(args.reference.id);
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: EVENT_PACKAGE, method: 'simulateButtonClick', args: [args.reference.id],
-        }) as { handlersFired: number, method: string };
-        return { handlersFired: result?.handlersFired ?? 0, method: result?.method ?? 'clickEvents' };
+        }) as { handlersFired: number, method: string } | null;
+        if (typeof result?.handlersFired !== 'number') throw new Error(`simulateButtonClick: unexpected response ${JSON.stringify(result)}`);
+        return { handlersFired: result.handlersFired, method: result.method ?? 'clickEvents' };
     }
 
     @utcpTool(
@@ -78,7 +79,8 @@ export class EventTools {
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: EVENT_PACKAGE, method: 'bindButtonClickEvent',
             args: [args.reference.id, args.componentType, args.handlerName, args.customEventData || ''],
-        }) as { handlerCount: number };
-        return { handlerCount: result?.handlerCount ?? 0 };
+        }) as { handlerCount: number } | null;
+        if (typeof result?.handlerCount !== 'number' || result.handlerCount === 0) throw new Error(`bindButtonClickEvent: unexpected response ${JSON.stringify(result)}`);
+        return { handlerCount: result.handlerCount };
     }
 }

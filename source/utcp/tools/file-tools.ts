@@ -80,7 +80,7 @@ export class FileTools {
         const relToProject = path.relative(projectPath, resolved).replace(/\\/g, '/');
         if (relToProject.startsWith('assets/')) {
             const dbUrl = `db://${relToProject}`;
-            try { await Editor.Message.request('asset-db', 'refresh-asset', dbUrl); } catch {}
+            try { await Editor.Message.request('asset-db', 'refresh-asset', dbUrl); } catch { /* best-effort hint: the write itself was verified; asset-db re-import is owned by the editor */ }
         }
 
         return { success: true, bytesWritten: Buffer.byteLength(args.content, 'utf-8') };
@@ -120,7 +120,7 @@ export class FileTools {
         const walk = (dir: string) => {
             if (results.length >= limit) return;
             let entries: fs.Dirent[];
-            try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+            try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { /* unreadable dir (permissions/symlink loop): skip this branch */ return; }
             for (const entry of entries) {
                 if (results.length >= limit) return;
                 if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'library' || entry.name === 'temp') continue;
@@ -181,7 +181,7 @@ export class FileTools {
         // Refresh asset-db if inside assets/
         const relToProject = path.relative(projectPath, resolved).replace(/\\/g, '/');
         if (relToProject.startsWith('assets/')) {
-            try { await Editor.Message.request('asset-db', 'refresh-asset', `db://${relToProject}`); } catch {}
+            try { await Editor.Message.request('asset-db', 'refresh-asset', `db://${relToProject}`); } catch { /* best-effort hint: the write itself was verified; asset-db re-import is owned by the editor */ }
         }
 
         return { success: true, replacements: count };

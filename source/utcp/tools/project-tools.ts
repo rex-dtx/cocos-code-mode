@@ -1,4 +1,5 @@
 import { ToolError } from '../tool-error';
+import { isMessageNotExposed } from '../utils/editor-message-error';
 export class ProjectTools {
 
     // via projectManage — kept for delegation
@@ -25,7 +26,7 @@ export class ProjectTools {
             const ok=await Editor.Message.request('project','set-config','project',args.path,args.value);
             if(ok===false) throw new Error(`Failed to set project config at "${args.path}"`);
         }catch(e:any){
-            if(/does not exist/i.test(String(e?.message??e))) {
+            if (isMessageNotExposed(e, 'project', 'set-config')) {
                 throw new ToolError({
                     code: 'UNSUPPORTED_EDITOR_API',
                     message: "projectManage set is unavailable: Cocos Creator 3.7 does not expose 'project/set-config'.",

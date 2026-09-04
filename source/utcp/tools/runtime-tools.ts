@@ -80,10 +80,11 @@ export class RuntimeTools {
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: 'cc-bridge-3x', method: 'runtimeGetState', args: [],
         }) as any;
+        if (!result || typeof result !== 'object') throw new Error('runtimeGetState: no runtime state — is the preview/game running?');
         return {
-            paused: result?.paused ?? false,
-            timeScale: result?.timeScale ?? 1,
-            frameCount: result?.frameCount ?? 0,
+            paused: typeof result.paused === 'boolean' ? result.paused : false,
+            timeScale: typeof result.timeScale === 'number' ? result.timeScale : 1,
+            frameCount: typeof result.frameCount === 'number' ? result.frameCount : 0,
         };
     }
 }

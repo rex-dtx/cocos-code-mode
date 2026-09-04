@@ -147,8 +147,12 @@ export class ValidationTools {
             probeScene(), probeRuntime(), probePerf(), probeDiag(), probeLogs(),
         ]);
 
+        // Fail closed: a diagnostics probe that threw carries {error} and ok === undefined;
+        // `!== false` let a crashed tsc read as a clean compile (docs §2 false-success).
+        const diag = diagnostics as any;
+        const diagOk = diag == null ? true : (diag.ok === true && !diag.error);
         const ok = !(scene as any).error && !(runtime as any).error && !(performance as any).error
-            && (!diagnostics || (diagnostics as any).ok !== false)
+            && diagOk
             && logErrors.length === 0;
 
         return { ok, scene, runtime, performance, diagnostics, logErrors };

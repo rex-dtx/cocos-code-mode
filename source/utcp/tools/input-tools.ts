@@ -108,14 +108,24 @@ export class InputTools {
         const key  = parts[parts.length - 1];
 
         const electronMods: string[] = [];
+        const MODIFIER_TOKENS: Record<string, string> = {
+            ctrl: 'control', control: 'control', cmd: 'control', command: 'control', meta: 'control',
+            shift: 'shift', alt: 'alt', option: 'alt',
+        };
         for (const m of mods) {
             const lower = m.toLowerCase();
-            if (lower === 'ctrl' || lower === 'cmd' || lower === 'control') electronMods.push('control');
-            else if (lower === 'shift') electronMods.push('shift');
-            else if (lower === 'alt')  electronMods.push('alt');
-            else if (lower === 'meta') electronMods.push('control');
+            const mapped = MODIFIER_TOKENS[lower];
+            if (!mapped) {
+                throw new Error("simulateKeyCombo: unknown modifier \""+m+"\" in \""+args.combo+"\". Supported: Ctrl, Cmd, Shift, Alt, Meta (format \"Mod+Key\").");
+            }
+            if (!electronMods.includes(mapped)) electronMods.push(mapped);
         }
 
+        // "Ctrl+" collapses to a bare modifier as the final key and "Super+D"
+        // silently drops its modifier — both echoed {success:true} (docs §2 mask-required).
+        if (MODIFIER_TOKENS[key.toLowerCase()]) {
+            throw new Error("simulateKeyCombo: \""+args.combo+"\" ends in a modifier — a final non-modifier key is required");
+        }
         const wc = getWebContents();
         wc.sendInputEvent({ type: 'keyDown', keyCode: key, modifiers: electronMods });
         wc.sendInputEvent({ type: 'keyUp',   keyCode: key, modifiers: electronMods });

@@ -74,6 +74,9 @@ export class ComponentTools {
                 ?? comp.cid ?? value?.cid;
 
             if (!args.componentType || (compType && compType.includes(args.componentType))) {
+                if (!compUuid) {
+                    throw new Error(`nodeComponentsGet: matched component on ${args.reference.id} carries no uuid — dump shape drift`);
+                }
                 foundComponents.push({ id: compUuid, type: compType });
             }
         }
@@ -118,7 +121,11 @@ export class ComponentTools {
             throw new Error(`Node ${args.reference.id} not found`);
         }
 
-        const beforeComponents = node.__comps__ ? node.__comps__.map((c: any) => c.value?.uuid?.value || c.value?.uuid || c.uuid) : [];
+        // Single extractor for both snapshots — the after-dump previously used a
+        // narrower chain than the before-dump, so a uuid-less ref could read as
+        // "new" and the call returned {id: undefined} as a success (docs §2).
+        const extractCompUuid = (c: any): string | undefined => c?.value?.uuid?.value ?? c?.value?.uuid ?? c?.uuid;
+        const beforeComponents = node.__comps__ ? node.__comps__.map(extractCompUuid) : [];
         const existingUuids = new Set(beforeComponents);
 
         await Editor.Message.request('scene', 'execute-scene-script',
@@ -130,13 +137,16 @@ export class ComponentTools {
         });
 
         const nodeAfter = await Editor.Message.request('scene', 'query-node', args.reference.id);
+        if (!nodeAfter) {
+            throw new Error(`nodeComponentAdd: node ${args.reference.id} disappeared after create-component`);
+        }
         const afterComponents: IInstanceReference[] = nodeAfter.__comps__ ?
-            nodeAfter.__comps__.map((c: any) => { return { id: c.value?.uuid?.value, type: c.type } }) : [];
+            nodeAfter.__comps__.map((c: any) => { return { id: extractCompUuid(c) ?? '', type: c.type } }) : [];
 
         const caughtLogs: string[] = await Editor.Message.request('scene', 'execute-scene-script',
             { name: packageJSON.name, method: 'stopCatchLogging', args: [] });
 
-        const newComponentRef = afterComponents.find(ref => !existingUuids.has(ref.id));
+        const newComponentRef = afterComponents.find((ref) => !!ref.id && !existingUuids.has(ref.id));
 
         if (newComponentRef) {
             await Editor.Message.request('scene', 'snapshot');

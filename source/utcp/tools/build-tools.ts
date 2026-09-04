@@ -87,7 +87,8 @@ export class BuildTools {
             throw new Error('options.platform is required (e.g. web-mobile)');
         }
         const result = await Editor.Message.request('builder', 'add-task', args.options);
-        const taskId = typeof result === 'string' ? result : ((result && (result as any).id) || args.options.taskId || undefined);
+        const taskId = typeof result === 'string' ? result : ((result && (result as any).id) || undefined);
+        if (!taskId) throw new Error(`builder add-task returned no task id (got ${JSON.stringify(result ?? null)})`);
         return { success: true, taskId };
     }
 
