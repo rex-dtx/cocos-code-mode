@@ -88,11 +88,24 @@ export function parseEntries(arr) {
   for (let idx = 0; idx < arr.length; idx++) {
     const e = arr[idx];
     if (!e || (e.__type__ !== 'cc.Node' && e.__type__ !== 'cc.Scene')) continue;
-    if (typeof e._id !== 'string' || !e._id) {
-      // A node without `_id` has no stable handle — the editor cannot address it
-      // across re-saves, so indexing it would fabricate identity. Fail loud instead.
-      throw new Error(`parseEntries: cc.Node at index ${idx} (${e._name ?? '?'}) has no _id`);
+    
+    // In Cocos Creator 3.x, prefab root/instances often store their stable ID
+    // in `_prefab.fileId` (via cc.CompPrefabInfo) rather than `_id`.
+    let id = (typeof e._id === 'string' && e._id) ? e._id : null;
+    if (!id && e._prefab && typeof e._prefab.__id__ === 'number') {
+      const pObj = arr[e._prefab.__id__];
+      if (pObj && typeof pObj.fileId === 'string' && pObj.fileId) {
+        id = pObj.fileId;
+      }
     }
+
+    if (!id) {
+      // Fallback: nested instances inside scenes that lack both _id and fileId
+      // are prefab-instantiated children that require live expansion. Skip from disk shard.
+      continue;
+    }
+
+    e._id = id;
     byIndex.set(idx, e);
     nameByIndex.set(idx, e._name ?? (e.__type__ === 'cc.Scene' ? 'Scene' : ''));
     const parentIdx = e._parent && typeof e._parent.__id__ === 'number' ? e._parent.__id__ : null;
