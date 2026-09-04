@@ -1,4 +1,5 @@
 import { utcpTool } from '../decorators';
+import { ToolError } from '../tool-error';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
@@ -136,11 +137,25 @@ export class UiTools {
             const node = await Editor.Message.request('scene', 'query-node', reference.id) as any;
             const labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
             if (!labelChild?.uuid) {
-                throw new Error(`createButton: no Label child on ${reference.id} — text "${args.text}" was not applied`);
+                const rbErr = await this.rollbackNode(reference.id);
+                throw new ToolError({
+                    code: 'PARTIAL_MUTATION',
+                    status: 500,
+                    message: `createButton: no Label child on ${reference.id} — text "${args.text}" was not applied${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, reason: 'no Label child' },
+                    recovery: 'Node was rolled back, safe to retry; or query-node to verify structure',
+                });
             }
             const ok = await Editor.Message.request('scene', 'set-property', { uuid: labelChild.uuid, path: '__comps__.0.string', dump: { value: args.text, type: 'cc.String' } }) as boolean;
             if (ok === false) {
-                throw new Error(`createButton: set-property refused for label text on ${labelChild.uuid}`);
+                const rbErr = await this.rollbackNode(reference.id);
+                throw new ToolError({
+                    code: 'PARTIAL_MUTATION',
+                    status: 500,
+                    message: `createButton: set-property refused for label text on ${labelChild.uuid} (button ${reference.id})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; button was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, labelChildUuid: labelChild.uuid },
+                    recovery: 'Button was rolled back, safe to retry',
+                });
             }
             await Editor.Message.request('scene', 'snapshot');
         }
@@ -174,11 +189,34 @@ export class UiTools {
                 dump: { value: { uuid: args.spriteFrameUuid }, type: 'cc.SpriteFrame' },
             }) as boolean;
             if (ok === false) {
-                throw new Error(`createSprite: set-property refused for spriteFrame ${args.spriteFrameUuid} on ${reference.id}`);
+                const rbErr = await this.rollbackNode(reference.id);
+                throw new ToolError({
+                    code: 'PARTIAL_MUTATION',
+                    status: 500,
+                    message: `createSprite: set-property refused for spriteFrame ${args.spriteFrameUuid} on ${reference.id}${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, spriteFrameUuid: args.spriteFrameUuid },
+                    recovery: 'Sprite node was rolled back, safe to retry; verify the SpriteFrame uuid with query-asset',
+                });
             }
             await Editor.Message.request('scene', 'snapshot');
         }
 
         return { reference };
+    }
+
+    /**
+     * Best-effort undo for a partially applied create* helper: remove the node we
+     * just created and snapshot the scene. Returns null when the node is gone, or
+     * the rollback error message so the caller can tell the agent to delete it
+     * manually before retrying (a leaked half-configured node is worse than a throw).
+     */
+    private async rollbackNode(uuid: string): Promise<string | null> {
+        try {
+            await Editor.Message.request('scene', 'remove-node', { uuid });
+            await Editor.Message.request('scene', 'snapshot');
+            return null;
+        } catch (e) {
+            return e instanceof Error ? e.message : String(e);
+        }
     }
 }

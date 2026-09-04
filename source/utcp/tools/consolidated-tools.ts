@@ -37,7 +37,14 @@ export class ConsolidatedTools {
         let filteredProps: any = props;
         if (args.fields && args.fields.length > 0) {
             filteredProps = {};
-            for (const key of args.fields) if (key in props) filteredProps[key] = (props as any)[key];
+            // Same guard as the delegation path (docs §2 mask-required): unknown /
+            // typo'd fields must not vanish — that reads as a healthy empty dump.
+            const hasOwn = (key: string) => Object.prototype.hasOwnProperty.call(props, key);
+            const unknown = args.fields.filter((key) => !hasOwn(key));
+            if (unknown.length > 0) {
+                throw new Error(`inspectorGet: fields not present on ${type} (${id}): ${unknown.join(', ')}`);
+            }
+            for (const key of args.fields) filteredProps[key] = (props as any)[key];
         }
         const parsed = ToolsUtils.unwrapProperties(filteredProps);
         const entries = Object.entries(parsed);

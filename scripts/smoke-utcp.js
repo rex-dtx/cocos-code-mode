@@ -75,8 +75,8 @@ async function main() {
         const head = (() => {
             try { return require('child_process').execSync('git rev-parse --short HEAD', { cwd: join(__dirname, '..') }).toString().trim(); } catch { return null; }
         })();
-        if (head && bi.commit && bi.commit !== head && !bi.dirty) {
-            bad('build-info stale', `editor serves ${bi.commit} but HEAD is ${head} — rebuild + restart editor (docs §4 rule 1)`);
+        if (head && bi.commit && bi.commit !== head) {
+            bad('build-info stale', `editor serves ${bi.commit}${bi.dirty ? '-dirty' : ''} but HEAD is ${head} — rebuild + restart editor (docs §4 rule 1; dirty does not excuse a commit mismatch)`);
         } else {
             ok(`build-info ${bi.commit}${bi.dirty ? '-dirty' : ''} on ${bi.branch}${head ? ` (HEAD ${head})` : ''}`);
         }
@@ -176,9 +176,10 @@ async function main() {
     try {
         const r = await fetch(`${base}/tools/simulateKeyCombo?combo=${encodeURIComponent('Super+D')}`, { method: 'POST' });
         const body = await r.json().catch(() => ({}));
-        assert.ok(!r.ok, `unknown modifier combo must not 2xx (got ${r.status} ${JSON.stringify(body).slice(0,120)})`);
-        assert.ok(typeof body.code === 'string' && typeof body.error === 'string', `error body ${JSON.stringify(body).slice(0,120)}`);
-        ok('fail-loud: simulateKeyCombo Super+D rejected');
+        assert.equal(r.status, 400, `simulateKeyCombo Super+D -> 400 INVALID_ARGUMENT (got ${r.status} ${JSON.stringify(body).slice(0,120)})`);
+        assert.equal(body.code, 'INVALID_ARGUMENT');
+        assert.ok(typeof body.error === 'string' && body.error.length > 5, `error present (got ${JSON.stringify(body).slice(0,120)})`);
+        ok('fail-loud: simulateKeyCombo Super+D rejected (400 INVALID_ARGUMENT)');
     } catch (e) { bad('fail-loud simulateKeyCombo', e.message); }
     try {
         const r = await fetch(`${base}/tools/projectManage?operation=set&path=test.failLoud&value=1`, { method: 'POST' });

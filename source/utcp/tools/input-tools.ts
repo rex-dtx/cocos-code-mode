@@ -1,3 +1,4 @@
+import { ToolError } from '../tool-error';
 import { utcpTool } from '../decorators';
 
 // Input simulation via Electron's webContents.sendInputEvent.
@@ -116,7 +117,13 @@ export class InputTools {
             const lower = m.toLowerCase();
             const mapped = MODIFIER_TOKENS[lower];
             if (!mapped) {
-                throw new Error("simulateKeyCombo: unknown modifier \""+m+"\" in \""+args.combo+"\". Supported: Ctrl, Cmd, Shift, Alt, Meta (format \"Mod+Key\").");
+                throw new ToolError({
+                    code: 'INVALID_ARGUMENT',
+                    status: 400,
+                    message: `simulateKeyCombo: unknown modifier "${m}" in "${args.combo}"`,
+                    details: { modifier: m, combo: args.combo },
+                    recovery: 'Supported modifiers: Ctrl, Cmd, Shift, Alt, Meta (format \"Mod+Key\")',
+                });
             }
             if (!electronMods.includes(mapped)) electronMods.push(mapped);
         }
@@ -124,7 +131,13 @@ export class InputTools {
         // "Ctrl+" collapses to a bare modifier as the final key and "Super+D"
         // silently drops its modifier — both echoed {success:true} (docs §2 mask-required).
         if (MODIFIER_TOKENS[key.toLowerCase()]) {
-            throw new Error("simulateKeyCombo: \""+args.combo+"\" ends in a modifier — a final non-modifier key is required");
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: `simulateKeyCombo: "${args.combo}" ends in a modifier — a final non-modifier key is required`,
+                details: { combo: args.combo },
+                recovery: 'Use \"Mod+Key\" with a real key last, e.g. Ctrl+S',
+            });
         }
         const wc = getWebContents();
         wc.sendInputEvent({ type: 'keyDown', keyCode: key, modifiers: electronMods });

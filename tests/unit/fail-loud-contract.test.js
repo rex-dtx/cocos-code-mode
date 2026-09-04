@@ -91,14 +91,22 @@ describe('fail-loud audit (docs §2) regressions', () => {
   it('inspectorGet names unknown fields; ui helpers no longer swallow text/sprite writes', () => {
     assert.match(readSource('source/utcp/tools/get-properties-tool.ts'), /fields not present on/);
     assert.match(readSource('source/utcp/tools/get-properties-tool.ts'), /hasOwnProperty/);
+    assert.match(readSource('source/utcp/tools/consolidated-tools.ts'), /fields not present on/);
+    assert.match(readSource('source/utcp/tools/consolidated-tools.ts'), /hasOwnProperty/);
     const ui = readSource('source/utcp/tools/ui-tools.ts');
     assert.doesNotMatch(ui, /catch \{\}/);
     assert.match(ui, /was not applied/);
+    assert.match(ui, /PARTIAL_MUTATION/);
+    assert.match(ui, /rollbackNode/);
+    assert.match(ui, /remove-node/);
   });
 
   it('simulateKeyCombo rejects unknown and modifier-only combos instead of echoing success', () => {
     const src = readSource('source/utcp/tools/input-tools.ts');
     assert.match(src, /unknown modifier/);
     assert.match(src, /ends in a modifier/);
+    assert.match(src, /INVALID_ARGUMENT/);
+    assert.match(src, /ToolError/);
+    assert.match(src, /input-tools.*tool-error|from '..\/tool-error'/);
   });
 });
