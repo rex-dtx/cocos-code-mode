@@ -234,6 +234,37 @@ Cái phân biệt chất lượng không phải version editor — mà là **đ�
 | `nodeComponentsGet` type | `["cc.UITransform","cc.Sprite","SettingsUI"]` — user script resolve đúng |
 | manual sau `fbdfd64` | 3 key, register lại 61 tool |
 
+
+## 7. Typed recovery errors — agent cần biết cách thoát lỗi
+
+Hai lỗi runtime 2026-09-01 cho thấy fail-loud chỉ là nửa contract:
+
+| Tool | Input/runtime state | Trước fix | Recovery đúng |
+|---|---|---|---|
+| `readPrefabJson` | `.scene` / `cc.SceneAsset` | `not a prefab` string | `sceneSnapshot`, `nodeGetTree`, hoặc `inspectorGet` |
+| `projectManage({ operation: 'set' })` | Creator 3.7 không có `project/set-config` | stack + message dài | chỉnh `settings/v2/packages/*.json`; chỉ dùng IPC write trên Creator 3.8 sau live verify |
+
+Agent không nên parse stack trace hay suy luận từ English message. CC Bridge trả lỗi domain có shape ổn định:
+
+```json
+{
+  "error": "readPrefabJson accepts cc.Prefab; received cc.SceneAsset.",
+  "code": "ASSET_TYPE_MISMATCH",
+  "details": {
+    "assetPath": "db://.../g9664H.scene",
+    "expectedTypes": ["cc.Prefab"],
+    "actualType": "cc.SceneAsset"
+  },
+  "recovery": "Use sceneSnapshot, nodeGetTree, or inspectorGet for a scene."
+}
+```
+
+`error` vẫn là string để HTTP/Code Mode client cũ hiển thị được; `code`, `details`, `recovery` là machine-readable context cho MCP/agent report và chọn đường thay thế. Expected caller/capability errors dùng HTTP `422`; invalid schema input dùng `400`; lỗi không phân loại trả `500` với `{ "error": "Internal tool error.", "code": "INTERNAL_ERROR" }` để không leak implementation detail.
+
+**Rule:** tool chỉ ném `ToolError` khi biết chính xác error class, input/resource state, và recovery. Không wrap error mơ hồ thành một code giả. Generic Cocos/extension failure vẫn cần full console/debug log để người vận hành điều tra.
+
+**Follow-up:** support `project/set-config` cho Creator 3.8 được queue tại master plan `Cocos 3.8 Project Config Support`; không giả lập bằng filesystem write ở 3.7 vì import/serialization phải do editor sở hữu.
+
 ---
 
 ## Unresolved

@@ -3,8 +3,18 @@
 // logs this shape: "Message does not exist: scene - new-scene".
 // A substring check would falsely fire on domain errors like
 // "Config path \"x\" does not exist". Use the registry verbatim.
+function errorText(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    if (typeof error === 'string') return error;
+    if (error && typeof error === 'object' && 'message' in error) {
+        const m = error.message;
+        return typeof m === 'string' ? m : String(m ?? '');
+    }
+    return String(error ?? '');
+}
+
 export function isMessageNotExposed(error: unknown, module?: string, message?: string): boolean {
-    const text = String((error as any)?.message ?? String(error ?? ''));
+    const text = errorText(error);
 
     // Require the registry prefix, then optionally the exact target to avoid
     // FP on e.g. "Message does not exist: builder - add-task" matching
