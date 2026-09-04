@@ -1,9 +1,32 @@
 # Changelog
 
-## Unreleased — fail-loud audit + smoke suite (2026-09-04) — branch feat/ccb3x-fail-loud-smoke
-- Đóng docs §2 audit: sweep toàn bộ source/utcp/tools theo 4 mẫu silent-failure — ?? default che required, catch rỗng nuốt lỗi, normalize trước guard, false-success; sửa verifiable outcomes (docs §2): set-property boolean check, restore-prefab boolean, move-array-element boolean + index, add-task, animation operation, validateScene diagnostics, nullish payloads → throw thay vì empty-but-healthy, image magic bytes check, simulateKeyCombo reject bad input; predicates `does not exist` được neo via isMessageNotExposed; empty catches removed/annotated best-effort.
-- Đóng docs §5 smoke: stale-build so HEAD vs /build-info (fail-loud khi lệch build), fail-loud typed-body tier trong scripts/smoke-utcp.js, CI-runnable contract guard tests/unit/fail-loud-contract.test.js (106 tests pass), tsc --noEmit OK.
-- Typed errors (§7) mở rộng: chỉ throw ToolError khi class+state+recovery đã biết, generic 5xx kèm full log cho ambiguous.
+## 2.2.0 — 2026-09-05 — Cocos Graph v4 + Typed Recovery Errors + 3x Baseline Consolidation
+
+Hợp nhất toàn bộ các nhánh `feat/ccb3x-consolidated`, `feat/ccb3x-fail-loud-smoke`, và `feat/ccb3x-scene-graph-index` vào `cc-3x7` (commit `53589bb`). 159 unit tests pass, 31 graph tests pass.
+
+- **Cocos Graph v4 (`tools/cocos-graph`):**
+  - CLI điều hướng cấu trúc scene/project offline với các lệnh `build`, `query`, `resolve`, `navigate`, `refs`, `session-record`, `validate`.
+  - Schema v4: composite handle `<file>#<engine-id>`, lưu giữ file provenance và component `fileId`.
+  - Hỗ trợ atomic generation swap với `fsync`, file lock đa tiến trình (`owner.json` + PID + stale-timeout 30s), và scoped build `--bundle`.
+  - Incremental rebuild dựa trên content-hash (sha256); bảo tồn manifest và thế hệ graph hợp lệ khi build gặp lỗi.
+  - Live overlay cho scene đang mở (`treeToGraph`): giải quyết độ lệch 62% node giữa disk và live do prefab expansion; disk shards giữ cờ `prefabOpaque: true`.
+  - Đo đạc P5 thực tế trên `cc30-new-all-in-one`: giảm 100% bridge calls cho tìm kiếm cấu trúc, giảm 87.28% kích thước payload response, hit rate 100%, query p50 = 92.4ms.
+- **Fail-Loud Audit & Durable Smoke Suite:**
+  - Hoàn tất quét toàn bộ 45 tools theo 4 mẫu silent-failure: bịt triệt để các khối `catch {}` rỗng, false-success trên các write path (`set-property`, `restore-prefab`, `move-array-element`, `add-task`, `animation-operation`, `validateScene`).
+  - Kiểm tra magic bytes ảnh JPEG (`/9j/`), từ chối input lỗi ở `simulateKeyCombo`.
+  - Khởi tạo smoke suite 2 tầng trong `scripts/smoke-utcp.js` và CI guard `tests/unit/fail-loud-contract.test.js` kèm kiểm tra lệch build (`/build-info` vs `git rev-parse HEAD`).
+- **Typed Tool Recovery Errors:**
+  - Chuẩn hóa contract `ToolError` (HTTP 400/404/422) với cấu trúc `{ error, code, details, recovery }`.
+  - `nodeGetTree`: Trả `TARGET_NOT_FOUND` (HTTP 404) kèm `currentSceneUuid` và hướng dẫn recovery khi node không thuộc scene đang mở; từ chối composite handle bằng `COMPOSITE_HANDLE_NOT_SUPPORTED` (HTTP 400).
+  - `readPrefabJson`: Trả `ASSET_TYPE_MISMATCH` (HTTP 422) khi nhận file `.scene`.
+  - `inspectorGet`: Trả `TARGET_NOT_FOUND` (HTTP 404) khi không tìm thấy target hoặc target không hỗ trợ; bổ sung `SceneImporter` để trích xuất metadata `.scene`.
+- **Cocos 3.8 Config Support & Lane C Intake:**
+  - Tự động probe IPC `project/set-config` cho Creator 3.8; fallback trả typed `UNSUPPORTED_EDITOR_API` (HTTP 422) trên 3.7.3 mà không tự ý ghi file bừa bãi.
+  - Port bổ sung 3 tool Lane C với strict schema và kiểm thử IPC: `materialQuery`, `assetDbQuery`, và `editorQuery:has_script`.
+- **Strict UTCP Schemas & Packaging:**
+  - Làm sạch UTCP manual: loại bỏ toàn bộ annotations nội bộ thừa, kích hoạt `slimOutputsSchema` thu gọn output schema.
+  - Sửa script đóng gói `npm run package` hỗ trợ đa nền tảng bằng `archiver` v8 streaming, tạo gói cài đặt zip hoàn chỉnh `cc-bridge-3x-v200-*.zip` (33MB).
+  - Bổ sung Ma trận điều phối Tool (Tool Selection Matrix) vào `SKILL.md` và `docs/agent-tool-failure-modes.md` hướng dẫn agent phân định giữa scene đang mở, file scene trên disk, và prefab đóng.
 
 ## 2.1.1 — 2026-08-23 — clean break + asset meta parity
 
