@@ -2,8 +2,8 @@
 
 Tham chiếu sống cho câu hỏi "bản kia có tool tương đương không". Cập nhật mỗi khi port xong một dòng.
 
-**v3** `cc-bridge-3x` (Creator 3.7.x, branch `cc-3x7`) = **86 tools** · **v2** `cc-bridge-2x` (Creator 2.4.15, branch `cc-2x`) = **53 tools**
-**Cập nhật:** 2026-08-28 (@`8c08955`+dirty — gap-closure G1+G3, probe G2 / 2x @`8a80bf5`) · **Snapshot audit:** `plans/reports/verify-260822-0926-v2-v3-tool-parity.md`
+**v3** `cc-bridge-3x` (Creator 3.7.x/3.8.x, branch `feat/ccb3x-consolidated` / `cc-3x7`) = **86 tools** · **v2** `cc-bridge-2x` (Creator 2.4.15, branch `cc-2x`) = **53 tools**
+**Cập nhật:** 2026-09-05 (Consolidated baseline @ `0483c4f`: Graph v4, Fail-Loud §2/§5/§7, strict UTCP manual 0-annotations, 3.8 project-config probe & IPC implementation, Lane C intake; unit tests 158/158 pass)
 **Đối chiếu message:** `docs/cc-3x7-message-registry.json` (416 msg / 20 module, dump 3.7.3) · coverage 131/416 xem `plans/reports/verify-260821-0939-cc3x7-api.md`
 
 ## Nguyên tắc đọc bảng
@@ -56,14 +56,16 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 | `nodeOperate` lock/unlock + create/link/revert/unwrap/open_prefab | — | ❌ `scene:*` prefab IPC timeout (Probe 4) |
 | `previewManage` (4 ops) | `previewGetUrl` + `previewOpenInBrowser` + `assetGetPreview` + `editorGetScenePreview` | ✅ 1:4 |
 | `programManage` (3 ops) | `programGetInfo` + `programOpen` + `urlOpen` | ✅ 1:3 |
-| `projectManage get` | `projectGetConfig` | ✅ |
+| `projectManage` (get/set) | `projectGetConfig` (read-only) | ⚠️ v3 hỗ trợ `get` trên 3.7+ và `set` qua 3.8 IPC `Editor.Message.request('project','set-config','project', dotPath, value)` (probe-gated; 3.7 trả HTTP 422 `UNSUPPORTED_EDITOR_API` kèm recovery guidance sửa `settings/v2/packages/*.json`); 2.4 chỉ hỗ trợ đọc |
 | `sceneGetInfo` | `sceneInfo` | ✅ |
 | `sceneManage` open/save | `sceneOpen` · `editorOperate save_scene` | ✅ |
 | `sceneManage` save_as/close/soft_reload | — | ⚠️ chưa port |
 | `propertyArrayElement` (remove/move phần tử array) | `nodeSetProperty` toàn array (read-modify-write) | ⚠️ không atomic |
-| `assetDbQuery` (databases/busy/mtime/data/db_info/meta) | `assetResolve mount_info` + `assetQuery meta` | ⚠️ thiếu busy/mtime/raw data |
-| `materialQuery` (effects/effect/material/serialized/render_pipeline/physics_material) | `assetReadContent` file `.mtl` | ❌ 2.4 không có effect/render-pipeline API |
+| `assetDbQuery` (databases/busy/mtime/data/db_info/meta/ready) | `assetResolve mount_info` + `assetQuery meta` | ⚠️ Lane C intake: 3x cover 7 IPC ops (missing-asset được bảo vệ qua `isMessageNotExposed`); 2x thiếu busy/mtime/raw data |
+| `materialQuery` (effects/effect/material/serialized/render_pipeline/physics_material) | `assetReadContent` file `.mtl` | ❌ Lane C intake: 3x cover 6 IPC ops (facade + registry 3.7.3); 2.4 không có effect/render-pipeline API |
 | `buildManage` (5 ops) | — | ❌ 2.4 Build panel không expose qua bridge |
+| `editorQuery has_script` | — | ⚠️ Lane C intake: 3x kiểm tra component class có script hay không qua `scene/query-component-has-script`; 2x chưa có message tương đương |
+| `cocos-graph` (offline structural oracle) | — | ❌ v3 có bộ chỉ mục cấu trúc offline T0/T1 (`.cocos-graph/<namespace>/<bundle>/graph.json`, composite handles `{file, nodeUuid}`, writer locking, staleness tracking); 2.4 chưa có |
 
 ## Chỉ v2 có (37) — v3 dùng gì thay
 

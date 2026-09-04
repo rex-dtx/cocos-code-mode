@@ -68,7 +68,7 @@ Cả 4 cái còn lại đã **verify runtime** trên Creator 3.7.3 thật (proje
 | `asset-db` | `query-asset-thumbnail` | `assetGetPreview` (mesh/gltf branch) | ⏳ Chưa verify được — server live lúc test còn chạy build cũ (không có `/build-info`). Đã có fallback renderer-based ngay dưới nhánh này |
 | `program` | `open-program` | `programOpen` | ✅ **FIX** `4832cf1` — map sang `execute`. Doc block 3.7.3 khai đúng 2 param `program {string}` + `args {Record<string,any>}` → match có tài liệu, không phải đoán |
 | `program` | `open-url` | `urlOpen` | ✅ **FIX** `4832cf1` — fallback `execFile` (không `exec`, không shell), chặn scheme ngoài http(s) vì URL thành command argument |
-| `project` | `set-config` | `projectSetConfig` | ✅ **FIX** `4832cf1` — **KHÔNG map**. Báo unsupported + chỉ workaround. Xem lý do dưới |
+| `project` | `set-config` | `projectSetConfig` | ✅ **UPDATE 2026-09-04** (`feat/ccb3x-consolidated` / `0483c4f`) — triển khai probe `probeProjectSetConfigCapability()`: trên 3.8 gọi IPC `Editor.Message.request('project','set-config','project', dotPath, value)`; trên 3.7 dùng `isMessageNotExposed` bắt đúng lỗi `Message does not exist: project - set-config` và trả về typed `ToolError` HTTP 422 `UNSUPPORTED_EDITOR_API` kèm recovery guidance sửa file `settings/v2/packages/*.json` trực tiếp; tuyệt đối không dùng filesystem fallback để tránh race. |
 | `scene` | `query-uuid` | `nodeOperate` (sibling index) | ✅ **ĐÃ FIX** — xem §2b |
 
 **Lỗi runtime thật đã ghi nhận** (trước khi fix):
@@ -78,11 +78,11 @@ Message does not exist: program - open-program
 Message does not exist: project - set-config
 ```
 
-**Vì sao KHÔNG map `project/set-config`:** 3.7.3 có `change-script-config` / `import-config` /
+**Vì sao KHÔNG map fake `project/set-config`:** 3.7.3 có `change-script-config` / `import-config` /
 `export-config`, nhưng **không cái nào ghi một dotted path đơn lẻ** — cái đầu chỉ đụng script
 settings, hai cái sau chuyển cả file. Map bừa = ghi sai key **im lặng**, nguy hiểm hơn là báo lỗi.
-Nguyên tắc đã chốt: **bỏ tool > map sai**. Đọc vẫn OK (`projectGetConfig` verify chạy tốt).
-
+Nguyên tắc đã chốt: **fail-loud > map sai**. Đọc vẫn OK (`projectManage get` verify chạy tốt).
+Từ 2026-09-04, CC Bridge nâng cấp cơ chế: probe IPC capability khi khởi động/gọi hàm; nếu là Creator 3.8.x thì dùng IPC chuẩn `(project, dotPath, value)`, còn trên Creator 3.7.x thì trả HTTP 422 `UNSUPPORTED_EDITOR_API` kèm recovery action rõ ràng cho Agent.
 ## 2b. `scene/query-uuid` — bug sẵn có, KHÔNG phải drift
 
 Message này **không tồn tại ở cả 3.7.3 lẫn 3.8.7** (grep typed `scene/@types/message.d.ts` = 0 hit).
