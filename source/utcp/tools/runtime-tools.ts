@@ -81,10 +81,11 @@ export class RuntimeTools {
             name: 'cc-bridge-3x', method: 'runtimeGetState', args: [],
         }) as any;
         if (!result || typeof result !== 'object') throw new Error('runtimeGetState: no runtime state — is the preview/game running?');
-        return {
-            paused: typeof result.paused === 'boolean' ? result.paused : false,
-            timeScale: typeof result.timeScale === 'number' ? result.timeScale : 1,
-            frameCount: typeof result.frameCount === 'number' ? result.frameCount : 0,
-        };
+        // Reject partial payloads outright: field-level coercion would fabricate
+        // false/1/0 again — the exact false-success class this audit removes (docs §2).
+        if (typeof result.paused !== 'boolean' || typeof result.timeScale !== 'number' || typeof result.frameCount !== 'number') {
+            throw new Error(`runtimeGetState: malformed runtime payload ${JSON.stringify(result).slice(0, 160)}`);
+        }
+        return { paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
     }
 }

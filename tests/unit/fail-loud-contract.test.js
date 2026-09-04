@@ -74,6 +74,7 @@ describe('fail-loud audit (docs §2) regressions', () => {
 
   it('runtime/event reads refuse fabricated state (docs §2 false success)', () => {
     assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /no runtime state/);
+    assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /malformed runtime payload/);
     assert.match(readSource('source/utcp/tools/event-tools.ts'), /simulateButtonClick: unexpected response/);
     assert.match(readSource('source/utcp/tools/event-tools.ts'), /bindButtonClickEvent: unexpected response/);
   });
@@ -89,6 +90,7 @@ describe('fail-loud audit (docs §2) regressions', () => {
 
   it('inspectorGet names unknown fields; ui helpers no longer swallow text/sprite writes', () => {
     assert.match(readSource('source/utcp/tools/get-properties-tool.ts'), /fields not present on/);
+    assert.match(readSource('source/utcp/tools/get-properties-tool.ts'), /hasOwnProperty/);
     const ui = readSource('source/utcp/tools/ui-tools.ts');
     assert.doesNotMatch(ui, /catch \{\}/);
     assert.match(ui, /was not applied/);

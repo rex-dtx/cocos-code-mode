@@ -183,11 +183,11 @@ async function main() {
     try {
         const r = await fetch(`${base}/tools/projectManage?operation=set&path=test.failLoud&value=1`, { method: 'POST' });
         const body = await r.json().catch(() => ({}));
-        assert.ok(!r.ok, `projectManage set must not succeed on Creator 3.7 (got ${r.status} ${JSON.stringify(body).slice(0,120)})`);
-        if (r.status === 422) {
-            assert.equal(body.code, 'UNSUPPORTED_EDITOR_API');
-            assert.ok(typeof body.recovery === 'string' && body.recovery.length > 10, 'recovery present');
-        }
+        // §7 contract must hold unconditionally — anything other than the typed
+        // 422 UNSUPPORTED_EDITOR_API is a regression, not a skip.
+        assert.equal(r.status, 422, `projectManage set -> 422 typed error (got ${r.status} ${JSON.stringify(body).slice(0, 120)})`);
+        assert.equal(body.code, 'UNSUPPORTED_EDITOR_API');
+        assert.ok(typeof body.recovery === 'string' && body.recovery.length > 10, `recovery present (got ${JSON.stringify(body).slice(0, 120)})`);
         ok(`fail-loud: projectManage set rejected (${r.status} ${body.code || ''})`);
     } catch (e) { bad('fail-loud projectManage set', e.message); }
     

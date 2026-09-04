@@ -27,7 +27,9 @@ export class GetPropertiesTool {
             filteredProps = {};
             // A typo'd field used to vanish silently — indistinguishable from "the
             // target has no such property". Name the offenders instead.
-            const unknown = args.fields.filter((key) => !(key in props));
+            // hasOwnProperty (not `in`): inherited names like toString/__proto__ are not fields.
+            const hasOwn = (key: string) => Object.prototype.hasOwnProperty.call(props, key);
+            const unknown = args.fields.filter((key) => !hasOwn(key));
             if (unknown.length > 0) {
                 throw new Error(`inspectorGet: fields not present on ${type} (${args.reference.id}): ${unknown.join(', ')}`);
             }
