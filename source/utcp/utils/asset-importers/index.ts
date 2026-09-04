@@ -1,3 +1,4 @@
+import { SceneImporter } from './scene-importer';
 import { ImporterManager } from './importer-manager';
 import { MaterialImporter } from './material-importer';
 import { TextureImporter } from './texture-importer';
@@ -26,6 +27,7 @@ export * from './gltf-importer';
 export * from './directory-importer';
 export * from './auto-atlas-importer';
 export * from './prefab-importer';
+export * from './scene-importer';
 export * from './image-importer';
 export * from './sprite-frame-importer';
 export * from './texture-cube-importer';
@@ -47,6 +49,8 @@ export function registerAllImporters() {
 
     // Prefab
     manager.registerImporter(new PrefabImporter());
+    // Scene
+    manager.registerImporter(new SceneImporter());
     
     // Textures & Images
     manager.registerImporter(new ImageImporter());

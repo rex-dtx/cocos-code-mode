@@ -58,12 +58,22 @@ export class ToolsUtils {
         // Try Asset
         try {
              const assetInfo = await Editor.Message.request('asset-db', 'query-asset-info', targetId);
-             const props = assetInfo ? await ImporterManager.getInstance().getImporter(assetInfo.importer)?.getProperties(assetInfo) : null;
              if (assetInfo) {
+                 let props = await ImporterManager.getInstance().getImporter(assetInfo.importer)?.getProperties(assetInfo);
+                 if (!props) {
+                     // Default safe property map for assets whose importer has no specific getProperties handler
+                     props = {
+                         uuid: { value: assetInfo.uuid, type: 'String' },
+                         type: { value: assetInfo.type, type: 'String' },
+                         name: { value: assetInfo.name || '', type: 'String' },
+                         url: { value: assetInfo.url || '', type: 'String' },
+                         importer: { value: assetInfo.importer || '', type: 'String' },
+                     };
+                 }
                  return {
                      uuid: targetId,
                      type: assetInfo.type, 
-                     props: props || null,
+                     props,
                      assetInfo: assetInfo
                  };
              }
