@@ -33,4 +33,4 @@ _tmp_*
 plans/visuals/
 
 # Cocos scene graph offline cache
-.cocos-graph*/
+.cocos-graph/

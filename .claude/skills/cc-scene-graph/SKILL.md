@@ -1,143 +1,107 @@
 ---
 name: cc-scene-graph
-description: >
-  Use when a task needs Cocos scene/project structure: find nodes by component,
-  script, path, or text; scope by bundle; or resume prior scene context. Wraps
-  the cocos-graph offline index (handle-first) and enforces live-read-before-mutate.
+description: Use for Cocos scene/project structural search, composite node resolution, bounded hierarchy navigation, asset references, or session continuation. Uses the offline T0/T1 graph and requires a live read before every mutation.
 ---
 
 # cc-scene-graph
 
-Offline structural index for the authoring Cocos project. Answers **where/what** (T1) without touching the editor; live bridge answers **how much** (T2) and every write.
+Offline structural navigation for saved Cocos assets. The graph answers **where/what**; CC Bridge remains authoritative for unsaved state, runtime state, and every write.
 
-## When to use cocos-graph instead of grep / nodeGetTree loops
+## Authority model
 
-| Intent | Use |
-|---|---|
-| Find / plan — "which nodes have X", "where is Y", "parents of N" | `cocos-graph query` (T1) |
-| Read-modify-write on node N | `cocos-graph query` → `inspectorGet` live → `inspectorSet`/`nodeOperate` |
-| Runtime value, material param, viewport | bridge only — never the index |
-| `grep` over `assets/` for node names/uuids | `cocos-graph query --text` — fewer tokens, bundle-scoped |
+- T0 identity: engine UUID plus source file. Indexed as composite `handle = <file>#<uuid>`.
+- T1 structure: saved hierarchy, component attachment, script identity, asset references. Indexed.
+- T2 mutable values: transforms, active state, component values. Never indexed.
+- T3 runtime/editor state: selection, viewport, undo, runtime instances. Never indexed.
 
-Default to the index for structural search. Use `nodeGetTree` only to **resolve one handle** or when `stale` says advisory.
+Node UUIDs and prefab `fileId` values are file-local. Never pass a composite handle directly to Cocos. Resolve its `uuid`, then confirm the exact live scene/target through CC Bridge.
 
-## Tier model (plan §Cacheability)
+## Cache layout
 
-- **T0 identity** — `uuid`, node `_id`, `fileId` — durable, permanent.
-- **T1 structure** — hierarchy, component attachment, script path — **indexed** (committed). Becomes advisory when `dirty:true`.
-- **T2 state** — `position`/`rotation`/`active`/every property value — **never indexed**; always `inspectorGet` live before mutate.
-- **T3 ephemeral** — selection, undo stack — never indexable.
+All generated data lives below one ignored root:
 
-Rule: index answers `where`/`what`, never `how much`. Before any mutation, live `inspectorGet` the exact target (T2 rule).
+```text
+<project>/.cocos-graph/<namespace>/
+  _manifest.json
+  <bundle>/graph-<semantic-hash>.json
+```
 
-## CLI — `tools/cocos-graph` (Node 22, 0 deps)
+`--isolate` or `CC_GRAPH_ISOLATE=1` selects a branch/worktree namespace. `CC_GRAPH_SLUG` overrides its slug. `--out` wins over `CC_GRAPH_OUT`, which wins over isolation defaults. Builds use a bounded namespace lock and atomic generation publication.
+
+## Commands
 
 ```bash
-# Build — output is <project>/.cocos-graph/<bundle>/graph.json + _manifest.json
-node tools/cocos-graph/bin/cocos-graph.mjs build --project <path> [--bundle <name>] [--live-json <path>] [--out .cocos-graph]
+# Build all bundles or exactly one bundle
+node tools/cocos-graph/bin/cocos-graph.mjs build --project <project> [--bundle <bundle>] [--isolate]
 
-# Query — at most one filter; multiple = AND; handle-first JSON to stdout
-node tools/cocos-graph/bin/cocos-graph.mjs query --bundle <name> [--by-component <type>] [--by-script <uuid|path>] [--path-glob <glob>] [--text <q>] [--limit 50] [--cursor <n>]
+# Overlay one expanded live scene; JSON must include sourceFile, tree, dirty
+node tools/cocos-graph/bin/cocos-graph.mjs build --project <project> --bundle <bundle> --live-json <snapshot.json> --isolate
 
-# Validate — live-vs-disk counts for the open scene, reports prefabOpaque
-node tools/cocos-graph/bin/cocos-graph.mjs validate --bundle <name> [--project <path>]
+# Search; filters compose with AND
+node tools/cocos-graph/bin/cocos-graph.mjs query --project <project> --bundle <bundle> [--by-component <type>] [--by-script <uuid>] [--component-id <id>] [--path-glob <path>] [--text <q>] [--explain] [--limit 50] [--cursor 0] --isolate
+
+# Resolve identity; ambiguous bare UUID exits 3 and returns candidates
+node tools/cocos-graph/bin/cocos-graph.mjs resolve --project <project> --bundle <bundle> --handle <file#uuid> --isolate
+node tools/cocos-graph/bin/cocos-graph.mjs resolve --project <project> --bundle <bundle> --uuid <engine-id> --isolate
+
+# Bounded hierarchy navigation
+node tools/cocos-graph/bin/cocos-graph.mjs navigate --project <project> --bundle <bundle> --handle <file#uuid> --relation ancestors|children|descendants [--depth 1] [--limit 50] --isolate
+
+# Asset references from component properties
+node tools/cocos-graph/bin/cocos-graph.mjs refs --project <project> --bundle <bundle> --asset-uuid <uuid> --isolate
+
+# Integrity/schema validation
+node tools/cocos-graph/bin/cocos-graph.mjs validate --project <project> --bundle <bundle> --isolate
 ```
 
-`<project>` is the authored Cocos project (e.g. `G:/_ws/cc-fws/cc30-new-all-in-one`). `--bundle` scopes to `assets/<bundle>/` (e.g. `cc-common`, `cc-release-slot`). Omit `--bundle` on `build` to build all shards.
+Parser schema is v4. v3 or older manifests fail with an explicit rebuild action.
 
-Query stdout (always one JSON line, exit 0):
-```json
-{"total":42,"truncated":false,"cursor":null,"handles":[{"uuid":"c0y6...","path":"/Canvas/Player","name":"Player","file":"assets/.../g9664L.scene"}],"stale":{"age_ms":12000,"dirty":false,"prefabOpaque":false}}
+## Required mutation workflow
+
+1. Search offline and keep `handle`, `uuid`, `file`, `source`, and `bundle`.
+2. Reject/adapt when `stale.advisory=true`, `dirty` is `true` or `unknown`, `prefabOpaque=true`, or resolution is ambiguous.
+3. Call `ccb3x.sceneGetInfo()` and verify the intended scene is open.
+4. Resolve/read the exact engine UUID live with `nodeGetTree` or `inspectorGet`.
+5. Perform the write through the narrow CC Bridge tool.
+6. Read the changed target live and verify the observable result.
+7. Only then record session continuity:
+
+```bash
+node tools/cocos-graph/bin/cocos-graph.mjs session-record \
+  --project <project> --bundle <bundle> --scene-uuid <scene-uuid> \
+  --working-path <path> --task <description> --verified
 ```
 
-Errors (exit 2, stderr one-liner, nothing on stdout) — distinguish from "0 matches":
-- `cocos-graph: shard not built for bundle "<name>" (run: cocos-graph build ...)`
-- `cocos-graph: shard <name> is stale or unreadable (parserVersion "3" expected, run build)`
-- Built OK but no matches → exit 0 with `"total":0,"handles":[]`.
+`session-record` rejects calls without `--verified`; it writes `.claude/ccb-session.json` atomically with `age_ms:0`.
 
-`parserVersion` is `"3"`; any other on disk is treated as stale.
-
-## Handle-first discipline (T2 live-read-before-mutate)
-
-1. `cocos-graph query --bundle <b> --by-component "cc.Sprite"` → collect `handles[].uuid`
-2. `inspectorGet({target:"instance", reference:{id: uuid}})` → live state for the chosen target only
-3. `inspectorSet` / `nodeOperate` / `nodeComponentManage` with the fresh value
-
-Never dump a whole scene, never write from index values, never use `__id__` (positional — breaks on re-save; stable keys are `uuid`/`_id`/`fileId`).
-
-## Bundle scoping
-
-`query` always requires `--bundle` (the shard). To answer cross-bundle questions, query each shard separately — do not load all shards at once. The active work's `bundle` lives in `.claude/ccb-session.json` (see below).
-
-## Staleness — check before trusting structure
-
-Every query `stale`:
-- `age_ms = now - builtAt` — banner when `age_ms > 2000` and the manifest predates the last edit.
-- `dirty` mirrors `sceneGetInfo().dirty` when available — if `true`, T1 is advisory; re-read via `nodeGetTree`/`sceneGetInfo` live.
-- `prefabOpaque:true` — disk shard has no prefab-expanded children; live-sourced shard only (`live` + `liveNodes`) does.
-
-Pattern (codegraph #403): non-blocking banner, never `throw`. If stale/advisory, fallback to `ccb3x.nodeGetTree` / `ccb3x.sceneGetInfo` for the target path.
-
-## Session artifact — `.claude/ccb-session.json` (Concern A)
-
-Small per-worktree file, gitignored, written by the agent after meaningful scene work, read at session start. Same `age_ms` gate as the index.
+## Live snapshot contract
 
 ```json
 {
-  "bundle": "cc-release-slot",
-  "sceneUuid": "80dddede-...",
-  "workingPath": "/Canvas/Player",
-  "task": "swap texture X -> Y on cc.Sprite",
-  "updatedAt": "2026-09-03T10:12:03.122Z",
-  "age_ms": 1200,
-  "project": "G:/_ws/cc-fws/cc30-new-all-in-one"
+  "sourceFile": "assets/<bundle>/<scene>.scene",
+  "dirty": true,
+  "tree": { "reference": {}, "children": [] }
 }
 ```
 
-- `bundle`/`sceneUuid`/`workingPath`/`task` — what/where you left off.
-- `updatedAt` (ISO 8601) — reference instant; written `age_ms` is only a hint.
-- `project` — Cocos project root so the hook can find `<project>/.cocos-graph/_manifest.json`.
-- Read side: `age_ms = Date.now() - Date.parse(updatedAt)` (fallback to written `age_ms`). Gate: `age_ms > 2000` or `manifest.builtAt < updatedAt` → stale.
+The source file must resolve uniquely inside the selected bundle. Live records replace only that scene; unrelated disk scene/prefab records remain. Missing or ambiguous provenance fails before publication.
 
-Write it from the agent (Write tool / `fs.writeFileSync`) at the end of a scene task. Delete it when switching tasks.
+## Output and failure semantics
 
-## SessionStart banner — `session-staleness.mjs`
-
-` .claude/skills/cc-scene-graph/session-staleness.mjs` reads `ccb-session.json` + `<project>/.cocos-graph/_manifest.json`, computes ages, and prints a non-blocking banner (stdout, exit 0) — never authoritative, never blocking. Register as a second `SessionStart` hook alongside `cc-bridge-bootstrap.js`:
-
-```json
-{ "hooks": { "SessionStart": [{ "hooks": [
-  { "type": "command", "command": "node ./scripts/cc-bridge-bootstrap.js", "timeout": 10 },
-  { "type": "command", "command": "node ./.claude/skills/cc-scene-graph/session-staleness.mjs", "timeout": 5 }
-]}]}}
-```
-
-If your bootstrap owns `settings.json`, merge the second entry there instead of overwriting — `staleness.mjs` is additive and never touches the bridge cache.
-
-## Examples — B-intent queries (T1)
-
-```bash
-# by component type
-node tools/cocos-graph/bin/cocos-graph.mjs query --bundle cc-release-slot --by-component "cc.Sprite" --limit 20
-
-# by script (uuid or db url)
-node tools/cocos-graph/bin/cocos-graph.mjs query --bundle cc-release-slot --by-script "f1a2..."
-
-# by path glob
-node tools/cocos-graph/bin/cocos-graph.mjs query --bundle cc-common --path-glob "/Canvas/Player/*"
-
-# text over node names (case-insensitive substring)
-node tools/cocos-graph/bin/cocos-graph.mjs query --bundle cc-release-slot --text "Player"
-
-# combine (AND) + paginate
-node tools/cocos-graph/bin/cocos-graph.mjs query --bundle cc-release-slot --by-component "cc.Label" --text "Score" --limit 50 --cursor 50
-```
-
-Each returns handles; to inspect one: `ccb3x.inspectorGet({target:"instance", reference:{id: handle.uuid}})`. Before any write, verify `ccb3x.sceneGetInfo().dirty`.
+- Query results are deterministically ordered and cursor-paginated.
+- Every handle includes `handle`, engine `uuid`, `file`, `source`, and `bundle`.
+- `resolve --uuid` never guesses: one candidate resolves, duplicates return `ambiguous` plus candidates.
+- `dirty:"unknown"` is advisory, never equivalent to clean.
+- `prefabOpaque:true` means disk parsing omitted expanded prefab internals.
+- Exit 0 + `total:0` means a valid empty result.
+- Exit 2 means missing/stale/invalid data or bad arguments.
+- Exit 3 means ambiguous bare identity.
 
 ## Do not
 
-- Cache or write `position`/`active`/material values from the index — `inspectorGet` live every time.
-- `grep` for node names when the same query exists as `--text`; do not loop `nodeGetTree` to search.
-- Treat `exit 0 + total:0` as "not built" — only `exit 2` means build is needed.
-- Assume T3 (runtime `cc.Node` instances) are indexable — `findRuntimeNodeUuid` stays live DFS.
+- Never cache or write T2 values from the graph.
+- Never treat bare node UUID as global identity.
+- Never use serialized positional `__id__` as identity.
+- Never mutate from offline evidence without the live-read and post-write witness.
+- Never dump an entire scene when a bounded query or navigation command answers the question.
+- Never add SQLite, embeddings, or offline prefab expansion without measured need and correctness fixtures.

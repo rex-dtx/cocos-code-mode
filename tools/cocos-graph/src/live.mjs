@@ -1,43 +1,59 @@
-// Tree → graph adapter — live editor dump (nodeGetTree verbose) to the same
-// per-shard shape as the disk parser. The live tree already contains prefab
-// expansion; its `reference.id` is the stable `_id` (or fileId-derived for
-// prefab children). No coordinate / property values are kept (T2 excluded).
+import { makeHandle } from './parser.mjs';
 
-export function treeToGraph(root) {
+export function unwrapLiveSnapshot(payload) {
+  const tree = payload?.tree ?? payload;
+  const sourceFile = payload?.sourceFile ?? payload?.file ?? tree?.sourceFile ?? null;
+  const dirty = typeof payload?.dirty === 'boolean' ? payload.dirty : 'unknown';
+  if (!sourceFile) throw new Error('live snapshot requires sourceFile (project-relative .scene path)');
+  return { tree, sourceFile: String(sourceFile).replace(/\\/g, '/'), dirty };
+}
+
+function assertNotTruncated(entry) {
+  if (entry?.truncated === true) throw new Error('live snapshot is truncated (increase maxNodes/maxDepth and export again)');
+  if (typeof entry?.childrenOmitted === 'number' && entry.childrenOmitted > 0) throw new Error('live snapshot omitted children (increase maxNodes/maxDepth and export again)');
+}
+
+export function treeToGraph(root, { file, source = 'live' } = {}) {
   if (!root || typeof root !== 'object') throw new Error('treeToGraph: expected the nodeGetTree result');
-  // Top-level shape from the bridge: { reference, name?, children?, components?, path? }
-  // Some calls wrap as { reference, children } only (no path); tolerate both.
+  if (!file) throw new Error('treeToGraph: source file is required');
+  assertNotTruncated(root);
   const nodes = [];
   const comps = [];
   const refs = [];
-  function walk(entry, parentPath) {
+
+  function walk(entry, parentHandle, parentPath) {
+    assertNotTruncated(entry);
     const uuid = entry.reference?.id;
     if (!uuid) return;
+    const handle = makeHandle(file, uuid);
     const name = entry.name ?? '';
     const path = entry.path ?? (parentPath === '/' ? `/${name}` : `${parentPath}/${name}`);
-    const parent = parentPath ? parentPath.split('/').filter(Boolean).pop() ?? null : null;
-    // parent above is just a name hint; for live trees we store the path-derived parent uuid
-    // via a second pass if needed — for the index, the `path` field is the canonical resolver.
-    nodes.push({ uuid, name, path, parent });
-    if (Array.isArray(entry.components)) {
-      for (const c of entry.components) {
-        const type = c.reference?.type ?? 'unknown';
-        comps.push({ node: uuid, type, script: null });
-        // Live refs (asset uses) stay variant — `asset-db query-asset-users` answers file→file;
-        // the per-node `refs` layer for live trees is left to the bridge's own dump.
-      }
+    nodes.push({ handle, uuid, file, source, name, path, parent: parentHandle });
+    for (const component of Array.isArray(entry.components) ? entry.components : []) {
+      const componentUuid = component.reference?.id ?? null;
+      comps.push({
+        handle: componentUuid ? makeHandle(file, `component:${componentUuid}`) : null,
+        uuid: componentUuid,
+        node: handle,
+        nodeUuid: uuid,
+        file,
+        source,
+        type: component.reference?.type ?? 'unknown',
+        script: null,
+      });
     }
-    if (Array.isArray(entry.children)) for (const child of entry.children) walk(child, path);
+    for (const child of Array.isArray(entry.children) ? entry.children : []) walk(child, handle, path);
   }
-  // The root holds the scene's only child as `children`; walk each
+
   const roots = Array.isArray(root.children) ? root.children : [root];
-  for (const child of roots) walk(child, '/');
+  for (const child of roots) walk(child, null, '/');
   return { nodes, comps, refs, prefabOpaque: false };
 }
 
 export function validateLiveGraph(graph) {
   if (!Array.isArray(graph.nodes)) throw new Error('validateLiveGraph: missing nodes');
-  // Every node should have a uuid; fail loud on missing.
-  for (const n of graph.nodes) if (!n.uuid) throw new Error('validateLiveGraph: node without uuid');
+  for (const node of graph.nodes) {
+    if (!node.uuid || !node.handle || !node.file) throw new Error('validateLiveGraph: node without identity provenance');
+  }
   return true;
 }

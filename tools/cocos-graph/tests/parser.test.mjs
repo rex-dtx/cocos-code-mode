@@ -1,57 +1,64 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { decodeUuid, parseEntries, parseSceneText } from '../src/parser.mjs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
+import { decodeUuid, makeHandle, parseEntries, parseHandle, parseSceneText } from '../src/parser.mjs';
 
-const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
+const fixtures = join(import.meta.dirname, 'fixtures');
 
 describe('decodeUuid', () => {
-  it('decodes the engine docstring golden vector', () => {
-    // From cocos/core/utils/decode-uuid.ts docstring
-    assert.equal(decodeUuid('fcmR3XADNLgJ1ByKhqcC5Z'), 'fc991dd7-0033-4b80-9d41-c8a86a702e59');
-  });
-  it('passes through non-22 strings and 22-char non-compressed', () => {
-    assert.equal(decodeUuid('deadbeef-dead-beef-dead-beefdeadbeef'), 'deadbeef-dead-beef-dead-beefdeadbeef');
-    assert.equal(decodeUuid(''), '');
+  it('decodes the engine golden vector', () => assert.equal(decodeUuid('fcmR3XADNLgJ1ByKhqcC5Z'), 'fc991dd7-0033-4b80-9d41-c8a86a702e59'));
+  it('preserves ordinary and sub-id values', () => {
     assert.equal(decodeUuid('short'), 'short');
-  });
-  it('preserves @ sub-id suffix', () => {
-    const withSub = 'fcmR3XADNLgJ1ByKhqcC5Z@12345';
-    const decoded = decodeUuid(withSub);
-    assert.ok(decoded.endsWith('@12345'));
-    assert.ok(decoded.startsWith('fc991dd7-0033-4b80'));
+    assert.ok(decodeUuid('fcmR3XADNLgJ1ByKhqcC5Z@sub').endsWith('@sub'));
   });
 });
 
-describe('parseEntries', () => {
-  it('parses the golden fixture and returns expected nodes/comps/refs', () => {
-    const text = readFileSync(join(fixturesDir, 'mini.scene.json'), 'utf8');
-    const arr = JSON.parse(text);
-    const { nodes, comps, refs, prefabOpaque } = parseEntries(arr);
-    assert.equal(nodes.length, 4, '3 cc.Node + 1 cc.Scene');
-    assert.ok(nodes.some((n) => n.uuid === 'node-a-uuid' && n.name === 'Player'));
-    assert.ok(nodes.some((n) => n.uuid === 'node-b-uuid' && n.name === 'Enemy'));
-    assert.ok(prefabOpaque, 'Enemy has _prefab → shard is opaque');
-    const sprite = comps.find((c) => c.node === 'node-a-uuid' && c.type === 'cc.Sprite');
-    assert.ok(sprite, 'Player should have cc.Sprite via _components');
-    assert.equal(refs.length, 1);
-    assert.equal(refs[0].uuid, 'fc991dd7-0033-4b80-9d41-c8a86a702e59');
-    assert.equal(refs[0].node, 'node-a-uuid');
+describe('composite handles', () => {
+  it('round-trips file plus engine identity', () => {
+    const handle = makeHandle('assets/a.scene', 'node-id');
+    assert.deepEqual(parseHandle(handle), { file: 'assets/a.scene', uuid: 'node-id' });
   });
-  it('throws when a cc.Node lacks _id (stable identity required)', () => {
-    assert.throws(() => parseEntries([{ __type__: 'cc.Node', _name: 'Nameless' }]), /has no _id/);
+});
+
+describe('parseEntries schema v4', () => {
+  it('preserves engine ids, component ids, file provenance, and composite parents', () => {
+    const text = readFileSync(join(fixtures, 'mini.scene.json'), 'utf8');
+    const result = parseSceneText(text, { file: 'assets/test/mini.scene' });
+    const player = result.nodes.find((node) => node.uuid === 'node-a-uuid');
+    assert.equal(player.handle, 'assets/test/mini.scene#node-a-uuid');
+    assert.equal(player.file, 'assets/test/mini.scene');
+    assert.equal(player.source, 'disk');
+    const child = result.nodes.find((node) => node.uuid === 'node-c-uuid');
+    assert.equal(child.parent, player.handle);
+    const sprite = result.comps.find((component) => component.type === 'cc.Sprite');
+    assert.equal(sprite.uuid, 'comp-sprite-a');
+    assert.equal(sprite.handle, 'assets/test/mini.scene#component:comp-sprite-a');
+    assert.equal(sprite.node, player.handle);
+    assert.equal(result.refs[0].node, player.handle);
   });
-  it('parseSceneText rejects non-array JSON', () => {
-    assert.throws(() => parseSceneText('{"foo":1}'), /expected the flat serialized array/);
+
+  it('keeps duplicate engine ids independent across files', () => {
+    const first = parseSceneText(readFileSync(join(fixtures, 'mini.scene.json'), 'utf8'), { file: 'assets/test/a.scene' });
+    const second = parseSceneText(readFileSync(join(fixtures, 'duplicate.scene.json'), 'utf8'), { file: 'assets/test/b.scene' });
+    const a = first.nodes.find((node) => node.uuid === 'node-a-uuid');
+    const b = second.nodes.find((node) => node.uuid === 'node-a-uuid');
+    assert.notEqual(a.handle, b.handle);
+    assert.equal(a.uuid, b.uuid);
   });
-  it('parseSceneText throws on invalid JSON', () => {
+
+  it('uses prefab fileId and skips nodes with no stable identity', () => {
+    const result = parseEntries([
+      { __type__: 'cc.Node', _name: 'PrefabRoot', _prefab: { __id__: 1 } },
+      { __type__: 'cc.PrefabInfo', fileId: 'prefab-file-id' },
+      { __type__: 'cc.Node', _name: 'UnexpandedInstance' },
+    ], { file: 'assets/test/x.prefab' });
+    assert.equal(result.nodes.length, 1);
+    assert.equal(result.nodes[0].uuid, 'prefab-file-id');
+  });
+
+  it('rejects invalid serialized input', () => {
     assert.throws(() => parseSceneText('{bad'), /invalid JSON/);
-  });
-  it('never uses __id__ as a persisted key', () => {
-    const text = readFileSync(join(fixturesDir, 'mini.scene.json'), 'utf8');
-    const { nodes } = parseEntries(JSON.parse(text));
-    for (const n of nodes) assert.ok(!String(n.uuid).startsWith('__id__'), `uuid must not be __id__: ${n.uuid}`);
+    assert.throws(() => parseEntries({}), /expected the flat serialized array/);
   });
 });

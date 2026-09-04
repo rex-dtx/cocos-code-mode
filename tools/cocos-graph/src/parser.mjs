@@ -1,61 +1,59 @@
 // Offline parser for Cocos 3.x `.scene` / `.prefab` files.
-//
-// On-disk format (verified against `@cocos/creator-types` + a real g9664L.scene):
-// a flat JSON array; entries carry `__type__`; intra-file links are `{ __id__: N }`
-// positional indices; cross-file links are `{ __uuid__: ..., __expectedType__: ... }`.
-// `__id__` is NEVER used as a persisted key (it breaks on every editor re-save);
-// node `_id` is the stable handle and is what the editor reports as `reference.id`.
-//
-// Scope: T0 identity + T1 structure only. No position / property values (T2) — those
-// must always be read live. See plan §Cacheability model + D6.
+// Persists T0 identity + T1 structure only. Cocos IDs are file-local, so every
+// record also carries a composite graph handle: <project-relative-file>#<engine-id>.
 
 const BASE64_KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const BASE64_VALUES = new Array(123).fill(64);
 for (let i = 0; i < 64; i++) BASE64_VALUES[BASE64_KEYS.charCodeAt(i)] = i;
-const HexChars = '0123456789abcdef'.split('');
-const _t = ['', '', '', ''];
-// 8 - 4 - 4 - 4 - 12 layout, 4 dashes, 32 hex slots.
-const UuidTemplate = _t.concat(_t, '-', _t, '-', _t, '-', _t, '-', _t, _t, _t);
-const HexIndices = UuidTemplate.map((x, i) => (x === '-' ? NaN : i)).filter(Number.isFinite);
+const HEX = '0123456789abcdef'.split('');
+const T = ['', '', '', ''];
+const UUID_TEMPLATE = T.concat(T, '-', T, '-', T, '-', T, '-', T, T, T);
+const HEX_INDICES = UUID_TEMPLATE.map((x, i) => (x === '-' ? NaN : i)).filter(Number.isFinite);
 
-/**
- * Port of `cocos/core/utils/decode-uuid.ts` (Creator 3.7.3 engine source).
- * Kept pure (copies the template) — the engine mutates its module-level array.
- * Golden vector from the engine docstring: 'fcmR3XADNLgJ1ByKhqcC5Z'
- *   -> 'fc991dd7-0033-4b80-9d41-c8a86a702e59'.
- */
 export function decodeUuid(base64) {
   if (typeof base64 !== 'string') return base64;
-  const strs = base64.split('@');
-  const head = strs[0];
+  const [head] = base64.split('@');
   if (head.length !== 22) return base64;
-  const tpl = UuidTemplate.slice();
-  tpl[0] = base64[0];
-  tpl[1] = base64[1];
+  const tpl = UUID_TEMPLATE.slice();
+  tpl[0] = head[0];
+  tpl[1] = head[1];
   for (let i = 2, j = 2; i < 22; i += 2) {
-    const lhs = BASE64_VALUES[base64.charCodeAt(i)];
-    const rhs = BASE64_VALUES[base64.charCodeAt(i + 1)];
-    tpl[HexIndices[j++]] = HexChars[lhs >> 2];
-    tpl[HexIndices[j++]] = HexChars[((lhs & 3) << 2) | (rhs >> 4)];
-    tpl[HexIndices[j++]] = HexChars[rhs & 0xf];
+    const lhs = BASE64_VALUES[head.charCodeAt(i)];
+    const rhs = BASE64_VALUES[head.charCodeAt(i + 1)];
+    tpl[HEX_INDICES[j++]] = HEX[lhs >> 2];
+    tpl[HEX_INDICES[j++]] = HEX[((lhs & 3) << 2) | (rhs >> 4)];
+    tpl[HEX_INDICES[j++]] = HEX[rhs & 0xf];
   }
   return base64.replace(head, tpl.join(''));
 }
 
-// Bookkeeping entries that are not real components.
+export function makeHandle(file, uuid) {
+  if (!file || !uuid) throw new Error('makeHandle: file and uuid are required');
+  return `${String(file).replace(/\\/g, '/')}#${uuid}`;
+}
+
+export function parseHandle(handle) {
+  const split = String(handle ?? '').lastIndexOf('#');
+  if (split <= 0 || split === String(handle).length - 1) return null;
+  return { file: handle.slice(0, split), uuid: handle.slice(split + 1) };
+}
+
 const SKIP_TYPES = new Set([
   'cc.SceneAsset', 'cc.Node', 'cc.Scene', 'cc.Prefab',
   'cc.PrefabInfo', 'cc.CompPrefabInfo', 'cc.TargetInfo',
   'CCPropertyOverrideInfo', 'cc.MountedChildrenInfo', 'cc.MountedComponentsInfo',
 ]);
 
-function idOf(arr, ref) {
-  if (!ref || typeof ref.__id__ !== 'number') return null;
-  const entry = arr[ref.__id__];
-  return entry && typeof entry._id === 'string' ? entry._id : null;
+function prefabFileId(arr, entry) {
+  if (!entry?._prefab || typeof entry._prefab.__id__ !== 'number') return null;
+  const info = arr[entry._prefab.__id__];
+  return typeof info?.fileId === 'string' && info.fileId ? info.fileId : null;
 }
 
-/** Collect every `{ __uuid__ }` occurrence under a value, with its property path. */
+function stableId(arr, entry) {
+  return typeof entry?._id === 'string' && entry._id ? entry._id : prefabFileId(arr, entry);
+}
+
 function collectUuidRefs(value, prop, out, depth = 0) {
   if (!value || typeof value !== 'object' || depth > 6) return;
   if (Array.isArray(value)) {
@@ -66,105 +64,72 @@ function collectUuidRefs(value, prop, out, depth = 0) {
     out.push({ uuid: decodeUuid(value.__uuid__), prop });
     return;
   }
-  for (const [k, v] of Object.entries(value)) {
-    if (k === '__type__' || k === '__id__') continue;
-    collectUuidRefs(v, prop ? `${prop}.${k}` : k, out, depth + 1);
+  for (const [key, child] of Object.entries(value)) {
+    if (key === '__type__' || key === '__id__') continue;
+    collectUuidRefs(child, prop ? `${prop}.${key}` : key, out, depth + 1);
   }
 }
 
-/**
- * Parse a deserialized `.scene` / `.prefab` array into T0+T1 structure.
- * Returns { nodes, comps, refs, prefabOpaque }.
- */
-export function parseEntries(arr) {
+export function parseEntries(arr, { file = 'unknown', source = 'disk' } = {}) {
   if (!Array.isArray(arr)) throw new Error('parseEntries: expected the flat serialized array');
-
-  const nodes = [];
-  const byIndex = new Map();          // array index -> node record
-  const nameByIndex = new Map();
-  const parentByIndex = new Map();
+  const normalizedFile = String(file).replace(/\\/g, '/');
+  const byIndex = new Map();
   let prefabOpaque = false;
 
-  for (let idx = 0; idx < arr.length; idx++) {
-    const e = arr[idx];
-    if (!e || (e.__type__ !== 'cc.Node' && e.__type__ !== 'cc.Scene')) continue;
-    
-    // In Cocos Creator 3.x, prefab root/instances often store their stable ID
-    // in `_prefab.fileId` (via cc.CompPrefabInfo) rather than `_id`.
-    let id = (typeof e._id === 'string' && e._id) ? e._id : null;
-    if (!id && e._prefab && typeof e._prefab.__id__ === 'number') {
-      const pObj = arr[e._prefab.__id__];
-      if (pObj && typeof pObj.fileId === 'string' && pObj.fileId) {
-        id = pObj.fileId;
-      }
-    }
-
-    if (!id) {
-      // Fallback: nested instances inside scenes that lack both _id and fileId
-      // are prefab-instantiated children that require live expansion. Skip from disk shard.
-      continue;
-    }
-
-    e._id = id;
-    byIndex.set(idx, e);
-    nameByIndex.set(idx, e._name ?? (e.__type__ === 'cc.Scene' ? 'Scene' : ''));
-    const parentIdx = e._parent && typeof e._parent.__id__ === 'number' ? e._parent.__id__ : null;
-    parentByIndex.set(idx, parentIdx);
-    if (e._prefab && typeof e._prefab.__id__ === 'number') prefabOpaque = true;
+  for (let index = 0; index < arr.length; index++) {
+    const entry = arr[index];
+    if (!entry || (entry.__type__ !== 'cc.Node' && entry.__type__ !== 'cc.Scene')) continue;
+    const uuid = stableId(arr, entry);
+    if (!uuid) continue; // unexpanded prefab instance: only the live editor can resolve it
+    byIndex.set(index, { entry, uuid, handle: makeHandle(normalizedFile, uuid) });
+    if (entry._prefab && typeof entry._prefab.__id__ === 'number') prefabOpaque = true;
   }
 
-  function pathOf(idx) {
+  const pathOf = (start) => {
     const parts = [];
-    let cur = idx;
-    let guard = 0;
-    while (cur != null && byIndex.has(cur) && guard++ < 200) {
-      const entry = byIndex.get(cur);
-      const n = nameByIndex.get(cur);
-      const isScene = entry && entry.__type__ === 'cc.Scene';
-      if (n && !isScene) parts.unshift(n);
-      cur = parentByIndex.get(cur);
+    let index = start;
+    const visited = new Set();
+    while (index != null && byIndex.has(index) && !visited.has(index)) {
+      visited.add(index);
+      const { entry } = byIndex.get(index);
+      if (entry.__type__ !== 'cc.Scene' && entry._name) parts.unshift(entry._name);
+      index = typeof entry._parent?.__id__ === 'number' ? entry._parent.__id__ : null;
     }
     return '/' + parts.join('/');
-  }
+  };
 
+  const nodes = [];
   const comps = [];
   const refs = [];
-  for (const [idx, e] of byIndex) {
-    const uuid = e._id;
-    nodes.push({
-      uuid,
-      name: nameByIndex.get(idx),
-      path: pathOf(idx),
-      parent: idOf(arr, e._parent),
-    });
-    if (!Array.isArray(e._components)) continue;
-    for (const cref of e._components) {
-      if (!cref || typeof cref.__id__ !== 'number') continue;
-      const comp = arr[cref.__id__];
-      if (!comp || !comp.__type__ || SKIP_TYPES.has(comp.__type__)) continue;
-      const type = comp.__type__;
-      // Custom script components serialize `__type__` as a 22-char compressed uuid.
+  for (const [index, record] of byIndex) {
+    const { entry, uuid, handle } = record;
+    const parentIndex = typeof entry._parent?.__id__ === 'number' ? entry._parent.__id__ : null;
+    const parent = parentIndex != null ? byIndex.get(parentIndex)?.handle ?? null : null;
+    nodes.push({ handle, uuid, file: normalizedFile, source, name: entry._name ?? (entry.__type__ === 'cc.Scene' ? 'Scene' : ''), path: pathOf(index), parent });
+
+    for (const componentRef of Array.isArray(entry._components) ? entry._components : []) {
+      if (typeof componentRef?.__id__ !== 'number') continue;
+      const component = arr[componentRef.__id__];
+      if (!component?.__type__ || SKIP_TYPES.has(component.__type__)) continue;
+      const type = component.__type__;
+      const componentUuid = stableId(arr, component);
+      const componentHandle = componentUuid ? makeHandle(normalizedFile, `component:${componentUuid}`) : null;
       const script = type.length === 22 ? decodeUuid(type) : null;
-      comps.push({ node: uuid, type, script });
+      comps.push({ handle: componentHandle, uuid: componentUuid, node: handle, nodeUuid: uuid, file: normalizedFile, source, type, script });
       const found = [];
-      for (const [k, v] of Object.entries(comp)) {
-        if (k === '__type__' || k === '_id' || k === 'node') continue;
-        collectUuidRefs(v, k, found);
+      for (const [key, value] of Object.entries(component)) {
+        if (key === '__type__' || key === '_id' || key === 'node') continue;
+        collectUuidRefs(value, key, found);
       }
-      for (const r of found) refs.push({ node: uuid, uuid: r.uuid, prop: `${type}.${r.prop}` });
+      for (const ref of found) refs.push({ node: handle, nodeUuid: uuid, file: normalizedFile, source, uuid: ref.uuid, prop: `${type}.${ref.prop}` });
     }
   }
-
   return { nodes, comps, refs, prefabOpaque };
 }
 
-/** Parse one file's raw text. Throws on non-array / invalid JSON. */
-export function parseSceneText(text) {
-  let arr;
-  try {
-    arr = JSON.parse(text);
-  } catch (err) {
-    throw new Error(`parseSceneText: invalid JSON (${err.message})`);
-  }
-  return parseEntries(arr);
+export function parseSceneText(text, options) {
+  let entries;
+  try { entries = JSON.parse(text); }
+  catch (error) { throw new Error(`parseSceneText: invalid JSON (${error.message})`); }
+  return parseEntries(entries, options);
 }

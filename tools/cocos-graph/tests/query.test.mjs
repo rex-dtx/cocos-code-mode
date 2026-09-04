@@ -1,72 +1,75 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { parseEntries } from '../src/parser.mjs';
-import { queryShard } from '../src/query.mjs';
+import { join } from 'node:path';
+import { parseSceneText } from '../src/parser.mjs';
+import { findAssetRefs, navigate, queryShard, resolveNode } from '../src/query.mjs';
 
-const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
-function fixtureGraph() {
-  const arr = JSON.parse(readFileSync(join(fixturesDir, 'mini.scene.json'), 'utf8'));
-  const { nodes, comps, refs, prefabOpaque } = parseEntries(arr);
-  const files = [{ path: 'assets/test/mini.scene', mtime: Date.now(), size: 1352, sha256: 'abcd' }];
-  return { version: '3', builtAt: Date.now(), dirty: false, prefabOpaque, bundle: 'test', source: 'disk', files, nodes, comps, refs };
+const fixtures = join(import.meta.dirname, 'fixtures');
+function graph() {
+  const a = parseSceneText(readFileSync(join(fixtures, 'mini.scene.json'), 'utf8'), { file: 'assets/test/a.scene' });
+  const b = parseSceneText(readFileSync(join(fixtures, 'duplicate.scene.json'), 'utf8'), { file: 'assets/test/b.scene' });
+  return { version: '4', builtAt: Date.now(), dirty: 'unknown', prefabOpaque: true, bundle: 'test', source: 'disk', files: [], nodes: [...a.nodes, ...b.nodes], comps: [...a.comps, ...b.comps], refs: [...a.refs, ...b.refs] };
 }
 
-describe('queryShard handle-first', () => {
-  it('byComponent returns uuids of nodes having that component', () => {
-    const g = fixtureGraph();
-    const res = queryShard(g, { byComponent: 'cc.Sprite', limit: 50 });
-    assert.equal(res.total, 1);
-    assert.equal(res.handles[0].uuid, 'node-a-uuid');
-    assert.ok(!res.handles[0].uuid.startsWith('__id__'));
+describe('query and resolve schema v4', () => {
+  it('returns deterministic provenance-rich handles and composes filters', () => {
+    const result = queryShard(graph(), { byComponent: 'cc.Sprite', text: 'player', explain: true, limit: 50 });
+    assert.equal(result.total, 2);
+    assert.deepEqual(result.handles.map((item) => item.handle), [...result.handles.map((item) => item.handle)].sort());
+    assert.ok(result.handles.every((item) => item.file && item.source && item.bundle === 'test'));
+    assert.match(result.handles[0].reason, /component:cc\.Sprite AND text:player/);
+    assert.equal(result.stale.dirty, 'unknown');
+    assert.equal(result.stale.advisory, true);
   });
-  it('text search is case-insensitive substring over name', () => {
-    const g = fixtureGraph();
-    const res = queryShard(g, { text: 'player', limit: 50 });
-    assert.equal(res.total, 1);
-    assert.equal(res.handles[0].name, 'Player');
+
+  it('never chooses an ambiguous bare engine UUID', () => {
+    const result = resolveNode(graph(), { uuid: 'node-a-uuid' });
+    assert.equal(result.status, 'ambiguous');
+    assert.equal(result.candidates.length, 2);
+    assert.notEqual(result.candidates[0].file, result.candidates[1].file);
   });
-  it('pathGlob prefix returns subtree', () => {
-    const g = fixtureGraph();
-    // fixture paths are '/' for scene, then derived; Enemy is sibling of Player, ScoreLabel is child of Player
-    const pref = queryShard(g, { pathGlob: '/Player/*', limit: 50 });
-    assert.equal(pref.total, 1);
-    assert.equal(pref.handles[0].name, 'ScoreLabel');
+
+  it('resolves an exact composite handle and unique UUID', () => {
+    const g = graph();
+    const exact = resolveNode(g, { handle: 'assets/test/a.scene#node-a-uuid' });
+    assert.equal(exact.status, 'resolved');
+    assert.equal(exact.node.file, 'assets/test/a.scene');
+    const unique = resolveNode(g, { uuid: 'node-c-uuid' });
+    assert.equal(unique.status, 'resolved');
+    assert.equal(unique.node.name, 'ScoreLabel');
   });
-  it('limit and cursor paginate without mutating total', () => {
-    const g = fixtureGraph();
+
+  it('navigates bounded ancestors, children, and descendants', () => {
+    const g = graph();
+    const player = 'assets/test/a.scene#node-a-uuid';
+    const child = 'assets/test/a.scene#node-c-uuid';
+    assert.deepEqual(navigate(g, { handle: player, relation: 'children' }).handles.map((item) => item.handle), [child]);
+    assert.equal(navigate(g, { handle: child, relation: 'ancestors', depth: 1 }).handles[0].handle, player);
+    assert.equal(navigate(g, { handle: 'assets/test/a.scene#scene-root-uuid', relation: 'descendants', depth: 1 }).total, 2);
+  });
+
+  it('looks up component instances by stable component id', () => {
+    const result = queryShard(graph(), { componentUuid: 'comp-label-c' });
+    assert.equal(result.total, 1);
+    assert.equal(result.handles[0].name, 'ScoreLabel');
+  });
+
+  it('returns asset references with owning node and property provenance', () => {
+    const result = findAssetRefs(graph(), { uuid: 'fc991dd7-0033-4b80-9d41-c8a86a702e59' });
+    assert.equal(result.total, 2);
+    assert.ok(result.refs.every((ref) => ref.node.includes('#node-a-uuid')));
+    assert.ok(result.refs.every((ref) => ref.file && ref.prop.startsWith('cc.Sprite.')));
+  });
+
+  it('paginates deterministically without changing total', () => {
+    const g = graph();
     const all = queryShard(g, { limit: 50 });
-    const page1 = queryShard(g, { limit: 1, cursor: 0 });
-    const page2 = queryShard(g, { limit: 1, cursor: 1 });
-    assert.equal(all.total, page1.total);
-    assert.equal(page1.total, page2.total);
-    assert.equal(page1.handles.length, 1);
-    assert.equal(page2.handles.length, 1);
-    assert.notEqual(page1.handles[0].uuid, page2.handles[0].uuid);
-    assert.equal(page1.truncated, true);
-  });
-  it('unknown component returns zero, not an error', () => {
-    const g = fixtureGraph();
-    const res = queryShard(g, { byComponent: 'cc.Missing', limit: 50 });
-    assert.equal(res.total, 0);
-    assert.equal(res.handles.length, 0);
-    assert.equal(res.truncated, false);
-  });
-  it('result carries stale banner fields', () => {
-    const g = fixtureGraph();
-    const res = queryShard(g, { limit: 50 });
-    assert.equal(typeof res.stale.age_ms, 'number');
-    assert.equal(typeof res.stale.dirty, 'boolean');
-    assert.equal(typeof res.stale.prefabOpaque, 'boolean');
-  });
-  it('never returns a blob — each handle has at most uuid/path/name/file', () => {
-    const g = fixtureGraph();
-    const res = queryShard(g, { limit: 50 });
-    for (const h of res.handles) {
-      const keys = Object.keys(h).sort();
-      assert.deepEqual(keys, ['file', 'name', 'path', 'uuid']);
-    }
+    const first = queryShard(g, { limit: 2, cursor: 0 });
+    const second = queryShard(g, { limit: 2, cursor: 2 });
+    assert.equal(first.total, all.total);
+    assert.equal(second.total, all.total);
+    assert.equal(first.cursor, 2);
+    assert.notDeepEqual(first.handles, second.handles);
   });
 });
