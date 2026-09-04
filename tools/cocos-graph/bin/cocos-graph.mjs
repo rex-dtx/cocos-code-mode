@@ -41,7 +41,7 @@ function has(name) { return process.argv.includes(`--${name}`); }
 const cmd = process.argv[2];
 if (!cmd || has('help') || has('h')) usage(0);
 
-const project = arg('project') ? resolve(arg('project')) : resolve('G:/_ws/cc-fws/cc30-new-all-in-one');
+const project = arg('project') ? resolve(arg('project')) : (process.env.CC_PROJECT_DIR ? resolve(process.env.CC_PROJECT_DIR) : process.cwd());
 const outRelative = arg('out') ?? '.cocos-graph';
 const outDir = resolve(project, outRelative);
 

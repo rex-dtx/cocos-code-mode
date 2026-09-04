@@ -134,30 +134,42 @@ export class UiTools {
         // label that was not applied must fail loudly, otherwise the agent believes
         // the button reads its text (docs §2 "trả sai còn tệ hơn ném lỗi").
         if (args.text !== undefined) {
-            const node = await Editor.Message.request('scene', 'query-node', reference.id) as any;
-            const labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
-            if (!labelChild?.uuid) {
+            try {
+                const node = await Editor.Message.request('scene', 'query-node', reference.id) as any;
+                const labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
+                if (!labelChild?.uuid) {
+                    const rbErr = await this.rollbackNode(reference.id);
+                    throw new ToolError({
+                        code: 'PARTIAL_MUTATION',
+                        status: 500,
+                        message: `createButton: no Label child on ${reference.id} — text "${args.text}" was not applied${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                        details: { createdNodeId: reference.id, reason: 'no Label child' },
+                        recovery: 'Node was rolled back, safe to retry; or query-node to verify structure',
+                    });
+                }
+                const ok = await Editor.Message.request('scene', 'set-property', { uuid: labelChild.uuid, path: '__comps__.0.string', dump: { value: args.text, type: 'cc.String' } }) as boolean;
+                if (ok === false) {
+                    const rbErr = await this.rollbackNode(reference.id);
+                    throw new ToolError({
+                        code: 'PARTIAL_MUTATION',
+                        status: 500,
+                        message: `createButton: set-property refused for label text on ${labelChild.uuid} (button ${reference.id})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; button was rolled back, safe to retry'}`,
+                        details: { createdNodeId: reference.id, labelChildUuid: labelChild.uuid },
+                        recovery: 'Button was rolled back, safe to retry',
+                    });
+                }
+                await Editor.Message.request('scene', 'snapshot');
+            } catch (err: any) {
+                if (err instanceof ToolError) throw err;
                 const rbErr = await this.rollbackNode(reference.id);
                 throw new ToolError({
                     code: 'PARTIAL_MUTATION',
                     status: 500,
-                    message: `createButton: no Label child on ${reference.id} — text "${args.text}" was not applied${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
-                    details: { createdNodeId: reference.id, reason: 'no Label child' },
-                    recovery: 'Node was rolled back, safe to retry; or query-node to verify structure',
-                });
-            }
-            const ok = await Editor.Message.request('scene', 'set-property', { uuid: labelChild.uuid, path: '__comps__.0.string', dump: { value: args.text, type: 'cc.String' } }) as boolean;
-            if (ok === false) {
-                const rbErr = await this.rollbackNode(reference.id);
-                throw new ToolError({
-                    code: 'PARTIAL_MUTATION',
-                    status: 500,
-                    message: `createButton: set-property refused for label text on ${labelChild.uuid} (button ${reference.id})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; button was rolled back, safe to retry'}`,
-                    details: { createdNodeId: reference.id, labelChildUuid: labelChild.uuid },
+                    message: `createButton: follow-up IPC failed for button ${reference.id} (${err?.message || err})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, error: err?.message || String(err) },
                     recovery: 'Button was rolled back, safe to retry',
                 });
             }
-            await Editor.Message.request('scene', 'snapshot');
         }
 
         return { reference };

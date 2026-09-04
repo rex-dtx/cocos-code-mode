@@ -102,7 +102,7 @@ export function parseEntries(arr) {
 
   function pathOf(idx) {
     const parts = [];
-    let cur = parentByIndex.get(idx);
+    let cur = idx;
     let guard = 0;
     while (cur != null && byIndex.has(cur) && guard++ < 200) {
       const entry = byIndex.get(cur);

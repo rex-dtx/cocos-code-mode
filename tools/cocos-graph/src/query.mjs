@@ -39,24 +39,27 @@ export function queryShard(graph, { byComponent, byScript, pathGlob, text, limit
   const cursorNum = Math.max(0, cursor | 0);
   let hits = null;
 
+  hits = graph.nodes.slice();
   if (byComponent) {
-    hits = (maps.byType.get(byComponent) ?? []).map((uuid) => maps.byUuid.get(uuid) ?? { uuid });
-  } else if (byScript) {
-    hits = (maps.byScript.get(byScript) ?? []).map((uuid) => maps.byUuid.get(uuid) ?? { uuid });
-  } else if (pathGlob) {
+    const uuids = new Set(maps.byType.get(byComponent) ?? []);
+    hits = hits.filter((n) => uuids.has(n.uuid));
+  }
+  if (byScript) {
+    const uuids = new Set(maps.byScript.get(byScript) ?? []);
+    hits = hits.filter((n) => uuids.has(n.uuid));
+  }
+  if (pathGlob) {
     const isPrefix = pathGlob.endsWith('/*') || pathGlob.endsWith('/**');
     const prefix = isPrefix ? pathGlob.replace(/\/?\*+$/, '') : pathGlob;
     if (isPrefix) {
-      hits = graph.nodes.filter((n) => n.path === prefix || n.path.startsWith(prefix + '/'));
+      hits = hits.filter((n) => n.path === prefix || n.path.startsWith(prefix + '/'));
     } else {
-      const hit = graph.nodes.find((n) => n.path === pathGlob);
-      hits = hit ? [hit] : [];
+      hits = hits.filter((n) => n.path === pathGlob);
     }
-  } else if (text) {
+  }
+  if (text) {
     const q = text.toLowerCase();
-    hits = maps.nameIndex.filter((n) => n.name && n.name.toLowerCase().includes(q));
-  } else {
-    hits = graph.nodes.slice();
+    hits = hits.filter((n) => n.name && n.name.toLowerCase().includes(q));
   }
 
   const total = hits.length;
