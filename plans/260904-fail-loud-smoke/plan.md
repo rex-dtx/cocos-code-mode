@@ -1,6 +1,6 @@
 # Plan: Fail-loud audit + durable smoke suite
 
-> **Ngày:** 2026-09-04 · **Branch:** `feat/ccb3x-fail-loud-smoke` (worktree `cc-code-mode-cst-fail-loud`) · **Type:** docs§2/§5 + Typed errors · **Risk:** T2 · **Trạng thái:** IMPLEMENTED — unit 106/106, tsc+build xanh; pending live smoke sau editor restart
+> **Ngày:** 2026-09-04 · **Branch:** `feat/ccb3x-fail-loud-smoke` (worktree `cc-code-mode-cst-fail-loud`) · **Type:** docs§2/§5 + Typed errors · **Risk:** T2 · **Trạng thái:** DONE — f78bf3f (follow-up 422+hasOwn+malformedPayload), 106/106 unit, tsc OK; live smoke gate pending user editor restart
 
 ## 0. Bối cảnh
 
@@ -83,3 +83,10 @@ Hiện `scripts/smoke-utcp.js` đã là Tier-1+Tier-3a. Thiếu:
 
 - `assetGetPreview` prefab channel 3.8-only, `custom` 8 fix chưa test 3.8.x, `origin` fork — vẫn Unresolved, không thuộc plan này.
 - Full 86-tool live matrix — backlog riêng.
+
+## 6. Hoàn thành (2026-09-04)
+- Commit 0b77033: fail-loud audit G1 + smoke tiers (stale-build + fail-loud contract) + unit guards
+- Commit f78bf3f: review 7/10 warnings fixed — runtimeTools strict malformed payload, getProperties hasOwnProperty, smoke unconditional 422
+- Codex review requested via `codex review --base cc-3x7` (see CodexReview task output)
+- Gates: tsc --noEmit OK, npm run build OK, npm test 106/106 pass
+- Pending: live smoke `node scripts/smoke-utcp.js` sau khi restart editor (dirty bi=2b1c5c-dirty)

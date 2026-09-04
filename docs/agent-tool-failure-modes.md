@@ -196,6 +196,12 @@ Suite này unblock việc khác: port fix sang branch mới → chạy suite tha
 
 Ước lượng ~200 LOC, không framework, không fixture. Chạy sau mỗi lần restart editor.
 
+<!-- §5-built -->
+**Đã dựng 2026-09-04** (`feat/ccb3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`): cả 2 tầng
+trên nằm trong `scripts/smoke-utcp.js` (tier manual + tier fail-loud typed-body) kèm stale-build
+assert `/build-info` vs `git rev-parse --short HEAD`; guard chạy CI:
+`tests/unit/fail-loud-contract.test.js`.
+
 ---
 
 ## 6. Ghi chú về surface
@@ -241,6 +247,7 @@ Cái phân biệt chất lượng không phải version editor — mà là **đ�
    xem ghi chú §2; `tests/unit/fail-loud-contract.test.js`.
 3. ~~**Smoke suite chưa viết.**~~ ✅ `scripts/smoke-utcp.js` thêm stale-build assert
    (§4 rule 1, so `/build-info` với `git rev-parse --short HEAD`) + tier fail-loud (§5).
+4. **`custom` có 8 fix nhưng chưa runtime-test trên 3.8.x** — cùng loại rủi ro đã tạo ra
    nhóm bug này ngay từ đầu.
 5. **`origin` = `rex-dtx/cocos-code-mode`, repo người khác.** Cả 3 branch đang push lên đó.
    Nếu không chủ ý → fork riêng + `remote set-url` trước khi push thêm. Câu này tồn qua 2 card chưa ai trả lời.

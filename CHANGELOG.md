@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — fail-loud audit + smoke suite (2026-09-04) — branch feat/ccb3x-fail-loud-smoke
+- Đóng docs §2 audit: sweep toàn bộ source/utcp/tools theo 4 mẫu silent-failure — ?? default che required, catch rỗng nuốt lỗi, normalize trước guard, false-success; sửa verifiable outcomes (docs §2): set-property boolean check, restore-prefab boolean, move-array-element boolean + index, add-task, animation operation, validateScene diagnostics, nullish payloads → throw thay vì empty-but-healthy, image magic bytes check, simulateKeyCombo reject bad input; predicates `does not exist` được neo via isMessageNotExposed; empty catches removed/annotated best-effort.
+- Đóng docs §5 smoke: stale-build so HEAD vs /build-info (fail-loud khi lệch build), fail-loud typed-body tier trong scripts/smoke-utcp.js, CI-runnable contract guard tests/unit/fail-loud-contract.test.js (106 tests pass), tsc --noEmit OK.
+- Typed errors (§7) mở rộng: chỉ throw ToolError khi class+state+recovery đã biết, generic 5xx kèm full log cho ambiguous.
+
 ## 2.1.1 — 2026-08-23 — clean break + asset meta parity
 
 - **Clean break:** bỏ hết compat `cc3x7`/`cc2x4` khỏi bootstrap/skill/smoke; `~/.utcp_config.json` chỉ nhận `cc-bridge-3x`/`ccb3x` + `cc-bridge-2x`/`ccb2x`. Xoá shim `scripts/code-mode-bootstrap.js`.
