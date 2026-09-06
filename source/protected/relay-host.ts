@@ -69,7 +69,11 @@ export class ProtectedRelayHost {
     }
     try {
       this.client?.close();
-      this.client = new GatewayClient({ origin, memberCredential: () => memberCredential });
+      this.client = new GatewayClient({
+        origin,
+        memberCredential: () => memberCredential,
+        allowInsecureLoopback: process.env.CCB_ALLOW_INSECURE_GATEWAY === "1" || file.allowInsecureGateway === "1",
+      });
       this.executionKeys = new Map([[keyId, createPublicKey({ key: decodeBase64UrlBuffer(executionKey), format: "der", type: "spki" })]]);
       this.projectId = projectId;
       this.state.activate();

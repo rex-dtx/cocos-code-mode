@@ -21,6 +21,7 @@ export interface GatewayClientOptions {
   responseMaxBytes?: number;
   minimumBackoffMs?: number;
   maximumBackoffMs?: number;
+  allowInsecureLoopback?: boolean;
 }
 
 function readBoundedResponse(response: IncomingMessage, maxBytes: number): Promise<Buffer> {
@@ -58,7 +59,8 @@ export class GatewayClient {
   constructor(private readonly options: GatewayClientOptions) {
     const origin = new URL(options.origin);
     const loopback = origin.hostname === "127.0.0.1" || origin.hostname === "localhost" || origin.hostname === "::1";
-    const allowInsecure = process.env.CCB_ALLOW_INSECURE_GATEWAY === "1" && origin.protocol === "http:" && loopback;
+    const allowInsecure = (process.env.CCB_ALLOW_INSECURE_GATEWAY === "1" || options.allowInsecureLoopback === true)
+      && origin.protocol === "http:" && loopback;
     if (origin.username || origin.password || origin.search || origin.hash || (origin.pathname !== "/" && origin.pathname !== "")) {
       throw new Error("Gateway origin must be an exact origin without credentials, path, query, or fragment");
     }

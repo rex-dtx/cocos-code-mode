@@ -9,3 +9,4 @@ scripts/**/*.js.map
 .env
 *.db
 *.db-*
+secrets/
