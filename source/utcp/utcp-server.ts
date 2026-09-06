@@ -309,8 +309,8 @@ export class UtcpServerManager {
             toolDef.tool_call_template.auth = {
                 auth_type: 'api_key',
                 var_name: LOCAL_TOKEN_HEADER,
-                api_key_value: `\${${LOCAL_TOKEN_VARIABLE}}`,
-                in: 'header',
+                api_key: `\${${LOCAL_TOKEN_VARIABLE}}`,
+                location: 'header',
             };
             utcpTools.push(toolDef);
 

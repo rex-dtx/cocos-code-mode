@@ -1,0 +1,371 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-09-06T16:45:31.180Z",
+  "host": {
+    "os": "win32-x64",
+    "cpus": 20
+  },
+  "build": {
+    "version": "2.0.0",
+    "commit": "26f4bb3",
+    "branch": "feat/ccb3x-consolidated",
+    "dirty": false,
+    "builtAt": "2026-09-06T15:50:45.475Z"
+  },
+  "manual": {
+    "toolCount": 80,
+    "executeJavascript": false
+  },
+  "samplesPerCase": 15,
+  "warmups": 3,
+  "diagnostics": {
+    "buildInfo": {
+      "lastStatus": 200,
+      "client": {
+        "count": 15,
+        "minMs": 0.8670000000000044,
+        "p50Ms": 1.0237999999999943,
+        "p95Ms": 2.027699999999996,
+        "p99Ms": 2.027699999999996,
+        "maxMs": 2.027699999999996,
+        "meanMs": 1.162
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 124,
+        "p50Ms": 124,
+        "p95Ms": 124,
+        "p99Ms": 124,
+        "maxMs": 124,
+        "meanMs": 124
+      }
+    },
+    "utcpManual": {
+      "lastStatus": 200,
+      "client": {
+        "count": 15,
+        "minMs": 2.4728000000000065,
+        "p50Ms": 3.0811999999999955,
+        "p95Ms": 4.78570000000002,
+        "p99Ms": 4.78570000000002,
+        "maxMs": 4.78570000000002,
+        "meanMs": 3.199
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 77846,
+        "p50Ms": 77846,
+        "p95Ms": 77846,
+        "p99Ms": 77846,
+        "maxMs": 77846,
+        "meanMs": 77846
+      }
+    },
+    "gatewayHealth": {
+      "lastStatus": 200,
+      "client": {
+        "count": 15,
+        "minMs": 0.6702999999999975,
+        "p50Ms": 0.7308999999999912,
+        "p95Ms": 1.3894000000000233,
+        "p99Ms": 1.3894000000000233,
+        "maxMs": 1.3894000000000233,
+        "meanMs": 0.774
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 71,
+        "p50Ms": 71,
+        "p95Ms": 71,
+        "p99Ms": 71,
+        "maxMs": 71,
+        "meanMs": 71
+      }
+    }
+  },
+  "tools": {
+    "sceneGetInfo": {
+      "method": "GET",
+      "lastStatus": 422,
+      "lastCode": "CCB_DEVICE_DENIED",
+      "failClosed": false,
+      "client": null,
+      "allClient": {
+        "count": 15,
+        "minMs": 6.184000000000026,
+        "p50Ms": 7.436000000000007,
+        "p95Ms": 8.796599999999984,
+        "p99Ms": 8.796599999999984,
+        "maxMs": 8.796599999999984,
+        "meanMs": 7.438
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 169,
+        "p50Ms": 169,
+        "p95Ms": 169,
+        "p99Ms": 169,
+        "maxMs": 169,
+        "meanMs": 169
+      },
+      "okCount": 0,
+      "failCount": 15,
+      "failPreview": "{\"error\":\"Device key is unknown, pending, or revoked.\",\"code\":\"CCB_DEVICE_DENIED\",\"details\":{},\"recovery\":\"Re-enroll this device or ask an administrator to approve it.\"}"
+    },
+    "nodeGetTree": {
+      "method": "GET",
+      "lastStatus": 422,
+      "lastCode": "CCB_DEVICE_DENIED",
+      "failClosed": false,
+      "client": null,
+      "allClient": {
+        "count": 15,
+        "minMs": 6.160500000000013,
+        "p50Ms": 7.357100000000003,
+        "p95Ms": 8.909400000000005,
+        "p99Ms": 8.909400000000005,
+        "maxMs": 8.909400000000005,
+        "meanMs": 7.495
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 169,
+        "p50Ms": 169,
+        "p95Ms": 169,
+        "p99Ms": 169,
+        "maxMs": 169,
+        "meanMs": 169
+      },
+      "okCount": 0,
+      "failCount": 15,
+      "failPreview": "{\"error\":\"Device key is unknown, pending, or revoked.\",\"code\":\"CCB_DEVICE_DENIED\",\"details\":{},\"recovery\":\"Re-enroll this device or ask an administrator to approve it.\"}"
+    },
+    "assetGetTree": {
+      "method": "GET",
+      "lastStatus": 422,
+      "lastCode": "CCB_DEVICE_DENIED",
+      "failClosed": false,
+      "client": null,
+      "allClient": {
+        "count": 15,
+        "minMs": 6.167699999999968,
+        "p50Ms": 8.052700000000016,
+        "p95Ms": 9.247799999999984,
+        "p99Ms": 9.247799999999984,
+        "maxMs": 9.247799999999984,
+        "meanMs": 7.978
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 169,
+        "p50Ms": 169,
+        "p95Ms": 169,
+        "p99Ms": 169,
+        "maxMs": 169,
+        "meanMs": 169
+      },
+      "okCount": 0,
+      "failCount": 15,
+      "failPreview": "{\"error\":\"Device key is unknown, pending, or revoked.\",\"code\":\"CCB_DEVICE_DENIED\",\"details\":{},\"recovery\":\"Re-enroll this device or ask an administrator to approve it.\"}"
+    },
+    "editorQuery": {
+      "method": "GET",
+      "lastStatus": 400,
+      "lastCode": null,
+      "failClosed": false,
+      "client": null,
+      "allClient": {
+        "count": 15,
+        "minMs": 0.8326999999999316,
+        "p50Ms": 0.9759000000000242,
+        "p95Ms": 1.3195000000000618,
+        "p99Ms": 1.3195000000000618,
+        "maxMs": 1.3195000000000618,
+        "meanMs": 1.021
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 177,
+        "p50Ms": 177,
+        "p95Ms": 177,
+        "p99Ms": 177,
+        "maxMs": 177,
+        "meanMs": 177
+      },
+      "okCount": 0,
+      "failCount": 15,
+      "failPreview": "{\"error\":\"Missing required input: category\",\"missingInputs\":[\"category\"],\"validationErrors\":[{\"path\":\"category\",\"keyword\":\"required\",\"message\":\"Required property is missing.\"}]}"
+    },
+    "captureSceneScreenshot": {
+      "method": "POST",
+      "lastStatus": 200,
+      "lastCode": null,
+      "failClosed": false,
+      "client": {
+        "count": 15,
+        "minMs": 9.289999999999964,
+        "p50Ms": 16.649600000000078,
+        "p95Ms": 21.833099999999945,
+        "p99Ms": 21.833099999999945,
+        "maxMs": 21.833099999999945,
+        "meanMs": 16.364
+      },
+      "allClient": {
+        "count": 15,
+        "minMs": 9.289999999999964,
+        "p50Ms": 16.649600000000078,
+        "p95Ms": 21.833099999999945,
+        "p99Ms": 21.833099999999945,
+        "maxMs": 21.833099999999945,
+        "meanMs": 16.364
+      },
+      "server": {
+        "count": 15,
+        "minMs": 8,
+        "p50Ms": 15,
+        "p95Ms": 20,
+        "p99Ms": 20,
+        "maxMs": 20,
+        "meanMs": 14.467
+      },
+      "bytes": {
+        "count": 15,
+        "minMs": 3594,
+        "p50Ms": 3594,
+        "p95Ms": 3594,
+        "p99Ms": 3594,
+        "maxMs": 3594,
+        "meanMs": 3594
+      },
+      "okCount": 15,
+      "failCount": 0,
+      "failPreview": null
+    },
+    "previewManage": {
+      "method": "POST",
+      "lastStatus": 400,
+      "lastCode": null,
+      "failClosed": false,
+      "client": null,
+      "allClient": {
+        "count": 15,
+        "minMs": 0.9048000000000229,
+        "p50Ms": 1.1201000000000931,
+        "p95Ms": 10.806600000000003,
+        "p99Ms": 10.806600000000003,
+        "maxMs": 10.806600000000003,
+        "meanMs": 1.792
+      },
+      "server": null,
+      "bytes": {
+        "count": 15,
+        "minMs": 318,
+        "p50Ms": 318,
+        "p95Ms": 318,
+        "p99Ms": 318,
+        "maxMs": 318,
+        "meanMs": 318
+      },
+      "okCount": 0,
+      "failCount": 15,
+      "failPreview": "{\"error\":\"Missing required inputs: cameraPosition, targetPosition\",\"missingInputs\":[\"cameraPosition\",\"targetPosition\"],\"validationErrors\":[{\"path\":\"cameraPosition\",\"keyword\":\"requi"
+    },
+    "projectListDirectory": {
+      "method": "GET",
+      "lastStatus": 200,
+      "lastCode": null,
+      "failClosed": false,
+      "client": {
+        "count": 15,
+        "minMs": 1.1648999999999887,
+        "p50Ms": 1.3532999999999902,
+        "p95Ms": 1.8587999999999738,
+        "p99Ms": 1.8587999999999738,
+        "maxMs": 1.8587999999999738,
+        "meanMs": 1.383
+      },
+      "allClient": {
+        "count": 15,
+        "minMs": 1.1648999999999887,
+        "p50Ms": 1.3532999999999902,
+        "p95Ms": 1.8587999999999738,
+        "p99Ms": 1.8587999999999738,
+        "maxMs": 1.8587999999999738,
+        "meanMs": 1.383
+      },
+      "server": {
+        "count": 8,
+        "minMs": 1,
+        "p50Ms": 1,
+        "p95Ms": 1,
+        "p99Ms": 1,
+        "maxMs": 1,
+        "meanMs": 1
+      },
+      "bytes": {
+        "count": 15,
+        "minMs": 951,
+        "p50Ms": 951,
+        "p95Ms": 951,
+        "p99Ms": 951,
+        "maxMs": 951,
+        "meanMs": 951
+      },
+      "okCount": 15,
+      "failCount": 0,
+      "failPreview": null
+    },
+    "editorGetLogs": {
+      "method": "GET",
+      "lastStatus": 200,
+      "lastCode": null,
+      "failClosed": false,
+      "client": {
+        "count": 15,
+        "minMs": 1.1311999999999216,
+        "p50Ms": 1.4287999999999101,
+        "p95Ms": 2.443100000000072,
+        "p99Ms": 2.443100000000072,
+        "maxMs": 2.443100000000072,
+        "meanMs": 1.495
+      },
+      "allClient": {
+        "count": 15,
+        "minMs": 1.1311999999999216,
+        "p50Ms": 1.4287999999999101,
+        "p95Ms": 2.443100000000072,
+        "p99Ms": 2.443100000000072,
+        "maxMs": 2.443100000000072,
+        "meanMs": 1.495
+      },
+      "server": {
+        "count": 7,
+        "minMs": 1,
+        "p50Ms": 1,
+        "p95Ms": 1,
+        "p99Ms": 1,
+        "maxMs": 1,
+        "meanMs": 1
+      },
+      "bytes": {
+        "count": 15,
+        "minMs": 1198,
+        "p50Ms": 1198,
+        "p95Ms": 1198,
+        "p99Ms": 1198,
+        "maxMs": 1198,
+        "meanMs": 1198
+      },
+      "okCount": 15,
+      "failCount": 0,
+      "failPreview": null
+    }
+  }
+}
