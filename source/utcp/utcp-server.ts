@@ -4,6 +4,8 @@ import { ToolRegistry } from './decorators';
 import { createLocalIngressGuard, loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
 import { REMOVED_CUSTOMER_TOOLS } from '../protected/removed-tools';
 import { ProtectedRelayHost } from '../protected/relay-host';
+import { CcbError, toCcbErrorBody } from '../protected/errors';
+import { dispatchProtectedCustomerTool, isProtectedCustomerTool } from '../protected/protected-route';
 import './tools/typescript-defenition';
 import './tools/get-properties-tool';
 import './tools/set-properties-tool';
@@ -436,22 +438,26 @@ export class UtcpServerManager {
                         tool: toolDef.name,
                         method: req.method,
                         url: req.originalUrl,
-                        args
                     });
 
-                    let result = await toolMeta.method.apply(instance, [args]);
+                    let result: unknown;
+                    if (this.host && isProtectedCustomerTool(toolDef.name)) {
+                        result = await dispatchProtectedCustomerTool(this.host, toolDef.name, args);
+                    } else {
+                        result = await toolMeta.method.apply(instance, [args]);
+                    }
 
                     if (result === undefined || result === null) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: ms });
+                        debugLog({ type: 'response', tool: toolDef.name, size: 0, durationMs: ms });
                         res.json(null);
                         return;
                     }
 
                     const ms = Date.now() - ((req as any)._t0 ?? t0);
                     res.setHeader('X-Duration-Ms', String(ms));
-                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
+                    debugLog({ type: 'response', tool: toolDef.name, durationMs: ms });
 
                     // ponytail: trim null/undefined/empty containers before serializing.
                     // Reduces response payload ~15-30% for property dumps and nested objects.
@@ -465,6 +471,12 @@ export class UtcpServerManager {
                     }
 
                 } catch (err: any) {
+                    if (err instanceof CcbError) {
+                        const ms2 = Date.now() - ((req as any)._t0 ?? t0);
+                        res.setHeader('X-Duration-Ms', String(ms2));
+                        res.status(422).json(toCcbErrorBody(err));
+                        return;
+                    }
                     console.error(`Error in tool ${toolDef.name}:`, err);
                     const ms2 = Date.now() - ((req as any)._t0 ?? t0);
                     const response = toToolErrorResponse(err);
