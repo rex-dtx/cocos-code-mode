@@ -8,6 +8,7 @@ import { CANARY_COHORTS, nextCanaryCohort } from "./canary.ts";
 import { PROTOCOL_VERSION, WRAPPER_MAX_BYTES } from "./protocol.ts";
 import { PublicToolRegistry } from "./public-tool-registry.ts";
 import { ccbMetricsRegistry, recordCcBridgeRuntimeState } from "./metrics.ts";
+import { importReleaseTarget, loadReleaseKeySet, publishRolloutPolicy } from "./release-admin.ts";
 
 function deny(res: Response, status: number, error: CcbError): void {
   res.status(status).json(toCcbErrorBody(error));
@@ -221,6 +222,38 @@ export function createCcBridgeRouter(
       replayEntries: counts.replayRows,
     });
     res.type(ccbMetricsRegistry.contentType).send(await ccbMetricsRegistry.metrics());
+  });
+
+  router.post("/v1/admin/releases/targets", ...memberProductAuth, express.json({ limit: "16kb" }), (req: Request, res: Response) => {
+    const member = req.toolAuth;
+    if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
+    const keys = loadReleaseKeySet();
+    if (!keys) { deny(res, 503, new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release verification keys are not configured.")); return; }
+    try { res.status(201).json(importReleaseTarget(deps.store, member, req.body, keys)); }
+    catch (error) { res.status(error instanceof CcbError ? 422 : 400).json(toCcbErrorBody(error)); }
+  });
+
+  router.get("/v1/admin/releases/targets", ...memberProductAuth, (req: Request, res: Response) => {
+    const member = req.toolAuth;
+    if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
+    try { res.json({ targets: deps.store.listReleaseTargets() }); }
+    catch (error) { res.status(422).json(toCcbErrorBody(error)); }
+  });
+
+  router.post("/v1/admin/releases/policies", ...memberProductAuth, express.json({ limit: "16kb" }), (req: Request, res: Response) => {
+    const member = req.toolAuth;
+    if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
+    const keys = loadReleaseKeySet();
+    if (!keys) { deny(res, 503, new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release verification keys are not configured.")); return; }
+    try { res.status(201).json(publishRolloutPolicy(deps.store, member, req.body, keys)); }
+    catch (error) { res.status(error instanceof CcbError ? 422 : 400).json(toCcbErrorBody(error)); }
+  });
+
+  router.get("/v1/admin/releases/policies", ...memberProductAuth, (req: Request, res: Response) => {
+    const member = req.toolAuth;
+    if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
+    try { res.json({ policies: deps.store.listRolloutPolicies() }); }
+    catch (error) { res.status(422).json(toCcbErrorBody(error)); }
   });
 
   router.use(typedBodyParserErrors);

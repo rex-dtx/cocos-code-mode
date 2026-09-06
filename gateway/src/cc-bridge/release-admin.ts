@@ -1,4 +1,5 @@
 import type { KeyLike } from "node:crypto";
+import { createPublicKey } from "node:crypto";
 import { z } from "zod";
 import type { AuthContext } from "../auth.ts";
 import { CcbError } from "./errors.ts";
@@ -51,6 +52,23 @@ export interface ReleaseKeySet {
   targetsThreshold: number;
   policy: ReadonlyMap<string, KeyLike>;
   policyThreshold: number;
+}
+
+export function loadReleaseKeySet(env: NodeJS.ProcessEnv = process.env): ReleaseKeySet | null {
+  const targetsPem = env.CCB_RELEASE_TARGETS_PUBLIC_KEY_PEM;
+  const policyPem = env.CCB_RELEASE_POLICY_PUBLIC_KEY_PEM;
+  if (!targetsPem || !policyPem) return null;
+  const targetsThreshold = Number(env.CCB_RELEASE_TARGETS_THRESHOLD ?? "1");
+  const policyThreshold = Number(env.CCB_RELEASE_POLICY_THRESHOLD ?? "1");
+  if (!Number.isSafeInteger(targetsThreshold) || targetsThreshold < 1 || !Number.isSafeInteger(policyThreshold) || policyThreshold < 1) {
+    throw new Error("release key thresholds must be positive integers");
+  }
+  return {
+    targets: new Map([[env.CCB_RELEASE_TARGETS_KEY_ID ?? "release-targets", createPublicKey(targetsPem)]]),
+    targetsThreshold,
+    policy: new Map([[env.CCB_RELEASE_POLICY_KEY_ID ?? "rollout-policy", createPublicKey(policyPem)]]),
+    policyThreshold,
+  };
 }
 
 function requireAdmin(auth: AuthContext): void {
