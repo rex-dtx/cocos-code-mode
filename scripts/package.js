@@ -89,7 +89,7 @@ async function main() {
   const patchedPackageJson = { ...packageJson, version };
   const entries = collectPackageEntries(projectRoot, packageName, patchedPackageJson);
   makeBuildInfoDeterministic(entries);
-  assertReleaseInventory(entries);
+  assertReleaseInventory(entries, { requireActivationLauncher: true });
 
   const manifest = createPackageManifest(packageName, version, entries);
   const manifestArtifact = writeCanonicalJson(path.join(projectRoot, 'dist', 'package-manifest.json'), manifest);

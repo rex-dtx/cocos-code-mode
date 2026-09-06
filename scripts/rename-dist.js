@@ -12,8 +12,8 @@ const KEEP = new Set([
   'scene.js',
   'build-info.js',
   'build-info.json',
-  path.join('panels', 'configuration', 'index.js'),
-  path.join('panels', 'preview', 'index.js'),
+  'panels/configuration/index.js',
+  'panels/preview/index.js',
 ]);
 
 function walk(dir, rel, files) {

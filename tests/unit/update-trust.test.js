@@ -1,0 +1,126 @@
+'use strict';
+
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const { createHash, generateKeyPairSync, sign } = require('node:crypto');
+const { mkdtempSync, rmSync } = require('node:fs');
+const { tmpdir } = require('node:os');
+const { join } = require('node:path');
+const { requireDist } = require('../helpers/require-dist');
+
+const { acceptRelease } = requireDist('update/trust.js');
+const { UpdateStateStore } = requireDist('update/state.js');
+
+function canonicalize(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalize(value[key])}`).join(',')}}`;
+}
+
+function key(id) {
+  const pair = generateKeyPairSync('ed25519');
+  return {
+    id,
+    privateKey: pair.privateKey,
+    spkiDer: pair.publicKey.export({ type: 'spki', format: 'der' }).toString('base64url'),
+  };
+}
+
+function signed(kind, body, signer) {
+  const payload = Buffer.from(canonicalize(body), 'utf8');
+  const prefix = Buffer.from(kind === 'target' ? 'CCB1 release-targets\n' : 'CCB1 rollout-policy\n');
+  return {
+    payload: payload.toString('base64url'),
+    signatures: [{ keyId: signer.id, signature: sign(null, Buffer.concat([prefix, payload]), signer.privateKey).toString('base64url') }],
+  };
+}
+
+function fixture(nowMs) {
+  const rootKey = key('root-key-1');
+  const targetKey = key('target-key-1');
+  const policyKey = key('policy-key-1');
+  const iso = (offset) => new Date(nowMs + offset).toISOString();
+  const root = {
+    schemaVersion: 1,
+    product: 'cc-bridge-3x',
+    rootVersion: 1,
+    issuedAt: iso(-60_000),
+    expiresAt: iso(86_400_000),
+    keys: {
+      [rootKey.id]: { algorithm: 'Ed25519', spkiDer: rootKey.spkiDer },
+      [targetKey.id]: { algorithm: 'Ed25519', spkiDer: targetKey.spkiDer },
+      [policyKey.id]: { algorithm: 'Ed25519', spkiDer: policyKey.spkiDer },
+    },
+    roles: {
+      root: { keyIds: [rootKey.id], threshold: 1 },
+      targets: { keyIds: [targetKey.id], threshold: 1 },
+      policy: { keyIds: [policyKey.id], threshold: 1 },
+    },
+  };
+  const target = {
+    schemaVersion: 1,
+    metadataVersion: 1,
+    releaseSequence: 7,
+    issuedAt: iso(-30_000),
+    expiresAt: iso(3_600_000),
+    package: {
+      name: 'cc-bridge-3x', version: '2.1.0', sha256: 'a'.repeat(64), size: 123,
+      url: 'https://releases.example.test/cc-bridge-3x.zip',
+      packageManifestSha256: 'b'.repeat(64), sbomSha256: 'c'.repeat(64), provenanceSha256: 'd'.repeat(64),
+    },
+    compatibility: { protocol: { min: 1, max: 1 }, creator: '>=3.7.0', os: ['win32'], arch: ['x64'] },
+  };
+  const targetWrapper = signed('target', target, targetKey);
+  const targetPayloadSha256 = createHash('sha256').update(Buffer.from(targetWrapper.payload, 'base64url')).digest('hex');
+  const policy = {
+    schemaVersion: 1, policySequence: 9, issuedAt: iso(-20_000), expiresAt: iso(300_000),
+    targetPayloadSha256, channel: 'stable', ring: '10', percentage: 100, recommended: true,
+    blockedBuilds: [], rollbackTargetPayloadSha256: [], disabledOperations: [], emergencyStop: false,
+  };
+  return { root, targetWrapper, policyWrapper: signed('policy', policy, policyKey), policy, policyKey };
+}
+
+describe('signed update trust transaction', () => {
+  const nowMs = Date.parse('2026-09-06T12:00:00.000Z');
+  const compatibility = {
+    protocolVersion: 1, creatorVersion: '3.8.7', os: 'win32', arch: 'x64', currentBuild: '2.0.0',
+    deviceId: 'device-test-1', channel: 'stable', allowedRing: '10',
+  };
+
+  it('accepts bound target/policy bytes and persists monotonic digests', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ccb-update-trust-'));
+    try {
+      const data = fixture(nowMs);
+      const store = new UpdateStateStore(join(dir, 'state.json'));
+      const accepted = acceptRelease(data.root, data.targetWrapper, data.policyWrapper, compatibility, store, nowMs);
+      assert.equal(accepted.target.package.version, '2.1.0');
+      assert.equal(store.load().highestPolicySequence, 9);
+      assert.equal(store.load().targetPayloadSha256, data.policy.targetPayloadSha256);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+
+  it('rejects mix-and-match target bytes and same-sequence different policy bytes', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ccb-update-trust-'));
+    try {
+      const data = fixture(nowMs);
+      const store = new UpdateStateStore(join(dir, 'state.json'));
+      acceptRelease(data.root, data.targetWrapper, data.policyWrapper, compatibility, store, nowMs);
+      const changed = { ...data.policy, recommended: false };
+      const changedWrapper = signed('policy', changed, data.policyKey);
+      assert.throws(() => acceptRelease(data.root, data.targetWrapper, changedWrapper, compatibility, store, nowMs), /different signed bytes/);
+      const mismatched = { ...data.policy, policySequence: 10, targetPayloadSha256: 'f'.repeat(64) };
+      assert.throws(() => acceptRelease(data.root, data.targetWrapper, signed('policy', mismatched, data.policyKey), compatibility, store, nowMs), /different signed target bytes/);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+
+  it('fails closed for emergency stop and incompatible Creator', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ccb-update-trust-'));
+    try {
+      const data = fixture(nowMs);
+      const store = new UpdateStateStore(join(dir, 'state.json'));
+      const stopped = { ...data.policy, emergencyStop: true };
+      assert.throws(() => acceptRelease(data.root, data.targetWrapper, signed('policy', stopped, data.policyKey), compatibility, store, nowMs), /emergency stop/);
+      assert.throws(() => acceptRelease(data.root, data.targetWrapper, data.policyWrapper, { ...compatibility, creatorVersion: '3.6.0' }, store, nowMs), /newer Creator/);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+});

@@ -12,6 +12,7 @@
     "obfuscate:dist": "node ./scripts/obfuscate-dist.js",
     "rename:dist": "node ./scripts/rename-dist.js",
     "package": "npm run build:release && node ./scripts/obfuscate-dist.js && node ./scripts/rename-dist.js && node ./scripts/package.js",
+    "sign-release": "node ./scripts/sign-release.js",
     "forbidden-material": "node ./scripts/forbidden-material-witness.js",
     "support-bundle": "node ./scripts/support-bundle.js",
     "live-prereqs": "node ./scripts/check-live-prereqs.js",
@@ -27,18 +28,14 @@
   "dependencies": {
     "@utcp/http": "^1.1.0",
     "@utcp/sdk": "^1.1.0",
-    "cors": "^2.8.6",
-    "express": "4.21.2",
     "fs-extra": "^10.0.0",
     "sharp": "0.30.7",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@cocos/creator-types": "^3.8.7",
-    "@types/cors": "^2.8.19",
-    "@types/express": "4.17.21",
-    "@types/fs-extra": "^9.0.5",
     "@types/node": "^18.17.1",
+    "@types/fs-extra": "^9.0.5",
     "@types/sharp": "^0.31.1",
     "archiver": "^8.0.0",
     "terser": "^5.36.0",
@@ -85,6 +82,11 @@
       },
       {
         "path": "CC Bridge 3x",
+        "label": "Check for Signed Update",
+        "message": "check-for-updates"
+      },
+      {
+        "path": "CC Bridge 3x",
         "label": "About",
         "message": "show-build-info"
       }
@@ -113,6 +115,11 @@
       "restart-server": {
         "methods": [
           "restartServer"
+        ]
+      },
+      "check-for-updates": {
+        "methods": [
+          "checkForUpdates"
         ]
       },
       "show-build-info": {

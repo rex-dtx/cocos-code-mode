@@ -1,38 +1,126 @@
-import { URL } from "url";
+import { createHash } from "node:crypto";
+import { createWriteStream, mkdirSync, renameSync, rmSync } from "node:fs";
+import { dirname } from "node:path";
+import { finished } from "node:stream/promises";
+import { URL } from "node:url";
+import { CcbError } from "../protected/errors";
 
-export const MAX_RELEASE_BYTES = 64 * 1024 * 1024;
+const MAX_REDIRECTS = 3;
 
 export function assertReleaseOrigin(origin: string): URL {
   const url = new URL(origin);
-  if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash) {
-    throw new Error("release origin must be an exact HTTPS origin without credentials, query, or fragment");
+  if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash || url.href !== `${url.origin}/`) {
+    throw new CcbError("CCB_CANONICAL_INVALID", "Release origin must be an exact HTTPS origin without path, credentials, query, or fragment.");
   }
   return url;
 }
 
 export function assertReleaseArtifactUrl(origin: URL, artifactUrl: string): URL {
   const url = new URL(artifactUrl);
-  if (url.origin !== origin.origin || url.protocol !== "https:" || url.username || url.password) {
-    throw new Error("release artifact URL must stay on the HTTPS release origin");
+  if (url.origin !== origin.origin || url.protocol !== "https:" || url.username || url.password || url.hash) {
+    throw new CcbError("CCB_CANONICAL_INVALID", "Release artifact URL must stay on the HTTPS release origin.");
   }
   return url;
 }
 
-export async function fetchReleaseArtifact(
-  origin: string,
-  artifactUrl: string,
-  maxBytes = MAX_RELEASE_BYTES,
-): Promise<Buffer> {
-  const url = assertReleaseArtifactUrl(assertReleaseOrigin(origin), artifactUrl);
-  const response = await fetch(url, { method: "GET", redirect: "error" });
-  if (!response.ok) throw new Error(`release artifact HTTP ${response.status}`);
-  const declared = response.headers.get("content-length");
-  if (declared === null) throw new Error("release artifact must declare Content-Length");
-  const size = Number(declared);
-  if (!Number.isInteger(size) || size <= 0 || size > maxBytes) {
-    throw new Error("release artifact Content-Length exceeds the download cap");
+async function fetchRelease(origin: URL, input: URL, signal?: AbortSignal): Promise<Response> {
+  let url = assertReleaseArtifactUrl(origin, input.href);
+  for (let redirects = 0; redirects <= MAX_REDIRECTS; redirects += 1) {
+    let response: Response;
+    try { response = await fetch(url, { redirect: "manual", signal, headers: { "accept-encoding": "identity" } }); }
+    catch { throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release artifact request failed."); }
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get("location");
+      if (!location || redirects === MAX_REDIRECTS) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release redirect chain is invalid or too long.");
+      url = assertReleaseArtifactUrl(origin, new URL(location, url).href);
+      continue;
+    }
+    if (!response.ok) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", `Release origin returned HTTP ${response.status}.`);
+    const encoding = response.headers.get("content-encoding");
+    if (encoding && encoding.toLowerCase() !== "identity") throw new CcbError("CCB_CANONICAL_INVALID", "Compressed release responses are not accepted.");
+    return response;
   }
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (bytes.length !== size) throw new Error("release artifact size does not match Content-Length");
-  return bytes;
+  throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release redirect chain did not terminate.");
+}
+
+function declaredLength(response: Response, maxBytes: number): number {
+  const header = response.headers.get("content-length");
+  const length = header === null ? Number.NaN : Number(header);
+  if (!Number.isSafeInteger(length) || length < 1 || length > maxBytes) {
+    throw new CcbError("CCB_LIMIT_EXCEEDED", `Release response must declare 1..${maxBytes} bytes.`);
+  }
+  return length;
+}
+
+export async function fetchReleaseJson(origin: URL, artifactUrl: string, maxBytes: number, signal?: AbortSignal): Promise<unknown> {
+  const response = await fetchRelease(origin, assertReleaseArtifactUrl(origin, artifactUrl), signal);
+  const expected = declaredLength(response, maxBytes);
+  if (!response.body) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release response body is missing.");
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > expected || total > maxBytes) {
+      await reader.cancel();
+      throw new CcbError("CCB_LIMIT_EXCEEDED", "Release response exceeded its declared size.");
+    }
+    chunks.push(value);
+  }
+  if (total !== expected) throw new CcbError("CCB_SIGNATURE_INVALID", "Release response was truncated.");
+  const bytes = Buffer.concat(chunks.map((chunk) => Buffer.from(chunk)), total);
+  try { return JSON.parse(bytes.toString("utf8")); }
+  catch { throw new CcbError("CCB_CANONICAL_INVALID", "Release response is not valid JSON."); }
+}
+
+export async function downloadReleaseArtifact(
+  origin: URL,
+  artifactUrl: string,
+  destination: string,
+  expectedSize: number | { maxBytes: number },
+  expectedSha256: string,
+  signal?: AbortSignal,
+): Promise<{ path: string; bytes: number; sha256: string }> {
+  const exactBytes = typeof expectedSize === "number" ? expectedSize : undefined;
+  const maxBytes = typeof expectedSize === "number" ? expectedSize : expectedSize.maxBytes;
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || !/^[0-9a-f]{64}$/.test(expectedSha256)) {
+    throw new CcbError("CCB_CANONICAL_INVALID", "Signed release artifact bounds are invalid.");
+  }
+  const response = await fetchRelease(origin, assertReleaseArtifactUrl(origin, artifactUrl), signal);
+  const declared = declaredLength(response, maxBytes);
+  if (exactBytes !== undefined && declared !== exactBytes) throw new CcbError("CCB_SIGNATURE_INVALID", "Artifact Content-Length differs from signed metadata.");
+  if (!response.body) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release artifact body is missing.");
+  const partial = `${destination}.partial`;
+  mkdirSync(dirname(destination), { recursive: true, mode: 0o700 });
+  rmSync(partial, { force: true });
+  const output = createWriteStream(partial, { flags: "wx", mode: 0o600 });
+  const digest = createHash("sha256");
+  let total = 0;
+  try {
+    const reader = response.body.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > declared) {
+        await reader.cancel();
+        throw new CcbError("CCB_LIMIT_EXCEEDED", "Release artifact exceeded its declared size.");
+      }
+      const chunk = Buffer.from(value);
+      digest.update(chunk);
+      if (!output.write(chunk)) await new Promise<void>((resolve) => output.once("drain", resolve));
+    }
+    output.end();
+    await finished(output);
+    const sha256 = digest.digest("hex");
+    if (total !== declared || sha256 !== expectedSha256) throw new CcbError("CCB_SIGNATURE_INVALID", "Release artifact size or hash does not match signed metadata.");
+    renameSync(partial, destination);
+    return { path: destination, bytes: total, sha256 };
+  } catch (error) {
+    output.destroy();
+    rmSync(partial, { force: true });
+    throw error;
+  }
 }

@@ -1,49 +1,55 @@
 import type { KeyLike } from "node:crypto";
-import { createPublicKey } from "node:crypto";
+import { createHash, createPublicKey } from "node:crypto";
 import { z } from "zod";
 import type { AuthContext } from "../auth.ts";
 import { CcbError } from "./errors.ts";
 import { verifyReleaseMetadata, type SignedMetadata } from "./release-metadata.ts";
 import type { CcBridgeStore } from "./store.ts";
 
+const Sha256Schema = z.string().regex(/^[a-f0-9]{64}$/);
+const IsoSchema = z.string().refine((value) => {
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString() === value;
+}, "must be an exact ISO timestamp");
+
 const ReleaseTargetBodySchema = z.object({
   schemaVersion: z.literal(1),
   metadataVersion: z.number().int().positive(),
   releaseSequence: z.number().int().positive(),
-  issuedAt: z.string().min(1),
-  expiresAt: z.string().min(1),
+  issuedAt: IsoSchema,
+  expiresAt: IsoSchema,
   package: z.object({
-    name: z.string().min(1),
-    version: z.string().min(1),
-    sha256: z.string().regex(/^[a-f0-9]{64}$/),
-    size: z.number().int().nonnegative().safe(),
-    url: z.string(),
-    packageManifestSha256: z.string(),
-    sbomSha256: z.string(),
-    provenanceSha256: z.string(),
+    name: z.literal("cc-bridge-3x"),
+    version: z.string().min(1).max(128),
+    sha256: Sha256Schema,
+    size: z.number().int().positive().safe(),
+    url: z.string().url().refine((value) => value.startsWith("https://"), "must use HTTPS"),
+    packageManifestSha256: Sha256Schema,
+    sbomSha256: Sha256Schema,
+    provenanceSha256: Sha256Schema,
   }).strict(),
   compatibility: z.object({
     protocol: z.object({ min: z.number().int().positive(), max: z.number().int().positive() }).strict(),
-    creator: z.string().min(1),
-    os: z.array(z.string().min(1)),
-    arch: z.array(z.string().min(1)),
+    creator: z.string().min(1).max(128),
+    os: z.array(z.string().min(1).max(32)).min(1).max(16),
+    arch: z.array(z.string().min(1).max(32)).min(1).max(16),
   }).strict(),
 }).strict();
 
 const RolloutPolicyBodySchema = z.object({
   schemaVersion: z.literal(1),
   policySequence: z.number().int().positive(),
-  issuedAt: z.string().min(1),
-  expiresAt: z.string().min(1),
-  targetPayloadSha256: z.string().regex(/^[a-f0-9]{64}$/),
-  channel: z.string().min(1),
+  issuedAt: IsoSchema,
+  expiresAt: IsoSchema,
+  targetPayloadSha256: Sha256Schema,
+  channel: z.string().min(1).max(64),
   ring: z.enum(["1", "3", "10"]),
   percentage: z.number().int().min(0).max(100),
   recommended: z.boolean(),
-  minimumBuild: z.string().optional(),
-  blockedBuilds: z.array(z.string()),
-  rollbackTargetPayloadSha256: z.array(z.string().regex(/^[a-f0-9]{64}$/)),
-  disabledOperations: z.array(z.string()),
+  minimumBuild: z.string().min(1).max(128).optional(),
+  blockedBuilds: z.array(z.string().min(1).max(128)).max(1024),
+  rollbackTargetPayloadSha256: z.array(Sha256Schema).max(8),
+  disabledOperations: z.array(z.string().min(1).max(128)).max(1024),
   emergencyStop: z.boolean(),
 }).strict();
 
@@ -75,9 +81,10 @@ function requireAdmin(auth: AuthContext): void {
   if (auth.role !== "admin") throw new CcbError("CCB_AUTH_INVALID", "Only an admin can manage releases.");
 }
 
-export function importReleaseTarget(store: CcBridgeStore, auth: AuthContext, wrapper: SignedMetadata, keys: ReleaseKeySet): { sequence: number; version: string; packageHash: string } {
+export function importReleaseTarget(store: CcBridgeStore, auth: AuthContext, wrapper: SignedMetadata, keys: ReleaseKeySet): { sequence: number; version: string; packageHash: string; targetPayloadHash: string } {
   requireAdmin(auth);
   const body = ReleaseTargetBodySchema.parse(verifyReleaseMetadata("target", wrapper, keys.targets, keys.targetsThreshold));
+  const targetPayloadHash = createHash("sha256").update(Buffer.from(wrapper.payload, "base64url")).digest("hex");
   if (Date.parse(body.issuedAt) > Date.now() || Date.parse(body.expiresAt) <= Date.now()) {
     throw new CcbError("CCB_CANONICAL_INVALID", "Release target metadata is not currently valid.");
   }
@@ -87,10 +94,11 @@ export function importReleaseTarget(store: CcBridgeStore, auth: AuthContext, wra
     sequence: body.releaseSequence,
     version: body.package.version,
     packageHash: body.package.sha256,
+    targetPayloadHash,
     compatibility: body.compatibility,
     status: "active",
   });
-  return { sequence, version: body.package.version, packageHash: body.package.sha256 };
+  return { sequence, version: body.package.version, packageHash: body.package.sha256, targetPayloadHash };
 }
 
 export function publishRolloutPolicy(store: CcBridgeStore, auth: AuthContext, wrapper: SignedMetadata, keys: ReleaseKeySet): { sequence: number; policySequence: number } {
@@ -103,7 +111,7 @@ export function publishRolloutPolicy(store: CcBridgeStore, auth: AuthContext, wr
   if (body.policySequence <= latest) {
     throw new CcbError("CCB_REPLAY", "Rollout policy sequence must increase monotonically.", { latest, submitted: body.policySequence });
   }
-  if (!store.getReleaseTargetByHash(body.targetPayloadSha256)) {
+  if (!store.getReleaseTargetByPayloadHash(body.targetPayloadSha256)) {
     throw new CcbError("CCB_DEVICE_DENIED", "Rollout policy references an unknown release target.");
   }
   const sequence = store.insertRolloutPolicy({

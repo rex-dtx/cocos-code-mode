@@ -5,7 +5,7 @@ const path = require('node:path');
 const { createHash } = require('node:crypto');
 
 const STATIC_ROOTS = ['@types', 'dist', 'i18n', 'static'];
-const STATIC_FILES = ['package-lock.json'];
+const STATIC_FILES = ['package-lock.json', 'scripts/install-update.ps1'];
 const GENERATED_SIDECARS = new Set([
   'dist/package-manifest.json',
   'dist/sbom.cdx.json',
@@ -138,7 +138,6 @@ const FIRST_PARTY_FORBIDDEN_TEXT = [
   /\bplanCreateUiNode\b/,
   /\bnew Function\s*\(/,
   /\beval\s*\(/,
-  /(?:node:)?child_process/,
 ];
 
 function isVendorPath(relativePath) {
@@ -149,8 +148,9 @@ function isVendorDoc(relativePath) {
   return isVendorPath(relativePath) && /\.(?:md|markdown|txt)$/i.test(relativePath);
 }
 
-function assertReleaseInventory(entries) {
+function assertReleaseInventory(entries, options = {}) {
   if (!Array.isArray(entries) || entries.length === 0) throw new Error('release inventory is empty');
+  let fixedActivationLaunchers = 0;
   for (const entry of entries) {
     if (!isVendorPath(entry.relativePath) && FORBIDDEN_ARCHIVE_PATH.test(entry.archivePath)) {
       throw new Error(`sensitive package path: ${entry.archivePath}`);
@@ -160,12 +160,21 @@ function assertReleaseInventory(entries) {
     const bytes = entry.bytes || fs.readFileSync(entry.sourcePath);
     if (bytes.includes(0)) continue;
     const text = bytes.toString('utf8');
+    if (/(?:node:)?child_process/.test(text)) {
+      if (!/powershell\.exe/i.test(text) || !/install-update\.ps1/i.test(text) || /\b(?:exec|execFile|fork)\s*\(/.test(text) || /shell\s*:\s*(?:true|!0)/.test(text)) {
+        throw new Error(`general process launcher in ${entry.archivePath}`);
+      }
+      fixedActivationLaunchers += 1;
+    }
     const patterns = isVendorPath(entry.relativePath)
       ? SECRET_TEXT
       : SECRET_TEXT.concat(FIRST_PARTY_FORBIDDEN_TEXT);
     for (const pattern of patterns) {
       if (pattern.test(text)) throw new Error(`forbidden release marker ${pattern} in ${entry.archivePath}`);
     }
+  }
+  if (fixedActivationLaunchers > 1 || (options.requireActivationLauncher === true && fixedActivationLaunchers !== 1)) {
+    throw new Error(`expected one fixed activation launcher, found ${fixedActivationLaunchers}`);
   }
 }
 

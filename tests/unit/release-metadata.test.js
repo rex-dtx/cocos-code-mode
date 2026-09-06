@@ -32,10 +32,10 @@ function targetBody(overrides = {}) {
       version: '2.0.0',
       sha256: 'a'.repeat(64),
       size: 42,
-      url: '',
-      packageManifestSha256: '',
-      sbomSha256: '',
-      provenanceSha256: '',
+      url: 'https://releases.example.test/cc-bridge-3x.zip',
+      packageManifestSha256: 'b'.repeat(64),
+      sbomSha256: 'c'.repeat(64),
+      provenanceSha256: 'd'.repeat(64),
     },
     compatibility: {
       protocol: { min: 1, max: 1 },
@@ -68,12 +68,12 @@ describe('release metadata sign <-> verify contract', () => {
 
   it('rejects a signature over the wrong domain prefix', () => {
     const signed = signedBy(targetBody(), keys.privateKey, 'targets-fixture-1', Buffer.from('CCB1 release-root\n', 'utf8'));
-    assert.throws(() => verifyReleaseMetadata('target', signed, new Map([['targets-fixture-1', publicKey]]), 1), /threshold not met/);
+    assert.throws(() => verifyReleaseMetadata('target', signed, new Map([['targets-fixture-1', publicKey]]), 1), /signature is invalid/);
   });
 
   it('rejects a signature from an unknown key', () => {
     const signed = signedBy(targetBody(), keys.privateKey, 'targets-fixture-1');
-    assert.throws(() => verifyReleaseMetadata('target', signed, new Map([['other-key', publicKey]]), 1), /threshold not met/);
+    assert.throws(() => verifyReleaseMetadata('target', signed, new Map([['other-key', publicKey]]), 1), /unknown signature key/);
   });
 
   it('does not double-count duplicate signatures from one key', () => {
@@ -87,7 +87,18 @@ describe('release metadata sign <-> verify contract', () => {
         { keyId: 'targets-fixture-1', signature: sig },
       ],
     };
-    // threshold 2 with a single distinct key must fail — duplicates do not count.
-    assert.throws(() => verifyReleaseMetadata('target', signed, new Map([['targets-fixture-1', publicKey]]), 2), /threshold not met/);
+    assert.throws(() => verifyReleaseMetadata('target', signed, new Map([['targets-fixture-1', publicKey]]), 1), /duplicate signature key/);
+  });
+
+  it('rejects unsigned thresholds and non-canonical signed JSON', () => {
+    const body = targetBody();
+    const canonical = signedBy(body, keys.privateKey);
+    assert.throws(() => verifyReleaseMetadata('target', canonical, new Map([['targets-fixture-1', publicKey]]), 0), /threshold is invalid/);
+    const payload = Buffer.from(JSON.stringify(body), 'utf8');
+    const signature = sign(null, Buffer.concat([TARGET_PREFIX, payload]), keys.privateKey).toString('base64url');
+    assert.throws(() => verifyReleaseMetadata('target', {
+      payload: payload.toString('base64url'),
+      signatures: [{ keyId: 'targets-fixture-1', signature }],
+    }, new Map([['targets-fixture-1', publicKey]]), 1), /not canonical/);
   });
 });

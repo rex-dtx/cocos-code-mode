@@ -12,7 +12,7 @@ const { generateKeyPairSync } = require('node:crypto');
 
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-release-'));
-  for (const directory of ['@types', 'dist', 'i18n', 'static', 'node_modules/prod', 'node_modules/dev']) {
+  for (const directory of ['@types', 'dist', 'i18n', 'static', 'scripts', 'node_modules/prod', 'node_modules/dev']) {
     fs.mkdirSync(path.join(root, directory), { recursive: true });
   }
   fs.writeFileSync(path.join(root, '@types', 'schema.json'), '{}');
@@ -23,6 +23,7 @@ function fixture() {
   fs.writeFileSync(path.join(root, 'i18n', 'en.js'), 'module.exports = {};');
   fs.writeFileSync(path.join(root, 'static', 'index.html'), '<main/>');
   fs.writeFileSync(path.join(root, 'README.md'), 'release fixture');
+  fs.writeFileSync(path.join(root, 'scripts', 'install-update.ps1'), 'param()');
   fs.writeFileSync(path.join(root, 'node_modules', 'prod', 'index.js'), 'module.exports = 1;');
   fs.writeFileSync(path.join(root, 'node_modules', 'dev', 'index.js'), 'module.exports = 2;');
   const lock = {
@@ -48,6 +49,7 @@ describe('deterministic release inventory', () => {
       const paths = entries.map((entry) => entry.archivePath);
       assert.deepEqual(paths, [...paths].sort((a, b) => a.localeCompare(b)));
       assert(paths.includes('cc-bridge-3x/node_modules/prod/index.js'));
+      assert(paths.includes('cc-bridge-3x/scripts/install-update.ps1'));
       assert(!paths.some((value) => value.includes('/node_modules/dev/')));
       assert(!paths.some((value) => value.endsWith('.map') || value.endsWith('/package-manifest.json')));
       const manifest = createPackageManifest('cc-bridge-3x', '2.0.0-dev.abc1234', entries);

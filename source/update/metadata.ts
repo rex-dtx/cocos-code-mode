@@ -1,107 +1,132 @@
-import { createHash, createPublicKey, type KeyLike, verify as ed25519Verify } from "crypto";
+import { verify as ed25519Verify } from "node:crypto";
+import type { KeyLike } from "node:crypto";
+import { z } from "zod";
+import { parseCanonicalJson } from "../protected/canonical-json";
+import { CcbError } from "../protected/errors";
 import { ED25519_SIGNATURE_BYTES, assertKeyId, decodeBase64Url } from "../protected/protocol";
-import { UpdateStateStore, type UpdateState } from "./state";
 
-export interface MetadataSignature {
-  keyId: string;
-  signature: string;
-}
+const Sha256Schema = z.string().regex(/^[0-9a-f]{64}$/);
+const IsoSchema = z.string().refine((value) => {
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString() === value;
+}, "must be an exact ISO timestamp");
+const KeyIdSchema = z.string().regex(/^[a-z0-9][a-z0-9._-]{0,63}$/);
 
-export interface SignedMetadata {
-  payload: string;
-  signatures: MetadataSignature[];
-}
+const SignatureSchema = z.object({
+  keyId: KeyIdSchema,
+  signature: z.string().regex(/^[A-Za-z0-9_-]+$/),
+}).strict();
+export const SignedMetadataSchema = z.object({
+  payload: z.string().regex(/^[A-Za-z0-9_-]+$/),
+  signatures: z.array(SignatureSchema).min(1).max(16),
+}).strict();
+export type SignedMetadata = z.infer<typeof SignedMetadataSchema>;
+
+const RoleSchema = z.object({ keyIds: z.array(KeyIdSchema).min(1), threshold: z.number().int().positive() }).strict();
+export const RootBodySchema = z.object({
+  schemaVersion: z.literal(1),
+  product: z.literal("cc-bridge-3x"),
+  rootVersion: z.number().int().positive(),
+  issuedAt: IsoSchema,
+  expiresAt: IsoSchema,
+  keys: z.record(z.object({ algorithm: z.literal("Ed25519"), spkiDer: z.string().regex(/^[A-Za-z0-9_-]+$/) }).strict()),
+  roles: z.object({ root: RoleSchema, targets: RoleSchema, policy: RoleSchema }).strict(),
+}).strict();
+export type RootBody = z.infer<typeof RootBodySchema>;
+
+export const ReleaseTargetBodySchema = z.object({
+  schemaVersion: z.literal(1),
+  metadataVersion: z.number().int().positive(),
+  releaseSequence: z.number().int().positive(),
+  issuedAt: IsoSchema,
+  expiresAt: IsoSchema,
+  package: z.object({
+    name: z.literal("cc-bridge-3x"),
+    version: z.string().min(1).max(128),
+    sha256: Sha256Schema,
+    size: z.number().int().positive().safe(),
+    url: z.string().url().refine((value) => value.startsWith("https://"), "must use HTTPS"),
+    packageManifestSha256: Sha256Schema,
+    sbomSha256: Sha256Schema,
+    provenanceSha256: Sha256Schema,
+  }).strict(),
+  compatibility: z.object({
+    protocol: z.object({ min: z.number().int().positive(), max: z.number().int().positive() }).strict(),
+    creator: z.string().min(1).max(128),
+    os: z.array(z.string().min(1).max(32)).min(1).max(16),
+    arch: z.array(z.string().min(1).max(32)).min(1).max(16),
+  }).strict(),
+}).strict();
+export type ReleaseTargetBody = z.infer<typeof ReleaseTargetBodySchema>;
+
+export const RolloutPolicyBodySchema = z.object({
+  schemaVersion: z.literal(1),
+  policySequence: z.number().int().positive(),
+  issuedAt: IsoSchema,
+  expiresAt: IsoSchema,
+  targetPayloadSha256: Sha256Schema,
+  channel: z.string().min(1).max(64),
+  ring: z.enum(["1", "3", "10"]),
+  percentage: z.number().int().min(0).max(100),
+  recommended: z.boolean(),
+  minimumBuild: z.string().min(1).max(128).optional(),
+  blockedBuilds: z.array(z.string().min(1).max(128)).max(1024),
+  rollbackTargetPayloadSha256: z.array(Sha256Schema).max(8),
+  disabledOperations: z.array(z.string().min(1).max(128)).max(1024),
+  emergencyStop: z.boolean(),
+}).strict();
+export type RolloutPolicyBody = z.infer<typeof RolloutPolicyBodySchema>;
 
 const PREFIX = {
   root: Buffer.from("CCB1 release-root\n", "utf8"),
   target: Buffer.from("CCB1 release-targets\n", "utf8"),
   policy: Buffer.from("CCB1 rollout-policy\n", "utf8"),
 } as const;
+const BODY_SCHEMA = { root: RootBodySchema, target: ReleaseTargetBodySchema, policy: RolloutPolicyBodySchema } as const;
+export type ReleaseMetadataKind = keyof typeof PREFIX;
+export type ReleaseMetadataBody<K extends ReleaseMetadataKind> = K extends "root" ? RootBody : K extends "target" ? ReleaseTargetBody : RolloutPolicyBody;
 
-export function verifyReleaseMetadata(
-  kind: keyof typeof PREFIX,
-  wrapper: SignedMetadata,
+function fail(code: "CCB_CANONICAL_INVALID" | "CCB_SIGNATURE_INVALID", message: string): never {
+  throw new CcbError(code, message);
+}
+
+export function verifyReleaseMetadata<K extends ReleaseMetadataKind>(
+  kind: K,
+  input: unknown,
   keys: ReadonlyMap<string, KeyLike>,
   threshold: number,
-): unknown {
-  const payload = decodeBase64Url(wrapper.payload, 256 * 1024);
+): ReleaseMetadataBody<K> {
+  if (!Number.isSafeInteger(threshold) || threshold < 1 || threshold > keys.size) {
+    fail("CCB_SIGNATURE_INVALID", "Release metadata signature threshold is invalid.");
+  }
+  let wrapper: SignedMetadata;
+  try { wrapper = SignedMetadataSchema.parse(input); }
+  catch { fail("CCB_CANONICAL_INVALID", "Release metadata wrapper is invalid."); }
+
+  let payload: Buffer;
+  try { payload = decodeBase64Url(wrapper.payload, 256 * 1024); }
+  catch { fail("CCB_CANONICAL_INVALID", "Release metadata payload encoding is invalid."); }
   const message = Buffer.concat([PREFIX[kind], payload]);
   const seen = new Set<string>();
   let accepted = 0;
   for (const entry of wrapper.signatures) {
-    assertKeyId(entry.keyId);
-    if (seen.has(entry.keyId)) continue;
+    try { assertKeyId(entry.keyId); }
+    catch { fail("CCB_CANONICAL_INVALID", "Release metadata key ID is invalid."); }
+    if (seen.has(entry.keyId)) fail("CCB_SIGNATURE_INVALID", "Release metadata contains a duplicate signature key.");
     seen.add(entry.keyId);
     const key = keys.get(entry.keyId);
-    if (!key) continue;
-    const signature = decodeBase64Url(entry.signature, ED25519_SIGNATURE_BYTES, ED25519_SIGNATURE_BYTES);
-    if (ed25519Verify(null, message, key, signature)) accepted += 1;
+    if (!key) fail("CCB_SIGNATURE_INVALID", "Release metadata contains an unknown signature key.");
+    let signature: Buffer;
+    try { signature = decodeBase64Url(entry.signature, ED25519_SIGNATURE_BYTES, ED25519_SIGNATURE_BYTES); }
+    catch { fail("CCB_SIGNATURE_INVALID", "Release metadata signature encoding is invalid."); }
+    if (!ed25519Verify(null, message, key, signature)) fail("CCB_SIGNATURE_INVALID", "Release metadata signature is invalid.");
+    accepted += 1;
   }
-  if (accepted < threshold) throw new Error("release metadata signature threshold not met");
-  return JSON.parse(Buffer.from(payload).toString("utf8"));
-}
+  if (accepted < threshold) fail("CCB_SIGNATURE_INVALID", "Release metadata signature threshold not met.");
 
-function sha256Hex(bytes: Buffer): string {
-  return createHash("sha256").update(bytes).digest("hex");
-}
-
-function roleKeySet(root: { keys: Record<string, { algorithm: string; spkiDer: string }>; roles: Record<string, { keyIds: string[]; threshold: number }> }, role: "targets" | "policy"): { keys: Map<string, KeyLike>; threshold: number } {
-  const spec = root.roles[role];
-  if (!spec || spec.threshold < 1) throw new Error(`root is missing ${role} role`);
-  const keys = new Map<string, KeyLike>();
-  for (const keyId of spec.keyIds) {
-    const entry = root.keys[keyId];
-    if (!entry || entry.algorithm !== "Ed25519") throw new Error(`root is missing ${role} key ${keyId}`);
-    keys.set(keyId, createPublicKey({ key: Buffer.from(entry.spkiDer, "base64url"), format: "der", type: "spki" }));
-  }
-  return { keys, threshold: spec.threshold };
-}
-
-export function acceptSignedReleaseSet(input: {
-  root: SignedMetadata;
-  target: SignedMetadata;
-  policy: SignedMetadata;
-  trustedRootKeys: ReadonlyMap<string, KeyLike>;
-  rootThreshold: number;
-  state: UpdateState;
-}): { nextState: UpdateState } {
-  const root = verifyReleaseMetadata("root", input.root, input.trustedRootKeys, input.rootThreshold) as {
-    rootVersion: number;
-    keys: Record<string, { algorithm: string; spkiDer: string }>;
-    roles: Record<string, { keyIds: string[]; threshold: number }>;
-  };
-  if (!Number.isInteger(root.rootVersion) || root.rootVersion < input.state.highestRootVersion) {
-    throw new Error("root version rolled back");
-  }
-  const targets = roleKeySet(root, "targets");
-  const policies = roleKeySet(root, "policy");
-  const target = verifyReleaseMetadata("target", input.target, targets.keys, targets.threshold) as { releaseSequence: number };
-  if (!Number.isInteger(target.releaseSequence) || target.releaseSequence < input.state.highestTargetSequence) {
-    throw new Error("target sequence rolled back");
-  }
-  const policy = verifyReleaseMetadata("policy", input.policy, policies.keys, policies.threshold) as {
-    policySequence: number;
-    targetPayloadSha256: string;
-  };
-  if (!Number.isInteger(policy.policySequence) || policy.policySequence < input.state.highestPolicySequence) {
-    throw new Error("policy sequence rolled back");
-  }
-  const targetPayload = decodeBase64Url(input.target.payload, 256 * 1024);
-  if (policy.targetPayloadSha256 !== sha256Hex(targetPayload)) throw new Error("policy/target digest mismatch");
-  return {
-    nextState: {
-      schemaVersion: 1,
-      highestRootVersion: Math.max(input.state.highestRootVersion, root.rootVersion),
-      highestTargetSequence: Math.max(input.state.highestTargetSequence, target.releaseSequence),
-      highestPolicySequence: Math.max(input.state.highestPolicySequence, policy.policySequence),
-    },
-  };
-}
-
-export function applySignedReleaseSet(
-  store: UpdateStateStore,
-  input: Omit<Parameters<typeof acceptSignedReleaseSet>[0], "state">,
-): UpdateState {
-  const accepted = acceptSignedReleaseSet({ ...input, state: store.load() });
-  return store.persistIfMonotonic(accepted.nextState);
+  let parsed: unknown;
+  try { parsed = parseCanonicalJson(payload, 256 * 1024); }
+  catch { fail("CCB_CANONICAL_INVALID", "Release metadata payload is not canonical RFC 8785 I-JSON."); }
+  try { return BODY_SCHEMA[kind].parse(parsed) as ReleaseMetadataBody<K>; }
+  catch { fail("CCB_CANONICAL_INVALID", `Release ${kind} metadata body is invalid.`); }
 }

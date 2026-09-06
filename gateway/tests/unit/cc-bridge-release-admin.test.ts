@@ -31,10 +31,10 @@ function targetBody(sha256 = "a".repeat(64)) {
       version: "2.0.0",
       sha256,
       size: 100,
-      url: "",
+      url: "https://releases.example.test/cc-bridge-3x.zip",
       packageManifestSha256: "b".repeat(64),
-      sbomSha256: "",
-      provenanceSha256: "",
+      sbomSha256: "c".repeat(64),
+      provenanceSha256: "d".repeat(64),
     },
     compatibility: {
       protocol: { min: 1, max: 1 },
@@ -83,7 +83,7 @@ describe("CC Bridge release admin", () => {
     expect(imported.packageHash).toBe(targetHash);
     expect(store.listReleaseTargets()).toHaveLength(1);
 
-    const published = publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 1), policyPrivateKey), keys);
+    const published = publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 1), policyPrivateKey), keys);
     expect(published.policySequence).toBe(1);
     expect(store.listRolloutPolicies()).toHaveLength(1);
   });
@@ -91,12 +91,12 @@ describe("CC Bridge release admin", () => {
   it("promotes an immutable target through rings 1 then 3 then 10", () => {
     const store = new CcBridgeStore(":memory:");
     const targetHash = "a".repeat(64);
-    importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
+    const imported = importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
     for (const [sequence, ring] of [[1, "1"], [2, "3"], [3, "10"]] as const) {
       const published = publishRolloutPolicy(
         store,
         admin,
-        signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, sequence, { ring }), policyPrivateKey),
+        signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, sequence, { ring }), policyPrivateKey),
         keys,
       );
       expect(published.policySequence).toBe(sequence);
@@ -109,12 +109,12 @@ describe("CC Bridge release admin", () => {
   it("stops a failed canary with a higher-sequence emergency policy", () => {
     const store = new CcBridgeStore(":memory:");
     const targetHash = "a".repeat(64);
-    importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
-    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 1, { ring: "1" }), policyPrivateKey), keys);
+    const imported = importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
+    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 1, { ring: "1" }), policyPrivateKey), keys);
     const stopped = publishRolloutPolicy(
       store,
       admin,
-      signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 2, {
+      signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 2, {
         ring: "1",
         emergencyStop: true,
         blockedBuilds: ["2.0.0-dev.bad"],
@@ -129,10 +129,10 @@ describe("CC Bridge release admin", () => {
   it("rejects a policy with a non-increasing sequence", () => {
     const store = new CcBridgeStore(":memory:");
     const targetHash = "a".repeat(64);
-    importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
-    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 5), policyPrivateKey), keys);
-    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 5), policyPrivateKey), keys)).toThrow(/monotonically/);
-    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 3), policyPrivateKey), keys)).toThrow(/monotonically/);
+    const imported = importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
+    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 5), policyPrivateKey), keys);
+    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 5), policyPrivateKey), keys)).toThrow(/monotonically/);
+    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 3), policyPrivateKey), keys)).toThrow(/monotonically/);
   });
 
   it("rejects a policy referencing an unknown target", () => {

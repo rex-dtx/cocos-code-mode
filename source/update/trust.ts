@@ -1,0 +1,159 @@
+import { createHash, createPublicKey } from "node:crypto";
+import type { KeyLike } from "node:crypto";
+import { CcbError } from "../protected/errors";
+import { decodeBase64Url } from "../protected/protocol";
+import {
+  ReleaseTargetBody,
+  RolloutPolicyBody,
+  RootBody,
+  SignedMetadata,
+  verifyReleaseMetadata,
+} from "./metadata";
+import { UpdateState, UpdateStateStore } from "./state";
+
+export interface UpdateCompatibility {
+  protocolVersion: number;
+  creatorVersion: string;
+  os: string;
+  arch: string;
+  currentBuild: string;
+  deviceId: string;
+  channel: string;
+  allowedRing: "1" | "3" | "10";
+}
+
+export interface AcceptedRelease {
+  root: RootBody;
+  target: ReleaseTargetBody;
+  policy: RolloutPolicyBody;
+  targetPayloadSha256: string;
+  state: UpdateState;
+}
+
+function payloadDigest(wrapper: SignedMetadata): string {
+  return createHash("sha256").update(decodeBase64Url(wrapper.payload, 256 * 1024)).digest("hex");
+}
+
+function activeAt(issuedAt: string, expiresAt: string, nowMs: number, label: string): void {
+  const issued = Date.parse(issuedAt);
+  const expires = Date.parse(expiresAt);
+  if (!Number.isFinite(issued) || !Number.isFinite(expires) || issued > nowMs || expires <= nowMs || expires <= issued) {
+    throw new CcbError(issued > nowMs || expires <= issued ? "CCB_CANONICAL_INVALID" : "CCB_EXPIRED", `${label} metadata is not currently valid.`);
+  }
+}
+
+function roleKeys(root: RootBody, role: keyof RootBody["roles"]): { keys: ReadonlyMap<string, KeyLike>; threshold: number } {
+  const definition = root.roles[role];
+  const unique = new Set(definition.keyIds);
+  if (unique.size !== definition.keyIds.length || definition.threshold > unique.size) {
+    throw new CcbError("CCB_CANONICAL_INVALID", `Root ${role} role is invalid.`);
+  }
+  const keys = new Map<string, KeyLike>();
+  for (const keyId of definition.keyIds) {
+    const definitionForKey = root.keys[keyId];
+    if (!definitionForKey) throw new CcbError("CCB_CANONICAL_INVALID", `Root ${role} role references an unknown key.`);
+    try {
+      const der = decodeBase64Url(definitionForKey.spkiDer, 44, 44);
+      keys.set(keyId, createPublicKey({ key: der, format: "der", type: "spki" }));
+    } catch {
+      throw new CcbError("CCB_CANONICAL_INVALID", `Root ${role} key is not a valid Ed25519 SPKI key.`);
+    }
+  }
+  return { keys, threshold: definition.threshold };
+}
+
+function numericVersion(value: string): number[] {
+  const match = /^(?:[^0-9]*)(\d+)(?:\.(\d+))?(?:\.(\d+))?/.exec(value);
+  if (!match) throw new CcbError("CCB_BUILD_INCOMPATIBLE", `Version is not comparable: ${value}`);
+  return [Number(match[1]), Number(match[2] || 0), Number(match[3] || 0)];
+}
+
+function compareVersions(left: string, right: string): number {
+  const a = numericVersion(left);
+  const b = numericVersion(right);
+  for (let index = 0; index < 3; index += 1) if (a[index] !== b[index]) return a[index] - b[index];
+  return 0;
+}
+
+function ringRank(ring: "1" | "3" | "10"): number {
+  return ring === "1" ? 1 : ring === "3" ? 3 : 10;
+}
+
+function selectedForPercentage(deviceId: string, percentage: number): boolean {
+  if (percentage === 100) return true;
+  if (percentage === 0) return false;
+  const bucket = createHash("sha256").update(deviceId, "utf8").digest().readUInt32BE(0) % 100;
+  return bucket < percentage;
+}
+
+export function acceptRootRotation(current: RootBody, candidateWrapper: SignedMetadata, nowMs = Date.now()): RootBody {
+  activeAt(current.issuedAt, current.expiresAt, nowMs, "Trusted root");
+  const currentRole = roleKeys(current, "root");
+  const candidate = verifyReleaseMetadata("root", candidateWrapper, currentRole.keys, currentRole.threshold);
+  if (candidate.rootVersion <= current.rootVersion) throw new CcbError("CCB_REPLAY", "Root version must increase.");
+  activeAt(candidate.issuedAt, candidate.expiresAt, nowMs, "Candidate root");
+  const candidateRole = roleKeys(candidate, "root");
+  verifyReleaseMetadata("root", candidateWrapper, candidateRole.keys, candidateRole.threshold);
+  return candidate;
+}
+
+export function acceptRelease(
+  root: RootBody,
+  targetWrapper: SignedMetadata,
+  policyWrapper: SignedMetadata,
+  compatibility: UpdateCompatibility,
+  stateStore: UpdateStateStore,
+  nowMs = Date.now(),
+): AcceptedRelease {
+  activeAt(root.issuedAt, root.expiresAt, nowMs, "Root");
+  const targetRole = roleKeys(root, "targets");
+  const policyRole = roleKeys(root, "policy");
+  const target = verifyReleaseMetadata("target", targetWrapper, targetRole.keys, targetRole.threshold);
+  const policy = verifyReleaseMetadata("policy", policyWrapper, policyRole.keys, policyRole.threshold);
+  activeAt(target.issuedAt, target.expiresAt, nowMs, "Release target");
+  activeAt(policy.issuedAt, policy.expiresAt, nowMs, "Rollout policy");
+
+  const targetPayloadSha256 = payloadDigest(targetWrapper);
+  if (policy.targetPayloadSha256 !== targetPayloadSha256) throw new CcbError("CCB_SIGNATURE_INVALID", "Rollout policy targets different signed target bytes.");
+  if (policy.channel !== compatibility.channel) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Rollout policy channel does not match this relay.");
+  if (policy.emergencyStop) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Rollout policy emergency stop is active.");
+  if (ringRank(policy.ring) > ringRank(compatibility.allowedRing) || !selectedForPercentage(compatibility.deviceId, policy.percentage)) {
+    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "This device is not selected for the rollout ring.");
+  }
+  if (policy.blockedBuilds.includes(compatibility.currentBuild)) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Current relay build is blocked.");
+  if (policy.minimumBuild && compareVersions(compatibility.currentBuild, policy.minimumBuild) < 0) {
+    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Current relay build is below the policy minimum.");
+  }
+  if (compatibility.protocolVersion < target.compatibility.protocol.min || compatibility.protocolVersion > target.compatibility.protocol.max) {
+    throw new CcbError("CCB_CONTRACT_MISMATCH", "Release target protocol range is incompatible.");
+  }
+  if (!target.compatibility.os.includes(compatibility.os) || !target.compatibility.arch.includes(compatibility.arch)) {
+    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Release target platform is incompatible.");
+  }
+  const minimumCreator = target.compatibility.creator.startsWith(">=") ? target.compatibility.creator.slice(2) : target.compatibility.creator;
+  if (compareVersions(compatibility.creatorVersion, minimumCreator) < 0) {
+    throw new CcbError("CCB_CREATOR_INCOMPATIBLE", "Release target requires a newer Creator version.");
+  }
+
+  const current = stateStore.load();
+  const rollbackTargetPayloadSha256 = current.activeTargetPayloadSha256
+    && policy.rollbackTargetPayloadSha256.includes(current.activeTargetPayloadSha256)
+    ? current.activeTargetPayloadSha256
+    : undefined;
+  if (current.activeTargetPayloadSha256 && !rollbackTargetPayloadSha256) {
+    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Rollout policy does not permit health rollback to the active release.");
+  }
+  const next = stateStore.persistIfMonotonic({
+    ...current,
+    highestRootVersion: root.rootVersion,
+    highestTargetSequence: target.releaseSequence,
+    highestPolicySequence: policy.policySequence,
+    rootPayloadSha256: current.rootPayloadSha256,
+    targetPayloadSha256,
+    policyPayloadSha256: payloadDigest(policyWrapper),
+    channel: policy.channel,
+    ring: policy.ring,
+    rollbackTargetPayloadSha256,
+  });
+  return { root, target, policy, targetPayloadSha256, state: next };
+}

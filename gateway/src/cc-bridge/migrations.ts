@@ -132,6 +132,14 @@ const MIGRATIONS: readonly Migration[] = [
       CREATE INDEX cc_bridge_audit_tool_status_idx ON cc_bridge_audit(tool_family, result_class, timestamp_ms);
     `,
   },
+  {
+    version: 2,
+    sql: `
+      ALTER TABLE release_target ADD COLUMN target_payload_hash TEXT;
+      UPDATE release_target SET target_payload_hash = package_hash WHERE target_payload_hash IS NULL;
+      CREATE UNIQUE INDEX release_target_payload_hash_idx ON release_target(target_payload_hash);
+    `,
+  },
 ];
 
 export function applyCcBridgeMigrations(db: Database.Database): void {

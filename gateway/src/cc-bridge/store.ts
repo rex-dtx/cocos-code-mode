@@ -50,6 +50,7 @@ export interface ReleaseTargetRecord {
   sequence: number;
   version: string;
   packageHash: string;
+  targetPayloadHash: string;
   compatibility: { protocol: { min: number; max: number }; creator: string; os: string[]; arch: string[] };
   status: "active" | "superseded" | "revoked";
   createdAtMs: number;
@@ -236,23 +237,31 @@ export class CcBridgeStore {
 
   insertReleaseTarget(record: Omit<ReleaseTargetRecord, "createdAtMs"> & { createdAtMs?: number }, nowMs = Date.now()): number {
     const result = this.db.prepare(`
-      INSERT INTO release_target(sequence, version, package_hash, compatibility_json, status, created_at_ms)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(record.sequence, record.version, record.packageHash, JSON.stringify(record.compatibility), record.status, record.createdAtMs ?? nowMs);
+      INSERT INTO release_target(sequence, version, package_hash, target_payload_hash, compatibility_json, status, created_at_ms)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(record.sequence, record.version, record.packageHash, record.targetPayloadHash, JSON.stringify(record.compatibility), record.status, record.createdAtMs ?? nowMs);
     return Number(result.lastInsertRowid);
   }
 
   getReleaseTargetByHash(packageHash: string): ReleaseTargetRecord | null {
-    const row = this.db.prepare("SELECT sequence, version, package_hash, compatibility_json, status, created_at_ms FROM release_target WHERE package_hash = ?")
-      .get(packageHash) as { sequence: number; version: string; package_hash: string; compatibility_json: string; status: ReleaseTargetRecord["status"]; created_at_ms: number } | undefined;
+    return this.readReleaseTarget("package_hash", packageHash);
+  }
+
+  getReleaseTargetByPayloadHash(targetPayloadHash: string): ReleaseTargetRecord | null {
+    return this.readReleaseTarget("target_payload_hash", targetPayloadHash);
+  }
+
+  private readReleaseTarget(column: "package_hash" | "target_payload_hash", hash: string): ReleaseTargetRecord | null {
+    const row = this.db.prepare(`SELECT sequence, version, package_hash, target_payload_hash, compatibility_json, status, created_at_ms FROM release_target WHERE ${column} = ?`)
+      .get(hash) as { sequence: number; version: string; package_hash: string; target_payload_hash: string; compatibility_json: string; status: ReleaseTargetRecord["status"]; created_at_ms: number } | undefined;
     if (!row) return null;
-    return { sequence: row.sequence, version: row.version, packageHash: row.package_hash, compatibility: JSON.parse(row.compatibility_json), status: row.status, createdAtMs: row.created_at_ms };
+    return { sequence: row.sequence, version: row.version, packageHash: row.package_hash, targetPayloadHash: row.target_payload_hash, compatibility: JSON.parse(row.compatibility_json), status: row.status, createdAtMs: row.created_at_ms };
   }
 
   listReleaseTargets(): ReleaseTargetRecord[] {
-    const rows = this.db.prepare("SELECT sequence, version, package_hash, compatibility_json, status, created_at_ms FROM release_target ORDER BY sequence DESC")
-      .all() as { sequence: number; version: string; package_hash: string; compatibility_json: string; status: ReleaseTargetRecord["status"]; created_at_ms: number }[];
-    return rows.map((row) => ({ sequence: row.sequence, version: row.version, packageHash: row.package_hash, compatibility: JSON.parse(row.compatibility_json), status: row.status, createdAtMs: row.created_at_ms }));
+    const rows = this.db.prepare("SELECT sequence, version, package_hash, target_payload_hash, compatibility_json, status, created_at_ms FROM release_target ORDER BY sequence DESC")
+      .all() as { sequence: number; version: string; package_hash: string; target_payload_hash: string; compatibility_json: string; status: ReleaseTargetRecord["status"]; created_at_ms: number }[];
+    return rows.map((row) => ({ sequence: row.sequence, version: row.version, packageHash: row.package_hash, targetPayloadHash: row.target_payload_hash, compatibility: JSON.parse(row.compatibility_json), status: row.status, createdAtMs: row.created_at_ms }));
   }
 
   latestRolloutPolicySequence(): number {

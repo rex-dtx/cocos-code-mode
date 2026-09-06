@@ -2,30 +2,34 @@ import { HttpCallTemplate } from '@utcp/http';
 import { JsonSchema, Tool } from '@utcp/sdk';
 import { inferAnnotations, registerToolProfile } from './tool-profiles';
 
+export interface ToolTarget {
+    constructor: Function;
+}
+
 export interface ToolMetadata {
-    method: Function;
-    target: any;
+    method: (...args: unknown[]) => unknown;
+    target: ToolTarget;
     tool: Tool;
 }
 
 export class ToolRegistry {
     private static tools: Map<string, ToolMetadata> = new Map();
 
-    static register(options: ToolMetadata) {
+    static register(options: ToolMetadata): void {
         this.tools.set(options.tool.name, options);
     }
 
-    static getTools() {
+    static getTools(): ToolMetadata[] {
         return Array.from(this.tools.values());
     }
 }
 
 export function utcpTool(name: string, description: string, inputs: JsonSchema, outputs: JsonSchema, httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', tags: string[] = [], options: { profile?: 'core' | 'full' } = {}) {
-    return function (target: any, propertyKey: string, descriptor?: PropertyDescriptor) {
-        if (!descriptor) return;
-
+    return function (target: ToolTarget, propertyKey: string, descriptor?: PropertyDescriptor) {
+        if (!descriptor || typeof descriptor.value !== 'function') return;
+        const method = descriptor.value as (...args: unknown[]) => unknown;
         ToolRegistry.register({
-            method: descriptor.value,
+            method,
             target,
             tool: {
                 name,

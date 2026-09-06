@@ -1,69 +1,109 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const os = require("node:os");
-const { createHash } = require("node:crypto");
+'use strict';
 
-const root = path.join(__dirname, "..");
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const { createHash } = require('node:crypto');
+
+const root = path.join(__dirname, '..');
 const outDir = path.join(os.tmpdir(), `ccb-support-${Date.now()}`);
-fs.mkdirSync(outDir, { recursive: true });
-
-// Only public metadata is eligible. Project payloads, source, screenshots,
-// results, observations, credentials, and update URLs never enter the bundle.
-const allow = [
-  "package.json",
-  "dist/build-info.json",
-  "dist/package-manifest.json",
-  "dist/release-target.signed.json",
-];
-const sensitiveKey = /credential|password|token|private[_-]?key|pkcs8|secret|bearer/i;
-const redact = () => "[redacted]";
+fs.mkdirSync(outDir, { recursive: true, mode: 0o700 });
 const copied = [];
 
-function redactJson(text) {
-  try {
-    const json = JSON.parse(text);
-    return `${JSON.stringify(json, (key, value) => (sensitiveKey.test(key) ? redact() : value), 2)}\n`;
-  } catch {
-    return text;
-  }
+function readJson(file) {
+  if (!fs.existsSync(file)) return undefined;
+  const stat = fs.statSync(file);
+  if (!stat.isFile() || stat.size > 1024 * 1024) throw new Error(`support input is not a bounded file: ${file}`);
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
-for (const rel of allow) {
-  const src = path.join(root, rel);
-  if (!fs.existsSync(src)) continue;
-  const text = redactJson(fs.readFileSync(src, "utf8"));
-  const dest = path.join(outDir, path.basename(rel));
-  fs.writeFileSync(dest, text);
-  copied.push({ file: path.basename(rel), sha256: createHash("sha256").update(text).digest("hex") });
+function emit(name, value) {
+  const text = `${JSON.stringify(value, null, 2)}\n`;
+  fs.writeFileSync(path.join(outDir, name), text, { flag: 'wx', mode: 0o600 });
+  copied.push({ file: name, sha256: createHash('sha256').update(text).digest('hex') });
 }
 
-// Canary-secret scan: refuse to emit a bundle that leaked a private key or
-// credential marker anywhere in its output. A signature is public, so it is
-// not a canary; an Ed25519 PKCS8 DER prefix or PEM private key is.
+const packageJson = readJson(path.join(root, 'package.json'));
+const buildInfo = readJson(path.join(root, 'dist', 'build-info.json'));
+emit('build.json', {
+  schemaVersion: 1,
+  package: packageJson?.name,
+  packageVersion: packageJson?.version,
+  creatorRange: packageJson?.editor,
+  build: buildInfo && {
+    version: buildInfo.version,
+    commit: buildInfo.commit,
+    branch: buildInfo.branch,
+    dirty: buildInfo.dirty,
+    builtAt: buildInfo.builtAt,
+  },
+});
+
+const targetWrapper = readJson(path.join(root, 'dist', 'release-target.signed.json'));
+if (targetWrapper && typeof targetWrapper.payload === 'string') {
+  const target = JSON.parse(Buffer.from(targetWrapper.payload, 'base64url').toString('utf8'));
+  emit('release.json', {
+    schemaVersion: 1,
+    metadataVersion: target.metadataVersion,
+    sequence: target.sequence,
+    expiresAt: target.expiresAt,
+    package: target.package && {
+      version: target.package.version,
+      buildId: target.package.buildId,
+      sha256: target.package.sha256,
+      size: target.package.size,
+      packageManifestSha256: target.package.packageManifestSha256,
+      sbomSha256: target.package.sbomSha256,
+      provenanceSha256: target.package.provenanceSha256,
+    },
+    protocol: target.protocol,
+    platform: target.platform,
+  });
+}
+
+const state = readJson(path.join(os.homedir(), '.cc-bridge', 'update-state-v1.json'));
+if (state) {
+  emit('update-state.json', {
+    schemaVersion: state.schemaVersion,
+    highestRootVersion: state.highestRootVersion,
+    highestTargetSequence: state.highestTargetSequence,
+    highestPolicySequence: state.highestPolicySequence,
+    rootPayloadSha256: state.rootPayloadSha256,
+    targetPayloadSha256: state.targetPayloadSha256,
+    policyPayloadSha256: state.policyPayloadSha256,
+    activeTargetPayloadSha256: state.activeTargetPayloadSha256,
+    stagedTargetPayloadSha256: state.stagedTargetPayloadSha256,
+    stagedDescriptorSha256: state.stagedDescriptorSha256,
+    rollbackTargetPayloadSha256: state.rollbackTargetPayloadSha256,
+    channel: state.channel,
+    ring: state.ring,
+    activationState: state.activationState,
+  });
+}
+
 const forbiddenMarkers = [
   /-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----/,
-  /MC4CAQAwBQYDK2VwBCIE/, // Ed25519 PKCS8 DER, base64url
-  /\.utcp-debug/,
+  /MC4CAQAwBQYDK2VwBCIE/,
+  /\b(?:bearer|password|credential|private[_-]?key|pkcs8|secret|signature)\b/i,
+  /https?:\/\//i,
+  /\.utcp-debug/i,
 ];
-let leaked = null;
 for (const entry of copied) {
-  const body = fs.readFileSync(path.join(outDir, entry.file), "utf8");
+  const body = fs.readFileSync(path.join(outDir, entry.file), 'utf8');
   for (const marker of forbiddenMarkers) {
-    if (marker.test(body)) { leaked = entry.file; break; }
+    if (marker.test(body)) {
+      fs.rmSync(outDir, { recursive: true, force: true });
+      throw new Error(`support bundle refused: forbidden marker in ${entry.file}`);
+    }
   }
-  if (leaked) break;
-}
-if (leaked) {
-  console.error(`support bundle refused: canary marker leaked in ${leaked}`);
-  process.exit(1);
 }
 
 const index = {
   schemaVersion: 1,
   createdAt: new Date().toISOString(),
-  excludes: ["project payloads", "credentials", "screenshots", "observation bodies", "source", "results"],
+  excludes: ['project payloads', 'credentials', 'signatures', 'URLs', 'screenshots', 'observation bodies', 'source', 'results'],
   files: copied,
 };
-fs.writeFileSync(path.join(outDir, "bundle.json"), `${JSON.stringify(index, null, 2)}\n`);
+emit('bundle.json', index);
 console.log(outDir);
-console.log("support bundle: privacy-safe defaults, canary scan clean");
+console.log('support bundle: metadata allowlist and canary scan clean');

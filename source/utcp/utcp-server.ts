@@ -1,9 +1,10 @@
 import { randomUUID } from '../protected/node14-compat';
-import { ToolRegistry } from './decorators';
+import { ToolMetadata, ToolRegistry } from './decorators';
 import { loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
 import { LocalHttpContext, LocalHttpServer, sendJson } from './http-server';
 import { ProtectedRelayHost } from '../protected/relay-host';
 import { CcbError, toCcbErrorBody } from '../protected/errors';
+import { REMOVED_CUSTOMER_TOOLS } from '../protected/removed-tools';
 import { dispatchProtectedCustomerTool, isProtectedCustomerTool } from '../protected/protected-route';
 import './tools/typescript-defenition';
 import './tools/get-properties-tool';
@@ -289,16 +290,17 @@ export class UtcpServerManager {
         }
     }
 
-    private registerTools(port: number, tools: any[], toolInstances: Map<Function, any>, utcpTools: Tool[]): void {
+    private registerTools(port: number, tools: ToolMetadata[], toolInstances: Map<Function, object>, utcpTools: Tool[]): void {
         const http = this.http;
         if (!http) throw new Error('UTCP Server is not running');
         const baseUrl = `http://localhost:${port}`;
 
         for (const toolMeta of tools) {
+            if (REMOVED_CUSTOMER_TOOLS.has(toolMeta.tool.name)) continue;
             const ToolClass = toolMeta.target.constructor;
             let instance = toolInstances.get(ToolClass);
             if (!instance) {
-                instance = new ToolClass();
+                instance = Reflect.construct(ToolClass, []) as object;
                 toolInstances.set(ToolClass, instance);
             }
 
