@@ -33,9 +33,27 @@ function percentile(values, p) {
   return sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1))];
 }
 
+async function loadLocalToken() {
+  const dir = path.join(os.homedir(), '.cc-bridge', 'local-auth');
+  if (!fs.existsSync(dir)) return '';
+  const files = fs.readdirSync(dir).filter((name) => name.endsWith('.json'));
+  let newest = '';
+  let mtime = 0;
+  for (const name of files) {
+    const full = path.join(dir, name);
+    const stat = fs.statSync(full);
+    if (stat.mtimeMs >= mtime) {
+      mtime = stat.mtimeMs;
+      newest = JSON.parse(fs.readFileSync(full, 'utf8')).token;
+    }
+  }
+  return typeof newest === 'string' ? newest : '';
+}
+
 async function main() {
   const base = discoverUtcp();
   const gatewayHealth = process.env.CCB_GATEWAY_HEALTH || 'http://127.0.0.1:8787/ccb/v1/health';
+  const token = await loadLocalToken();
   const [build, manual, health] = await Promise.all([
     get(`${base}/build-info`),
     get(`${base}/utcp`),
@@ -51,7 +69,8 @@ async function main() {
     gateway: { url: gatewayHealth, ok: health.ok, body: health.text.slice(0, 240) },
     ready: Boolean(build.ok && manual.ok && !hasExec && health.ok),
     samples: [],
-    note: 'Live one-RTT proof requires this relay in Creator. Simulated Gateway bench is not this report.',
+    failClosed: null,
+    note: 'Live one-RTT proof requires Gateway enrollment. Fail-closed LOCKED is valid until then.',
   };
   if (!report.ready) {
     fs.mkdirSync(path.dirname(REPORT), { recursive: true });
@@ -59,19 +78,26 @@ async function main() {
     console.log(JSON.stringify(report, null, 2));
     throw new Error('live Creator 3x UTCP is not ready');
   }
+  const headers = { 'content-type': 'application/json' };
+  if (token) headers['x-ccb-local-token'] = token;
+  const first = await fetch(`${base}/tools/sceneGetInfo`, { method: 'GET', headers, redirect: 'error' });
+  const firstText = await first.text();
+  if (first.status === 422 && /CCB_GATEWAY_UNAVAILABLE/.test(firstText)) {
+    report.failClosed = { status: 422, code: 'CCB_GATEWAY_UNAVAILABLE' };
+    fs.mkdirSync(path.dirname(REPORT), { recursive: true });
+    fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
+  if (!first.ok) throw new Error(`sceneGetInfo -> ${first.status}: ${firstText.slice(0, 200)}`);
   const samples = Number(process.env.CCB_BENCH_SAMPLES || '20');
   const durations = [];
   for (let i = 0; i < samples; i += 1) {
     const started = performance.now();
-    const response = await fetch(`${base}/tools/sceneGetInfo`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: '{}',
-      redirect: 'error',
-    });
-    const text = await response.text();
+    const response = await fetch(`${base}/tools/sceneGetInfo`, { method: 'GET', headers, redirect: 'error' });
+    await response.arrayBuffer();
     durations.push(performance.now() - started);
-    if (!response.ok) throw new Error(`sceneGetInfo -> ${response.status}: ${text.slice(0, 200)}`);
+    if (!response.ok) throw new Error(`sceneGetInfo -> ${response.status}`);
   }
   report.samples = {
     count: durations.length,

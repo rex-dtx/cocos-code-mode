@@ -1,4 +1,7 @@
 import { createPublicKey, type KeyLike } from "crypto";
+import { readFileSync } from "fs";
+import { homedir } from "os";
+import { join } from "path";
 import { DeviceIdentity, DeviceIdentityStore } from "./device-identity";
 import { GatewayClient } from "./gateway-client";
 import { MutationJournal } from "./mutation-journal";
@@ -6,6 +9,19 @@ import { ReplayWindow } from "./replay-window";
 import { ProtectedRelayStateMachine } from "./state-machine";
 import { CcbError } from "./errors";
 import { decodeBase64UrlBuffer, randomUUID } from "./node14-compat";
+
+function readGatewayFile(): Record<string, string> {
+  try {
+    const raw = JSON.parse(readFileSync(join(homedir(), ".cc-bridge", "gateway.json"), "utf8")) as Record<string, unknown>;
+    const out: Record<string, string> = {};
+    for (const [key, value] of Object.entries(raw)) {
+      if (typeof value === "string" && value) out[key] = value;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
 export class ProtectedRelayHost {
   readonly state = new ProtectedRelayStateMachine();
   readonly identityStore = new DeviceIdentityStore();
@@ -38,11 +54,12 @@ export class ProtectedRelayHost {
   }
 
   activateIfConfigured(): void {
-    const origin = process.env.CCB_GATEWAY_ORIGIN;
-    const projectId = process.env.CCB_PROJECT_ID;
-    const memberCredential = process.env.CCB_MEMBER_CREDENTIAL;
-    const executionKey = process.env.CCB_EXECUTION_PUBLIC_KEY;
-    const keyId = process.env.CCB_EXECUTION_KEY_ID || "execution-fixture-1";
+    const file = readGatewayFile();
+    const origin = process.env.CCB_GATEWAY_ORIGIN || file.origin;
+    const projectId = process.env.CCB_PROJECT_ID || file.projectId;
+    const memberCredential = process.env.CCB_MEMBER_CREDENTIAL || file.memberCredential;
+    const executionKey = process.env.CCB_EXECUTION_PUBLIC_KEY || file.executionPublicKey;
+    const keyId = process.env.CCB_EXECUTION_KEY_ID || file.executionKeyId || "execution-dev-1";
     if (!origin || !projectId || !memberCredential || !executionKey) {
       this.state.lock({
         code: "CCB_GATEWAY_UNAVAILABLE",
