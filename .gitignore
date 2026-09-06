@@ -31,4 +31,7 @@ probe-result.json
 
 # Plans song o Notes vault (notes/plans/cc-code-mode-cst/), khong track o repo
 plans/
+
+# Generated Cocos Graph cache (project-local, never commit)
+.cocos-graph/
 utcp_live_tmp.json
