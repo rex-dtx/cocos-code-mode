@@ -1,0 +1,494 @@
+{
+  "capturedAt": "2026-09-06T18:04:48.251Z",
+  "via": "mcp ccb3x call_tool_chain",
+  "build": {
+    "version": "2.0.0",
+    "commit": "26f4bb3",
+    "branch": "feat/ccb3x-consolidated"
+  },
+  "mcpResults": {
+    "count": 80,
+    "results": [
+      {
+        "name": "assetGetTree",
+        "ms": 22,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "assetGetAtPath",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "assetResolvePath",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "assetReadContent",
+        "ms": 4,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "assetFindReferences",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "assetQuery",
+        "ms": 9,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "assetSaveContent",
+        "ms": 5,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "assetGetAvailableUrl",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "assetCreate",
+        "ms": 14,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "assetImport",
+        "ms": 21,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "assetOperate",
+        "ms": 3,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "nodeGetAvailableComponentTypes",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "nodeComponentsGet",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "sceneGetInfo",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "findNodesByAsset",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "findNodesWithMissingAssets",
+        "ms": 7,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "findNodes",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "nodeReset",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "listComponentMethods",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "listComponentClasses",
+        "ms": 174,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "nodeClipboard",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "nodeGetTree",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "nodeGetAtPath",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "nodeCreatePrimitive",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "nodeCreate",
+        "ms": 1,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "nodeOperate",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "editorEnvInfo",
+        "ms": 1,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "editorViewport",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "editorSelect",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "editorHistory",
+        "ms": 1,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "editorGetLogs",
+        "ms": 8,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "animationQuery",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "animationEdit",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "propertyArrayElement",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "materialQuery",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "assetDbQuery",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "inspectorGet",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "inspectorSet",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "inspectorGetDefinition",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "nodeComponentManage",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "editorQuery",
+        "ms": 3,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "sceneManage",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "buildManage",
+        "ms": 1,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "previewManage",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "projectManage",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "projectReadFile",
+        "ms": 2,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "projectWriteFile",
+        "ms": 8,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "projectSearchFiles",
+        "ms": 30,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "projectReplaceInFile",
+        "ms": 3,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "projectFileExists",
+        "ms": 1,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "projectListDirectory",
+        "ms": 2,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "createUiNode",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "createLabel",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "createButton",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "createSprite",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "runtimePause",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "runtimeResume",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "runtimeSetTimeScale",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "runtimeGetState",
+        "ms": 10,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "nodeBatchSet",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "sceneBatchGet",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "assetBatchQuery",
+        "ms": 2,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "getPerformanceSnapshot",
+        "ms": 8,
+        "status": "err",
+        "code": "CCB_DEVICE_DENIED"
+      },
+      {
+        "name": "validateScene",
+        "ms": 14,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "captureSceneScreenshot",
+        "ms": 24,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "captureEditorScreenshot",
+        "ms": 71,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "listEditorWindows",
+        "ms": 2,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "sceneSnapshot",
+        "ms": 20,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "simulateButtonClick",
+        "ms": 3,
+        "status": "err",
+        "code": ""
+      },
+      {
+        "name": "readPrefabJson",
+        "ms": 4,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "editPrefabJson",
+        "ms": 3,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "duplicatePrefab",
+        "ms": 3,
+        "status": "err",
+        "code": "INTERNAL_ERROR"
+      },
+      {
+        "name": "readProjectInstruction",
+        "ms": 2,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "writeProjectInstruction",
+        "ms": 6,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "getEditorPreference",
+        "ms": 3,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "setEditorPreference",
+        "ms": 4,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "simulateKeyPress",
+        "ms": 2,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "simulateKeyCombo",
+        "ms": 2,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "simulateMouseClick",
+        "ms": 2,
+        "status": "ok",
+        "code": ""
+      },
+      {
+        "name": "simulateMouseDrag",
+        "ms": 2,
+        "status": "ok",
+        "code": ""
+      }
+    ]
+  }
+}
