@@ -1,8 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import express, { Request, Response } from 'express';
 import { ToolRegistry } from './decorators';
-import { createLocalIngressGuard, loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
-import { REMOVED_CUSTOMER_TOOLS } from '../protected/removed-tools';
+import { loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
+import { LocalHttpContext, LocalHttpServer, sendJson } from './http-server';
 import { ProtectedRelayHost } from '../protected/relay-host';
 import { CcbError, toCcbErrorBody } from '../protected/errors';
 import { dispatchProtectedCustomerTool, isProtectedCustomerTool } from '../protected/protected-route';
@@ -37,7 +36,6 @@ import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';
 import { JsonSchema, Tool, UtcpManual } from '@utcp/sdk';
-import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
@@ -264,131 +262,68 @@ export function setServerProfile(profile: ToolProfile, enabled: string[] = [], d
 }
 
 export class UtcpServerManager {
-    private app: express.Application;
-    private server: any;
+    private http: LocalHttpServer | null = null;
     public port: number = 0;
     private readonly host?: ProtectedRelayHost;
 
     constructor(host?: ProtectedRelayHost) {
         this.host = host;
-        this.app = express();
         registerAllImporters();
     }
 
     async start(port: number = 3000): Promise<number> {
-        // PHAI set TRUOC moi app.use(): express bind 'query parser fn' luc lazyrouter
-        // chay (o use() dau tien) va khong doc lai. Set sau -> decoder nay khong bao gio
-        // chay, moi arg so/bool ve tay tool duoi dang string.
-        this.app.set("query parser", (queryString: string) =>
-            parse(queryString, {
-                decoder(value, defaultDecoder, charset, type) {
-                    const decoded = defaultDecoder(value);
-
-                    if (decoded === "true") return true;
-                    if (decoded === "false") return false;
-
-                    if (
-                        typeof decoded === "string" &&
-                        decoded !== "" &&
-                        !Number.isNaN(Number(decoded))
-                    ) {
-                        return Number(decoded);
-                    }
-
-                    if (decoded === "__null__") return null;
-
-                    return decoded;
-                }
-            })
-        );
-
+        if (this.http) throw new Error('UTCP Server is already running');
         const localAuth = loadOrCreateLocalAuth(this.host?.relayInstanceId ?? randomUUID());
-        this.app.use(createLocalIngressGuard(localAuth));
-        this.app.use(express.json({ limit: '1mb' }));
-
-        // M1 timing baseline: stamp request start so handlers and clients can
-        // measure wall time (via X-Duration-Ms header) before/after batching.
-        this.app.use((req: any, _res: any, next: any) => {
-            req._t0 = Date.now();
-            next();
-        });
-
-        const tools = ToolRegistry.getTools();
-        const toolInstances = new Map<Function, any>();
-        const utcpTools: Tool[] = [];
-
-        let currentPort = port;
-
-        // Let's listen first to get the port if it's 0
-        return new Promise((resolve, reject) => {
-            this.server = this.app.listen(port, "127.0.0.1", () => {
-                const addr = this.server.address();
-                if (addr && typeof addr === 'object') {
-                    currentPort = addr.port;
-                }
-
-                // Now register tools with the correct port
-                this.port = currentPort;
-                this.registerTools(currentPort, tools, toolInstances, utcpTools);
-
-                resolve(currentPort);
-            });
-            this.server.on('error', (err: any) => {
-                reject(err);
-            });
-        });
+        const http = new LocalHttpServer(localAuth);
+        this.http = http;
+        try {
+            const actualPort = await http.listen(port);
+            this.port = actualPort;
+            this.registerTools(actualPort, ToolRegistry.getTools(), new Map<Function, any>(), []);
+            return actualPort;
+        } catch (error) {
+            await http.close().catch(() => {});
+            this.http = null;
+            this.port = 0;
+            throw error;
+        }
     }
 
-    private registerTools(port: number, tools: any[], toolInstances: Map<Function, any>, utcpTools: Tool[]) {
+    private registerTools(port: number, tools: any[], toolInstances: Map<Function, any>, utcpTools: Tool[]): void {
+        const http = this.http;
+        if (!http) throw new Error('UTCP Server is not running');
         const baseUrl = `http://localhost:${port}`;
 
-        // Initialize tool instances and build UTCP definitions
         for (const toolMeta of tools) {
             const ToolClass = toolMeta.target.constructor;
             let instance = toolInstances.get(ToolClass);
-            if (REMOVED_CUSTOMER_TOOLS.has(toolMeta.tool.name)) continue;
             if (!instance) {
                 instance = new ToolClass();
                 toolInstances.set(ToolClass, instance);
             }
 
             const toolDef = JSON.parse(JSON.stringify(toolMeta.tool));
-            // ponytail: slim outputs schema to top-level keys only; nested detail is token bloat.
-            // Inputs schemas stay intact — Claude needs full param shape to call correctly.
-            if (toolDef.outputs) {
-                toolDef.outputs = slimOutputsSchema(toolDef.outputs);
-            }
+            if (toolDef.outputs) toolDef.outputs = slimOutputsSchema(toolDef.outputs);
             const toolUrlPath = toolDef.tool_call_template.url;
-
             toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;
             toolDef.tool_call_template.auth = {
-                auth_type: "api_key",
+                auth_type: 'api_key',
                 var_name: LOCAL_TOKEN_HEADER,
                 api_key_value: `\${${LOCAL_TOKEN_VARIABLE}}`,
-                in: "header",
+                in: 'header',
             };
-
-            // Profile annotations remain in ToolProfileRegistry. The Code Mode manual parser
-            // rejects unknown per-tool fields, so do not expose them in the UTCP manual.
-
             utcpTools.push(toolDef);
 
-            // Register specific endpoint
-            const handler = async (req: Request, res: Response) => {
-                const t0 = Date.now();
+            const handler = async (context: LocalHttpContext): Promise<void> => {
+                const { body, query, response, startedAt } = context;
+                const duration = () => ({ 'x-duration-ms': String(Date.now() - startedAt) });
                 try {
-                    // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
-                        res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
+                        sendJson(response, 404, { error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` }, duration());
                         return;
                     }
-
-                    const body = req.body as unknown;
                     const bodyArgs = isPlainJsonObject(body) ? body as Record<string, unknown> : {};
-                    const args: Record<string, unknown> = {
-                        ...(req.query as unknown as Record<string, unknown>),
-                        ...bodyArgs,
-                    };
+                    const args: Record<string, unknown> = { ...query, ...bodyArgs };
                     const validationErrors = body === undefined || isPlainJsonObject(body)
                         ? validateSchemaArguments(toolDef.inputs, args)
                         : validateSchemaArguments(toolDef.inputs, body);
@@ -397,117 +332,65 @@ export class UtcpServerManager {
                             .filter((error) => error.keyword === 'required' && !error.path.includes('.') && !error.path.includes('['))
                             .map((error) => error.path);
                         const plural = missingInputs.length === 1 ? '' : 's';
-                        res.status(400).json({
+                        sendJson(response, 400, {
                             error: missingInputs.length > 0
                                 ? `Missing required input${plural}: ${missingInputs.join(', ')}`
                                 : 'Invalid tool input.',
                             ...(missingInputs.length > 0 ? { missingInputs } : {}),
                             validationErrors,
-                        });
+                        }, duration());
                         return;
                     }
 
-                    let result: unknown;
-                    if (isProtectedCustomerTool(toolDef.name)) {
-                        if (!this.host) {
-                            throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Protected tools require an active Gateway relay host.");
-                        }
-                        result = await dispatchProtectedCustomerTool(this.host, toolDef.name, args);
-                    } else {
-                        result = await toolMeta.method.apply(instance, [args]);
-                    }
-
-                    if (result === undefined || result === null) {
-                        const ms = Date.now() - ((req as any)._t0 ?? t0);
-                        res.setHeader('X-Duration-Ms', String(ms));
-                        res.json(null);
+                    const result = isProtectedCustomerTool(toolDef.name)
+                        ? await this.dispatchProtected(toolDef.name, args)
+                        : await toolMeta.method.apply(instance, [args]);
+                    const trimmed = result === undefined || result === null ? null : trimResponse(result) ?? null;
+                    sendJson(
+                        response,
+                        200,
+                        envelopeEnabled ? createResultEnvelope(toolDef.name, args, trimmed) : trimmed,
+                        duration(),
+                    );
+                } catch (error) {
+                    if (error instanceof CcbError) {
+                        sendJson(response, 422, toCcbErrorBody(error), duration());
                         return;
                     }
-
-                    const ms = Date.now() - ((req as any)._t0 ?? t0);
-                    res.setHeader('X-Duration-Ms', String(ms));
-
-                    // ponytail: trim null/undefined/empty containers before serializing.
-                    // Reduces response payload ~15-30% for property dumps and nested objects.
-                    const trimmed = trimResponse(result);
-
-                    // Wrap in envelope if enabled
-                    if (envelopeEnabled) {
-                        res.json(createResultEnvelope(toolDef.name, args, trimmed ?? null));
-                    } else {
-                        res.json(trimmed ?? null);
-                    }
-
-                } catch (err: any) {
-                    if (err instanceof CcbError) {
-                        const ms2 = Date.now() - ((req as any)._t0 ?? t0);
-                        res.setHeader('X-Duration-Ms', String(ms2));
-                        res.status(422).json(toCcbErrorBody(err));
-                        return;
-                    }
-                    console.error(`Error in tool ${toolDef.name}:`, err);
-                    const ms2 = Date.now() - ((req as any)._t0 ?? t0);
-                    const response = toToolErrorResponse(err);
-                    res.setHeader('X-Duration-Ms', String(ms2));
-                    res.status(response.status).json(response.body);
+                    console.error(`Error in tool ${toolDef.name}:`, error);
+                    const toolError = toToolErrorResponse(error);
+                    sendJson(response, toolError.status, toolError.body, duration());
                 }
             };
 
-            switch (toolDef.tool_call_template.http_method) {
-                case 'POST':
-                    this.app.post(toolUrlPath, handler);
-                    break;
-                case 'GET':
-                    this.app.get(toolUrlPath, handler);
-                    break;
-                case 'DELETE':
-                    this.app.delete(toolUrlPath, handler);
-                    break;
-                case 'PUT':
-                    this.app.put(toolUrlPath, handler);
-                    break;
-                default:
-                // throw new Error(`Unsupported HTTP method: ${toolDef.tool_call_template.http_method}`);
+            const method = toolDef.tool_call_template.http_method;
+            if (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE') {
+                http.route(method, toolUrlPath, handler);
             }
         }
 
-        // Serve UTCP Manual
-        this.app.get('/utcp', (req, res) => {
-            // Filter tools based on active profile
-            const filteredTools = utcpTools.filter(t => isToolExposed(t.name, activeProfile, enabledTools, disabledTools));
+        http.route('GET', '/utcp', ({ response }) => {
             const manual: UtcpManual = {
-                utcp_version: "1.0.1",
-                manual_version: "1.0.0",
-                tools: filteredTools
+                utcp_version: '1.0.1',
+                manual_version: '1.0.0',
+                tools: utcpTools.filter((tool) => isToolExposed(tool.name, activeProfile, enabledTools, disabledTools)),
             };
-            // Do NOT add fields here. The UTCP SDK validates the manual with a strict
-            // schema: an extra key fails registration for EVERY tool, not just itself.
-            // Build provenance lives on /build-info below for exactly this reason.
-            res.json(manual);
+            sendJson(response, 200, manual);
         });
+        http.route('GET', '/build-info', ({ response }) => sendJson(response, 200, getBuildInfo()));
+    }
 
-        // Provenance on its own endpoint, out of the manual's strict schema.
-        this.app.get('/build-info', (req, res) => {
-            res.json(getBuildInfo());
-        });
-
-        this.app.get('/debug-logs', (_req, res) => {
-            res.status(404).json({ error: 'Debug log endpoint removed from the customer relay.' });
-        });
+    private async dispatchProtected(toolName: string, args: Record<string, unknown>): Promise<unknown> {
+        if (!this.host) throw new CcbError('CCB_GATEWAY_UNAVAILABLE', 'Protected tools require an active Gateway relay host.');
+        return dispatchProtectedCustomerTool(this.host, toolName, args);
     }
 
     async stop(): Promise<void> {
-        const server = this.server;
-        if (!server) return;
-
-        await new Promise<void>((resolve, reject) => {
-            server.close((err?: Error) => {
-                this.server = null;
-                this.port = 0;
-                if (err) reject(err);
-                else resolve();
-            });
-        });
-        console.log("UTCP Server stopped");
+        const http = this.http;
+        if (!http) return;
+        this.http = null;
+        this.port = 0;
+        await http.close();
+        console.log('UTCP Server stopped');
     }
 }
