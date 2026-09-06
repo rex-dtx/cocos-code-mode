@@ -77,6 +77,18 @@ async function smoke() {
         assert.equal(ok, true, 'GET /build-info ok');
         assert.ok(body && body.commit && body.branch, 'build-info has commit and branch');
         pass(`build-info ${body.commit}${body.dirty ? '-dirty' : ''} on ${body.branch}`);
+        const head = (() => {
+            try {
+                return require('child_process').execSync('git rev-parse --short HEAD', { cwd: join(__dirname, '..') }).toString().trim();
+            } catch {
+                return null;
+            }
+        })();
+        if (head && body.commit && body.commit !== head) {
+            fail('build-info stale', `editor serves ${body.commit}${body.dirty ? '-dirty' : ''} but HEAD is ${head} — rebuild + restart editor`);
+        } else if (head) {
+            pass(`build-info matches HEAD ${head}`);
+        }
     } catch (error) {
         skip('build-info', error instanceof Error ? error.message : String(error));
     }
