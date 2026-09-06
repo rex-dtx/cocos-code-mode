@@ -41,8 +41,10 @@ export function ensurePrivateDirectory(path: string): void {
   assertInsideUserHome(path);
   assertNotSymlink(path);
   mkdirSync(path, { recursive: true, mode: PRIVATE_DIRECTORY_MODE });
-  chmodSync(path, PRIVATE_DIRECTORY_MODE);
-  assertPrivatePermissions(path, true);
+  if (process.platform !== "win32") {
+    chmodSync(path, PRIVATE_DIRECTORY_MODE);
+    assertPrivatePermissions(path, true);
+  }
 }
 
 export function readPrivateJson(path: string, maxBytes: number): unknown | undefined {
@@ -68,12 +70,18 @@ export function writePrivateJsonAtomic(path: string, value: unknown): void {
   try {
     descriptor = openSync(temporary, "wx", PRIVATE_FILE_MODE);
     writeSync(descriptor, bytes, 0, bytes.length, 0);
-    fsyncSync(descriptor);
+    try { fsyncSync(descriptor); } catch (error: any) {
+      if (!["EINVAL", "ENOTSUP", "EPERM"].includes(error?.code)) throw error;
+    }
     closeSync(descriptor);
     descriptor = undefined;
-    chmodSync(temporary, PRIVATE_FILE_MODE);
+    if (process.platform !== "win32") {
+      chmodSync(temporary, PRIVATE_FILE_MODE);
+    }
     renameSync(temporary, path);
-    assertPrivatePermissions(path, false);
+    if (process.platform !== "win32") {
+      assertPrivatePermissions(path, false);
+    }
 
     try {
       const directoryDescriptor = openSync(directory, "r");
