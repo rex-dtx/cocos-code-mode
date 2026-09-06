@@ -5,7 +5,7 @@ const path = require('node:path');
 const { createHash } = require('node:crypto');
 
 const STATIC_ROOTS = ['@types', 'dist', 'i18n', 'static'];
-const STATIC_FILES = ['package-lock.json', 'README.md'];
+const STATIC_FILES = ['package-lock.json'];
 const GENERATED_SIDECARS = new Set([
   'dist/package-manifest.json',
   'dist/sbom.cdx.json',
