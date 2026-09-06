@@ -7,6 +7,9 @@ const forbidden = [
   /\beval\s*\(/,
   /CCB_EXECUTION_PRIVATE_KEY/,
   /planCreateUiNode/,
+  /sourceMappingURL=data:/,
+  /"sourcesContent"\s*:/,
+  /\bexecuteJavascript\b/,
   // Customer protected artifact carries no process launch or raw debug persistence.
   /require\(['"]child_process['"]\)/,
   /from\s+['"]child_process['"]/,
@@ -29,7 +32,11 @@ function walk(dir) {
       walk(full);
       continue;
     }
-    if (path.extname(entry.name) === ".map") continue;
+    if (entry.name.endsWith(".map") || entry.name.endsWith(".ts")) {
+      console.error(`${full}: source/source-map file must not ship`);
+      hits += 1;
+      continue;
+    }
     const text = fs.readFileSync(full, "utf8");
     for (const pattern of forbidden) {
       if (pattern.test(text)) {

@@ -1,137 +1,142 @@
-const { createHash, createPrivateKey, createPublicKey, sign, verify } = require("node:crypto");
-const fs = require("node:fs");
-const path = require("node:path");
+'use strict';
 
-// Offline immutable-target signer. Emits a SignedMetadata envelope
-// (payload + signatures[]) over a ReleaseTargetBody, signed with the
-// "CCB1 release-targets\n" domain prefix — the exact shape that
-// gateway/src/cc-bridge/release-metadata.ts and source/update/metadata.ts
-// verify. Target keys are distinct from root/policy keys.
+const { createHash, createPrivateKey, createPublicKey, sign, verify } = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
 
-const TARGET_PREFIX = Buffer.from("CCB1 release-targets\n", "utf8");
+const TARGET_PREFIX = Buffer.from('CCB1 release-targets\n', 'utf8');
 const KEY_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/;
+const SHA256_PATTERN = /^[0-9a-f]{64}$/;
+const projectRoot = path.join(__dirname, '..');
 
-const projectRoot = path.join(__dirname, "..");
-const packageJson = require(path.join(projectRoot, "package.json"));
-
-// RFC 8785 JCS — byte-identical to source/protected/canonical-json.ts
-// (sorted keys + JSON.stringify for primitives; no number rewriting needed
-// for this schema's integer/hex/ISO-string fields).
 function canonicalize(value) {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return "[" + value.map(canonicalize).join(",") + "]";
-  const keys = Object.keys(value).sort();
-  return "{" + keys.map((k) => JSON.stringify(k) + ":" + canonicalize(value[k])).join(",") + "}";
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalize(value[key])}`).join(',')}}`;
 }
 
 function decodeBase64UrlStrict(value, exactBytes) {
-  if (typeof value !== "string" || !BASE64URL_PATTERN.test(value) || value.includes("=")) {
-    throw new Error("invalid unpadded base64url");
+  if (typeof value !== 'string' || !BASE64URL_PATTERN.test(value) || value.includes('=')) {
+    throw new Error('invalid unpadded base64url');
   }
-  const bytes = Buffer.from(value, "base64url");
-  if (bytes.length === 0 || bytes.toString("base64url") !== value) throw new Error("invalid base64url encoding");
+  const bytes = Buffer.from(value, 'base64url');
+  if (!bytes.length || bytes.toString('base64url') !== value) throw new Error('invalid base64url encoding');
   if (exactBytes !== undefined && bytes.length !== exactBytes) throw new Error(`expected ${exactBytes} bytes, got ${bytes.length}`);
   return bytes;
 }
 
-function assertKeyId(keyId) {
-  if (!KEY_ID_PATTERN.test(keyId)) throw new Error("invalid key ID");
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is required`);
+  return value;
 }
 
-function readZip() {
-  const explicit = process.argv[2];
-  const zipPath = explicit
-    || fs.readdirSync(projectRoot).filter((name) => /^cc-bridge-3x.*\.zip$/.test(name)).sort().at(-1);
-  if (!zipPath) {
-    console.error("No cc-bridge-3x ZIP found. Pass an explicit path.");
-    process.exit(1);
+function positiveInteger(name) {
+  const value = Number(requiredEnv(name));
+  if (!Number.isSafeInteger(value) || value < 1) throw new Error(`${name} must be a positive safe integer`);
+  return value;
+}
+
+function exactIso(name) {
+  const value = requiredEnv(name);
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime()) || date.toISOString() !== value) throw new Error(`${name} must be an exact ISO timestamp`);
+  return value;
+}
+
+function artifact(relativePath) {
+  const filePath = path.join(projectRoot, relativePath);
+  if (!fs.existsSync(filePath)) throw new Error(`required release artifact missing: ${relativePath}`);
+  const bytes = fs.readFileSync(filePath);
+  return { filePath, bytes, sha256: createHash('sha256').update(bytes).digest('hex') };
+}
+
+function readZip(explicitPath) {
+  const candidate = explicitPath || fs.readdirSync(projectRoot).filter((name) => /^cc-bridge-3x.*\.zip$/.test(name)).sort().at(-1);
+  if (!candidate) throw new Error('no cc-bridge-3x ZIP found; pass an explicit path');
+  const filePath = path.resolve(projectRoot, candidate);
+  if (!fs.existsSync(filePath)) throw new Error(`ZIP not found: ${filePath}`);
+  const bytes = fs.readFileSync(filePath);
+  return { filePath, bytes, sha256: createHash('sha256').update(bytes).digest('hex') };
+}
+
+function assertHttpsArtifactUrl(value) {
+  const url = new URL(value);
+  if (url.protocol !== 'https:' || url.username || url.password || url.hash) {
+    throw new Error('CCB_RELEASE_URL must be HTTPS without credentials or fragment');
   }
-  const resolved = path.resolve(projectRoot, zipPath);
-  if (!fs.existsSync(resolved)) {
-    console.error(`ZIP not found: ${resolved}`);
-    process.exit(1);
+  return url.toString();
+}
+
+function buildReleaseTargetBody(zip, options = {}) {
+  const manifestArtifact = artifact('dist/package-manifest.json');
+  const sbomArtifact = artifact('dist/sbom.cdx.json');
+  const provenanceArtifact = artifact('dist/provenance.intoto.json');
+  const manifest = JSON.parse(manifestArtifact.bytes.toString('utf8'));
+  if (manifest.schemaVersion !== 1 || manifest.package !== 'cc-bridge-3x' || typeof manifest.version !== 'string') {
+    throw new Error('package manifest identity is invalid');
   }
-  return { resolved, basename: path.basename(resolved), bytes: fs.readFileSync(resolved) };
-}
-
-function manifestSha256() {
-  const manifestPath = path.join(projectRoot, "dist", "package-manifest.json");
-  if (!fs.existsSync(manifestPath)) return "";
-  return createHash("sha256").update(fs.readFileSync(manifestPath)).digest("hex");
-}
-
-function buildReleaseTargetBody(artifact) {
-  const now = new Date();
+  if (!Array.isArray(manifest.files) || manifest.files.length === 0) throw new Error('package manifest contains no files');
+  for (const digest of [zip.sha256, manifestArtifact.sha256, sbomArtifact.sha256, provenanceArtifact.sha256]) {
+    if (!SHA256_PATTERN.test(digest)) throw new Error('release artifact SHA-256 is malformed');
+  }
   return {
     schemaVersion: 1,
-    metadataVersion: 1,
-    releaseSequence: 1,
-    issuedAt: now.toISOString(),
-    expiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    metadataVersion: options.metadataVersion ?? positiveInteger('CCB_RELEASE_METADATA_VERSION'),
+    releaseSequence: options.releaseSequence ?? positiveInteger('CCB_RELEASE_SEQUENCE'),
+    issuedAt: options.issuedAt ?? exactIso('CCB_RELEASE_ISSUED_AT'),
+    expiresAt: options.expiresAt ?? exactIso('CCB_RELEASE_EXPIRES_AT'),
     package: {
-      name: packageJson.name,
-      version: packageJson.version,
-      sha256: createHash("sha256").update(artifact.bytes).digest("hex"),
-      size: artifact.bytes.length,
-      url: "",
-      packageManifestSha256: manifestSha256(),
-      sbomSha256: "",
-      provenanceSha256: "",
+      name: manifest.package,
+      version: manifest.version,
+      sha256: zip.sha256,
+      size: zip.bytes.length,
+      url: options.url ?? assertHttpsArtifactUrl(requiredEnv('CCB_RELEASE_URL')),
+      packageManifestSha256: manifestArtifact.sha256,
+      sbomSha256: sbomArtifact.sha256,
+      provenanceSha256: provenanceArtifact.sha256,
     },
     compatibility: {
       protocol: { min: 1, max: 1 },
-      creator: packageJson.editor || ">=3.7.0",
-      os: ["win32"],
-      arch: ["x64"],
+      creator: process.env.CCB_RELEASE_CREATOR || '>=3.7.0',
+      os: (process.env.CCB_RELEASE_OS || 'win32').split(',').filter(Boolean),
+      arch: (process.env.CCB_RELEASE_ARCH || 'x64').split(',').filter(Boolean),
     },
   };
 }
 
-function main() {
-  const artifact = readZip();
-  const body = buildReleaseTargetBody(artifact);
-  const payloadBytes = Buffer.from(canonicalize(body), "utf8");
+function signTarget(body, keyId, privateKeyBase64Url, publicKeyBase64Url) {
+  if (!KEY_ID_PATTERN.test(keyId)) throw new Error('invalid key ID');
+  const privateKey = createPrivateKey({ key: decodeBase64UrlStrict(privateKeyBase64Url), format: 'der', type: 'pkcs8' });
+  const payloadBytes = Buffer.from(canonicalize(body), 'utf8');
   const message = Buffer.concat([TARGET_PREFIX, payloadBytes]);
-
-  const keyId = process.env.CCB_RELEASE_TARGETS_KEY_ID;
-  const privateKeyB64 = process.env.CCB_RELEASE_TARGETS_PRIVATE_KEY;
-  const publicKeyB64 = process.env.CCB_RELEASE_TARGETS_PUBLIC_KEY;
-
-  if (!keyId || !privateKeyB64) {
-    console.error("CCB_RELEASE_TARGETS_KEY_ID and CCB_RELEASE_TARGETS_PRIVATE_KEY (PKCS8 DER base64url) are required.");
-    process.exit(1);
-  }
-  assertKeyId(keyId);
-
-  const privateKey = createPrivateKey({ key: Buffer.from(privateKeyB64, "base64url"), format: "der", type: "pkcs8" });
   const signatureBytes = sign(null, message, privateKey);
-  if (signatureBytes.length !== 64) throw new Error("Ed25519 produced an unexpected signature length");
-
-  const signed = {
-    payload: payloadBytes.toString("base64url"),
-    signatures: [{ keyId, signature: signatureBytes.toString("base64url") }],
-  };
-
-  const distDir = path.join(projectRoot, "dist");
-  fs.mkdirSync(distDir, { recursive: true });
-  const outPath = path.join(distDir, "release-target.signed.json");
-  fs.writeFileSync(outPath, JSON.stringify(signed, null, 2) + "\n");
-
-  // Self-verify the round trip when the public key is available.
-  if (publicKeyB64) {
-    const publicKey = createPublicKey({ key: Buffer.from(publicKeyB64, "base64url"), format: "der", type: "spki" });
-    const recovered = decodeBase64UrlStrict(signed.payload);
-    const recoveredMessage = Buffer.concat([TARGET_PREFIX, recovered]);
-    const ok = verify(null, recoveredMessage, publicKey, signatureBytes);
-    if (!ok) throw new Error("self-verify failed: signature does not cover the canonical payload");
-    console.log("self-verify: OK");
+  if (signatureBytes.length !== 64) throw new Error('Ed25519 produced an unexpected signature length');
+  if (publicKeyBase64Url) {
+    const publicKey = createPublicKey({ key: decodeBase64UrlStrict(publicKeyBase64Url), format: 'der', type: 'spki' });
+    if (!verify(null, message, publicKey, signatureBytes)) throw new Error('self-verify failed');
   }
-
-  console.log(`Wrote ${outPath}`);
-  console.log(`package ${body.package.name}@${body.package.version}`);
-  console.log(`sha256 ${body.package.sha256}`);
-  console.log(`size ${body.package.size}`);
+  return { payload: payloadBytes.toString('base64url'), signatures: [{ keyId, signature: signatureBytes.toString('base64url') }] };
 }
 
-main();
+function main() {
+  const zip = readZip(process.argv[2]);
+  const body = buildReleaseTargetBody(zip);
+  if (Date.parse(body.expiresAt) <= Date.parse(body.issuedAt)) throw new Error('release target must expire after it is issued');
+  const signed = signTarget(
+    body,
+    requiredEnv('CCB_RELEASE_TARGETS_KEY_ID'),
+    requiredEnv('CCB_RELEASE_TARGETS_PRIVATE_KEY'),
+    process.env.CCB_RELEASE_TARGETS_PUBLIC_KEY,
+  );
+  const outPath = path.join(projectRoot, 'dist', 'release-target.signed.json');
+  fs.writeFileSync(outPath, `${JSON.stringify(signed, null, 2)}\n`);
+  console.log(JSON.stringify({ outPath, package: `${body.package.name}@${body.package.version}`, ...body.package }, null, 2));
+}
+
+if (require.main === module) {
+  try { main(); } catch (error) { console.error(`sign-release failed: ${error.message}`); process.exitCode = 1; }
+}
+
+module.exports = { buildReleaseTargetBody, canonicalize, decodeBase64UrlStrict, signTarget };

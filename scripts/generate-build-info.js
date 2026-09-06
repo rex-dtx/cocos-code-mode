@@ -22,18 +22,20 @@ function git(args, fallback) {
 const info = {
     commit: git('rev-parse --short HEAD', 'unknown'),
     branch: git('rev-parse --abbrev-ref HEAD', 'unknown'),
-    // Uncommitted changes at build time: "the code you tested isn't in git".
-    // Scoped to what actually ends up in the build -- the editor drops temp files
-    // at the repo root, and a flag that cries wolf is a flag people stop reading.
-    // Untracked files count here: a new source/*.ts does get compiled in.
-    dirty: git('status --porcelain -- source package.json', '') !== '',
+    // Release provenance covers every source/build input that can affect the
+    // customer artifact, including new untracked files.
+    dirty: git(
+        'status --porcelain --untracked-files=all -- source scripts package.json package-lock.json tsconfig.json tsconfig.release.json base.tsconfig.json',
+        ''
+    ) !== '',
     builtAt: new Date().toISOString()
 };
 
 const distDir = path.join(projectRoot, 'dist');
-if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir, { recursive: true });
+if (process.argv.includes('--clean')) {
+    fs.rmSync(distDir, { recursive: true, force: true });
 }
+fs.mkdirSync(distDir, { recursive: true });
 
 fs.writeFileSync(path.join(distDir, 'build-info.json'), JSON.stringify(info, null, 2));
 console.log(`build-info: ${info.commit}${info.dirty ? '-dirty' : ''} (${info.branch})`);

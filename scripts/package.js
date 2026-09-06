@@ -1,175 +1,122 @@
-const fs = require('fs');
-const path = require('path');
-const { createHash } = require('node:crypto');
-const { ZipArchive } = require('archiver'); // archiver v8: class-based API (cc-bridge-3x Node >= 18)
+'use strict';
 
-const packageJsonPath = path.join(__dirname, '../package.json');
-if (!fs.existsSync(packageJsonPath)) {
-    console.error('package.json not found!');
-    process.exit(1);
-}
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const { ZipArchive } = require('archiver');
+const { assertReleaseInventory, collectPackageEntries, createPackageManifest, sha256 } = require('./release-inventory');
+const { writeCanonicalJson, writeReleaseSidecars } = require('./release-artifacts');
 
-const packageJson = require(packageJsonPath);
-const packageName = packageJson.name;
 const projectRoot = path.join(__dirname, '..');
+const packageJson = require(path.join(projectRoot, 'package.json'));
+const packageName = packageJson.name;
+const ZIP_EPOCH_SECONDS = Number(process.env.SOURCE_DATE_EPOCH || 315532800);
+if (!Number.isSafeInteger(ZIP_EPOCH_SECONDS) || ZIP_EPOCH_SECONDS < 315532800) {
+  throw new Error('SOURCE_DATE_EPOCH must be an integer at or after 1980-01-01');
+}
+const archiveDate = new Date(ZIP_EPOCH_SECONDS * 1000);
 
-const { spawnSync } = require('child_process');
-const executeDist = path.join(projectRoot, 'dist', 'utcp', 'execute');
-if (fs.existsSync(executeDist)) {
-    console.error('Refuse to package: dist/utcp/execute is present');
-    process.exit(1);
-}
-for (const witness of ['scan-protected-absence.js', 'forbidden-material-witness.js']) {
-    const ran = spawnSync(process.execPath, [path.join(__dirname, witness)], { cwd: projectRoot, stdio: 'inherit' });
-    if (ran.status !== 0) {
-        console.error(`Refuse to package: ${witness} failed`);
-        process.exit(ran.status || 1);
-    }
-}
-
-// Zip name carries version + build timestamp so artifacts from different
-// sessions never silently collide: cc-bridge-3x-<version>-YYMMDD-HHMMSS.zip.
-// Timestamp comes from dist/build-info.json (stamped at build time) so the
-// name always matches the packaged build; falls back to now.
-function buildTimestamp() {
-    try {
-        const info = JSON.parse(fs.readFileSync(path.join(projectRoot, 'dist', 'build-info.json'), 'utf8'));
-        if (info.builtAt) return new Date(info.builtAt);
-    } catch { /* fall through to now */ }
-    return new Date();
-}
-const ts = buildTimestamp();
-const pad = (n) => String(n).padStart(2, '0');
-const stamp = `${String(ts.getFullYear()).slice(2)}${pad(ts.getMonth() + 1)}${pad(ts.getDate())}-${pad(ts.getHours())}${pad(ts.getMinutes())}${pad(ts.getSeconds())}`;
-const zipFileName = `${packageName}-v${packageJson.version.replace(/\./g, '')}-${stamp}.zip`;
-
-// Derive zip version from build-info.json stamped at build time, so the
-// Extensions Manager header shows which commit produced this artifact.
-// Source package.json stays at 1.0.0; only the archived copy is patched.
-function resolveZipVersion() {
-    const fallback = packageJson.version;
-    try {
-        const infoPath = path.join(projectRoot, 'dist', 'build-info.json');
-        if (!fs.existsSync(infoPath)) return fallback;
-        const info = JSON.parse(fs.readFileSync(infoPath, 'utf8'));
-        if (!info.commit || info.commit === 'unknown') return fallback;
-        const suffix = info.dirty ? '-dirty' : '';
-        return `${fallback}-dev.${info.commit}${suffix}`;
-    } catch {
-        return fallback;
-    }
-}
-const zipVersion = resolveZipVersion();
-if (zipVersion !== packageJson.version) {
-    console.log(`Patched zip version: ${packageJson.version} -> ${zipVersion}`);
+function runWitness(script) {
+  const result = spawnSync(process.execPath, [path.join(__dirname, script)], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+  if (result.status !== 0) throw new Error(`${script} failed`);
 }
 
-// List of files/folders to include in the archive
-const filesToInclude = [
-    '@types',
-    'dist',
-    'i18n',
-    'node_modules',
-    'static',
-    'package-lock.json',
-    'package.json',
-    'README.md'
-];
-
-const outputPath = path.join(projectRoot, zipFileName);
-
-// Each package run supersedes the previous build (dist/ is overwritten anyway),
-// so drop any leftover cc-bridge-3x*.zip first — artifacts must not pile up.
-for (const old of fs.readdirSync(projectRoot)) {
-    if (old === zipFileName || !/^cc-bridge-3x.*\.zip$/.test(old)) continue;
-    fs.unlinkSync(path.join(projectRoot, old));
-    console.log(`Removed old package: ${old}`);
+function assertCleanTrackedSource() {
+  const result = spawnSync('git', ['status', '--porcelain', '--untracked-files=no'], {
+    cwd: projectRoot,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) throw new Error('cannot determine release source state');
+  if (result.stdout.trim()) throw new Error('refuse production package from a dirty tracked worktree');
 }
 
-console.log(`Packaging project into ${zipFileName}...`);
+function buildInfo() {
+  const filePath = path.join(projectRoot, 'dist', 'build-info.json');
+  const info = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  if (!info.commit || info.commit === 'unknown' || info.dirty) {
+    throw new Error('release build requires a clean recorded source commit');
+  }
+  return info;
+}
 
-const output = fs.createWriteStream(outputPath);
-const archive = new ZipArchive({ zlib: { level: 9 } });
+function zipVersion(info) {
+  return `${packageJson.version}-dev.${info.commit}`;
+}
 
-output.on('close', () => {
-    const sizeMb = (archive.pointer() / 1024 / 1024).toFixed(1);
-    console.log(`\nPackage created successfully: ${outputPath} (${sizeMb} MB)`);
+function outputName(version) {
+  return `${packageName}-v${version.replace(/[^A-Za-z0-9.-]/g, '-')}.zip`;
+}
+
+function makeBuildInfoDeterministic(entries) {
+  const entry = entries.find((candidate) => candidate.relativePath === 'dist/build-info.json');
+  if (!entry) throw new Error('dist/build-info.json missing from package inventory');
+  const source = JSON.parse(fs.readFileSync(entry.sourcePath, 'utf8'));
+  const bytes = Buffer.from(JSON.stringify({ ...source, builtAt: archiveDate.toISOString() }, null, 2));
+  entry.sourcePath = null;
+  entry.bytes = bytes;
+  entry.size = bytes.length;
+  entry.sha256 = sha256(bytes);
+}
+
+async function createZip(outputPath, entries) {
+  const output = fs.createWriteStream(outputPath, { flags: 'wx' });
+  const archive = new ZipArchive({ zlib: { level: 9 } });
+  const closed = new Promise((resolve, reject) => {
+    output.once('close', resolve);
+    output.once('error', reject);
+    archive.once('error', reject);
+  });
+  archive.pipe(output);
+  for (const entry of entries) {
+    const options = { name: entry.archivePath, date: archiveDate, mode: entry.mode };
+    if (entry.bytes) archive.append(entry.bytes, options);
+    else archive.file(entry.sourcePath, options);
+  }
+  await archive.finalize();
+  await closed;
+}
+
+async function main() {
+  assertCleanTrackedSource();
+  runWitness('scan-protected-absence.js');
+  runWitness('forbidden-material-witness.js');
+
+  const info = buildInfo();
+  const version = zipVersion(info);
+  const patchedPackageJson = { ...packageJson, version };
+  const entries = collectPackageEntries(projectRoot, packageName, patchedPackageJson);
+  makeBuildInfoDeterministic(entries);
+  assertReleaseInventory(entries);
+
+  const manifest = createPackageManifest(packageName, version, entries);
+  const manifestArtifact = writeCanonicalJson(path.join(projectRoot, 'dist', 'package-manifest.json'), manifest);
+  const zipFileName = outputName(version);
+  const outputPath = path.join(projectRoot, zipFileName);
+
+  for (const name of fs.readdirSync(projectRoot)) {
+    if (name !== zipFileName && /^cc-bridge-3x.*\.zip$/.test(name)) fs.rmSync(path.join(projectRoot, name));
+  }
+  fs.rmSync(outputPath, { force: true });
+  await createZip(outputPath, entries);
+  const sidecars = writeReleaseSidecars(projectRoot, outputPath, manifestArtifact, packageName, version);
+
+  console.log(JSON.stringify({
+    package: `${packageName}@${version}`,
+    zip: outputPath,
+    bytes: fs.statSync(outputPath).size,
+    sha256: sidecars.zipSha256,
+    files: entries.length,
+    packageManifestSha256: manifestArtifact.sha256,
+    sbomSha256: sidecars.sbom.sha256,
+    provenanceSha256: sidecars.provenance.sha256,
+    sourceDateEpoch: ZIP_EPOCH_SECONDS,
+  }, null, 2));
+}
+
+main().catch((error) => {
+  console.error(`package failed: ${error.message}`);
+  process.exitCode = 1;
 });
-
-archive.on('error', (err) => {
-    console.error('Error creating package:', err.message);
-    process.exit(1);
-});
-
-archive.pipe(output);
-
-for (const item of filesToInclude) {
-    if (item === 'package.json') {
-        // Patch version in archived copy; leave source untouched. Wrap in package prefix (v2 parity).
-        const patched = { ...packageJson, version: zipVersion };
-        const content = JSON.stringify(patched, null, 2);
-        archive.append(content, { name: `${packageName}/package.json` });
-        continue;
-    }
-    const itemPath = path.join(projectRoot, item);
-    if (!fs.existsSync(itemPath)) {
-        // 'dist' is required build output — refuse a partial release instead of skipping.
-        if (item === 'dist') {
-            console.error('dist missing — run npm run build before packaging');
-            process.exit(1);
-        }
-        console.warn(`Warning: '${item}' not found, skipping`);
-        continue;
-    }
-    if (fs.statSync(itemPath).isDirectory()) {
-        archive.directory(itemPath, `${packageName}/${item}`);
-    } else {
-        archive.file(itemPath, { name: `${packageName}/${item}` });
-    }
-}
-
-// First-party file manifest {path,size,sha256} for every archived file. Published
-// beside the ZIP as part of the immutable release set; its digest is bound into
-// the signed target metadata by scripts/sign-release.js.
-function collectManifestEntries() {
-    const entries = [];
-    const walk = (fsPath, zipRel) => {
-        const stat = fs.statSync(fsPath);
-        if (stat.isDirectory()) {
-            for (const name of fs.readdirSync(fsPath).sort()) walk(path.join(fsPath, name), `${zipRel}/${name}`);
-            return;
-        }
-        const data = fs.readFileSync(fsPath);
-        entries.push({
-            path: zipRel.split(path.sep).join('/'),
-            size: data.length,
-            sha256: createHash('sha256').update(data).digest('hex'),
-        });
-    };
-    for (const item of filesToInclude) {
-        if (item === 'package.json') continue;
-        const itemPath = path.join(projectRoot, item);
-        if (!fs.existsSync(itemPath)) continue;
-        walk(itemPath, `${packageName}/${item}`);
-    }
-    const patchedBytes = Buffer.from(JSON.stringify({ ...packageJson, version: zipVersion }, null, 2));
-    entries.push({
-        path: `${packageName}/package.json`,
-        size: patchedBytes.length,
-        sha256: createHash('sha256').update(patchedBytes).digest('hex'),
-    });
-    return entries.sort((a, b) => a.path.localeCompare(b.path));
-}
-
-const manifest = {
-    schemaVersion: 1,
-    package: packageName,
-    version: zipVersion,
-    files: collectManifestEntries(),
-};
-const manifestBody = JSON.stringify(manifest, null, 2) + '\n';
-const manifestPath = path.join(projectRoot, 'dist', 'package-manifest.json');
-fs.writeFileSync(manifestPath, manifestBody);
-console.log(`Package manifest: ${manifestPath} (${manifest.files.length} files, sha256 ${createHash('sha256').update(manifestBody).digest('hex')})`);
-
-archive.finalize();
