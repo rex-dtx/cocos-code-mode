@@ -10,6 +10,16 @@
         "consentVersion": "project-metadata-v1",
         "fields": ["parentUuid"]
       }
+    },
+    {
+      "name": "nodeCreate",
+      "contractVersion": 1,
+      "contractHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "observation": {
+        "contractId": "ui-parent-v1",
+        "consentVersion": "project-metadata-v1",
+        "fields": ["parentUuid"]
+      }
     }
   ]
 }

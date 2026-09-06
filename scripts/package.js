@@ -12,6 +12,12 @@ const packageJson = require(packageJsonPath);
 const packageName = packageJson.name;
 const projectRoot = path.join(__dirname, '..');
 
+const executeDist = path.join(projectRoot, 'dist', 'utcp', 'execute');
+if (fs.existsSync(executeDist)) {
+    console.error('Refuse to package: dist/utcp/execute is present');
+    process.exit(1);
+}
+
 // Zip name carries version + build timestamp so artifacts from different
 // sessions never silently collide: cc-bridge-3x-<version>-YYMMDD-HHMMSS.zip.
 // Timestamp comes from dist/build-info.json (stamped at build time) so the

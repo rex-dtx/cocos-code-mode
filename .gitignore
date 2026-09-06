@@ -34,3 +34,4 @@ plans/
 
 # Cocos scene graph offline cache
 .cocos-graph/
+plans

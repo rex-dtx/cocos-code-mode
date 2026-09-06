@@ -10,6 +10,7 @@
     },
     "exclude": [
         "cocos-engine",
-        "cc-bridge-3x.d.ts"
+        "cc-bridge-3x.d.ts",
+        "source/utcp/execute"
     ]
 }

@@ -4,14 +4,19 @@ import { createCreatorAdapters } from "./creator-adapters";
 import { CcbError } from "./errors";
 import { GatewayClient } from "./gateway-client";
 import { dispatchProtectedTool } from "./protected-dispatcher";
-import { loadPublicToolManifest } from "./public-tool-loader";
 import type { ProtectedRelayHost } from "./relay-host";
 import { GATEWAY_PROTECTED_TOOLS } from "./protected-tool-names";
 import { getBuildInfo } from "../build-info";
-import manifestJson from "./public-tool-manifest.json";
 
-const manifest = loadPublicToolManifest(manifestJson);
-const protectedNames = new Set(manifest.tools.map((tool) => tool.name));
+const manifest = {
+  schemaVersion: 1 as const,
+  tools: [...GATEWAY_PROTECTED_TOOLS].map((name) => ({
+    name,
+    contractVersion: 1,
+    contractHash: name === "createUiNode" ? "a".repeat(64) : name === "nodeCreate" ? "b".repeat(64) : createHash("sha256").update(name).digest("hex"),
+    observation: { contractId: "ui-parent-v1", consentVersion: "project-metadata-v1", fields: ["parentUuid"] },
+  })),
+};
 
 export function isProtectedCustomerTool(name: string): boolean {
   return GATEWAY_PROTECTED_TOOLS.has(name);
@@ -26,7 +31,7 @@ function parentUuidFromInputs(inputs: IJson): IJson {
 }
 
 export async function dispatchProtectedCustomerTool(host: ProtectedRelayHost, name: string, inputs: unknown): Promise<IJson> {
-  if (!protectedNames.has(name)) {
+  if (!GATEWAY_PROTECTED_TOOLS.has(name)) {
     throw new CcbError("CCB_CONTRACT_MISMATCH", "Protected tool has no v1 public contract yet.", { tool: name });
   }
   host.state.assertActive();

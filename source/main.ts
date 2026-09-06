@@ -135,13 +135,17 @@ export async function load() {
 
     relayHost = new ProtectedRelayHost();
     relayHost.activateIfConfigured();
+    if (process.env.CCB_ENABLE_LOCAL_UTCP !== "1") {
+      console.log(`[${packageJSON.name}] Local UTCP listener disabled; protected tools use Gateway only. Set CCB_ENABLE_LOCAL_UTCP=1 to re-enable.`);
+      return;
+    }
     utcpServer = new UtcpServerManager(relayHost);
     let wasConfiguredPort = true;
     // Load port from profile, default to 0 (random free port) if not set
     let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
     if (typeof port !== 'number') {
-        port = 0;
-        wasConfiguredPort = false;
+      port = 0;
+      wasConfiguredPort = false;
     }
 
     try {
