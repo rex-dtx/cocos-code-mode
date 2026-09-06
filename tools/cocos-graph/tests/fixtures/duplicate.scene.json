@@ -1,0 +1,6 @@
+[
+  { "__type__": "cc.SceneAsset", "scene": { "__id__": 1 } },
+  { "__type__": "cc.Scene", "_id": "duplicate-scene", "_name": "DuplicateScene", "_children": [{ "__id__": 2 }], "_parent": null },
+  { "__type__": "cc.Node", "_id": "node-a-uuid", "_name": "OtherPlayer", "_parent": { "__id__": 1 }, "_children": [], "_components": [{ "__id__": 3 }], "_prefab": null },
+  { "__type__": "cc.Sprite", "_id": "comp-sprite-a", "node": { "__id__": 2 }, "_spriteFrame": { "__uuid__": "fcmR3XADNLgJ1ByKhqcC5Z" } }
+]

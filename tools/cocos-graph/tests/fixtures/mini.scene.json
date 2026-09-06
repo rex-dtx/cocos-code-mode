@@ -1,0 +1,12 @@
+[
+  { "__type__": "cc.SceneAsset", "scene": { "__id__": 1 } },
+  { "__type__": "cc.Scene", "_id": "scene-root-uuid", "_name": "TestScene", "_children": [{ "__id__": 2 }, { "__id__": 3 }], "_parent": null },
+  { "__type__": "cc.Node", "_id": "node-a-uuid", "_name": "Player", "_parent": { "__id__": 1 }, "_children": [{ "__id__": 4 }], "_components": [{ "__id__": 5 }, { "__id__": 6 }], "_prefab": null },
+  { "__type__": "cc.Node", "_id": "node-b-uuid", "_name": "Enemy", "_parent": { "__id__": 1 }, "_children": [], "_components": [{ "__id__": 7 }], "_prefab": { "__id__": 8 } },
+  { "__type__": "cc.Node", "_id": "node-c-uuid", "_name": "ScoreLabel", "_parent": { "__id__": 2 }, "_children": [], "_components": [{ "__id__": 9 }], "_prefab": null },
+  { "__type__": "cc.Sprite", "_id": "comp-sprite-a", "node": { "__id__": 2 }, "_spriteFrame": { "__uuid__": "fcmR3XADNLgJ1ByKhqcC5Z", "__expectedType__": "cc.SpriteFrame" } },
+  { "__type__": "cc.UITransform", "_id": "comp-transform-a", "node": { "__id__": 2 } },
+  { "__type__": "cc.Label", "_id": "comp-label-b", "node": { "__id__": 3 }, "string": "hello" },
+  { "__type__": "cc.PrefabInfo", "_id": "prefab-info-b", "fileId": "abc123", "asset": { "__uuid__": "deadbeef-dead-beef-dead-beefdeadbeef" } },
+  { "__type__": "cc.Label", "_id": "comp-label-c", "node": { "__id__": 4 }, "string": "100" }
+]

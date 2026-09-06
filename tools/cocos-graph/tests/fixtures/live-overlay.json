@@ -1,0 +1,17 @@
+{
+  "sourceFile": "assets/live-bundle/a.scene",
+  "dirty": true,
+  "tree": {
+    "reference": { "id": "live-scene-uuid", "type": "cc.Scene" },
+    "name": "LiveScene",
+    "children": [
+      {
+        "reference": { "id": "live-node-1", "type": "cc.Node" },
+        "name": "LivePlayer",
+        "path": "/LivePlayer",
+        "components": [{ "reference": { "id": "live-component-1", "type": "cc.Sprite" } }],
+        "children": []
+      }
+    ]
+  }
+}
