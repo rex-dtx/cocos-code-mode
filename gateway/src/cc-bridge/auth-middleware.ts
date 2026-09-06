@@ -20,9 +20,16 @@ function deny(res: Response, status: number, error: CcbError): void {
 }
 
 export function createMemberAuthMiddleware(
-  verifier: MemberTokenVerifier = createMemberTokenVerifierFromEnv(),
+  verifier?: MemberTokenVerifier,
 ): RequestHandler {
+  let resolved = verifier;
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      resolved ??= createMemberTokenVerifierFromEnv();
+    } catch {
+      deny(res, 503, new CcbError("CCB_GATEWAY_UNAVAILABLE", "Member JWT public key is not configured."));
+      return;
+    }
     const authorization = req.headers.authorization;
     if (!authorization?.startsWith("Bearer ")) {
       deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required."));
@@ -34,7 +41,7 @@ export function createMemberAuthMiddleware(
       return;
     }
     try {
-      req.toolAuth = await verifier.verify(token);
+      req.toolAuth = await resolved.verify(token);
       next();
     } catch {
       deny(res, 401, new CcbError("CCB_AUTH_INVALID", "Member credential is invalid or expired."));
