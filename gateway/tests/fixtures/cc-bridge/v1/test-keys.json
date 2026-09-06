@@ -1,0 +1,11 @@
+{
+  "warning": "TEST KEYS ONLY",
+  "device": {
+    "privateKeyPkcs8": "MC4CAQAwBQYDK2VwBCIEIAOJODvNA093EY3rwal2KafvfBcG6_9ZA1svlI0X7ONR",
+    "publicKeySpki": "MCowBQYDK2VwAyEASlvvBpkJFL0JR_8CQWnFuoisB2dORAV19wRPveQXyT0"
+  },
+  "execution": {
+    "privateKeyPkcs8": "MC4CAQAwBQYDK2VwBCIEIJT80YHbS2kGlhZmsmzjsUtC5YwRYA6sz1qyrtoThGKo",
+    "publicKeySpki": "MCowBQYDK2VwAyEArtxjc_VF7njdh0g62DNKNKY1EKjZ-PqtL-pbXCpq1Cs"
+  }
+}
