@@ -29,5 +29,29 @@ services:
       retries: 5
       start_period: 20s
 
+  # Production signing: private key stays in this process, not in the Gateway.
+  #   docker compose --profile signer up -d
+  # Requires CCB_SIGNER_PRIVATE_KEY_PATH on the host (PEM Ed25519).
+  cc-bridge-signer:
+    profiles: ["signer"]
+    image: cc-bridge-gateway:dev
+    build: .
+    container_name: cc-bridge-signer
+    restart: unless-stopped
+    init: true
+    environment:
+      CCB_SIGNER_SOCKET: /run/cc-bridge/signer.sock
+      CCB_EXECUTION_KEY_ID: ${CCB_EXECUTION_KEY_ID:-execution-dev-1}
+      CCB_SIGNER_PRIVATE_KEY_PATH: /run/secrets/execution-private.pem
+    volumes:
+      - signer-sock:/run/cc-bridge
+      - ./secrets/execution-private.pem:/run/secrets/execution-private.pem:ro
+    entrypoint: ["/usr/bin/dumb-init", "--"]
+    command:
+      - /bin/sh
+      - -c
+      - mkdir -p /run/cc-bridge && chown node:node /run/cc-bridge && su-exec node yarn signer:start
+
 volumes:
   cc-bridge-data:
+  signer-sock:
