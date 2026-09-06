@@ -1,5 +1,5 @@
-import { Agent, RequestOptions, request as httpsRequest } from "node:https";
-import { IncomingMessage } from "node:http";
+import { Agent as HttpsAgent, RequestOptions, request as httpsRequest } from "node:https";
+import { Agent as HttpAgent, IncomingMessage, request as httpRequest } from "node:http";
 import { URL } from "node:url";
 import { z } from "zod";
 import { CCB_ERROR_CODES, CcbError, CcbErrorCode } from "./errors";
@@ -47,7 +47,7 @@ function isCcbErrorCode(value: string): value is CcbErrorCode {
 
 export class GatewayClient {
   private readonly endpoint: URL;
-  private readonly agent: Agent;
+  private readonly agent: HttpAgent | HttpsAgent;
   private readonly deadlineMs: number;
   private readonly responseMaxBytes: number;
   private readonly minimumBackoffMs: number;
@@ -57,11 +57,18 @@ export class GatewayClient {
 
   constructor(private readonly options: GatewayClientOptions) {
     const origin = new URL(options.origin);
-    if (origin.protocol !== "https:" || origin.username || origin.password || origin.search || origin.hash || (origin.pathname !== "/" && origin.pathname !== "")) {
-      throw new Error("Gateway origin must be an exact HTTPS origin without credentials, path, query, or fragment");
+    const loopback = origin.hostname === "127.0.0.1" || origin.hostname === "localhost" || origin.hostname === "::1";
+    const allowInsecure = process.env.CCB_ALLOW_INSECURE_GATEWAY === "1" && origin.protocol === "http:" && loopback;
+    if (origin.username || origin.password || origin.search || origin.hash || (origin.pathname !== "/" && origin.pathname !== "")) {
+      throw new Error("Gateway origin must be an exact origin without credentials, path, query, or fragment");
+    }
+    if (origin.protocol !== "https:" && !allowInsecure) {
+      throw new Error("Gateway origin must be HTTPS, or http://127.0.0.1 with CCB_ALLOW_INSECURE_GATEWAY=1");
     }
     this.endpoint = new URL(EXECUTE_PATH, origin.origin);
-    this.agent = new Agent({ keepAlive: true, maxSockets: 4, maxFreeSockets: 1, timeout: 30_000 });
+    this.agent = origin.protocol === "https:"
+      ? new HttpsAgent({ keepAlive: true, maxSockets: 4, maxFreeSockets: 1, timeout: 30_000 })
+      : new HttpAgent({ keepAlive: true, maxSockets: 4, maxFreeSockets: 1, timeout: 30_000 });
     this.deadlineMs = options.deadlineMs ?? 15_000;
     this.responseMaxBytes = options.responseMaxBytes ?? WRAPPER_MAX_BYTES;
     this.minimumBackoffMs = options.minimumBackoffMs ?? 250;
@@ -102,7 +109,7 @@ export class GatewayClient {
     const requestOptions: RequestOptions = {
       protocol: this.endpoint.protocol,
       hostname: this.endpoint.hostname,
-      port: this.endpoint.port || 443,
+      port: this.endpoint.port || (this.endpoint.protocol === "https:" ? 443 : 80),
       path: this.endpoint.pathname,
       method: "POST",
       agent: this.agent,
@@ -115,8 +122,9 @@ export class GatewayClient {
       },
     };
 
+    const transport = this.endpoint.protocol === "https:" ? httpsRequest : httpRequest;
     return new Promise<SignedGatewayDecision>((resolve, reject) => {
-      const outgoing = httpsRequest(requestOptions, async (response) => {
+      const outgoing = transport(requestOptions, async (response) => {
         try {
           if (response.headers.location) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Gateway redirects are not accepted.");
           if (response.headers["content-encoding"]) throw new CcbError("CCB_CANONICAL_INVALID", "Compressed Gateway responses are not accepted.");
