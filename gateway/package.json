@@ -12,7 +12,8 @@
     "loopback": "tsx scripts/cc-bridge-loopback.ts",
     "start": "tsx src/server.ts",
     "signer:start": "tsx src/signer-main.ts",
-    "smoke:production": "tsx scripts/cc-bridge-production-smoke.ts"
+    "smoke:production": "tsx scripts/cc-bridge-production-smoke.ts",
+    "bench:cc-bridge": "tsx scripts/diag/bench-cc-bridge.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
