@@ -29,6 +29,7 @@ import './tools-2x/editor-extra-tools';
 import './tools-2x/program-tools';
 import './tools-2x/clipboard-tools';
 import './tools-2x/animation-tools';
+import './execute/execute-tool';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';

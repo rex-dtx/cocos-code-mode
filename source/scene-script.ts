@@ -114,6 +114,47 @@
 
     module.exports = {
 
+        'run-code': async function (event: { reply?: (err: unknown, result?: unknown) => void }, code: string, args: unknown) {
+            try {
+                const globals: Record<string, unknown> = {
+                    cc: (globalThis as Record<string, unknown>)['cc'],
+                    Editor: typeof Editor !== 'undefined' ? Editor : (globalThis as Record<string, unknown>)['Editor'],
+                    document: typeof document !== 'undefined' ? document : undefined,
+                    window: typeof window !== 'undefined' ? window : undefined,
+                    require: typeof require === 'function' ? require : undefined,
+                };
+                const names = Object.keys(globals);
+                const values = Object.values(globals);
+                const fn = new Function('args', ...names, `return (async () => { ${code} })();`) as (...v: unknown[]) => Promise<unknown>;
+                let result = await fn(args ?? {}, ...values);
+                if (result === undefined || result === null) {
+                    result = null;
+                } else {
+                    try {
+                        JSON.stringify(result);
+                    } catch {
+                        const seen = new WeakSet<object>();
+                        try {
+                            result = JSON.parse(JSON.stringify(result, (_key, val: unknown) => {
+                                if (typeof val === 'function' || typeof val === 'bigint' || typeof val === 'symbol') return undefined;
+                                if (val && typeof val === 'object') {
+                                    if (seen.has(val)) return undefined;
+                                    seen.add(val);
+                                }
+                                return val;
+                            }));
+                        } catch {
+                            result = null;
+                        }
+                    }
+                }
+                if (event.reply) { event.reply(null, result); }
+            } catch (err: unknown) {
+                const errMsg = err instanceof Error ? err.message : String(err);
+                if (event.reply) { event.reply(errMsg); }
+            }
+        },
+
         'probe': function (event: any) {
             const out: any = { errors: [] };
 

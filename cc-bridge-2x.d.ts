@@ -326,6 +326,8 @@ declare namespace cc_bridge_2x {
     function editorGetScenePreview(args?: { width?: number; height?: number }): { type: string; data: string; mimeType: string; note?: string };
     /** Clipboard copy/cut/paste/duplicate nodes. */
     function nodeClipboard(args: { operation: 'copy'|'cut'|'paste'|'duplicate'; ids?: string; targetId?: string }): { success: boolean; ids?: string[] };
+    /** Execute arbitrary JavaScript in scene or editor main process. */
+    function executeJavascript(args: { context: 'scene'|'editor'; code: string; args?: Record<string, any>; safety_checks?: boolean; timeout_ms?: number }): { result: any };
 }
 
 // Aliases: ccb2x is recommended short (no hyphen/underscore). ccb_2x / ccb-2x kept for compat.
