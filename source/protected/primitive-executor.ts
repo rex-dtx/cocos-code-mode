@@ -1,5 +1,7 @@
 import { CcbError } from "./errors";
 import { ExecutionEnvelope, ExecutionEnvelopeSchema, PrimitiveCommand, primitiveCommandSemantics } from "./primitive-contract";
+import type { ProtectedRequest } from "./protocol";
+import { resolveProvenanceValue } from "./value-resolver";
 
 export interface PrimitiveInvocation {
   command: PrimitiveCommand;
@@ -17,7 +19,7 @@ export interface PrimitiveExecution {
   snapshotTaken: boolean;
 }
 
-export async function executeEnvelope(envelopeInput: unknown, adapters: PrimitiveAdapters): Promise<PrimitiveExecution> {
+export async function executeEnvelope(envelopeInput: unknown, adapters: PrimitiveAdapters, request: ProtectedRequest): Promise<PrimitiveExecution> {
   const envelope = ExecutionEnvelopeSchema.parse(envelopeInput);
   const executedCommandIds: string[] = [];
   const commandResults = new Map<string, unknown>();
@@ -26,7 +28,8 @@ export async function executeEnvelope(envelopeInput: unknown, adapters: Primitiv
   try {
     for (const command of envelope.commands) {
       primitiveCommandSemantics(command);
-      commandResults.set(command.commandId, await adapters.invoke(command));
+      const resolved = { ...command, args: resolveProvenanceValue(command.args, request) } as PrimitiveCommand;
+      commandResults.set(command.commandId, await adapters.invoke(resolved));
       executedCommandIds.push(command.commandId);
     }
     if (envelope.transaction.snapshot === "once-after-success") {

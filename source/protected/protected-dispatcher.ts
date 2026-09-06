@@ -73,12 +73,12 @@ export async function dispatchProtectedTool(
       summary: { executedCommandIds: execution.executedCommandIds, snapshotTaken: execution.snapshotTaken },
     });
     if (envelope.effect === "none") {
-      return routeExecutionResult(envelope, toLocal(await executeEnvelope(envelope, ctx.adapters)));
+      return routeExecutionResult(envelope, toLocal(await executeEnvelope(envelope, ctx.adapters, built.request)));
     }
     const admission = ctx.journal.prepare(verified.decisionDigest, built.request.requestId, built.request.idempotencyKey);
     if (admission.action === "return-completed") return admission.result;
     ctx.journal.markStarted(verified.decisionDigest);
-    const result = routeExecutionResult(envelope, toLocal(await executeEnvelope(envelope, ctx.adapters)));
+    const result = routeExecutionResult(envelope, toLocal(await executeEnvelope(envelope, ctx.adapters, built.request)));
     ctx.journal.markCompleted(verified.decisionDigest, result);
     return result;
   } catch (error) {

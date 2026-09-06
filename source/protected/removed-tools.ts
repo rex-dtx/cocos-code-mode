@@ -3,4 +3,6 @@ export const REMOVED_CUSTOMER_TOOLS = new Set([
   "callComponentMethod",
   "bindButtonClickEvent",
   "programManage",
+  "runScriptDiagnostics",
+  "getScriptDiagnosticContext",
 ]);
