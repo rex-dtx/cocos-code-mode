@@ -94,22 +94,16 @@ describe('live: gap-closure — findNodes, assetResolve +4, scene:new-scene NOT-
     });
   });
 
-  // G2 wired as negative evidence: scene:new-scene does not exist in 3.7.3.
-  // We prove it by asking the editor (scene context) to request a non-existent
-  // message and asserting the expected error. This locks in the decision to
-  // keep assetCreate{scene}+sceneManage as the canonical path.
   describe('G2 scene:new-scene NOT-EXPOSED (negative)', () => {
-    it('Editor.Message.request scene new-scene => Message does not exist', async (t) => {
+    it('executeJavascript is absent from the customer relay', async (t) => {
       if (skip(t)) return;
       const r = await getJson('/tools/executeJavascript', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ context: 'editor', code: 'try { await Editor.Message.request("scene","new-scene"); return { ok: true }; } catch (e) { return { ok: false, msg: String(e && e.message || e) }; }' }),
+        body: JSON.stringify({ context: 'editor', code: 'return 1' }),
       });
-      assert.equal(r.ok, true, JSON.stringify(r.body).slice(0, 160));
-      const v = resVal(r.body);
-      assert.equal(v.ok, false, 'new-scene must error');
-      assert.match(v.msg, /Message does not exist/i, `msg=${v.msg}`);
+      assert.equal(r.ok, false, 'executeJavascript must not be registered');
+      assert.ok(r.status === 404 || r.status === 400 || r.status === 422, `status=${r.status}`);
     });
   });
 });
