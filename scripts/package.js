@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { createHash } = require('node:crypto');
 const { ZipArchive } = require('archiver'); // archiver v8: class-based API (cc-bridge-3x Node >= 18)
 
 const packageJsonPath = path.join(__dirname, '../package.json');
@@ -112,8 +113,12 @@ for (const item of filesToInclude) {
     }
     const itemPath = path.join(projectRoot, item);
     if (!fs.existsSync(itemPath)) {
-        // Skip missing items; 'dist' missing is significant, warn loudly
-        console.warn(`Warning: '${item}' not found, skipping${item === 'dist' ? ' (build output missing - run npm run build!)' : ''}`);
+        // 'dist' is required build output — refuse a partial release instead of skipping.
+        if (item === 'dist') {
+            console.error('dist missing — run npm run build before packaging');
+            process.exit(1);
+        }
+        console.warn(`Warning: '${item}' not found, skipping`);
         continue;
     }
     if (fs.statSync(itemPath).isDirectory()) {
@@ -122,5 +127,49 @@ for (const item of filesToInclude) {
         archive.file(itemPath, { name: `${packageName}/${item}` });
     }
 }
+
+// First-party file manifest {path,size,sha256} for every archived file. Published
+// beside the ZIP as part of the immutable release set; its digest is bound into
+// the signed target metadata by scripts/sign-release.js.
+function collectManifestEntries() {
+    const entries = [];
+    const walk = (fsPath, zipRel) => {
+        const stat = fs.statSync(fsPath);
+        if (stat.isDirectory()) {
+            for (const name of fs.readdirSync(fsPath).sort()) walk(path.join(fsPath, name), `${zipRel}/${name}`);
+            return;
+        }
+        const data = fs.readFileSync(fsPath);
+        entries.push({
+            path: zipRel.split(path.sep).join('/'),
+            size: data.length,
+            sha256: createHash('sha256').update(data).digest('hex'),
+        });
+    };
+    for (const item of filesToInclude) {
+        if (item === 'package.json') continue;
+        const itemPath = path.join(projectRoot, item);
+        if (!fs.existsSync(itemPath)) continue;
+        walk(itemPath, `${packageName}/${item}`);
+    }
+    const patchedBytes = Buffer.from(JSON.stringify({ ...packageJson, version: zipVersion }, null, 2));
+    entries.push({
+        path: `${packageName}/package.json`,
+        size: patchedBytes.length,
+        sha256: createHash('sha256').update(patchedBytes).digest('hex'),
+    });
+    return entries.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+const manifest = {
+    schemaVersion: 1,
+    package: packageName,
+    version: zipVersion,
+    files: collectManifestEntries(),
+};
+const manifestBody = JSON.stringify(manifest, null, 2) + '\n';
+const manifestPath = path.join(projectRoot, 'dist', 'package-manifest.json');
+fs.writeFileSync(manifestPath, manifestBody);
+console.log(`Package manifest: ${manifestPath} (${manifest.files.length} files, sha256 ${createHash('sha256').update(manifestBody).digest('hex')})`);
 
 archive.finalize();

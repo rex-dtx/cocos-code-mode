@@ -55,6 +55,12 @@ function readZip() {
   return { resolved, basename: path.basename(resolved), bytes: fs.readFileSync(resolved) };
 }
 
+function manifestSha256() {
+  const manifestPath = path.join(projectRoot, "dist", "package-manifest.json");
+  if (!fs.existsSync(manifestPath)) return "";
+  return createHash("sha256").update(fs.readFileSync(manifestPath)).digest("hex");
+}
+
 function buildReleaseTargetBody(artifact) {
   const now = new Date();
   return {
@@ -69,7 +75,7 @@ function buildReleaseTargetBody(artifact) {
       sha256: createHash("sha256").update(artifact.bytes).digest("hex"),
       size: artifact.bytes.length,
       url: "",
-      packageManifestSha256: "",
+      packageManifestSha256: manifestSha256(),
       sbomSha256: "",
       provenanceSha256: "",
     },
