@@ -46,6 +46,7 @@ function collectTree(projectRoot, relativeRoot, entries, options = {}) {
     if (stat.isDirectory()) {
       for (const name of fs.readdirSync(absolutePath).sort()) {
         if (options.skipNestedNodeModules && name === 'node_modules') continue;
+        if (options.skipVendorNoise && /^(?:test|tests|__tests__|example|examples|fixture|fixtures|\.github)$/i.test(name)) continue;
         walk(path.join(absolutePath, name), path.join(relativePath, name));
       }
       return;
@@ -91,7 +92,7 @@ function collectPackageEntries(projectRoot, packageName, patchedPackageJson) {
   for (const relativeRoot of STATIC_ROOTS) collectTree(projectRoot, relativeRoot, entries);
   for (const relativeFile of STATIC_FILES) collectTree(projectRoot, relativeFile, entries);
   for (const packageRoot of productionPackageRoots(projectRoot)) {
-    collectTree(projectRoot, packageRoot, entries, { skipNestedNodeModules: true });
+    collectTree(projectRoot, packageRoot, entries, { skipNestedNodeModules: true, skipVendorNoise: true });
   }
 
   const packageBytes = Buffer.from(JSON.stringify(patchedPackageJson, null, 2));
