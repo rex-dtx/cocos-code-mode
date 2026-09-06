@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from '../protected/node14-compat';
 import { ToolRegistry } from './decorators';
 import { loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
 import { LocalHttpContext, LocalHttpServer, sendJson } from './http-server';

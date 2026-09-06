@@ -1,5 +1,5 @@
 import {
-  KeyObject, createHash, createPrivateKey, createPublicKey, generateKeyPairSync, randomUUID,
+  KeyObject, createHash, createPrivateKey, createPublicKey, generateKeyPairSync,
 } from "crypto";
 import { homedir } from "os";
 import { join } from "path";
@@ -7,6 +7,7 @@ import { z } from "zod";
 import {
   ED25519_PKCS8_DER_BYTES, ED25519_SPKI_DER_BYTES, encodeBase64Url,
 } from "./protocol";
+import { decodeBase64UrlBuffer, randomUUID } from "./node14-compat";
 import { readPrivateJson, writePrivateJsonAtomic } from "./durable-file";
 
 const IdentitySchema = z.object({
@@ -32,7 +33,7 @@ function identityPath(root: string): string {
 }
 
 function decodeDer(value: string, expectedBytes: number): Buffer {
-  const bytes = Buffer.from(value, "base64url");
+  const bytes = decodeBase64UrlBuffer(value);
   if (bytes.length !== expectedBytes || encodeBase64Url(bytes) !== value) {
     throw new Error(`invalid Ed25519 DER key; expected ${expectedBytes} canonical bytes`);
   }

@@ -1,10 +1,11 @@
-import { KeyLike, randomBytes, randomUUID } from "crypto";
+import { KeyLike, randomBytes } from "crypto";
 import { assertIJson, canonicalizeToBytes, IJson } from "./canonical-json";
 import {
   OBSERVATION_MAX_BYTES, ProtectedRequest, SignedProtectedRequest, signProtectedRequest,
 } from "./protocol";
 import { parseProtectedRequest } from "./schemas";
 import type { CompletionTelemetry } from "./protocol";
+import { encodeBase64Url, randomUUID } from "./node14-compat";
 
 export interface ToolRequestBinding {
   id: string;
@@ -63,13 +64,13 @@ export function buildProtectedRequest(options: BuildProtectedRequestOptions): Bu
   const request: ProtectedRequest = {
     protocolVersion: 1,
     requestId: randomUUID(),
-    idempotencyKey: options.idempotencyKey ?? randomBytes(24).toString("base64url"),
+    idempotencyKey: options.idempotencyKey ?? encodeBase64Url(randomBytes(24)),
     deviceId: options.deviceId,
     projectId: options.projectId,
     relayInstanceId: options.relayInstanceId,
     sequence: options.sequence,
     issuedAtMs: nowMs,
-    nonce: randomBytes(16).toString("base64url"),
+    nonce: encodeBase64Url(randomBytes(16)),
     tool: { ...options.tool },
     relay: { ...options.relay },
     inputs: options.inputs,

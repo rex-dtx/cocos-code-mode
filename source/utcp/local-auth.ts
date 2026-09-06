@@ -5,7 +5,7 @@ import { join } from "path";
 import { z } from "zod";
 import { CcbError, CcbErrorBody, toCcbErrorBody } from "../protected/errors";
 import { readPrivateJson, writePrivateJsonAtomic } from "../protected/durable-file";
-
+import { encodeBase64Url } from "../protected/node14-compat";
 export const LOCAL_TOKEN_HEADER = "x-ccb-local-token";
 export const LOCAL_TOKEN_VARIABLE = "CCB_LOCAL_TOKEN";
 const LocalTokenSchema = z.object({
@@ -32,7 +32,7 @@ export function loadOrCreateLocalAuth(relayInstanceId: string, root = join(homed
     const parsed = LocalTokenSchema.parse(stored);
     return { relayInstanceId, token: parsed.token, variableName: LOCAL_TOKEN_VARIABLE };
   }
-  const token = randomBytes(32).toString("base64url");
+  const token = encodeBase64Url(randomBytes(32));
   writePrivateJsonAtomic(path, { schemaVersion: 1, relayInstanceId, token });
   return { relayInstanceId, token, variableName: LOCAL_TOKEN_VARIABLE };
 }

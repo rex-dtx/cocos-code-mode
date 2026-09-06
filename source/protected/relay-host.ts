@@ -1,23 +1,36 @@
-import { createPublicKey, randomUUID, type KeyLike } from "crypto";
-import { DeviceIdentityStore } from "./device-identity";
+import { createPublicKey, type KeyLike } from "crypto";
+import { DeviceIdentity, DeviceIdentityStore } from "./device-identity";
 import { GatewayClient } from "./gateway-client";
 import { MutationJournal } from "./mutation-journal";
 import { ReplayWindow } from "./replay-window";
 import { ProtectedRelayStateMachine } from "./state-machine";
 import { CcbError } from "./errors";
+import { decodeBase64UrlBuffer, randomUUID } from "./node14-compat";
 export class ProtectedRelayHost {
   readonly state = new ProtectedRelayStateMachine();
   readonly identityStore = new DeviceIdentityStore();
   readonly journal = new MutationJournal();
   readonly replayWindow = new ReplayWindow();
   readonly relayInstanceId = randomUUID();
-  readonly identity;
+  readonly identity: DeviceIdentity;
   client: GatewayClient | null = null;
   executionKeys = new Map<string, KeyLike>();
   projectId: string | null = null;
 
   constructor() {
-    this.identity = this.identityStore.loadOrCreate();
+    try {
+      this.identity = this.identityStore.loadOrCreate();
+    } catch (error) {
+      console.error("[cc-bridge-3x] Device identity unavailable; protected tools stay locked:", error);
+      this.identity = {
+        schemaVersion: 1,
+        deviceId: this.relayInstanceId,
+        deviceKeyId: "device-unavailable",
+        publicKeyDer: "unavailable",
+        privateKeyDer: "unavailable",
+        createdAt: new Date().toISOString(),
+      };
+    }
     this.state.finishBootLocked({
       code: "CCB_GATEWAY_UNAVAILABLE",
       error: "Protected relay is locked until Gateway origin, project, and execution keys are configured.",
@@ -40,7 +53,7 @@ export class ProtectedRelayHost {
     try {
       this.client?.close();
       this.client = new GatewayClient({ origin, memberCredential: () => memberCredential });
-      this.executionKeys = new Map([[keyId, createPublicKey({ key: Buffer.from(executionKey, "base64url"), format: "der", type: "spki" })]]);
+      this.executionKeys = new Map([[keyId, createPublicKey({ key: decodeBase64UrlBuffer(executionKey), format: "der", type: "spki" })]]);
       this.projectId = projectId;
       this.state.activate();
     } catch (error) {
