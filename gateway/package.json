@@ -3,15 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "loopback": "tsx scripts/cc-bridge-loopback.ts",
-    "start": "tsx src/server.ts"
+    "start": "tsx src/server.ts",
+    "signer:start": "tsx src/signer-main.ts",
+    "smoke:production": "tsx scripts/cc-bridge-production-smoke.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
     "express": "^4.21.0",
+    "jose": "^5.9.0",
+    "prom-client": "^15.1.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {

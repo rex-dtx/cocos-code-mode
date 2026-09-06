@@ -1,3 +1,4 @@
+import { performance } from "node:perf_hooks";
 import { randomUUID } from "node:crypto";
 import type { AuthContext } from "../auth.ts";
 import { isEmergencyStopped } from "../emergency-stop.ts";
@@ -8,7 +9,7 @@ import { authorizeProtectedRequest } from "./authorizer.ts";
 import { verifyDeviceRequest } from "./device-proof.ts";
 import { filterProtectedInputs } from "./input-filter.ts";
 import { encodeSignature, type EnvelopeSigner } from "./envelope-signer.ts";
-import { recordCcBridgeExecute } from "./metrics.ts";
+import { recordCcBridgeExecute, type CcbMetricPhase } from "./metrics.ts";
 import { validateGatewayDecision } from "./plan-validator.ts";
 import { assertCcBridgeProduct } from "./product-grant.ts";
 import { decisionSignatureBase, type SignedGatewayDecision } from "./protocol.ts";
@@ -27,6 +28,16 @@ export interface ExecuteDependencies {
 export interface ExecuteResult {
   status: number;
   body: Buffer;
+}
+
+function markPhase(
+  timings: Partial<Record<CcbMetricPhase, number>>,
+  phase: CcbMetricPhase,
+  startedAt: number,
+): number {
+  const finishedAt = performance.now();
+  timings[phase] = finishedAt - startedAt;
+  return finishedAt;
 }
 
 function errorResult(error: unknown): ExecuteResult {
@@ -48,6 +59,8 @@ export async function executeProtectedTool(
   let deviceId: string | undefined;
   let projectId: string | undefined;
   let relayBuild: string | undefined;
+  const phaseTimings: Partial<Record<CcbMetricPhase, number>> = {};
+  let phaseStartedAt = performance.now();
   try {
     if (isEmergencyStopped()) {
       throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Protected execute is stopped by the emergency gate.");
@@ -55,13 +68,17 @@ export async function executeProtectedTool(
     assertCcBridgeProduct(auth);
     const verified = verifyDeviceRequest(deps.store, rawBody, nowMs);
     filterProtectedInputs(verified.request);
+    phaseStartedAt = markPhase(phaseTimings, "verify", phaseStartedAt);
     toolFamily = verified.request.tool.id;
     deviceId = verified.request.deviceId;
     projectId = verified.request.projectId;
     relayBuild = verified.request.relay.build;
     const digest = canonicalRequestDigest(verified.payloadBytes);
     const replayed = deps.replay.lookupCompleted(verified.request.deviceId, verified.request.idempotencyKey, digest);
-    if (replayed) return finish(deps.store, { status: 200, body: replayed }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok" });
+    if (replayed) {
+      markPhase(phaseTimings, "authorize", phaseStartedAt);
+      return finish(deps.store, { status: 200, body: replayed }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
+    }
     const authorization = authorizeProtectedRequest(deps.store, auth, verified.device, verified.request, nowMs);
     const admission = deps.replay.reserve({
       deviceId: verified.request.deviceId,
@@ -73,7 +90,10 @@ export async function executeProtectedTool(
       nowMs,
       expiresAtMs: nowMs + 24 * 60 * 60 * 1000,
     });
-    if (admission.kind === "duplicate") return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok" });
+    phaseStartedAt = markPhase(phaseTimings, "authorize", phaseStartedAt);
+    if (admission.kind === "duplicate") {
+      return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
+    }
     deps.store.markDeviceSeen(verified.device.id, nowMs);
     const unsigned = deps.planners.plan({
       request: verified.request,
@@ -81,9 +101,12 @@ export async function executeProtectedTool(
       correlationId,
       nowMs,
     });
+    phaseStartedAt = markPhase(phaseTimings, "plan", phaseStartedAt);
     const decision = validateGatewayDecision(unsigned, verified.request);
+    phaseStartedAt = markPhase(phaseTimings, "validate", phaseStartedAt);
     const payload = canonicalizeToBytes(decision);
     const signature = await deps.signer.sign(deps.signer.keyId, decisionSignatureBase(deps.signer.keyId, payload));
+    phaseStartedAt = markPhase(phaseTimings, "sign", phaseStartedAt);
     const signed: SignedGatewayDecision = {
       executionKeyId: deps.signer.keyId,
       payload: Buffer.from(payload).toString("base64url"),
@@ -91,7 +114,8 @@ export async function executeProtectedTool(
     };
     const responseBody = Buffer.from(JSON.stringify(signed));
     deps.replay.complete(admission.id, admission.owner, responseBody, nowMs);
-    return finish(deps.store, { status: 200, body: responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok" });
+    markPhase(phaseTimings, "persist", phaseStartedAt);
+    return finish(deps.store, { status: 200, body: responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
   } catch (error) {
     const failed = errorResult(error);
     const code = toCcbErrorBody(error).code;
@@ -100,6 +124,7 @@ export async function executeProtectedTool(
       requestBytes: rawBody.byteLength,
       resultClass: code === "CCB_INTERNAL" ? "error" : "deny",
       errorCode: code,
+      phaseTimings,
     });
   }
 }
@@ -110,6 +135,7 @@ function finish(
   meta: {
     correlationId: string; auth: AuthContext; toolFamily: string; deviceId?: string; projectId?: string;
     relayBuild?: string; requestBytes: number; resultClass: "ok" | "deny" | "error"; errorCode?: string;
+    phaseTimings: Partial<Record<CcbMetricPhase, number>>;
   },
 ): ExecuteResult {
   try {
@@ -124,9 +150,9 @@ function finish(
       errorCode: meta.errorCode,
       requestBytes: meta.requestBytes,
       responseBytes: result.body.byteLength,
-      phaseTimings: {},
+      phaseTimings: meta.phaseTimings,
     });
-    recordCcBridgeExecute(meta.toolFamily, meta.resultClass);
+    recordCcBridgeExecute(meta.toolFamily, meta.resultClass, meta.errorCode, meta.phaseTimings);
   } catch {
     /* audit/metrics must not fail the signed response */
   }

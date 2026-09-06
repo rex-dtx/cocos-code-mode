@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { recordCcBridgeAudit, type CcBridgeAuditRow } from "../../src/cc-bridge/audit.ts";
+import { ccbMetricsRegistry, recordCcBridgeExecute, recordCcBridgeRuntimeState } from "../../src/cc-bridge/metrics.ts";
 import { CcBridgeStore } from "../../src/cc-bridge/store.ts";
 
 describe("CC Bridge audit", () => {
@@ -24,5 +25,19 @@ describe("CC Bridge audit", () => {
       "response_bytes", "result_class", "timestamp_ms", "tool_family",
     ].sort());
     expect(JSON.stringify(stored)).not.toMatch(/observation|screenshot|parentUuid|scene-root/);
+  });
+
+  it("exports only bounded low-cardinality metric labels", async () => {
+    ccbMetricsRegistry.resetMetrics();
+    recordCcBridgeExecute("createUiNode", "ok", undefined, { plan: 5 });
+    recordCcBridgeExecute("attacker-controlled-tool", "deny", "attacker-controlled-reason");
+    recordCcBridgeRuntimeState({ signerAvailable: true, activeDevices: 3, replayEntries: 7 });
+    const metrics = await ccbMetricsRegistry.metrics();
+    expect(metrics).toContain('operation_class="mutation",result_class="ok",reason="none"');
+    expect(metrics).toContain('operation_class="unknown",result_class="deny",reason="unknown"');
+    expect(metrics).toContain('phase="plan"');
+    expect(metrics).toContain('state="active_devices"} 3');
+    expect(metrics).not.toContain("createUiNode");
+    expect(metrics).not.toContain("attacker-controlled");
   });
 });

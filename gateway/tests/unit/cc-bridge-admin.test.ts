@@ -18,6 +18,7 @@ function auth(role: "admin" | "searcher"): AuthContext {
     products: ["cc_bridge"],
     tokenAlg: "EdDSA",
     role,
+    exp: 2_000_000_000,
   };
 }
 

@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "lib": ["ES2022"]
+    "lib": ["ES2024"]
   },
   "include": ["src/**/*", "scripts/**/*", "tests/unit/**/*"]
 }

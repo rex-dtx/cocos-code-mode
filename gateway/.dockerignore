@@ -1,0 +1,7 @@
+node_modules
+coverage
+*.db
+*.db-*
+.env*
+secrets
+.smoke-tmp

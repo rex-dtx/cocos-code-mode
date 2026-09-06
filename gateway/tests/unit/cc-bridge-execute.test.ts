@@ -27,6 +27,7 @@ const auth: AuthContext = {
   clearance: "internal",
   products: ["cc_bridge"],
   tokenAlg: "EdDSA",
+  exp: 2_000_000_000,
 };
 
 function runtime() {

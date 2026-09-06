@@ -31,6 +31,7 @@ const auth: AuthContext = {
   products: ["cc_bridge"],
   tokenAlg: "EdDSA",
   role: "admin",
+  exp: 2_000_000_000,
 };
 
 const store = new CcBridgeStore(":memory:");
@@ -65,7 +66,7 @@ app.use("/ccb", createCcBridgeRouter({
   planners,
   nowMs: () => vectors.request.issuedAtMs as number,
 }, (req: Request, _res: Response, next: NextFunction) => {
-  req.mcpdocsAuth = auth;
+  req.toolAuth = auth;
   next();
 }));
 

@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
 import express, { type NextFunction, type Request, type Response } from "express";
+import { SignJWT } from "jose";
 import { describe, expect, it } from "vitest";
-import type { AuthContext } from "../../src/auth.ts";
+import { createMemberTokenVerifier, type AuthContext } from "../../src/auth.ts";
 import { canonicalizeToBytes } from "../../src/cc-bridge/canonical-json.ts";
 import { MemoryEnvelopeSigner } from "../../src/cc-bridge/envelope-signer.ts";
 import { planCreateUiNode } from "../../src/cc-bridge/planners/create-ui-node.ts";
@@ -14,6 +15,7 @@ import { createCcBridgeRouter } from "../../src/cc-bridge/router.ts";
 import { parseSignedGatewayDecision } from "../../src/cc-bridge/schemas.ts";
 import { CcBridgeStore } from "../../src/cc-bridge/store.ts";
 import { verifyGatewayDecision } from "../../src/cc-bridge/protocol.ts";
+import { createMemberAuthMiddleware } from "../../src/cc-bridge/auth-middleware.ts";
 
 const fixtureRoot = join(import.meta.dirname, "..", "fixtures", "cc-bridge", "v1");
 const keys = JSON.parse(readFileSync(join(fixtureRoot, "test-keys.json"), "utf8"));
@@ -29,6 +31,7 @@ const auth: AuthContext = {
   products: ["cc_bridge"],
   tokenAlg: "EdDSA",
   role: "admin",
+  exp: 2_000_000_000,
 };
 
 function runtime() {
@@ -65,8 +68,20 @@ function runtime() {
 }
 
 function stubAuth(req: Request, _res: Response, next: NextFunction): void {
-  req.mcpdocsAuth = auth;
+  req.toolAuth = auth;
   next();
+}
+
+async function signMemberJwt(): Promise<string> {
+  const now = Math.floor(Date.now() / 1_000);
+  return new SignJWT({ label: "fixture", role: "admin", products: ["cc_bridge"] })
+    .setProtectedHeader({ alg: "EdDSA", typ: "JWT" })
+    .setIssuer("mcpdocs")
+    .setSubject(auth.member_id)
+    .setJti(auth.jti)
+    .setIssuedAt(now)
+    .setExpirationTime(now + 300)
+    .sign(executionPrivateKey);
 }
 
 describe("CC Bridge HTTP execute", () => {
@@ -110,6 +125,47 @@ describe("CC Bridge HTTP execute", () => {
       const rollout = await (await fetch(`${base}/admin/rollout`)).json() as { next: number | "ga"; healthyDevices: number };
       expect(rollout.healthyDevices).toBe(1);
       expect(rollout.next).toBe(3);
+      const metrics = await fetch(`${base}/metrics`);
+      expect(metrics.headers.get("content-type")).toContain("text/plain");
+      expect(await metrics.text()).toContain("ccb_runtime_state");
+    } finally {
+      server.close();
+    }
+  });
+
+  it("authenticates before parsing JSON and returns typed parser errors", async () => {
+    const verifier = createMemberTokenVerifier({
+      issuer: "mcpdocs",
+      publicKeyPem: executionPublicKey.export({ format: "pem", type: "spki" }).toString(),
+    });
+    const app = express();
+    app.use("/ccb", createCcBridgeRouter(runtime(), createMemberAuthMiddleware(verifier)));
+    const server = createServer(app);
+    await new Promise<void>((resolve) => { server.listen(0, "127.0.0.1", resolve); });
+    const address = server.address();
+    if (!address || typeof address === "string") throw new Error("no port");
+    const url = `http://127.0.0.1:${address.port}/ccb/v1/devices/enroll`;
+    try {
+      const unauthenticated = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{",
+      });
+      expect(unauthenticated.status).toBe(401);
+      expect(unauthenticated.headers.get("content-type")).toContain("application/json");
+      expect(await unauthenticated.json()).toMatchObject({ code: "CCB_AUTH_REQUIRED" });
+
+      const malformed = await fetch(url, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${await signMemberJwt()}`,
+          "content-type": "application/json",
+        },
+        body: "{",
+      });
+      expect(malformed.status).toBe(400);
+      expect(malformed.headers.get("content-type")).toContain("application/json");
+      expect(await malformed.json()).toMatchObject({ code: "CCB_CANONICAL_INVALID" });
     } finally {
       server.close();
     }
