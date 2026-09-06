@@ -135,8 +135,8 @@ export async function load() {
 
     relayHost = new ProtectedRelayHost();
     relayHost.activateIfConfigured();
-    if (process.env.CCB_ENABLE_LOCAL_UTCP !== "1") {
-      console.log(`[${packageJSON.name}] Local UTCP listener disabled; protected tools use Gateway only. Set CCB_ENABLE_LOCAL_UTCP=1 to re-enable.`);
+    if (process.env.CCB_DISABLE_LOCAL_UTCP === "1") {
+      console.log(`[${packageJSON.name}] Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1.`);
       return;
     }
     utcpServer = new UtcpServerManager(relayHost);

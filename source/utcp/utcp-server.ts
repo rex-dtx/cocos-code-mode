@@ -441,7 +441,10 @@ export class UtcpServerManager {
                     });
 
                     let result: unknown;
-                    if (this.host && isProtectedCustomerTool(toolDef.name)) {
+                    if (isProtectedCustomerTool(toolDef.name)) {
+                        if (!this.host) {
+                            throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Protected tools require an active Gateway relay host.");
+                        }
                         result = await dispatchProtectedCustomerTool(this.host, toolDef.name, args);
                     } else {
                         result = await toolMeta.method.apply(instance, [args]);
