@@ -1,0 +1,1588 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-09-06T16:48:17.834Z",
+  "connection": {
+    "utcp": "http://localhost:49651/utcp",
+    "gatewayHealth": {
+      "ok": true,
+      "protocolVersion": 1,
+      "signer": "configured",
+      "activeDevices": 0
+    },
+    "build": {
+      "version": "2.0.0",
+      "commit": "26f4bb3",
+      "branch": "feat/ccb3x-consolidated",
+      "dirty": false,
+      "builtAt": "2026-09-06T15:50:45.475Z"
+    },
+    "toolCount": 80,
+    "executeJavascript": false
+  },
+  "tools": [
+    {
+      "name": "assetGetTree",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 6.399,
+        "p50Ms": 7.541,
+        "p95Ms": 19.847,
+        "maxMs": 19.847,
+        "meanMs": 9.021
+      },
+      "samples": 8
+    },
+    {
+      "name": "assetGetAtPath",
+      "method": "GET",
+      "required": [
+        "assetPath"
+      ],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 6.409,
+        "p50Ms": 7.427,
+        "p95Ms": 8.319,
+        "maxMs": 8.319,
+        "meanMs": 7.302
+      },
+      "samples": 8
+    },
+    {
+      "name": "assetResolvePath",
+      "method": "GET",
+      "required": [],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 1.145,
+        "p50Ms": 1.145,
+        "p95Ms": 1.145,
+        "maxMs": 1.145,
+        "meanMs": 1.145
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetReadContent",
+      "method": "GET",
+      "required": [],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 0.893,
+        "p50Ms": 0.893,
+        "p95Ms": 0.893,
+        "maxMs": 0.893,
+        "meanMs": 0.893
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetFindReferences",
+      "method": "GET",
+      "required": [
+        "reference"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 119,
+      "timings": {
+        "n": 1,
+        "minMs": 0.96,
+        "p50Ms": 0.96,
+        "p95Ms": 0.96,
+        "maxMs": 0.96,
+        "meanMs": 0.96
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetQuery",
+      "method": "GET",
+      "required": [],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 0.871,
+        "p50Ms": 0.871,
+        "p95Ms": 0.871,
+        "maxMs": 0.871,
+        "meanMs": 0.871
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetSaveContent",
+      "method": "POST",
+      "required": [
+        "content"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 2.191,
+        "p50Ms": 2.191,
+        "p95Ms": 2.191,
+        "maxMs": 2.191,
+        "meanMs": 2.191
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetGetAvailableUrl",
+      "method": "GET",
+      "required": [
+        "assetPath"
+      ],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 6.037,
+        "p50Ms": 6.431,
+        "p95Ms": 7.686,
+        "maxMs": 7.686,
+        "meanMs": 6.534
+      },
+      "samples": 8
+    },
+    {
+      "name": "assetCreate",
+      "method": "POST",
+      "required": [
+        "assetPath",
+        "preset"
+      ],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 3.598,
+        "p50Ms": 3.598,
+        "p95Ms": 3.598,
+        "maxMs": 3.598,
+        "meanMs": 3.598
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetImport",
+      "method": "POST",
+      "required": [
+        "sourceFilesystemPath",
+        "targetAssetPath"
+      ],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 2.54,
+        "p50Ms": 2.54,
+        "p95Ms": 2.54,
+        "maxMs": 2.54,
+        "meanMs": 2.54
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetOperate",
+      "method": "POST",
+      "required": [
+        "operation",
+        "reference"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 1.061,
+        "p50Ms": 1.061,
+        "p95Ms": 1.061,
+        "maxMs": 1.061,
+        "meanMs": 1.061
+      },
+      "samples": 1
+    },
+    {
+      "name": "nodeGetAvailableComponentTypes",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 5.708,
+        "p50Ms": 6.075,
+        "p95Ms": 7.434,
+        "maxMs": 7.434,
+        "meanMs": 6.275
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeComponentsGet",
+      "method": "GET",
+      "required": [
+        "reference"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 119,
+      "timings": {
+        "n": 1,
+        "minMs": 1.031,
+        "p50Ms": 1.031,
+        "p95Ms": 1.031,
+        "maxMs": 1.031,
+        "meanMs": 1.031
+      },
+      "samples": 1
+    },
+    {
+      "name": "sceneGetInfo",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 5.826,
+        "p50Ms": 6.307,
+        "p95Ms": 7.153,
+        "maxMs": 7.153,
+        "meanMs": 6.39
+      },
+      "samples": 8
+    },
+    {
+      "name": "findNodesByAsset",
+      "method": "GET",
+      "required": [
+        "reference"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 119,
+      "timings": {
+        "n": 1,
+        "minMs": 1.149,
+        "p50Ms": 1.149,
+        "p95Ms": 1.149,
+        "maxMs": 1.149,
+        "meanMs": 1.149
+      },
+      "samples": 1
+    },
+    {
+      "name": "findNodesWithMissingAssets",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 5.579,
+        "p50Ms": 5.801,
+        "p95Ms": 6.513,
+        "maxMs": 6.513,
+        "meanMs": 5.893
+      },
+      "samples": 8
+    },
+    {
+      "name": "findNodes",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 5.824,
+        "p50Ms": 6.383,
+        "p95Ms": 7.116,
+        "maxMs": 7.116,
+        "meanMs": 6.408
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeReset",
+      "method": "POST",
+      "required": [
+        "operation",
+        "references"
+      ],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 6.004,
+        "p50Ms": 6.301,
+        "p95Ms": 7.113,
+        "maxMs": 7.113,
+        "meanMs": 6.378
+      },
+      "samples": 8
+    },
+    {
+      "name": "listComponentMethods",
+      "method": "GET",
+      "required": [
+        "reference"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 119,
+      "timings": {
+        "n": 1,
+        "minMs": 0.995,
+        "p50Ms": 0.995,
+        "p95Ms": 0.995,
+        "maxMs": 0.995,
+        "meanMs": 0.995
+      },
+      "samples": 1
+    },
+    {
+      "name": "listComponentClasses",
+      "method": "GET",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 4,
+      "timings": {
+        "n": 8,
+        "minMs": 163.908,
+        "p50Ms": 167.722,
+        "p95Ms": 169.202,
+        "maxMs": 169.202,
+        "meanMs": 166.932
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeClipboard",
+      "method": "POST",
+      "required": [
+        "operation",
+        "references"
+      ],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 6.516,
+        "p50Ms": 6.628,
+        "p95Ms": 7.358,
+        "maxMs": 7.358,
+        "meanMs": 6.807
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeGetTree",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 5.987,
+        "p50Ms": 6.271,
+        "p95Ms": 7.473,
+        "maxMs": 7.473,
+        "meanMs": 6.465
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeGetAtPath",
+      "method": "GET",
+      "required": [
+        "hierarchyPath"
+      ],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 5.825,
+        "p50Ms": 6.813,
+        "p95Ms": 7.424,
+        "maxMs": 7.424,
+        "meanMs": 6.67
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeCreatePrimitive",
+      "method": "POST",
+      "required": [
+        "name",
+        "primitiveType"
+      ],
+      "status": 422,
+      "code": "CCB_DEVICE_DENIED",
+      "error": "Device key is unknown, pending, or revoked.",
+      "bytes": 169,
+      "timings": {
+        "n": 8,
+        "minMs": 7.177,
+        "p50Ms": 7.489,
+        "p95Ms": 8.562,
+        "maxMs": 8.562,
+        "meanMs": 7.647
+      },
+      "samples": 8
+    },
+    {
+      "name": "nodeCreate",
+      "method": "POST",
+      "required": [
+        "name"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.852,
+        "p50Ms": 3.852,
+        "p95Ms": 3.852,
+        "maxMs": 3.852,
+        "meanMs": 3.852
+      },
+      "samples": 1
+    },
+    {
+      "name": "nodeOperate",
+      "method": "POST",
+      "required": [
+        "operation",
+        "reference"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.804,
+        "p50Ms": 3.804,
+        "p95Ms": 3.804,
+        "maxMs": 3.804,
+        "meanMs": 3.804
+      },
+      "samples": 1
+    },
+    {
+      "name": "editorEnvInfo",
+      "method": "GET",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 321,
+      "timings": {
+        "n": 8,
+        "minMs": 0.84,
+        "p50Ms": 0.916,
+        "p95Ms": 1.508,
+        "maxMs": 1.508,
+        "meanMs": 1.046
+      },
+      "samples": 8
+    },
+    {
+      "name": "editorViewport",
+      "method": "POST",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.255,
+        "p50Ms": 3.255,
+        "p95Ms": 3.255,
+        "maxMs": 3.255,
+        "meanMs": 3.255
+      },
+      "samples": 1
+    },
+    {
+      "name": "editorSelect",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 2.622,
+        "p50Ms": 2.622,
+        "p95Ms": 2.622,
+        "maxMs": 2.622,
+        "meanMs": 2.622
+      },
+      "samples": 1
+    },
+    {
+      "name": "editorHistory",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 2.903,
+        "p50Ms": 2.903,
+        "p95Ms": 2.903,
+        "maxMs": 2.903,
+        "meanMs": 2.903
+      },
+      "samples": 1
+    },
+    {
+      "name": "editorGetLogs",
+      "method": "GET",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 1203,
+      "timings": {
+        "n": 8,
+        "minMs": 1.11,
+        "p50Ms": 1.331,
+        "p95Ms": 6.137,
+        "maxMs": 6.137,
+        "meanMs": 1.935
+      },
+      "samples": 8
+    },
+    {
+      "name": "animationQuery",
+      "method": "GET",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.102,
+        "p50Ms": 3.102,
+        "p95Ms": 3.102,
+        "maxMs": 3.102,
+        "meanMs": 3.102
+      },
+      "samples": 1
+    },
+    {
+      "name": "animationEdit",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.095,
+        "p50Ms": 3.095,
+        "p95Ms": 3.095,
+        "maxMs": 3.095,
+        "meanMs": 3.095
+      },
+      "samples": 1
+    },
+    {
+      "name": "propertyArrayElement",
+      "method": "POST",
+      "required": [
+        "operation",
+        "reference",
+        "propertyPath",
+        "index"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.001,
+        "p50Ms": 3.001,
+        "p95Ms": 3.001,
+        "maxMs": 3.001,
+        "meanMs": 3.001
+      },
+      "samples": 1
+    },
+    {
+      "name": "materialQuery",
+      "method": "GET",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 2.829,
+        "p50Ms": 2.829,
+        "p95Ms": 2.829,
+        "maxMs": 2.829,
+        "meanMs": 2.829
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetDbQuery",
+      "method": "GET",
+      "required": [
+        "operation"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 32,
+      "timings": {
+        "n": 8,
+        "minMs": 1.345,
+        "p50Ms": 1.449,
+        "p95Ms": 1.685,
+        "maxMs": 1.685,
+        "meanMs": 1.491
+      },
+      "samples": 8
+    },
+    {
+      "name": "inspectorGet",
+      "method": "GET",
+      "required": [
+        "target"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Missing required input: reference",
+      "bytes": 180,
+      "timings": {
+        "n": 1,
+        "minMs": 1.038,
+        "p50Ms": 1.038,
+        "p95Ms": 1.038,
+        "maxMs": 1.038,
+        "meanMs": 1.038
+      },
+      "samples": 1
+    },
+    {
+      "name": "inspectorSet",
+      "method": "POST",
+      "required": [
+        "target"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Missing required input: reference",
+      "bytes": 260,
+      "timings": {
+        "n": 1,
+        "minMs": 1.198,
+        "p50Ms": 1.198,
+        "p95Ms": 1.198,
+        "maxMs": 1.198,
+        "meanMs": 1.198
+      },
+      "samples": 1
+    },
+    {
+      "name": "inspectorGetDefinition",
+      "method": "GET",
+      "required": [
+        "target"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Missing required input: reference",
+      "bytes": 180,
+      "timings": {
+        "n": 1,
+        "minMs": 0.976,
+        "p50Ms": 0.976,
+        "p95Ms": 0.976,
+        "maxMs": 0.976,
+        "meanMs": 0.976
+      },
+      "samples": 1
+    },
+    {
+      "name": "nodeComponentManage",
+      "method": "POST",
+      "required": [
+        "operation",
+        "reference"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Missing required input: componentType",
+      "bytes": 192,
+      "timings": {
+        "n": 1,
+        "minMs": 1.106,
+        "p50Ms": 1.106,
+        "p95Ms": 1.106,
+        "maxMs": 1.106,
+        "meanMs": 1.106
+      },
+      "samples": 1
+    },
+    {
+      "name": "editorQuery",
+      "method": "GET",
+      "required": [
+        "category"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.438,
+        "p50Ms": 3.438,
+        "p95Ms": 3.438,
+        "maxMs": 3.438,
+        "meanMs": 3.438
+      },
+      "samples": 1
+    },
+    {
+      "name": "sceneManage",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Missing required input: reference",
+      "bytes": 180,
+      "timings": {
+        "n": 1,
+        "minMs": 1.293,
+        "p50Ms": 1.293,
+        "p95Ms": 1.293,
+        "maxMs": 1.293,
+        "meanMs": 1.293
+      },
+      "samples": 1
+    },
+    {
+      "name": "buildManage",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 2.711,
+        "p50Ms": 2.711,
+        "p95Ms": 2.711,
+        "maxMs": 2.711,
+        "meanMs": 2.711
+      },
+      "samples": 1
+    },
+    {
+      "name": "previewManage",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 34,
+      "timings": {
+        "n": 8,
+        "minMs": 3.29,
+        "p50Ms": 3.587,
+        "p95Ms": 4.197,
+        "maxMs": 4.197,
+        "meanMs": 3.691
+      },
+      "samples": 8
+    },
+    {
+      "name": "projectManage",
+      "method": "POST",
+      "required": [
+        "operation"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.955,
+        "p50Ms": 3.955,
+        "p95Ms": 3.955,
+        "maxMs": 3.955,
+        "meanMs": 3.955
+      },
+      "samples": 1
+    },
+    {
+      "name": "projectReadFile",
+      "method": "GET",
+      "required": [
+        "filePath"
+      ],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 13.934,
+        "p50Ms": 13.934,
+        "p95Ms": 13.934,
+        "maxMs": 13.934,
+        "meanMs": 13.934
+      },
+      "samples": 1
+    },
+    {
+      "name": "projectWriteFile",
+      "method": "POST",
+      "required": [
+        "filePath",
+        "content"
+      ],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 2.174,
+        "p50Ms": 2.174,
+        "p95Ms": 2.174,
+        "maxMs": 2.174,
+        "meanMs": 2.174
+      },
+      "samples": 1
+    },
+    {
+      "name": "projectSearchFiles",
+      "method": "GET",
+      "required": [
+        "pattern"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 43,
+      "timings": {
+        "n": 8,
+        "minMs": 24.47,
+        "p50Ms": 25.032,
+        "p95Ms": 28.417,
+        "maxMs": 28.417,
+        "meanMs": 25.938
+      },
+      "samples": 8
+    },
+    {
+      "name": "projectReplaceInFile",
+      "method": "POST",
+      "required": [
+        "filePath",
+        "search",
+        "replace"
+      ],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 1.82,
+        "p50Ms": 1.82,
+        "p95Ms": 1.82,
+        "maxMs": 1.82,
+        "meanMs": 1.82
+      },
+      "samples": 1
+    },
+    {
+      "name": "projectFileExists",
+      "method": "GET",
+      "required": [
+        "filePath"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 36,
+      "timings": {
+        "n": 8,
+        "minMs": 0.927,
+        "p50Ms": 1.057,
+        "p95Ms": 1.343,
+        "maxMs": 1.343,
+        "meanMs": 1.115
+      },
+      "samples": 8
+    },
+    {
+      "name": "projectListDirectory",
+      "method": "GET",
+      "required": [],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 1.345,
+        "p50Ms": 1.345,
+        "p95Ms": 1.345,
+        "maxMs": 1.345,
+        "meanMs": 1.345
+      },
+      "samples": 1
+    },
+    {
+      "name": "createUiNode",
+      "method": "POST",
+      "required": [
+        "uiType"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.754,
+        "p50Ms": 3.754,
+        "p95Ms": 3.754,
+        "maxMs": 3.754,
+        "meanMs": 3.754
+      },
+      "samples": 1
+    },
+    {
+      "name": "createLabel",
+      "method": "POST",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.032,
+        "p50Ms": 3.032,
+        "p95Ms": 3.032,
+        "maxMs": 3.032,
+        "meanMs": 3.032
+      },
+      "samples": 1
+    },
+    {
+      "name": "createButton",
+      "method": "POST",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.202,
+        "p50Ms": 3.202,
+        "p95Ms": 3.202,
+        "maxMs": 3.202,
+        "meanMs": 3.202
+      },
+      "samples": 1
+    },
+    {
+      "name": "createSprite",
+      "method": "POST",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.856,
+        "p50Ms": 3.856,
+        "p95Ms": 3.856,
+        "maxMs": 3.856,
+        "meanMs": 3.856
+      },
+      "samples": 1
+    },
+    {
+      "name": "runtimePause",
+      "method": "POST",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.076,
+        "p50Ms": 3.076,
+        "p95Ms": 3.076,
+        "maxMs": 3.076,
+        "meanMs": 3.076
+      },
+      "samples": 1
+    },
+    {
+      "name": "runtimeResume",
+      "method": "POST",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 2.979,
+        "p50Ms": 2.979,
+        "p95Ms": 2.979,
+        "maxMs": 2.979,
+        "meanMs": 2.979
+      },
+      "samples": 1
+    },
+    {
+      "name": "runtimeSetTimeScale",
+      "method": "POST",
+      "required": [
+        "scale"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.718,
+        "p50Ms": 3.718,
+        "p95Ms": 3.718,
+        "maxMs": 3.718,
+        "meanMs": 3.718
+      },
+      "samples": 1
+    },
+    {
+      "name": "runtimeGetState",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.673,
+        "p50Ms": 3.673,
+        "p95Ms": 3.673,
+        "maxMs": 3.673,
+        "meanMs": 3.673
+      },
+      "samples": 1
+    },
+    {
+      "name": "nodeBatchSet",
+      "method": "POST",
+      "required": [
+        "entries"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 338,
+      "timings": {
+        "n": 1,
+        "minMs": 1.594,
+        "p50Ms": 1.594,
+        "p95Ms": 1.594,
+        "maxMs": 1.594,
+        "meanMs": 1.594
+      },
+      "samples": 1
+    },
+    {
+      "name": "sceneBatchGet",
+      "method": "POST",
+      "required": [
+        "entries"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 142,
+      "timings": {
+        "n": 1,
+        "minMs": 1.83,
+        "p50Ms": 1.83,
+        "p95Ms": 1.83,
+        "maxMs": 1.83,
+        "meanMs": 1.83
+      },
+      "samples": 1
+    },
+    {
+      "name": "assetBatchQuery",
+      "method": "POST",
+      "required": [
+        "queries"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 142,
+      "timings": {
+        "n": 1,
+        "minMs": 1.376,
+        "p50Ms": 1.376,
+        "p95Ms": 1.376,
+        "maxMs": 1.376,
+        "meanMs": 1.376
+      },
+      "samples": 1
+    },
+    {
+      "name": "getPerformanceSnapshot",
+      "method": "GET",
+      "required": [],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 3.369,
+        "p50Ms": 3.369,
+        "p95Ms": 3.369,
+        "maxMs": 3.369,
+        "meanMs": 3.369
+      },
+      "samples": 1
+    },
+    {
+      "name": "validateScene",
+      "method": "POST",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 255,
+      "timings": {
+        "n": 8,
+        "minMs": 8.761,
+        "p50Ms": 10.163,
+        "p95Ms": 16.259,
+        "maxMs": 16.259,
+        "meanMs": 11.316
+      },
+      "samples": 8
+    },
+    {
+      "name": "captureSceneScreenshot",
+      "method": "POST",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 1526,
+      "timings": {
+        "n": 8,
+        "minMs": 15.897,
+        "p50Ms": 17.01,
+        "p95Ms": 29.891,
+        "maxMs": 29.891,
+        "meanMs": 18.492
+      },
+      "samples": 8
+    },
+    {
+      "name": "captureEditorScreenshot",
+      "method": "POST",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 4221,
+      "timings": {
+        "n": 8,
+        "minMs": 9.508,
+        "p50Ms": 16.642,
+        "p95Ms": 27.111,
+        "maxMs": 27.111,
+        "meanMs": 17.294
+      },
+      "samples": 8
+    },
+    {
+      "name": "listEditorWindows",
+      "method": "GET",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 297,
+      "timings": {
+        "n": 8,
+        "minMs": 0.81,
+        "p50Ms": 0.837,
+        "p95Ms": 1.414,
+        "maxMs": 1.414,
+        "meanMs": 0.935
+      },
+      "samples": 8
+    },
+    {
+      "name": "sceneSnapshot",
+      "method": "GET",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 263536,
+      "timings": {
+        "n": 8,
+        "minMs": 9.095,
+        "p50Ms": 10.803,
+        "p95Ms": 14.761,
+        "maxMs": 14.761,
+        "meanMs": 11.438
+      },
+      "samples": 8
+    },
+    {
+      "name": "simulateButtonClick",
+      "method": "POST",
+      "required": [
+        "reference"
+      ],
+      "status": 422,
+      "code": "CCB_BUSY",
+      "error": "Gateway member request limit exceeded.",
+      "bytes": 166,
+      "timings": {
+        "n": 1,
+        "minMs": 4.536,
+        "p50Ms": 4.536,
+        "p95Ms": 4.536,
+        "maxMs": 4.536,
+        "meanMs": 4.536
+      },
+      "samples": 1
+    },
+    {
+      "name": "readPrefabJson",
+      "method": "GET",
+      "required": [],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 1.287,
+        "p50Ms": 1.287,
+        "p95Ms": 1.287,
+        "maxMs": 1.287,
+        "meanMs": 1.287
+      },
+      "samples": 1
+    },
+    {
+      "name": "editPrefabJson",
+      "method": "POST",
+      "required": [
+        "content"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 1.147,
+        "p50Ms": 1.147,
+        "p95Ms": 1.147,
+        "maxMs": 1.147,
+        "meanMs": 1.147
+      },
+      "samples": 1
+    },
+    {
+      "name": "duplicatePrefab",
+      "method": "POST",
+      "required": [
+        "targetAssetPath"
+      ],
+      "status": 400,
+      "code": null,
+      "error": "Invalid tool input.",
+      "bytes": 133,
+      "timings": {
+        "n": 1,
+        "minMs": 1.57,
+        "p50Ms": 1.57,
+        "p95Ms": 1.57,
+        "maxMs": 1.57,
+        "meanMs": 1.57
+      },
+      "samples": 1
+    },
+    {
+      "name": "readProjectInstruction",
+      "method": "GET",
+      "required": [
+        "filePath"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 64,
+      "timings": {
+        "n": 8,
+        "minMs": 0.945,
+        "p50Ms": 1.047,
+        "p95Ms": 1.36,
+        "maxMs": 1.36,
+        "meanMs": 1.107
+      },
+      "samples": 8
+    },
+    {
+      "name": "writeProjectInstruction",
+      "method": "POST",
+      "required": [
+        "filePath",
+        "content"
+      ],
+      "status": 500,
+      "code": "INTERNAL_ERROR",
+      "error": "Internal tool error.",
+      "bytes": 56,
+      "timings": {
+        "n": 1,
+        "minMs": 1.874,
+        "p50Ms": 1.874,
+        "p95Ms": 1.874,
+        "maxMs": 1.874,
+        "meanMs": 1.874
+      },
+      "samples": 1
+    },
+    {
+      "name": "getEditorPreference",
+      "method": "GET",
+      "required": [],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 28,
+      "timings": {
+        "n": 8,
+        "minMs": 0.872,
+        "p50Ms": 0.903,
+        "p95Ms": 1.569,
+        "maxMs": 1.569,
+        "meanMs": 1.065
+      },
+      "samples": 8
+    },
+    {
+      "name": "setEditorPreference",
+      "method": "POST",
+      "required": [
+        "key",
+        "value"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 46,
+      "timings": {
+        "n": 8,
+        "minMs": 4.095,
+        "p50Ms": 4.335,
+        "p95Ms": 6.851,
+        "maxMs": 6.851,
+        "meanMs": 4.613
+      },
+      "samples": 8
+    },
+    {
+      "name": "simulateKeyPress",
+      "method": "POST",
+      "required": [
+        "key"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 26,
+      "timings": {
+        "n": 8,
+        "minMs": 1.269,
+        "p50Ms": 1.333,
+        "p95Ms": 10.65,
+        "maxMs": 10.65,
+        "meanMs": 2.515
+      },
+      "samples": 8
+    },
+    {
+      "name": "simulateKeyCombo",
+      "method": "POST",
+      "required": [
+        "combo"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 39,
+      "timings": {
+        "n": 8,
+        "minMs": 1.066,
+        "p50Ms": 1.218,
+        "p95Ms": 1.434,
+        "maxMs": 1.434,
+        "meanMs": 1.224
+      },
+      "samples": 8
+    },
+    {
+      "name": "simulateMouseClick",
+      "method": "POST",
+      "required": [
+        "x",
+        "y"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 16,
+      "timings": {
+        "n": 8,
+        "minMs": 0.93,
+        "p50Ms": 0.983,
+        "p95Ms": 1.285,
+        "maxMs": 1.285,
+        "meanMs": 1.049
+      },
+      "samples": 8
+    },
+    {
+      "name": "simulateMouseDrag",
+      "method": "POST",
+      "required": [
+        "x",
+        "y",
+        "x2",
+        "y2"
+      ],
+      "status": 200,
+      "code": null,
+      "error": null,
+      "bytes": 16,
+      "timings": {
+        "n": 8,
+        "minMs": 1.001,
+        "p50Ms": 1.153,
+        "p95Ms": 1.392,
+        "maxMs": 1.392,
+        "meanMs": 1.177
+      },
+      "samples": 8
+    }
+  ]
+}
