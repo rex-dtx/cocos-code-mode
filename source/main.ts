@@ -73,45 +73,47 @@ export const methods: { [key: string]: (...any: any) => any } = {
 export async function load() {
     console.log('===========Loaded cc-bridge-3x===========');
     console.log(`[${packageJSON.name}] build ${formatBuildInfo()}`);
-
-    // Initialize config manager
-    const configManager = getConfigManager();
-    await configManager.initialize();
-
-    // Load and apply tool profile config
-    const profileConfig = await configManager.getToolProfileConfig();
-    setServerProfile(profileConfig.profile as any, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
-
-    relayHost = new ProtectedRelayHost();
-    relayHost.activateIfConfigured();
-    if (process.env.CCB_DISABLE_LOCAL_UTCP === "1") {
-      console.log(`[${packageJSON.name}] Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1.`);
-      return;
-    }
-    utcpServer = new UtcpServerManager(relayHost);
-    let wasConfiguredPort = true;
-    // Load port from profile, default to 0 (random free port) if not set
-    let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
-    if (typeof port !== 'number') {
-      port = 0;
-      wasConfiguredPort = false;
-    }
-
     try {
-        const actualPort = await utcpServer.start(port);
-        const url = `http://localhost:${actualPort}/utcp`;
-        await configManager.updatePort(actualPort);
-        console.log(
-            `[${packageJSON.name}] Ready: UTCP server listening at ${url}\n` +
-            `[${packageJSON.name}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-            `[${packageJSON.name}] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
-        );
-    } catch (err) {
-        console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);
-    }
+        const configManager = getConfigManager();
+        await configManager.initialize();
+        const profileConfig = await configManager.getToolProfileConfig();
+        setServerProfile(profileConfig.profile as any, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
 
-    if (!wasConfiguredPort) {
-        Editor.Panel.open(packageJSON.name);
+        try {
+            relayHost = new ProtectedRelayHost();
+            relayHost.activateIfConfigured();
+        } catch (err) {
+            relayHost = null;
+            console.error(`[${packageJSON.name}] Protected relay failed to boot; menus and local tools still start:`, err);
+        }
+        if (process.env.CCB_DISABLE_LOCAL_UTCP === "1") {
+            console.log(`[${packageJSON.name}] Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1.`);
+            return;
+        }
+        utcpServer = new UtcpServerManager(relayHost ?? undefined);
+        let wasConfiguredPort = true;
+        let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
+        if (typeof port !== 'number') {
+            port = 0;
+            wasConfiguredPort = false;
+        }
+        try {
+            const actualPort = await utcpServer.start(port);
+            const url = `http://localhost:${actualPort}/utcp`;
+            await configManager.updatePort(actualPort);
+            console.log(
+                `[${packageJSON.name}] Ready: UTCP server listening at ${url}\n` +
+                `[${packageJSON.name}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
+                `[${packageJSON.name}] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
+            );
+        } catch (err) {
+            console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);
+        }
+        if (!wasConfiguredPort) {
+            Editor.Panel.open(packageJSON.name + '.configuration');
+        }
+    } catch (err) {
+        console.error(`[${packageJSON.name}] Extension load failed; menu handlers remain registered:`, err);
     }
 }
 
