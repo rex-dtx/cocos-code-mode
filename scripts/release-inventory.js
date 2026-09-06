@@ -11,6 +11,7 @@ const GENERATED_SIDECARS = new Set([
   'dist/sbom.cdx.json',
   'dist/provenance.intoto.json',
   'dist/release-target.signed.json',
+  'dist/.rename-map.json',
 ]);
 const FORBIDDEN_SUFFIXES = ['.map', '.tsbuildinfo'];
 
