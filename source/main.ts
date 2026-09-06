@@ -107,15 +107,20 @@ module.exports = {
             // fire-and-log without blocking dialog; port resolves fast (profile read)
             portP.then((port: number) => {
                 const configPath = cm.getConfigPath();
-                const url = port ? `http://localhost:${port}/utcp` : '(not running)';
+                const isRunning = Boolean(port && utcpServer);
+                const statusIcon = isRunning ? '🟢' : '🔴';
+                const statusUrl = isRunning ? `http://localhost:${port}/utcp` : 'Server not running';
+                const commitStr = `${b.commit}${b.dirty ? '-dirty' : ''}`;
+                const versionTag = `v${b.version}@${commitStr}`;
+
                 const lines = [
-                    `Port:     ${port || '(not running)'} | Config: ${configPath} | ${url}`,
-                    `Version:  ${b.version}`,
-                    `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
-                    `Branch:   ${b.branch}`,
-                    `Built at: ${b.builtAt}`,
+                    `[${PKG_NAME}] ${statusIcon} ${statusUrl} (${versionTag})`,
+                    `  Port:     ${port || '(not running)'}`,
+                    `  Config:   ${configPath}`,
+                    `  Branch:   ${b.branch}`,
+                    `  Built at: ${b.builtAt}`,
                 ];
-                Editor.log(`[${PKG_NAME}] Build info:\n${lines.join('\n')}`);
+                Editor.log(lines.join('\n'));
             });
         },
         'open-config'() {
