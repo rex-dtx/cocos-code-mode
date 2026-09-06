@@ -46,6 +46,28 @@ export interface OperationPolicyRecord {
   revision: number;
 }
 
+export interface ReleaseTargetRecord {
+  sequence: number;
+  version: string;
+  packageHash: string;
+  compatibility: { protocol: { min: number; max: number }; creator: string; os: string[]; arch: string[] };
+  status: "active" | "superseded" | "revoked";
+  createdAtMs: number;
+}
+
+export interface RolloutPolicyRecord {
+  sequence: number;
+  targetHash: string;
+  channel: string;
+  ring: "1" | "3" | "10";
+  percentage: number;
+  minimumBuild: string | null;
+  blockedBuilds: readonly string[];
+  rollbackTargetHash: string | null;
+  expiresAtMs: number;
+  createdAtMs: number;
+}
+
 type DeviceRow = {
   id: string; key_id: string; member_id: string; public_key_spki: Buffer;
   fingerprint: string; label: string; status: DeviceStatus;
@@ -210,6 +232,46 @@ export class CcBridgeStore {
 
   revokeGrant(grantId: string, nowMs = Date.now()): boolean {
     return this.db.prepare("UPDATE grant_record SET status = 'revoked' WHERE id = ? AND status != 'revoked'").run(grantId).changes === 1;
+  }
+
+  insertReleaseTarget(record: Omit<ReleaseTargetRecord, "createdAtMs"> & { createdAtMs?: number }, nowMs = Date.now()): number {
+    const result = this.db.prepare(`
+      INSERT INTO release_target(sequence, version, package_hash, compatibility_json, status, created_at_ms)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(record.sequence, record.version, record.packageHash, JSON.stringify(record.compatibility), record.status, record.createdAtMs ?? nowMs);
+    return Number(result.lastInsertRowid);
+  }
+
+  getReleaseTargetByHash(packageHash: string): ReleaseTargetRecord | null {
+    const row = this.db.prepare("SELECT sequence, version, package_hash, compatibility_json, status, created_at_ms FROM release_target WHERE package_hash = ?")
+      .get(packageHash) as { sequence: number; version: string; package_hash: string; compatibility_json: string; status: ReleaseTargetRecord["status"]; created_at_ms: number } | undefined;
+    if (!row) return null;
+    return { sequence: row.sequence, version: row.version, packageHash: row.package_hash, compatibility: JSON.parse(row.compatibility_json), status: row.status, createdAtMs: row.created_at_ms };
+  }
+
+  listReleaseTargets(): ReleaseTargetRecord[] {
+    const rows = this.db.prepare("SELECT sequence, version, package_hash, compatibility_json, status, created_at_ms FROM release_target ORDER BY sequence DESC")
+      .all() as { sequence: number; version: string; package_hash: string; compatibility_json: string; status: ReleaseTargetRecord["status"]; created_at_ms: number }[];
+    return rows.map((row) => ({ sequence: row.sequence, version: row.version, packageHash: row.package_hash, compatibility: JSON.parse(row.compatibility_json), status: row.status, createdAtMs: row.created_at_ms }));
+  }
+
+  latestRolloutPolicySequence(): number {
+    const row = this.db.prepare("SELECT MAX(sequence) AS seq FROM rollout_policy").get() as { seq: number | null };
+    return row.seq ?? 0;
+  }
+
+  insertRolloutPolicy(record: Omit<RolloutPolicyRecord, "createdAtMs"> & { createdAtMs?: number }, nowMs = Date.now()): number {
+    const result = this.db.prepare(`
+      INSERT INTO rollout_policy(sequence, target_hash, channel, ring, percentage, minimum_build, blocked_builds_json, rollback_target_hash, expires_at_ms, created_at_ms)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(record.sequence, record.targetHash, record.channel, record.ring, record.percentage, record.minimumBuild, JSON.stringify(record.blockedBuilds), record.rollbackTargetHash, record.expiresAtMs, record.createdAtMs ?? nowMs);
+    return Number(result.lastInsertRowid);
+  }
+
+  listRolloutPolicies(): RolloutPolicyRecord[] {
+    const rows = this.db.prepare("SELECT sequence, target_hash, channel, ring, percentage, minimum_build, blocked_builds_json, rollback_target_hash, expires_at_ms, created_at_ms FROM rollout_policy ORDER BY sequence DESC")
+      .all() as { sequence: number; target_hash: string; channel: string; ring: RolloutPolicyRecord["ring"]; percentage: number; minimum_build: string | null; blocked_builds_json: string; rollback_target_hash: string | null; expires_at_ms: number; created_at_ms: number }[];
+    return rows.map((row) => ({ sequence: row.sequence, targetHash: row.target_hash, channel: row.channel, ring: row.ring, percentage: row.percentage, minimumBuild: row.minimum_build, blockedBuilds: JSON.parse(row.blocked_builds_json), rollbackTargetHash: row.rollback_target_hash, expiresAtMs: row.expires_at_ms, createdAtMs: row.created_at_ms }));
   }
 
   counts(): { activeDevices: number; replayRows: number } {
