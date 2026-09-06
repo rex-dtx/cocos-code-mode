@@ -9,7 +9,8 @@
     "preinstall": "node ./scripts/preinstall.js",
     "build": "node ./scripts/generate-build-info.js && npx tsc",
     "build:release": "node ./scripts/generate-build-info.js --clean && npx tsc -p tsconfig.release.json",
-    "package": "npm run build:release && node ./scripts/package.js",
+    "obfuscate:dist": "node ./scripts/obfuscate-dist.js",
+    "package": "npm run build:release && node ./scripts/obfuscate-dist.js && node ./scripts/package.js",
     "sign-release": "node ./scripts/sign-release.js",
     "forbidden-material": "node ./scripts/forbidden-material-witness.js",
     "support-bundle": "node ./scripts/support-bundle.js",
@@ -40,6 +41,7 @@
     "@types/node": "^18.17.1",
     "@types/sharp": "^0.31.1",
     "archiver": "^8.0.0",
+    "terser": "^5.36.0",
     "typescript": "^5.8.2"
   },
   "panels": {
