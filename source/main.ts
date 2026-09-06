@@ -101,15 +101,21 @@ export const methods: { [key: string]: (...any: any) => any } = {
         // ponytail: merged Server Info + About — single log has port/config/url + build info (same as 2x)
         const port = await cm.getCurrentPort().catch(() => 0);
         const configPath = cm.getConfigPath();
-        const url = port ? `http://localhost:${port}/utcp` : '(not running)';
+        const isRunning = Boolean(port && utcpServer);
+        const statusIcon = isRunning ? '🟢' : '🔴';
+        const statusUrl = isRunning ? `http://localhost:${port}/utcp` : 'Server not running';
+        const commitStr = `${b.commit}${b.dirty ? '-dirty' : ''}`;
+        const versionTag = `v${b.version}@${commitStr}`;
+
         const lines = [
-            `Port:     ${port || '(not running)'} | Config: ${configPath} | ${url}`,
-            `Version:  ${b.version}`,
-            `Commit:   ${b.commit}${b.dirty ? '-dirty' : ''}`,
-            `Branch:   ${b.branch}`,
-            `Built at: ${b.builtAt}`,
+            `[${packageJSON.name}] ${statusIcon} ${statusUrl} (${versionTag})`,
+            `  Build info:`,
+            `    Port:     ${port || '(not running)'}`,
+            `    Config:   ${configPath}`,
+            `    Branch:   ${b.branch}`,
+            `    Built at: ${b.builtAt}`,
         ];
-        console.log(`[${packageJSON.name}] Build info:\n${lines.join('\n')}`);
+        console.log(lines.join('\n'));
     }
 };
 
