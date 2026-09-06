@@ -83,6 +83,19 @@ export class UtcpConfigManager {
         profile.save();
     }
 
+    getPreference(key: string, fallback: any = null): any {
+        return this.readSetting(key, fallback);
+    }
+
+    setPreference(key: string, value: any): boolean {
+        const profile = this.getProfile();
+        if (!profile) {
+            return false;
+        }
+        this.writeSetting(key, value);
+        return true;
+    }
+
     async initialize(): Promise<void> {
         const savedPath = this.readSetting<string>('utcpConfigPath', '');
         if (savedPath && typeof savedPath === 'string') {

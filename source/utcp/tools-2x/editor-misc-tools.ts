@@ -1,6 +1,7 @@
-import { existsSync, readdirSync, readFileSync } from 'fs';
-import { join } from 'path';
 import { utcpTool } from '../decorators';
+import { sceneIpc } from '../utils/ipc-promise';
+import { join } from 'path';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 
 type SelectionType = 'node' | 'asset';
 
@@ -34,13 +35,13 @@ export class EditorMiscTools {
     @utcpTool(
         'editorSelect',
         'Get or change editor selection (node/asset). Changes selection only, not scene. ' +
-        'Ops: query/select/unselect/clear + hover/set_context/patch/filter/confirm/cancel (selection.html 18-method API).',
+        'Ops: query/select/unselect/clear/select_all + hover/set_context/patch/filter/confirm/cancel.',
         {
             type: 'object',
             properties: {
                 operation: {
                     type: 'string',
-                    enum: ['query', 'select', 'unselect', 'clear', 'hover', 'set_context', 'patch', 'filter', 'confirm', 'cancel'],
+                    enum: ['query', 'select', 'unselect', 'clear', 'hover', 'set_context', 'patch', 'filter', 'confirm', 'cancel', 'select_all'],
                     description: 'Which action to take'
                 },
                 selectionType: { type: 'string', enum: ['node', 'asset'], description: 'Selection channel, default node' },
@@ -127,6 +128,23 @@ export class EditorMiscTools {
             case 'cancel':
                 Editor.Selection.cancel();
                 return { success: true };
+            case 'select_all': {
+                const raw = await sceneIpc<any>('scene:query-hierarchy');
+                const hierarchy = Array.isArray(raw) ? (raw.length === 2 ? raw[1] : raw) : raw;
+                const ids: string[] = [];
+                const stack = Array.isArray(hierarchy) ? hierarchy.slice() : hierarchy ? [hierarchy] : [];
+                const roots = stack.filter((n: any) => n && n.hidden !== true);
+                const walk: any[] = roots.slice();
+                while (walk.length) {
+                    const n = walk.pop();
+                    if (!n) continue;
+                    if (n.id || n.uuid) ids.push(n.id || n.uuid);
+                    const children = Array.isArray(n.children) ? n.children : [];
+                    for (let i = 0; i < children.length; i++) walk.push(children[i]);
+                }
+                Editor.Selection.select(type, ids, true, true);
+                return done({ selectedCount: ids.length });
+            }
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);
         }

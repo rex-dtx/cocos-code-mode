@@ -35,6 +35,20 @@ import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
 import { trimResponse } from './utils/response-trimmer';
 import { slimOutputsSchema } from './utils/schema-slimmer';
+import { ToolError, toToolErrorResponse } from './tool-error';
+import { findMissingRequiredInputs, validateSchemaArguments } from './schema-validate';
+import './tools-2x/diagnostics-tools';
+import './tools-2x/file-tools';
+import './tools-2x/runtime-tools';
+import './tools-2x/prefab-json-tools';
+import './tools-2x/property-array-tools';
+import './tools-2x/event-tools';
+import './tools-2x/validation-tools';
+import './tools-2x/input-tools';
+import './tools-2x/preference-tools';
+import './tools-2x/instruction-tools';
+import './tools-2x/screenshot-tools';
+import './tools-2x/batch-asset-tools';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -137,24 +151,51 @@ export class UtcpServerManager {
             // Register specific endpoint
             const handler = async (req: Request, res: Response) => {
                 const t0 = Date.now();
+                const stamp = () => {
+                    const ms = Date.now() - t0;
+                    res.setHeader('X-Duration-Ms', String(ms));
+                    return ms;
+                };
                 try {
                     const queryArgs = req.query as Record<string, any>;
                     const bodyArgs = (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) ? req.body : {};
                     const args = req.method === 'GET' ? queryArgs : { ...queryArgs, ...bodyArgs };
                     debugLog({ type: 'request', tool: toolDef.name, method: req.method, url: req.originalUrl, args });
+                    const validationErrors = validateSchemaArguments(toolDef.inputs, args);
+                    if (validationErrors.length > 0) {
+                        const missingInputs = findMissingRequiredInputs(toolDef.inputs, args);
+                        const typed = new ToolError({
+                            code: missingInputs.length ? 'MISSING_INPUTS' : 'INVALID_INPUT',
+                            status: 400,
+                            message: missingInputs.length
+                                ? `Missing required inputs: ${missingInputs.join(', ')}.`
+                                : 'Tool arguments failed schema validation.',
+                            details: { errors: validationErrors, missingInputs },
+                            recovery: 'Pass every field listed in details.missingInputs; enum values must match the tool schema.',
+                        });
+                        const response = toToolErrorResponse(typed);
+                        const ms = stamp();
+                        debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, durationMs: ms });
+                        res.status(response.status).json(response.body);
+                        return;
+                    }
                     let result = await toolMeta.method.apply(instance, [args]);
                     if (result === undefined || result === null) {
-                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: Date.now() - t0 });
+                        const ms = stamp();
+                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
                         return;
                     }
-                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: Date.now() - t0 });
+                    const ms = stamp();
+                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
                     const trimmed = trimResponse(result);
                     res.json(trimmed ?? null);
                 } catch (err: any) {
+                    const response = toToolErrorResponse(err);
+                    const ms = stamp();
                     console.error(`Error in tool ${toolDef.name}:`, err);
-                    debugLog({ type: 'error', tool: toolDef.name, error: err.message, durationMs: Date.now() - t0 });
-                    res.status(500).json({ error: err.message });
+                    debugLog({ type: 'error', tool: toolDef.name, error: err && err.message, code: response.body.code, durationMs: ms });
+                    res.status(response.status).json(response.body);
                 }
             };
 

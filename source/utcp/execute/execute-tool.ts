@@ -1,4 +1,5 @@
 import { utcpTool } from '../decorators';
+import { ToolError } from '../tool-error';
 import { ExecuteContext } from './execute-types';
 import { getExecuteGuards, registerExecuteGuard } from './execute-guard-registry';
 import { safetyGuard } from './guards/safety-guard';
@@ -54,35 +55,62 @@ export class ExecuteTools {
         ['execute', 'javascript', 'code', 'scene', 'editor', 'runtime', 'eval']
     )
     async executeJavascript(args: { context: string, code: string, args?: Record<string, unknown>, safety_checks?: boolean, timeout_ms?: number }): Promise<{ result: unknown }> {
-        const editorObj = typeof Editor !== 'undefined' ? Editor : (globalThis as Record<string, unknown>).Editor as { Project?: { path?: string } } | undefined;
-        const projectPath = editorObj?.Project?.path || process.cwd();
-        let ctx: ExecuteContext = {
-            context: args.context === 'editor' ? 'editor' : 'scene',
-            code: args.code,
-            args: args.args,
-            projectPath,
-            safetyChecks: args.safety_checks !== false,
-        };
+        try {
+            const editorObj = typeof Editor !== 'undefined' ? Editor : (globalThis as Record<string, unknown>).Editor as { Project?: { path?: string } } | undefined;
+            const projectPath = editorObj?.Project?.path || process.cwd();
+            let ctx: ExecuteContext = {
+                context: args.context === 'editor' ? 'editor' : 'scene',
+                code: args.code,
+                args: args.args,
+                projectPath,
+                safetyChecks: args.safety_checks !== false,
+            };
 
-        for (const guard of getExecuteGuards()) {
-            if (guard.before) ctx = (await guard.before(ctx)) ?? ctx;
-        }
-
-        let result: unknown;
-        const timeoutMs = args.timeout_ms ?? DEFAULT_TIMEOUT_MS;
-        if (ctx.context === 'scene') {
-            result = await withTimeout(sceneScript<unknown>('run-code', ctx.code, ctx.args), timeoutMs, 'scene');
-        } else {
-            result = await withTimeout(runEditorCode(ctx.code, ctx.args), timeoutMs, 'editor');
-        }
-
-        for (const guard of getExecuteGuards()) {
-            if (guard.after) {
-                const guarded = await guard.after(ctx, result);
-                if (guarded !== undefined) result = guarded;
+            for (const guard of getExecuteGuards()) {
+                if (guard.before) ctx = (await guard.before(ctx)) ?? ctx;
             }
-        }
 
-        return { result: result === undefined ? null : result };
+            let result: unknown;
+            const timeoutMs = args.timeout_ms ?? DEFAULT_TIMEOUT_MS;
+            if (ctx.context === 'scene') {
+                result = await withTimeout(sceneScript<unknown>('run-code', ctx.code, ctx.args), timeoutMs, 'scene');
+            } else {
+                result = await withTimeout(runEditorCode(ctx.code, ctx.args), timeoutMs, 'editor');
+            }
+
+            for (const guard of getExecuteGuards()) {
+                if (guard.after) {
+                    const guarded = await guard.after(ctx, result);
+                    if (guarded !== undefined) result = guarded;
+                }
+            }
+
+            return { result: result === undefined ? null : result };
+        } catch (err: unknown) {
+            if (err instanceof ToolError) throw err;
+            const message = err instanceof Error ? err.message : String(err);
+            if (/safety checks blocked/i.test(message)) {
+                throw new ToolError({
+                    code: 'SAFETY_BLOCKED',
+                    status: 400,
+                    message,
+                    recovery: 'Use project-relative file tools, or pass safety_checks=false after reviewing risk.',
+                });
+            }
+            if (/timed out/i.test(message)) {
+                throw new ToolError({
+                    code: 'TIMEOUT',
+                    status: 422,
+                    message,
+                    recovery: 'Increase timeout_ms or avoid awaiting a promise that never settles.',
+                });
+            }
+            throw new ToolError({
+                code: 'SCRIPT_ERROR',
+                status: 422,
+                message,
+                recovery: 'Fix the script. The error message is the thrown/syntax/runtime failure.',
+            });
+        }
     }
 }

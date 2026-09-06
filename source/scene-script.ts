@@ -129,23 +129,19 @@
                 let result = await fn(args ?? {}, ...values);
                 if (result === undefined || result === null) {
                     result = null;
-                } else {
+                } else if (typeof result === 'object') {
+                    const seen = new WeakSet<object>();
                     try {
-                        JSON.stringify(result);
+                        result = JSON.parse(JSON.stringify(result, (_key, val: unknown) => {
+                            if (typeof val === 'function' || typeof val === 'bigint' || typeof val === 'symbol') return undefined;
+                            if (val && typeof val === 'object') {
+                                if (seen.has(val)) return undefined;
+                                seen.add(val);
+                            }
+                            return val;
+                        }));
                     } catch {
-                        const seen = new WeakSet<object>();
-                        try {
-                            result = JSON.parse(JSON.stringify(result, (_key, val: unknown) => {
-                                if (typeof val === 'function' || typeof val === 'bigint' || typeof val === 'symbol') return undefined;
-                                if (val && typeof val === 'object') {
-                                    if (seen.has(val)) return undefined;
-                                    seen.add(val);
-                                }
-                                return val;
-                            }));
-                        } catch {
-                            result = null;
-                        }
+                        result = null;
                     }
                 }
                 if (event.reply) { event.reply(null, result); }
@@ -520,6 +516,49 @@
                 .filter(function (c: any) { return !isEditorNode(c); })
                 .forEach(function (c: any) { walk(c, ''); });
 
+            event.reply(null, { nodes: found, truncated: truncated, maxResults: maxResults });
+        },
+
+        'find-missing-assets': function (event: any, opts: any) {
+            const scene = cc.director.getScene();
+            if (!scene) { return event.reply(new Error('no scene open')); }
+            const rawMax = opts && opts.maxResults;
+            const maxResults = (typeof rawMax === 'number' && rawMax > 0) ? rawMax : 200;
+            const found: any[] = [];
+            let truncated = false;
+            const ASSET_KEYS = {
+                spriteFrame: 1, texture: 1, font: 1, clip: 1, defaultClip: 1,
+                skeletonData: 1, dragonAsset: 1, dragonAtlasAsset: 1, file: 1,
+                tmxAsset: 1, material: 1, mesh: 1,
+            };
+            function scanComponent(node: any, path: string, comp: any) {
+                for (const k in ASSET_KEYS) {
+                    if (found.length >= maxResults) { truncated = true; return; }
+                    let v: any;
+                    try { v = comp[k]; } catch (e) { continue; }
+                    if (v === undefined) { continue; }
+                    if (v === null) {
+                        found.push({ uuid: node.uuid, name: node.name, path: path, component: className(comp), property: k, reason: 'null' });
+                        continue;
+                    }
+                    if (v && typeof v === 'object' && isRefLike(v)) {
+                        const id = v.uuid || v._uuid || '';
+                        if (!id) {
+                            found.push({ uuid: node.uuid, name: node.name, path: path, component: className(comp), property: k, reason: 'empty-uuid' });
+                        }
+                    }
+                }
+            }
+            function walk(node: any, parentPath: string) {
+                if (found.length >= maxResults) { truncated = true; return; }
+                const p = parentPath ? parentPath + '/' + node.name : node.name;
+                const comps = node._components || [];
+                for (let i = 0; i < comps.length; i++) { scanComponent(node, p, comps[i]); }
+                (node.children || []).forEach(function (c: any) { walk(c, p); });
+            }
+            (scene.children || [])
+                .filter(function (c: any) { return !isEditorNode(c); })
+                .forEach(function (c: any) { walk(c, ''); });
             event.reply(null, { nodes: found, truncated: truncated, maxResults: maxResults });
         },
 
@@ -1009,14 +1048,18 @@
                 event.reply(null, { result: out });
             } catch(e:any){ event.reply(e); }
         },
-        'node-reset': function (event: any, uuid: string) {
+        'node-reset': function (event: any, uuid: string, path?: string) {
             try{
                 const mod:any = Editor.require('scene://set-property-by-path');
                 const fn = mod.resetPropertyByPath || mod.resetProperty;
                 let node:any=null; try{ if(cc.engine && (cc.engine as any).getInstanceById) node=(cc.engine as any).getInstanceById(uuid);}catch{}
                 if(!node){ (function walk(n:any){ if(node||!n) return; if(n.uuid===uuid){node=n;return;} (n.children||[]).forEach(walk); })(cc.director.getScene()); }
                 if(!node) return event.reply(new Error('node not found: '+uuid));
-                if(typeof fn==='function'){ fn(node.uuid, 'position'); fn(node.uuid, 'rotation'); fn(node.uuid, 'scale'); event.reply(null, { uuid, reset:true }); }
+                if(typeof fn==='function'){
+                    if(path){ fn(node.uuid, path); event.reply(null, { uuid, reset:true, path }); return; }
+                    fn(node.uuid, 'position'); fn(node.uuid, 'rotation'); fn(node.uuid, 'scale');
+                    event.reply(null, { uuid, reset:true });
+                }
                 else { node.setPosition(0,0,0); event.reply(null, { uuid, reset:true, fallback:true }); }
             } catch(e:any){ event.reply(e); }
         },
@@ -1132,6 +1175,316 @@
                 }
                 parent.addChild(node);
                 event.reply(null, { uuid: node.uuid, name: node.name, parent: parent.name });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'create-ui-node': function (event: any, opts: any) {
+            try {
+                opts = opts || {};
+                const uiType = String(opts.uiType || '');
+                const typeMap: Record<string, string> = {
+                    Canvas: 'cc.Canvas', Label: 'cc.Label', Button: 'cc.Button', Sprite: 'cc.Sprite',
+                    Widget: 'cc.Widget', ScrollView: 'cc.ScrollView', Toggle: 'cc.Toggle',
+                    ProgressBar: 'cc.ProgressBar', Slider: 'cc.Slider', EditBox: 'cc.EditBox',
+                    Layout: 'cc.Layout', Graphics: 'cc.Graphics', Mask: 'cc.Mask',
+                    PageView: 'cc.PageView', RichText: 'cc.RichText',
+                };
+                if (uiType !== 'Node' && !typeMap[uiType]) {
+                    return event.reply(new Error('Unknown UI type: ' + uiType + '. Available: ' + Object.keys(typeMap).concat(['Node']).join(', ')));
+                }
+                const node = new cc.Node(opts.name || uiType || 'Node');
+                let parent: any = cc.director.getScene();
+                const parentUuid = opts.parentUuid || '';
+                if (parentUuid) {
+                    try { if (cc.engine && cc.engine.getInstanceById) { parent = cc.engine.getInstanceById(parentUuid) || parent; } } catch (e) {}
+                    if (parent.uuid !== parentUuid) {
+                        let found: any = null;
+                        (function walk(n: any) { if (found || !n) return; if (n.uuid === parentUuid) { found = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                        if (found) { parent = found; }
+                    }
+                }
+                function applyColor(comp: any, raw: any) {
+                    if (!raw || !comp) return;
+                    let c: any = null;
+                    const s = String(raw);
+                    if (s.charAt(0) === '#' && s.length === 7) {
+                        c = new cc.Color(parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16));
+                    } else {
+                        const parts = s.split(',').map(Number);
+                        if (parts.length >= 3 && parts.every((n) => Number.isFinite(n))) {
+                            c = new cc.Color(parts[0], parts[1], parts[2], parts[3] == null ? 255 : parts[3]);
+                        }
+                    }
+                    if (c) {
+                        if (comp.node) { comp.node.color = c; }
+                        else { comp.color = c; }
+                    }
+                }
+                if (uiType !== 'Node') {
+                    const comp = node.addComponent(typeMap[uiType]);
+                    if (!comp) { return event.reply(new Error('addComponent returned null for ' + typeMap[uiType])); }
+                    if (uiType === 'Label' || uiType === 'RichText') {
+                        if (opts.text != null) { comp.string = String(opts.text); }
+                        if (opts.fontSize != null && Number.isFinite(Number(opts.fontSize))) { comp.fontSize = Number(opts.fontSize); }
+                        applyColor(comp, opts.color);
+                    }
+                    if (uiType === 'Button') {
+                        const labelNode = new cc.Node('Label');
+                        const label = labelNode.addComponent(cc.Label);
+                        if (label && opts.text != null) { label.string = String(opts.text); }
+                        node.addChild(labelNode);
+                    }
+                    if (uiType === 'Sprite' && opts.spriteFrameUuid) {
+                        let sf: any = null;
+                        try { if (cc.engine && cc.engine.getInstanceById) { sf = cc.engine.getInstanceById(opts.spriteFrameUuid); } } catch (e) {}
+                        if (sf) { comp.spriteFrame = sf; }
+                    }
+                }
+                parent.addChild(node);
+                event.reply(null, { uuid: node.uuid, name: node.name, uiType: uiType, parent: parent.name });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'runtime-pause': function (event: any) {
+            try { cc.director.pause(); event.reply(null, true); } catch (e: any) { event.reply(e); }
+        },
+        'runtime-resume': function (event: any) {
+            try { cc.director.resume(); event.reply(null, true); } catch (e: any) { event.reply(e); }
+        },
+        'runtime-set-timescale': function (event: any, scale: number) {
+            try {
+                const scheduler = cc.director.getScheduler();
+                if (!scheduler || typeof scheduler.setTimeScale !== 'function') {
+                    return event.reply(new Error('director scheduler setTimeScale unavailable'));
+                }
+                scheduler.setTimeScale(scale);
+                event.reply(null, true);
+            } catch (e: any) { event.reply(e); }
+        },
+        'runtime-get-state': function (event: any) {
+            try {
+                const paused = !!(cc.director.isPaused && cc.director.isPaused());
+                let timeScale = 1;
+                try { timeScale = cc.director.getScheduler().getTimeScale(); } catch (e) {}
+                let frameCount = 0;
+                try {
+                    if (typeof (cc.director as any).getTotalFrames === 'function') {
+                        frameCount = (cc.director as any).getTotalFrames();
+                    }
+                } catch (e) {}
+                event.reply(null, { paused: paused, timeScale: timeScale, frameCount: frameCount });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'animation-query': function (event: any, opts: any) {
+            try {
+                opts = opts || {};
+                const uuid = opts.nodeUuid || '';
+                let node: any = null;
+                try { if (uuid && cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+                if (!node && uuid) {
+                    (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                }
+                if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+                function animOn(n: any) { return n && n.getComponent ? n.getComponent(cc.Animation) : null; }
+                let root = node;
+                let anim = animOn(root);
+                while (!anim && root.parent) { root = root.parent; anim = animOn(root); }
+                if (!anim) { return event.reply(new Error('cc.Animation not found on node or ancestors')); }
+                const clips = anim.getClips ? anim.getClips() : (anim.clips || anim._clips || []);
+                const slim = (Array.isArray(clips) ? clips : []).map((c: any) => ({
+                    name: c && (c.name || c._name) || null,
+                    uuid: c && (c.uuid || c._uuid) || null,
+                    duration: c && c.duration,
+                    sample: c && c.sample,
+                    wrapMode: c && c.wrapMode,
+                }));
+                const op = opts.operation;
+                if (op === 'root') {
+                    return event.reply(null, { uuid: root.uuid, name: root.name });
+                }
+                if (op === 'root_info' || op === 'edit_info') {
+                    return event.reply(null, { uuid: root.uuid, name: root.name, clips: slim, defaultClip: anim.defaultClip || anim._defaultClip || null, playOnLoad: anim.playOnLoad });
+                }
+                function currentState() {
+                    let playing = false;
+                    let time = 0;
+                    let current: any = null;
+                    try {
+                        const clip = anim.currentClip || anim.defaultClip;
+                        const name = clip && (clip.name || clip._name);
+                        const st = name && anim.getAnimationState ? anim.getAnimationState(name) : null;
+                        if (st) {
+                            playing = !!st.isPlaying;
+                            time = st.time || 0;
+                            current = { name: name, duration: st.duration, wrapMode: st.wrapMode };
+                        }
+                    } catch (e) {}
+                    return { uuid: root.uuid, playing: playing, time: time, current: current };
+                }
+                if (op === 'current_info' || op === 'state') {
+                    return event.reply(null, currentState());
+                }
+                if (op === 'clip_time') {
+                    const st = currentState();
+                    const name = opts.clipName || (st.current && st.current.name);
+                    if (name && anim.getAnimationState) {
+                        try {
+                            const s = anim.getAnimationState(name);
+                            if (s) return event.reply(null, { name: name, time: s.time || 0, duration: s.duration, playing: !!s.isPlaying });
+                        } catch (e) {}
+                    }
+                    return event.reply(null, st);
+                }
+                if (op === 'value_at_frame') {
+                    const name = opts.clipName || '';
+                    const clip = (Array.isArray(clips) ? clips : []).find((c: any) => (c && (c.name || c._name)) === name) || clips[0];
+                    if (!clip) { return event.reply(new Error('clip not found')); }
+                    const frame = Number(opts.frame);
+                    const propKey = opts.propKey || '';
+                    const nodePath = opts.nodePath || '';
+                    const data = clip.curveData || clip.curves || null;
+                    let keys: any = null;
+                    if (data && data.paths && nodePath && data.paths[nodePath] && data.paths[nodePath].props) {
+                        keys = data.paths[nodePath].props[propKey];
+                    } else if (data && data.props) {
+                        keys = data.props[propKey];
+                    }
+                    let value = null;
+                    if (Array.isArray(keys)) {
+                        for (let i = 0; i < keys.length; i++) {
+                            const k = keys[i];
+                            const f = (k && (k.frame != null ? k.frame : k[0]));
+                            if (f != null && f <= frame) { value = k.value != null ? k.value : k[1]; }
+                        }
+                    }
+                    return event.reply(null, { clip: clip.name || clip._name, nodePath: nodePath, propKey: propKey, frame: frame, value: value, keyCount: Array.isArray(keys) ? keys.length : 0 });
+                }
+                return event.reply(new Error('Unknown animationQuery operation: ' + op));
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'array-element': function (event: any, opts: any) {
+            try {
+                opts = opts || {};
+                const uuid = opts.uuid;
+                let target: any = null;
+                try { if (cc.engine && cc.engine.getInstanceById) { target = cc.engine.getInstanceById(uuid); } } catch (e) {}
+                if (!target) {
+                    let node: any = null;
+                    (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                    target = node;
+                }
+                if (!target) { return event.reply(new Error('target not found: ' + uuid)); }
+                if (opts.compType && target.getComponent) {
+                    const comp = target.getComponent(opts.compType);
+                    if (!comp) { return event.reply(new Error('component not found: ' + opts.compType)); }
+                    target = comp;
+                }
+                const parts = String(opts.propertyPath || '').split('.');
+                let cur: any = target;
+                for (let i = 0; i < parts.length; i++) {
+                    if (cur == null) { return event.reply(new Error('path segment not found: ' + parts.slice(0, i).join('.'))); }
+                    if (i === parts.length - 1) {
+                        const arr = cur[parts[i]];
+                        if (!Array.isArray(arr)) { return event.reply(new Error('property is not an array: ' + opts.propertyPath)); }
+                        const index = opts.index;
+                        if (index < 0 || index >= arr.length) { return event.reply(new Error('index out of range: ' + index)); }
+                        if (opts.operation === 'remove') {
+                            arr.splice(index, 1);
+                        } else if (opts.operation === 'move') {
+                            const toIndex = opts.toIndex;
+                            if (toIndex < 0 || toIndex >= arr.length) { return event.reply(new Error('toIndex out of range: ' + toIndex)); }
+                            if (toIndex !== index) {
+                                const [item] = arr.splice(index, 1);
+                                arr.splice(toIndex, 0, item);
+                            }
+                        } else {
+                            return event.reply(new Error('unknown operation: ' + opts.operation));
+                        }
+                        return event.reply(null, { success: true, length: arr.length });
+                    }
+                    cur = cur[parts[i]];
+                }
+                return event.reply(new Error('empty propertyPath'));
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'simulate-button-click': function (event: any, uuid: string) {
+            try {
+                let node: any = null;
+                try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+                if (!node) {
+                    (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                }
+                if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+                const btn = node.getComponent(cc.Button);
+                if (!btn) { return event.reply(new Error('cc.Button not found on ' + node.name)); }
+                const events = btn.clickEvents || [];
+                if (cc.Component && cc.Component.EventHandler && typeof cc.Component.EventHandler.emitEvents === 'function') {
+                    cc.Component.EventHandler.emitEvents(events, { type: 'click', target: node, currentTarget: node });
+                }
+                event.reply(null, { handlersFired: events.length, method: 'clickEvents' });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'bind-button-click': function (event: any, opts: any) {
+            try {
+                opts = opts || {};
+                const uuid = opts.uuid;
+                let node: any = null;
+                try { if (cc.engine && cc.engine.getInstanceById) { node = cc.engine.getInstanceById(uuid); } } catch (e) {}
+                if (!node) {
+                    (function walk(n: any) { if (node || !n) return; if (n.uuid === uuid) { node = n; return; } (n.children || []).forEach(walk); })(cc.director.getScene());
+                }
+                if (!node) { return event.reply(new Error('node not found: ' + uuid)); }
+                const btn = node.getComponent(cc.Button);
+                if (!btn) { return event.reply(new Error('cc.Button not found on ' + node.name)); }
+                let targetNode = node;
+                if (!node.getComponent(opts.componentType)) {
+                    let found: any = null;
+                    (function walk(n: any) {
+                        if (found || !n) return;
+                        if (n.getComponent && n.getComponent(opts.componentType)) { found = n; return; }
+                        (n.children || []).forEach(walk);
+                    })(node);
+                    if (found) { targetNode = found; }
+                }
+                const handler = new cc.Component.EventHandler();
+                handler.target = targetNode;
+                handler.component = opts.componentType;
+                handler.handler = opts.handlerName;
+                handler.customEventData = opts.customEventData || '';
+                if (!btn.clickEvents) { btn.clickEvents = []; }
+                btn.clickEvents.push(handler);
+                event.reply(null, { handlerCount: btn.clickEvents.length });
+            } catch (e: any) { event.reply(e); }
+        },
+
+        'scene-perf': function (event: any) {
+            try {
+                const scene = cc.director.getScene();
+                if (!scene) { return event.reply(new Error('no scene open')); }
+                let nodeCount = 0;
+                let componentCount = 0;
+                let uiNodeCount = 0;
+                let activeNodes = 0;
+                let maxDepth = 0;
+                function walk(n: any, depth: number) {
+                    if (!n) return;
+                    if (isEditorNode(n) && depth === 0) return;
+                    nodeCount++;
+                    if (n.active) { activeNodes++; }
+                    if (depth > maxDepth) { maxDepth = depth; }
+                    const comps = n._components || [];
+                    componentCount += comps.length;
+                    if (n.getComponent && (n.getComponent(cc.Widget) || n.getComponent(cc.Canvas) || n.getComponent(cc.Button) || n.getComponent(cc.Label))) {
+                        uiNodeCount++;
+                    }
+                    (n.children || []).forEach(function (c: any) { walk(c, depth + 1); });
+                }
+                (scene.children || []).forEach(function (c: any) { walk(c, 0); });
+                event.reply(null, { nodeCount: nodeCount, componentCount: componentCount, uiNodeCount: uiNodeCount, maxDepth: maxDepth, activeNodes: activeNodes, warnings: [] });
             } catch (e: any) { event.reply(e); }
         },
 

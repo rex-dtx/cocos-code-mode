@@ -45,6 +45,50 @@ export class AssetWriteTools {
     }
 
     @utcpTool(
+        'assetCreate',
+        'Create a 2.4 asset from a template preset (folder, javascript, json, animation-clip, prefab, markdown, text).',
+        {
+            type: 'object',
+            properties: {
+                assetPath: { type: 'string', description: 'db:// path, with or without extension' },
+                preset: { type: 'string', enum: ['folder', 'javascript', 'json', 'animation-clip', 'prefab', 'markdown', 'text'] },
+            },
+            required: ['assetPath', 'preset'],
+        },
+        { type: 'object', properties: { url: { type: 'string' }, fspath: { type: 'string' }, preset: { type: 'string' } }, required: ['url'] },
+        'POST',
+        ['asset', 'create', 'template', 'preset', 'javascript', 'anim', 'prefab']
+    )
+    async assetCreate(args: { assetPath: string, preset: string }): Promise<any> {
+        let url = args.assetPath.startsWith('db://') ? args.assetPath : `db://assets/${args.assetPath.replace(/^\/+/, '')}`;
+        if (args.preset === 'folder') {
+            return { ...(await this.assetCreateFolder({ url })), preset: 'folder' };
+        }
+        const ext: Record<string, string> = {
+            javascript: '.js',
+            json: '.json',
+            'animation-clip': '.anim',
+            prefab: '.prefab',
+            markdown: '.md',
+            text: '.txt',
+        };
+        const want = ext[args.preset];
+        if (!want) throw new Error('Unknown preset: ' + args.preset);
+        if (!url.endsWith(want)) url += want;
+        const name = url.replace(/^.*\//, '').replace(/\.[^.]+$/, '');
+        const templates: Record<string, string> = {
+            javascript: `cc.Class({\n    extends: cc.Component,\n    properties: {},\n    onLoad () {},\n    start () {},\n});\n`,
+            json: '{}\n',
+            'animation-clip': JSON.stringify({ __type__: 'cc.AnimationClip', _name: name, sample: 60, _duration: 0, curveData: {} }, null, 2) + '\n',
+            prefab: JSON.stringify([{ __type__: 'cc.Prefab', _name: name }, { __type__: 'cc.Node', _name: name, _children: [], _components: [] }], null, 2) + '\n',
+            markdown: `# ${name}\n`,
+            text: '',
+        };
+        const written = await this.assetWriteContent({ url, content: templates[args.preset] });
+        return { ...written, preset: args.preset };
+    }
+
+    @utcpTool(
         'assetWriteContent',
         'Write text content to an asset file (creates if not exists). Triggers asset-db refresh.',
         {
@@ -238,5 +282,29 @@ export class AssetWriteTools {
             } catch { resolve([]); }
         });
         return { url, results: results || [] };
+    }
+
+    @utcpTool(
+        'assetCopy',
+        'Copy an asset to a new db:// path. Fails if dest already exists.',
+        {
+            type: 'object',
+            properties: {
+                srcUrl: { type: 'string', description: 'Source db:// url' },
+                destUrl: { type: 'string', description: 'Destination db:// url' },
+            },
+            required: ['srcUrl', 'destUrl'],
+        },
+        { type: 'object', properties: { srcUrl: { type: 'string' }, destUrl: { type: 'string' }, uuid: { type: 'string' } } },
+        'POST', ['asset', 'copy', 'duplicate', 'clone']
+    )
+    async assetCopy(args: { srcUrl: string, destUrl: string }): Promise<any> {
+        const src = requireUrl(args.srcUrl);
+        const dest = requireUrl(args.destUrl);
+        if ((Editor.assetdb as any).exists && Editor.assetdb.exists(dest)) {
+            throw new Error('Destination already exists: ' + dest);
+        }
+        await cbToPromise<void>((cb) => (Editor.assetdb as any).copy(src, dest, cb as any));
+        return { srcUrl: src, destUrl: dest, uuid: Editor.assetdb.urlToUuid(dest) || '' };
     }
 }

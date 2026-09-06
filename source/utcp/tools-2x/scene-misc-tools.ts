@@ -45,6 +45,18 @@ export class SceneMiscTools {
     }
 
     @utcpTool(
+        'sceneClose',
+        'Close the current scene (scene:close-scene IPC). Fire-and-forget — save first if dirty.',
+        { type: 'object', properties: {} },
+        { type: 'object', properties: { success: { type: 'boolean' }, note: { type: 'string' } }, required: ['success'] },
+        'POST', ['scene', 'close', 'lifecycle']
+    )
+    async sceneClose(): Promise<any> {
+        Editor.Ipc.sendToPanel('scene', 'scene:close-scene' as any);
+        return { success: true, note: 'fire-and-forget; verify with sceneInfo' };
+    }
+
+    @utcpTool(
         'prefabSync',
         'Apply prefab instance changes back to the prefab asset (scene:set-prefab-sync, forum reply #41). Fire-and-forget.',
         {

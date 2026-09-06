@@ -8,22 +8,29 @@ import { sceneScript } from '../utils/ipc-promise';
 export class AnimationTools2x {
     @utcpTool(
         'animationQuery',
-        'Query animation on node (cc.Animation): list clips, dump one clip, or all props.',
+        'Query animation on node (cc.Animation): clips_info, clip_dump, properties, state, plus 2.4-adapted root_info/root/edit_info/current_info/clip_time/value_at_frame.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['clips_info', 'clip_dump', 'properties', 'state'], description: 'clips_info|clip_dump|properties|state' },
-                nodeUuid: { type: 'string', description: 'Node with cc.Animation' },
+                operation: {
+                    type: 'string',
+                    enum: ['clips_info', 'clip_dump', 'properties', 'state', 'root_info', 'root', 'edit_info', 'current_info', 'clip_time', 'value_at_frame'],
+                    description: 'Which animation query',
+                },
+                nodeUuid: { type: 'string', description: 'Node with cc.Animation (or a descendant)' },
                 path: { type: 'string', description: 'Alternative to nodeUuid: cc.find path' },
-                clipName: { type: 'string', description: 'For clip_dump: clip name or url' },
+                clipName: { type: 'string', description: 'For clip_dump / clip_time / value_at_frame' },
                 includeCurves: { type: 'boolean', description: 'For clip_dump: include full curves (large)', default: false },
+                nodePath: { type: 'string', description: 'For value_at_frame: path relative to animation root' },
+                propKey: { type: 'string', description: 'For value_at_frame: property key, e.g. x or position' },
+                frame: { type: 'number', description: 'For value_at_frame: frame index' },
             },
             required: ['operation'],
         },
         { type: 'object', properties: { result: {} }, required: ['result'] },
         'GET', ['animation', 'clip', 'query', 'anim']
     )
-    async animationQuery(args: { operation: string, nodeUuid?: string, path?: string, clipName?: string, includeCurves?: boolean }): Promise<any> {
+    async animationQuery(args: { operation: string, nodeUuid?: string, path?: string, clipName?: string, includeCurves?: boolean, nodePath?: string, propKey?: string, frame?: number }): Promise<any> {
         const op = args.operation;
         if (!args.nodeUuid && !args.path) throw new Error('animationQuery requires nodeUuid or path');
         // Resolve node -> we need uuid for scene-script; if path given, resolve via assetdb/node query?
@@ -97,8 +104,18 @@ export class AnimationTools2x {
                 // 2.4 Animation state: isPlaying etc are runtime, not serializable — return what we have
                 return { result: { uuid, isPlaying: props.isPlaying ?? null, currentClip: props.currentClip || null, props } };
             }
-            default:
-                throw new Error(`Unknown animationQuery operation: ${op}`);
+            default: {
+                const extra = await sceneScript<any>('animation-query', {
+                    operation: op,
+                    nodeUuid: uuid,
+                    clipName: args.clipName || '',
+                    includeCurves: !!args.includeCurves,
+                    nodePath: args.nodePath || '',
+                    propKey: args.propKey || '',
+                    frame: args.frame,
+                });
+                return { result: extra };
+            }
         }
     }
 

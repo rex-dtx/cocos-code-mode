@@ -1,5 +1,6 @@
 import { utcpTool } from '../decorators';
 import { panelIpc, sceneScript } from '../utils/ipc-promise';
+import { ToolError } from '../tool-error';
 
 /**
  * Write tools — probe verified direct assign (x: 0→999 OK).
@@ -88,6 +89,105 @@ export class SceneWriteTools {
     )
     async nodeCreate(args: { name: string, parentUuid?: string }): Promise<any> {
         return sceneScript<any>('create-node', args.name, args.parentUuid || '');
+    }
+
+    @utcpTool(
+        'createUiNode',
+        'Create a 2.4 UI node by adding the matching cc.* component (Canvas, Label, Button, Sprite, Widget, ScrollView, Toggle, ProgressBar, Slider, EditBox, Layout, Graphics, Mask, PageView, RichText).',
+        {
+            type: 'object',
+            properties: {
+                uiType: { type: 'string', enum: ['Canvas', 'Label', 'Button', 'Sprite', 'Widget', 'ScrollView', 'Toggle', 'ProgressBar', 'Slider', 'EditBox', 'Layout', 'Graphics', 'Mask', 'PageView', 'RichText', 'Node'] },
+                name: { type: 'string', description: 'Node name (defaults to uiType)' },
+                parentUuid: { type: 'string', description: 'Parent node uuid; omit for scene root' },
+                text: { type: 'string', description: 'Label/Button text' },
+                fontSize: { type: 'number', description: 'Label font size' },
+                color: { type: 'string', description: 'Label color as #RRGGBB or r,g,b' },
+                spriteFrameUuid: { type: 'string', description: 'SpriteFrame uuid for Sprite' },
+            },
+            required: ['uiType'],
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' }, uiType: { type: 'string' } }, required: ['uuid'] },
+        'POST',
+        ['ui', 'create', 'canvas', 'label', 'button', 'sprite', 'widget', '2d', 'panel']
+    )
+    async createUiNode(args: { uiType: string, name?: string, parentUuid?: string, text?: string, fontSize?: number, color?: string, spriteFrameUuid?: string }): Promise<any> {
+        return sceneScript<any>('create-ui-node', {
+            uiType: args.uiType,
+            name: args.name || args.uiType,
+            parentUuid: args.parentUuid || '',
+            text: args.text,
+            fontSize: args.fontSize,
+            color: args.color,
+            spriteFrameUuid: args.spriteFrameUuid,
+        });
+    }
+
+    @utcpTool(
+        'createLabel',
+        'Create a cc.Label node with optional text, font size, and color.',
+        {
+            type: 'object',
+            properties: {
+                name: { type: 'string', description: 'Node name (default Label)' },
+                text: { type: 'string', description: 'Label string' },
+                fontSize: { type: 'number', description: 'Font size' },
+                color: { type: 'string', description: 'Color as #RRGGBB or r,g,b' },
+                parentUuid: { type: 'string', description: 'Parent node uuid' },
+            },
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' } }, required: ['uuid'] },
+        'POST',
+        ['ui', 'label', 'text', 'create', '2d']
+    )
+    async createLabel(args: { name?: string, text?: string, fontSize?: number, color?: string, parentUuid?: string } = {}): Promise<any> {
+        return this.createUiNode({ uiType: 'Label', name: args.name || 'Label', parentUuid: args.parentUuid, text: args.text, fontSize: args.fontSize, color: args.color });
+    }
+
+    @utcpTool(
+        'createButton',
+        'Create a cc.Button node with a child Label. Optional label text.',
+        {
+            type: 'object',
+            properties: {
+                name: { type: 'string', description: 'Node name (default Button)' },
+                text: { type: 'string', description: 'Child label text' },
+                parentUuid: { type: 'string', description: 'Parent node uuid' },
+            },
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' } }, required: ['uuid'] },
+        'POST',
+        ['ui', 'button', 'create', '2d', 'interactive']
+    )
+    async createButton(args: { name?: string, text?: string, parentUuid?: string } = {}): Promise<any> {
+        return this.createUiNode({ uiType: 'Button', name: args.name || 'Button', parentUuid: args.parentUuid, text: args.text });
+    }
+
+    @utcpTool(
+        'createSprite',
+        'Create a cc.Sprite node, optionally assigning a SpriteFrame uuid.',
+        {
+            type: 'object',
+            properties: {
+                name: { type: 'string', description: 'Node name (default Sprite)' },
+                spriteFrameUuid: { type: 'string', description: 'SpriteFrame asset/instance uuid' },
+                parentUuid: { type: 'string', description: 'Parent node uuid' },
+            },
+        },
+        { type: 'object', properties: { uuid: { type: 'string' }, name: { type: 'string' } }, required: ['uuid'] },
+        'POST',
+        ['ui', 'sprite', 'image', 'create', '2d']
+    )
+    async createSprite(args: { name?: string, spriteFrameUuid?: string, parentUuid?: string } = {}): Promise<any> {
+        if (args.spriteFrameUuid === '') {
+            throw new ToolError({
+                code: 'INVALID_INPUT',
+                status: 400,
+                message: 'spriteFrameUuid must be a non-empty uuid when provided',
+                recovery: 'Omit spriteFrameUuid or pass a SpriteFrame uuid from assetQuery.',
+            });
+        }
+        return this.createUiNode({ uiType: 'Sprite', name: args.name || 'Sprite', parentUuid: args.parentUuid, spriteFrameUuid: args.spriteFrameUuid });
     }
 
     @utcpTool(
@@ -241,17 +341,20 @@ export class SceneWriteTools {
 
     @utcpTool(
         'nodeReset',
-        'Reset node transform via resetPropertyByPath (undo-aware).',
+        'Reset node transform (position/rotation/scale) or one property path via resetPropertyByPath (undo-aware). 2.4 has no reset-component IPC.',
         {
             type: 'object',
-            properties: { uuid: { type: 'string', description: 'Node uuid' } },
+            properties: {
+                uuid: { type: 'string', description: 'Node uuid' },
+                path: { type: 'string', description: 'Optional single property path, e.g. "position". Omit to reset transform.' },
+            },
             required: ['uuid'],
         },
-        { type: 'object', properties: { uuid: { type: 'string' }, reset: { type: 'boolean' } } },
+        { type: 'object', properties: { uuid: { type: 'string' }, reset: { type: 'boolean' }, path: { type: 'string' } } },
         'POST', ['scene','node','reset','property']
     )
-    async nodeReset(args: { uuid: string }): Promise<any> {
-        return sceneScript<any>('node-reset', args.uuid);
+    async nodeReset(args: { uuid: string, path?: string }): Promise<any> {
+        return sceneScript<any>('node-reset', args.uuid, args.path || '');
     }
 
     @utcpTool(
