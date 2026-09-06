@@ -6,7 +6,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "loopback": "tsx scripts/cc-bridge-loopback.ts"
+    "loopback": "tsx scripts/cc-bridge-loopback.ts",
+    "start": "tsx src/server.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
