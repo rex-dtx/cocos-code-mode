@@ -2,7 +2,11 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
 const { createHash, generateKeyPairSync, sign } = require("node:crypto");
-const { acceptSignedReleaseSet } = require("../../dist/update/metadata.js");
+const { mkdirSync, mkdtempSync, rmSync } = require("node:fs");
+const { homedir } = require("node:os");
+const { join } = require("node:path");
+const { acceptSignedReleaseSet, applySignedReleaseSet } = require("../../dist/update/metadata.js");
+const { UpdateStateStore } = require("../../dist/update/state.js");
 
 const PREFIX = {
   root: Buffer.from("CCB1 release-root\n"),
@@ -83,5 +87,37 @@ describe("signed release set acceptance", () => {
       rootThreshold: 1,
       state: state(),
     }), /digest mismatch/);
+  });
+
+  it("persists accepted sequences and refuses a lower root version", () => {
+    mkdirSync(join(homedir(), ".cc-bridge"), { recursive: true });
+    const dir = mkdtempSync(join(homedir(), ".cc-bridge", "update-chain-"));
+    try {
+      const store = new UpdateStateStore(join(dir, "update-state-v1.json"));
+      const set = fixtures();
+      const persisted = applySignedReleaseSet(store, {
+        root: set.root,
+        target: set.target,
+        policy: set.policy,
+        trustedRootKeys: trusted,
+        rootThreshold: 1,
+      });
+      assert.equal(persisted.highestPolicySequence, 1);
+      assert.equal(store.load().highestTargetSequence, 1);
+      const lower = fixtures();
+      // Re-sign a rootVersion 0 body with the trusted root key.
+      const rootBody = JSON.parse(Buffer.from(lower.root.payload, "base64url").toString("utf8"));
+      rootBody.rootVersion = 0;
+      lower.root = wrap("root", "root-1", rootBody, rootKeys.privateKey);
+      assert.throws(() => applySignedReleaseSet(store, {
+        root: lower.root,
+        target: lower.target,
+        policy: lower.policy,
+        trustedRootKeys: trusted,
+        rootThreshold: 1,
+      }), /rolled back/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

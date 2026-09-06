@@ -1,6 +1,6 @@
 import { createHash, createPublicKey, type KeyLike, verify as ed25519Verify } from "node:crypto";
 import { ED25519_SIGNATURE_BYTES, assertKeyId, decodeBase64Url } from "../protected/protocol";
-import type { UpdateState } from "./state";
+import { UpdateStateStore, type UpdateState } from "./state";
 
 export interface MetadataSignature {
   keyId: string;
@@ -96,4 +96,12 @@ export function acceptSignedReleaseSet(input: {
       highestPolicySequence: Math.max(input.state.highestPolicySequence, policy.policySequence),
     },
   };
+}
+
+export function applySignedReleaseSet(
+  store: UpdateStateStore,
+  input: Omit<Parameters<typeof acceptSignedReleaseSet>[0], "state">,
+): UpdateState {
+  const accepted = acceptSignedReleaseSet({ ...input, state: store.load() });
+  return store.persistIfMonotonic(accepted.nextState);
 }
