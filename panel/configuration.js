@@ -71,6 +71,7 @@ Editor.Panel.extend({
         portInput: '#port-input',
         savePortBtn: '#save-port-btn',
         mcpConfigCode: '#mcp-config-code',
+        agentInstructionCode: '#agent-instruction-code',
         utcpConfigPathInput: '#utcp-config-path',
         utcpConfigPathSaveBtn: '#save-utcp-path-btn',
         bridgeList: '#bridge-container',
@@ -120,7 +121,7 @@ Editor.Panel.extend({
         const configPath = getConfigPath();
         el.textContent = JSON.stringify({
             mcpServers: {
-                "code-mode": {
+                "cc-bridge": {
                     command: "npx",
                     args: ["-y", "@utcp/code-mode-mcp"],
                     env: { UTCP_CONFIG_FILE: configPath }
@@ -142,7 +143,7 @@ Editor.Panel.extend({
         }
         let html = '';
         templates.forEach(function (t) {
-            const isCocos = t.name === 'cc-bridge-2x' || t.name === 'ccb2x' || t.name === 'ccb-2x' || t.name === 'cc_bridge_2x' || t.name === 'ccb_2x';
+            const isCocos = /^(ccb2x(_\d+)?|ccb3x(_\d+)?|cc-bridge-2x|cc-bridge-3x|ccb-2x|cc_bridge_2x|ccb_2x)$/.test(t.name);
             const delBtn = isCocos ? '' : '<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove"><ui-icon value="del"></ui-icon></ui-button>';
             html += '<ui-section class="bridge-item-section" data-name="' + t.name + '">'
                 + '<div slot="header" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding-right:10px;">'
@@ -177,7 +178,7 @@ Editor.Panel.extend({
     },
 
     removeBridge(name) {
-        if (name === 'cc-bridge-2x' || name === 'ccb2x' || name === 'ccb-2x' || name === 'cc_bridge_2x' || name === 'ccb_2x') return;
+        if (/^(ccb2x(_\d+)?|ccb3x(_\d+)?|cc-bridge-2x|cc-bridge-3x|ccb-2x|cc_bridge_2x|ccb_2x)$/.test(name)) return;
         if (!confirm('Remove ' + name + '?')) return;
         const cfg = readUtcpConfig();
         cfg.manual_call_templates = (cfg.manual_call_templates || []).filter(function (t) { return t.name !== name; });
