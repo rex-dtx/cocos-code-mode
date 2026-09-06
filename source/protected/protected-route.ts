@@ -1,4 +1,4 @@
-import { createHash, createPublicKey } from "node:crypto";
+import { createHash } from "node:crypto";
 import { assertIJson, IJson } from "./canonical-json";
 import { createCreatorAdapters } from "./creator-adapters";
 import { CcbError } from "./errors";
@@ -34,9 +34,7 @@ export async function dispatchProtectedCustomerTool(host: ProtectedRelayHost, na
     throw new CcbError("CCB_CONTRACT_MISMATCH", "Protected tool has no v1 public contract yet.", { tool: name });
   }
   host.state.assertActive();
-  const projectId = process.env.CCB_PROJECT_ID;
-  const executionKey = process.env.CCB_EXECUTION_PUBLIC_KEY;
-  if (!host.client || !projectId || !executionKey) {
+  if (!host.client || !host.projectId || host.executionKeys.size === 0) {
     throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Protected tools require a warm Gateway client, project, and execution public key.");
   }
   assertIJson(inputs);
@@ -45,13 +43,13 @@ export async function dispatchProtectedCustomerTool(host: ProtectedRelayHost, na
     state: host.state,
     identity: host.identity,
     identityStore: host.identityStore,
-    projectId,
+    projectId: host.projectId,
     relayInstanceId: host.relayInstanceId,
     sequence: host.replayWindow,
     replayWindow: host.replayWindow,
     journal: host.journal,
     client: host.client,
-    executionKeys: new Map([[process.env.CCB_EXECUTION_KEY_ID || "execution-fixture-1", createPublicKey({ key: Buffer.from(executionKey, "base64url"), format: "der", type: "spki" })]]),
+    executionKeys: host.executionKeys,
     expectedCreatorRange: ">=3.7.0 <3.9.0",
     relay: {
       build: build.version,
