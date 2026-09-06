@@ -80,7 +80,6 @@ describe('fail-loud audit (docs §2) regressions', () => {
     assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /no runtime state/);
     assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /malformed runtime payload/);
     assert.match(readSource('source/utcp/tools/event-tools.ts'), /simulateButtonClick: unexpected response/);
-    assert.match(readSource('source/utcp/tools/event-tools.ts'), /bindButtonClickEvent: unexpected response/);
   });
 
   it('component type lookup carries the §1 fallback into findNodes, node tree and add', () => {

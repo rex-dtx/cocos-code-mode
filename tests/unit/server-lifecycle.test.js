@@ -8,9 +8,11 @@ describe('UtcpServerManager stop', () => {
     const { UtcpServerManager } = requireDist('utcp/utcp-server.js');
     const manager = new UtcpServerManager();
     let finishClose;
-    manager.server = {
-      close(callback) {
-        finishClose = callback;
+    manager.http = {
+      close() {
+        return new Promise((resolve) => {
+          finishClose = resolve;
+        });
       },
     };
 
@@ -21,7 +23,7 @@ describe('UtcpServerManager stop', () => {
 
     finishClose();
     await stopping;
-    assert.equal(manager.server, null);
+    assert.equal(manager.http, null);
     assert.equal(manager.port, 0);
   });
 });

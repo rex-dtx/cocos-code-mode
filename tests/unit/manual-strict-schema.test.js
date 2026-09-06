@@ -68,7 +68,7 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.match(mainSrc, /utcpServer = nextServer/, 'restartServer must reassign utcpServer to the fresh manager');
     assert.match(mainSrc, /await getConfigManager\(\)\.updatePort\(actualPort\)/, 'restartServer must update config after start');
     const serverSrc = readSource('utcp/utcp-server.ts');
-    assert.match(serverSrc, /server\.close\(/, 'stop() must call server.close with callback');
+    assert.match(serverSrc, /await http\.close\(\)/, 'stop() must await LocalHttpServer.close()');
     assert.match(serverSrc, /this\.port = 0/, 'stop() must clear port');
     const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', '..', 'package.json'), 'utf8'));
     const labels = (pkg.contributions?.menu || []).map((m) => String(m.label));

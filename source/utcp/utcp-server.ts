@@ -370,6 +370,8 @@ export class UtcpServerManager {
         }
 
         http.route('GET', '/utcp', ({ response }) => {
+            // Profile annotations remain in ToolProfileRegistry.
+            // Do NOT add fields here — Code Mode rejects extra manual keys.
             const manual: UtcpManual = {
                 utcp_version: '1.0.1',
                 manual_version: '1.0.0',
