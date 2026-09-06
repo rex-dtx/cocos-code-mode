@@ -126,6 +126,19 @@ module.exports = {
         'open-config'() {
             Editor.Panel.open(PKG_NAME);
         },
+        async 'query-status'(event: unknown) {
+            const cm = getConfigManager();
+            const port = await cm.getCurrentPort().catch(() => 0);
+            const configPath = cm.getConfigPath();
+            const payload = {
+                port: port || 0,
+                configPath,
+                url: port ? `http://localhost:${port}/utcp` : '',
+                running: Boolean(utcpServer && port),
+            };
+            const ev = event as { reply?: (err: unknown, data?: unknown) => void };
+            if (ev && typeof ev.reply === 'function') ev.reply(null, payload);
+        },
         'toggle-debug'() {
             if (!utcpServer) return;
             const enabled = utcpServer.toggleDebug();

@@ -1,46 +1,39 @@
 <div class="panel">
-    <div class="section">
-        <h3>Server Configuration</h3>
-        <div class="row">
-            <ui-label>Server Port</ui-label>
-            <ui-num-input id="port-input" value="0" step="1"></ui-num-input>
+    <ui-section>
+        <div class="header">Server Configuration</div>
+        <ui-prop name="Server Port">
+            <ui-num-input id="port-input" class="flex-1" value="0"></ui-num-input>
             <ui-button id="save-port-btn" class="blue">Update</ui-button>
-        </div>
-    </div>
+        </ui-prop>
+    </ui-section>
 
-    <div class="section">
-        <h3>UTCP Configuration</h3>
-        <div class="row">
-            <ui-label>Config Path</ui-label>
+    <ui-section>
+        <div class="header">UTCP Configuration</div>
+        <ui-prop name="Config Path">
             <ui-input id="utcp-config-path" class="flex-1"></ui-input>
-            <ui-button id="save-utcp-path-btn" class="green"><ui-icon value="check"></ui-icon></ui-button>
-        </div>
+            <ui-button id="save-utcp-path-btn" class="green">Save</ui-button>
+        </ui-prop>
         <div class="group-header">Bridge Templates</div>
         <div id="bridge-container" class="list-container"></div>
-        <div class="group-header mt-10">Add New Template</div>
-        <div class="add-template-container">
-            <ui-textarea id="new-template-json" placeholder='{"name":"my-bridge","call_template_type":"http","url":"http://..."}' rows="5"></ui-textarea>
-            <div class="actions right">
-                <ui-button id="add-bridge-btn" class="green"><ui-icon value="add"></ui-icon> Add Template</ui-button>
-            </div>
+        <div class="group-header">Add New Template</div>
+        <ui-text-area id="new-template-json" placeholder='{"name":"my-bridge","call_template_type":"http","url":"http://..."}'></ui-text-area>
+        <div class="actions right">
+            <ui-button id="add-bridge-btn" class="green">Add Template</ui-button>
         </div>
-    </div>
+    </ui-section>
 
-    <div class="section">
-        <h3>CC Bridge MCP Integration</h3>
-        <div class="desc-container">
-            <span class="desc">Add CC Bridge to your AI client's MCP configuration. The MCP adapter loads this extension's UTCP manual from the configured file.</span>
+    <ui-section>
+        <div class="header">CC Bridge MCP Integration</div>
+        <div class="desc-container">Add CC Bridge to your AI client's MCP configuration. The MCP adapter loads this extension's UTCP manual from the configured file.</div>
+        <ui-text-area id="mcp-config-code" readonly></ui-text-area>
+        <div class="actions right">
+            <ui-button id="copy-mcp-btn" class="blue">Copy MCP Config</ui-button>
         </div>
-        <div class="code-container">
-            <ui-code language="json" id="mcp-config-code"></ui-code>
+        <div class="group-header">AI Instruction</div>
+        <div class="desc-container">Paste this into your AI agent's instructions:</div>
+        <ui-text-area id="agent-instruction-code" readonly></ui-text-area>
+        <div class="actions right">
+            <ui-button id="copy-instruction-btn" class="blue">Copy Instruction</ui-button>
         </div>
-
-        <div class="group-header mt-10">AI Instruction</div>
-        <div class="desc-container">
-            <span class="desc">Paste this into your AI agent's instructions:</span>
-        </div>
-        <div class="code-container">
-            <ui-code language="text" id="agent-instruction-code">CC Bridge controls Cocos Creator 2.4 through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project, and screenshots. Discover first, then act: inspect current state before mutations, retain returned references, and use batch operations where available.</ui-code>
-        </div>
-    </div>
+    </ui-section>
 </div>
