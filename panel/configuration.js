@@ -65,13 +65,17 @@ function el(panel, key, selector) {
     return null;
 }
 
-function copyText(text) {
+function copyText(text, label) {
     try {
         require('electron').clipboard.writeText(String(text || ''));
-        Editor.log('[' + PKG + '] Copied to clipboard');
+        Editor.log('[' + PKG + '] Copied ' + (label || 'text') + ' to clipboard');
     } catch (e) {
         Editor.warn('[' + PKG + '] Copy failed: ' + (e && e.message ? e.message : e));
     }
+}
+
+function utcpUrl(port) {
+    return port ? 'http://localhost:' + port + '/utcp' : '';
 }
 
 function mcpConfigJson(configPath) {
@@ -105,12 +109,16 @@ Editor.Panel.extend({
     $: {
         portInput: '#port-input',
         savePortBtn: '#save-port-btn',
+        copyPortBtn: '#copy-port-btn',
+        utcpUrlInput: '#utcp-url',
+        copyUrlBtn: '#copy-url-btn',
         mcpConfigCode: '#mcp-config-code',
         agentInstructionCode: '#agent-instruction-code',
         copyMcpBtn: '#copy-mcp-btn',
         copyInstructionBtn: '#copy-instruction-btn',
         utcpConfigPathInput: '#utcp-config-path',
         utcpConfigPathSaveBtn: '#save-utcp-path-btn',
+        copyPathBtn: '#copy-path-btn',
         bridgeList: '#bridge-container',
         addBridgeBtn: '#add-bridge-btn',
         newTemplateJson: '#new-template-json',
@@ -121,8 +129,10 @@ Editor.Panel.extend({
         const apply = function (port, configPath) {
             const portEl = el(self, 'portInput', '#port-input');
             const pathEl = el(self, 'utcpConfigPathInput', '#utcp-config-path');
+            const urlEl = el(self, 'utcpUrlInput', '#utcp-url');
             if (portEl) portEl.value = port || 0;
             if (pathEl) pathEl.value = configPath || getConfigPath();
+            if (urlEl) urlEl.value = utcpUrl(port);
             self.updateMcpCodeBlock();
             self.fetchBridgeList();
             self.fillInstruction();
@@ -184,8 +194,14 @@ Editor.Panel.extend({
             const delBtn = COCOS_TEMPLATE.test(t.name)
                 ? ''
                 : '<ui-button class="tiny red remove-btn">Remove</ui-button>';
-            html += '<div class="bridge-item-section" data-name="' + t.name + '">'
-                + '<div class="bridge-item-header"><span>' + t.name + ' (' + t.call_template_type + ')</span>' + delBtn + '</div>'
+            const url = t.url ? String(t.url) : '';
+            html += '<div class="bridge-item-section" data-name="' + t.name + '" data-url="' + url.replace(/"/g, '&quot;') + '">'
+                + '<div class="bridge-item-header"><span>' + t.name + ' (' + t.call_template_type + ')</span>'
+                + '<div class="bridge-item-actions">'
+                + '<ui-button class="tiny copy-json-btn">Copy JSON</ui-button>'
+                + (url ? '<ui-button class="tiny copy-tpl-url-btn">Copy URL</ui-button>' : '')
+                + delBtn
+                + '</div></div>'
                 + '<ui-text-area readonly id="code-' + t.name + '"></ui-text-area>'
                 + '</div>';
         });
@@ -237,15 +253,40 @@ Editor.Panel.extend({
         on('savePortBtn', '#save-port-btn', function () { self.updatePort(); });
         on('utcpConfigPathSaveBtn', '#save-utcp-path-btn', function () { self.saveSettings(); });
         on('addBridgeBtn', '#add-bridge-btn', function () { self.addBridgeTemplate(); });
-        on('copyMcpBtn', '#copy-mcp-btn', function () { copyText(mcpConfigJson(getConfigPath())); });
-        on('copyInstructionBtn', '#copy-instruction-btn', function () { copyText(AGENT_INSTRUCTION); });
+        on('copyPortBtn', '#copy-port-btn', function () {
+            const portEl = el(self, 'portInput', '#port-input');
+            copyText(String((portEl && portEl.value) || ''), 'port');
+        });
+        on('copyUrlBtn', '#copy-url-btn', function () {
+            const urlEl = el(self, 'utcpUrlInput', '#utcp-url');
+            const portEl = el(self, 'portInput', '#port-input');
+            copyText((urlEl && urlEl.value) || utcpUrl(portEl && portEl.value), 'UTCP URL');
+        });
+        on('copyPathBtn', '#copy-path-btn', function () {
+            const pathEl = el(self, 'utcpConfigPathInput', '#utcp-config-path');
+            copyText((pathEl && pathEl.value) || getConfigPath(), 'config path');
+        });
+        on('copyMcpBtn', '#copy-mcp-btn', function () { copyText(mcpConfigJson(getConfigPath()), 'MCP config'); });
+        on('copyInstructionBtn', '#copy-instruction-btn', function () { copyText(AGENT_INSTRUCTION, 'AI instruction'); });
         const list = el(this, 'bridgeList', '#bridge-container');
         if (list) {
             list.addEventListener('click', function (e) {
-                const btn = e.target.closest ? e.target.closest('.remove-btn') : null;
-                if (!btn) return;
-                const section = btn.closest('.bridge-item-section');
-                if (section && section.dataset.name) self.removeBridge(section.dataset.name);
+                const target = e.target.closest ? e.target : null;
+                if (!target || !target.closest) return;
+                const section = target.closest('.bridge-item-section');
+                if (!section) return;
+                if (target.closest('.copy-json-btn')) {
+                    const codeEl = section.querySelector('ui-text-area');
+                    copyText(codeEl && codeEl.value, 'template JSON');
+                    return;
+                }
+                if (target.closest('.copy-tpl-url-btn')) {
+                    copyText(section.dataset.url || '', 'template URL');
+                    return;
+                }
+                if (target.closest('.remove-btn') && section.dataset.name) {
+                    self.removeBridge(section.dataset.name);
+                }
             });
         }
     },

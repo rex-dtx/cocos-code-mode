@@ -25,8 +25,17 @@ describe('configuration guidance', () => {
     assert.doesNotMatch(template, /<ui-code/);
     assert.doesNotMatch(template, /<ui-textarea/);
     assert.match(panel, /panel\['\$' \+ key\]/);
-    assert.match(panel, /copy-mcp-btn/);
     assert.match(panel, /clipboard\.writeText/);
     assert.match(main, /'query-status'/);
+  });
+
+  it('exposes copy buttons for port, URL, path, MCP config, instruction, and templates', () => {
+    assert.match(template, /id="copy-port-btn"/);
+    assert.match(template, /id="copy-url-btn"/);
+    assert.match(template, /id="copy-path-btn"/);
+    assert.match(template, /id="copy-mcp-btn"/);
+    assert.match(template, /id="copy-instruction-btn"/);
+    assert.match(panel, /copy-json-btn/);
+    assert.match(panel, /copy-tpl-url-btn/);
   });
 });

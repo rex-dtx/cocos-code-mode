@@ -3,7 +3,12 @@
         <div class="header">Server Configuration</div>
         <ui-prop name="Server Port">
             <ui-num-input id="port-input" class="flex-1" value="0"></ui-num-input>
+            <ui-button id="copy-port-btn">Copy Port</ui-button>
             <ui-button id="save-port-btn" class="blue">Update</ui-button>
+        </ui-prop>
+        <ui-prop name="UTCP URL">
+            <ui-input id="utcp-url" class="flex-1" readonly></ui-input>
+            <ui-button id="copy-url-btn" class="blue">Copy URL</ui-button>
         </ui-prop>
     </ui-section>
 
@@ -11,6 +16,7 @@
         <div class="header">UTCP Configuration</div>
         <ui-prop name="Config Path">
             <ui-input id="utcp-config-path" class="flex-1"></ui-input>
+            <ui-button id="copy-path-btn">Copy Path</ui-button>
             <ui-button id="save-utcp-path-btn" class="green">Save</ui-button>
         </ui-prop>
         <div class="group-header">Bridge Templates</div>
