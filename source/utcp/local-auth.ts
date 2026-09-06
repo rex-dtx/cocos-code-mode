@@ -1,7 +1,7 @@
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
-import type { IncomingMessage } from "node:http";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { createHash, randomBytes, timingSafeEqual } from "crypto";
+import type { IncomingMessage } from "http";
+import { homedir } from "os";
+import { join } from "path";
 import { z } from "zod";
 import { CcbError, CcbErrorBody, toCcbErrorBody } from "../protected/errors";
 import { readPrivateJson, writePrivateJsonAtomic } from "../protected/durable-file";

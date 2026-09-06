@@ -1,6 +1,6 @@
-import { Agent as HttpsAgent, RequestOptions, request as httpsRequest } from "node:https";
-import { Agent as HttpAgent, IncomingMessage, request as httpRequest } from "node:http";
-import { URL } from "node:url";
+import { Agent as HttpsAgent, RequestOptions, request as httpsRequest } from "https";
+import { Agent as HttpAgent, IncomingMessage, request as httpRequest } from "http";
+import { URL } from "url";
 import { z } from "zod";
 import { CCB_ERROR_CODES, CcbError, CcbErrorCode } from "./errors";
 import { canonicalizeToBytes } from "./canonical-json";

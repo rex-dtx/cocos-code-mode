@@ -4,7 +4,7 @@
  * Modified: strict I-JSON validation, bounded parsing, fatal UTF-8 decoding.
  * License: Apache-2.0; see canonical-json.LICENSE.txt.
  */
-import { TextDecoder } from "node:util";
+import { TextDecoder } from "util";
 
 export type IJson = null | boolean | string | number | IJson[] | { [key: string]: IJson };
 

@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash } from "crypto";
 import { assertIJson, canonicalizeToBytes, IJson } from "./canonical-json";
 import { CcbError } from "./errors";
 import { OBSERVATION_MAX_BYTES } from "./protocol";

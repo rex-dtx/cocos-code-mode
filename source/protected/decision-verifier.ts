@@ -1,4 +1,4 @@
-import { KeyLike, createHash } from "node:crypto";
+import { KeyLike, createHash } from "crypto";
 import { CcbError } from "./errors";
 import {
   CLOCK_SKEW_MAX_MS, GatewayDecision, ProtectedRequest, SignedGatewayDecision,

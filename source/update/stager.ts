@@ -1,4 +1,4 @@
-import { posix } from "node:path";
+import { posix } from "path";
 
 const MAX_ENTRIES = 4096;
 const MAX_PATH_DEPTH = 8;

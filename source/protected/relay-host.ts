@@ -1,4 +1,4 @@
-import { createPublicKey, randomUUID, type KeyLike } from "node:crypto";
+import { createPublicKey, randomUUID, type KeyLike } from "crypto";
 import { DeviceIdentityStore } from "./device-identity";
 import { GatewayClient } from "./gateway-client";
 import { MutationJournal } from "./mutation-journal";

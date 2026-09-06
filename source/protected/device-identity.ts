@@ -1,8 +1,8 @@
 import {
   KeyObject, createHash, createPrivateKey, createPublicKey, generateKeyPairSync, randomUUID,
-} from "node:crypto";
-import { homedir } from "node:os";
-import { join } from "node:path";
+} from "crypto";
+import { homedir } from "os";
+import { join } from "path";
 import { z } from "zod";
 import {
   ED25519_PKCS8_DER_BYTES, ED25519_SPKI_DER_BYTES, encodeBase64Url,

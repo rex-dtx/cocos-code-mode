@@ -1,4 +1,4 @@
-import { createHash, createPublicKey, type KeyLike, verify as ed25519Verify } from "node:crypto";
+import { createHash, createPublicKey, type KeyLike, verify as ed25519Verify } from "crypto";
 import { ED25519_SIGNATURE_BYTES, assertKeyId, decodeBase64Url } from "../protected/protocol";
 import { UpdateStateStore, type UpdateState } from "./state";
 

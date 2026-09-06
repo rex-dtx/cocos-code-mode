@@ -1,4 +1,4 @@
-import { KeyLike, randomBytes, randomUUID } from "node:crypto";
+import { KeyLike, randomBytes, randomUUID } from "crypto";
 import { assertIJson, canonicalizeToBytes, IJson } from "./canonical-json";
 import {
   OBSERVATION_MAX_BYTES, ProtectedRequest, SignedProtectedRequest, signProtectedRequest,

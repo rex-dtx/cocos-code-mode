@@ -1,4 +1,4 @@
-import { KeyLike } from "node:crypto";
+import { KeyLike } from "crypto";
 import { IJson } from "./canonical-json";
 import { CcbError } from "./errors";
 import { executeEnvelope, type PrimitiveAdapters, type PrimitiveExecution } from "./primitive-executor";

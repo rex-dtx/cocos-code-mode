@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash } from "crypto";
 import { assertIJson, IJson } from "./canonical-json";
 import { createCreatorAdapters } from "./creator-adapters";
 import { CcbError } from "./errors";

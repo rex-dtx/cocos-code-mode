@@ -1,4 +1,4 @@
-import { KeyLike } from "node:crypto";
+import { KeyLike } from "crypto";
 import { canonicalizeJson } from "./canonical-json";
 import { ExecutionEnvelopeSchema } from "./primitive-contract";
 import { verifyGatewayDecision, verifyProtectedRequest } from "./protocol";

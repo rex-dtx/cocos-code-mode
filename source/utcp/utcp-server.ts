@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID } from 'crypto';
 import { ToolRegistry } from './decorators';
 import { loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
 import { LocalHttpContext, LocalHttpServer, sendJson } from './http-server';

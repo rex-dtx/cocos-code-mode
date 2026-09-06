@@ -1,4 +1,4 @@
-import { URL } from "node:url";
+import { URL } from "url";
 
 export const MAX_RELEASE_BYTES = 64 * 1024 * 1024;
 

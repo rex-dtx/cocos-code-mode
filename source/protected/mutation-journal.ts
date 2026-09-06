@@ -1,5 +1,5 @@
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { homedir } from "os";
+import { join } from "path";
 import { z } from "zod";
 import { assertIJson, canonicalizeToBytes, IJson } from "./canonical-json";
 import { CcbError } from "./errors";

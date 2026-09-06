@@ -1,7 +1,7 @@
-import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, renameSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { createHash } from "crypto";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, renameSync } from "fs";
+import { homedir } from "os";
+import { join } from "path";
 import { CcbError } from "./errors";
 
 export interface PendingRelease {

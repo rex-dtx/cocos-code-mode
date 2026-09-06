@@ -1,9 +1,9 @@
 import {
   chmodSync, closeSync, existsSync, fsyncSync, lstatSync, mkdirSync,
   openSync, readFileSync, renameSync, unlinkSync, writeSync,
-} from "node:fs";
-import { homedir } from "node:os";
-import { dirname, resolve, sep } from "node:path";
+} from "fs";
+import { homedir } from "os";
+import { dirname, resolve, sep } from "path";
 
 const PRIVATE_FILE_MODE = 0o600;
 const PRIVATE_DIRECTORY_MODE = 0o700;

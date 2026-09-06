@@ -1,5 +1,5 @@
-import { createServer, IncomingMessage, Server, ServerResponse } from "node:http";
-import { URL } from "node:url";
+import { createServer, IncomingMessage, Server, ServerResponse } from "http";
+import { URL } from "url";
 import { CcbError, toCcbErrorBody } from "../protected/errors";
 import { LocalAuthContext, validateLocalIngress } from "./local-auth";
 
