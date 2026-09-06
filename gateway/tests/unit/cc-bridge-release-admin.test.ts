@@ -88,6 +88,44 @@ describe("CC Bridge release admin", () => {
     expect(store.listRolloutPolicies()).toHaveLength(1);
   });
 
+  it("promotes an immutable target through rings 1 then 3 then 10", () => {
+    const store = new CcBridgeStore(":memory:");
+    const targetHash = "a".repeat(64);
+    importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
+    for (const [sequence, ring] of [[1, "1"], [2, "3"], [3, "10"]] as const) {
+      const published = publishRolloutPolicy(
+        store,
+        admin,
+        signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, sequence, { ring }), policyPrivateKey),
+        keys,
+      );
+      expect(published.policySequence).toBe(sequence);
+    }
+    const policies = store.listRolloutPolicies();
+    expect(policies.map((row) => row.ring)).toEqual(["10", "3", "1"]);
+    expect(policies.map((row) => row.sequence)).toEqual([3, 2, 1]);
+  });
+
+  it("stops a failed canary with a higher-sequence emergency policy", () => {
+    const store = new CcBridgeStore(":memory:");
+    const targetHash = "a".repeat(64);
+    importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
+    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 1, { ring: "1" }), policyPrivateKey), keys);
+    const stopped = publishRolloutPolicy(
+      store,
+      admin,
+      signReleaseMetadata("policy", "policy-fixture-1", policyBody(targetHash, 2, {
+        ring: "1",
+        emergencyStop: true,
+        blockedBuilds: ["2.0.0-dev.bad"],
+        disabledOperations: ["createUiNode"],
+      }), policyPrivateKey),
+      keys,
+    );
+    expect(stopped.policySequence).toBe(2);
+    expect(store.listRolloutPolicies()[0]?.sequence).toBe(2);
+  });
+
   it("rejects a policy with a non-increasing sequence", () => {
     const store = new CcBridgeStore(":memory:");
     const targetHash = "a".repeat(64);
