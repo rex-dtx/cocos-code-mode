@@ -303,8 +303,6 @@ declare namespace cc_bridge_3x {
     function sceneManage(args: { operation: "open" | "save" | "save_as" | "close" | "soft_reload", reference?: InstanceReference }): { success: boolean, error?: string, reference?: InstanceReference };
     /** Consolidated: preview (asset/scene capture, get url, open browser). */
     function previewManage(args: { operation: "get_url" | "open_browser" | "asset_preview" | "scene_preview", reference?: InstanceReference, imageSize?: number, jpegQuality?: number, transparentColor?: Color, cameraPosition?: Vector3, targetPosition?: Vector3, orthographic?: boolean, orthographicSize?: number }): any;
-    /** Consolidated: external programs and url open. */
-    function programManage(args: { operation: "get_info" | "open" | "open_url", programName?: string, commandArguments?: Record<string, any>, url?: string }): any;
     /** Consolidated: project settings read/write. */
     function projectManage(args: { operation: "get" | "set", type?: string, key?: string, path?: string, value?: any }): any;
     /** Consolidated: build panel/tasks/trigger/control. */

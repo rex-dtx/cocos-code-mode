@@ -28,7 +28,6 @@ describe('fail-loud audit (docs §2) regressions', () => {
     for (const rel of [
       'source/utcp/tools/material-tools.ts',
       'source/utcp/tools/project-tools.ts',
-      'source/utcp/tools/program-tools.ts',
       'source/utcp/tools/editor-tools.ts',
     ]) {
       const src = readSource(rel);
@@ -69,7 +68,12 @@ describe('fail-loud audit (docs §2) regressions', () => {
     assert.match(readSource('source/utcp/tools/scene-tools.ts'), /query-nodes-miss-assets returned no payload/);
     assert.match(readSource('source/utcp/tools/scene-tools.ts'), /query-component-function-of-node returned no payload/);
     assert.match(readSource('source/utcp/tools/editor-tools.ts'), /returned no payload/);
-    assert.match(readSource('source/utcp/tools/validation-tools.ts'), /diag\.ok === true/);
+  });
+
+  it('validateScene no longer launches a compiler process (internal-dev-only diagnostics removed)', () => {
+    const src = readSource('source/utcp/tools/validation-tools.ts');
+    assert.match(src, /probeDiag = async \(\) => null/, 'validateScene must return diagnostics: null without a compiler process');
+    assert.doesNotMatch(src, /diagnostics-tools/, 'validateScene must not import the internal-dev-only diagnostics module');
   });
 
   it('runtime/event reads refuse fabricated state (docs §2 false success)', () => {

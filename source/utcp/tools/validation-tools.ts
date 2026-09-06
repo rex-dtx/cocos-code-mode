@@ -101,7 +101,6 @@ export class ValidationTools {
         diagnostics: any,
         logErrors: string[],
     }> {
-        const includeDiag = args.includeScriptDiagnostics !== false;
         const includeLogs = args.includeLogErrors !== false;
 
         // M1: 5 independent probes -> run concurrently instead of sequentially.
@@ -125,15 +124,7 @@ export class ValidationTools {
         const probePerf = async () => {
             try { return await this.getPerformanceSnapshot(); } catch (e: any) { return { error: e.message }; }
         };
-        const probeDiag = async () => {
-            if (!includeDiag) return null;
-            try {
-                const { DiagnosticsTools } = await import('./diagnostics-tools');
-                const diagTool = new DiagnosticsTools();
-                const result = await diagTool.runScriptDiagnostics({});
-                return { ok: result.ok, errorCount: result.errorCount };
-            } catch (e: any) { return { error: e.message }; }
-        };
+        const probeDiag = async () => null;
         const probeLogs = async (): Promise<string[]> => {
             if (!includeLogs) return [];
             try {
@@ -147,12 +138,10 @@ export class ValidationTools {
             probeScene(), probeRuntime(), probePerf(), probeDiag(), probeLogs(),
         ]);
 
-        // Fail closed: a diagnostics probe that threw carries {error} and ok === undefined;
-        // `!== false` let a crashed tsc read as a clean compile (docs §2 false-success).
-        const diag = diagnostics as any;
-        const diagOk = diag == null ? true : (diag.ok === true && !diag.error);
+        // TypeScript diagnostics run outside the customer protected artifact
+        // (internal-dev-only); validateScene returns diagnostics: null so the
+        // public contract never launches a compiler process.
         const ok = !(scene as any).error && !(runtime as any).error && !(performance as any).error
-            && diagOk
             && logErrors.length === 0;
 
         return { ok, scene, runtime, performance, diagnostics, logErrors };

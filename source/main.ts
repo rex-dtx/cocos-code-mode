@@ -3,15 +3,9 @@ import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
 import { ProtectedRelayHost } from './protected/relay-host';
-import { exec } from 'child_process';
-import { homedir } from 'os';
-import { join } from 'path';
-import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 
 let utcpServer: UtcpServerManager | null = null;
 let relayHost: ProtectedRelayHost | null = null;
-const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
-
 
 export const methods: { [key: string]: (...any: any) => any } = {
 
@@ -51,51 +45,6 @@ export const methods: { [key: string]: (...any: any) => any } = {
         }
     },
 
-
-    toggleDebug() {
-        if (!utcpServer) return;
-        const enabled = utcpServer.toggleDebug();
-        const status = enabled ? 'ON' : 'OFF';
-        console.log(`[${packageJSON.name}] Debug logging ${status}`);
-        // Also toggle scene-process console capture (log/warn/error from editor
-        // scripts). Fails silently when no scene is open — MCP logging still works.
-        const method = enabled ? 'startCatchAll' : 'stopCatchAll';
-        Editor.Message.request('scene', 'execute-scene-script',
-            { name: packageJSON.name, method, args: [] })
-            .catch((err: any) => console.warn(`[${packageJSON.name}] Scene console capture not toggled: ${err?.message || err}`));
-    },
-
-    // The folder may not exist until debug logging is first enabled.
-    openDebugFolder() {
-        try {
-            mkdirSync(DEBUG_LOG_DIR, { recursive: true });
-        } catch (err: unknown) {
-            console.error(`[${packageJSON.name}] Failed to create debug folder:`, err instanceof Error ? err.message : String(err));
-            return;
-        }
-        // ponytail: cross-platform open — works on Windows/macOS/Linux
-        const cmd = process.platform === 'win32'
-            ? `start "" "${DEBUG_LOG_DIR}"`
-            : process.platform === 'darwin'
-                ? `open "${DEBUG_LOG_DIR}"`
-                : `xdg-open "${DEBUG_LOG_DIR}"`;
-        exec(cmd, (err) => {
-            if (err) console.error(`[${packageJSON.name}] Failed to open debug folder:`, err.message);
-        });
-    },
-
-    clearDebugLogs() {
-        try {
-            const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
-            files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
-            console.log(`[${packageJSON.name}] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
-        } catch (err: any) {
-            // ENOENT means the folder never existed — nothing to clear.
-            if (err?.code !== 'ENOENT') {
-                console.error(`[${packageJSON.name}] Failed to clear debug logs:`, err?.message || err);
-            }
-        }
-    },
 
     async showBuildInfo() {
         const b = getBuildInfo();

@@ -11,6 +11,8 @@
     "exclude": [
         "cocos-engine",
         "cc-bridge-3x.d.ts",
-        "source/utcp/execute"
+        "source/utcp/execute",
+        "gateway",
+        "node_modules"
     ]
 }

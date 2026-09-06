@@ -66,8 +66,6 @@ export const CORE_TOOLS = new Set([
     'projectReadFile', 'projectWriteFile', 'projectSearchFiles',
     // UI
     'createUiNode',
-    // Diagnostics
-    'runScriptDiagnostics',
 ]);
 
 export function isToolExposed(toolName: string, activeProfile: ToolProfile, enabledTools?: Set<string>, disabledTools?: Set<string>): boolean {

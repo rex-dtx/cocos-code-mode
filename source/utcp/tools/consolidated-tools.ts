@@ -282,19 +282,6 @@ export class ConsolidatedTools {
         }
     }
 
-    // ── programManage: 3→1 (programGetInfo, programOpen, urlOpen) ──
-    @utcpTool('programManage','External programs and URL open.',{type:'object',properties:{operation:{type:'string',enum:['get_info','open','open_url']},programName:{type:'string'},commandArguments:{type:'object'},url:{type:'string'}},required:['operation'],allOf:[{if:{properties:{operation:{enum:['get_info','open']}},required:['operation']},then:{required:['programName']}},{if:{properties:{operation:{const:'open_url'}},required:['operation']},then:{required:['url']}}]},{type:'object',properties:{success:{type:'boolean'},path:{type:'string'},commandArgument:{type:'string'}}},'POST',['program','consolidated'])
-    async programManage(args:any):Promise<any>{
-        const { ProgramTools } = await import('./program-tools');
-        const t=new (ProgramTools as any)();
-        switch(args.operation){
-            case 'get_info': if(!args.programName) throw new Error('programManage get_info requires programName'); return t.programGetInfo({ programName:args.programName });
-            case 'open': if(!args.programName) throw new Error('programManage open requires programName'); return t.programOpen({ programName:args.programName, commandArguments:args.commandArguments });
-            case 'open_url': if(!args.url) throw new Error('programManage open_url requires url'); return t.urlOpen({ url:args.url });
-            default: throw new Error(`Unknown programManage operation: ${args.operation}`);
-        }
-    }
-
     // ── projectManage: 2→1 (projectGetConfig, projectSetConfig) ──
     @utcpTool('projectManage','Read/write project settings.',{type:'object',properties:{operation:{type:'string',enum:['get','set']},type:{type:'string'},key:{type:'string'},path:{type:'string'},value:{},limit:{type:'number',minimum:1,maximum:1000,default:200}},required:['operation'],allOf:[{if:{properties:{operation:{const:'set'}},required:['operation']},then:{required:['path']}}]},{type:'object',properties:{config:{},success:{type:'boolean'},total:{type:'number'},truncated:{type:'boolean'}}},'POST',['project','consolidated'])
     async projectManage(args:any):Promise<any>{

@@ -1,0 +1,11 @@
+node_modules/
+coverage/
+*.tsbuildinfo
+# Gateway runs via tsx + `tsc --noEmit`; any co-located .js is a stray emit.
+src/**/*.js
+src/**/*.js.map
+scripts/**/*.js
+scripts/**/*.js.map
+.env
+*.db
+*.db-*

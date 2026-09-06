@@ -14,14 +14,12 @@ import './tools/component-tools';
 import './tools/scene-tools';
 import './tools/editor-tools';
 import './tools/build-tools';
-import './tools/program-tools';
 import './tools/project-tools';
 import './tools/preview-tools';
 import './tools/animation-tools';
 import './tools/property-array-tools';
 import './tools/material-tools';
 import './tools/consolidated-tools';
-import './tools/diagnostics-tools';
 import './tools/file-tools';
 import './tools/ui-tools';
 import './tools/runtime-tools';
@@ -41,9 +39,6 @@ import { trimResponse } from './utils/response-trimmer';
 import { JsonSchema, Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
-import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
-import { join } from 'path';
-import { homedir } from 'os';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
 import { toToolErrorResponse } from './tool-error';
@@ -250,27 +245,6 @@ export function findMissingRequiredInputs(schema: JsonSchema, args: Record<strin
         .map((error) => error.path);
 }
 
-// ponytail: debug log to file, not console — avoid polluting editor output.
-// Mutable so the menu toggle (toggleDebug) can flip it at runtime, not just via env var.
-let debugEnabled = process.env.UTCP_DEBUG === '1' || process.env.UTCP_DEBUG === 'true';
-const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
-let debugLogFile = join(DEBUG_LOG_DIR, `utcp-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
-
-if (debugEnabled) {
-    try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-    console.log(`[UTCP] Debug mode ON → ${debugLogFile}`);
-}
-
-function debugLog(entry: Record<string, any>): void {
-    if (!debugEnabled) return;
-    try {
-        // lazy mkdir: toggling on via menu means dir may not exist yet
-        try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-        const line = JSON.stringify({ ts: new Date().toISOString(), ...entry });
-        appendFileSync(debugLogFile, line + '\n');
-    } catch {}
-}
-
 // Profile config — mutable at runtime via panel.
 let activeProfile: ToolProfile = 'full'; // default: expose everything (backward compat)
 let enabledTools = new Set<string>();
@@ -433,13 +407,6 @@ export class UtcpServerManager {
                         return;
                     }
 
-                    debugLog({
-                        type: 'request',
-                        tool: toolDef.name,
-                        method: req.method,
-                        url: req.originalUrl,
-                    });
-
                     let result: unknown;
                     if (isProtectedCustomerTool(toolDef.name)) {
                         if (!this.host) {
@@ -453,14 +420,12 @@ export class UtcpServerManager {
                     if (result === undefined || result === null) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        debugLog({ type: 'response', tool: toolDef.name, size: 0, durationMs: ms });
                         res.json(null);
                         return;
                     }
 
                     const ms = Date.now() - ((req as any)._t0 ?? t0);
                     res.setHeader('X-Duration-Ms', String(ms));
-                    debugLog({ type: 'response', tool: toolDef.name, durationMs: ms });
 
                     // ponytail: trim null/undefined/empty containers before serializing.
                     // Reduces response payload ~15-30% for property dumps and nested objects.
@@ -484,7 +449,6 @@ export class UtcpServerManager {
                     const ms2 = Date.now() - ((req as any)._t0 ?? t0);
                     const response = toToolErrorResponse(err);
                     res.setHeader('X-Duration-Ms', String(ms2));
-                    debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, durationMs: ms2 });
                     res.status(response.status).json(response.body);
                 }
             };
@@ -545,17 +509,5 @@ export class UtcpServerManager {
             });
         });
         console.log("UTCP Server stopped");
-    }
-
-    // ponytail: runtime toggle for debug logging — no restart needed
-    toggleDebug(): boolean {
-        debugEnabled = !debugEnabled;
-        if (debugEnabled) {
-            try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-            console.log(`[UTCP] Debug mode ON → ${debugLogFile}`);
-        } else {
-            console.log('[UTCP] Debug mode OFF');
-        }
-        return debugEnabled;
     }
 }

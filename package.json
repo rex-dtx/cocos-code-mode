@@ -81,21 +81,6 @@
       },
       {
         "path": "CC Bridge 3x",
-        "label": "Toggle Debug Logging",
-        "message": "toggle-debug"
-      },
-      {
-        "path": "CC Bridge 3x/Debug Logs",
-        "label": "Open Debug Folder",
-        "message": "open-debug-folder"
-      },
-      {
-        "path": "CC Bridge 3x/Debug Logs",
-        "label": "Clear Debug Logs",
-        "message": "clear-debug-logs"
-      },
-      {
-        "path": "CC Bridge 3x",
         "label": "About",
         "message": "show-build-info"
       }
@@ -124,21 +109,6 @@
       "restart-server": {
         "methods": [
           "restartServer"
-        ]
-      },
-      "toggle-debug": {
-        "methods": [
-          "toggleDebug"
-        ]
-      },
-      "open-debug-folder": {
-        "methods": [
-          "openDebugFolder"
-        ]
-      },
-      "clear-debug-logs": {
-        "methods": [
-          "clearDebugLogs"
         ]
       },
       "show-build-info": {
