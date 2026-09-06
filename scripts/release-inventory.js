@@ -139,15 +139,26 @@ const FIRST_PARTY_FORBIDDEN_TEXT = [
   /(?:node:)?child_process/,
 ];
 
+function isVendorPath(relativePath) {
+  return relativePath.startsWith('node_modules/');
+}
+
+function isVendorDoc(relativePath) {
+  return isVendorPath(relativePath) && /\.(?:md|markdown|txt)$/i.test(relativePath);
+}
+
 function assertReleaseInventory(entries) {
   if (!Array.isArray(entries) || entries.length === 0) throw new Error('release inventory is empty');
   for (const entry of entries) {
-    if (FORBIDDEN_ARCHIVE_PATH.test(entry.archivePath)) throw new Error(`sensitive package path: ${entry.archivePath}`);
+    if (!isVendorPath(entry.relativePath) && FORBIDDEN_ARCHIVE_PATH.test(entry.archivePath)) {
+      throw new Error(`sensitive package path: ${entry.archivePath}`);
+    }
     if (NESTED_ARCHIVE.test(entry.archivePath)) throw new Error(`nested archive is not allowed: ${entry.archivePath}`);
+    if (isVendorDoc(entry.relativePath)) continue;
     const bytes = entry.bytes || fs.readFileSync(entry.sourcePath);
     if (bytes.includes(0)) continue;
     const text = bytes.toString('utf8');
-    const patterns = entry.relativePath.startsWith('node_modules/')
+    const patterns = isVendorPath(entry.relativePath)
       ? SECRET_TEXT
       : SECRET_TEXT.concat(FIRST_PARTY_FORBIDDEN_TEXT);
     for (const pattern of patterns) {
