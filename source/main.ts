@@ -116,19 +116,6 @@ module.exports = {
                     `Built at: ${b.builtAt}`,
                 ];
                 Editor.log(`[${PKG_NAME}] Build info:\n${lines.join('\n')}`);
-                try {
-                    (Editor as any).Dialog.messageBox({
-                        type: 'info',
-                        title: `${PKG_NAME} Build Info`,
-                        message: lines.join('\n'),
-                        buttons: ['OK'],
-                        defaultId: 0,
-                    });
-                } catch {
-                    try {
-                        (Editor as any).Dialog.info(lines.join('\n'), { title: `${PKG_NAME} Build Info` });
-                    } catch { /* logged above */ }
-                }
             });
         },
         'open-config'() {
