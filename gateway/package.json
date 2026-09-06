@@ -11,6 +11,8 @@
     "test": "vitest run",
     "loopback": "tsx scripts/cc-bridge-loopback.ts",
     "start": "tsx src/server.ts",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
     "signer:start": "tsx src/signer-main.ts",
     "smoke:production": "tsx scripts/cc-bridge-production-smoke.ts",
     "bench:cc-bridge": "tsx scripts/diag/bench-cc-bridge.ts"

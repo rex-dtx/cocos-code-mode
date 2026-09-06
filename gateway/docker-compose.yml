@@ -1,0 +1,33 @@
+services:
+  cc-bridge-gateway:
+    build: .
+    image: cc-bridge-gateway:dev
+    container_name: cc-bridge-gateway
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      CCB_GATEWAY_HOST: 0.0.0.0
+      CCB_GATEWAY_PORT: "8787"
+      CCB_CACHE_DIR: /data
+      CCB_DB_PATH: /data/cc-bridge.db
+      CCB_ALLOWED_HOSTS: 127.0.0.1,localhost,cc-bridge-gateway
+    ports:
+      - "${CCB_GATEWAY_PUBLISH_PORT:-8787}:8787"
+    volumes:
+      - cc-bridge-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8787/ccb/v1/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  cc-bridge-data:

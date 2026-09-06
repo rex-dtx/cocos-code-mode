@@ -12,12 +12,13 @@ RUN yarn typecheck
 
 FROM node:22-alpine AS runtime
 
-RUN apk add --no-cache dumb-init libstdc++
+RUN apk add --no-cache dumb-init libstdc++ su-exec
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=build --chown=node:node /app/package.json /app/yarn.lock ./
-COPY --from=build --chown=node:node /app/node_modules ./node_modules
-COPY --from=build --chown=node:node /app/src ./src
-USER node
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["yarn", "start"]
+COPY --from=build /app/package.json /app/yarn.lock ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/src ./src
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod 755 /app/docker-entrypoint.sh && chown -R node:node /app
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/app/docker-entrypoint.sh"]
+HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 CMD node -e "fetch('http://127.0.0.1:8787/ccb/v1/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
