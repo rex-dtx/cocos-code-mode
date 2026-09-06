@@ -29,8 +29,8 @@ package-lock.json
 *.zip
 _tmp_*
 
-# Generated visuals (scene screenshots via previewManage) — regenerate on demand
-plans/visuals/
+# Plans song o Notes vault (notes/plans/cc-code-mode-cst/), khong track o repo
+plans/
 
 # Cocos scene graph offline cache
 .cocos-graph/
