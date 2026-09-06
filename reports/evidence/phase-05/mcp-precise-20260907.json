@@ -1,0 +1,1312 @@
+{
+  "capturedAt": "2026-09-06T18:08:48.813Z",
+  "via": "mcp ccb3x.call_tool_chain 2 warmup + 5 samples, 4 batches",
+  "build": {
+    "version": "2.0.0",
+    "commit": "26f4bb3",
+    "branch": "feat/ccb3x-consolidated"
+  },
+  "toolCount": 80,
+  "results": [
+    {
+      "name": "assetGetTree",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 7,
+      "p50": 7,
+      "p95": 8,
+      "max": 8,
+      "mean": 7.2,
+      "samples": [
+        7,
+        7,
+        7,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "assetGetAtPath",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 9,
+      "max": 9,
+      "mean": 7.4,
+      "samples": [
+        6,
+        7,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "name": "assetResolvePath",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.6,
+      "samples": [
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "assetReadContent",
+      "firstStatus": "err",
+      "firstCode": "INTERNAL_ERROR",
+      "n": 1,
+      "min": 3,
+      "p50": 3,
+      "p95": 3,
+      "max": 3,
+      "mean": 3,
+      "samples": [
+        3
+      ]
+    },
+    {
+      "name": "assetFindReferences",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "assetQuery",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.8,
+      "samples": [
+        6,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "assetSaveContent",
+      "firstStatus": "err",
+      "firstCode": "INTERNAL_ERROR",
+      "n": 1,
+      "min": 28,
+      "p50": 28,
+      "p95": 28,
+      "max": 28,
+      "mean": 28,
+      "samples": [
+        28
+      ]
+    },
+    {
+      "name": "assetGetAvailableUrl",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 7,
+      "p50": 8,
+      "p95": 9,
+      "max": 9,
+      "mean": 7.8,
+      "samples": [
+        7,
+        7,
+        8,
+        8,
+        9
+      ]
+    },
+    {
+      "name": "assetCreate",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 177,
+      "p50": 309,
+      "p95": 387,
+      "max": 387,
+      "mean": 300.4,
+      "samples": [
+        177,
+        280,
+        309,
+        349,
+        387
+      ]
+    },
+    {
+      "name": "assetImport",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 323,
+      "p50": 352,
+      "p95": 384,
+      "max": 384,
+      "mean": 352.8,
+      "samples": [
+        323,
+        347,
+        352,
+        358,
+        384
+      ]
+    },
+    {
+      "name": "assetOperate",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "nodeGetAvailableComponentTypes",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.8,
+      "samples": [
+        6,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "nodeComponentsGet",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "sceneGetInfo",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 6,
+      "p95": 8,
+      "max": 8,
+      "mean": 6.6,
+      "samples": [
+        6,
+        6,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "findNodesByAsset",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "findNodesWithMissingAssets",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 8,
+      "p50": 9,
+      "p95": 9,
+      "max": 9,
+      "mean": 8.8,
+      "samples": [
+        8,
+        9,
+        9,
+        9,
+        9
+      ]
+    },
+    {
+      "name": "findNodes",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 7,
+      "p50": 8,
+      "p95": 9,
+      "max": 9,
+      "mean": 8,
+      "samples": [
+        7,
+        8,
+        8,
+        8,
+        9
+      ]
+    },
+    {
+      "name": "nodeReset",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "listComponentMethods",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "listComponentClasses",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 163,
+      "p50": 170,
+      "p95": 213,
+      "max": 213,
+      "mean": 177.4,
+      "samples": [
+        163,
+        169,
+        170,
+        172,
+        213
+      ]
+    },
+    {
+      "name": "nodeClipboard",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 4,
+      "p50": 4,
+      "p95": 4,
+      "max": 4,
+      "mean": 4,
+      "samples": [
+        4
+      ]
+    },
+    {
+      "name": "nodeGetTree",
+      "firstStatus": "err",
+      "firstCode": "CCB_BUSY",
+      "n": 5,
+      "min": 3,
+      "p50": 4,
+      "p95": 4,
+      "max": 4,
+      "mean": 3.6,
+      "samples": [
+        3,
+        3,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "name": "nodeGetAtPath",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "nodeCreatePrimitive",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "nodeCreate",
+      "firstStatus": "err",
+      "firstCode": "CCB_BUSY",
+      "n": 5,
+      "min": 2,
+      "p50": 3,
+      "p95": 4,
+      "max": 4,
+      "mean": 3,
+      "samples": [
+        2,
+        3,
+        3,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "nodeOperate",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "editorEnvInfo",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "editorViewport",
+      "firstStatus": "err",
+      "firstCode": "CCB_BUSY",
+      "n": 5,
+      "min": 2,
+      "p50": 3,
+      "p95": 3,
+      "max": 3,
+      "mean": 2.8,
+      "samples": [
+        2,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "editorSelect",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "editorHistory",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "editorGetLogs",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.4,
+      "samples": [
+        1,
+        1,
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "animationQuery",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "animationEdit",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "propertyArrayElement",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "materialQuery",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "assetDbQuery",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "inspectorGet",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "inspectorSet",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "inspectorGetDefinition",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "nodeComponentManage",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "editorQuery",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 4,
+      "p50": 4,
+      "p95": 4,
+      "max": 4,
+      "mean": 4,
+      "samples": [
+        4
+      ]
+    },
+    {
+      "name": "sceneManage",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "buildManage",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "previewManage",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "projectManage",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.6,
+      "samples": [
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "projectReadFile",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.2,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "projectWriteFile",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 3,
+      "p50": 4,
+      "p95": 4,
+      "max": 4,
+      "mean": 3.8,
+      "samples": [
+        3,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "name": "projectSearchFiles",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 24,
+      "p50": 24,
+      "p95": 25,
+      "max": 25,
+      "mean": 24.4,
+      "samples": [
+        24,
+        24,
+        24,
+        25,
+        25
+      ]
+    },
+    {
+      "name": "projectReplaceInFile",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.4,
+      "samples": [
+        1,
+        1,
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "projectFileExists",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.4,
+      "samples": [
+        1,
+        1,
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "projectListDirectory",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 2,
+      "p50": 2,
+      "p95": 4,
+      "max": 4,
+      "mean": 2.6,
+      "samples": [
+        2,
+        2,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "createUiNode",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "createLabel",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 9,
+      "max": 9,
+      "mean": 7.4,
+      "samples": [
+        6,
+        7,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "name": "createButton",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.8,
+      "samples": [
+        6,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "createSprite",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 8,
+      "max": 8,
+      "mean": 7,
+      "samples": [
+        6,
+        7,
+        7,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "runtimePause",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 6,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.2,
+      "samples": [
+        6,
+        6,
+        6,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "runtimeResume",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 11,
+      "max": 11,
+      "mean": 8.2,
+      "samples": [
+        6,
+        7,
+        7,
+        10,
+        11
+      ]
+    },
+    {
+      "name": "runtimeSetTimeScale",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.8,
+      "samples": [
+        6,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "runtimeGetState",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.6,
+      "samples": [
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "nodeBatchSet",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "sceneBatchGet",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 3,
+      "p50": 3,
+      "p95": 3,
+      "max": 3,
+      "mean": 3,
+      "samples": [
+        3
+      ]
+    },
+    {
+      "name": "assetBatchQuery",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "getPerformanceSnapshot",
+      "firstStatus": "err",
+      "firstCode": "CCB_DEVICE_DENIED",
+      "n": 5,
+      "min": 6,
+      "p50": 7,
+      "p95": 7,
+      "max": 7,
+      "mean": 6.8,
+      "samples": [
+        6,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "name": "validateScene",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 10,
+      "p50": 11,
+      "p95": 13,
+      "max": 13,
+      "mean": 11.2,
+      "samples": [
+        10,
+        11,
+        11,
+        11,
+        13
+      ]
+    },
+    {
+      "name": "captureSceneScreenshot",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 14,
+      "p50": 29,
+      "p95": 33,
+      "max": 33,
+      "mean": 23.8,
+      "samples": [
+        14,
+        14,
+        29,
+        29,
+        33
+      ]
+    },
+    {
+      "name": "captureEditorScreenshot",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 8,
+      "p50": 16,
+      "p95": 25,
+      "max": 25,
+      "mean": 15.6,
+      "samples": [
+        8,
+        12,
+        16,
+        17,
+        25
+      ]
+    },
+    {
+      "name": "listEditorWindows",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "sceneSnapshot",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 11,
+      "p50": 12,
+      "p95": 14,
+      "max": 14,
+      "mean": 12,
+      "samples": [
+        11,
+        11,
+        12,
+        12,
+        14
+      ]
+    },
+    {
+      "name": "simulateButtonClick",
+      "firstStatus": "err",
+      "firstCode": "Error: Request failed with status code 400 Error data: {\"err",
+      "n": 1,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1
+      ]
+    },
+    {
+      "name": "readPrefabJson",
+      "firstStatus": "err",
+      "firstCode": "INTERNAL_ERROR",
+      "n": 1,
+      "min": 3,
+      "p50": 3,
+      "p95": 3,
+      "max": 3,
+      "mean": 3,
+      "samples": [
+        3
+      ]
+    },
+    {
+      "name": "editPrefabJson",
+      "firstStatus": "err",
+      "firstCode": "INTERNAL_ERROR",
+      "n": 1,
+      "min": 2,
+      "p50": 2,
+      "p95": 2,
+      "max": 2,
+      "mean": 2,
+      "samples": [
+        2
+      ]
+    },
+    {
+      "name": "duplicatePrefab",
+      "firstStatus": "err",
+      "firstCode": "INTERNAL_ERROR",
+      "n": 1,
+      "min": 3,
+      "p50": 3,
+      "p95": 3,
+      "max": 3,
+      "mean": 3,
+      "samples": [
+        3
+      ]
+    },
+    {
+      "name": "readProjectInstruction",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.2,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "writeProjectInstruction",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 4,
+      "p50": 4,
+      "p95": 4,
+      "max": 4,
+      "mean": 4,
+      "samples": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "name": "getEditorPreference",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.2,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "setEditorPreference",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 4,
+      "p50": 4,
+      "p95": 5,
+      "max": 5,
+      "mean": 4.2,
+      "samples": [
+        4,
+        4,
+        4,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "simulateKeyPress",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "simulateKeyCombo",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.2,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "simulateMouseClick",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "max": 2,
+      "mean": 1.4,
+      "samples": [
+        1,
+        1,
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "simulateMouseDrag",
+      "firstStatus": "ok",
+      "firstCode": "",
+      "n": 5,
+      "min": 1,
+      "p50": 1,
+      "p95": 1,
+      "max": 1,
+      "mean": 1,
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}
