@@ -2,6 +2,22 @@ import { utcpTool } from '../decorators';
 import { sceneIpc } from '../utils/ipc-promise';
 import { join } from 'path';
 import { existsSync, readdirSync, readFileSync } from 'fs';
+import { homedir } from 'os';
+
+export function editorLogCandidates(projectPath?: string, home?: string): string[] {
+    const paths: string[] = [];
+    const h = home || homedir();
+    if (h) paths.push(join(h, '.CocosCreator', 'logs', 'CocosCreator.log'));
+    if (projectPath) paths.push(join(projectPath, 'temp', 'logs', 'project.log'));
+    return paths;
+}
+
+export function pickExistingLog(paths: string[], exists: (p: string) => boolean = existsSync): string | null {
+    for (const p of paths) {
+        if (p && exists(p)) return p;
+    }
+    return null;
+}
 
 type SelectionType = 'node' | 'asset';
 
@@ -390,7 +406,7 @@ export class EditorMiscTools {
 
     @utcpTool(
         'editorGetLogs',
-        'Get last N lines from project.log (Editor.Project.path/temp/logs/project.log). Returns empty if log missing.',
+        'Get last N lines of Creator logs. Prefers ~/.CocosCreator/logs/CocosCreator.log (session); falls back to temp/logs/project.log.',
         {
             type: 'object',
             properties: {
@@ -398,22 +414,20 @@ export class EditorMiscTools {
                 order: { type: 'string', enum: ['newest-to-oldest','oldest-to-newest'], description: 'Order', default: 'newest-to-oldest' },
             },
         },
-        { type: 'object', properties: { logLines: { type: 'array', items: { type: 'string' } }, path: { type: 'string' } }, required: ['logLines'] },
+        { type: 'object', properties: { logLines: { type: 'array', items: { type: 'string' } }, path: { type: 'string' }, candidates: { type: 'array', items: { type: 'string' } } }, required: ['logLines'] },
         'GET', ['editor', 'logs', 'debug', 'info']
     )
     async editorGetLogs(args: { count?: number, order?: string }): Promise<any> {
-        const { join } = await import('path');
-        const { existsSync, readFileSync } = await import('fs');
         const projectPath = Editor.Project.path;
-        if (!projectPath) throw new Error('Editor.Project.path not available');
-        const logPath = join(projectPath, 'temp', 'logs', 'project.log');
-        if (!existsSync(logPath)) return { logLines: [], path: logPath };
+        const candidates = editorLogCandidates(projectPath);
+        const logPath = pickExistingLog(candidates);
+        if (!logPath) return { logLines: [], path: candidates[0] || '', candidates };
         const text = readFileSync(logPath, 'utf8');
-        let lines = text.split('\n').filter(Boolean);
+        let lines = text.split(/\r?\n/).filter(Boolean);
         const n = args.count && args.count > 0 ? args.count : 50;
         if (args.order === 'oldest-to-newest') lines = lines.slice(-n);
         else { lines = lines.slice(-n).reverse(); }
-        return { logLines: lines, path: logPath };
+        return { logLines: lines, path: logPath, candidates };
     }
 
     @utcpTool(
