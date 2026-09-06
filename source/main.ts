@@ -3,6 +3,7 @@ import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
 import { ProtectedRelayHost } from './protected/relay-host';
+import { BOOT_LOG_PATH, bootLog, bootWarnDialog } from './protected/boot-log';
 
 let utcpServer: UtcpServerManager | null = null;
 let relayHost: ProtectedRelayHost | null = null;
@@ -65,14 +66,14 @@ export const methods: { [key: string]: (...any: any) => any } = {
             `    Config:   ${configPath}`,
             `    Branch:   ${b.branch}`,
             `    Built at: ${b.builtAt}`,
+            `    Boot log: ${BOOT_LOG_PATH}`,
         ];
         console.log(lines.join('\n'));
     }
 };
 
 export async function load() {
-    console.log('===========Loaded cc-bridge-3x===========');
-    console.log(`[${packageJSON.name}] build ${formatBuildInfo()}`);
+    bootLog("info", `Loaded ${formatBuildInfo()}`);
     try {
         const configManager = getConfigManager();
         await configManager.initialize();
@@ -82,18 +83,19 @@ export async function load() {
         try {
             relayHost = new ProtectedRelayHost();
             relayHost.activateIfConfigured();
+            bootLog("info", `relay identity=${relayHost.identity.deviceKeyId}`);
         } catch (err) {
             relayHost = null;
-            console.error(`[${packageJSON.name}] Protected relay failed to boot; menus and local tools still start:`, err);
+            bootLog("error", "Protected relay failed to boot; menus and local tools still start", err);
         }
         if (process.env.CCB_DISABLE_LOCAL_UTCP === "1") {
-            console.log(`[${packageJSON.name}] Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1.`);
+            bootLog("info", "Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1");
             return;
         }
         utcpServer = new UtcpServerManager(relayHost ?? undefined);
         let wasConfiguredPort = true;
-        let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
-        if (typeof port !== 'number') {
+        let port = await Editor.Profile.getConfig(packageJSON.name, "serverPort");
+        if (typeof port !== "number") {
             port = 0;
             wasConfiguredPort = false;
         }
@@ -101,19 +103,17 @@ export async function load() {
             const actualPort = await utcpServer.start(port);
             const url = `http://localhost:${actualPort}/utcp`;
             await configManager.updatePort(actualPort);
-            console.log(
-                `[${packageJSON.name}] Ready: UTCP server listening at ${url}\n` +
-                `[${packageJSON.name}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-                `[${packageJSON.name}] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
-            );
+            bootLog("info", `UTCP listening at ${url}; boot log ${BOOT_LOG_PATH}`);
         } catch (err) {
-            console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);
+            bootWarnDialog(`UTCP failed to start. See ${BOOT_LOG_PATH}`);
+            bootLog("error", "Failed to start UTCP Server", err);
         }
         if (!wasConfiguredPort) {
-            Editor.Panel.open(packageJSON.name + '.configuration');
+            Editor.Panel.open(packageJSON.name + ".configuration");
         }
     } catch (err) {
-        console.error(`[${packageJSON.name}] Extension load failed; menu handlers remain registered:`, err);
+        bootWarnDialog(`Extension load failed. See ${BOOT_LOG_PATH}`);
+        bootLog("error", "Extension load failed; menu handlers remain registered", err);
     }
 }
 

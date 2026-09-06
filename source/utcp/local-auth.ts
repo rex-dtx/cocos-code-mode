@@ -48,7 +48,7 @@ function denial(status: number, code: ConstructorParameters<typeof CcbError>[0],
   return { status, body: toCcbErrorBody(new CcbError(code, error)) };
 }
 
-export function validateLocalIngress(auth: LocalAuthContext, request: IncomingMessage): LocalIngressDenial | undefined {
+export function validateLocalIngress(auth: LocalAuthContext, request: IncomingMessage, pathname = "/"): LocalIngressDenial | undefined {
   const remoteAddress = request.socket.remoteAddress;
   if (remoteAddress !== "127.0.0.1" && remoteAddress !== "::ffff:127.0.0.1") {
     return denial(403, "CCB_AUTH_INVALID", "Local route accepts loopback clients only.");
@@ -87,7 +87,8 @@ export function validateLocalIngress(auth: LocalAuthContext, request: IncomingMe
       return denial(415, "CCB_CANONICAL_INVALID", "Local request requires application/json; charset=utf-8.");
     }
   }
-  if (!tokenMatches(auth.token, request.headers[LOCAL_TOKEN_HEADER])) {
+  const publicGet = request.method === "GET" && (pathname === "/utcp" || pathname === "/build-info");
+  if (!publicGet && !tokenMatches(auth.token, request.headers[LOCAL_TOKEN_HEADER])) {
     return denial(401, "CCB_AUTH_REQUIRED", "Valid local API token is required.");
   }
   return undefined;

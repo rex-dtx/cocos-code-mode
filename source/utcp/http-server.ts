@@ -110,12 +110,12 @@ export class LocalHttpServer {
   private async handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const startedAt = Date.now();
     try {
-      const denial = validateLocalIngress(this.auth, request);
+      const url = new URL(request.url || "/", "http://localhost");
+      const denial = validateLocalIngress(this.auth, request, url.pathname);
       if (denial) {
         sendJson(response, denial.status, denial.body);
         return;
       }
-      const url = new URL(request.url || "/", "http://localhost");
       const method = request.method as HttpMethod;
       const handler = this.routes.get(`${method} ${url.pathname}`);
       if (!handler) {
