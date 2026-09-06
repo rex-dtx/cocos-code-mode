@@ -228,36 +228,8 @@ export class SceneTools {
     }
 
     @utcpTool(
-        'callComponentMethod',
-        'Call a method on a component by uuid. Args and return must be JSON-serializable. Get uuid via nodeComponentsGet.',
-        {
-            type: 'object',
-            properties: {
-                reference: InstanceReferenceSchema,
-                methodName: { type: 'string', description: 'Name of the method to call' },
-                methodArgs: { type: 'array', items: {}, description: 'Arguments to pass to the method (JSON-serializable)' }
-            },
-            required: ['reference', 'methodName']
-        },
-        { type: 'object', properties: { result: {} } }, "POST", ['scene', 'component', 'call', 'execute', 'method', 'invoke', 'script']
-    )
-    async callComponentMethod(args: { reference: IInstanceReference, methodName: string, methodArgs?: any[] }): Promise<{ result: any }> {
-        if (!args.reference || !args.reference.id) {
-            throw new Error('callComponentMethod requires reference.id (component uuid)');
-        }
-        const result = await Editor.Message.request('scene', 'execute-component-method', {
-            uuid: args.reference.id,
-            name: args.methodName,
-            args: args.methodArgs || []
-        });
-        // The method may mutate scene state; snapshot so undo covers it
-        await Editor.Message.request('scene', 'snapshot');
-        return { result: result === undefined ? null : result };
-    }
-
-    @utcpTool(
         'listComponentMethods',
-        'List callable method names per component on a node. Use to discover methods before callComponentMethod.',
+        'List callable method names per component on a node.',
         {
             type: 'object',
             properties: {

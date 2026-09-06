@@ -46,41 +46,4 @@ export class EventTools {
         return { handlersFired: result.handlersFired, method: result.method ?? 'clickEvents' };
     }
 
-    @utcpTool(
-        'bindButtonClickEvent',
-        'Attach a cc.EventHandler to a Button: on click, calls componentType.handlerName on the same node (or its children).',
-        {
-            type: 'object',
-            properties: {
-                reference: InstanceReferenceSchema,
-                componentType: { type: 'string', description: 'Target component type, e.g. "WheelController" or "cc.Component"' },
-                handlerName:   { type: 'string', description: 'Method name on that component' },
-                customEventData: { type: 'string', description: 'Optional customEventData forwarded to the handler' },
-            },
-            required: ['reference', 'componentType', 'handlerName'],
-        },
-        {
-            type: 'object',
-            properties: {
-                handlerCount: { type: 'number' },
-            },
-            required: ['handlerCount'],
-        },
-        'POST',
-        ['event', 'button', 'bind', 'handler', 'component', 'interact']
-    )
-    async bindButtonClickEvent(args: {
-        reference: IInstanceReference, componentType: string, handlerName: string, customEventData?: string
-    }): Promise<{ handlerCount: number }> {
-        if (!args.reference?.id) throw new Error('bindButtonClickEvent requires reference.id');
-        if (!args.componentType?.trim()) throw new Error('componentType must be non-empty');
-        if (!args.handlerName?.trim())   throw new Error('handlerName must be non-empty');
-        await ensureRuntimeNode(args.reference.id);
-        const result = await Editor.Message.request('scene', 'execute-scene-script', {
-            name: EVENT_PACKAGE, method: 'bindButtonClickEvent',
-            args: [args.reference.id, args.componentType, args.handlerName, args.customEventData || ''],
-        }) as { handlerCount: number } | null;
-        if (typeof result?.handlerCount !== 'number' || result.handlerCount === 0) throw new Error(`bindButtonClickEvent: unexpected response ${JSON.stringify(result)}`);
-        return { handlerCount: result.handlerCount };
-    }
 }
