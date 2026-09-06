@@ -12,10 +12,15 @@ services:
       CCB_CACHE_DIR: /data
       CCB_DB_PATH: /data/cc-bridge.db
       CCB_ALLOWED_HOSTS: 127.0.0.1,localhost,cc-bridge-gateway
+      CCB_EXECUTION_KEY_ID: ${CCB_EXECUTION_KEY_ID:-}
+      CCB_ALLOW_MEMORY_SIGNER: ${CCB_ALLOW_MEMORY_SIGNER:-}
+      CCB_EXECUTION_PRIVATE_KEY_PKCS8: ${CCB_EXECUTION_PRIVATE_KEY_PKCS8:-}
+      CCB_SIGNER_SOCKET: ${CCB_SIGNER_SOCKET:-}
     ports:
       - "${CCB_GATEWAY_PUBLISH_PORT:-8787}:8787"
     volumes:
       - cc-bridge-data:/data
+      - signer-sock:/run/cc-bridge
     healthcheck:
       test:
         [

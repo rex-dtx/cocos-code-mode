@@ -12,8 +12,11 @@ if (-not (Test-Path -LiteralPath $LiveDirectory)) { throw "live directory missin
 if ($PackageSha256 -notmatch '^[a-f0-9]{64}$') { throw "package hash must be 64 hex chars" }
 
 Write-Output ("state=wait pid={0} hash={1}" -f $CreatorPid, $PackageSha256)
+$stagedZip = Join-Path $StagedDirectory "pending.zip"
+if (-not (Test-Path -LiteralPath $stagedZip)) { throw "staged zip missing" }
+$actual = (Get-FileHash -LiteralPath $stagedZip -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($actual -ne $PackageSha256) { throw "staged zip hash mismatch" }
 Wait-Process -Id $CreatorPid -ErrorAction SilentlyContinue
-
 $liveParent = Split-Path -Parent $LiveDirectory
 $swapName = (Split-Path -Leaf $LiveDirectory) + ".prev"
 $backup = Join-Path $liveParent $swapName
