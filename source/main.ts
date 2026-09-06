@@ -169,6 +169,7 @@ export async function load() {
 export function unload() {
     if (relayHost) {
         void relayHost.state.drain(5_000);
+        relayHost.close();
         relayHost = null;
     }
     if (utcpServer) {
