@@ -1,0 +1,1771 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "request-signature.request-id",
+      "stage": "request-signature",
+      "path": [
+        "requestId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.device-id",
+      "stage": "request-signature",
+      "path": [
+        "deviceId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.project-id",
+      "stage": "request-signature",
+      "path": [
+        "projectId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.relay-instance",
+      "stage": "request-signature",
+      "path": [
+        "relayInstanceId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.nonce",
+      "stage": "request-signature",
+      "path": [
+        "nonce"
+      ],
+      "operation": "set",
+      "value": "BBBBBBBBBBBBBBBBBBBBBB",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.sequence",
+      "stage": "request-signature",
+      "path": [
+        "sequence"
+      ],
+      "operation": "set",
+      "value": 8,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.tool-id",
+      "stage": "request-signature",
+      "path": [
+        "tool",
+        "id"
+      ],
+      "operation": "set",
+      "value": "differentTool",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.contract-hash",
+      "stage": "request-signature",
+      "path": [
+        "tool",
+        "contractHash"
+      ],
+      "operation": "set",
+      "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.relay-build",
+      "stage": "request-signature",
+      "path": [
+        "relay",
+        "build"
+      ],
+      "operation": "set",
+      "value": "9.9.9",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-signature.package-hash",
+      "stage": "request-signature",
+      "path": [
+        "relay",
+        "packageHash"
+      ],
+      "operation": "set",
+      "value": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.request-id",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "requestId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.device-id",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "deviceId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.project-id",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "projectId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.relay-instance",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "relayInstanceId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.nonce",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "nonce"
+      ],
+      "operation": "set",
+      "value": "BBBBBBBBBBBBBBBBBBBBBB",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.sequence",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "sequence"
+      ],
+      "operation": "set",
+      "value": 8,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.tool-id",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "tool",
+        "id"
+      ],
+      "operation": "set",
+      "value": "differentTool",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.creator-range",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "creatorRange"
+      ],
+      "operation": "set",
+      "value": ">=9",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.expires-at",
+      "stage": "decision-signature",
+      "path": [
+        "binding",
+        "expiresAtMs"
+      ],
+      "operation": "set",
+      "value": 1893456999999,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "decision-signature.correlation",
+      "stage": "decision-signature",
+      "path": [
+        "correlationId"
+      ],
+      "operation": "set",
+      "value": "00000000-0000-4000-8000-000000000099",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.protocol-version",
+      "stage": "request-schema",
+      "path": [
+        "protocolVersion"
+      ],
+      "operation": "set",
+      "value": 2,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.negative-sequence",
+      "stage": "request-schema",
+      "path": [
+        "sequence"
+      ],
+      "operation": "set",
+      "value": -1,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.bad-nonce",
+      "stage": "request-schema",
+      "path": [
+        "nonce"
+      ],
+      "operation": "set",
+      "value": "not base64url!",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.unknown-field",
+      "stage": "request-schema",
+      "path": [
+        "unexpected"
+      ],
+      "operation": "set",
+      "value": true,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.bad-contract-hash",
+      "stage": "request-schema",
+      "path": [
+        "tool",
+        "contractHash"
+      ],
+      "operation": "set",
+      "value": "bad",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.empty-os",
+      "stage": "request-schema",
+      "path": [
+        "relay",
+        "os"
+      ],
+      "operation": "set",
+      "value": "",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.bad-request-id",
+      "stage": "request-schema",
+      "path": [
+        "requestId"
+      ],
+      "operation": "set",
+      "value": "not-a-uuid",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.fractional-issued-at",
+      "stage": "request-schema",
+      "path": [
+        "issuedAtMs"
+      ],
+      "operation": "set",
+      "value": 1.5,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.telemetry-overflow",
+      "stage": "request-schema",
+      "path": [
+        "priorTelemetry"
+      ],
+      "operation": "set",
+      "value": [
+        {
+          "code": "c0",
+          "durationMs": 1
+        },
+        {
+          "code": "c1",
+          "durationMs": 1
+        },
+        {
+          "code": "c2",
+          "durationMs": 1
+        },
+        {
+          "code": "c3",
+          "durationMs": 1
+        },
+        {
+          "code": "c4",
+          "durationMs": 1
+        },
+        {
+          "code": "c5",
+          "durationMs": 1
+        },
+        {
+          "code": "c6",
+          "durationMs": 1
+        },
+        {
+          "code": "c7",
+          "durationMs": 1
+        },
+        {
+          "code": "c8",
+          "durationMs": 1
+        },
+        {
+          "code": "c9",
+          "durationMs": 1
+        },
+        {
+          "code": "c10",
+          "durationMs": 1
+        },
+        {
+          "code": "c11",
+          "durationMs": 1
+        },
+        {
+          "code": "c12",
+          "durationMs": 1
+        },
+        {
+          "code": "c13",
+          "durationMs": 1
+        },
+        {
+          "code": "c14",
+          "durationMs": 1
+        },
+        {
+          "code": "c15",
+          "durationMs": 1
+        },
+        {
+          "code": "c16",
+          "durationMs": 1
+        }
+      ],
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "request-schema.bad-observation-digest",
+      "stage": "request-schema",
+      "path": [
+        "observation",
+        "digest"
+      ],
+      "operation": "set",
+      "value": "bad",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.effect-downgrade",
+      "stage": "primitive-schema",
+      "path": [
+        "effect"
+      ],
+      "operation": "set",
+      "value": "none",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.command-count",
+      "stage": "primitive-schema",
+      "path": [
+        "limits",
+        "commandCount"
+      ],
+      "operation": "set",
+      "value": 2,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.ipc-count",
+      "stage": "primitive-schema",
+      "path": [
+        "limits",
+        "ipcCount"
+      ],
+      "operation": "set",
+      "value": 1,
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.no-precondition",
+      "stage": "primitive-schema",
+      "path": [
+        "preconditions"
+      ],
+      "operation": "set",
+      "value": [],
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.read-mode-write",
+      "stage": "primitive-schema",
+      "path": [
+        "transaction",
+        "mode"
+      ],
+      "operation": "set",
+      "value": "read",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.write-no-snapshot",
+      "stage": "primitive-schema",
+      "path": [
+        "transaction",
+        "snapshot"
+      ],
+      "operation": "set",
+      "value": "none",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.duplicate-command-id",
+      "stage": "primitive-schema",
+      "path": [
+        "commands"
+      ],
+      "operation": "append",
+      "value": {
+        "op": "scene.createNode",
+        "commandId": "create-node",
+        "usesHandles": [],
+        "createsHandle": "node-1",
+        "args": {
+          "parent": {
+            "source": "observation",
+            "jsonPointer": "/fields/parentUuid"
+          },
+          "name": {
+            "source": "request",
+            "jsonPointer": "/inputs/name"
+          }
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.return-missing-command",
+      "stage": "primitive-schema",
+      "path": [
+        "return"
+      ],
+      "operation": "set",
+      "value": {
+        "mode": "command-result",
+        "commandId": "missing"
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.undeclared-handle-use",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0,
+        "usesHandles"
+      ],
+      "operation": "set",
+      "value": [
+        "ghost"
+      ],
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.forward-handle",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0
+      ],
+      "operation": "set",
+      "value": {
+        "op": "scene.setProperties",
+        "commandId": "set",
+        "usesHandles": [
+          "ghost"
+        ],
+        "args": {
+          "target": {
+            "source": "handle",
+            "handle": "ghost"
+          },
+          "values": [
+            {
+              "property": {
+                "source": "public-contract-constant",
+                "id": "enabled"
+              },
+              "value": {
+                "source": "request",
+                "jsonPointer": "/inputs/name"
+              }
+            }
+          ]
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.duplicate-created-handle",
+      "stage": "primitive-schema",
+      "path": [
+        "commands"
+      ],
+      "operation": "append",
+      "value": {
+        "op": "scene.createNode",
+        "commandId": "second",
+        "usesHandles": [],
+        "createsHandle": "node-1",
+        "args": {
+          "parent": {
+            "source": "observation",
+            "jsonPointer": "/fields/parentUuid"
+          },
+          "name": {
+            "source": "request",
+            "jsonPointer": "/inputs/name"
+          }
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.missing-created-handle",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0,
+        "createsHandle"
+      ],
+      "operation": "delete",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.forbidden-created-handle",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0
+      ],
+      "operation": "set",
+      "value": {
+        "op": "scene.readNode",
+        "commandId": "read",
+        "usesHandles": [],
+        "createsHandle": "bad",
+        "args": {
+          "target": {
+            "source": "observation",
+            "jsonPointer": "/fields/parentUuid"
+          }
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.delete-creates-handle",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0
+      ],
+      "operation": "set",
+      "value": {
+        "op": "scene.operateNode",
+        "commandId": "delete",
+        "usesHandles": [],
+        "createsHandle": "bad",
+        "args": {
+          "target": {
+            "source": "observation",
+            "jsonPointer": "/fields/parentUuid"
+          },
+          "action": "delete"
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.duplicate-missing-handle",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0
+      ],
+      "operation": "set",
+      "value": {
+        "op": "scene.operateNode",
+        "commandId": "duplicate",
+        "usesHandles": [],
+        "args": {
+          "target": {
+            "source": "observation",
+            "jsonPointer": "/fields/parentUuid"
+          },
+          "action": "duplicate"
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.unknown-op",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0,
+        "op"
+      ],
+      "operation": "set",
+      "value": "scene.runCode",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.arbitrary-literal",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0,
+        "args",
+        "name"
+      ],
+      "operation": "set",
+      "value": "Gateway-authored",
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.command-overflow",
+      "stage": "primitive-schema",
+      "path": [
+        "commands"
+      ],
+      "operation": "set",
+      "value": [
+        {
+          "op": "scene.createNode",
+          "commandId": "command-0",
+          "usesHandles": [],
+          "createsHandle": "handle-0",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-1",
+          "usesHandles": [],
+          "createsHandle": "handle-1",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-2",
+          "usesHandles": [],
+          "createsHandle": "handle-2",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-3",
+          "usesHandles": [],
+          "createsHandle": "handle-3",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-4",
+          "usesHandles": [],
+          "createsHandle": "handle-4",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-5",
+          "usesHandles": [],
+          "createsHandle": "handle-5",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-6",
+          "usesHandles": [],
+          "createsHandle": "handle-6",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-7",
+          "usesHandles": [],
+          "createsHandle": "handle-7",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-8",
+          "usesHandles": [],
+          "createsHandle": "handle-8",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-9",
+          "usesHandles": [],
+          "createsHandle": "handle-9",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-10",
+          "usesHandles": [],
+          "createsHandle": "handle-10",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-11",
+          "usesHandles": [],
+          "createsHandle": "handle-11",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-12",
+          "usesHandles": [],
+          "createsHandle": "handle-12",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-13",
+          "usesHandles": [],
+          "createsHandle": "handle-13",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-14",
+          "usesHandles": [],
+          "createsHandle": "handle-14",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-15",
+          "usesHandles": [],
+          "createsHandle": "handle-15",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-16",
+          "usesHandles": [],
+          "createsHandle": "handle-16",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-17",
+          "usesHandles": [],
+          "createsHandle": "handle-17",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-18",
+          "usesHandles": [],
+          "createsHandle": "handle-18",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-19",
+          "usesHandles": [],
+          "createsHandle": "handle-19",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-20",
+          "usesHandles": [],
+          "createsHandle": "handle-20",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-21",
+          "usesHandles": [],
+          "createsHandle": "handle-21",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-22",
+          "usesHandles": [],
+          "createsHandle": "handle-22",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-23",
+          "usesHandles": [],
+          "createsHandle": "handle-23",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-24",
+          "usesHandles": [],
+          "createsHandle": "handle-24",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-25",
+          "usesHandles": [],
+          "createsHandle": "handle-25",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-26",
+          "usesHandles": [],
+          "createsHandle": "handle-26",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-27",
+          "usesHandles": [],
+          "createsHandle": "handle-27",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-28",
+          "usesHandles": [],
+          "createsHandle": "handle-28",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-29",
+          "usesHandles": [],
+          "createsHandle": "handle-29",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-30",
+          "usesHandles": [],
+          "createsHandle": "handle-30",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-31",
+          "usesHandles": [],
+          "createsHandle": "handle-31",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-32",
+          "usesHandles": [],
+          "createsHandle": "handle-32",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-33",
+          "usesHandles": [],
+          "createsHandle": "handle-33",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-34",
+          "usesHandles": [],
+          "createsHandle": "handle-34",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-35",
+          "usesHandles": [],
+          "createsHandle": "handle-35",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-36",
+          "usesHandles": [],
+          "createsHandle": "handle-36",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-37",
+          "usesHandles": [],
+          "createsHandle": "handle-37",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-38",
+          "usesHandles": [],
+          "createsHandle": "handle-38",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-39",
+          "usesHandles": [],
+          "createsHandle": "handle-39",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-40",
+          "usesHandles": [],
+          "createsHandle": "handle-40",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-41",
+          "usesHandles": [],
+          "createsHandle": "handle-41",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-42",
+          "usesHandles": [],
+          "createsHandle": "handle-42",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-43",
+          "usesHandles": [],
+          "createsHandle": "handle-43",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-44",
+          "usesHandles": [],
+          "createsHandle": "handle-44",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-45",
+          "usesHandles": [],
+          "createsHandle": "handle-45",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-46",
+          "usesHandles": [],
+          "createsHandle": "handle-46",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-47",
+          "usesHandles": [],
+          "createsHandle": "handle-47",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-48",
+          "usesHandles": [],
+          "createsHandle": "handle-48",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-49",
+          "usesHandles": [],
+          "createsHandle": "handle-49",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-50",
+          "usesHandles": [],
+          "createsHandle": "handle-50",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-51",
+          "usesHandles": [],
+          "createsHandle": "handle-51",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-52",
+          "usesHandles": [],
+          "createsHandle": "handle-52",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-53",
+          "usesHandles": [],
+          "createsHandle": "handle-53",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-54",
+          "usesHandles": [],
+          "createsHandle": "handle-54",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-55",
+          "usesHandles": [],
+          "createsHandle": "handle-55",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-56",
+          "usesHandles": [],
+          "createsHandle": "handle-56",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-57",
+          "usesHandles": [],
+          "createsHandle": "handle-57",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-58",
+          "usesHandles": [],
+          "createsHandle": "handle-58",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-59",
+          "usesHandles": [],
+          "createsHandle": "handle-59",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-60",
+          "usesHandles": [],
+          "createsHandle": "handle-60",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-61",
+          "usesHandles": [],
+          "createsHandle": "handle-61",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-62",
+          "usesHandles": [],
+          "createsHandle": "handle-62",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-63",
+          "usesHandles": [],
+          "createsHandle": "handle-63",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        },
+        {
+          "op": "scene.createNode",
+          "commandId": "command-64",
+          "usesHandles": [],
+          "createsHandle": "handle-64",
+          "args": {
+            "parent": {
+              "source": "observation",
+              "jsonPointer": "/fields/parentUuid"
+            },
+            "name": {
+              "source": "request",
+              "jsonPointer": "/inputs/name"
+            }
+          }
+        }
+      ],
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.mixed-effect",
+      "stage": "primitive-schema",
+      "path": [
+        "commands"
+      ],
+      "operation": "append",
+      "value": {
+        "op": "screenshot.capture",
+        "commandId": "capture",
+        "usesHandles": [],
+        "args": {
+          "width": {
+            "source": "request",
+            "jsonPointer": "/inputs/width"
+          },
+          "height": {
+            "source": "request",
+            "jsonPointer": "/inputs/height"
+          },
+          "quality": {
+            "source": "request",
+            "jsonPointer": "/inputs/quality"
+          }
+        }
+      },
+      "expected": "reject-before-ipc"
+    },
+    {
+      "id": "primitive.move-without-destination",
+      "stage": "primitive-schema",
+      "path": [
+        "commands",
+        0
+      ],
+      "operation": "set",
+      "value": {
+        "op": "scene.operateNode",
+        "commandId": "move",
+        "usesHandles": [],
+        "args": {
+          "target": {
+            "source": "observation",
+            "jsonPointer": "/fields/parentUuid"
+          },
+          "action": "move"
+        }
+      },
+      "expected": "reject-before-ipc"
+    }
+  ]
+}

@@ -1,6 +1,9 @@
+import { randomUUID } from 'node:crypto';
 import express, { Request, Response } from 'express';
-import cors from 'cors';
 import { ToolRegistry } from './decorators';
+import { createLocalIngressGuard, loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
+import { REMOVED_CUSTOMER_TOOLS } from '../protected/removed-tools';
+import { ProtectedRelayHost } from '../protected/relay-host';
 import './tools/typescript-defenition';
 import './tools/get-properties-tool';
 import './tools/set-properties-tool';
@@ -16,7 +19,6 @@ import './tools/animation-tools';
 import './tools/property-array-tools';
 import './tools/material-tools';
 import './tools/consolidated-tools';
-import './execute/execute-tool';
 import './tools/diagnostics-tools';
 import './tools/file-tools';
 import './tools/ui-tools';
@@ -288,10 +290,11 @@ export function setServerProfile(profile: ToolProfile, enabled: string[] = [], d
 export class UtcpServerManager {
     private app: express.Application;
     private server: any;
-    // Resolved port after start(); used by unload to GC the config entry.
     public port: number = 0;
+    private readonly host?: ProtectedRelayHost;
 
-    constructor() {
+    constructor(host?: ProtectedRelayHost) {
+        this.host = host;
         this.app = express();
         registerAllImporters();
     }
@@ -323,8 +326,9 @@ export class UtcpServerManager {
             })
         );
 
-        this.app.use(cors());
-        this.app.use(express.json({ limit: '50mb' }));
+        const localAuth = loadOrCreateLocalAuth(this.host?.relayInstanceId ?? randomUUID());
+        this.app.use(createLocalIngressGuard(localAuth));
+        this.app.use(express.json({ limit: '1mb' }));
 
         // M1 timing baseline: stamp request start so handlers and clients can
         // measure wall time (via X-Duration-Ms header) before/after batching.
@@ -366,6 +370,7 @@ export class UtcpServerManager {
         for (const toolMeta of tools) {
             const ToolClass = toolMeta.target.constructor;
             let instance = toolInstances.get(ToolClass);
+            if (REMOVED_CUSTOMER_TOOLS.has(toolMeta.tool.name)) continue;
             if (!instance) {
                 instance = new ToolClass();
                 toolInstances.set(ToolClass, instance);
@@ -380,6 +385,12 @@ export class UtcpServerManager {
             const toolUrlPath = toolDef.tool_call_template.url;
 
             toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;
+            toolDef.tool_call_template.auth = {
+                auth_type: "api_key",
+                var_name: LOCAL_TOKEN_HEADER,
+                api_key_value: `\${${LOCAL_TOKEN_VARIABLE}}`,
+                in: "header",
+            };
 
             // Profile annotations remain in ToolProfileRegistry. The Code Mode manual parser
             // rejects unknown per-tool fields, so do not expose them in the UTCP manual.
@@ -501,37 +512,8 @@ export class UtcpServerManager {
             res.json(getBuildInfo());
         });
 
-        // ponytail: debug log viewer — GET /debug-logs returns all log entries as JSON array
-        // GET /debug-logs?tool=X filters by tool name; ?last=N returns last N entries
-        this.app.get('/debug-logs', (req, res) => {
-            if (!debugEnabled) {
-                res.status(404).json({ error: 'Debug mode not enabled. Toggle via menu or set UTCP_DEBUG=1.' });
-                return;
-            }
-            try {
-                const files = readdirSync(DEBUG_LOG_DIR)
-                    .filter(f => f.endsWith('.jsonl'))
-                    .sort()
-                    .reverse();
-                if (files.length === 0) {
-                    res.json([]);
-                    return;
-                }
-                const content = readFileSync(join(DEBUG_LOG_DIR, files[0]), 'utf-8');
-                let entries = content.trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
-
-                const toolFilter = req.query.tool as string | undefined;
-                if (toolFilter) {
-                    entries = entries.filter(e => e.tool === toolFilter);
-                }
-                const lastN = Number(req.query.last);
-                if (lastN > 0) {
-                    entries = entries.slice(-lastN);
-                }
-                res.json(entries);
-            } catch (err: any) {
-                res.status(500).json({ error: err.message });
-            }
+        this.app.get('/debug-logs', (_req, res) => {
+            res.status(404).json({ error: 'Debug log endpoint removed from the customer relay.' });
         });
     }
 
