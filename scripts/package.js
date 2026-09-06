@@ -12,10 +12,18 @@ const packageJson = require(packageJsonPath);
 const packageName = packageJson.name;
 const projectRoot = path.join(__dirname, '..');
 
+const { spawnSync } = require('child_process');
 const executeDist = path.join(projectRoot, 'dist', 'utcp', 'execute');
 if (fs.existsSync(executeDist)) {
     console.error('Refuse to package: dist/utcp/execute is present');
     process.exit(1);
+}
+for (const witness of ['scan-protected-absence.js', 'forbidden-material-witness.js']) {
+    const ran = spawnSync(process.execPath, [path.join(__dirname, witness)], { cwd: projectRoot, stdio: 'inherit' });
+    if (ran.status !== 0) {
+        console.error(`Refuse to package: ${witness} failed`);
+        process.exit(ran.status || 1);
+    }
 }
 
 // Zip name carries version + build timestamp so artifacts from different
