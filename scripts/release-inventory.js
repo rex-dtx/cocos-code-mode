@@ -125,13 +125,15 @@ function createPackageManifest(packageName, version, entries) {
 
 const FORBIDDEN_ARCHIVE_PATH = /(?:^|\/)(?:\.env(?:\.|$)|[^/]*(?:private[-_]?key|credential|secret)[^/]*)/i;
 const NESTED_ARCHIVE = /\.(?:zip|tgz|tar|gz|7z|rar|asar)$/i;
-const FORBIDDEN_TEXT = [
+const SECRET_TEXT = [
+  /CCB_(?:EXECUTION|RELEASE|DEVICE)[A-Z0-9_]*PRIVATE_KEY/,
+  /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
+];
+const FIRST_PARTY_FORBIDDEN_TEXT = [
   /sourceMappingURL=data:/,
   /"sourcesContent"\s*:/,
   /\bexecuteJavascript\b/,
   /\bplanCreateUiNode\b/,
-  /CCB_(?:EXECUTION|RELEASE|DEVICE)[A-Z0-9_]*PRIVATE_KEY/,
-  /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
   /\bnew Function\s*\(/,
   /\beval\s*\(/,
   /(?:node:)?child_process/,
@@ -145,7 +147,10 @@ function assertReleaseInventory(entries) {
     const bytes = entry.bytes || fs.readFileSync(entry.sourcePath);
     if (bytes.includes(0)) continue;
     const text = bytes.toString('utf8');
-    for (const pattern of FORBIDDEN_TEXT) {
+    const patterns = entry.relativePath.startsWith('node_modules/')
+      ? SECRET_TEXT
+      : SECRET_TEXT.concat(FIRST_PARTY_FORBIDDEN_TEXT);
+    for (const pattern of patterns) {
       if (pattern.test(text)) throw new Error(`forbidden release marker ${pattern} in ${entry.archivePath}`);
     }
   }
