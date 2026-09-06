@@ -62,8 +62,6 @@ export const CORE_TOOLS = new Set([
     'assetQuery', 'assetGetTree', 'assetGetAtPath', 'assetResolvePath', 'assetCreate', 'assetOperate',
     // Editor
     'editorSelect', 'editorHistory', 'editorEnvInfo',
-    // Execute
-    'executeJavascript',
     // Files
     'projectReadFile', 'projectWriteFile', 'projectSearchFiles',
     // UI

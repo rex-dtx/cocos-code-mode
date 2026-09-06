@@ -2,12 +2,14 @@ import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
+import { ProtectedRelayHost } from './protected/relay-host';
 import { exec } from 'child_process';
 import { homedir } from 'os';
 import { join } from 'path';
 import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 
 let utcpServer: UtcpServerManager | null = null;
+let relayHost: ProtectedRelayHost | null = null;
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
 
@@ -38,7 +40,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
         const previousServer = utcpServer;
         try {
             await previousServer.stop();
-            const nextServer = new UtcpServerManager();
+            const nextServer = new UtcpServerManager(relayHost ?? undefined);
             const actualPort = await nextServer.start(newPort);
             utcpServer = nextServer;
             await getConfigManager().updatePort(actualPort);
@@ -131,8 +133,9 @@ export async function load() {
     const profileConfig = await configManager.getToolProfileConfig();
     setServerProfile(profileConfig.profile as any, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
 
-    utcpServer = new UtcpServerManager();
-
+    relayHost = new ProtectedRelayHost();
+    relayHost.activateIfConfigured();
+    utcpServer = new UtcpServerManager(relayHost);
     let wasConfiguredPort = true;
     // Load port from profile, default to 0 (random free port) if not set
     let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
@@ -160,12 +163,15 @@ export async function load() {
 }
 
 export function unload() {
+    if (relayHost) {
+        void relayHost.state.drain(5_000);
+        relayHost = null;
+    }
     if (utcpServer) {
         console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
         const port = (utcpServer as any).port ?? 0;
         utcpServer.stop();
         utcpServer = null;
-        // Best-effort: don't block unload on config I/O.
         getConfigManager().removeCocosEditorTemplate(port).catch(() => {});
     }
 }

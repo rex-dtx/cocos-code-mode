@@ -1,0 +1,5591 @@
+{
+  "schemaVersion": 2,
+  "toolCount": 86,
+  "protectionClaim": "Gateway source and algorithm bytes remain absent from the customer package; inputs, outputs, timing, primitive actions, final mutations, and cooperative-client self-reports remain observable. This is not remote attestation.",
+  "tools": [
+    {
+      "toolId": "assetGetTree",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxDepth",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxNodes",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetGetAtPath",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetResolvePath",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetReadContent",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/maxBytes",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetFindReferences",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/direction",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/assetKind",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/resolveUrls",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetQuery",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/pattern",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/ccType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/importer",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/extname",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/isBundle",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetSaveContent",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/content",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "assetGetAvailableUrl",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetCreate",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "local-public",
+      "reason": "Source-capable asset creation or metadata mutation remains inspectable and local; protected v1 accepts no arbitrary Gateway-authored text/blob/file content.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/preset",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/options",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "assetImport",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/sourceFilesystemPath",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/targetAssetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/imageType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/options",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "assetOperate",
+      "sourceFile": "source/utcp/tools/asset-tools.ts",
+      "disposition": "local-public",
+      "reason": "Source-capable asset creation or metadata mutation remains inspectable and local; protected v1 accepts no arbitrary Gateway-authored text/blob/file content.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/targetAssetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/meta",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/options",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "nodeGetAvailableComponentTypes",
+      "sourceFile": "source/utcp/tools/component-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/includeInternal",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/filter",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readComponent"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeComponentsGet",
+      "sourceFile": "source/utcp/tools/component-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/componentType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readComponent"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "sceneGetInfo",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "findNodesByAsset",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "findNodesWithMissingAssets",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "findNodes",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/componentType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxResults",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeReset",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/references",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/propertyPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.operateNode"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "callComponentMethod",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "removed",
+      "reason": "Caller-controlled method names are a generic execution surface.",
+      "compatibility": "breaking",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/methodName",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/methodArgs",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "listComponentMethods",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "listComponentClasses",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/extends",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/excludeSelf",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/filter",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeClipboard",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/references",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/targetReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/keepWorldTransform",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/pasteAsChild",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.operateNode"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "nodeGetTree",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxDepth",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxNodes",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/fields",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeGetAtPath",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/hierarchyPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeCreatePrimitive",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/primitiveType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/parentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.createPrimitive"
+      ],
+      "observationContract": "scene-root-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "nodeCreate",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/parentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/assetReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/unwrapPrefab",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.createNode"
+      ],
+      "observationContract": "scene-root-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "nodeOperate",
+      "sourceFile": "source/utcp/tools/scene-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/newParentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/newPrefabPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/prefabAssetReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/siblingIndex",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/recursive",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.operateNode"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "editorEnvInfo",
+      "sourceFile": "source/utcp/tools/editor-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "editorViewport",
+      "sourceFile": "source/utcp/tools/editor-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/references",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/enabled",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/size",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/gizmoTool",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/gizmoPivot",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/gizmoCoordinate",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "editor.viewport"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "editor-state-v1",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "editorSelect",
+      "sourceFile": "source/utcp/tools/editor-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/selectionType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/references",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "editor.selection"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "editor-state-v1",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "editorHistory",
+      "sourceFile": "source/utcp/tools/editor-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "editor.history"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "editor-history-v1",
+      "operationEffects": {
+        "undo": "project-write",
+        "redo": "project-write",
+        "abort": "local-state"
+      }
+    },
+    {
+      "toolId": "editorGetLogs",
+      "sourceFile": "source/utcp/tools/editor-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/count",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/showStack",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/order",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "animationQuery",
+      "sourceFile": "source/utcp/tools/animation-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/nodeReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/clipReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/includeCurves",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxCurves",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/nodePath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/propKey",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/frame",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "animation.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "animationEdit",
+      "sourceFile": "source/utcp/tools/animation-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/nodeReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/clipReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/time",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/clipState",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/operations",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "animation.edit"
+      ],
+      "observationContract": "animation-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "propertyArrayElement",
+      "sourceFile": "source/utcp/tools/property-array-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/propertyPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/index",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/toIndex",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.setProperties"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "materialQuery",
+      "sourceFile": "source/utcp/tools/material-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/effectName",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readProperties"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetDbQuery",
+      "sourceFile": "source/utcp/tools/material-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/dbName",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/maxBytes",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "inspectorGet",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/target",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/fields",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/maxProperties",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readProperties"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "inspectorSet",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/target",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/propertyPaths",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/values",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/propertyPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/value",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.setProperties"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "inspectorGetDefinition",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/target",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/section",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readProperties"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeComponentManage",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/componentType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.addComponent",
+        "scene.removeComponent"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "editorQuery",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/category",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/enumPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/className",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "editor.selection"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "sceneManage",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "runtime.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "scene-lifecycle-v1",
+      "operationEffects": {
+        "open": "local-state",
+        "save": "project-write",
+        "save_as": "project-write",
+        "close": "local-state",
+        "soft_reload": "local-state"
+      }
+    },
+    {
+      "toolId": "buildManage",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/panel",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/taskId",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/options",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/control",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "build.query",
+        "build.start",
+        "build.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "build-task-v1",
+      "operationEffects": {
+        "panel_open": "local-state",
+        "tasks_info": "none",
+        "get_task": "none",
+        "trigger": "external-side-effect",
+        "control": "external-side-effect"
+      }
+    },
+    {
+      "toolId": "previewManage",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "capture",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/imageSize",
+          "dataClass": "public-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/jpegQuality",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/transparentColor",
+          "dataClass": "public-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/cameraPosition",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/targetPosition",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/orthographic",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/orthographicSize",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "programManage",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "removed",
+      "reason": "Mixed process launch and URL actions cannot remain one bounded customer tool.",
+      "compatibility": "breaking",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/programName",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/commandArguments",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/url",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "projectManage",
+      "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/operation",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/type",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/key",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/path",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/value",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "project.readSetting",
+        "project.writeSetting"
+      ],
+      "observationContract": "project-setting-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "executeJavascript",
+      "sourceFile": "source/utcp/execute/execute-tool.ts",
+      "disposition": "removed",
+      "reason": "Arbitrary JavaScript and new Function violate the finite relay boundary.",
+      "compatibility": "breaking",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/context",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/code",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/args",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/safety_checks",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/timeout_ms",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "runScriptDiagnostics",
+      "sourceFile": "source/utcp/tools/diagnostics-tools.ts",
+      "disposition": "internal-dev-only",
+      "reason": "Runs a fixed external compiler process; keep outside the customer protected artifact.",
+      "compatibility": "breaking",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/tsconfigPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "getScriptDiagnosticContext",
+      "sourceFile": "source/utcp/tools/diagnostics-tools.ts",
+      "disposition": "internal-dev-only",
+      "reason": "Runs a fixed external compiler process; keep outside the customer protected artifact.",
+      "compatibility": "breaking",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/tsconfigPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/contextLines",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "projectReadFile",
+      "sourceFile": "source/utcp/tools/file-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/filePath",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "projectWriteFile",
+      "sourceFile": "source/utcp/tools/file-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/filePath",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/content",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/createDirs",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "projectSearchFiles",
+      "sourceFile": "source/utcp/tools/file-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/pattern",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "projectReplaceInFile",
+      "sourceFile": "source/utcp/tools/file-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/filePath",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/search",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/replace",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/replaceAll",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "projectFileExists",
+      "sourceFile": "source/utcp/tools/file-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/filePath",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "projectListDirectory",
+      "sourceFile": "source/utcp/tools/file-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/dirPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/limit",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "createUiNode",
+      "sourceFile": "source/utcp/tools/ui-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/uiType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/parentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.createNode",
+        "scene.setProperties"
+      ],
+      "observationContract": "ui-parent-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "createLabel",
+      "sourceFile": "source/utcp/tools/ui-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/text",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/fontSize",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/color",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/parentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.createNode",
+        "scene.addComponent",
+        "scene.setProperties"
+      ],
+      "observationContract": "ui-parent-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "createButton",
+      "sourceFile": "source/utcp/tools/ui-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/text",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/parentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.createNode",
+        "scene.addComponent",
+        "scene.setProperties"
+      ],
+      "observationContract": "ui-parent-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "createSprite",
+      "sourceFile": "source/utcp/tools/ui-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/name",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/spriteFrameUuid",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/parentReference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.createNode",
+        "scene.addComponent",
+        "scene.setProperties"
+      ],
+      "observationContract": "ui-parent-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "runtimePause",
+      "sourceFile": "source/utcp/tools/runtime-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "runtime.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "runtime-state-v1",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "runtimeResume",
+      "sourceFile": "source/utcp/tools/runtime-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "runtime.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "runtime-state-v1",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "runtimeSetTimeScale",
+      "sourceFile": "source/utcp/tools/runtime-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/scale",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "runtime.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "runtime-state-v1",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "runtimeGetState",
+      "sourceFile": "source/utcp/tools/runtime-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "runtime.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "nodeBatchSet",
+      "sourceFile": "source/utcp/tools/batch-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/entries",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.setProperties"
+      ],
+      "observationContract": "scene-target-v1",
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "sceneBatchGet",
+      "sourceFile": "source/utcp/tools/batch-read-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/entries",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        },
+        {
+          "jsonPointer": "/fields",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readProperties"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "assetBatchQuery",
+      "sourceFile": "source/utcp/tools/batch-read-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/queries",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "asset.query"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "getPerformanceSnapshot",
+      "sourceFile": "source/utcp/tools/validation-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "scene.readNode",
+        "scene.readComponent"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "none-v1",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "validateScene",
+      "sourceFile": "source/utcp/tools/validation-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/includeScriptDiagnostics",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/includeLogErrors",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "captureSceneScreenshot",
+      "sourceFile": "source/utcp/tools/screenshot-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "capture",
+      "inputFields": [
+        {
+          "jsonPointer": "/imageSize",
+          "dataClass": "public-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/jpegQuality",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "captureEditorScreenshot",
+      "sourceFile": "source/utcp/tools/screenshot-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "capture",
+      "inputFields": [
+        {
+          "jsonPointer": "/windowTitle",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "listEditorWindows",
+      "sourceFile": "source/utcp/tools/screenshot-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "sceneSnapshot",
+      "sourceFile": "source/utcp/tools/scene-snapshot-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/maxDepth",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/maxNodes",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/fields",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "simulateButtonClick",
+      "sourceFile": "source/utcp/tools/event-tools.ts",
+      "disposition": "gateway-protected",
+      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "allowed"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [
+        "runtime.control"
+      ],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 1048576,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "finite-contract-values-only",
+      "observationContract": "scene-target-v1",
+      "operationEffects": {
+        "*": "external-side-effect"
+      }
+    },
+    {
+      "toolId": "bindButtonClickEvent",
+      "sourceFile": "source/utcp/tools/event-tools.ts",
+      "disposition": "removed",
+      "reason": "Caller-controlled handler names create an indirect generic method invocation.",
+      "compatibility": "breaking",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/componentType",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/handlerName",
+          "dataClass": "forbidden",
+          "maxBytes": null,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/customEventData",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "readPrefabJson",
+      "sourceFile": "source/utcp/tools/prefab-json-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "editPrefabJson",
+      "sourceFile": "source/utcp/tools/prefab-json-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/content",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "duplicatePrefab",
+      "sourceFile": "source/utcp/tools/prefab-json-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/reference",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/assetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/targetAssetPath",
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/overwrite",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "readProjectInstruction",
+      "sourceFile": "source/utcp/tools/instruction-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/filePath",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/verbose",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "writeProjectInstruction",
+      "sourceFile": "source/utcp/tools/instruction-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/filePath",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/content",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "getEditorPreference",
+      "sourceFile": "source/utcp/tools/preference-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "read",
+      "inputFields": [
+        {
+          "jsonPointer": "/key",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "none"
+      }
+    },
+    {
+      "toolId": "setEditorPreference",
+      "sourceFile": "source/utcp/tools/preference-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "mutation",
+      "inputFields": [
+        {
+          "jsonPointer": "/key",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/value",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "project-write"
+      }
+    },
+    {
+      "toolId": "simulateKeyPress",
+      "sourceFile": "source/utcp/tools/input-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/key",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/modifiers",
+          "dataClass": "project-metadata",
+          "maxBytes": 65536,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "simulateKeyCombo",
+      "sourceFile": "source/utcp/tools/input-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/combo",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "simulateMouseClick",
+      "sourceFile": "source/utcp/tools/input-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/x",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/y",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/button",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/clickCount",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    },
+    {
+      "toolId": "simulateMouseDrag",
+      "sourceFile": "source/utcp/tools/input-tools.ts",
+      "disposition": "local-public",
+      "reason": "Carries local payload, diagnostics, editor-only state, or inspectable utility behavior that must not hairpin through Gateway.",
+      "compatibility": "preserve",
+      "operationClass": "control",
+      "inputFields": [
+        {
+          "jsonPointer": "/x",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/y",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/x2",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/y2",
+          "dataClass": "project-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/steps",
+          "dataClass": "public-metadata",
+          "maxBytes": 64,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        },
+        {
+          "jsonPointer": "/button",
+          "dataClass": "public-metadata",
+          "maxBytes": 4096,
+          "retention": "none",
+          "provenance": [
+            "request"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "resultLocation": "relay-local",
+      "candidatePrimitives": [],
+      "outputFields": [
+        {
+          "jsonPointer": "/*",
+          "dataClass": "local-payload",
+          "maxBytes": 10485760,
+          "retention": "none",
+          "provenance": [
+            "creator-ipc",
+            "local-derived"
+          ],
+          "gatewayTransfer": "never"
+        }
+      ],
+      "gatewayResponsePolicy": "not-applicable",
+      "operationEffects": {
+        "*": "local-state"
+      }
+    }
+  ],
+  "auxiliarySurfaces": [
+    {
+      "surfaceId": "route.tools",
+      "sourcePath": "source/utcp/utcp-server.ts:390-481",
+      "kind": "route",
+      "currentBehavior": "Every generated /tools/{toolId} route accepts unauthenticated loopback JSON/query arguments and returns raw tool results/errors.",
+      "cutoverDisposition": "authenticated",
+      "dataClasses": [
+        "public-metadata",
+        "project-metadata",
+        "local-payload"
+      ],
+      "retention": "none",
+      "currentRoutes": [
+        "/{toolUrlPath}"
+      ]
+    },
+    {
+      "surfaceId": "route.manual",
+      "sourcePath": "source/utcp/utcp-server.ts:484-497",
+      "kind": "route",
+      "currentBehavior": "GET /utcp returns the active-profile manual without authentication.",
+      "cutoverDisposition": "authenticated",
+      "dataClasses": [
+        "public-metadata"
+      ],
+      "retention": "none",
+      "currentRoutes": [
+        "/utcp"
+      ]
+    },
+    {
+      "surfaceId": "route.build-info",
+      "sourcePath": "source/utcp/utcp-server.ts:499-502",
+      "kind": "route",
+      "currentBehavior": "GET /build-info returns build provenance without authentication.",
+      "cutoverDisposition": "authenticated",
+      "dataClasses": [
+        "public-metadata"
+      ],
+      "retention": "none",
+      "currentRoutes": [
+        "/build-info"
+      ]
+    },
+    {
+      "surfaceId": "route.debug-logs",
+      "sourcePath": "source/utcp/utcp-server.ts:504-535",
+      "kind": "route",
+      "currentBehavior": "GET /debug-logs can return persisted raw arguments, results, and errors.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "project-metadata",
+        "local-payload",
+        "forbidden"
+      ],
+      "retention": "bounded-local",
+      "currentRoutes": [
+        "/debug-logs"
+      ]
+    },
+    {
+      "surfaceId": "middleware.cors",
+      "sourcePath": "source/utcp/utcp-server.ts:326",
+      "kind": "middleware",
+      "currentBehavior": "Permissive cors() precedes every route.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "public-metadata"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "middleware.json-body",
+      "sourcePath": "source/utcp/utcp-server.ts:327",
+      "kind": "middleware",
+      "currentBehavior": "Global express.json 50 MiB parser runs before route-specific validation.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "project-metadata",
+        "local-payload",
+        "forbidden"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "middleware.default-deny",
+      "sourcePath": "source/utcp/utcp-server.ts",
+      "kind": "middleware",
+      "currentBehavior": "No global loopback/token/Host/Origin/Sec-Fetch-Site/content-type/body guard exists.",
+      "cutoverDisposition": "authenticated",
+      "dataClasses": [
+        "public-metadata",
+        "project-metadata",
+        "local-payload"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "storage.debug-jsonl",
+      "sourcePath": "source/utcp/utcp-server.ts:249-267",
+      "kind": "storage",
+      "currentBehavior": "UTCP_DEBUG appends raw request arguments and raw results/errors under ~/.utcp-debug/*.jsonl.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "project-metadata",
+        "local-payload",
+        "forbidden"
+      ],
+      "retention": "bounded-local"
+    },
+    {
+      "surfaceId": "storage.manual-config",
+      "sourcePath": "source/utcp/config-manager.ts:28-97",
+      "kind": "storage",
+      "currentBehavior": "~/.utcp_config.json stores provider URLs and is rewritten non-atomically.",
+      "cutoverDisposition": "allowlisted",
+      "dataClasses": [
+        "public-metadata"
+      ],
+      "retention": "bounded-local"
+    },
+    {
+      "surfaceId": "storage.profile-config",
+      "sourcePath": "source/utcp/config-manager.ts:208-231",
+      "kind": "storage",
+      "currentBehavior": "Editor.Profile stores active tool profile and response-envelope settings.",
+      "cutoverDisposition": "allowlisted",
+      "dataClasses": [
+        "public-metadata"
+      ],
+      "retention": "bounded-local"
+    },
+    {
+      "surfaceId": "log.console",
+      "sourcePath": "source/main.ts; source/utcp/utcp-server.ts; source/utcp/config-manager.ts",
+      "kind": "log",
+      "currentBehavior": "Console logs include paths, raw thrown errors, and per-tool failures.",
+      "cutoverDisposition": "redacted",
+      "dataClasses": [
+        "public-metadata",
+        "project-metadata",
+        "local-payload"
+      ],
+      "retention": "bounded-local"
+    },
+    {
+      "surfaceId": "emission.typescript",
+      "sourcePath": "tsconfig.json; base.tsconfig.json",
+      "kind": "emission",
+      "currentBehavior": "All source/**/*.ts compiles into dist with inline source maps and inline sources.",
+      "cutoverDisposition": "allowlisted",
+      "dataClasses": [
+        "public-metadata",
+        "forbidden"
+      ],
+      "retention": "package-lifetime"
+    },
+    {
+      "surfaceId": "package.dist",
+      "sourcePath": "scripts/package.js:52-110",
+      "kind": "package",
+      "currentBehavior": "Package includes all dist output and selected static/config files without a generated file allowlist witness.",
+      "cutoverDisposition": "allowlisted",
+      "dataClasses": [
+        "public-metadata",
+        "forbidden"
+      ],
+      "retention": "package-lifetime"
+    },
+    {
+      "surfaceId": "package.dependencies",
+      "sourcePath": "scripts/package.js:52-110",
+      "kind": "package",
+      "currentBehavior": "Package includes dependency trees selected by directory names; transitive contents are not independently allowlisted.",
+      "cutoverDisposition": "allowlisted",
+      "dataClasses": [
+        "public-metadata",
+        "forbidden"
+      ],
+      "retention": "package-lifetime"
+    },
+    {
+      "surfaceId": "package.static-assets",
+      "sourcePath": "scripts/package.js:52-110",
+      "kind": "package",
+      "currentBehavior": "Package includes static assets, panels, i18n, package metadata, and type declarations.",
+      "cutoverDisposition": "allowlisted",
+      "dataClasses": [
+        "public-metadata"
+      ],
+      "retention": "package-lifetime"
+    },
+    {
+      "surfaceId": "process.open-debug-folder",
+      "sourcePath": "source/main.ts:67-82",
+      "kind": "process",
+      "currentBehavior": "openDebugFolder shell-concatenates a platform command and invokes child_process.exec.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "public-metadata",
+        "forbidden"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "scene-export.toggle-console-capture",
+      "sourcePath": "source/main.ts:53-63",
+      "kind": "scene-export",
+      "currentBehavior": "toggleDebug selects a method string and dispatches execute-scene-script dynamically.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "public-metadata",
+        "forbidden"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "scene-export.run-code",
+      "sourcePath": "source/scene.ts:252-284",
+      "kind": "scene-export",
+      "currentBehavior": "runCode compiles caller-controlled JavaScript through new Function in the scene process.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "local-payload",
+        "forbidden"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "panel-ipc.preview-function",
+      "sourcePath": "source/panels/preview/index.ts:65-84",
+      "kind": "panel-ipc",
+      "currentBehavior": "Preview panel accepts a function-name string and forwards it through call-preview-function.",
+      "cutoverDisposition": "typed-adapter",
+      "dataClasses": [
+        "public-metadata",
+        "project-metadata"
+      ],
+      "retention": "none"
+    },
+    {
+      "surfaceId": "ui-action.debug-menus",
+      "sourcePath": "source/main.ts:53-95; package.json:contributions.menu",
+      "kind": "ui-action",
+      "currentBehavior": "Debug menu toggles raw logging, opens its folder through a shell, and clears persisted raw logs.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "project-metadata",
+        "local-payload",
+        "forbidden"
+      ],
+      "retention": "bounded-local"
+    },
+    {
+      "surfaceId": "process.program-url-fallback",
+      "sourcePath": "source/utcp/tools/program-tools.ts:35-38",
+      "kind": "process",
+      "currentBehavior": "Program URL fallback invokes cmd/open/xdg-open through child_process.execFile and is reachable from the removed programManage family.",
+      "cutoverDisposition": "removed",
+      "dataClasses": [
+        "public-metadata",
+        "forbidden"
+      ],
+      "retention": "none"
+    }
+  ],
+  "observationContracts": {
+    "none-v1": {
+      "purpose": "No upfront Creator state is required; any read occurs through the signed local primitive envelope.",
+      "consentVersion": "none",
+      "retention": "none",
+      "maxBytes": 0,
+      "fields": []
+    },
+    "scene-root-v1": {
+      "purpose": "Bind a scene-wide mutation to the exact open scene revision before the first write.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 8192,
+      "fields": [
+        "/sceneUuid",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "scene-target-v1": {
+      "purpose": "Bind a targeted node/component mutation to the exact entity revision and type before the first write.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 65536,
+      "fields": [
+        "/nodeUuid",
+        "/entityType",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "ui-parent-v1": {
+      "purpose": "Bind UI construction to the selected parent and its scene revision before the first write.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 16384,
+      "fields": [
+        "/parentUuid",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "animation-target-v1": {
+      "purpose": "Bind animation edits to the selected clip and current revision before the first write.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 32768,
+      "fields": [
+        "/clipUuid",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "project-setting-v1": {
+      "purpose": "Bind a supported project-setting mutation to the current real Creator capability and setting revision.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 16384,
+      "fields": [
+        "/namespace",
+        "/key",
+        "/creatorCapability",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "editor-history-v1": {
+      "purpose": "Bind undo, redo, or snapshot abort to the current history head before changing it.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 8192,
+      "fields": [
+        "/historyHead",
+        "/pendingSnapshot",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "scene-lifecycle-v1": {
+      "purpose": "Bind scene open/save/save-as/close/reload to the current scene identity, dirty state, and revision.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 16384,
+      "fields": [
+        "/sceneUuid",
+        "/dirty",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "build-task-v1": {
+      "purpose": "Bind build trigger/control to the current worker and task state before the external side effect.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 32768,
+      "fields": [
+        "/workerReady",
+        "/taskId",
+        "/taskState",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "editor-state-v1": {
+      "purpose": "Bind editor selection/viewport state before a local state transition.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 16384,
+      "fields": [
+        "/selection",
+        "/viewport",
+        "/revisionToken",
+        "/digest"
+      ]
+    },
+    "runtime-state-v1": {
+      "purpose": "Bind preview runtime state before pause, resume, or time-scale transition.",
+      "consentVersion": "project-metadata-v1",
+      "retention": "none",
+      "maxBytes": 8192,
+      "fields": [
+        "/playing",
+        "/paused",
+        "/timeScale",
+        "/revisionToken",
+        "/digest"
+      ]
+    }
+  }
+}

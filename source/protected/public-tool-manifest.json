@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "tools": [
+    {
+      "name": "createUiNode",
+      "contractVersion": 1,
+      "contractHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "observation": {
+        "contractId": "ui-parent-v1",
+        "consentVersion": "project-metadata-v1",
+        "fields": ["parentUuid"]
+      }
+    }
+  ]
+}

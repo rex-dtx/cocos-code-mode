@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-09-06T07:26:26.782Z",
+  "profile": {
+    "creatorProject": "cc30-new-all-in-one",
+    "gateway": "local-development",
+    "note": "Company-LAN and 100-device evidence belong to Phase 5."
+  },
+  "manual": {
+    "url": "http://localhost:49650/utcp",
+    "toolCount": 86,
+    "bytes": 84281,
+    "buildInfo": {
+      "version": "2.0.0-dev.0483c4f",
+      "commit": "6ede24a",
+      "branch": "feat/ccb3x-consolidated",
+      "dirty": false,
+      "builtAt": "2026-09-04T17:50:36.541Z"
+    }
+  },
+  "smallRead": {
+    "samples": [
+      {
+        "durationMs": 2.2958,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.6880000000000024,
+        "bytes": 189,
+        "serverDurationMs": null
+      },
+      {
+        "durationMs": 1.644599999999997,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 2.7642999999999986,
+        "bytes": 189,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 1.9155999999999977,
+        "bytes": 189,
+        "serverDurationMs": null
+      },
+      {
+        "durationMs": 1.4797999999999973,
+        "bytes": 189,
+        "serverDurationMs": null
+      },
+      {
+        "durationMs": 2.0001999999999924,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.5559000000000083,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.3849000000000018,
+        "bytes": 189,
+        "serverDurationMs": null
+      },
+      {
+        "durationMs": 1.2561000000000035,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.2169999999999987,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.669700000000006,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.250700000000009,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.4257000000000062,
+        "bytes": 189,
+        "serverDurationMs": null
+      },
+      {
+        "durationMs": 1.391999999999996,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.2297999999999973,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.2265999999999906,
+        "bytes": 189,
+        "serverDurationMs": null
+      },
+      {
+        "durationMs": 1.1768999999999892,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.2601000000000084,
+        "bytes": 189,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.2258999999999958,
+        "bytes": 189,
+        "serverDurationMs": 1
+      }
+    ],
+    "clientMs": {
+      "count": 20,
+      "min": 1.1768999999999892,
+      "p50": 1.391999999999996,
+      "p95": 2.2958,
+      "p99": 2.7642999999999986,
+      "max": 2.7642999999999986,
+      "mean": 1.5529799999999998
+    },
+    "serverMs": {
+      "count": 14,
+      "min": 1,
+      "p50": 1,
+      "p95": 2,
+      "p99": 2,
+      "max": 2,
+      "mean": 1.0714285714285714
+    },
+    "responseBytes": {
+      "count": 20,
+      "min": 189,
+      "p50": 189,
+      "p95": 189,
+      "p99": 189,
+      "max": 189,
+      "mean": 189
+    },
+    "creatorIpcCountPerCall": 1
+  },
+  "screenshot": {
+    "dimensions": {
+      "width": 128,
+      "height": 128
+    },
+    "samples": [
+      {
+        "durationMs": 21.13810000000001,
+        "responseBytes": 3526,
+        "validJpeg": true
+      },
+      {
+        "durationMs": 24.78709999999998,
+        "responseBytes": 3526,
+        "validJpeg": true
+      },
+      {
+        "durationMs": 16.28649999999999,
+        "responseBytes": 3526,
+        "validJpeg": true
+      },
+      {
+        "durationMs": 16.193399999999997,
+        "responseBytes": 3526,
+        "validJpeg": true
+      },
+      {
+        "durationMs": 17.26739999999998,
+        "responseBytes": 3526,
+        "validJpeg": true
+      }
+    ],
+    "clientMs": {
+      "count": 5,
+      "min": 16.193399999999997,
+      "p50": 17.26739999999998,
+      "p95": 24.78709999999998,
+      "p99": 24.78709999999998,
+      "max": 24.78709999999998,
+      "mean": 19.134499999999992
+    },
+    "responseBytes": {
+      "count": 5,
+      "min": 3526,
+      "p50": 3526,
+      "p95": 3526,
+      "p99": 3526,
+      "max": 3526,
+      "mean": 3526
+    },
+    "allValidJpeg": true,
+    "resultPath": "local"
+  },
+  "tenStepRead": {
+    "sequentialCalls": 10,
+    "sequentialSamples": [
+      {
+        "durationMs": 2.5165000000000077,
+        "bytes": 54,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 3.496200000000016,
+        "bytes": 54,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 2.191900000000004,
+        "bytes": 56,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 1.2779999999999916,
+        "bytes": 56,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.8144000000000062,
+        "bytes": 56,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 1.6396000000000015,
+        "bytes": 54,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 2.3146999999999878,
+        "bytes": 62,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 2.3075000000000045,
+        "bytes": 62,
+        "serverDurationMs": 1
+      },
+      {
+        "durationMs": 2.544700000000006,
+        "bytes": 63,
+        "serverDurationMs": 2
+      },
+      {
+        "durationMs": 2.7079000000000235,
+        "bytes": 64,
+        "serverDurationMs": 2
+      }
+    ],
+    "sequentialMs": 22.81140000000005,
+    "batchCalls": 1,
+    "batchMs": 7.963899999999995,
+    "improvementPercent": 65.08807000008777,
+    "batchResults": 10
+  },
+  "mutation": {
+    "snapshotCount": 2,
+    "restored": true,
+    "durationsMs": {
+      "create": 15.502900000000011,
+      "delete": 3.533600000000007,
+      "undoDelete": 8.165500000000009,
+      "undoCreate": 90.90360000000001
+    },
+    "postState": {
+      "dirty": false,
+      "temporaryNodeMatches": 0
+    }
+  },
+  "gatewayHealthRtt": {
+    "samples": [
+      3.9979000000000156,
+      3.338199999999972,
+      2.285599999999988,
+      2.942099999999982,
+      2.6760000000000446,
+      2.394399999999962,
+      1.963700000000017,
+      1.9839000000000055,
+      2.045099999999991,
+      1.9019999999999868,
+      2.4407999999999674,
+      2.882499999999993,
+      2.824799999999982,
+      2.1222999999999956,
+      2.081099999999992,
+      1.926400000000001,
+      1.9904999999999973,
+      2.2088000000000534,
+      3.8149999999999977,
+      2.7200000000000273
+    ],
+    "summary": {
+      "count": 20,
+      "min": 1.9019999999999868,
+      "p50": 2.285599999999988,
+      "p95": 3.8149999999999977,
+      "p99": 3.9979000000000156,
+      "max": 3.9979000000000156,
+      "mean": 2.5270549999999985
+    }
+  }
+}

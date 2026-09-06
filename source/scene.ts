@@ -24,18 +24,6 @@ function _writeSceneLog(level: 'log' | 'warn' | 'error', data: unknown[]): void 
     } catch {}
 }
 
-function getSceneExecuteGlobals(): Record<string, any> {
-    // Inject scene-renderer globals explicitly — new Function has no closure access.
-    // `cc`/`cce`/`document` are reliably present in the editor scene; `require` is
-    // guarded because fs may be unavailable in some scene sub-contexts.
-    return {
-        cc: (globalThis as any)['cc'],
-        cce: (globalThis as any)['cce'],
-        document,
-        require: typeof require === 'function' ? require : undefined,
-    };
-}
-
 export const methods = {
     async startCatchLogging() {
         _caughtLogs = [];
@@ -249,39 +237,8 @@ export const methods = {
         });
     },
 
-    async runCode(code: string, args?: any): Promise<any> {
-        // Generic JS execution escape hatch in the scene renderer. Globals are injected
-        // explicitly and kept in getSceneExecuteGlobals so future globals are a one-line
-        // add. Uses an async wrapper so the agent can `await` and `return <expr>`.
-        const globals = getSceneExecuteGlobals();
-        const names = Object.keys(globals);
-        const values = Object.values(globals);
-        const fn = new Function('args', ...names, `return (async () => { ${code} })();`) as (...v: any[]) => Promise<any>;
-        const result = await fn(args ?? {}, ...values);
-        if (result === undefined || result === null) return null;
-        // Coerce to JSON-safe BEFORE crossing IPC: the Editor.Message transport
-        // JSON-serializes this return value in the scene process, so a circular
-        // object or live cc.Node would throw "Converting circular structure to JSON"
-        // where the editor-side serializeGuard cannot intercept it. Mirror that guard
-        // here so scene-context returns are as safe as editor-context returns.
-        try {
-            JSON.stringify(result);
-            return result; // already serializable — skip the extra round-trip
-        } catch {
-            const seen = new WeakSet();
-            try {
-                return JSON.parse(JSON.stringify(result, (_key, val) => {
-                    if (typeof val === 'function' || typeof val === 'bigint' || typeof val === 'symbol') return undefined;
-                    if (val && typeof val === 'object') {
-                        if (seen.has(val)) return undefined; // circular
-                        seen.add(val);
-                    }
-                    return val;
-                }));
-            } catch {
-                return null; // pathologically non-serializable — fail soft, not crash
-            }
-        }
+    async runCode(): Promise<never> {
+        throw new Error('scene.runCode was removed from the customer relay.');
     },
 
     async runtimePause(): Promise<boolean> {
