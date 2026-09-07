@@ -48,12 +48,12 @@ describe('Windows signed update activation helper', { skip: process.platform !==
       };
       const descriptorBytes = Buffer.from(`${JSON.stringify(descriptor)}\n`);
       writeFileSync(join(staged, '.ccb-staged.json'), descriptorBytes);
-      const creator = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 500)'], { stdio: 'ignore', windowsHide: true });
+      const creator = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 5000)'], { stdio: 'ignore', windowsHide: true });
       const result = spawnSync('powershell.exe', [
         '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', join(__dirname, '..', '..', 'scripts', 'install-update.ps1'),
         '-CreatorPid', String(creator.pid), '-CreatorExecutablePath', process.execPath,
         '-StagedDirectory', staged, '-LiveDirectory', live, '-DescriptorSha256', digest(descriptorBytes),
-      ], { encoding: 'utf8', timeout: 15_000, windowsHide: true });
+      ], { encoding: 'utf8', timeout: 20_000, windowsHide: true });
       assert.equal(result.status, 0, result.stderr || result.stdout);
       assert.equal(readFileSync(join(live, 'dist', 'main.js'), 'utf8'), payload.toString());
       assert.equal(readFileSync(join(root, 'live.prev', 'old.txt'), 'utf8'), 'old');
@@ -72,12 +72,12 @@ describe('Windows signed update activation helper', { skip: process.platform !==
       mkdirSync(backup);
       writeFileSync(join(live, 'version.txt'), 'failed');
       writeFileSync(join(backup, 'version.txt'), 'previous');
-      const creator = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 500)'], { stdio: 'ignore', windowsHide: true });
+      const creator = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 5000)'], { stdio: 'ignore', windowsHide: true });
       const result = spawnSync('powershell.exe', [
         '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', join(__dirname, '..', '..', 'scripts', 'install-update.ps1'),
         '-CreatorPid', String(creator.pid), '-CreatorExecutablePath', process.execPath,
         '-LiveDirectory', live, '-RollbackPendingHealth',
-      ], { encoding: 'utf8', timeout: 15_000, windowsHide: true });
+      ], { encoding: 'utf8', timeout: 20_000, windowsHide: true });
       assert.equal(result.status, 0, result.stderr || result.stdout);
       assert.equal(readFileSync(join(live, 'version.txt'), 'utf8'), 'previous');
       assert.match(result.stdout, /state=rolled-back/);

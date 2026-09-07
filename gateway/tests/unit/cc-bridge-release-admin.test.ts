@@ -19,16 +19,16 @@ const admin: AuthContext = {
 
 const searcher: AuthContext = { ...admin, role: "searcher" };
 
-function targetBody(sha256 = "a".repeat(64)) {
+function targetBody(sha256 = "a".repeat(64), releaseSequence = 1) {
   return {
     schemaVersion: 1,
     metadataVersion: 1,
-    releaseSequence: 1,
+    releaseSequence,
     issuedAt: new Date(Date.now() - 1000).toISOString(),
     expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
     package: {
       name: "cc-bridge-3x",
-      version: "2.0.0",
+      version: `2.0.${releaseSequence}`,
       sha256,
       size: 100,
       url: "https://releases.example.test/cc-bridge-3x.zip",
@@ -88,22 +88,52 @@ describe("CC Bridge release admin", () => {
     expect(store.listRolloutPolicies()).toHaveLength(1);
   });
 
-  it("promotes an immutable target through rings 1 then 3 then 10", () => {
+  it("promotes an immutable target only through healthy, soaked rings 1 then 3 then 10", () => {
     const store = new CcBridgeStore(":memory:");
     const targetHash = "a".repeat(64);
     const imported = importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(targetHash), targetPrivateKey), keys);
-    for (const [sequence, ring] of [[1, "1"], [2, "3"], [3, "10"]] as const) {
-      const published = publishRolloutPolicy(
+    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 1), policyPrivateKey), keys);
+    for (const [sequence, fromRing, toRing, requiredDevices] of [[2, "1", "3", 1], [3, "3", "10", 3]] as const) {
+      const now = Date.now();
+      store.db.prepare("UPDATE rollout_state SET updated_at_ms = ? WHERE channel = ?")
+        .run(now - 20 * 60_000, "stable");
+      for (let index = 0; index < requiredDevices; index += 1) {
+        store.recordCanaryHealth({
+          targetHash: imported.targetPayloadHash, packageHash: targetHash, deviceId: `device-${index}`,
+          probeId: `probe-${sequence}-${index}`, observedAtMs: now - 1000, ring: fromRing, healthy: true,
+        });
+      }
+      publishRolloutPolicy(
         store,
         admin,
-        signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, sequence, { ring }), policyPrivateKey),
+        signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, sequence, { ring: toRing }), policyPrivateKey),
         keys,
       );
-      expect(published.policySequence).toBe(sequence);
     }
-    const policies = store.listRolloutPolicies();
-    expect(policies.map((row) => row.ring)).toEqual(["10", "3", "1"]);
-    expect(policies.map((row) => row.sequence)).toEqual([3, 2, 1]);
+    expect(store.getRolloutState("stable")?.ring).toBe("10");
+  });
+
+  it("rejects direct ring 10, backward movement, and promotion without healthy evidence", () => {
+    const store = new CcBridgeStore(":memory:");
+    const imported = importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(), targetPrivateKey), keys);
+    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 1, { ring: "10" }), policyPrivateKey), keys)).toThrow(/begin in canary ring 1/);
+    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 1), policyPrivateKey), keys);
+    store.db.prepare("UPDATE rollout_state SET updated_at_ms = ? WHERE channel = ?")
+      .run(Date.now() - 20 * 60_000, "stable");
+    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 2, { ring: "10" }), policyPrivateKey), keys)).toThrow(/1→3→10/);
+    store.recordCanaryHealth({
+      targetHash: imported.targetPayloadHash, packageHash: "a".repeat(64), deviceId: "device-1",
+      probeId: "probe-1", observedAtMs: Date.now(), ring: "1", healthy: true,
+    });
+    publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 2, { ring: "3" }), policyPrivateKey), keys);
+    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 3, { ring: "1" }), policyPrivateKey), keys)).toThrow(/cannot move backward/);
+    store.db.prepare("UPDATE rollout_state SET updated_at_ms = ? WHERE channel = ?")
+      .run(Date.now() - 20 * 60_000, "stable");
+    store.recordCanaryHealth({
+      targetHash: imported.targetPayloadHash, packageHash: "a".repeat(64), deviceId: "device-bad",
+      probeId: "probe-bad", observedAtMs: Date.now(), ring: "3", healthy: false,
+    });
+    expect(() => publishRolloutPolicy(store, admin, signReleaseMetadata("policy", "policy-fixture-1", policyBody(imported.targetPayloadHash, 4, { ring: "10" }), policyPrivateKey), keys)).toThrow(/unhealthy/);
   });
 
   it("stops a failed canary with a higher-sequence emergency policy", () => {
@@ -149,5 +179,19 @@ describe("CC Bridge release admin", () => {
   it("rejects non-admin mutation", () => {
     const store = new CcBridgeStore(":memory:");
     expect(() => importReleaseTarget(store, searcher, signReleaseMetadata("target", "targets-fixture-1", targetBody(), targetPrivateKey), keys)).toThrow(/admin/);
+  });
+
+  it("rejects lower and equal target sequences with typed replay before insertion", () => {
+    const store = new CcBridgeStore(":memory:");
+    importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody("a".repeat(64), 4), targetPrivateKey), keys);
+    for (const sequence of [4, 3]) {
+      try {
+        importReleaseTarget(store, admin, signReleaseMetadata("target", "targets-fixture-1", targetBody(String(sequence).repeat(64).slice(0, 64), sequence), targetPrivateKey), keys);
+        throw new Error("expected replay denial");
+      } catch (error) {
+        expect((error as { body?: { code?: string } }).body?.code).toBe("CCB_REPLAY");
+      }
+    }
+    expect(store.listReleaseTargets()).toHaveLength(1);
   });
 });

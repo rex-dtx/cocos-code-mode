@@ -8,7 +8,8 @@ const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { requireDist } = require('../helpers/require-dist');
 
-const { acceptRelease } = requireDist('update/trust.js');
+const { acceptRelease, acceptRootRotation } = requireDist('update/trust.js');
+const { satisfiesSemverRange } = requireDist('update/semver-range.js');
 const { UpdateStateStore } = requireDist('update/state.js');
 
 function canonicalize(value) {
@@ -26,12 +27,19 @@ function key(id) {
   };
 }
 
-function signed(kind, body, signer) {
+function signed(kind, body, signer, additionalSigners = []) {
   const payload = Buffer.from(canonicalize(body), 'utf8');
-  const prefix = Buffer.from(kind === 'target' ? 'CCB1 release-targets\n' : 'CCB1 rollout-policy\n');
+  const prefix = Buffer.from(kind === 'root'
+    ? 'CCB1 release-root\n'
+    : kind === 'target'
+      ? 'CCB1 release-targets\n'
+      : 'CCB1 rollout-policy\n');
   return {
     payload: payload.toString('base64url'),
-    signatures: [{ keyId: signer.id, signature: sign(null, Buffer.concat([prefix, payload]), signer.privateKey).toString('base64url') }],
+    signatures: [signer, ...additionalSigners].map((entry) => ({
+      keyId: entry.id,
+      signature: sign(null, Buffer.concat([prefix, payload]), entry.privateKey).toString('base64url'),
+    })),
   };
 }
 
@@ -77,7 +85,7 @@ function fixture(nowMs) {
     targetPayloadSha256, channel: 'stable', ring: '10', percentage: 100, recommended: true,
     blockedBuilds: [], rollbackTargetPayloadSha256: [], disabledOperations: [], emergencyStop: false,
   };
-  return { root, targetWrapper, policyWrapper: signed('policy', policy, policyKey), policy, policyKey };
+  return { root, rootKey, targetWrapper, target, targetKey, policyWrapper: signed('policy', policy, policyKey), policy, policyKey };
 }
 
 describe('signed update trust transaction', () => {
@@ -98,6 +106,19 @@ describe('signed update trust transaction', () => {
       assert.equal(store.load().targetPayloadSha256, data.policy.targetPayloadSha256);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
+  it('binds the installed signed target before the first update so health rollback is permitted', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ccb-update-trust-'));
+    try {
+      const data = fixture(nowMs);
+      const installedTarget = 'e'.repeat(64);
+      const policy = { ...data.policy, rollbackTargetPayloadSha256: [installedTarget] };
+      const store = new UpdateStateStore(join(dir, 'state.json'));
+      store.initializeInstalledTarget(installedTarget);
+      acceptRelease(data.root, data.targetWrapper, signed('policy', policy, data.policyKey), compatibility, store, nowMs);
+      assert.equal(store.load().activeTargetPayloadSha256, installedTarget);
+      assert.equal(store.load().rollbackTargetPayloadSha256, installedTarget);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
 
   it('rejects mix-and-match target bytes and same-sequence different policy bytes', () => {
     const dir = mkdtempSync(join(tmpdir(), 'ccb-update-trust-'));
@@ -113,14 +134,46 @@ describe('signed update trust transaction', () => {
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 
-  it('fails closed for emergency stop and incompatible Creator', () => {
+  it('persists a verified emergency policy high-water before denying execution', () => {
     const dir = mkdtempSync(join(tmpdir(), 'ccb-update-trust-'));
     try {
       const data = fixture(nowMs);
       const store = new UpdateStateStore(join(dir, 'state.json'));
-      const stopped = { ...data.policy, emergencyStop: true };
+      const stopped = { ...data.policy, policySequence: data.policy.policySequence + 1, emergencyStop: true };
       assert.throws(() => acceptRelease(data.root, data.targetWrapper, signed('policy', stopped, data.policyKey), compatibility, store, nowMs), /emergency stop/);
-      assert.throws(() => acceptRelease(data.root, data.targetWrapper, data.policyWrapper, { ...compatibility, creatorVersion: '3.6.0' }, store, nowMs), /newer Creator/);
+      assert.equal(store.load().highestPolicySequence, stopped.policySequence);
+      assert.throws(() => acceptRelease(data.root, data.targetWrapper, data.policyWrapper, compatibility, store, nowMs), /rolled back/);
     } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+
+  it('enforces full Creator SemVer ranges including upper bounds, ORs, and prereleases', () => {
+    assert.equal(satisfiesSemverRange('3.8.7', '>=3.7.0 <3.9.0'), true);
+    assert.equal(satisfiesSemverRange('3.9.0', '>=3.7.0 <3.9.0'), false);
+    assert.equal(satisfiesSemverRange('3.8.7', '^3.7.0 || ~4.1.0'), true);
+    assert.equal(satisfiesSemverRange('3.8.0-beta.1', '>=3.8.0'), false);
+    assert.equal(satisfiesSemverRange('3.8.0-beta.1', '>=3.8.0-beta.1 <3.8.0'), true);
+  });
+
+  it('accepts root rotation only when current and candidate thresholds are independently met', () => {
+    const data = fixture(nowMs);
+    const nextRootKey = key('root-key-2');
+    const candidate = {
+      ...data.root,
+      rootVersion: 2,
+      keys: {
+        ...data.root.keys,
+        [nextRootKey.id]: { algorithm: 'Ed25519', spkiDer: nextRootKey.spkiDer },
+      },
+      roles: {
+        ...data.root.roles,
+        root: { keyIds: [nextRootKey.id], threshold: 1 },
+      },
+    };
+    assert.equal(acceptRootRotation(data.root, signed('root', candidate, data.rootKey, [nextRootKey]), nowMs).rootVersion, 2);
+    assert.throws(() => acceptRootRotation(data.root, signed('root', candidate, data.rootKey), nowMs), /candidate-root signature threshold/);
+    assert.throws(() => acceptRootRotation(data.root, signed('root', candidate, nextRootKey), nowMs), /current-root signature threshold/);
+    const duplicate = signed('root', candidate, data.rootKey, [nextRootKey]);
+    duplicate.signatures.push(duplicate.signatures[0]);
+    assert.throws(() => acceptRootRotation(data.root, duplicate, nowMs), /duplicate signature/);
   });
 });

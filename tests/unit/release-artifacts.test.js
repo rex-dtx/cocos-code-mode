@@ -40,12 +40,23 @@ function fixture() {
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: 'cc-bridge-3x', version: '2.0.0' }));
   return root;
 }
+const fixtureInputs = {
+  trackedFiles: [
+    '@types/schema.json',
+    'i18n/en.js',
+    'static/index.html',
+    'package-lock.json',
+    'scripts/install-update.ps1',
+  ],
+  generatedOutputs: ['dist/main.js', 'dist/build-info.json'],
+};
+
 
 describe('deterministic release inventory', () => {
   it('archives only sorted production entries and emits mode-bearing manifest rows', () => {
     const root = fixture();
     try {
-      const entries = collectPackageEntries(root, 'cc-bridge-3x', { name: 'cc-bridge-3x', version: '2.0.0-dev.abc1234' });
+      const entries = collectPackageEntries(root, 'cc-bridge-3x', { name: 'cc-bridge-3x', version: '2.0.0-dev.abc1234' }, fixtureInputs);
       const paths = entries.map((entry) => entry.archivePath);
       assert.deepEqual(paths, [...paths].sort((a, b) => a.localeCompare(b)));
       assert(paths.includes('cc-bridge-3x/node_modules/prod/index.js'));
@@ -62,6 +73,25 @@ describe('deterministic release inventory', () => {
   it('rejects case-colliding archive paths independently of host filesystem casing', () => {
     const entries = [{ relativePath: 'static/index.html' }, { relativePath: 'static/INDEX.HTML' }];
     assert.throws(() => assignArchivePaths(entries, 'cc-bridge-3x'), /case-colliding/);
+  });
+
+  it('rejects relevant untracked static and undeclared dist inputs', () => {
+    const root = fixture();
+    try {
+      fs.writeFileSync(path.join(root, 'static', 'injected.js'), 'module.exports = 1;');
+      assert.throws(
+        () => collectPackageEntries(root, 'cc-bridge-3x', { name: 'cc-bridge-3x', version: '2.0.0' }, fixtureInputs),
+        /untracked packaged input: static\/injected\.js/,
+      );
+      fs.rmSync(path.join(root, 'static', 'injected.js'));
+      fs.writeFileSync(path.join(root, 'dist', 'injected.js'), 'module.exports = 1;');
+      assert.throws(
+        () => collectPackageEntries(root, 'cc-bridge-3x', { name: 'cc-bridge-3x', version: '2.0.0' }, fixtureInputs),
+        /undeclared generated packaged input: dist\/injected\.js/,
+      );
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 });
 

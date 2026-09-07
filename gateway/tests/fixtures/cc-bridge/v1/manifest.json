@@ -3,15 +3,16 @@
   "publicSources": {
     "canonical-json.ts": "c837eaf6cd4fff9d556b962296e48544988dbbc5731d10f3b25d44d944e3dc11",
     "canonical-json.LICENSE.txt": "283ea6cc2997a1a70da0049e09adf9317bb60ca1b51279b65196b83a69e1996b",
-    "protocol.ts": "40416bde539cb0f1f9f5682d61f91c5f5f91c31e7241eaa1f177ac5ccd40e4be",
-    "primitive-contract.ts": "09d32e7db639f45713084fd093dcbb0ac1795482a827e38da8ab97c869d18810",
+    "protocol.ts": "27fdbf4fabe3f6d1e98f47331a7f8383fcc3e7b7a844afcfbd79c2f113266c3b",
+    "primitive-contract.ts": "6f49c2f77abb9bc6116546276bfb55d47684df1e560ed97cb4aebd6b6f83f75b",
     "errors.ts": "1b9a041265356bba51208eac1fcca565a12a12f989eeeeaac727c521271d042c",
-    "schemas.ts": "1627bc9d87f5d6be8160a98c7573edd66d77068709b77439ea75b58b360a89ee",
-    "negative-fixture-runner.ts": "730ca1b31a7f24177b15509c496bfdb9aef5da48c6a64b37c2f4bdeee7eb8de4"
+    "schemas.ts": "580f7310af0bdb6ce049f03b5ab0fd8557d0327b4fc75cbff3b9e6d181ec842d",
+    "negative-fixture-runner.ts": "730ca1b31a7f24177b15509c496bfdb9aef5da48c6a64b37c2f4bdeee7eb8de4",
+    "public-tool-manifest.json": "32c0395fc7c50112b88bd990a8fc385bab25f16f72ba47da13eaecd538e29c9d"
   },
   "fixtures": {
     "test-keys.json": "49018b1e79113bcf9fbc71579b8f268d26986a93fdac5de70816e19f4f65c9bc",
-    "vectors.json": "a62a75b145704002c6c9881d27fa836411dc3797d33471a93ac84236cb0eb725",
+    "vectors.json": "83b94e3a3e4bb7c1f730115c6c4008b7814aabc327af51d8d1bfadf0dc91ec9e",
     "canonical-cases.json": "63079984bd578e6954da03ac4db3e4fbba3eaf42ab1e95b3b2aa59b9af4aefa8",
     "negative-cases.json": "d6a75c622fa180173b60a56dfe29c414380d632e2c5b54163d0d79c917d930e2"
   }
