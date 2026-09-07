@@ -1,6 +1,9 @@
-import { createPublicKey } from "node:crypto";
+import { createPublicKey, verify as verifySignature } from "node:crypto";
+import { canonicalizeToBytes } from "./canonical-json.ts";
 import { CcbError } from "./errors.ts";
-import { WRAPPER_MAX_BYTES, verifyProtectedRequest } from "./protocol.ts";
+import {
+  ED25519_SIGNATURE_BYTES, WRAPPER_MAX_BYTES, decodeBase64Url, verifyProtectedRequest,
+} from "./protocol.ts";
 import { parseProtectedRequest, parseSignedProtectedRequest } from "./schemas.ts";
 import type { CcBridgeStore, DeviceRecord } from "./store.ts";
 import type { ProtectedRequest, SignedProtectedRequest } from "./protocol.ts";
@@ -10,6 +13,52 @@ export interface VerifiedDeviceRequest {
   request: ProtectedRequest;
   device: DeviceRecord;
   payloadBytes: Buffer;
+}
+
+export interface EnrollmentProofFields {
+  challengeId: string;
+  challenge: string;
+  memberId: string;
+  label: string;
+  expiresAtMs: number;
+  deviceId: string;
+  deviceKeyId: string;
+  publicKeySpki: string;
+}
+
+export function enrollmentProofBytes(fields: EnrollmentProofFields): Buffer {
+  return canonicalizeToBytes({
+    domain: "ccb-device-enrollment-v1",
+    challengeId: fields.challengeId,
+    challenge: fields.challenge,
+    memberId: fields.memberId,
+    label: fields.label,
+    expiresAtMs: fields.expiresAtMs,
+    deviceId: fields.deviceId,
+    deviceKeyId: fields.deviceKeyId,
+    publicKeySpki: fields.publicKeySpki,
+  });
+}
+
+export function verifyEnrollmentProof(
+  fields: EnrollmentProofFields,
+  proofSignature: string,
+  publicKeySpki: Buffer,
+): void {
+  let signature: Buffer;
+  try {
+    signature = decodeBase64Url(proofSignature, ED25519_SIGNATURE_BYTES, ED25519_SIGNATURE_BYTES);
+  } catch {
+    throw new CcbError("CCB_SIGNATURE_INVALID", "Enrollment proof signature is not canonical Ed25519 data.");
+  }
+  try {
+    const publicKey = createPublicKey({ key: publicKeySpki, format: "der", type: "spki" });
+    if (!verifySignature(null, enrollmentProofBytes(fields), publicKey, signature)) {
+      throw new Error("signature mismatch");
+    }
+  } catch {
+    throw new CcbError("CCB_SIGNATURE_INVALID", "Enrollment proof of device-key possession did not verify.");
+  }
 }
 
 export function verifyDeviceRequest(store: CcBridgeStore, rawBody: Buffer, nowMs = Date.now()): VerifiedDeviceRequest {

@@ -49,13 +49,32 @@ export class UpdateManager {
     if (!this.checking) this.checking = this.run(signal).finally(() => { this.checking = null; });
     return this.checking;
   }
-
-  markActivationQueued(): void {
-    this.stateStore.markActivationQueued();
+  initializeInstalledTarget(targetPayloadSha256: string): void {
+    this.stateStore.initializeInstalledTarget(targetPayloadSha256);
   }
 
-  markHealthy(): void {
-    this.stateStore.markHealthy();
+  beginActivationLaunch(): void {
+    this.stateStore.beginActivationLaunch();
+  }
+
+  markActivationSpawned(): void {
+    this.stateStore.markActivationSpawned();
+  }
+
+  markActivationLaunchFailed(): void {
+    this.stateStore.markActivationLaunchFailed();
+  }
+
+  recoverActivation(backupPresent: boolean): void {
+    this.stateStore.recoverActivation(backupPresent);
+  }
+
+  markHealthPassed(): void {
+    this.stateStore.markHealthPassed();
+  }
+
+  markBackupRetired(backupPresent: boolean): void {
+    this.stateStore.markBackupRetired(backupPresent);
   }
 
   markRollbackRequired(): void {

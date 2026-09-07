@@ -1,3 +1,3 @@
-import { planSceneCreateNode } from "./plan-scene-create-node.ts";
+import { planCreateTool } from "./plan-create-tools.ts";
 
-export const planCreateUiNode = planSceneCreateNode;
+export const planCreateUiNode = planCreateTool;

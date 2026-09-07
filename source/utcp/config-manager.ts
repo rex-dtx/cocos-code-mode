@@ -1,10 +1,17 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs-extra';
-import { join } from 'path';
+import { closeSync, constants, existsSync, fsyncSync, openSync, readFileSync, renameSync, unlinkSync, writeSync } from 'fs';
+import { join, resolve } from 'path';
 import { homedir } from 'os';
 
+// package.json is supplied by the extension build.
 // @ts-ignore
 import packageJSON from '../../package.json';
 
+
+interface UtcpConfig {
+    manual_call_templates: Array<Record<string, unknown>>;
+    load_variables_from?: Array<Record<string, unknown>>;
+    [key: string]: unknown;
+}
 
 export class UtcpConfigManager {
     private static instance: UtcpConfigManager;
@@ -44,22 +51,21 @@ export class UtcpConfigManager {
         console.log(`[UtcpConfigManager] Config path updated to: ${path}`);
     }
 
-    readConfig(): any {
+    readConfig(): UtcpConfig {
         const path = this.getConfigPath();
         if (path && existsSync(path)) {
             try {
-                const content = readFileSync(path, 'utf-8');
-                const parsed = JSON.parse(content);
-                // Strict cutover: legacy names are no longer supported. If the
-                // file still carries any, purge them now so they can never cause
-                // a duplicate URL / double tool registration again.
-                if (this.purgeLegacyIfNeeded(parsed)) {
-                    this.writeConfig(parsed);
+                const parsed: unknown = JSON.parse(readFileSync(path, 'utf-8'));
+                if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('UTCP config root must be an object');
+                const config = parsed as UtcpConfig;
+                if (!Array.isArray(config.manual_call_templates)) config.manual_call_templates = [];
+                if (this.purgeLegacyIfNeeded(config)) {
+                    this.writeConfig(config);
                     console.log('[UtcpConfigManager] Purged legacy cc-bridge templates (cutover to ccb3x/ccb2x only)');
                 }
-                return parsed;
-            } catch (e) {
-                console.error('[UtcpConfigManager] Failed to parse UTCP config:', e);
+                return config;
+            } catch (error) {
+                console.error('[UtcpConfigManager] Failed to parse UTCP config:', error);
                 return { manual_call_templates: [] };
             }
         }
@@ -70,136 +76,124 @@ export class UtcpConfigManager {
      * Returns true if any legacy entry was removed. The caller must persist
      * the config when true.
      */
-    private purgeLegacyIfNeeded(config: any): boolean {
-        if (!Array.isArray(config.manual_call_templates)) return false;
+    private purgeLegacyIfNeeded(config: UtcpConfig): boolean {
         const before = config.manual_call_templates.length;
-        const VALID = /^ccb[23]x(_\d+)?$/;
-        config.manual_call_templates = config.manual_call_templates.filter((t: any) => {
-            const name: string = t.name || '';
-            // Keep non-ccb entries (other MCP servers) and valid ccb* names.
+        const validName = /^ccb[23]x(_\d+)?$/;
+        config.manual_call_templates = config.manual_call_templates.filter((template) => {
+            const name = typeof template.name === 'string' ? template.name : '';
             if (!name.startsWith('ccb') && !name.startsWith('cc-bridge') && name !== 'cc3x7' && name !== 'cc2x4') return true;
-            return VALID.test(name);
+            return validName.test(name);
         });
         return config.manual_call_templates.length !== before;
     }
 
-    writeConfig(config: any): void {
+    writeConfig(config: unknown): void {
         const path = this.getConfigPath();
         if (!path) {
             console.error('[UtcpConfigManager] Config path is not set');
             return;
         }
+        const bytes = Buffer.from(`${JSON.stringify(config, null, 2)}\n`, 'utf8');
+        const temporary = `${path}.${process.pid}.${Date.now()}.tmp`;
+        let descriptor: number | undefined;
         try {
-            writeFileSync(path, JSON.stringify(config, null, 2));
+            descriptor = openSync(temporary, constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY, 0o600);
+            writeSync(descriptor, bytes, 0, bytes.length, 0);
+            try { fsyncSync(descriptor); } catch { /* filesystem may not support fsync */ }
+            closeSync(descriptor);
+            descriptor = undefined;
+            renameSync(temporary, path);
             console.log(`[UtcpConfigManager] Saved UTCP config to ${path}`);
-        } catch (e) {
-            console.error('[UtcpConfigManager] Failed to write UTCP config:', e);
+        } catch (error) {
+            console.error('[UtcpConfigManager] Failed to write UTCP config:', error);
+            throw error;
+        } finally {
+            if (descriptor !== undefined) closeSync(descriptor);
+            if (existsSync(temporary)) unlinkSync(temporary);
         }
     }
 
     private portOf(url: string): number {
-        const m = String(url || '').match(/localhost:(\d+)/);
-        return m ? Number(m[1]) : 0;
+        const match = String(url || '').match(/localhost:(\d+)/);
+        return match ? Number(match[1]) : 0;
     }
 
-    private makeTemplate(name: string, port: number): any {
+    private makeTemplate(name: string, port: number): Record<string, unknown> {
         return {
             name,
             call_template_type: 'http',
             url: `http://localhost:${port}/utcp`,
             http_method: 'GET',
             content_type: 'application/json',
+            headers: {
+                'x-ccb-relay-instance': `\${CCB_RELAY_INSTANCE_ID}`,
+                'x-ccb-bound-port': `\${CCB_BOUND_PORT}`,
+            },
         };
     }
 
     /**
-     * Multi-editor rendezvous. The config file is shared between every running
-     * editor and every Claude terminal, so each editor gets its own entry keyed
-     * by port: `ccb3x_<port>`. The bare canonical name `ccb3x` is a "latest"
-     * pointer kept for backward compat with `ccb3x.*` prompts.
-     *
-     * Invariant: no two entries share a URL — that is what caused the double
-     * tool registration. When this editor becomes active it claims the bare
-     * `ccb3x` name and demotes the previous latest to `ccb3x_<itsPort>`.
+     * Registers one authenticated exact per-port rendezvous. Credentials are
+     * resolved from its bound token file and never copied into config or manual.
      */
-    async ensureCocosEditorTemplate(port: number): Promise<boolean> {
-        if (!port || port <= 0) {
+    async ensureCocosEditorTemplate(port: number, relayInstanceId?: string, tokenPath?: string): Promise<boolean> {
+        if (!Number.isSafeInteger(port) || port < 1 || port > 65535) {
             console.warn('[UtcpConfigManager] Invalid port provided:', port);
             return false;
         }
+        if ((relayInstanceId === undefined) !== (tokenPath === undefined)) {
+            throw new Error('relay instance and local token path must be configured together');
+        }
+        if (!relayInstanceId || !tokenPath) {
+            throw new Error('authenticated ccb3x rendezvous requires a relay instance and token path');
+        }
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(relayInstanceId)) {
+            throw new Error('relay instance must be a UUID');
+        }
 
         const config = this.readConfig();
-        const list: any[] = Array.isArray(config.manual_call_templates) ? config.manual_call_templates : [];
-        const before = JSON.stringify(list);
+        const list = config.manual_call_templates;
+        const before = JSON.stringify({ templates: list, loaders: config.load_variables_from });
+        const resolvedTokenPath = resolve(tokenPath);
+        const loaders = Array.isArray(config.load_variables_from) ? config.load_variables_from : [];
+        config.load_variables_from = [
+            ...loaders.filter((loader) => loader.variable_loader_type !== 'dotenv' || resolve(String(loader.env_file_path)) !== resolvedTokenPath),
+            { variable_loader_type: 'dotenv', env_file_path: resolvedTokenPath },
+        ];
 
         const CANON = UtcpConfigManager.CANON;
-        const LEGACY = UtcpConfigManager.LEGACY;
+        const family = (template: Record<string, unknown>) =>
+            UtcpConfigManager.LEGACY.has(String(template.name)) ||
+            template.name === CANON ||
+            (typeof template.name === 'string' && template.name.startsWith(`${CANON}_`));
+        const retained = list.filter((template) => {
+            if (!family(template)) return true;
+            if (UtcpConfigManager.LEGACY.has(String(template.name)) || template.name === CANON) return false;
+            return template.name !== `${CANON}_${port}` && this.portOf(String(template.url || '')) !== port;
+        });
+        retained.push(this.makeTemplate(`${CANON}_${port}`, port));
+        config.manual_call_templates = retained;
 
-        // Keep non-cc-bridge-3x entries untouched (other MCP servers, the 2x
-        // generation, user-added templates, etc.).
-        const is3xFamily = (t: any) =>
-            LEGACY.has(t.name) ||
-            t.name === CANON ||
-            (typeof t.name === 'string' && t.name.startsWith(`${CANON}_`));
-
-        const others = list.filter((t) => !is3xFamily(t));
-        const family = list.filter((t) => is3xFamily(t));
-
-        const rebuilt: any[] = [];
-        for (const t of family) {
-            if (LEGACY.has(t.name)) continue; // drop legacy names
-            const tPort = this.portOf(t.url);
-            if (t.name === CANON) {
-                if (tPort === port) continue; // it's me restarting; rewrite below
-                rebuilt.push(this.makeTemplate(`${CANON}_${tPort}`, tPort)); // demote previous latest
-            } else if (t.name === `${CANON}_${port}` || tPort === port) {
-                continue; // stale/duplicate entry for my own port
-            } else {
-                rebuilt.push(t); // another live editor
-            }
-        }
-        rebuilt.push(this.makeTemplate(CANON, port)); // claim the latest pointer
-
-        config.manual_call_templates = [...others, ...rebuilt];
-        const changed = JSON.stringify(config.manual_call_templates) !== before;
+        const changed = JSON.stringify({ templates: retained, loaders: config.load_variables_from }) !== before;
         if (changed) {
             this.writeConfig(config);
-            console.log(`[UtcpConfigManager] ${CANON} -> ${port} (latest); other editors kept as ${CANON}_<port>`);
+            console.log(`[UtcpConfigManager] Registered authenticated ${CANON}_${port} rendezvous for relay ${relayInstanceId}`);
         }
         return changed;
     }
 
-    /**
-     * Called on editor unload: drop this editor's entries. If it held the bare
-     * `ccb3x` latest pointer, promote a remaining per-port editor so `ccb3x.*`
-     * keeps resolving instead of pointing at a dead server.
-     */
     async removeCocosEditorTemplate(port: number): Promise<boolean> {
-        if (!port || port <= 0) return false;
-
+        if (!Number.isSafeInteger(port) || port < 1 || port > 65535) return false;
         const config = this.readConfig();
         if (!Array.isArray(config.manual_call_templates)) return false;
-        const list: any[] = config.manual_call_templates;
-        const before = JSON.stringify(list);
-
+        const before = JSON.stringify(config.manual_call_templates);
         const CANON = UtcpConfigManager.CANON;
-
-        // Drop my per-port entry.
-        config.manual_call_templates = list.filter((t: any) => t.name !== `${CANON}_${port}`);
-
-        // If I was the latest, remove the bare pointer and promote a survivor.
-        const bareIdx = config.manual_call_templates.findIndex((t: any) => t.name === CANON);
-        if (bareIdx !== -1 && this.portOf(config.manual_call_templates[bareIdx].url) === port) {
-            config.manual_call_templates.splice(bareIdx, 1);
-            const nextIdx = config.manual_call_templates.findIndex(
-                (t: any) => typeof t.name === 'string' && t.name.startsWith(`${CANON}_`)
-            );
-            if (nextIdx !== -1) {
-                config.manual_call_templates[nextIdx].name = CANON; // promote a survivor
-            }
-        }
-
-        const changed = JSON.stringify(config.manual_call_templates) !== before;
+        const retained = config.manual_call_templates.filter((template: Record<string, unknown>) => {
+            const templatePort = this.portOf(String(template.url || ''));
+            return template.name !== `${CANON}_${port}` && !(template.name === CANON && templatePort === port);
+        });
+        config.manual_call_templates = retained;
+        const changed = JSON.stringify(retained) !== before;
         if (changed) this.writeConfig(config);
         return changed;
     }
@@ -209,9 +203,9 @@ export class UtcpConfigManager {
         return typeof port === 'number' ? port : 0;
     }
 
-    async updatePort(port: number): Promise<void> {
+    async updatePort(port: number, relayInstanceId?: string, tokenPath?: string): Promise<void> {
         await Editor.Profile.setConfig(packageJSON.name, 'serverPort', port);
-        await this.ensureCocosEditorTemplate(port);
+        await this.ensureCocosEditorTemplate(port, relayInstanceId, tokenPath);
     }
 
     // Tool profile config persistence

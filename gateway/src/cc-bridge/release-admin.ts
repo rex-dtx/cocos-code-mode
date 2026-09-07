@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { AuthContext } from "../auth.ts";
 import { CcbError } from "./errors.ts";
 import { verifyReleaseMetadata, type SignedMetadata } from "./release-metadata.ts";
+import { assertDurableCanaryPromotion } from "./canary.ts";
 import type { CcBridgeStore } from "./store.ts";
 
 const Sha256Schema = z.string().regex(/^[a-f0-9]{64}$/);
@@ -88,6 +89,10 @@ export function importReleaseTarget(store: CcBridgeStore, auth: AuthContext, wra
   if (Date.parse(body.issuedAt) > Date.now() || Date.parse(body.expiresAt) <= Date.now()) {
     throw new CcbError("CCB_CANONICAL_INVALID", "Release target metadata is not currently valid.");
   }
+  const latest = store.latestReleaseTargetSequence();
+  if (body.releaseSequence <= latest) {
+    throw new CcbError("CCB_REPLAY", "Release target sequence must increase monotonically.", { latest, submitted: body.releaseSequence });
+  }
   const existing = store.getReleaseTargetByHash(body.package.sha256);
   if (existing) throw new CcbError("CCB_REPLAY", "A release target with this package hash already exists.");
   const sequence = store.insertReleaseTarget({
@@ -111,8 +116,27 @@ export function publishRolloutPolicy(store: CcBridgeStore, auth: AuthContext, wr
   if (body.policySequence <= latest) {
     throw new CcbError("CCB_REPLAY", "Rollout policy sequence must increase monotonically.", { latest, submitted: body.policySequence });
   }
-  if (!store.getReleaseTargetByPayloadHash(body.targetPayloadSha256)) {
+  const rolloutHighWater = store.getRolloutState(body.channel);
+  if (rolloutHighWater && body.policySequence <= rolloutHighWater.policySequence) {
+    throw new CcbError("CCB_REPLAY", "Rollout state policy sequence must increase monotonically.", {
+      latest: rolloutHighWater.policySequence,
+      submitted: body.policySequence,
+    });
+  }
+  const target = store.getReleaseTargetByPayloadHash(body.targetPayloadSha256);
+  if (!target) {
     throw new CcbError("CCB_DEVICE_DENIED", "Rollout policy references an unknown release target.");
+  }
+  const nowMs = Date.now();
+  if (!body.emergencyStop) {
+    assertDurableCanaryPromotion(store, {
+      channel: body.channel,
+      targetHash: body.targetPayloadSha256,
+      packageHash: target.packageHash,
+      ring: body.ring,
+      policySequence: body.policySequence,
+      nowMs,
+    });
   }
   const sequence = store.insertRolloutPolicy({
     sequence: body.policySequence,
@@ -125,5 +149,16 @@ export function publishRolloutPolicy(store: CcBridgeStore, auth: AuthContext, wr
     rollbackTargetHash: body.rollbackTargetPayloadSha256[0] ?? null,
     expiresAtMs: Date.parse(body.expiresAt),
   });
+  const previous = store.getRolloutState(body.channel);
+  if (!store.setRolloutState({
+    channel: body.channel,
+    targetHash: body.emergencyStop && previous ? previous.targetHash : body.targetPayloadSha256,
+    packageHash: body.emergencyStop && previous ? previous.packageHash : target.packageHash,
+    ring: body.emergencyStop && previous ? previous.ring : body.ring,
+    policySequence: body.policySequence,
+    updatedAtMs: nowMs,
+  })) {
+    throw new CcbError("CCB_REPLAY", "Rollout state high-water rejected the policy sequence.");
+  }
   return { sequence, policySequence: body.policySequence };
 }

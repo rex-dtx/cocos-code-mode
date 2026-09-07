@@ -2,6 +2,8 @@ import { createHash, randomUUID } from "node:crypto";
 import type Database from "better-sqlite3";
 import { CcbError } from "./errors.ts";
 
+export type ReplayFailureClass = "planner" | "validator" | "signer" | "persist" | "internal";
+
 export interface ReplayReservationInput {
   deviceId: string;
   relayInstanceId: string;
@@ -10,6 +12,7 @@ export interface ReplayReservationInput {
   nonce: string;
   sequence: number;
   nowMs: number;
+  leaseExpiresAtMs: number;
   expiresAtMs: number;
 }
 
@@ -20,7 +23,9 @@ export type ReplayAdmission =
 type ExistingRow = {
   id: number;
   request_digest: string;
-  state: "reserved" | "completed";
+  state: "reserved" | "completed" | "failed";
+  reservation_owner: string;
+  lease_expires_at_ms: number;
   response_body: Buffer | null;
   response_hash: string | null;
 };
@@ -38,23 +43,55 @@ export class ReplayStore {
 
   constructor(private readonly db: Database.Database) {
     this.reserveTransaction = db.transaction((input: ReplayReservationInput): ReplayAdmission => {
-      const duplicate = db.prepare(`
-        SELECT id, request_digest, state, response_body, response_hash
+      const existing = db.prepare(`
+        SELECT id, request_digest, state, reservation_owner, lease_expires_at_ms,
+               response_body, response_hash
         FROM request_idempotency
         WHERE device_id = ? AND idempotency_key = ?
       `).get(input.deviceId, input.idempotencyKey) as ExistingRow | undefined;
 
-      if (duplicate) {
-        if (duplicate.request_digest !== input.requestDigest) {
+      if (existing) {
+        if (existing.request_digest !== input.requestDigest) {
           throw new CcbError("CCB_IDEMPOTENCY_CONFLICT", "Idempotency key was used for different request bytes.");
         }
-        if (duplicate.state !== "completed" || !duplicate.response_body || !duplicate.response_hash) {
+        if (existing.state === "completed") {
+          if (!existing.response_body || !existing.response_hash
+            || sha256(existing.response_body) !== existing.response_hash) {
+            throw new CcbError("CCB_INTERNAL", "Stored idempotent response failed its integrity check.");
+          }
+          return { kind: "duplicate", responseBody: Buffer.from(existing.response_body) };
+        }
+        if (existing.state === "reserved" && existing.lease_expires_at_ms > input.nowMs) {
           throw new CcbError("CCB_BUSY", "The exact request is already being processed.");
         }
-        if (sha256(duplicate.response_body) !== duplicate.response_hash) {
-          throw new CcbError("CCB_INTERNAL", "Stored idempotent response failed its integrity check.");
+
+        const owner = randomUUID();
+        const reclaimed = db.prepare(`
+          UPDATE request_idempotency
+          SET state = 'reserved',
+              reservation_owner = @owner,
+              lease_expires_at_ms = @leaseExpiresAtMs,
+              expires_at_ms = MAX(expires_at_ms, @expiresAtMs),
+              failure_class = NULL,
+              failed_at_ms = NULL
+          WHERE id = @id
+            AND request_digest = @requestDigest
+            AND (
+              state = 'failed'
+              OR (state = 'reserved' AND lease_expires_at_ms <= @nowMs)
+            )
+        `).run({
+          id: existing.id,
+          requestDigest: input.requestDigest,
+          owner,
+          nowMs: input.nowMs,
+          leaseExpiresAtMs: input.leaseExpiresAtMs,
+          expiresAtMs: input.expiresAtMs,
+        });
+        if (reclaimed.changes !== 1) {
+          throw new CcbError("CCB_BUSY", "The exact request reservation changed before it could be reclaimed.");
         }
-        return { kind: "duplicate", responseBody: Buffer.from(duplicate.response_body) };
+        return { kind: "reserved", id: existing.id, owner };
       }
 
       const cursor = db.prepare(`
@@ -74,43 +111,28 @@ export class ReplayStore {
       const inserted = db.prepare(`
         INSERT INTO request_idempotency(
           device_id, relay_instance_id, idempotency_key, request_digest, nonce, sequence,
-          state, reservation_owner, created_at_ms, expires_at_ms
-        ) VALUES (?, ?, ?, ?, ?, ?, 'reserved', ?, ?, ?)
+          state, reservation_owner, created_at_ms, lease_expires_at_ms, expires_at_ms
+        ) VALUES (?, ?, ?, ?, ?, ?, 'reserved', ?, ?, ?, ?)
       `).run(
         input.deviceId, input.relayInstanceId, input.idempotencyKey, input.requestDigest,
-        input.nonce, input.sequence, owner, input.nowMs, input.expiresAtMs,
+        input.nonce, input.sequence, owner, input.nowMs, input.leaseExpiresAtMs,
+        input.expiresAtMs,
       );
       db.prepare(`
         INSERT INTO relay_cursor(device_id, relay_instance_id, last_sequence, updated_at_ms)
         VALUES (?, ?, ?, ?)
         ON CONFLICT(device_id, relay_instance_id) DO UPDATE SET
-          last_sequence = excluded.last_sequence,
+          last_sequence = MAX(relay_cursor.last_sequence, excluded.last_sequence),
           updated_at_ms = excluded.updated_at_ms
       `).run(input.deviceId, input.relayInstanceId, input.sequence, input.nowMs);
       return { kind: "reserved", id: Number(inserted.lastInsertRowid), owner };
     });
   }
 
-
-  lookupCompleted(deviceId: string, idempotencyKey: string, requestDigest: string): Buffer | null {
-    const duplicate = this.db.prepare(`
-      SELECT request_digest, state, response_body, response_hash
-      FROM request_idempotency
-      WHERE device_id = ? AND idempotency_key = ?
-    `).get(deviceId, idempotencyKey) as ExistingRow | undefined;
-    if (!duplicate) return null;
-    if (duplicate.request_digest !== requestDigest) {
-      throw new CcbError("CCB_IDEMPOTENCY_CONFLICT", "Idempotency key was used for different request bytes.");
-    }
-    if (duplicate.state !== "completed" || !duplicate.response_body || !duplicate.response_hash) {
-      throw new CcbError("CCB_BUSY", "The exact request is already being processed.");
-    }
-    if (sha256(duplicate.response_body) !== duplicate.response_hash) {
-      throw new CcbError("CCB_INTERNAL", "Stored idempotent response failed its integrity check.");
-    }
-    return Buffer.from(duplicate.response_body);
-  }
   reserve(input: ReplayReservationInput): ReplayAdmission {
+    if (input.leaseExpiresAtMs <= input.nowMs || input.expiresAtMs < input.leaseExpiresAtMs) {
+      throw new CcbError("CCB_INTERNAL", "Replay reservation received invalid lease bounds.");
+    }
     try {
       return this.reserveTransaction(input);
     } catch (error) {
@@ -126,11 +148,30 @@ export class ReplayStore {
     const body = Buffer.from(responseBody);
     const result = this.db.prepare(`
       UPDATE request_idempotency
-      SET state = 'completed', response_body = ?, response_hash = ?, completed_at_ms = ?
-      WHERE id = ? AND reservation_owner = ? AND state = 'reserved'
-    `).run(body, sha256(body), nowMs, id, owner);
+      SET state = 'completed',
+          response_body = ?,
+          response_hash = ?,
+          completed_at_ms = ?,
+          lease_expires_at_ms = ?
+      WHERE id = ?
+        AND reservation_owner = ?
+        AND state = 'reserved'
+        AND lease_expires_at_ms > ?
+    `).run(body, sha256(body), nowMs, nowMs, id, owner, nowMs);
     if (result.changes !== 1) {
-      throw new CcbError("CCB_INTERNAL", "Could not durably complete the request reservation.");
+      throw new CcbError("CCB_INTERNAL", "Could not durably complete the active request reservation.");
     }
+  }
+
+  fail(id: number, owner: string, failureClass: ReplayFailureClass, nowMs: number): boolean {
+    const result = this.db.prepare(`
+      UPDATE request_idempotency
+      SET state = 'failed',
+          failure_class = ?,
+          failed_at_ms = ?,
+          lease_expires_at_ms = ?
+      WHERE id = ? AND reservation_owner = ? AND state = 'reserved'
+    `).run(failureClass, nowMs, nowMs, id, owner);
+    return result.changes === 1;
   }
 }

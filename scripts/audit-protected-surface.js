@@ -32,14 +32,6 @@ const EXECUTION_SINKS = [
   { toolId: 'callComponentMethod', dispositions: ['removed'], file: 'source/utcp/tools/scene-tools.ts', pattern: /execute-component-method/ },
   { toolId: 'runScriptDiagnostics', dispositions: ['internal-dev-only'], file: 'source/utcp/tools/diagnostics-tools.ts', pattern: /execFileAsync\(/ }
 ];
-const PRIMITIVES = [
-  'scene.readNode', 'scene.readComponent', 'scene.readProperties', 'scene.createNode',
-  'scene.createPrimitive', 'scene.addComponent', 'scene.removeComponent', 'scene.setProperties',
-  'scene.operateNode', 'asset.query', 'asset.create', 'asset.operate', 'project.readSetting',
-  'project.writeSetting', 'editor.selection', 'editor.viewport', 'editor.history',
-  'animation.query', 'animation.edit', 'build.query', 'build.start', 'build.control',
-  'runtime.control', 'preview.capture', 'screenshot.capture'
-];
 
 function sourceInventory() {
   const inventory = new Map();

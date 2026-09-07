@@ -75,6 +75,10 @@ async function readJsonBody(request: IncomingMessage): Promise<unknown> {
 export class LocalHttpServer {
   private readonly routes = new Map<string, LocalHttpHandler>();
   private server: Server | null = null;
+  private lifecycle: "idle" | "accepting" | "draining" | "closed" = "idle";
+  private inFlight = 0;
+  private closePromise: Promise<void> | null = null;
+  private readonly drainWaiters: Array<() => void> = [];
 
   constructor(private readonly auth: LocalAuthContext) {}
 
@@ -85,30 +89,64 @@ export class LocalHttpServer {
   }
 
   async listen(port: number): Promise<number> {
-    if (this.server) throw new Error("local HTTP server already started");
-    this.server = createServer((request, response) => void this.handle(request, response));
-    await new Promise<void>((resolve, reject) => {
-      const server = this.server!;
-      server.once("error", reject);
-      server.listen(port, "127.0.0.1", () => {
-        server.off("error", reject);
-        resolve();
+    if (this.server || this.lifecycle !== "idle") throw new Error("local HTTP server already started");
+    const server = createServer((request, response) => void this.handle(request, response));
+    this.server = server;
+    try {
+      await new Promise<void>((resolve, reject) => {
+        server.once("error", reject);
+        server.listen(port, "127.0.0.1", () => {
+          server.off("error", reject);
+          resolve();
+        });
       });
-    });
-    const address = this.server.address();
+    } catch (error) {
+      this.server = null;
+      throw error;
+    }
+    this.lifecycle = "accepting";
+    const address = server.address();
     if (!address || typeof address === "string") throw new Error("local HTTP server did not expose a TCP port");
     return address.port;
   }
 
+  beginDrain(): void {
+    if (this.lifecycle === "accepting") this.lifecycle = "draining";
+  }
+
+  isDraining(): boolean {
+    return this.lifecycle === "draining";
+  }
+
   async close(): Promise<void> {
+    if (this.closePromise) return this.closePromise;
+    this.beginDrain();
     const server = this.server;
-    if (!server) return;
-    this.server = null;
-    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+    if (!server) {
+      this.lifecycle = "closed";
+      return;
+    }
+    this.closePromise = (async () => {
+      const socketClosed = new Promise<void>((resolve, reject) => {
+        server.close((error) => error ? reject(error) : resolve());
+      });
+      const workDrained = this.inFlight === 0
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => this.drainWaiters.push(resolve));
+      await Promise.all([socketClosed, workDrained]);
+      this.server = null;
+      this.lifecycle = "closed";
+    })();
+    return this.closePromise;
   }
 
   private async handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const startedAt = Date.now();
+    if (this.lifecycle !== "accepting") {
+      sendJson(response, 503, toCcbErrorBody(new CcbError("CCB_BUSY", "Local server is draining and is not accepting new work.")));
+      return;
+    }
+    this.inFlight += 1;
     try {
       const url = new URL(request.url || "/", "http://localhost");
       const denial = validateLocalIngress(this.auth, request, url.pathname);
@@ -127,8 +165,17 @@ export class LocalHttpServer {
       if (!response.writableEnded) sendJson(response, 204, null);
     } catch (error) {
       const typed = error instanceof CcbError ? error : new CcbError("CCB_INTERNAL", "Local request failed.");
-      const status = typed.body.code === "CCB_LIMIT_EXCEEDED" ? 413 : typed.body.code === "CCB_CANONICAL_INVALID" ? 400 : 500;
+      const status = typed.body.code === "CCB_LIMIT_EXCEEDED" ? 413
+        : typed.body.code === "CCB_CANONICAL_INVALID" ? 400
+          : typed.body.code === "CCB_IDEMPOTENCY_CONFLICT" ? 409
+            : typed.body.code === "CCB_BUSY" ? 503
+              : typed.body.code === "CCB_INTERNAL" ? 500 : 422;
       sendJson(response, status, toCcbErrorBody(typed), { "x-duration-ms": String(Date.now() - startedAt) });
+    } finally {
+      this.inFlight -= 1;
+      if (this.inFlight === 0) {
+        for (const resolve of this.drainWaiters.splice(0)) resolve();
+      }
     }
   }
 }

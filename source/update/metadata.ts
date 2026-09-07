@@ -90,43 +90,90 @@ function fail(code: "CCB_CANONICAL_INVALID" | "CCB_SIGNATURE_INVALID", message: 
   throw new CcbError(code, message);
 }
 
+interface DecodedMetadata<K extends ReleaseMetadataKind> {
+  wrapper: SignedMetadata;
+  message: Buffer;
+  body: ReleaseMetadataBody<K>;
+}
+
+export interface ReleaseSignatureRole {
+  label: string;
+  keys: ReadonlyMap<string, KeyLike>;
+  threshold: number;
+}
+
+function decodeMetadata<K extends ReleaseMetadataKind>(kind: K, input: unknown): DecodedMetadata<K> {
+  let wrapper: SignedMetadata;
+  try { wrapper = SignedMetadataSchema.parse(input); }
+  catch { fail("CCB_CANONICAL_INVALID", "Release metadata wrapper is invalid."); }
+  let payload: Buffer;
+  try { payload = decodeBase64Url(wrapper.payload, 256 * 1024); }
+  catch { fail("CCB_CANONICAL_INVALID", "Release metadata payload encoding is invalid."); }
+  let parsed: unknown;
+  try { parsed = parseCanonicalJson(payload, 256 * 1024); }
+  catch { fail("CCB_CANONICAL_INVALID", "Release metadata payload is not canonical RFC 8785 I-JSON."); }
+  let body: ReleaseMetadataBody<K>;
+  try { body = BODY_SCHEMA[kind].parse(parsed) as ReleaseMetadataBody<K>; }
+  catch { fail("CCB_CANONICAL_INVALID", `Release ${kind} metadata body is invalid.`); }
+  return { wrapper, message: Buffer.concat([PREFIX[kind], payload]), body };
+}
+
+export function parseUntrustedReleaseMetadataBody<K extends ReleaseMetadataKind>(
+  kind: K,
+  input: unknown,
+): ReleaseMetadataBody<K> {
+  return decodeMetadata(kind, input).body;
+}
+
+export function verifyReleaseMetadataForRoles<K extends ReleaseMetadataKind>(
+  kind: K,
+  input: unknown,
+  roles: readonly ReleaseSignatureRole[],
+): ReleaseMetadataBody<K> {
+  if (roles.length === 0) fail("CCB_SIGNATURE_INVALID", "Release metadata has no authorized signature roles.");
+  for (const role of roles) {
+    if (!Number.isSafeInteger(role.threshold) || role.threshold < 1 || role.threshold > role.keys.size) {
+      fail("CCB_SIGNATURE_INVALID", `Release metadata ${role.label} signature threshold is invalid.`);
+    }
+  }
+  const decoded = decodeMetadata(kind, input);
+  const seen = new Set<string>();
+  const acceptedByRole = roles.map(() => 0);
+  for (const entry of decoded.wrapper.signatures) {
+    try { assertKeyId(entry.keyId); }
+    catch { fail("CCB_CANONICAL_INVALID", "Release metadata key ID is invalid."); }
+    if (seen.has(entry.keyId)) fail("CCB_SIGNATURE_INVALID", "Release metadata contains a duplicate signature key.");
+    seen.add(entry.keyId);
+    let signature: Buffer;
+    try { signature = decodeBase64Url(entry.signature, ED25519_SIGNATURE_BYTES, ED25519_SIGNATURE_BYTES); }
+    catch { fail("CCB_SIGNATURE_INVALID", "Release metadata signature encoding is invalid."); }
+    let recognized = false;
+    let valid = false;
+    roles.forEach((role, index) => {
+      const key = role.keys.get(entry.keyId);
+      if (!key) return;
+      recognized = true;
+      if (ed25519Verify(null, decoded.message, key, signature)) {
+        acceptedByRole[index] += 1;
+        valid = true;
+      }
+    });
+    if (!recognized) fail("CCB_SIGNATURE_INVALID", "Release metadata contains an unknown signature key.");
+    if (!valid) fail("CCB_SIGNATURE_INVALID", "Release metadata signature is invalid.");
+  }
+  roles.forEach((role, index) => {
+    if (acceptedByRole[index] < role.threshold) {
+      fail("CCB_SIGNATURE_INVALID", `Release metadata ${role.label} signature threshold not met.`);
+    }
+  });
+  return decoded.body;
+}
+
 export function verifyReleaseMetadata<K extends ReleaseMetadataKind>(
   kind: K,
   input: unknown,
   keys: ReadonlyMap<string, KeyLike>,
   threshold: number,
 ): ReleaseMetadataBody<K> {
-  if (!Number.isSafeInteger(threshold) || threshold < 1 || threshold > keys.size) {
-    fail("CCB_SIGNATURE_INVALID", "Release metadata signature threshold is invalid.");
-  }
-  let wrapper: SignedMetadata;
-  try { wrapper = SignedMetadataSchema.parse(input); }
-  catch { fail("CCB_CANONICAL_INVALID", "Release metadata wrapper is invalid."); }
-
-  let payload: Buffer;
-  try { payload = decodeBase64Url(wrapper.payload, 256 * 1024); }
-  catch { fail("CCB_CANONICAL_INVALID", "Release metadata payload encoding is invalid."); }
-  const message = Buffer.concat([PREFIX[kind], payload]);
-  const seen = new Set<string>();
-  let accepted = 0;
-  for (const entry of wrapper.signatures) {
-    try { assertKeyId(entry.keyId); }
-    catch { fail("CCB_CANONICAL_INVALID", "Release metadata key ID is invalid."); }
-    if (seen.has(entry.keyId)) fail("CCB_SIGNATURE_INVALID", "Release metadata contains a duplicate signature key.");
-    seen.add(entry.keyId);
-    const key = keys.get(entry.keyId);
-    if (!key) fail("CCB_SIGNATURE_INVALID", "Release metadata contains an unknown signature key.");
-    let signature: Buffer;
-    try { signature = decodeBase64Url(entry.signature, ED25519_SIGNATURE_BYTES, ED25519_SIGNATURE_BYTES); }
-    catch { fail("CCB_SIGNATURE_INVALID", "Release metadata signature encoding is invalid."); }
-    if (!ed25519Verify(null, message, key, signature)) fail("CCB_SIGNATURE_INVALID", "Release metadata signature is invalid.");
-    accepted += 1;
-  }
-  if (accepted < threshold) fail("CCB_SIGNATURE_INVALID", "Release metadata signature threshold not met.");
-
-  let parsed: unknown;
-  try { parsed = parseCanonicalJson(payload, 256 * 1024); }
-  catch { fail("CCB_CANONICAL_INVALID", "Release metadata payload is not canonical RFC 8785 I-JSON."); }
-  try { return BODY_SCHEMA[kind].parse(parsed) as ReleaseMetadataBody<K>; }
-  catch { fail("CCB_CANONICAL_INVALID", `Release ${kind} metadata body is invalid.`); }
+  return verifyReleaseMetadataForRoles(kind, input, [{ label: kind, keys, threshold }]);
 }

@@ -1,44 +1,143 @@
+import {
+  chmodSync, closeSync, constants, existsSync, fsyncSync, lstatSync, openSync,
+  readFileSync, renameSync, unlinkSync, writeSync,
+} from "fs";
 import { createHash, randomBytes, timingSafeEqual } from "crypto";
 import type { IncomingMessage } from "http";
 import { homedir } from "os";
-import { join } from "path";
+import { dirname, join } from "path";
 import { z } from "zod";
 import { CcbError, CcbErrorBody, toCcbErrorBody } from "../protected/errors";
-import { readPrivateJson, writePrivateJsonAtomic } from "../protected/durable-file";
+import { ensurePrivateDirectory } from "../protected/durable-file";
 import { encodeBase64Url } from "../protected/node14-compat";
+
 export const LOCAL_TOKEN_HEADER = "x-ccb-local-token";
+export const LOCAL_INSTANCE_HEADER = "x-ccb-relay-instance";
+export const LOCAL_PORT_HEADER = "x-ccb-bound-port";
+export const IDEMPOTENCY_KEY_HEADER = "x-ccb-idempotency-key";
 export const LOCAL_TOKEN_VARIABLE = "CCB_LOCAL_TOKEN";
-const LocalTokenSchema = z.object({
-  schemaVersion: z.literal(1),
-  relayInstanceId: z.string().uuid(),
-  token: z.string().length(43).regex(/^[A-Za-z0-9_-]+$/),
-}).strict();
+export const LOCAL_INSTANCE_VARIABLE = "CCB_RELAY_INSTANCE_ID";
+export const LOCAL_PORT_VARIABLE = "CCB_BOUND_PORT";
+const MAX_TOKEN_FILE_BYTES = 4096;
+const IdempotencyKeySchema = z.string().min(16).max(128).regex(/^[A-Za-z0-9_-]+$/);
 
 export interface LocalAuthContext {
   relayInstanceId: string;
   token: string;
+  tokenPath: string;
   variableName: string;
+  boundPort?: number;
+}
+
+export interface LocalAuthBinding {
+  templateName: string;
+  tokenPath: string;
+  previousPort?: number;
 }
 
 export interface LocalIngressDenial {
   status: number;
   body: CcbErrorBody;
 }
-
-export function loadOrCreateLocalAuth(relayInstanceId: string, root = join(homedir(), ".cc-bridge", "local-auth")): LocalAuthContext {
-  const path = join(root, `${relayInstanceId}.json`);
-  const stored = readPrivateJson(path, 4096);
-  if (stored !== undefined) {
-    const parsed = LocalTokenSchema.parse(stored);
-    return { relayInstanceId, token: parsed.token, variableName: LOCAL_TOKEN_VARIABLE };
-  }
-  const token = encodeBase64Url(randomBytes(32));
-  writePrivateJsonAtomic(path, { schemaVersion: 1, relayInstanceId, token });
-  return { relayInstanceId, token, variableName: LOCAL_TOKEN_VARIABLE };
+function effectiveVariableName(templateName: string, variableName: string): string {
+  const namespace = templateName.replace(/_/g, "__");
+  return `${namespace}_${variableName}`;
 }
 
-function tokenMatches(expected: string, received: unknown): boolean {
-  const candidate = typeof received === "string" && received.length <= 128 ? received : "";
+function parseTokenFile(path: string, relayInstanceId: string): LocalAuthContext | undefined {
+  if (!existsSync(path)) return undefined;
+  const stat = lstatSync(path);
+  if (stat.isSymbolicLink() || !stat.isFile()) throw new Error("local auth token path must be a regular file");
+  if (process.platform !== "win32" && (stat.mode & 0o077) !== 0) throw new Error("local auth token file must be user-private");
+  if (stat.size < 1 || stat.size > MAX_TOKEN_FILE_BYTES) throw new RangeError(`local auth token file must contain 1..${MAX_TOKEN_FILE_BYTES} bytes`);
+  const values: Record<string, string> = {};
+  for (const rawLine of readFileSync(path, "utf8").split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const separator = line.indexOf("=");
+    if (separator < 1) throw new Error("local auth token file is malformed");
+    const key = line.slice(0, separator);
+    const value = line.slice(separator + 1);
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key) || Object.prototype.hasOwnProperty.call(values, key)) {
+      throw new Error("local auth token file contains invalid or duplicate variables");
+    }
+    values[key] = value;
+  }
+  const relayId = values[LOCAL_INSTANCE_VARIABLE];
+  const token = values[LOCAL_TOKEN_VARIABLE];
+  if (typeof relayId !== "string" || !z.string().uuid().safeParse(relayId).success) throw new Error("local auth token file has an invalid relay instance");
+  if (typeof token !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(token)) throw new Error("local auth token file has an invalid token");
+  const rawPort = values[LOCAL_PORT_VARIABLE];
+  const boundPort = rawPort === undefined ? undefined : Number(rawPort);
+  if (boundPort !== undefined && (!Number.isSafeInteger(boundPort) || boundPort < 1 || boundPort > 65535)) {
+    throw new Error("local auth token file has an invalid bound port");
+  }
+  if (relayId !== relayInstanceId) throw new Error("local auth token file belongs to a different relay instance");
+  return {
+    relayInstanceId: relayId,
+    token,
+    boundPort,
+    tokenPath: path,
+    variableName: LOCAL_TOKEN_VARIABLE,
+  };
+}
+
+function writeTokenFile(auth: LocalAuthContext, port?: number): void {
+  ensurePrivateDirectory(dirname(auth.tokenPath));
+  if (existsSync(auth.tokenPath) && lstatSync(auth.tokenPath).isSymbolicLink()) throw new Error("refusing symbolic local auth token path");
+  const lines = [
+    "# Generated by cc-bridge-3x. Keep this file private.",
+    `${LOCAL_INSTANCE_VARIABLE}=${auth.relayInstanceId}`,
+    `${LOCAL_TOKEN_VARIABLE}=${auth.token}`,
+  ];
+  if (port !== undefined) {
+    const templateName = `ccb3x_${port}`;
+    lines.push(
+      `${LOCAL_PORT_VARIABLE}=${port}`,
+      `${effectiveVariableName(templateName, LOCAL_INSTANCE_VARIABLE)}=${auth.relayInstanceId}`,
+      `${effectiveVariableName(templateName, LOCAL_TOKEN_VARIABLE)}=${auth.token}`,
+    );
+  }
+  const bytes = Buffer.from(`${lines.join("\n")}\n`, "utf8");
+  const temporary = `${auth.tokenPath}.${process.pid}.${Date.now()}.${randomBytes(8).toString("hex")}.tmp`;
+  let descriptor: number | undefined;
+  try {
+    descriptor = openSync(temporary, constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY, 0o600);
+    writeSync(descriptor, bytes, 0, bytes.length, 0);
+    try { fsyncSync(descriptor); } catch (error: unknown) {
+      const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
+      if (code !== "EINVAL" && code !== "ENOTSUP" && code !== "EPERM") throw error;
+    }
+    closeSync(descriptor);
+    descriptor = undefined;
+    if (process.platform !== "win32") chmodSync(temporary, 0o600);
+    renameSync(temporary, auth.tokenPath);
+  } finally {
+    if (descriptor !== undefined) closeSync(descriptor);
+    if (existsSync(temporary)) unlinkSync(temporary);
+  }
+}
+
+export function loadOrCreateLocalAuth(relayInstanceId: string, root = join(homedir(), ".cc-bridge", "local-auth")): LocalAuthContext {
+  z.string().uuid().parse(relayInstanceId);
+  const tokenPath = join(root, `${relayInstanceId}.env`);
+  const stored = parseTokenFile(tokenPath, relayInstanceId);
+  if (stored) return stored;
+  const auth = { relayInstanceId, token: encodeBase64Url(randomBytes(32)), tokenPath, variableName: LOCAL_TOKEN_VARIABLE };
+  writeTokenFile(auth);
+  return auth;
+}
+
+export function bindLocalAuthToPort(auth: LocalAuthContext, port: number): LocalAuthBinding {
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65535) throw new RangeError("local auth port must be in 1..65535");
+  const previousPort = auth.boundPort;
+  writeTokenFile(auth, port);
+  auth.boundPort = port;
+  return { templateName: `ccb3x_${port}`, tokenPath: auth.tokenPath, previousPort };
+}
+
+function valueMatches(expected: string, received: unknown): boolean {
+  const candidate = typeof received === "string" && received.length <= 256 ? received : "";
   const expectedDigest = createHash("sha256").update(expected, "utf8").digest();
   const candidateDigest = createHash("sha256").update(candidate, "utf8").digest();
   return timingSafeEqual(expectedDigest, candidateDigest) && candidate.length === expected.length;
@@ -48,48 +147,55 @@ function denial(status: number, code: ConstructorParameters<typeof CcbError>[0],
   return { status, body: toCcbErrorBody(new CcbError(code, error)) };
 }
 
+export function extractIdempotencyKey(request: IncomingMessage): string | undefined {
+  const rawValues: string[] = [];
+  for (let index = 0; index + 1 < request.rawHeaders.length; index += 2) {
+    if (request.rawHeaders[index].toLowerCase() === IDEMPOTENCY_KEY_HEADER) rawValues.push(request.rawHeaders[index + 1]);
+  }
+  const normalized = request.headers[IDEMPOTENCY_KEY_HEADER];
+  const values = rawValues.length > 0
+    ? rawValues
+    : Array.isArray(normalized) ? normalized : typeof normalized === "string" ? normalized.split(",").map((value) => value.trim()) : [];
+  if (values.length === 0) return undefined;
+  if (values.length !== 1 || values.some((value) => value !== values[0])) {
+    throw new CcbError("CCB_IDEMPOTENCY_CONFLICT", "Conflicting local idempotency headers are not accepted.");
+  }
+  const key = values[0];
+  if (Buffer.byteLength(key, "utf8") > 128) {
+    throw new CcbError("CCB_LIMIT_EXCEEDED", "Local idempotency key must not exceed 128 bytes.");
+  }
+  if (!IdempotencyKeySchema.safeParse(key).success) {
+    throw new CcbError("CCB_CANONICAL_INVALID", "Local idempotency key must be 16..128 base64url characters.");
+  }
+  return key;
+}
+
 export function validateLocalIngress(auth: LocalAuthContext, request: IncomingMessage, pathname = "/"): LocalIngressDenial | undefined {
   const remoteAddress = request.socket.remoteAddress;
-  if (remoteAddress !== "127.0.0.1" && remoteAddress !== "::ffff:127.0.0.1") {
-    return denial(403, "CCB_AUTH_INVALID", "Local route accepts loopback clients only.");
-  }
-  if (request.headers.forwarded !== undefined || request.headers["x-forwarded-for"] !== undefined || request.headers["x-real-ip"] !== undefined) {
-    return denial(400, "CCB_AUTH_INVALID", "Forwarded client identity headers are not accepted.");
-  }
+  if (remoteAddress !== "127.0.0.1" && remoteAddress !== "::ffff:127.0.0.1") return denial(403, "CCB_AUTH_INVALID", "Local route accepts loopback clients only.");
+  if (request.headers.forwarded !== undefined || request.headers["x-forwarded-for"] !== undefined || request.headers["x-real-ip"] !== undefined) return denial(400, "CCB_AUTH_INVALID", "Forwarded client identity headers are not accepted.");
   const localPort = request.socket.localPort;
   const host = request.headers.host;
-  if (typeof host !== "string" || !new Set([`127.0.0.1:${localPort}`, `localhost:${localPort}`]).has(host.toLowerCase())) {
-    return denial(400, "CCB_AUTH_INVALID", "Local request Host is invalid.");
-  }
+  if (typeof host !== "string" || !new Set([`127.0.0.1:${localPort}`, `localhost:${localPort}`]).has(host.toLowerCase())) return denial(400, "CCB_AUTH_INVALID", "Local request Host is invalid.");
   const origin = request.headers.origin;
   if (origin !== undefined) {
     let parsedOrigin: URL;
     try { parsedOrigin = new URL(origin); } catch { return denial(403, "CCB_AUTH_INVALID", "Request Origin is invalid."); }
-    if ((parsedOrigin.protocol !== "http:" && parsedOrigin.protocol !== "https:")
-      || !["127.0.0.1", "localhost"].includes(parsedOrigin.hostname)
-      || parsedOrigin.username || parsedOrigin.password || parsedOrigin.pathname !== "/" || parsedOrigin.search || parsedOrigin.hash) {
-      return denial(403, "CCB_AUTH_INVALID", "Foreign request Origin is not accepted.");
-    }
+    if ((parsedOrigin.protocol !== "http:" && parsedOrigin.protocol !== "https:") || !["127.0.0.1", "localhost"].includes(parsedOrigin.hostname)
+      || parsedOrigin.username || parsedOrigin.password || parsedOrigin.pathname !== "/" || parsedOrigin.search || parsedOrigin.hash) return denial(403, "CCB_AUTH_INVALID", "Foreign request Origin is not accepted.");
   }
   const fetchSite = request.headers["sec-fetch-site"];
-  if (fetchSite !== undefined && fetchSite !== "same-origin" && fetchSite !== "none") {
-    return denial(403, "CCB_AUTH_INVALID", "Cross-site browser requests are not accepted.");
-  }
-  if (request.headers["content-encoding"] !== undefined) {
-    return denial(415, "CCB_CANONICAL_INVALID", "Compressed local request bodies are not accepted.");
-  }
-  if (!["GET", "POST", "PUT", "DELETE"].includes(request.method || "")) {
-    return denial(405, "CCB_AUTH_INVALID", "HTTP method is not allowed.");
-  }
+  if (fetchSite !== undefined && fetchSite !== "same-origin" && fetchSite !== "none") return denial(403, "CCB_AUTH_INVALID", "Cross-site browser requests are not accepted.");
+  if (request.headers["content-encoding"] !== undefined) return denial(415, "CCB_CANONICAL_INVALID", "Compressed local request bodies are not accepted.");
+  if (!["GET", "POST", "PUT", "DELETE"].includes(request.method || "")) return denial(405, "CCB_AUTH_INVALID", "HTTP method is not allowed.");
   if (request.method !== "GET") {
     const contentType = String(request.headers["content-type"] ?? "").toLowerCase();
-    if (contentType !== "application/json" && contentType !== "application/json; charset=utf-8") {
-      return denial(415, "CCB_CANONICAL_INVALID", "Local request requires application/json; charset=utf-8.");
-    }
+    if (contentType !== "application/json" && contentType !== "application/json; charset=utf-8") return denial(415, "CCB_CANONICAL_INVALID", "Local request requires application/json; charset=utf-8.");
   }
   const publicGet = request.method === "GET" && (pathname === "/utcp" || pathname === "/build-info");
-  if (!publicGet && !tokenMatches(auth.token, request.headers[LOCAL_TOKEN_HEADER])) {
-    return denial(401, "CCB_AUTH_REQUIRED", "Valid local API token is required.");
-  }
+  if (publicGet) return undefined;
+  if (!valueMatches(auth.token, request.headers[LOCAL_TOKEN_HEADER])) return denial(401, "CCB_AUTH_REQUIRED", "Valid local API token is required.");
+  if (!valueMatches(auth.relayInstanceId, request.headers[LOCAL_INSTANCE_HEADER])) return denial(401, "CCB_AUTH_INVALID", "Local API credential is bound to a different relay instance.");
+  if (auth.boundPort !== undefined && !valueMatches(String(auth.boundPort), request.headers[LOCAL_PORT_HEADER])) return denial(401, "CCB_AUTH_INVALID", "Local API credential is bound to a different port.");
   return undefined;
 }

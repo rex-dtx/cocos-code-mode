@@ -7,8 +7,11 @@ import {
   RolloutPolicyBody,
   RootBody,
   SignedMetadata,
+  parseUntrustedReleaseMetadataBody,
   verifyReleaseMetadata,
+  verifyReleaseMetadataForRoles,
 } from "./metadata";
+import { satisfiesSemverRange } from "./semver-range";
 import { UpdateState, UpdateStateStore } from "./state";
 
 export interface UpdateCompatibility {
@@ -62,18 +65,6 @@ function roleKeys(root: RootBody, role: keyof RootBody["roles"]): { keys: Readon
   return { keys, threshold: definition.threshold };
 }
 
-function numericVersion(value: string): number[] {
-  const match = /^(?:[^0-9]*)(\d+)(?:\.(\d+))?(?:\.(\d+))?/.exec(value);
-  if (!match) throw new CcbError("CCB_BUILD_INCOMPATIBLE", `Version is not comparable: ${value}`);
-  return [Number(match[1]), Number(match[2] || 0), Number(match[3] || 0)];
-}
-
-function compareVersions(left: string, right: string): number {
-  const a = numericVersion(left);
-  const b = numericVersion(right);
-  for (let index = 0; index < 3; index += 1) if (a[index] !== b[index]) return a[index] - b[index];
-  return 0;
-}
 
 function ringRank(ring: "1" | "3" | "10"): number {
   return ring === "1" ? 1 : ring === "3" ? 3 : 10;
@@ -88,12 +79,15 @@ function selectedForPercentage(deviceId: string, percentage: number): boolean {
 
 export function acceptRootRotation(current: RootBody, candidateWrapper: SignedMetadata, nowMs = Date.now()): RootBody {
   activeAt(current.issuedAt, current.expiresAt, nowMs, "Trusted root");
+  const candidate = parseUntrustedReleaseMetadataBody("root", candidateWrapper);
   const currentRole = roleKeys(current, "root");
-  const candidate = verifyReleaseMetadata("root", candidateWrapper, currentRole.keys, currentRole.threshold);
+  const candidateRole = roleKeys(candidate, "root");
+  verifyReleaseMetadataForRoles("root", candidateWrapper, [
+    { label: "current-root", ...currentRole },
+    { label: "candidate-root", ...candidateRole },
+  ]);
   if (candidate.rootVersion <= current.rootVersion) throw new CcbError("CCB_REPLAY", "Root version must increase.");
   activeAt(candidate.issuedAt, candidate.expiresAt, nowMs, "Candidate root");
-  const candidateRole = roleKeys(candidate, "root");
-  verifyReleaseMetadata("root", candidateWrapper, candidateRole.keys, candidateRole.threshold);
   return candidate;
 }
 
@@ -114,14 +108,28 @@ export function acceptRelease(
   activeAt(policy.issuedAt, policy.expiresAt, nowMs, "Rollout policy");
 
   const targetPayloadSha256 = payloadDigest(targetWrapper);
+  const policyPayloadSha256 = payloadDigest(policyWrapper);
   if (policy.targetPayloadSha256 !== targetPayloadSha256) throw new CcbError("CCB_SIGNATURE_INVALID", "Rollout policy targets different signed target bytes.");
   if (policy.channel !== compatibility.channel) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Rollout policy channel does not match this relay.");
-  if (policy.emergencyStop) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Rollout policy emergency stop is active.");
+  const current = stateStore.load();
+  if (policy.emergencyStop) {
+    stateStore.persistIfMonotonic({
+      ...current,
+      highestRootVersion: root.rootVersion,
+      highestTargetSequence: target.releaseSequence,
+      highestPolicySequence: policy.policySequence,
+      targetPayloadSha256,
+      policyPayloadSha256,
+      channel: policy.channel,
+      ring: policy.ring,
+    });
+    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Rollout policy emergency stop is active.");
+  }
   if (ringRank(policy.ring) > ringRank(compatibility.allowedRing) || !selectedForPercentage(compatibility.deviceId, policy.percentage)) {
     throw new CcbError("CCB_BUILD_INCOMPATIBLE", "This device is not selected for the rollout ring.");
   }
   if (policy.blockedBuilds.includes(compatibility.currentBuild)) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Current relay build is blocked.");
-  if (policy.minimumBuild && compareVersions(compatibility.currentBuild, policy.minimumBuild) < 0) {
+  if (policy.minimumBuild && !satisfiesSemverRange(compatibility.currentBuild, `>=${policy.minimumBuild}`)) {
     throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Current relay build is below the policy minimum.");
   }
   if (compatibility.protocolVersion < target.compatibility.protocol.min || compatibility.protocolVersion > target.compatibility.protocol.max) {
@@ -130,12 +138,9 @@ export function acceptRelease(
   if (!target.compatibility.os.includes(compatibility.os) || !target.compatibility.arch.includes(compatibility.arch)) {
     throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Release target platform is incompatible.");
   }
-  const minimumCreator = target.compatibility.creator.startsWith(">=") ? target.compatibility.creator.slice(2) : target.compatibility.creator;
-  if (compareVersions(compatibility.creatorVersion, minimumCreator) < 0) {
-    throw new CcbError("CCB_CREATOR_INCOMPATIBLE", "Release target requires a newer Creator version.");
+  if (!satisfiesSemverRange(compatibility.creatorVersion, target.compatibility.creator)) {
+    throw new CcbError("CCB_CREATOR_INCOMPATIBLE", "Release target Creator range is incompatible.");
   }
-
-  const current = stateStore.load();
   const rollbackTargetPayloadSha256 = current.activeTargetPayloadSha256
     && policy.rollbackTargetPayloadSha256.includes(current.activeTargetPayloadSha256)
     ? current.activeTargetPayloadSha256
@@ -150,7 +155,7 @@ export function acceptRelease(
     highestPolicySequence: policy.policySequence,
     rootPayloadSha256: current.rootPayloadSha256,
     targetPayloadSha256,
-    policyPayloadSha256: payloadDigest(policyWrapper),
+    policyPayloadSha256,
     channel: policy.channel,
     ring: policy.ring,
     rollbackTargetPayloadSha256,

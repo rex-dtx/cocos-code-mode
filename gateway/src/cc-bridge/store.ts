@@ -69,6 +69,27 @@ export interface RolloutPolicyRecord {
   createdAtMs: number;
 }
 
+export type CanaryRing = "1" | "3" | "10";
+
+export interface CanaryHealthRecord {
+  targetHash: string;
+  packageHash: string;
+  deviceId: string;
+  probeId: string;
+  observedAtMs: number;
+  ring: CanaryRing;
+  healthy: boolean;
+}
+
+export interface RolloutStateRecord {
+  channel: string;
+  targetHash: string;
+  packageHash: string;
+  ring: CanaryRing;
+  policySequence: number;
+  updatedAtMs: number;
+}
+
 type DeviceRow = {
   id: string; key_id: string; member_id: string; public_key_spki: Buffer;
   fingerprint: string; label: string; status: DeviceStatus;
@@ -180,6 +201,56 @@ export class CcBridgeStore {
     `).run(record.id, record.keyId, record.memberId, record.publicKeySpki, record.fingerprint, record.label, record.status, nowMs);
   }
 
+  insertEnrollmentChallenge(record: {
+    challengeId: string;
+    challengeHash: string;
+    memberId: string;
+    label: string;
+    expiresAtMs: number;
+  }, nowMs = Date.now()): void {
+    this.db.prepare(`
+      INSERT INTO enrollment_challenge(
+        challenge_id, challenge_hash, member_id, label, created_at_ms, expires_at_ms
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `).run(
+      record.challengeId, record.challengeHash, record.memberId, record.label,
+      nowMs, record.expiresAtMs,
+    );
+  }
+
+  enrollDeviceWithChallenge(input: {
+    challengeId: string;
+    challengeHash: string;
+    challengeExpiresAtMs: number;
+    device: DeviceRecord;
+    nowMs: number;
+  }): boolean {
+    const enroll = this.db.transaction(() => {
+      const consumed = this.db.prepare(`
+        UPDATE enrollment_challenge
+        SET consumed_at_ms = @nowMs
+        WHERE challenge_id = @challengeId
+          AND challenge_hash = @challengeHash
+          AND member_id = @memberId
+          AND label = @label
+          AND expires_at_ms = @challengeExpiresAtMs
+          AND expires_at_ms > @nowMs
+          AND consumed_at_ms IS NULL
+      `).run({
+        challengeId: input.challengeId,
+        challengeHash: input.challengeHash,
+        challengeExpiresAtMs: input.challengeExpiresAtMs,
+        memberId: input.device.memberId,
+        label: input.device.label,
+        nowMs: input.nowMs,
+      });
+      if (consumed.changes !== 1) return false;
+      this.insertDevice(input.device, input.nowMs);
+      return true;
+    });
+    return enroll();
+  }
+
   insertProject(record: ProjectRecord, nowMs = Date.now()): void {
     this.db.prepare("INSERT INTO project(id, display_label, status, created_at_ms) VALUES (?, ?, ?, ?)")
       .run(record.id, record.displayLabel, record.status, nowMs);
@@ -235,6 +306,11 @@ export class CcBridgeStore {
     return this.db.prepare("UPDATE grant_record SET status = 'revoked' WHERE id = ? AND status != 'revoked'").run(grantId).changes === 1;
   }
 
+  latestReleaseTargetSequence(): number {
+    const row = this.db.prepare("SELECT MAX(sequence) AS seq FROM release_target").get() as { seq: number | null };
+    return row.seq ?? 0;
+  }
+
   insertReleaseTarget(record: Omit<ReleaseTargetRecord, "createdAtMs"> & { createdAtMs?: number }, nowMs = Date.now()): number {
     const result = this.db.prepare(`
       INSERT INTO release_target(sequence, version, package_hash, target_payload_hash, compatibility_json, status, created_at_ms)
@@ -281,6 +357,92 @@ export class CcBridgeStore {
     const rows = this.db.prepare("SELECT sequence, target_hash, channel, ring, percentage, minimum_build, blocked_builds_json, rollback_target_hash, expires_at_ms, created_at_ms FROM rollout_policy ORDER BY sequence DESC")
       .all() as { sequence: number; target_hash: string; channel: string; ring: RolloutPolicyRecord["ring"]; percentage: number; minimum_build: string | null; blocked_builds_json: string; rollback_target_hash: string | null; expires_at_ms: number; created_at_ms: number }[];
     return rows.map((row) => ({ sequence: row.sequence, targetHash: row.target_hash, channel: row.channel, ring: row.ring, percentage: row.percentage, minimumBuild: row.minimum_build, blockedBuilds: JSON.parse(row.blocked_builds_json), rollbackTargetHash: row.rollback_target_hash, expiresAtMs: row.expires_at_ms, createdAtMs: row.created_at_ms }));
+  }
+
+  recordCanaryHealth(record: CanaryHealthRecord): void {
+    this.db.prepare(`
+      INSERT INTO canary_health(
+        target_hash, package_hash, device_id, probe_id, observed_at_ms, ring, healthy
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      record.targetHash, record.packageHash, record.deviceId, record.probeId,
+      record.observedAtMs, record.ring, record.healthy ? 1 : 0,
+    );
+  }
+
+  getCanaryHealth(input: {
+    targetHash: string;
+    packageHash: string;
+    ring: CanaryRing;
+    sinceMs?: number;
+  }): CanaryHealthRecord[] {
+    const rows = this.db.prepare(`
+      SELECT target_hash, package_hash, device_id, probe_id, observed_at_ms, ring, healthy
+      FROM canary_health
+      WHERE target_hash = @targetHash
+        AND package_hash = @packageHash
+        AND ring = @ring
+        AND observed_at_ms >= @sinceMs
+      ORDER BY observed_at_ms ASC, device_id ASC, probe_id ASC
+    `).all({ ...input, sinceMs: input.sinceMs ?? 0 }) as Array<{
+      target_hash: string;
+      package_hash: string;
+      device_id: string;
+      probe_id: string;
+      observed_at_ms: number;
+      ring: CanaryRing;
+      healthy: number;
+    }>;
+    return rows.map((row) => ({
+      targetHash: row.target_hash,
+      packageHash: row.package_hash,
+      deviceId: row.device_id,
+      probeId: row.probe_id,
+      observedAtMs: row.observed_at_ms,
+      ring: row.ring,
+      healthy: row.healthy === 1,
+    }));
+  }
+
+  getRolloutState(channel: string): RolloutStateRecord | null {
+    const row = this.db.prepare(`
+      SELECT channel, target_hash, package_hash, ring, policy_sequence, updated_at_ms
+      FROM rollout_state WHERE channel = ?
+    `).get(channel) as {
+      channel: string;
+      target_hash: string;
+      package_hash: string;
+      ring: CanaryRing;
+      policy_sequence: number;
+      updated_at_ms: number;
+    } | undefined;
+    return row ? {
+      channel: row.channel,
+      targetHash: row.target_hash,
+      packageHash: row.package_hash,
+      ring: row.ring,
+      policySequence: row.policy_sequence,
+      updatedAtMs: row.updated_at_ms,
+    } : null;
+  }
+
+  setRolloutState(record: RolloutStateRecord): boolean {
+    const result = this.db.prepare(`
+      INSERT INTO rollout_state(
+        channel, target_hash, package_hash, ring, policy_sequence, updated_at_ms
+      ) VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(channel) DO UPDATE SET
+        target_hash = excluded.target_hash,
+        package_hash = excluded.package_hash,
+        ring = excluded.ring,
+        policy_sequence = excluded.policy_sequence,
+        updated_at_ms = excluded.updated_at_ms
+      WHERE excluded.policy_sequence > rollout_state.policy_sequence
+    `).run(
+      record.channel, record.targetHash, record.packageHash, record.ring,
+      record.policySequence, record.updatedAtMs,
+    );
+    return result.changes === 1;
   }
 
   counts(): { activeDevices: number; replayRows: number } {

@@ -19,7 +19,16 @@ const StateSchema = z.object({
   rollbackTargetPayloadSha256: DigestSchema.optional(),
   channel: z.string().min(1).max(64).optional(),
   ring: z.enum(["1", "3", "10"]).optional(),
-  activationState: z.enum(["idle", "staged", "activating", "pending-health", "active", "rollback-required"]).default("idle"),
+  activationState: z.enum([
+    "idle",
+    "staged",
+    "activation-launching",
+    "activating",
+    "pending-health",
+    "retiring-backup",
+    "active",
+    "rollback-required",
+  ]).default("idle"),
 }).strict();
 
 export type UpdateState = z.infer<typeof StateSchema>;
@@ -56,18 +65,68 @@ export class UpdateStateStore {
     return next;
   }
 
-  markActivationQueued(): void {
+  initializeInstalledTarget(targetPayloadSha256: string): UpdateState {
+    const digest = DigestSchema.parse(targetPayloadSha256);
+    const state = this.load();
+    if (state.activeTargetPayloadSha256) return state;
+    if (state.activationState !== "idle") {
+      throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Cannot initialize the installed target after update activation has begun.");
+    }
+    return this.persistIfMonotonic({ ...state, activeTargetPayloadSha256: digest, activationState: "active" });
+  }
+  beginActivationLaunch(): UpdateState {
     const state = this.load();
     if (state.activationState !== "staged" || !state.stagedTargetPayloadSha256 || !state.stagedDescriptorSha256) {
       throw new CcbError("CCB_BUILD_INCOMPATIBLE", "No verified staged release is ready for activation.");
     }
-    this.persistIfMonotonic({ ...state, activationState: "activating" });
+    return this.persistIfMonotonic({ ...state, activationState: "activation-launching" });
   }
 
-  markHealthy(): void {
+  markActivationSpawned(): UpdateState {
     const state = this.load();
-    if (!state.stagedTargetPayloadSha256) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "No staged release is pending health.");
-    this.persistIfMonotonic({
+    if (state.activationState !== "activation-launching") {
+      throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Activation helper was not in the launching state.");
+    }
+    return this.persistIfMonotonic({ ...state, activationState: "activating" });
+  }
+
+  markActivationLaunchFailed(): UpdateState {
+    const state = this.load();
+    if (state.activationState !== "activation-launching") return state;
+    return this.persistIfMonotonic({ ...state, activationState: "staged" });
+  }
+
+  recoverActivation(backupPresent: boolean): UpdateState {
+    const state = this.load();
+    if (state.activationState === "retiring-backup") {
+      if (backupPresent) return state;
+      return this.markBackupRetired(false);
+    }
+    if (state.activationState === "pending-health") {
+      if (!backupPresent) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Pending-health backup is missing.");
+      return state;
+    }
+    if (state.activationState === "activation-launching" || state.activationState === "activating") {
+      return this.persistIfMonotonic({ ...state, activationState: backupPresent ? "pending-health" : "staged" });
+    }
+    return state;
+  }
+
+  markHealthPassed(): UpdateState {
+    const state = this.load();
+    if (state.activationState !== "pending-health" || !state.stagedTargetPayloadSha256) {
+      throw new CcbError("CCB_BUILD_INCOMPATIBLE", "No staged release is pending health.");
+    }
+    return this.persistIfMonotonic({ ...state, activationState: "retiring-backup" });
+  }
+
+  markBackupRetired(backupPresent: boolean): UpdateState {
+    const state = this.load();
+    if (state.activationState !== "retiring-backup") {
+      throw new CcbError("CCB_BUILD_INCOMPATIBLE", "The prior package is not awaiting retirement.");
+    }
+    if (backupPresent) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "The prior package backup still exists.");
+    return this.persistIfMonotonic({
       ...state,
       activeTargetPayloadSha256: state.stagedTargetPayloadSha256,
       stagedTargetPayloadSha256: undefined,
@@ -77,9 +136,12 @@ export class UpdateStateStore {
     });
   }
 
-  markRollbackRequired(): void {
+  markRollbackRequired(): UpdateState {
     const state = this.load();
+    if (state.activationState !== "pending-health") {
+      throw new CcbError("CCB_BUILD_INCOMPATIBLE", "No activated release is pending health.");
+    }
     if (!state.rollbackTargetPayloadSha256) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "No signed-policy rollback target is available.");
-    this.persistIfMonotonic({ ...state, activationState: "rollback-required" });
+    return this.persistIfMonotonic({ ...state, activationState: "rollback-required" });
   }
 }

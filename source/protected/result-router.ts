@@ -68,6 +68,15 @@ export function routeExecutionResult(envelope: ExecutionEnvelope, execution: Loc
       }
       return enforceResultLimit(execution.commandResults.get(envelope.return.commandId), maxBytes);
     }
+    case "command-results": {
+      const results = envelope.return.commandIds.map((commandId) => {
+        if (!execution.commandResults.has(commandId)) {
+          throw new CcbError("CCB_INTERNAL", "Selected command result is unavailable.", { commandId });
+        }
+        return execution.commandResults.get(commandId);
+      });
+      return enforceResultLimit({ results }, maxBytes);
+    }
     case "execution-summary":
       return enforceResultLimit(execution.summary, maxBytes);
     default: {

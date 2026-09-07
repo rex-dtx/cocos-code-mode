@@ -1,9 +1,6 @@
-import { KeyLike, sign as ed25519Sign, verify as ed25519Verify } from "crypto";
+import { KeyLike, sign as ed25519Sign, verify as ed25519Verify } from "node:crypto";
 import { canonicalizeToBytes, IJson, parseCanonicalJson } from "./canonical-json";
-import { decodeBase64UrlBuffer, encodeBase64Url } from "./node14-compat";
 import type { ExecutionEnvelope } from "./primitive-contract";
-
-export { encodeBase64Url } from "./node14-compat";
 
 export const PROTOCOL_VERSION = 1 as const;
 export const EXECUTE_METHOD = "POST" as const;
@@ -13,8 +10,8 @@ export const DECISION_PAYLOAD_MAX_BYTES = 512 * 1024;
 export const WRAPPER_MAX_BYTES = 360 * 1024;
 export const OBSERVATION_MAX_BYTES = 192 * 1024;
 export const PRIOR_TELEMETRY_MAX_RECORDS = 16;
-export const COMMAND_MAX_COUNT = 64;
-export const CREATOR_IPC_MAX_COUNT = 128;
+export const COMMAND_MAX_COUNT = 100;
+export const CREATOR_IPC_MAX_COUNT = 10_001;
 export const DECISION_LIFETIME_MAX_MS = 15_000;
 export const CLOCK_SKEW_MAX_MS = 30_000;
 export const ED25519_SIGNATURE_BYTES = 64;
@@ -97,9 +94,13 @@ export function assertKeyId(keyId: string): void {
   if (!KEY_ID_PATTERN.test(keyId)) throw new TypeError("invalid key ID");
 }
 
+export function encodeBase64Url(bytes: Uint8Array): string {
+  return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString("base64url");
+}
+
 export function decodeBase64Url(value: string, maxBytes: number, exactBytes?: number): Buffer {
   if (!BASE64URL_PATTERN.test(value) || value.includes("=")) throw new TypeError("invalid unpadded base64url");
-  const decoded = decodeBase64UrlBuffer(value);
+  const decoded = Buffer.from(value, "base64url");
   if (decoded.length === 0 || decoded.length > maxBytes || encodeBase64Url(decoded) !== value) {
     throw new RangeError("base64url decoded length or encoding is invalid");
   }

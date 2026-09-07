@@ -1,5 +1,5 @@
 import {
-  KeyObject, createHash, createPrivateKey, createPublicKey, generateKeyPairSync,
+  KeyObject, createHash, createPrivateKey, createPublicKey, generateKeyPairSync, sign,
 } from "crypto";
 import { homedir } from "os";
 import { join } from "path";
@@ -9,6 +9,7 @@ import {
 } from "./protocol";
 import { decodeBase64UrlBuffer, randomUUID } from "./node14-compat";
 import { readPrivateJson, writePrivateJsonAtomic } from "./durable-file";
+import { canonicalizeToBytes } from "./canonical-json";
 
 const IdentitySchema = z.object({
   schemaVersion: z.literal(1),
@@ -19,6 +20,14 @@ const IdentitySchema = z.object({
   createdAt: z.string().datetime(),
 }).strict();
 
+const EnrollmentChallengeSchema = z.object({
+  challengeId: z.string().uuid(),
+  challenge: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+  memberId: z.string().min(1).max(128),
+  label: z.string().min(1).max(64),
+  expiresAtMs: z.number().int().positive().safe(),
+}).strict();
+
 export interface DeviceIdentity {
   schemaVersion: 1;
   deviceId: string;
@@ -26,6 +35,21 @@ export interface DeviceIdentity {
   publicKeyDer: string;
   privateKeyDer: string;
   createdAt: string;
+}
+
+export interface EnrollmentChallenge {
+  challengeId: string;
+  challenge: string;
+  memberId: string;
+  label: string;
+  expiresAtMs: number;
+}
+
+export interface DeviceEnrollmentProof extends EnrollmentChallenge {
+  deviceId: string;
+  deviceKeyId: string;
+  publicKeySpki: string;
+  proofSignature: string;
 }
 
 function identityPath(root: string): string {
@@ -75,25 +99,37 @@ export class DeviceIdentityStore {
       privateKeyDer: encodeBase64Url(privateDer),
       createdAt: new Date().toISOString(),
     };
+    // Creation is successful only after the atomically written record can be read and verified.
     writePrivateJsonAtomic(path, identity);
-    return identity;
+    const persisted = IdentitySchema.parse(readPrivateJson(path, 16 * 1024)) as DeviceIdentity;
+    validateKeyPair(persisted);
+    if (persisted.deviceId !== identity.deviceId) throw new Error("persisted device identity changed during enrollment readiness");
+    return persisted;
   }
 
   privateKey(identity: DeviceIdentity): KeyObject {
     validateKeyPair(identity);
-    return createPrivateKey({
-      key: decodeDer(identity.privateKeyDer, ED25519_PKCS8_DER_BYTES),
-      format: "der",
-      type: "pkcs8",
-    });
+    return createPrivateKey({ key: decodeDer(identity.privateKeyDer, ED25519_PKCS8_DER_BYTES), format: "der", type: "pkcs8" });
   }
 
   publicKey(identity: DeviceIdentity): KeyObject {
     validateKeyPair(identity);
-    return createPublicKey({
-      key: decodeDer(identity.publicKeyDer, ED25519_SPKI_DER_BYTES),
-      format: "der",
-      type: "spki",
-    });
+    return createPublicKey({ key: decodeDer(identity.publicKeyDer, ED25519_SPKI_DER_BYTES), format: "der", type: "spki" });
+  }
+
+  createEnrollmentProof(identity: DeviceIdentity, challengeInput: unknown, nowMs = Date.now()): DeviceEnrollmentProof {
+    validateKeyPair(identity);
+    const challenge = EnrollmentChallengeSchema.parse(challengeInput) as EnrollmentChallenge;
+    const challengeBytes = decodeBase64UrlBuffer(challenge.challenge);
+    if (challengeBytes.byteLength !== 32 || encodeBase64Url(challengeBytes) !== challenge.challenge) throw new Error("enrollment challenge must be 32 canonical bytes");
+    if (challenge.expiresAtMs <= nowMs) throw new Error("enrollment challenge is expired");
+    const body = {
+      ...challenge,
+      deviceId: identity.deviceId,
+      deviceKeyId: identity.deviceKeyId,
+      publicKeySpki: identity.publicKeyDer,
+    };
+    const signatureBase = canonicalizeToBytes({ domain: "ccb-device-enrollment-v1", ...body });
+    return { ...body, proofSignature: encodeBase64Url(sign(null, signatureBase, this.privateKey(identity))) };
   }
 }

@@ -2,7 +2,7 @@ import express, { type ErrorRequestHandler, type NextFunction, type Request, typ
 import { createGatewayAdmission, type GatewayAdmission } from "./admission.ts";
 import { createMemberAuthMiddleware, requireCcBridgeProduct } from "./auth-middleware.ts";
 import { CcbError, toCcbErrorBody } from "./errors.ts";
-import { approveEnrolledDevice, createGrant, enrollDevice, listAdminDevices, listAdminGrants, revokeAdminGrant, revokeEnrolledDevice } from "./enrollment.ts";
+import { approveEnrolledDevice, createGrant, enrollDevice, issueEnrollmentChallenge, listAdminDevices, listAdminGrants, revokeAdminGrant, revokeEnrolledDevice } from "./enrollment.ts";
 import { executeProtectedTool, type ExecuteDependencies } from "./execute-service.ts";
 import { CANARY_COHORTS, nextCanaryCohort } from "./canary.ts";
 import { PROTOCOL_VERSION, WRAPPER_MAX_BYTES } from "./protocol.ts";
@@ -87,6 +87,24 @@ export function createCcBridgeRouter(
       const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
       const result = await executeProtectedTool(deps, auth, rawBody);
       res.status(result.status).type("application/json").send(result.body);
+    },
+  );
+
+  router.post(
+    "/v1/devices/challenge",
+    ...memberProductAuth,
+    express.json({ limit: "2kb" }),
+    (req: Request, res: Response) => {
+      const member = req.toolAuth;
+      if (!member) {
+        deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required."));
+        return;
+      }
+      try {
+        res.status(201).json(issueEnrollmentChallenge(deps.store, member, req.body));
+      } catch (error) {
+        res.status(error instanceof CcbError ? 422 : 400).json(toCcbErrorBody(error));
+      }
     },
   );
 

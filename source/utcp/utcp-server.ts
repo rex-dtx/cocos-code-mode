@@ -1,6 +1,9 @@
-import { randomUUID } from '../protected/node14-compat';
 import { ToolMetadata, ToolRegistry } from './decorators';
-import { loadOrCreateLocalAuth, LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE } from './local-auth';
+import {
+    bindLocalAuthToPort, extractIdempotencyKey, loadOrCreateLocalAuth, LocalAuthContext,
+    LOCAL_INSTANCE_HEADER, LOCAL_INSTANCE_VARIABLE, LOCAL_PORT_HEADER, LOCAL_PORT_VARIABLE,
+    LOCAL_TOKEN_HEADER, LOCAL_TOKEN_VARIABLE,
+} from './local-auth';
 import { LocalHttpContext, LocalHttpServer, sendJson } from './http-server';
 import { ProtectedRelayHost } from '../protected/relay-host';
 import { CcbError, toCcbErrorBody } from '../protected/errors';
@@ -266,7 +269,7 @@ export class UtcpServerManager {
     private http: LocalHttpServer | null = null;
     public port: number = 0;
     private readonly host?: ProtectedRelayHost;
-
+    private localAuth: LocalAuthContext | null = null;
     constructor(host?: ProtectedRelayHost) {
         this.host = host;
         registerAllImporters();
@@ -274,18 +277,22 @@ export class UtcpServerManager {
 
     async start(port: number = 3000): Promise<number> {
         if (this.http) throw new Error('UTCP Server is already running');
-        const localAuth = loadOrCreateLocalAuth(this.host?.relayInstanceId ?? randomUUID());
+        const relayInstanceId = this.host?.relayInstanceId;
+        if (!relayInstanceId) throw new CcbError('CCB_GATEWAY_UNAVAILABLE', 'UTCP startup requires a bound protected relay instance.');
+        const localAuth = loadOrCreateLocalAuth(relayInstanceId);
         const http = new LocalHttpServer(localAuth);
         this.http = http;
         try {
             const actualPort = await http.listen(port);
+            bindLocalAuthToPort(localAuth, actualPort);
+            this.localAuth = localAuth;
             this.port = actualPort;
-            this.registerTools(actualPort, ToolRegistry.getTools(), new Map<Function, any>(), []);
+            this.registerTools(actualPort, ToolRegistry.getTools(), new Map<Function, object>(), []);
             return actualPort;
         } catch (error) {
             await http.close().catch(() => {});
             this.http = null;
-            this.port = 0;
+            this.localAuth = null;
             throw error;
         }
     }
@@ -307,7 +314,11 @@ export class UtcpServerManager {
             const toolDef = JSON.parse(JSON.stringify(toolMeta.tool));
             if (toolDef.outputs) toolDef.outputs = slimOutputsSchema(toolDef.outputs);
             const toolUrlPath = toolDef.tool_call_template.url;
-            toolDef.tool_call_template.url = `${baseUrl}${toolUrlPath}`;
+            toolDef.tool_call_template.headers = {
+                ...(toolDef.tool_call_template.headers || {}),
+                [LOCAL_INSTANCE_HEADER]: `\${${LOCAL_INSTANCE_VARIABLE}}`,
+                [LOCAL_PORT_HEADER]: `\${${LOCAL_PORT_VARIABLE}}`,
+            };
             toolDef.tool_call_template.auth = {
                 auth_type: 'api_key',
                 var_name: LOCAL_TOKEN_HEADER,
@@ -345,7 +356,7 @@ export class UtcpServerManager {
                     }
 
                     const result = isProtectedCustomerTool(toolDef.name)
-                        ? await this.dispatchProtected(toolDef.name, args)
+                        ? await this.dispatchProtected(toolDef.name, args, extractIdempotencyKey(context.request))
                         : await toolMeta.method.apply(instance, [args]);
                     const trimmed = result === undefined || result === null ? null : trimResponse(result) ?? null;
                     sendJson(
@@ -384,17 +395,28 @@ export class UtcpServerManager {
         http.route('GET', '/build-info', ({ response }) => sendJson(response, 200, getBuildInfo()));
     }
 
-    private async dispatchProtected(toolName: string, args: Record<string, unknown>): Promise<unknown> {
+    private async dispatchProtected(toolName: string, args: Record<string, unknown>, idempotencyKey?: string): Promise<unknown> {
         if (!this.host) throw new CcbError('CCB_GATEWAY_UNAVAILABLE', 'Protected tools require an active Gateway relay host.');
-        return dispatchProtectedCustomerTool(this.host, toolName, args);
+        return dispatchProtectedCustomerTool(this.host, toolName, args, { idempotencyKey });
+    }
+    
+    getLocalAuthBinding(): Readonly<Pick<LocalAuthContext, 'relayInstanceId' | 'tokenPath' | 'boundPort'>> | null {
+        if (!this.localAuth) return null;
+        return { relayInstanceId: this.localAuth.relayInstanceId, tokenPath: this.localAuth.tokenPath, boundPort: this.localAuth.boundPort };
+    }
+
+    beginDrain(): void {
+        this.http?.beginDrain();
     }
 
     async stop(): Promise<void> {
         const http = this.http;
         if (!http) return;
-        this.http = null;
-        this.port = 0;
+        this.beginDrain();
         await http.close();
+        this.http = null;
+        this.localAuth = null;
+        this.port = 0;
         console.log('UTCP Server stopped');
     }
 }

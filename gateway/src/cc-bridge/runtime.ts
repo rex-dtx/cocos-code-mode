@@ -2,19 +2,10 @@ import { createPrivateKey } from "node:crypto";
 import { CcbError } from "./errors.ts";
 import { MemoryEnvelopeSigner, type EnvelopeSigner } from "./envelope-signer.ts";
 import { ExecuteDependencies } from "./execute-service.ts";
-import { planCreateUiNode } from "./planners/create-ui-node.ts";
-import { planObservationResult } from "./planners/plan-observation-result.ts";
-import { planRuntimeControl } from "./planners/plan-runtime-control.ts";
-import { planEditorHistory } from "./planners/plan-editor-history.ts";
-import { planEditorSelection } from "./planners/plan-editor-selection.ts";
-import { planNodeOperate } from "./planners/plan-node-operate.ts";
-import { planSetProperties } from "./planners/plan-set-properties.ts";
-import { planAddComponent } from "./planners/plan-add-component.ts";
-import { planEditorViewport } from "./planners/plan-editor-viewport.ts";
-import { planBuildStart } from "./planners/plan-build-start.ts";
-import { planProjectWriteSetting } from "./planners/plan-project-setting.ts";
-import { planAnimationEdit } from "./planners/plan-animation-edit.ts";
-import { MUTATION_TOOLS, READ_TOOLS } from "./tool-catalog.ts";
+import { planControlTool } from "./planners/plan-control-tools.ts";
+import { planCreateTool } from "./planners/plan-create-tools.ts";
+import { planMutationTool } from "./planners/plan-mutation-tools.ts";
+import { planReadTool } from "./planners/plan-read-tools.ts";
 import { ProtectedToolRegistry } from "./protected-tool-registry.ts";
 import { ReplayStore } from "./replay-store.ts";
 import { CcBridgeStore } from "./store.ts";
@@ -42,27 +33,52 @@ export function createSigner(): EnvelopeSigner {
 }
 
 export function registerCatalogPlanners(planners: ProtectedToolRegistry): void {
-  for (const toolId of MUTATION_TOOLS) planners.register(toolId, 1, planCreateUiNode);
-  for (const toolId of READ_TOOLS) planners.register(toolId, 1, (context) => planObservationResult(context));
-  planners.register("runtimePause", 1, (context) => planRuntimeControl(context, "pause"));
-  planners.register("runtimeResume", 1, (context) => planRuntimeControl(context, "resume"));
-  planners.register("runtimeSetTimeScale", 1, (context) => planRuntimeControl(context, "set-time-scale"));
-  planners.register("runtimeGetState", 1, (context) => planRuntimeControl(context, "get-state"));
-  planners.register("editorHistory", 1, (context) => planEditorHistory(context, "undo"));
-  planners.register("editorSelect", 1, (context) => planEditorSelection(context));
-  planners.register("nodeOperate", 1, planNodeOperate);
-  planners.register("nodeReset", 1, planNodeOperate);
-  planners.register("inspectorSet", 1, planSetProperties);
-  planners.register("nodeBatchSet", 1, planSetProperties);
-  planners.register("nodeComponentManage", 1, planAddComponent);
-  planners.register("editorViewport", 1, planEditorViewport);
-  planners.register("buildManage", 1, planBuildStart);
-  planners.register("projectManage", 1, planProjectWriteSetting);
-  planners.register("animationEdit", 1, planAnimationEdit);
-  planners.register("propertyArrayElement", 1, planSetProperties);
-  planners.register("nodeClipboard", 1, planNodeOperate);
-  planners.register("sceneManage", 1, planNodeOperate);
-  planners.register("simulateButtonClick", 1, (context) => planEditorSelection(context));
+  planners.register("assetGetTree", 1, planReadTool);
+  planners.register("assetGetAtPath", 1, planReadTool);
+  planners.register("assetResolvePath", 1, planReadTool);
+  planners.register("assetQuery", 1, planReadTool);
+  planners.register("assetGetAvailableUrl", 1, planReadTool);
+  planners.register("nodeGetAvailableComponentTypes", 1, planReadTool);
+  planners.register("nodeComponentsGet", 1, planReadTool);
+  planners.register("sceneGetInfo", 1, planReadTool);
+  planners.register("findNodesByAsset", 1, planReadTool);
+  planners.register("findNodesWithMissingAssets", 1, planReadTool);
+  planners.register("findNodes", 1, planReadTool);
+  planners.register("nodeGetTree", 1, planReadTool);
+  planners.register("nodeGetAtPath", 1, planReadTool);
+  planners.register("animationQuery", 1, planReadTool);
+  planners.register("materialQuery", 1, planReadTool);
+  planners.register("editorQuery", 1, planReadTool);
+  planners.register("assetBatchQuery", 1, planReadTool);
+  planners.register("getPerformanceSnapshot", 1, planReadTool);
+
+  planners.register("createUiNode", 1, planCreateTool);
+  planners.register("nodeCreate", 1, planCreateTool);
+  planners.register("createLabel", 1, planCreateTool);
+  planners.register("createButton", 1, planCreateTool);
+  planners.register("createSprite", 1, planCreateTool);
+  planners.register("nodeCreatePrimitive", 1, planCreateTool);
+
+  planners.register("nodeOperate", 1, planMutationTool);
+  planners.register("nodeReset", 1, planMutationTool);
+  planners.register("inspectorSet", 1, planMutationTool);
+  planners.register("nodeBatchSet", 1, planMutationTool);
+  planners.register("nodeComponentManage", 1, planMutationTool);
+  planners.register("projectManage", 1, planMutationTool);
+  planners.register("animationEdit", 2, planMutationTool);
+  planners.register("propertyArrayElement", 1, planMutationTool);
+  planners.register("nodeClipboard", 1, planMutationTool);
+  planners.register("sceneManage", 1, planMutationTool);
+
+  planners.register("runtimePause", 1, planControlTool);
+  planners.register("runtimeResume", 1, planControlTool);
+  planners.register("runtimeSetTimeScale", 1, planControlTool);
+  planners.register("runtimeGetState", 1, planControlTool);
+  planners.register("editorHistory", 1, planControlTool);
+  planners.register("editorSelect", 1, planControlTool);
+  planners.register("editorViewport", 1, planControlTool);
+  planners.register("buildManage", 1, planControlTool);
+  planners.register("simulateButtonClick", 1, planControlTool);
 }
 
 export function createCcBridgeRuntime(): ExecuteDependencies {

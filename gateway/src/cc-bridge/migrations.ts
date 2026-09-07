@@ -140,6 +140,121 @@ const MIGRATIONS: readonly Migration[] = [
       CREATE UNIQUE INDEX release_target_payload_hash_idx ON release_target(target_payload_hash);
     `,
   },
+  {
+    version: 3,
+    sql: `
+      CREATE TABLE enrollment_challenge (
+        challenge_id TEXT PRIMARY KEY,
+        challenge_hash TEXT NOT NULL UNIQUE,
+        member_id TEXT NOT NULL,
+        label TEXT NOT NULL,
+        created_at_ms INTEGER NOT NULL,
+        expires_at_ms INTEGER NOT NULL,
+        consumed_at_ms INTEGER
+      );
+
+      CREATE INDEX enrollment_challenge_expiry_idx
+        ON enrollment_challenge(expires_at_ms, consumed_at_ms);
+
+      ALTER TABLE request_idempotency RENAME TO request_idempotency_v2;
+
+      CREATE TABLE request_idempotency (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT NOT NULL,
+        relay_instance_id TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        request_digest TEXT NOT NULL,
+        nonce TEXT NOT NULL,
+        sequence INTEGER NOT NULL,
+        state TEXT NOT NULL CHECK (state IN ('reserved', 'completed', 'failed')),
+        reservation_owner TEXT NOT NULL,
+        response_body BLOB,
+        response_hash TEXT,
+        failure_class TEXT,
+        created_at_ms INTEGER NOT NULL,
+        lease_expires_at_ms INTEGER NOT NULL,
+        completed_at_ms INTEGER,
+        failed_at_ms INTEGER,
+        expires_at_ms INTEGER NOT NULL,
+        UNIQUE (device_id, idempotency_key),
+        UNIQUE (device_id, relay_instance_id, nonce),
+        CHECK (
+          (state = 'reserved'
+            AND response_body IS NULL AND response_hash IS NULL
+            AND completed_at_ms IS NULL AND failed_at_ms IS NULL AND failure_class IS NULL)
+          OR
+          (state = 'completed'
+            AND response_body IS NOT NULL AND response_hash IS NOT NULL
+            AND completed_at_ms IS NOT NULL AND failed_at_ms IS NULL AND failure_class IS NULL)
+          OR
+          (state = 'failed'
+            AND response_body IS NULL AND response_hash IS NULL
+            AND completed_at_ms IS NULL AND failed_at_ms IS NOT NULL AND failure_class IS NOT NULL)
+        )
+      );
+
+      INSERT INTO request_idempotency(
+        id, device_id, relay_instance_id, idempotency_key, request_digest, nonce, sequence,
+        state, reservation_owner, response_body, response_hash, failure_class, created_at_ms,
+        lease_expires_at_ms, completed_at_ms, failed_at_ms, expires_at_ms
+      )
+      SELECT
+        id, device_id, relay_instance_id, idempotency_key, request_digest, nonce, sequence,
+        state, reservation_owner, response_body, response_hash, NULL, created_at_ms,
+        expires_at_ms, completed_at_ms, NULL, expires_at_ms
+      FROM request_idempotency_v2;
+
+      DROP TABLE request_idempotency_v2;
+
+      CREATE INDEX replay_expiry_idx
+        ON request_idempotency(expires_at_ms, state);
+      CREATE INDEX replay_lease_idx
+        ON request_idempotency(state, lease_expires_at_ms);
+
+      CREATE TABLE canary_health (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        target_hash TEXT NOT NULL,
+        package_hash TEXT NOT NULL,
+        device_id TEXT NOT NULL,
+        probe_id TEXT NOT NULL,
+        observed_at_ms INTEGER NOT NULL,
+        ring TEXT NOT NULL CHECK (ring IN ('1', '3', '10')),
+        healthy INTEGER NOT NULL CHECK (healthy IN (0, 1)),
+        UNIQUE (target_hash, package_hash, device_id, probe_id, observed_at_ms)
+      );
+
+      CREATE INDEX canary_health_cohort_idx
+        ON canary_health(target_hash, package_hash, ring, observed_at_ms);
+
+      CREATE TABLE rollout_state (
+        channel TEXT PRIMARY KEY,
+        target_hash TEXT NOT NULL,
+        package_hash TEXT NOT NULL,
+        ring TEXT NOT NULL CHECK (ring IN ('1', '3', '10')),
+        policy_sequence INTEGER NOT NULL,
+        updated_at_ms INTEGER NOT NULL
+      );
+
+      INSERT INTO rollout_state(
+        channel, target_hash, package_hash, ring, policy_sequence, updated_at_ms
+      )
+      SELECT
+        policy.channel,
+        policy.target_hash,
+        COALESCE(target.package_hash, ''),
+        policy.ring,
+        policy.sequence,
+        policy.created_at_ms
+      FROM rollout_policy AS policy
+      LEFT JOIN release_target AS target
+        ON target.target_payload_hash = policy.target_hash
+      WHERE policy.sequence = (
+        SELECT MAX(candidate.sequence)
+        FROM rollout_policy AS candidate
+        WHERE candidate.channel = policy.channel
+      );
+    `,
+  },
 ];
 
 export function applyCcBridgeMigrations(db: Database.Database): void {

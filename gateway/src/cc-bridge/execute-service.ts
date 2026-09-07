@@ -13,9 +13,14 @@ import { recordCcBridgeExecute, type CcbMetricPhase } from "./metrics.ts";
 import { validateGatewayDecision } from "./plan-validator.ts";
 import { assertCcBridgeProduct } from "./product-grant.ts";
 import { decisionSignatureBase, type SignedGatewayDecision } from "./protocol.ts";
-import { canonicalRequestDigest, ReplayStore } from "./replay-store.ts";
+import {
+  canonicalRequestDigest, ReplayStore, type ReplayFailureClass, type ReplayAdmission,
+} from "./replay-store.ts";
 import type { ProtectedToolRegistry } from "./protected-tool-registry.ts";
 import type { CcBridgeStore } from "./store.ts";
+
+const RESERVATION_LEASE_MS = 30_000;
+const COMPLETED_RESPONSE_RETENTION_MS = 24 * 60 * 60 * 1000;
 
 export interface ExecuteDependencies {
   store: CcBridgeStore;
@@ -59,6 +64,8 @@ export async function executeProtectedTool(
   let deviceId: string | undefined;
   let projectId: string | undefined;
   let relayBuild: string | undefined;
+  let reservation: Extract<ReplayAdmission, { kind: "reserved" }> | undefined;
+  let failureClass: ReplayFailureClass = "internal";
   const phaseTimings: Partial<Record<CcbMetricPhase, number>> = {};
   let phaseStartedAt = performance.now();
   try {
@@ -74,12 +81,8 @@ export async function executeProtectedTool(
     projectId = verified.request.projectId;
     relayBuild = verified.request.relay.build;
     const digest = canonicalRequestDigest(verified.payloadBytes);
-    const replayed = deps.replay.lookupCompleted(verified.request.deviceId, verified.request.idempotencyKey, digest);
-    if (replayed) {
-      markPhase(phaseTimings, "authorize", phaseStartedAt);
-      return finish(deps.store, { status: 200, body: replayed }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
-    }
     const authorization = authorizeProtectedRequest(deps.store, auth, verified.device, verified.request, nowMs);
+    phaseStartedAt = markPhase(phaseTimings, "authorize", phaseStartedAt);
     const admission = deps.replay.reserve({
       deviceId: verified.request.deviceId,
       relayInstanceId: verified.request.relayInstanceId,
@@ -88,13 +91,15 @@ export async function executeProtectedTool(
       nonce: verified.request.nonce,
       sequence: verified.request.sequence,
       nowMs,
-      expiresAtMs: nowMs + 24 * 60 * 60 * 1000,
+      leaseExpiresAtMs: nowMs + RESERVATION_LEASE_MS,
+      expiresAtMs: nowMs + COMPLETED_RESPONSE_RETENTION_MS,
     });
-    phaseStartedAt = markPhase(phaseTimings, "authorize", phaseStartedAt);
     if (admission.kind === "duplicate") {
       return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
     }
+    reservation = admission;
     deps.store.markDeviceSeen(verified.device.id, nowMs);
+    failureClass = "planner";
     const unsigned = deps.planners.plan({
       request: verified.request,
       policy: authorization.policy,
@@ -102,9 +107,11 @@ export async function executeProtectedTool(
       nowMs,
     });
     phaseStartedAt = markPhase(phaseTimings, "plan", phaseStartedAt);
+    failureClass = "validator";
     const decision = validateGatewayDecision(unsigned, verified.request);
     phaseStartedAt = markPhase(phaseTimings, "validate", phaseStartedAt);
     const payload = canonicalizeToBytes(decision);
+    failureClass = "signer";
     const signature = await deps.signer.sign(deps.signer.keyId, decisionSignatureBase(deps.signer.keyId, payload));
     phaseStartedAt = markPhase(phaseTimings, "sign", phaseStartedAt);
     const signed: SignedGatewayDecision = {
@@ -113,10 +120,25 @@ export async function executeProtectedTool(
       signature: encodeSignature(signature),
     };
     const responseBody = Buffer.from(JSON.stringify(signed));
-    deps.replay.complete(admission.id, admission.owner, responseBody, nowMs);
+    failureClass = "persist";
+    const completedAtMs = deps.nowMs?.() ?? Date.now();
+    deps.replay.complete(admission.id, admission.owner, responseBody, completedAtMs);
+    reservation = undefined;
     markPhase(phaseTimings, "persist", phaseStartedAt);
     return finish(deps.store, { status: 200, body: responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
   } catch (error) {
+    if (reservation) {
+      try {
+        deps.replay.fail(
+          reservation.id,
+          reservation.owner,
+          failureClass,
+          deps.nowMs?.() ?? Date.now(),
+        );
+      } catch {
+        /* the original execution failure remains the caller-visible cause */
+      }
+    }
     const failed = errorResult(error);
     const code = toCcbErrorBody(error).code;
     return finish(deps.store, failed, {

@@ -5,11 +5,13 @@ import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
 import { ProtectedRelayHost } from './protected/relay-host';
+import { dispatchProtectedCustomerTool } from './protected/protected-route';
 import { BOOT_LOG_PATH, bootLog, bootWarnDialog } from './protected/boot-log';
 import { toCcbErrorBody } from './protected/errors';
 import { launchPendingHealthRollback, launchStagedActivation } from './update/activation';
 import { UpdateManager, type StagedUpdate } from './update/manager';
 import { UpdateStateStore } from './update/state';
+import { evaluateUpdateHealth } from './update/health';
 
 let utcpServer: UtcpServerManager | null = null;
 let relayHost: ProtectedRelayHost | null = null;
@@ -19,19 +21,42 @@ const extensionRoot = resolve(__dirname, '..');
 const activationHelperPath = join(extensionRoot, 'scripts', 'install-update.ps1');
 let pendingHealthRollback = false;
 
-function finishPendingHealth(healthy: boolean): void {
+async function finishPendingHealth(utcpReady: boolean): Promise<void> {
     const backup = `${extensionRoot}.prev`;
-    if (!existsSync(backup)) return;
-    const state = new UpdateStateStore();
+    const backupPresent = existsSync(backup);
+    const stateStore = new UpdateStateStore();
     try {
-        if (!healthy) {
-            state.markRollbackRequired();
-            pendingHealthRollback = true;
-            bootLog('error', 'Signed update failed startup health; rollback queued for Creator shutdown');
+        const recovered = stateStore.recoverActivation(backupPresent);
+        if (recovered.activationState === 'retiring-backup') {
+            rmSync(backup, { recursive: true, force: true });
+            stateStore.markBackupRetired(existsSync(backup));
+            bootLog('info', 'Signed update backup retirement completed');
             return;
         }
-        state.markHealthy();
+        if (recovered.activationState !== 'pending-health') return;
+        const host = relayHost;
+        const health = await evaluateUpdateHealth({
+            utcpReady,
+            relayState: host?.state.state ?? 'LOCKED',
+            identityCompatible: host?.identity !== null && host?.identity !== undefined,
+            packageCompatible: typeof host?.packageHash === 'string',
+            creatorCompatible: typeof Editor.App.version === 'string' && Editor.App.version.length > 0,
+            protectedProbeTimeoutMs: 5_000,
+            protectedProbe: async () => {
+                if (!host) return false;
+                await dispatchProtectedCustomerTool(host, 'editorQuery', { category: 'ready' });
+                return true;
+            },
+        });
+        if (!health.healthy) {
+            stateStore.markRollbackRequired();
+            pendingHealthRollback = true;
+            bootLog('error', `Signed update failed startup health (${health.failures.join(',')}); rollback queued for Creator shutdown`);
+            return;
+        }
+        stateStore.markHealthPassed();
         rmSync(backup, { recursive: true, force: true });
+        stateStore.markBackupRetired(existsSync(backup));
         bootLog('info', 'Signed update passed startup health; prior package removed');
     } catch (error) {
         bootLog('error', `Unable to resolve pending update health: ${toCcbErrorBody(error).code}`);
@@ -136,13 +161,13 @@ export async function load() {
         try {
             relayHost = new ProtectedRelayHost();
             relayHost.activateIfConfigured();
-            bootLog("info", `relay identity=${relayHost.identity.deviceKeyId}`);
+            if (relayHost.identity) bootLog("info", `relay identity=${relayHost.identity.deviceKeyId}`);
         } catch (err) {
             relayHost = null;
             bootLog("error", "Protected relay failed to boot; menus and local tools still start", err);
         }
         const releaseOrigin = process.env.CCB_RELEASE_ORIGIN;
-        if (releaseOrigin && relayHost) {
+        if (releaseOrigin && relayHost?.identity && relayHost.packageHash && relayHost.targetPayloadHash) {
             const configuredRing = process.env.CCB_RELEASE_RING;
             const allowedRing = configuredRing === '3' || configuredRing === '10' ? configuredRing : '1';
             const build = getBuildInfo();
@@ -150,20 +175,21 @@ export async function load() {
                 origin: releaseOrigin,
                 compatibility: {
                     protocolVersion: 1,
-                    creatorVersion: packageJSON.creator.version,
+                    creatorVersion: Editor.App.version,
                     os: process.platform,
                     arch: process.arch,
-                    currentBuild: `${build.version}-dev.${build.commit}`,
+                    currentBuild: build.version,
                     deviceId: relayHost.identity.deviceId,
                     channel: process.env.CCB_RELEASE_CHANNEL || 'stable',
                     allowedRing,
                 },
             });
+            updateManager.initializeInstalledTarget(relayHost.targetPayloadHash);
         }
         if (process.env.CCB_DISABLE_LOCAL_UTCP === "1") {
             bootLog("info", "Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1");
             stageUpdateInBackground();
-            finishPendingHealth(relayHost !== null);
+            await finishPendingHealth(false);
             return;
         }
         utcpServer = new UtcpServerManager(relayHost ?? undefined);
@@ -179,11 +205,11 @@ export async function load() {
             await configManager.updatePort(actualPort);
             bootLog("info", `UTCP listening at ${url}; boot log ${BOOT_LOG_PATH}`);
             stageUpdateInBackground();
-            finishPendingHealth(relayHost !== null);
+            await finishPendingHealth(true);
         } catch (err) {
             bootWarnDialog(`UTCP failed to start. See ${BOOT_LOG_PATH}`);
             bootLog("error", "Failed to start UTCP Server", err);
-            finishPendingHealth(false);
+            await finishPendingHealth(false);
         }
         if (!wasConfiguredPort) {
             Editor.Panel.open(packageJSON.name + ".configuration");
@@ -191,14 +217,36 @@ export async function load() {
     } catch (err) {
         bootWarnDialog(`Extension load failed. See ${BOOT_LOG_PATH}`);
         bootLog("error", "Extension load failed; menu handlers remain registered", err);
-        finishPendingHealth(false);
+        await finishPendingHealth(false);
     }
 }
 
-export function unload() {
-    if (pendingHealthRollback) {
+export async function unload() {
+    const currentServer = utcpServer;
+    const currentRelay = relayHost;
+    const currentUpdateManager = updateManager;
+    const currentStagedUpdate = stagedUpdate;
+    const shouldRollback = pendingHealthRollback;
+    utcpServer = null;
+    relayHost = null;
+    updateManager = null;
+    stagedUpdate = null;
+    pendingHealthRollback = false;
+    currentServer?.beginDrain();
+    if (currentRelay) {
+        const drained = await currentRelay.state.drain(5_000);
+        if (!drained) bootLog('error', 'Protected relay drain timed out; in-flight outcome remains ambiguous');
+    }
+    if (currentServer) {
+        console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
+        const port = currentServer.port;
+        await currentServer.stop();
+        await getConfigManager().removeCocosEditorTemplate(port).catch(() => {});
+    }
+    currentRelay?.close();
+    if (shouldRollback) {
         try {
-            launchPendingHealthRollback({
+            await launchPendingHealthRollback({
                 creatorPid: process.pid,
                 creatorExecutablePath: process.execPath,
                 liveDirectory: extensionRoot,
@@ -207,35 +255,23 @@ export function unload() {
         } catch (error) {
             bootLog('error', `Unable to queue pending-health rollback: ${toCcbErrorBody(error).code}`);
         }
-    } else if (stagedUpdate && updateManager) {
-        try {
-            updateManager.markActivationQueued();
-            launchStagedActivation({
-                creatorPid: process.pid,
-                creatorExecutablePath: process.execPath,
-                stagedDirectory: stagedUpdate.stagedDirectory,
-                liveDirectory: extensionRoot,
-                descriptorSha256: stagedUpdate.descriptorSha256,
-                helperPath: activationHelperPath,
-            });
-            bootLog('info', `Signed update queued for Creator shutdown: ${stagedUpdate.accepted.target.package.version}`);
-        } catch (error) {
-            bootLog('error', `Unable to queue staged update: ${toCcbErrorBody(error).code}`);
-        }
+        return;
     }
-    pendingHealthRollback = false;
-    stagedUpdate = null;
-    updateManager = null;
-    if (relayHost) {
-        void relayHost.state.drain(5_000);
-        relayHost.close();
-        relayHost = null;
-    }
-    if (utcpServer) {
-        console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
-        const port = utcpServer.port;
-        utcpServer.stop();
-        utcpServer = null;
-        getConfigManager().removeCocosEditorTemplate(port).catch(() => {});
+    if (!currentStagedUpdate || !currentUpdateManager) return;
+    try {
+        currentUpdateManager.beginActivationLaunch();
+        await launchStagedActivation({
+            creatorPid: process.pid,
+            creatorExecutablePath: process.execPath,
+            stagedDirectory: currentStagedUpdate.stagedDirectory,
+            liveDirectory: extensionRoot,
+            descriptorSha256: currentStagedUpdate.descriptorSha256,
+            helperPath: activationHelperPath,
+        });
+        currentUpdateManager.markActivationSpawned();
+        bootLog('info', `Signed update queued for Creator shutdown: ${currentStagedUpdate.accepted.target.package.version}`);
+    } catch (error) {
+        currentUpdateManager.markActivationLaunchFailed();
+        bootLog('error', `Unable to queue staged update: ${toCcbErrorBody(error).code}`);
     }
 }

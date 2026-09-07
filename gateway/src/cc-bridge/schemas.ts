@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ExecutionEnvelopeSchema } from "./primitive-contract";
+import { EffectSchema, ExecutionEnvelopeSchema, PUBLIC_PRIMITIVE_IDS, PUBLIC_VALUE_SOURCES } from "./primitive-contract";
 import {
   BASE64URL_PATTERN, CLOCK_SKEW_MAX_MS, DECISION_LIFETIME_MAX_MS, KEY_ID_PATTERN,
   PRIOR_TELEMETRY_MAX_RECORDS, ProtectedRequest, GatewayDecision, SignedGatewayDecision,
@@ -78,6 +78,69 @@ export const GatewayDecisionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("result"), binding: DecisionBindingSchema, result: finiteResult, limits: decisionLimits, correlationId: opaqueId }).strict(),
   z.object({ kind: z.literal("execute"), binding: DecisionBindingSchema, envelope: ExecutionEnvelopeSchema, correlationId: opaqueId }).strict(),
 ]);
+
+const PublicObservationSchema = z.object({
+  contractId: identifier,
+  consentVersion: identifier,
+  fields: z.array(identifier).max(32),
+}).strict();
+
+const PublicDataFieldSchema = z.object({
+  jsonPointer: z.string().min(1).max(1024).regex(/^\//),
+  dataClass: z.enum(["project-metadata", "public-metadata", "local-payload"]),
+  maxBytes: z.number().int().positive().max(10 * 1024 * 1024),
+  retention: z.literal("none"),
+  provenance: z.array(z.enum(["request", "creator-ipc", "local-derived"])).min(1).max(4),
+  gatewayTransfer: z.enum(["allowed", "never"]),
+}).strict();
+
+const PublicOperationContractSchema = z.object({
+  effect: EffectSchema,
+  observation: PublicObservationSchema,
+  primitives: z.array(z.enum(PUBLIC_PRIMITIVE_IDS)).min(1).max(16),
+  resultMode: z.enum(["command-result", "command-results", "execution-summary"]),
+}).strict();
+
+export const PublicToolBehaviorSchema = z.object({
+  name: identifier,
+  contractVersion: z.number().int().positive(),
+  compatibility: z.enum(["preserve", "breaking"]),
+  creatorRange: boundedText(128),
+  minimumRelayBuild: boundedText(128),
+  plannerId: identifier,
+  primitiveAbiVersion: z.literal(2),
+  inputSchema: z.record(z.string(), z.unknown()),
+  outputSchema: z.record(z.string(), z.unknown()),
+  allowedInputFields: z.array(identifier).max(128),
+  inputFields: z.array(PublicDataFieldSchema).max(128),
+  outputFields: z.array(PublicDataFieldSchema).min(1).max(128),
+  resultLocation: z.literal("relay-local"),
+  gatewayResponsePolicy: z.literal("finite-contract-values-only"),
+  allowedValueSources: z.array(z.enum(PUBLIC_VALUE_SOURCES)).min(1).max(PUBLIC_VALUE_SOURCES.length),
+  publicConstants: z.record(z.string(), z.unknown()),
+  operations: z.record(z.string().min(1).max(128).regex(/^[A-Za-z0-9._:*-]+$/), PublicOperationContractSchema).refine((operations) => Object.keys(operations).length > 0, "at least one operation is required"),
+  limits: z.object({
+    inputBytes: z.number().int().positive().max(262_144),
+    outputBytes: z.number().int().positive().max(524_288),
+    commandCount: z.number().int().positive().max(100),
+    creatorIpcCount: z.number().int().positive().max(10_001),
+    timeoutMs: z.number().int().positive().max(15_000),
+  }).strict(),
+}).strict();
+
+export const PublicToolContractSchema = PublicToolBehaviorSchema.extend({
+  contractHash: hash,
+}).strict();
+
+export const PublicToolManifestSchema = z.object({
+  schemaVersion: z.literal(2),
+  manifestHash: hash,
+  tools: z.array(PublicToolContractSchema).length(43),
+}).strict();
+
+export type PublicToolBehavior = z.infer<typeof PublicToolBehaviorSchema>;
+export type PublicToolContract = z.infer<typeof PublicToolContractSchema>;
+export type PublicToolManifest = z.infer<typeof PublicToolManifestSchema>;
 
 export function parseSignedProtectedRequest(value: unknown): SignedProtectedRequest {
   return SignedProtectedRequestSchema.parse(value);

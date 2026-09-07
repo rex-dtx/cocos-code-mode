@@ -1,34 +1,105 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { AuthContext } from "../auth.ts";
+import { verifyEnrollmentProof } from "./device-proof.ts";
 import { CcbError } from "./errors.ts";
-import { ED25519_SPKI_DER_BYTES, KEY_ID_PATTERN, decodeBase64Url } from "./protocol.ts";
+import {
+  ED25519_SPKI_DER_BYTES, KEY_ID_PATTERN, decodeBase64Url,
+} from "./protocol.ts";
 import type { CcBridgeStore } from "./store.ts";
 
-const EnrollSchema = z.object({
-  deviceKeyId: z.string().regex(KEY_ID_PATTERN),
-  publicKeySpki: z.string().min(1).max(128),
+const ENROLLMENT_CHALLENGE_LIFETIME_MS = 5 * 60 * 1000;
+
+const ChallengeRequestSchema = z.object({
   label: z.string().min(1).max(64),
 }).strict();
 
-export function enrollDevice(store: CcBridgeStore, auth: AuthContext, body: unknown, nowMs = Date.now()) {
+const EnrollSchema = z.object({
+  challengeId: z.string().uuid(),
+  challenge: z.string().min(1).max(64),
+  memberId: z.string().min(1).max(128),
+  label: z.string().min(1).max(64),
+  expiresAtMs: z.number().int().positive(),
+  deviceId: z.string().uuid(),
+  deviceKeyId: z.string().regex(KEY_ID_PATTERN),
+  publicKeySpki: z.string().min(1).max(128),
+  proofSignature: z.string().min(1).max(128),
+}).strict();
+
+function requireEnrollmentAuth(auth: AuthContext): void {
   if (auth.is_legacy || auth.tokenAlg !== "EdDSA") {
     throw new CcbError("CCB_AUTH_INVALID", "Device enrollment requires an EdDSA member JWT.");
   }
-  const parsed = EnrollSchema.parse(body);
-  const publicKeySpki = decodeBase64Url(parsed.publicKeySpki, ED25519_SPKI_DER_BYTES, ED25519_SPKI_DER_BYTES);
-  const fingerprint = createHash("sha256").update(publicKeySpki).digest("hex").slice(0, 32);
-  const deviceId = randomUUID();
-  store.insertDevice({
-    id: deviceId,
-    keyId: parsed.deviceKeyId,
+}
+
+function challengeHash(challenge: string): string {
+  return createHash("sha256").update(challenge, "utf8").digest("hex");
+}
+
+export function issueEnrollmentChallenge(
+  store: CcBridgeStore,
+  auth: AuthContext,
+  body: unknown,
+  nowMs = Date.now(),
+) {
+  requireEnrollmentAuth(auth);
+  const { label } = ChallengeRequestSchema.parse(body);
+  const challengeId = randomUUID();
+  const challenge = randomBytes(32).toString("base64url");
+  const expiresAtMs = nowMs + ENROLLMENT_CHALLENGE_LIFETIME_MS;
+  store.insertEnrollmentChallenge({
+    challengeId,
+    challengeHash: challengeHash(challenge),
     memberId: auth.member_id,
-    publicKeySpki,
-    fingerprint,
-    label: parsed.label,
-    status: "pending",
+    label,
+    expiresAtMs,
   }, nowMs);
-  return { deviceId, fingerprint, status: "pending" as const };
+  return { challengeId, challenge, memberId: auth.member_id, label, expiresAtMs };
+}
+
+export function enrollDevice(store: CcBridgeStore, auth: AuthContext, body: unknown, nowMs = Date.now()) {
+  requireEnrollmentAuth(auth);
+  const parsed = EnrollSchema.parse(body);
+  if (parsed.memberId !== auth.member_id) {
+    throw new CcbError("CCB_AUTH_INVALID", "Enrollment challenge member does not match the authenticated member.");
+  }
+  let publicKeySpki: Buffer;
+  let challenge: Buffer;
+  try {
+    publicKeySpki = decodeBase64Url(parsed.publicKeySpki, ED25519_SPKI_DER_BYTES, ED25519_SPKI_DER_BYTES);
+    challenge = decodeBase64Url(parsed.challenge, 32, 32);
+  } catch {
+    throw new CcbError("CCB_CANONICAL_INVALID", "Enrollment key or challenge encoding is invalid.");
+  }
+  verifyEnrollmentProof(parsed, parsed.proofSignature, publicKeySpki);
+  const fingerprint = createHash("sha256").update(publicKeySpki).digest("hex").slice(0, 32);
+  try {
+    const enrolled = store.enrollDeviceWithChallenge({
+      challengeId: parsed.challengeId,
+      challengeHash: challengeHash(challenge.toString("base64url")),
+      challengeExpiresAtMs: parsed.expiresAtMs,
+      device: {
+        id: parsed.deviceId,
+        keyId: parsed.deviceKeyId,
+        memberId: auth.member_id,
+        publicKeySpki,
+        fingerprint,
+        label: parsed.label,
+        status: "pending",
+      },
+      nowMs,
+    });
+    if (!enrolled) {
+      throw new CcbError("CCB_DEVICE_DENIED", "Enrollment challenge is unknown, expired, mismatched, or already used.");
+    }
+  } catch (error) {
+    if (error instanceof CcbError) throw error;
+    if (error instanceof Error && "code" in error && String(error.code).startsWith("SQLITE_CONSTRAINT")) {
+      throw new CcbError("CCB_DEVICE_DENIED", "Device ID, key ID, or public-key fingerprint is already enrolled.");
+    }
+    throw error;
+  }
+  return { deviceId: parsed.deviceId, fingerprint, status: "pending" as const };
 }
 
 export function approveEnrolledDevice(store: CcBridgeStore, auth: AuthContext, deviceId: string, nowMs = Date.now()) {

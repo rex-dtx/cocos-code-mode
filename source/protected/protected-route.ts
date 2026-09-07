@@ -1,44 +1,68 @@
-import { createHash } from "crypto";
 import { assertIJson, IJson } from "./canonical-json";
 import { createCreatorAdapters } from "./creator-adapters";
 import { CcbError } from "./errors";
-import { dispatchProtectedTool } from "./protected-dispatcher";
+import { dispatchProtectedTool, type ProtectedDispatchContext } from "./protected-dispatcher";
 import type { ProtectedRelayHost } from "./relay-host";
 import { GATEWAY_PROTECTED_TOOLS } from "./protected-tool-names";
 import { getBuildInfo } from "../build-info";
+import { loadPublicToolManifest, type PublicToolManifest } from "./public-tool-loader";
+import manifestJson from "./public-tool-manifest.json";
 
-const manifest = {
-  schemaVersion: 1 as const,
-  tools: [...GATEWAY_PROTECTED_TOOLS].map((name) => ({
-    name,
-    contractVersion: 1,
-    contractHash: name === "createUiNode" ? "a".repeat(64) : name === "nodeCreate" ? "b".repeat(64) : createHash("sha256").update(name).digest("hex"),
-    observation: { contractId: "ui-parent-v1", consentVersion: "project-metadata-v1", fields: ["parentUuid"] },
-  })),
-};
+let manifest: PublicToolManifest | undefined;
+
+function canonicalManifest() {
+  try {
+    manifest ??= loadPublicToolManifest(manifestJson);
+    return manifest;
+  } catch (error) {
+    throw new CcbError("CCB_CONTRACT_MISMATCH", "Installed canonical protected-tool manifest is invalid.", {
+      cause: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512),
+    });
+  }
+}
 
 export function isProtectedCustomerTool(name: string): boolean {
   return GATEWAY_PROTECTED_TOOLS.has(name);
 }
 
-function parentUuidFromInputs(inputs: IJson): IJson {
-  if (inputs && typeof inputs === "object" && !Array.isArray(inputs) && "parentReference" in inputs) {
-    const parent = inputs.parentReference;
-    if (parent && typeof parent === "object" && "id" in parent && typeof parent.id === "string") return parent.id;
-  }
-  return "scene-root";
-}
-
-export async function dispatchProtectedCustomerTool(host: ProtectedRelayHost, name: string, inputs: unknown): Promise<IJson> {
+export async function dispatchProtectedCustomerTool(
+  host: ProtectedRelayHost,
+  name: string,
+  inputs: unknown,
+  dispatch: ProtectedDispatchContext = {},
+): Promise<IJson> {
   if (!GATEWAY_PROTECTED_TOOLS.has(name)) {
-    throw new CcbError("CCB_CONTRACT_MISMATCH", "Protected tool has no v1 public contract yet.", { tool: name });
+    throw new CcbError("CCB_CONTRACT_MISMATCH", "Protected tool is absent from the canonical public contract.", { tool: name });
   }
   host.state.assertActive();
+  if (!host.identity || !host.packageHash) throw new CcbError("CCB_DEVICE_DENIED", "Protected relay has no verified local identity or installed package digest.");
   if (!host.client || !host.projectId || host.executionKeys.size === 0) {
     throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Protected tools require a warm Gateway client, project, and execution public key.");
   }
   assertIJson(inputs);
   const build = getBuildInfo();
+  const creatorVersion = Editor.App.version;
+  if (typeof creatorVersion !== "string" || !creatorVersion) throw new CcbError("CCB_CREATOR_INCOMPATIBLE", "Creator runtime did not expose Editor.App.version.");
+  let creatorIpcCount = 0;
+  const creatorRequest = async (module: string, message: string, ...args: unknown[]) => {
+    creatorIpcCount += 1;
+    return Editor.Message.request(module as never, message as never, ...args as never[]);
+  };
+  const selection = {
+    getSelected: (type: "node" | "asset") => [...Editor.Selection.getSelected(type)],
+    getLastSelected: (type: "node" | "asset") => Editor.Selection.getLastSelected(type) || undefined,
+  };
+  const invoke = createCreatorAdapters(creatorRequest, {
+    selection: {
+      select: (type, values) => Editor.Selection.select(type, values),
+      unselect: (type, values) => Editor.Selection.unselect(type, values),
+      clear: (type) => Editor.Selection.clear(type),
+      hover: (type, value) => Editor.Selection.hover(type, value),
+      update: (type, values) => Editor.Selection.update(type, values),
+      getSelected: selection.getSelected,
+      getLastSelected: selection.getLastSelected,
+    },
+  });
   return dispatchProtectedTool({
     state: host.state,
     identity: host.identity,
@@ -48,20 +72,23 @@ export async function dispatchProtectedCustomerTool(host: ProtectedRelayHost, na
     sequence: host.replayWindow,
     replayWindow: host.replayWindow,
     journal: host.journal,
+    requestCache: host.requestCache,
     client: host.client,
     executionKeys: host.executionKeys,
-    expectedCreatorRange: ">=3.7.0 <3.9.0",
     relay: {
       build: build.version,
-      packageHash: createHash("sha256").update(`${build.version}:${build.commit}`).digest("hex"),
-      creatorVersion: "3.7.3",
+      packageHash: host.packageHash,
+      creatorVersion,
       os: `${process.platform}-${process.arch}`,
     },
     adapters: {
-      invoke: createCreatorAdapters(async (moduleName, message, args) => Editor.Message.request(moduleName, message, args)),
-      snapshot: async () => { await Editor.Message.request("scene", "snapshot"); },
-      recheckPreconditions: async () => undefined,
+      invoke,
+      snapshot: async () => { await creatorRequest("scene", "snapshot"); },
+      recheckPreconditions: async () => {
+        throw new CcbError("CCB_PRECONDITION_FAILED", "Effectful protected dispatch must install a live observation recheck.");
+      },
+      readIpcCount: () => creatorIpcCount,
     },
-    collectField: (field) => field === "parentUuid" ? parentUuidFromInputs(inputs) : "scene-root",
-  }, manifest, name, inputs);
+    observationRuntime: { request: creatorRequest, selection },
+  }, canonicalManifest(), name, inputs, dispatch);
 }

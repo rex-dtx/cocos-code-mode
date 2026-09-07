@@ -251,8 +251,8 @@
     {
       "toolId": "assetFindReferences",
       "sourceFile": "source/utcp/tools/asset-tools.ts",
-      "disposition": "gateway-protected",
-      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "disposition": "local-public",
+      "reason": "Adaptive/local behavior cannot be represented honestly by the finite one-RTT protected primitive contract; user approved local-public cutover.",
       "compatibility": "preserve",
       "operationClass": "read",
       "inputFields": [
@@ -1072,7 +1072,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.operateNode"
+        "scene.reset"
       ],
       "observationContract": "scene-target-v1",
       "outputFields": [
@@ -1299,7 +1299,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.operateNode"
+        "scene.clipboard"
       ],
       "observationContract": "scene-target-v1",
       "outputFields": [
@@ -1317,7 +1317,9 @@
       ],
       "gatewayResponsePolicy": "finite-contract-values-only",
       "operationEffects": {
-        "*": "project-write"
+        "copy": "local-state",
+        "cut": "project-write",
+        "paste": "project-write"
       }
     },
     {
@@ -1807,7 +1809,18 @@
       "gatewayResponsePolicy": "finite-contract-values-only",
       "observationContract": "editor-state-v1",
       "operationEffects": {
-        "*": "local-state"
+        "focus": "local-state",
+        "set_2d_mode": "local-state",
+        "set_grid_visible": "local-state",
+        "set_icon_gizmo_3d": "local-state",
+        "set_icon_gizmo_size": "local-state",
+        "set_gizmo_tool": "local-state",
+        "set_gizmo_pivot": "local-state",
+        "set_gizmo_coordinate": "local-state",
+        "query_gizmo": "none",
+        "query_viewport": "none",
+        "align_view_to_selected_node": "local-state",
+        "align_selected_node_to_view": "local-state"
       }
     },
     {
@@ -1869,7 +1882,13 @@
       "gatewayResponsePolicy": "finite-contract-values-only",
       "observationContract": "editor-state-v1",
       "operationEffects": {
-        "*": "local-state"
+        "select": "local-state",
+        "unselect": "local-state",
+        "clear": "local-state",
+        "query": "none",
+        "select_all": "local-state",
+        "hover": "local-state",
+        "update": "local-state"
       }
     },
     {
@@ -2092,7 +2111,7 @@
       "sourceFile": "source/utcp/tools/animation-tools.ts",
       "disposition": "gateway-protected",
       "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
-      "compatibility": "preserve",
+      "compatibility": "breaking",
       "operationClass": "mutation",
       "inputFields": [
         {
@@ -2144,16 +2163,6 @@
             "request"
           ],
           "gatewayTransfer": "allowed"
-        },
-        {
-          "jsonPointer": "/operations",
-          "dataClass": "project-metadata",
-          "maxBytes": 65536,
-          "retention": "none",
-          "provenance": [
-            "request"
-          ],
-          "gatewayTransfer": "allowed"
         }
       ],
       "resultLocation": "relay-local",
@@ -2176,7 +2185,13 @@
       ],
       "gatewayResponsePolicy": "finite-contract-values-only",
       "operationEffects": {
-        "*": "project-write"
+        "record_start": "project-write",
+        "record_stop": "project-write",
+        "change_root": "project-write",
+        "set_edit_clip": "project-write",
+        "set_edit_time": "project-write",
+        "clip_state": "project-write",
+        "save_clip": "project-write"
       }
     },
     {
@@ -2240,7 +2255,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.setProperties"
+        "scene.arrayElement"
       ],
       "observationContract": "scene-target-v1",
       "outputFields": [
@@ -2312,7 +2327,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.readProperties"
+        "material.query"
       ],
       "outputFields": [
         {
@@ -2405,8 +2420,8 @@
     {
       "toolId": "inspectorGet",
       "sourceFile": "source/utcp/tools/consolidated-tools.ts",
-      "disposition": "gateway-protected",
-      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "disposition": "local-public",
+      "reason": "Instance assets require local importer-specific metadata algorithms; a fixed finite three-probe relay can expose identity only, so preserving the advertised behavior requires local-public execution.",
       "compatibility": "preserve",
       "operationClass": "read",
       "inputFields": [
@@ -2569,8 +2584,8 @@
     {
       "toolId": "inspectorGetDefinition",
       "sourceFile": "source/utcp/tools/consolidated-tools.ts",
-      "disposition": "gateway-protected",
-      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "disposition": "local-public",
+      "reason": "Adaptive/local behavior cannot be represented honestly by the finite one-RTT protected primitive contract; user approved local-public cutover.",
       "compatibility": "preserve",
       "operationClass": "read",
       "inputFields": [
@@ -2607,7 +2622,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.readProperties"
+        "inspector.definition"
       ],
       "outputFields": [
         {
@@ -2742,7 +2757,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "editor.selection"
+        "editor.query"
       ],
       "outputFields": [
         {
@@ -2794,7 +2809,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "runtime.control"
+        "scene.lifecycle"
       ],
       "outputFields": [
         {
@@ -3123,17 +3138,17 @@
         },
         {
           "jsonPointer": "/key",
-          "dataClass": "local-payload",
-          "maxBytes": 10485760,
+          "dataClass": "project-metadata",
+          "maxBytes": 4096,
           "retention": "none",
           "provenance": [
             "request"
           ],
-          "gatewayTransfer": "never"
+          "gatewayTransfer": "allowed"
         },
         {
           "jsonPointer": "/path",
-          "dataClass": "public-metadata",
+          "dataClass": "project-metadata",
           "maxBytes": 4096,
           "retention": "none",
           "provenance": [
@@ -3183,7 +3198,8 @@
       ],
       "gatewayResponsePolicy": "finite-contract-values-only",
       "operationEffects": {
-        "*": "project-write"
+        "get": "none",
+        "set": "project-write"
       }
     },
     {
@@ -3702,8 +3718,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.createNode",
-        "scene.setProperties"
+        "scene.createNode"
       ],
       "observationContract": "ui-parent-v1",
       "outputFields": [
@@ -3786,7 +3801,6 @@
       "resultLocation": "relay-local",
       "candidatePrimitives": [
         "scene.createNode",
-        "scene.addComponent",
         "scene.setProperties"
       ],
       "observationContract": "ui-parent-v1",
@@ -3850,7 +3864,7 @@
       "resultLocation": "relay-local",
       "candidatePrimitives": [
         "scene.createNode",
-        "scene.addComponent",
+        "scene.readNode",
         "scene.setProperties"
       ],
       "observationContract": "ui-parent-v1",
@@ -3914,7 +3928,6 @@
       "resultLocation": "relay-local",
       "candidatePrimitives": [
         "scene.createNode",
-        "scene.addComponent",
         "scene.setProperties"
       ],
       "observationContract": "ui-parent-v1",
@@ -4116,8 +4129,8 @@
     {
       "toolId": "sceneBatchGet",
       "sourceFile": "source/utcp/tools/batch-read-tools.ts",
-      "disposition": "gateway-protected",
-      "reason": "High-level contract is authorized and planned on Gateway; relay exposes only the listed closed primitives.",
+      "disposition": "local-public",
+      "reason": "The schema admits node, component, asset, and settings entries; preserving importer-specific asset properties cannot meet a fixed finite Creator IPC count.",
       "compatibility": "preserve",
       "operationClass": "read",
       "inputFields": [
@@ -4217,8 +4230,7 @@
       "inputFields": [],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "scene.readNode",
-        "scene.readComponent"
+        "scene.performanceSnapshot"
       ],
       "outputFields": [
         {
@@ -4494,7 +4506,7 @@
       ],
       "resultLocation": "relay-local",
       "candidatePrimitives": [
-        "runtime.control"
+        "runtime.simulateButtonClick"
       ],
       "outputFields": [
         {

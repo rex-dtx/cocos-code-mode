@@ -1,4 +1,4 @@
-import { KeyLike, randomBytes } from "crypto";
+import { KeyLike, createHash, randomBytes } from "crypto";
 import { assertIJson, canonicalizeToBytes, IJson } from "./canonical-json";
 import {
   OBSERVATION_MAX_BYTES, ProtectedRequest, SignedProtectedRequest, signProtectedRequest,
@@ -6,6 +6,9 @@ import {
 import { parseProtectedRequest } from "./schemas";
 import type { CompletionTelemetry } from "./protocol";
 import { encodeBase64Url, randomUUID } from "./node14-compat";
+import { CcbError } from "./errors";
+
+const IDEMPOTENCY_KEY = /^[A-Za-z0-9_-]{16,128}$/;
 
 export interface ToolRequestBinding {
   id: string;
@@ -50,14 +53,75 @@ export interface BuiltProtectedRequest {
   wrapperBytes: Buffer;
 }
 
+function assertIdempotencyKey(value: string): void {
+  if (!IDEMPOTENCY_KEY.test(value)) {
+    throw new CcbError("CCB_CANONICAL_INVALID", "Idempotency key must be 16-128 base64url characters.");
+  }
+}
+
+export function canonicalToolInputDigest(tool: ToolRequestBinding, inputs: IJson): string {
+  assertIJson(inputs);
+  return createHash("sha256").update(canonicalizeToBytes({ tool, inputs })).digest("hex");
+}
+
+interface CachedRequest {
+  bindingDigest: string;
+  built: Promise<BuiltProtectedRequest>;
+}
+
+/** Bounded per-relay cache. A key is installed before asynchronous observation reads begin. */
+export class SignedRequestCache {
+  private readonly entries = new Map<string, CachedRequest>();
+
+  constructor(private readonly maxEntries = 256) {
+    if (!Number.isSafeInteger(maxEntries) || maxEntries < 1) throw new RangeError("request cache size must be positive");
+  }
+
+  async getOrBuild(
+    idempotencyKey: string,
+    bindingDigest: string,
+    build: () => Promise<BuiltProtectedRequest>,
+  ): Promise<BuiltProtectedRequest> {
+    assertIdempotencyKey(idempotencyKey);
+    const existing = this.entries.get(idempotencyKey);
+    if (existing) {
+      if (existing.bindingDigest !== bindingDigest) {
+        throw new CcbError("CCB_IDEMPOTENCY_CONFLICT", "Idempotency key is already bound to different canonical tool input bytes.");
+      }
+      return existing.built;
+    }
+
+    const promise = build();
+    this.entries.set(idempotencyKey, { bindingDigest, built: promise });
+    try {
+      const result = await promise;
+      this.prune();
+      return result;
+    } catch (error) {
+      const current = this.entries.get(idempotencyKey);
+      if (current?.built === promise) this.entries.delete(idempotencyKey);
+      throw error;
+    }
+  }
+
+  private prune(): void {
+    while (this.entries.size > this.maxEntries) {
+      const oldest = this.entries.keys().next().value as string | undefined;
+      if (oldest === undefined) return;
+      this.entries.delete(oldest);
+    }
+  }
+}
+
 export function buildProtectedRequest(options: BuildProtectedRequestOptions): BuiltProtectedRequest {
   const nowMs = options.nowMs ?? Date.now();
   assertIJson(options.inputs);
+  if (options.idempotencyKey !== undefined) assertIdempotencyKey(options.idempotencyKey);
   if (options.observation) {
     assertIJson(options.observation.fields);
     const observationBytes = canonicalizeToBytes(options.observation);
     if (observationBytes.byteLength > OBSERVATION_MAX_BYTES) {
-      throw new RangeError(`observation exceeds ${OBSERVATION_MAX_BYTES} bytes`);
+      throw new CcbError("CCB_LIMIT_EXCEEDED", `Observation exceeds ${OBSERVATION_MAX_BYTES} bytes.`);
     }
   }
 

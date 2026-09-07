@@ -121,30 +121,18 @@ export class AnimationTools {
 
     @utcpTool(
         'animationEdit',
-        'Edit animation clips: record_start -> operate -> save_clip -> record_stop.',
+        'Edit animation clips through finite record, root, clip, time, state, and save operations.',
         {
             type: 'object',
             properties: {
                 operation: {
                     type: 'string',
-                    enum: ['record_start', 'record_stop', 'change_root', 'set_edit_clip', 'set_edit_time', 'clip_state', 'save_clip', 'operate']
+                    enum: ['record_start', 'record_stop', 'change_root', 'set_edit_clip', 'set_edit_time', 'clip_state', 'save_clip']
                 },
                 nodeReference: InstanceReferenceSchema,
                 clipReference: InstanceReferenceSchema,
                 time: { type: 'number', description: 'For set_edit_time: playhead time in seconds' },
                 clipState: { type: 'string', enum: ['play', 'pause', 'resume', 'stop'], description: 'For clip_state' },
-                operations: {
-                    type: 'array',
-                    maxItems: 100,
-                    items: {
-                        type: 'object',
-                        properties: {
-                            funcName: { type: 'string' },
-                            args: { type: 'array', items: {} }
-                        },
-                        required: ['funcName', 'args']
-                    }
-                }
             },
             required: ['operation']
         },
@@ -152,8 +140,7 @@ export class AnimationTools {
             type: 'object',
             properties: {
                 success: { type: 'boolean' },
-                error: { type: 'string' },
-                result: { description: 'For operate: the result payload of the animation operation' }
+                error: { type: 'string' }
             },
             required: ['success']
         }, "POST",
@@ -161,8 +148,8 @@ export class AnimationTools {
     )
     async animationEdit(args: {
         operation: string, nodeReference?: IInstanceReference, clipReference?: IInstanceReference,
-        time?: number, clipState?: string, operations?: { funcName: string, args: any[] }[]
-    }): Promise<ISuccessIndicator & { result?: any }> {
+        time?: number, clipState?: string
+    }): Promise<ISuccessIndicator> {
         // Animation has its own undo stack (AnimationUndoManager) driven by recordUndo -
         // a scene snapshot() here would record into the wrong stack while in record mode.
         switch (args.operation) {
@@ -206,29 +193,6 @@ export class AnimationTools {
                     throw new Error('Failed to save the animation clip (is the editor in record mode?)');
                 }
                 return { success: true };
-            }
-            case 'operate': {
-                if (!Array.isArray(args.operations) || args.operations.length === 0) {
-                    throw new Error('operate requires a non-empty operations array');
-                }
-                if (args.operations.length > 100) {
-                    throw new Error('operate supports at most 100 operations per request');
-                }
-                for (const op of args.operations) {
-                    if (!op || !op.funcName || !Array.isArray(op.args)) {
-                        throw new Error('each operation requires funcName and an args array');
-                    }
-                }
-                const res: any = await Editor.Message.request('scene', 'animation-operation', args.operations, { recordUndo: true });
-                // IAniResultBase: { state: 'success' | 'failure', result, reason? }.
-                // Whitelist success — an absent or unknown state is a refused/lost write.
-                if (res && res.state === 'failure') {
-                    return { success: false, error: res.reason || 'animation operation failed', result: res.result ?? null };
-                }
-                if (!res || res.state !== 'success') {
-                    throw new Error(`animation-operation returned an unexpected payload: ${JSON.stringify(res ?? null)}`);
-                }
-                return { success: true, result: 'result' in res ? res.result : null };
             }
             default:
                 throw new Error(`Unknown animation edit operation: ${args.operation}`);

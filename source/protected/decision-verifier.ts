@@ -4,13 +4,15 @@ import {
   CLOCK_SKEW_MAX_MS, GatewayDecision, ProtectedRequest, SignedGatewayDecision,
   decodeBase64Url, verifyGatewayDecision,
 } from "./protocol";
-import { parseGatewayDecision, parseSignedGatewayDecision } from "./schemas";
+import { parseGatewayDecision, parseSignedGatewayDecision, type PublicToolContract } from "./schemas";
 import { ReplayAdmission, ReplayWindow } from "./replay-window";
 
+type PublicOperationContract = PublicToolContract["operations"][string];
 export interface VerifiedGatewayDecision {
   decision: GatewayDecision;
   decisionDigest: string;
   replay: ReplayAdmission;
+  deadlineAtMs: number;
 }
 
 export interface DecisionVerificationOptions {
@@ -18,7 +20,8 @@ export interface DecisionVerificationOptions {
   signed: SignedGatewayDecision;
   executionKeys: ReadonlyMap<string, KeyLike>;
   replayWindow: ReplayWindow;
-  expectedCreatorRange: string;
+  tool: PublicToolContract;
+  operation: PublicOperationContract;
   nowMs?: number;
 }
 
@@ -40,7 +43,7 @@ function compareVersion(left: [number, number, number], right: [number, number, 
   return 0;
 }
 
-function versionSatisfies(versionText: string, range: string): boolean {
+export function versionSatisfies(versionText: string, range: string): boolean {
   const version = parseVersion(versionText);
   if (!version) return false;
   const clauses = range.trim().split(/\s+/).filter(Boolean);
@@ -62,29 +65,39 @@ function versionSatisfies(versionText: string, range: string): boolean {
   });
 }
 
+function verifyEnvelopeContract(decision: Extract<GatewayDecision, { kind: "execute" }>, tool: PublicToolContract, operation: PublicOperationContract): void {
+  const envelope = decision.envelope;
+  if (envelope.effect !== operation.effect) throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway envelope effect differs from canonical operation metadata.");
+  const allowedPrimitives = new Set(operation.primitives);
+  for (const command of envelope.commands) {
+    if (!allowedPrimitives.has(command.op)) throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway envelope contains a primitive outside the selected operation.", { op: command.op });
+  }
+  if (envelope.limits.commandCount > tool.limits.commandCount
+    || envelope.limits.ipcCount > tool.limits.creatorIpcCount
+    || envelope.limits.inputBytes > tool.limits.inputBytes
+    || envelope.limits.outputBytes > tool.limits.outputBytes
+    || envelope.limits.timeoutMs > tool.limits.timeoutMs) {
+    throw new CcbError("CCB_LIMIT_EXCEEDED", "Gateway envelope exceeds canonical per-operation limits.");
+  }
+  if (envelope.return.mode !== operation.resultMode) {
+    throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway envelope result mode differs from canonical operation metadata.");
+  }
+}
+
 export function verifyDecision(options: DecisionVerificationOptions): VerifiedGatewayDecision {
   let signed: SignedGatewayDecision;
-  try {
-    signed = parseSignedGatewayDecision(options.signed);
-  } catch {
-    throw new CcbError("CCB_CANONICAL_INVALID", "Gateway decision wrapper is invalid.");
-  }
+  try { signed = parseSignedGatewayDecision(options.signed); }
+  catch { throw new CcbError("CCB_CANONICAL_INVALID", "Gateway decision wrapper is invalid."); }
   const executionKey = options.executionKeys.get(signed.executionKeyId);
   if (!executionKey) throw new CcbError("CCB_SIGNATURE_INVALID", "Gateway execution key is not trusted.", { executionKeyId: signed.executionKeyId });
 
   let verifiedPayload: unknown;
-  try {
-    verifiedPayload = verifyGatewayDecision(signed, executionKey);
-  } catch {
-    throw new CcbError("CCB_SIGNATURE_INVALID", "Gateway decision signature or canonical payload is invalid.");
-  }
+  try { verifiedPayload = verifyGatewayDecision(signed, executionKey); }
+  catch { throw new CcbError("CCB_SIGNATURE_INVALID", "Gateway decision signature or canonical payload is invalid."); }
 
   let decision: GatewayDecision;
-  try {
-    decision = parseGatewayDecision(verifiedPayload);
-  } catch {
-    throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway decision does not match the protected v1 contract.");
-  }
+  try { decision = parseGatewayDecision(verifiedPayload); }
+  catch { throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway decision does not match the protected finite contract."); }
 
   const request = options.request;
   const binding = decision.binding;
@@ -97,10 +110,10 @@ export function verifyDecision(options: DecisionVerificationOptions): VerifiedGa
     && equalToolBinding(request.tool, binding.tool);
   if (!commonBindingMatches) throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway decision binding does not match the signed request.");
   if (binding.relay.build !== request.relay.build || binding.relay.packageHash !== request.relay.packageHash) {
-    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Gateway decision relay binding does not match this build.");
+    throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Gateway decision relay binding does not match this installed package.");
   }
-  if (binding.creatorRange !== options.expectedCreatorRange) {
-    throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway decision Creator range differs from the public tool contract.");
+  if (binding.creatorRange !== options.tool.creatorRange) {
+    throw new CcbError("CCB_CONTRACT_MISMATCH", "Gateway decision Creator range differs from the canonical tool contract.");
   }
   if (!versionSatisfies(request.relay.creatorVersion, binding.creatorRange)) {
     throw new CcbError("CCB_CREATOR_INCOMPATIBLE", "Creator version is outside the signed decision range.", { creatorVersion: request.relay.creatorVersion });
@@ -110,12 +123,16 @@ export function verifyDecision(options: DecisionVerificationOptions): VerifiedGa
   if (binding.issuedAtMs > nowMs + CLOCK_SKEW_MAX_MS || binding.expiresAtMs < nowMs) {
     throw new CcbError("CCB_EXPIRED", "Gateway decision is expired or not yet valid.");
   }
-  if (decision.kind === "result" && decision.limits.expiresInMs > binding.expiresAtMs - binding.issuedAtMs) {
-    throw new CcbError("CCB_LIMIT_EXCEEDED", "Gateway result lifetime exceeds its signed binding.");
+  if (decision.kind === "result") {
+    if (decision.limits.expiresInMs > binding.expiresAtMs - binding.issuedAtMs || decision.limits.outputBytes > options.tool.limits.outputBytes) {
+      throw new CcbError("CCB_LIMIT_EXCEEDED", "Gateway finite result exceeds canonical signed limits.");
+    }
+  } else {
+    verifyEnvelopeContract(decision, options.tool, options.operation);
   }
 
   const payload = decodeBase64Url(signed.payload, 512 * 1024);
   const decisionDigest = createHash("sha256").update(payload).digest("hex");
   const replay = options.replayWindow.admitDecision(binding.nonce, binding.sequence, decisionDigest, binding.expiresAtMs, nowMs);
-  return { decision, decisionDigest, replay };
+  return { decision, decisionDigest, replay, deadlineAtMs: binding.expiresAtMs };
 }
