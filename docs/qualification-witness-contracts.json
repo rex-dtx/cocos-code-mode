@@ -1,0 +1,802 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-09-08",
+  "qualificationTarget": {
+    "creator": "3.8.7",
+    "os": "windows-x64",
+    "profile": "full",
+    "artifactClass": "local-operator",
+    "sourceBranch": "cc-3x7"
+  },
+  "status": "planned-contracts-only",
+  "rules": [
+    "A planned witness contract is not runtime evidence or candidate approval.",
+    "Positive and negative witness IDs are stable; evidence artifacts bind exact Creator version, fixture hash, build commit and artifact SHA-256.",
+    "Every count-eligible candidate references all declared prerequisite contracts and owns candidate-specific positive/negative IDs.",
+    "Candidate qualification requires all prerequisite witnesses plus its candidate-specific observable contract evidence."
+  ],
+  "contracts": [
+    {
+      "id": "animation-graph-format",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-roundtrip",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.animation-graph-format.v1",
+      "positiveWitness": {
+        "testId": "witness.animation-graph-format.positive.v1",
+        "expectedOutcome": "animation graph fixture imports, reopens, and preserves layers/states/transitions"
+      },
+      "negativeWitness": {
+        "testId": "witness.animation-graph-format.negative.v1",
+        "expectedOutcome": "malformed or unsupported graph revision fails before publication"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/animation-graph-format/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "animation-graph-write",
+      "version": 1,
+      "status": "planned",
+      "kind": "live-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.animation-graph-write.v1",
+      "positiveWitness": {
+        "testId": "witness.animation-graph-write.positive.v1",
+        "expectedOutcome": "bounded graph edit persists after reopen and reads back exactly"
+      },
+      "negativeWitness": {
+        "testId": "witness.animation-graph-write.negative.v1",
+        "expectedOutcome": "unsupported/private write route returns typed 422 without mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/animation-graph-write/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "asset-create",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.asset-create.v1",
+      "positiveWitness": {
+        "testId": "witness.asset-create.positive.v1",
+        "expectedOutcome": "created asset appears in asset-db and survives refresh/reopen"
+      },
+      "negativeWitness": {
+        "testId": "witness.asset-create.negative.v1",
+        "expectedOutcome": "invalid path/type/collision fails before filesystem or asset-db mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/asset-create/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "asset-import-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.asset-import-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.asset-import-contract.positive.v1",
+        "expectedOutcome": "bounded import returns per-item result and asset-db read-back"
+      },
+      "negativeWitness": {
+        "testId": "witness.asset-import-contract.negative.v1",
+        "expectedOutcome": "missing source, traversal, collision, and limit fail before mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/asset-import-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "asset-operate-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.asset-operate-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.asset-operate-contract.positive.v1",
+        "expectedOutcome": "move/copy/delete/reimport result matches asset-db postcondition"
+      },
+      "negativeWitness": {
+        "testId": "witness.asset-operate-contract.negative.v1",
+        "expectedOutcome": "same-target, missing target, collision, and limit fail before mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/asset-operate-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "asset-query-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "read-contract",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.asset-query-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.asset-query-contract.positive.v1",
+        "expectedOutcome": "query output is bounded, deterministic, and resolves authoritative asset identities"
+      },
+      "negativeWitness": {
+        "testId": "witness.asset-query-contract.negative.v1",
+        "expectedOutcome": "invalid filters/limits and missing exact target fail typed without fabricated rows"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/asset-query-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "asset-reimport",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.asset-reimport.v1",
+      "positiveWitness": {
+        "testId": "witness.asset-reimport.positive.v1",
+        "expectedOutcome": "reimport reaches terminal state and generated output changes as expected"
+      },
+      "negativeWitness": {
+        "testId": "witness.asset-reimport.negative.v1",
+        "expectedOutcome": "importer failure is surfaced with bounded diagnostics and no false success"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/asset-reimport/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "audio-import-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-roundtrip",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.audio-import-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.audio-import-contract.positive.v1",
+        "expectedOutcome": "audio metadata, duration, format, and target compatibility match imported output"
+      },
+      "negativeWitness": {
+        "testId": "witness.audio-import-contract.negative.v1",
+        "expectedOutcome": "unsupported/corrupt audio returns importer diagnostics without qualification"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/audio-import-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "audio-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.audio-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.audio-schema.positive.v1",
+        "expectedOutcome": "AudioSource/clip fields normalize and configured values read back after save"
+      },
+      "negativeWitness": {
+        "testId": "witness.audio-schema.negative.v1",
+        "expectedOutcome": "invalid range/clip/load-mode combination fails before mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/audio-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "build-artifact",
+      "version": 1,
+      "status": "planned",
+      "kind": "artifact-inspection",
+      "requiresLiveCreator": false,
+      "fixtureId": "fixture.build-artifact.v1",
+      "positiveWitness": {
+        "testId": "witness.build-artifact.positive.v1",
+        "expectedOutcome": "terminal build artifact contains expected files, hashes, and target metadata"
+      },
+      "negativeWitness": {
+        "testId": "witness.build-artifact.negative.v1",
+        "expectedOutcome": "missing/stale/wrong-target artifact is rejected"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/build-artifact/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "build-job",
+      "version": 1,
+      "status": "planned",
+      "kind": "long-job",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.build-job.v1",
+      "positiveWitness": {
+        "testId": "witness.build-job.positive.v1",
+        "expectedOutcome": "job exposes identity, bounded status/logs, cancellation, and one terminal result"
+      },
+      "negativeWitness": {
+        "testId": "witness.build-job.negative.v1",
+        "expectedOutcome": "unknown/stale/cancelled job cannot report success"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/build-job/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "build-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-validation",
+      "requiresLiveCreator": false,
+      "fixtureId": "fixture.build-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.build-schema.positive.v1",
+        "expectedOutcome": "target-specific preset validates and dispatch-ready config round-trips"
+      },
+      "negativeWitness": {
+        "testId": "witness.build-schema.negative.v1",
+        "expectedOutcome": "unsupported or mutually incompatible options fail before build dispatch"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/build-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "compound-scene-workflow",
+      "version": 1,
+      "status": "planned",
+      "kind": "scene-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.compound-scene-workflow.v1",
+      "positiveWitness": {
+        "testId": "witness.compound-scene-workflow.positive.v1",
+        "expectedOutcome": "multi-step create applies bounded components/properties with one workflow witness and reload read-back"
+      },
+      "negativeWitness": {
+        "testId": "witness.compound-scene-workflow.negative.v1",
+        "expectedOutcome": "preflight failure causes zero mutation; injected mid-flight failure reports applied/pending and recovery"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/compound-scene-workflow/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "effect-compiler-diagnostics",
+      "version": 1,
+      "status": "planned",
+      "kind": "compiler-diagnostics",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.effect-compiler-diagnostics.v1",
+      "positiveWitness": {
+        "testId": "witness.effect-compiler-diagnostics.positive.v1",
+        "expectedOutcome": "effect importer/compiler result ties diagnostics to source locations"
+      },
+      "negativeWitness": {
+        "testId": "witness.effect-compiler-diagnostics.negative.v1",
+        "expectedOutcome": "invalid shader fails with real compiler diagnostic rather than generic success"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/effect-compiler-diagnostics/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "graph-v4",
+      "version": 1,
+      "status": "planned",
+      "kind": "offline-structural",
+      "requiresLiveCreator": false,
+      "fixtureId": "fixture.graph-v4.v1",
+      "positiveWitness": {
+        "testId": "witness.graph-v4.positive.v1",
+        "expectedOutcome": "graph result identifies source generation, bounds, staleness, and advisory limits"
+      },
+      "negativeWitness": {
+        "testId": "witness.graph-v4.negative.v1",
+        "expectedOutcome": "ambiguous/stale/truncated graph cannot be treated as mutation authority"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/graph-v4/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "importer-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.importer-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.importer-schema.positive.v1",
+        "expectedOutcome": "importer-specific settings normalize for exact type/version"
+      },
+      "negativeWitness": {
+        "testId": "witness.importer-schema.negative.v1",
+        "expectedOutcome": "unknown fields/types fail without raw-meta mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/importer-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "light-bake-job-api",
+      "version": 1,
+      "status": "planned",
+      "kind": "long-job",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.light-bake-job-api.v1",
+      "positiveWitness": {
+        "testId": "witness.light-bake-job-api.positive.v1",
+        "expectedOutcome": "bake job reaches terminal state and emits verifiable output assets"
+      },
+      "negativeWitness": {
+        "testId": "witness.light-bake-job-api.negative.v1",
+        "expectedOutcome": "missing API/cancel/failure returns typed state without panel-click success"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/light-bake-job-api/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "live-prefab-identity",
+      "version": 1,
+      "status": "planned",
+      "kind": "scene-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.live-prefab-identity.v1",
+      "positiveWitness": {
+        "testId": "witness.live-prefab-identity.positive.v1",
+        "expectedOutcome": "instance/source/override identities remain stable across save and reopen"
+      },
+      "negativeWitness": {
+        "testId": "witness.live-prefab-identity.negative.v1",
+        "expectedOutcome": "closed/wrong-scene/composite ambiguity fails with recovery and zero mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/live-prefab-identity/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "localization-package-api",
+      "version": 1,
+      "status": "planned",
+      "kind": "package-adapter",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.localization-package-api.v1",
+      "positiveWitness": {
+        "testId": "witness.localization-package-api.positive.v1",
+        "expectedOutcome": "detected package/version supports finite locale/table operation with read-back"
+      },
+      "negativeWitness": {
+        "testId": "witness.localization-package-api.negative.v1",
+        "expectedOutcome": "absent/incompatible package returns unsupported without file scraping"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/localization-package-api/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "localization-resource-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-validation",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.localization-resource-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.localization-resource-contract.positive.v1",
+        "expectedOutcome": "compiled locale resources, fallback, glyphs and mappings validate against fixture"
+      },
+      "negativeWitness": {
+        "testId": "witness.localization-resource-contract.negative.v1",
+        "expectedOutcome": "missing key/font/resource is reported with location and no false coverage credit"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/localization-resource-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "material-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.material-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.material-schema.positive.v1",
+        "expectedOutcome": "material passes/defines/properties normalize and edited values survive reimport"
+      },
+      "negativeWitness": {
+        "testId": "witness.material-schema.negative.v1",
+        "expectedOutcome": "invalid pass/property/texture fails before mutation or import publication"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/material-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "model-skeleton-metadata",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-validation",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.model-skeleton-metadata.v1",
+      "positiveWitness": {
+        "testId": "witness.model-skeleton-metadata.positive.v1",
+        "expectedOutcome": "mesh/skeleton/LOD and clip compatibility match imported model output"
+      },
+      "negativeWitness": {
+        "testId": "witness.model-skeleton-metadata.negative.v1",
+        "expectedOutcome": "missing joint or incompatible skeleton/clip produces actionable mismatch"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/model-skeleton-metadata/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "mutation-workflow",
+      "version": 1,
+      "status": "planned",
+      "kind": "mutation-contract",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.mutation-workflow.v1",
+      "positiveWitness": {
+        "testId": "witness.mutation-workflow.positive.v1",
+        "expectedOutcome": "preflight, bounded application, postcondition, persistence and recovery are recorded"
+      },
+      "negativeWitness": {
+        "testId": "witness.mutation-workflow.negative.v1",
+        "expectedOutcome": "invalid input yields zero mutation; partial failure reports applied/pending and avoids blind retry"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/mutation-workflow/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "named-target",
+      "version": 1,
+      "status": "planned",
+      "kind": "target-identity",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.named-target.v1",
+      "positiveWitness": {
+        "testId": "witness.named-target.positive.v1",
+        "expectedOutcome": "launcher/session binds exact platform, artifact, device and target identity"
+      },
+      "negativeWitness": {
+        "testId": "witness.named-target.negative.v1",
+        "expectedOutcome": "missing/wrong target never falls back to browser preview"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/named-target/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "panel-layout-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "visual-capture",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.panel-layout-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.panel-layout-contract.positive.v1",
+        "expectedOutcome": "fixed panel lookup returns in-window bounds and valid image bytes"
+      },
+      "negativeWitness": {
+        "testId": "witness.panel-layout-contract.negative.v1",
+        "expectedOutcome": "missing/ambiguous layout returns typed unsupported without full-window fallback"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/panel-layout-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "particle-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.particle-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.particle-schema.positive.v1",
+        "expectedOutcome": "particle modules/curves/assets normalize and configured values persist"
+      },
+      "negativeWitness": {
+        "testId": "witness.particle-schema.negative.v1",
+        "expectedOutcome": "invalid ranges/assets/modules fail before mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/particle-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "physics-2d-backend-matrix",
+      "version": 1,
+      "status": "planned",
+      "kind": "backend-matrix",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.physics-2d-backend-matrix.v1",
+      "positiveWitness": {
+        "testId": "witness.physics-2d-backend-matrix.positive.v1",
+        "expectedOutcome": "reported backend supports declared bodies/colliders/joints/queries in fixture"
+      },
+      "negativeWitness": {
+        "testId": "witness.physics-2d-backend-matrix.negative.v1",
+        "expectedOutcome": "unsupported Builtin/backend combination is rejected before mutation/query claim"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/physics-2d-backend-matrix/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "physics-3d-backend-matrix",
+      "version": 1,
+      "status": "planned",
+      "kind": "backend-matrix",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.physics-3d-backend-matrix.v1",
+      "positiveWitness": {
+        "testId": "witness.physics-3d-backend-matrix.positive.v1",
+        "expectedOutcome": "reported backend supports declared shapes/bodies/materials/constraints/queries"
+      },
+      "negativeWitness": {
+        "testId": "witness.physics-3d-backend-matrix.negative.v1",
+        "expectedOutcome": "unsupported Builtin/cannon/PhysX combination is rejected explicitly"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/physics-3d-backend-matrix/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "preview-lifecycle",
+      "version": 1,
+      "status": "planned",
+      "kind": "runtime-lifecycle",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.preview-lifecycle.v1",
+      "positiveWitness": {
+        "testId": "witness.preview-lifecycle.positive.v1",
+        "expectedOutcome": "selected preview target starts, becomes ready, reports state, and stops"
+      },
+      "negativeWitness": {
+        "testId": "witness.preview-lifecycle.negative.v1",
+        "expectedOutcome": "unavailable mode/API/timeout returns typed failure and no stale running claim"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/preview-lifecycle/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "preview-resolution",
+      "version": 1,
+      "status": "planned",
+      "kind": "visual-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.preview-resolution.v1",
+      "positiveWitness": {
+        "testId": "witness.preview-resolution.positive.v1",
+        "expectedOutcome": "declared resolution is applied and observed in target capture/state"
+      },
+      "negativeWitness": {
+        "testId": "witness.preview-resolution.negative.v1",
+        "expectedOutcome": "unsupported resolution or missing read-back cannot qualify responsive behavior"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/preview-resolution/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "preview-resolution-ipc",
+      "version": 1,
+      "status": "planned",
+      "kind": "private-api-probe",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.preview-resolution-ipc.v1",
+      "positiveWitness": {
+        "testId": "witness.preview-resolution-ipc.positive.v1",
+        "expectedOutcome": "exact IPC payload persists and reads back on target Creator version"
+      },
+      "negativeWitness": {
+        "testId": "witness.preview-resolution-ipc.negative.v1",
+        "expectedOutcome": "missing/signature-mismatch API returns typed 422 with zero mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/preview-resolution-ipc/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "project-settings-read",
+      "version": 1,
+      "status": "planned",
+      "kind": "read-contract",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.project-settings-read.v1",
+      "positiveWitness": {
+        "testId": "witness.project-settings-read.positive.v1",
+        "expectedOutcome": "versioned settings query returns exact declared path and normalized value"
+      },
+      "negativeWitness": {
+        "testId": "witness.project-settings-read.negative.v1",
+        "expectedOutcome": "unknown path/module returns typed error without guessed default"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/project-settings-read/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "project-settings-write",
+      "version": 1,
+      "status": "planned",
+      "kind": "live-persistence",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.project-settings-write.v1",
+      "positiveWitness": {
+        "testId": "witness.project-settings-write.positive.v1",
+        "expectedOutcome": "supported project setting writes, reads back, persists, and is restored"
+      },
+      "negativeWitness": {
+        "testId": "witness.project-settings-write.negative.v1",
+        "expectedOutcome": "unexposed 3.7/private API returns typed 422 with no filesystem fallback"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/project-settings-write/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "reference-image-ipc",
+      "version": 1,
+      "status": "planned",
+      "kind": "private-api-probe",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.reference-image-ipc.v1",
+      "positiveWitness": {
+        "testId": "witness.reference-image-ipc.positive.v1",
+        "expectedOutcome": "finite add/select/transform/remove lifecycle reads back on exact Creator version"
+      },
+      "negativeWitness": {
+        "testId": "witness.reference-image-ipc.negative.v1",
+        "expectedOutcome": "missing module/signature/path violation returns typed 422 with zero unintended change"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/reference-image-ipc/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "render-pipeline-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.render-pipeline-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.render-pipeline-schema.positive.v1",
+        "expectedOutcome": "pipeline/camera/layer/light configuration normalizes for active target"
+      },
+      "negativeWitness": {
+        "testId": "witness.render-pipeline-schema.negative.v1",
+        "expectedOutcome": "incompatible pipeline/pass/layer configuration fails before mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/render-pipeline-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "runtime-session",
+      "version": 1,
+      "status": "planned",
+      "kind": "runtime-lifecycle",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.runtime-session.v1",
+      "positiveWitness": {
+        "testId": "witness.runtime-session.positive.v1",
+        "expectedOutcome": "session has unique identity, target kind, readiness, bounded observation and terminal stop/reset"
+      },
+      "negativeWitness": {
+        "testId": "witness.runtime-session.negative.v1",
+        "expectedOutcome": "stale/unknown/timeout session rejects actions and cannot leak across targets"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/runtime-session/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "runtime-transport",
+      "version": 1,
+      "status": "planned",
+      "kind": "runtime-transport",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.runtime-transport.v1",
+      "positiveWitness": {
+        "testId": "witness.runtime-transport.positive.v1",
+        "expectedOutcome": "finite named primitives reach only the bound runtime target and responses preserve session identity"
+      },
+      "negativeWitness": {
+        "testId": "witness.runtime-transport.negative.v1",
+        "expectedOutcome": "script strings, arbitrary selectors/methods and production-build attachment are rejected"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/runtime-transport/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "scene-query-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "read-contract",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.scene-query-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.scene-query-contract.positive.v1",
+        "expectedOutcome": "query resolves active-scene identities with bounds/truncation and current-scene provenance"
+      },
+      "negativeWitness": {
+        "testId": "witness.scene-query-contract.negative.v1",
+        "expectedOutcome": "closed-scene/stale/composite target returns typed error without disk/live conflation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/scene-query-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "screenshot-adapter",
+      "version": 1,
+      "status": "planned",
+      "kind": "visual-capture",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.screenshot-adapter.v1",
+      "positiveWitness": {
+        "testId": "witness.screenshot-adapter.positive.v1",
+        "expectedOutcome": "capture identifies target/session, dimensions, MIME, bounds and valid magic bytes"
+      },
+      "negativeWitness": {
+        "testId": "witness.screenshot-adapter.negative.v1",
+        "expectedOutcome": "missing target/oversize/invalid layout fails without fallback capture"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/screenshot-adapter/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "skeletal-extension-detection",
+      "version": 1,
+      "status": "planned",
+      "kind": "package-adapter",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.skeletal-extension-detection.v1",
+      "positiveWitness": {
+        "testId": "witness.skeletal-extension-detection.positive.v1",
+        "expectedOutcome": "Spine/DragonBones availability/version/assets/components are detected and normalized"
+      },
+      "negativeWitness": {
+        "testId": "witness.skeletal-extension-detection.negative.v1",
+        "expectedOutcome": "absent/incompatible extension or atlas/skeleton pair returns explicit unsupported/mismatch"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/skeletal-extension-detection/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "terrain-schema",
+      "version": 1,
+      "status": "planned",
+      "kind": "schema-readback",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.terrain-schema.v1",
+      "positiveWitness": {
+        "testId": "witness.terrain-schema.positive.v1",
+        "expectedOutcome": "terrain dimensions/layers/materials/assets normalize and created asset survives reopen"
+      },
+      "negativeWitness": {
+        "testId": "witness.terrain-schema.negative.v1",
+        "expectedOutcome": "invalid dimensions/layer/material references fail before mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/terrain-schema/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "terrain-write-api",
+      "version": 1,
+      "status": "planned",
+      "kind": "private-api-probe",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.terrain-write-api.v1",
+      "positiveWitness": {
+        "testId": "witness.terrain-write-api.positive.v1",
+        "expectedOutcome": "bounded height/layer edit persists through supported API and reopen"
+      },
+      "negativeWitness": {
+        "testId": "witness.terrain-write-api.negative.v1",
+        "expectedOutcome": "missing/private API or out-of-bounds edit fails without raw asset-byte mutation"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/terrain-write-api/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "tmx-import-contract",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-roundtrip",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.tmx-import-contract.v1",
+      "positiveWitness": {
+        "testId": "witness.tmx-import-contract.positive.v1",
+        "expectedOutcome": "TMX/TSX import resolves tilesets/layers/objects/GIDs and survives reimport"
+      },
+      "negativeWitness": {
+        "testId": "witness.tmx-import-contract.negative.v1",
+        "expectedOutcome": "broken link/dimension/GID fails with source location"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/tmx-import-contract/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "tmx-roundtrip",
+      "version": 1,
+      "status": "planned",
+      "kind": "asset-roundtrip",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.tmx-roundtrip.v1",
+      "positiveWitness": {
+        "testId": "witness.tmx-roundtrip.positive.v1",
+        "expectedOutcome": "bounded source-format edit round-trips without losing unknown data and reimports correctly"
+      },
+      "negativeWitness": {
+        "testId": "witness.tmx-roundtrip.negative.v1",
+        "expectedOutcome": "unsupported encoding/construct aborts before source overwrite"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/tmx-roundtrip/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "visual-harness",
+      "version": 1,
+      "status": "planned",
+      "kind": "visual-capture",
+      "requiresLiveCreator": true,
+      "fixtureId": "fixture.visual-harness.v1",
+      "positiveWitness": {
+        "testId": "witness.visual-harness.positive.v1",
+        "expectedOutcome": "fixture state plus capture produces deterministic expected-region comparison metadata"
+      },
+      "negativeWitness": {
+        "testId": "witness.visual-harness.negative.v1",
+        "expectedOutcome": "capture-only or state-only observation cannot claim intended visual effect"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/visual-harness/<creator>-<artifact-sha>.json"
+    },
+    {
+      "id": "web-artifact",
+      "version": 1,
+      "status": "planned",
+      "kind": "artifact-launch",
+      "requiresLiveCreator": false,
+      "fixtureId": "fixture.web-artifact.v1",
+      "positiveWitness": {
+        "testId": "witness.web-artifact.positive.v1",
+        "expectedOutcome": "completed web artifact is served on bounded lifecycle URL and responds with expected build identity"
+      },
+      "negativeWitness": {
+        "testId": "witness.web-artifact.negative.v1",
+        "expectedOutcome": "missing/stale artifact or port collision fails without serving another build"
+      },
+      "evidenceArtifactPattern": "reports/evidence/prerequisites/web-artifact/<creator>-<artifact-sha>.json"
+    }
+  ]
+}

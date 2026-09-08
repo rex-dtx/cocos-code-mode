@@ -1,0 +1,1683 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-09-08",
+  "kind": "cc-3x7-dependency-and-witness-review",
+  "sourceBranch": "cc-3x7",
+  "source": {
+    "path": "docs/tool-portfolio-candidates.json",
+    "sha256": "8ee54557c987cfd41d31f82a8be538aba1754bad5a1e53b7dbe49f989bd74f35"
+  },
+  "witnessSource": {
+    "path": "docs/qualification-witness-contracts.json",
+    "sha256": "d036b6cc938f323f6666ce5c440e28d901abaf82438a03c4428694ef2429a3f0"
+  },
+  "summary": {
+    "baselineSourceRegistrations": 86,
+    "totalRows": 100,
+    "countEligibleRows": 94,
+    "replacementRows": 6,
+    "emptyReviewedPrerequisites": 0,
+    "reserveRowsMissingMetadata": 0,
+    "prerequisiteWitnessContracts": 46,
+    "rowsWithCompleteEvidencePlan": 94,
+    "minimumNetIfAllCurrentQualify": 71,
+    "requiredApprovalCountAtStaticBaseline": 82,
+    "approvedRows": 0,
+    "readyForBulkImplementation": false
+  },
+  "proposedExecutionPhaseCounts": {
+    "P1": 8,
+    "P2": 28,
+    "P3": 16,
+    "P4": 16,
+    "P5": 10,
+    "P6": 16
+  },
+  "dependencyFanout": [
+    {
+      "prerequisite": "runtime-session",
+      "candidateCount": 21,
+      "candidates": [
+        "animationGraphPreview",
+        "assetBundleValidate",
+        "audioPlaybackControl",
+        "audioPlaybackObserve",
+        "buildTargetSmoke",
+        "localizationPreview",
+        "particlePlayback",
+        "physics2dQuery",
+        "physics3dQuery",
+        "previewSessionInspect",
+        "previewSessionStop",
+        "renderDiagnosticsCollect",
+        "runtimeInputDispatch",
+        "runtimeScenarioAssert",
+        "runtimeScenarioRun",
+        "runtimeScreenshotAssert",
+        "runtimeStateObserve",
+        "runtimeWaitForState",
+        "skeletalAnimationEvents",
+        "skeletalAnimationPlay",
+        "uiResponsivePreview"
+      ]
+    },
+    {
+      "prerequisite": "compound-scene-workflow",
+      "candidateCount": 9,
+      "candidates": [
+        "physics2dCreateBody",
+        "physics2dCreateJoint",
+        "physics3dCreateBody",
+        "physics3dCreateJoint",
+        "prefabInstantiate",
+        "renderConfigurationApply",
+        "terrainCreate",
+        "uiCreateInputForm",
+        "uiCreateScrollView"
+      ]
+    },
+    {
+      "prerequisite": "mutation-workflow",
+      "candidateCount": 7,
+      "candidates": [
+        "assetBatchImport",
+        "assetBatchOperate",
+        "audioSourceConfigure",
+        "prefabApplyOverrides",
+        "prefabRevertOverrides",
+        "skeletalAnimationConfigure",
+        "uiLayoutApply"
+      ]
+    },
+    {
+      "prerequisite": "live-prefab-identity",
+      "candidateCount": 6,
+      "candidates": [
+        "prefabApplyOverrides",
+        "prefabInstantiate",
+        "prefabOverrideDiff",
+        "prefabReferenceAudit",
+        "prefabRevertOverrides",
+        "sceneReferenceValidate"
+      ]
+    },
+    {
+      "prerequisite": "asset-reimport",
+      "candidateCount": 5,
+      "candidates": [
+        "assetCompressionConfigure",
+        "assetImportSettingsSet",
+        "materialEdit",
+        "modelImportConfigure",
+        "spriteAtlasConfigure"
+      ]
+    },
+    {
+      "prerequisite": "build-job",
+      "candidateCount": 5,
+      "candidates": [
+        "buildArtifactInspect",
+        "buildArtifactServe",
+        "buildLogInspect",
+        "buildTargetLaunch",
+        "buildTaskWait"
+      ]
+    },
+    {
+      "prerequisite": "importer-schema",
+      "candidateCount": 5,
+      "candidates": [
+        "assetCompressionConfigure",
+        "assetImportSettingsGet",
+        "assetImportSettingsSet",
+        "modelImportConfigure",
+        "spriteAtlasConfigure"
+      ]
+    },
+    {
+      "prerequisite": "graph-v4",
+      "candidateCount": 4,
+      "candidates": [
+        "assetMissingReferenceAudit",
+        "assetUsageAnalyze",
+        "prefabReferenceAudit",
+        "sceneReferenceValidate"
+      ]
+    },
+    {
+      "prerequisite": "physics-2d-backend-matrix",
+      "candidateCount": 4,
+      "candidates": [
+        "physics2dCreateBody",
+        "physics2dCreateJoint",
+        "physics2dInspect",
+        "physics2dValidate"
+      ]
+    },
+    {
+      "prerequisite": "physics-3d-backend-matrix",
+      "candidateCount": 4,
+      "candidates": [
+        "physics3dCreateBody",
+        "physics3dCreateJoint",
+        "physics3dInspect",
+        "physics3dValidate"
+      ]
+    },
+    {
+      "prerequisite": "scene-query-contract",
+      "candidateCount": 4,
+      "candidates": [
+        "sceneHierarchyValidate",
+        "uiLayoutApply",
+        "uiLayoutInspect",
+        "uiLayoutValidate"
+      ]
+    },
+    {
+      "prerequisite": "animation-graph-format",
+      "candidateCount": 3,
+      "candidates": [
+        "animationGraphCreate",
+        "animationGraphInspect",
+        "animationGraphValidate"
+      ]
+    },
+    {
+      "prerequisite": "asset-query-contract",
+      "candidateCount": 3,
+      "candidates": [
+        "assetManifestExport",
+        "assetMissingReferenceAudit",
+        "prefabOverrideDiff"
+      ]
+    },
+    {
+      "prerequisite": "localization-package-api",
+      "candidateCount": 3,
+      "candidates": [
+        "localizationInspect",
+        "localizationPreview",
+        "localizationTableEdit"
+      ]
+    },
+    {
+      "prerequisite": "particle-schema",
+      "candidateCount": 3,
+      "candidates": [
+        "particleConfigure",
+        "particleInspect",
+        "particleValidate"
+      ]
+    },
+    {
+      "prerequisite": "skeletal-extension-detection",
+      "candidateCount": 3,
+      "candidates": [
+        "skeletalAnimationConfigure",
+        "skeletalAnimationInspect",
+        "skeletalAnimationValidate"
+      ]
+    },
+    {
+      "prerequisite": "asset-create",
+      "candidateCount": 2,
+      "candidates": [
+        "animationGraphCreate",
+        "terrainCreate"
+      ]
+    },
+    {
+      "prerequisite": "audio-schema",
+      "candidateCount": 2,
+      "candidates": [
+        "audioSourceConfigure",
+        "audioSourceInspect"
+      ]
+    },
+    {
+      "prerequisite": "build-schema",
+      "candidateCount": 2,
+      "candidates": [
+        "buildPresetValidate",
+        "projectSettingsValidate"
+      ]
+    },
+    {
+      "prerequisite": "model-skeleton-metadata",
+      "candidateCount": 2,
+      "candidates": [
+        "animationRetargetValidate",
+        "modelImportConfigure"
+      ]
+    },
+    {
+      "prerequisite": "named-target",
+      "candidateCount": 2,
+      "candidates": [
+        "buildTargetLaunch",
+        "buildTargetSmoke"
+      ]
+    },
+    {
+      "prerequisite": "preview-lifecycle",
+      "candidateCount": 2,
+      "candidates": [
+        "previewSessionStart",
+        "runtimeSessionManage"
+      ]
+    },
+    {
+      "prerequisite": "project-settings-write",
+      "candidateCount": 2,
+      "candidates": [
+        "physics2dConfigure",
+        "physics3dConfigure"
+      ]
+    },
+    {
+      "prerequisite": "render-pipeline-schema",
+      "candidateCount": 2,
+      "candidates": [
+        "renderConfigurationApply",
+        "renderPipelineInspect"
+      ]
+    },
+    {
+      "prerequisite": "runtime-transport",
+      "candidateCount": 2,
+      "candidates": [
+        "previewSessionStart",
+        "runtimeSessionManage"
+      ]
+    },
+    {
+      "prerequisite": "terrain-schema",
+      "candidateCount": 2,
+      "candidates": [
+        "terrainCreate",
+        "terrainInspect"
+      ]
+    },
+    {
+      "prerequisite": "tmx-import-contract",
+      "candidateCount": 2,
+      "candidates": [
+        "tilemapInspect",
+        "tilemapValidate"
+      ]
+    },
+    {
+      "prerequisite": "tmx-roundtrip",
+      "candidateCount": 2,
+      "candidates": [
+        "tilemapLayerEdit",
+        "tilemapObjectEdit"
+      ]
+    },
+    {
+      "prerequisite": "visual-harness",
+      "candidateCount": 2,
+      "candidates": [
+        "materialEdit",
+        "renderConfigurationApply"
+      ]
+    },
+    {
+      "prerequisite": "animation-graph-write",
+      "candidateCount": 1,
+      "candidates": [
+        "animationGraphEdit"
+      ]
+    },
+    {
+      "prerequisite": "asset-import-contract",
+      "candidateCount": 1,
+      "candidates": [
+        "assetBatchImport"
+      ]
+    },
+    {
+      "prerequisite": "asset-operate-contract",
+      "candidateCount": 1,
+      "candidates": [
+        "assetBatchOperate"
+      ]
+    },
+    {
+      "prerequisite": "audio-import-contract",
+      "candidateCount": 1,
+      "candidates": [
+        "audioAssetValidate"
+      ]
+    },
+    {
+      "prerequisite": "build-artifact",
+      "candidateCount": 1,
+      "candidates": [
+        "assetCompressionConfigure"
+      ]
+    },
+    {
+      "prerequisite": "effect-compiler-diagnostics",
+      "candidateCount": 1,
+      "candidates": [
+        "shaderValidate"
+      ]
+    },
+    {
+      "prerequisite": "light-bake-job-api",
+      "candidateCount": 1,
+      "candidates": [
+        "lightBakeManage"
+      ]
+    },
+    {
+      "prerequisite": "localization-resource-contract",
+      "candidateCount": 1,
+      "candidates": [
+        "localizationValidate"
+      ]
+    },
+    {
+      "prerequisite": "material-schema",
+      "candidateCount": 1,
+      "candidates": [
+        "materialEdit"
+      ]
+    },
+    {
+      "prerequisite": "panel-layout-contract",
+      "candidateCount": 1,
+      "candidates": [
+        "editorPanelCapture"
+      ]
+    },
+    {
+      "prerequisite": "preview-resolution",
+      "candidateCount": 1,
+      "candidates": [
+        "uiResponsivePreview"
+      ]
+    },
+    {
+      "prerequisite": "preview-resolution-ipc",
+      "candidateCount": 1,
+      "candidates": [
+        "previewResolutionSet"
+      ]
+    },
+    {
+      "prerequisite": "project-settings-read",
+      "candidateCount": 1,
+      "candidates": [
+        "projectSettingsValidate"
+      ]
+    },
+    {
+      "prerequisite": "reference-image-ipc",
+      "candidateCount": 1,
+      "candidates": [
+        "referenceImageManage"
+      ]
+    },
+    {
+      "prerequisite": "screenshot-adapter",
+      "candidateCount": 1,
+      "candidates": [
+        "runtimeScreenshotAssert"
+      ]
+    },
+    {
+      "prerequisite": "terrain-write-api",
+      "candidateCount": 1,
+      "candidates": [
+        "terrainEdit"
+      ]
+    },
+    {
+      "prerequisite": "web-artifact",
+      "candidateCount": 1,
+      "candidates": [
+        "buildArtifactServe"
+      ]
+    }
+  ],
+  "gates": [
+    "Static source count is not live qualification.",
+    "Planned witnesses are not approval evidence.",
+    "Bulk implementation remains closed until at least 82 candidates are approved against the qualified cc-3x7 baseline."
+  ],
+  "candidates": [
+    {
+      "name": "uiLayoutInspect",
+      "state": "candidate",
+      "contractDelta": "Typed constraint tree and computed world rectangles, not a generic property dump.",
+      "route": "scene query plus layout normalization",
+      "prerequisites": [
+        "scene-query-contract"
+      ],
+      "pool": "primary",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "uiLayoutApply",
+      "state": "candidate",
+      "contractDelta": "Atomic bounded layout constraint application with preflight, one snapshot and read-back.",
+      "route": "shared inspector mutation service",
+      "prerequisites": [
+        "scene-query-contract",
+        "mutation-workflow"
+      ],
+      "pool": "primary",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "uiLayoutValidate",
+      "state": "candidate",
+      "contractDelta": "Detect clipping, overlap, missing anchors and inconsistent safe-area constraints.",
+      "route": "scene geometry validator",
+      "prerequisites": [
+        "scene-query-contract"
+      ],
+      "pool": "primary",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "uiResponsivePreview",
+      "state": "probe-required",
+      "contractDelta": "Render and compare one scene across declared resolutions with target-specific evidence.",
+      "route": "runtime session plus screenshot adapter",
+      "prerequisites": [
+        "runtime-session",
+        "preview-resolution"
+      ],
+      "pool": "primary",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "uiCreateScrollView",
+      "state": "candidate",
+      "contractDelta": "Create and verify the complete view-mask-content hierarchy, not one prefab node.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "uiCreateInputForm",
+      "state": "candidate",
+      "contractDelta": "Create labeled input hierarchy, focus order and validation binding with functional read-back.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "referenceImageManage",
+      "state": "probe-required",
+      "contractDelta": "Finite persistent reference-image lifecycle with transform read-back.",
+      "route": "version-gated editor IPC",
+      "prerequisites": [
+        "reference-image-ipc"
+      ],
+      "pool": "primary",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "prefabOverrideDiff",
+      "state": "candidate",
+      "contractDelta": "Structural live-instance versus prefab-source override diff with stable identities.",
+      "route": "scene plus asset comparison",
+      "prerequisites": [
+        "live-prefab-identity",
+        "asset-query-contract"
+      ],
+      "pool": "primary",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "prefabReferenceAudit",
+      "state": "candidate",
+      "contractDelta": "Detect broken or ambiguous nested prefab and override references after reload.",
+      "route": "scene and asset graph validator",
+      "prerequisites": [
+        "live-prefab-identity",
+        "graph-v4"
+      ],
+      "pool": "primary",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "prefabVariantCreate",
+      "state": "replace",
+      "contractDelta": "Rejected concept: Creator has no native prefab-variant asset.",
+      "route": "none",
+      "prerequisites": [],
+      "pool": "primary",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "tilemapInspect",
+      "state": "candidate",
+      "contractDelta": "Typed TMX map, layer, object and tileset inspection after Creator import.",
+      "route": "asset parser plus imported-data query",
+      "prerequisites": [
+        "tmx-import-contract"
+      ],
+      "pool": "primary",
+      "domain": "tilemap-atlas",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "tilemapCreate",
+      "state": "replace",
+      "contractDelta": "Creator imports TMX; it does not provide a native map authoring API.",
+      "route": "external Tiled workflow",
+      "prerequisites": [],
+      "pool": "primary",
+      "domain": "tilemap-atlas",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "tilemapLayerEdit",
+      "state": "probe-required",
+      "contractDelta": "Persistent layer mutation without corrupting source TMX.",
+      "route": "supported source-format editor only",
+      "prerequisites": [
+        "tmx-roundtrip"
+      ],
+      "pool": "primary",
+      "domain": "tilemap-atlas",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "tilemapObjectEdit",
+      "state": "probe-required",
+      "contractDelta": "Persistent typed object-layer mutation with TMX round-trip.",
+      "route": "supported source-format editor only",
+      "prerequisites": [
+        "tmx-roundtrip"
+      ],
+      "pool": "primary",
+      "domain": "tilemap-atlas",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "tilemapValidate",
+      "state": "candidate",
+      "contractDelta": "Validate tileset links, gids, layer dimensions and imported references.",
+      "route": "TMX plus asset-db validator",
+      "prerequisites": [
+        "tmx-import-contract"
+      ],
+      "pool": "primary",
+      "domain": "tilemap-atlas",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "spriteAtlasConfigure",
+      "state": "candidate",
+      "contractDelta": "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
+      "route": "importer service plus output validator",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport"
+      ],
+      "pool": "primary",
+      "domain": "tilemap-atlas",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetImportSettingsGet",
+      "state": "candidate",
+      "contractDelta": "Typed importer-specific schema and normalized settings, not raw metadata.",
+      "route": "importer registry",
+      "prerequisites": [
+        "importer-schema"
+      ],
+      "pool": "primary",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetImportSettingsSet",
+      "state": "candidate",
+      "contractDelta": "Typed importer mutation with preflight, reimport and output read-back.",
+      "route": "importer registry",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport"
+      ],
+      "pool": "primary",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetCompressionConfigure",
+      "state": "candidate",
+      "contractDelta": "Platform-aware compression validation plus generated-output evidence.",
+      "route": "importer registry and build artifact check",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "build-artifact"
+      ],
+      "pool": "primary",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetManifestExport",
+      "state": "candidate",
+      "contractDelta": "Bounded deterministic manifest with dependencies, hashes and explicit exclusions.",
+      "route": "asset-db query and hashing",
+      "prerequisites": [
+        "asset-query-contract"
+      ],
+      "pool": "primary",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetBundleValidate",
+      "state": "probe-required",
+      "contractDelta": "Validate bundle metadata and actual runtime load/release behavior.",
+      "route": "asset-db plus runtime session",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "assetUsageAnalyze",
+      "state": "candidate",
+      "contractDelta": "Evidence-backed unreferenced candidates with roots, confidence and dynamic-load caveats.",
+      "route": "Cocos Graph analysis",
+      "prerequisites": [
+        "graph-v4"
+      ],
+      "pool": "primary",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "animationGraphCreate",
+      "state": "candidate",
+      "contractDelta": "Create a valid native graph asset and prove import/read-back.",
+      "route": "asset preset plus graph validator",
+      "prerequisites": [
+        "animation-graph-format",
+        "asset-create"
+      ],
+      "pool": "primary",
+      "domain": "animation-graph",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "animationGraphInspect",
+      "state": "candidate",
+      "contractDelta": "Typed layers, states, transitions, variables and masks from native serialized data.",
+      "route": "versioned graph reader",
+      "prerequisites": [
+        "animation-graph-format"
+      ],
+      "pool": "primary",
+      "domain": "animation-graph",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "animationGraphEdit",
+      "state": "probe-required",
+      "contractDelta": "Persistent bounded graph mutations independent of panel selection state.",
+      "route": "non-panel IPC or versioned serializer",
+      "prerequisites": [
+        "animation-graph-write"
+      ],
+      "pool": "primary",
+      "domain": "animation-graph",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "animationGraphValidate",
+      "state": "candidate",
+      "contractDelta": "Validate unreachable states, missing clips, invalid variables and transition conditions.",
+      "route": "graph semantic validator",
+      "prerequisites": [
+        "animation-graph-format"
+      ],
+      "pool": "primary",
+      "domain": "animation-graph",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "animationGraphPreview",
+      "state": "probe-required",
+      "contractDelta": "Run graph and observe transitions/events in a named runtime session.",
+      "route": "runtime session",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "animation-graph",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "animationRetargetValidate",
+      "state": "candidate",
+      "contractDelta": "Check skeleton, joint and clip compatibility without claiming automatic retargeting.",
+      "route": "model and clip metadata validator",
+      "prerequisites": [
+        "model-skeleton-metadata"
+      ],
+      "pool": "primary",
+      "domain": "animation-graph",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "skeletalAnimationInspect",
+      "state": "candidate",
+      "contractDelta": "Typed skins, tracks, sockets, animations and extension availability.",
+      "route": "Spine/DragonBones asset adapter",
+      "prerequisites": [
+        "skeletal-extension-detection"
+      ],
+      "pool": "primary",
+      "domain": "skeletal-animation",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "skeletalAnimationConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed skin, mix and socket setup with component read-back.",
+      "route": "skeletal adapter plus inspector service",
+      "prerequisites": [
+        "skeletal-extension-detection",
+        "mutation-workflow"
+      ],
+      "pool": "primary",
+      "domain": "skeletal-animation",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "skeletalAnimationPlay",
+      "state": "probe-required",
+      "contractDelta": "Bounded play/queue/stop contract on a named runtime target.",
+      "route": "runtime skeletal adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "skeletal-animation",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "skeletalAnimationEvents",
+      "state": "probe-required",
+      "contractDelta": "Bounded ordered event observation tied to one playback session.",
+      "route": "runtime event adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "skeletal-animation",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "skeletalAnimationValidate",
+      "state": "candidate",
+      "contractDelta": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
+      "route": "asset and component validator",
+      "prerequisites": [
+        "skeletal-extension-detection"
+      ],
+      "pool": "primary",
+      "domain": "skeletal-animation",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "audioSourceInspect",
+      "state": "candidate",
+      "contractDelta": "Normalized AudioSource and clip state including load mode and platform constraints.",
+      "route": "audio adapter",
+      "prerequisites": [
+        "audio-schema"
+      ],
+      "pool": "primary",
+      "domain": "audio",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "audioSourceConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded source configuration with clip compatibility read-back.",
+      "route": "audio adapter plus inspector service",
+      "prerequisites": [
+        "audio-schema",
+        "mutation-workflow"
+      ],
+      "pool": "primary",
+      "domain": "audio",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "audioPlaybackControl",
+      "state": "probe-required",
+      "contractDelta": "Play, pause, stop and seek on a named runtime source with state confirmation.",
+      "route": "runtime audio adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "audio",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "audioPlaybackObserve",
+      "state": "probe-required",
+      "contractDelta": "Bounded playback progress/state observation with activation errors.",
+      "route": "runtime audio adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "audio",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "audioAssetValidate",
+      "state": "candidate",
+      "contractDelta": "Validate format, decode/load mode, duration and target compatibility.",
+      "route": "asset importer and platform validator",
+      "prerequisites": [
+        "audio-import-contract"
+      ],
+      "pool": "primary",
+      "domain": "audio",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "physics2dInspect",
+      "state": "candidate",
+      "contractDelta": "Normalized backend, body, collider, group and joint topology.",
+      "route": "physics-2d adapter",
+      "prerequisites": [
+        "physics-2d-backend-matrix"
+      ],
+      "pool": "primary",
+      "domain": "physics-2d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics2dConfigure",
+      "state": "probe-required",
+      "contractDelta": "Backend-aware settings and collision matrix mutation with read-back.",
+      "route": "version-gated project settings",
+      "prerequisites": [
+        "project-settings-write"
+      ],
+      "pool": "primary",
+      "domain": "physics-2d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics2dCreateBody",
+      "state": "candidate",
+      "contractDelta": "Compound node/body/collider creation with backend preflight and persistence.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "physics-2d-backend-matrix",
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "physics-2d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics2dCreateJoint",
+      "state": "candidate",
+      "contractDelta": "Typed joint creation with endpoint validation and Builtin rejection.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "physics-2d-backend-matrix",
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "physics-2d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics2dQuery",
+      "state": "probe-required",
+      "contractDelta": "Runtime raycast/contact/overlap queries identified by backend and session.",
+      "route": "runtime physics adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "physics-2d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics2dValidate",
+      "state": "candidate",
+      "contractDelta": "Reject unsupported backend/component/joint/matrix combinations.",
+      "route": "physics-2d semantic validator",
+      "prerequisites": [
+        "physics-2d-backend-matrix"
+      ],
+      "pool": "primary",
+      "domain": "physics-2d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics3dInspect",
+      "state": "candidate",
+      "contractDelta": "Normalized backend, rigidbody, collider, material and constraint topology.",
+      "route": "physics-3d adapter",
+      "prerequisites": [
+        "physics-3d-backend-matrix"
+      ],
+      "pool": "primary",
+      "domain": "physics-3d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics3dConfigure",
+      "state": "probe-required",
+      "contractDelta": "Backend-aware settings mutation with version/platform read-back.",
+      "route": "version-gated project settings",
+      "prerequisites": [
+        "project-settings-write"
+      ],
+      "pool": "primary",
+      "domain": "physics-3d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics3dCreateBody",
+      "state": "candidate",
+      "contractDelta": "Compound mesh/body/collider creation with backend capability preflight.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "physics-3d-backend-matrix",
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "physics-3d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics3dCreateJoint",
+      "state": "candidate",
+      "contractDelta": "Typed constraint creation with backend-specific validation.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "physics-3d-backend-matrix",
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "physics-3d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics3dQuery",
+      "state": "probe-required",
+      "contractDelta": "Runtime raycast, sweep, contact and trigger queries tied to backend/session.",
+      "route": "runtime physics adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "physics-3d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "physics3dValidate",
+      "state": "candidate",
+      "contractDelta": "Reject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
+      "route": "physics-3d semantic validator",
+      "prerequisites": [
+        "physics-3d-backend-matrix"
+      ],
+      "pool": "primary",
+      "domain": "physics-3d",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "particleInspect",
+      "state": "candidate",
+      "contractDelta": "Normalized modules, curves, gradients, assets and current configuration.",
+      "route": "particle adapter",
+      "prerequisites": [
+        "particle-schema"
+      ],
+      "pool": "primary",
+      "domain": "particles",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "particleConfigure",
+      "state": "probe-required",
+      "contractDelta": "Typed module/curve mutation with persistent read-back, not panel scraping.",
+      "route": "component metadata adapter",
+      "prerequisites": [
+        "particle-schema"
+      ],
+      "pool": "primary",
+      "domain": "particles",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "particlePlayback",
+      "state": "probe-required",
+      "contractDelta": "Play, stop, clear and completion observation in a named runtime session.",
+      "route": "runtime particle adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "particles",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "particleValidate",
+      "state": "candidate",
+      "contractDelta": "Validate ranges, required textures/materials/modules and backend limits.",
+      "route": "particle semantic validator",
+      "prerequisites": [
+        "particle-schema"
+      ],
+      "pool": "primary",
+      "domain": "particles",
+      "proposedExecutionPhase": "P4"
+    },
+    {
+      "name": "tweenSequenceCreate",
+      "state": "replace",
+      "contractDelta": "Creator has no native tween sequence asset.",
+      "route": "project-code workflow",
+      "prerequisites": [],
+      "pool": "primary",
+      "domain": "tween",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "tweenSequenceInspect",
+      "state": "replace",
+      "contractDelta": "No persistent native sequence exists to inspect.",
+      "route": "project-code workflow",
+      "prerequisites": [],
+      "pool": "primary",
+      "domain": "tween",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "tweenSequenceControl",
+      "state": "replace",
+      "contractDelta": "Runtime control would target generated project code, not a native asset.",
+      "route": "runtime project-code workflow",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "tween",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "tweenSequenceValidate",
+      "state": "replace",
+      "contractDelta": "Validation belongs to TypeScript compile/runtime behavior.",
+      "route": "diagnostics plus runtime session",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "tween",
+      "proposedExecutionPhase": "P3"
+    },
+    {
+      "name": "materialEdit",
+      "state": "candidate",
+      "contractDelta": "Typed pass/property mutation followed by import and rendered postcondition.",
+      "route": "material adapter plus importer",
+      "prerequisites": [
+        "material-schema",
+        "asset-reimport",
+        "visual-harness"
+      ],
+      "pool": "primary",
+      "domain": "rendering-materials",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "shaderValidate",
+      "state": "candidate",
+      "contractDelta": "Return real effect importer/compiler diagnostics tied to source locations.",
+      "route": "effect importer diagnostics",
+      "prerequisites": [
+        "effect-compiler-diagnostics"
+      ],
+      "pool": "primary",
+      "domain": "rendering-materials",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "renderPipelineInspect",
+      "state": "candidate",
+      "contractDelta": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query.",
+      "route": "render adapter",
+      "prerequisites": [
+        "render-pipeline-schema"
+      ],
+      "pool": "primary",
+      "domain": "rendering-materials",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "renderConfigurationApply",
+      "state": "candidate",
+      "contractDelta": "Atomic camera/light/fog/skybox configuration with scene read-back.",
+      "route": "compound scene workflow",
+      "prerequisites": [
+        "render-pipeline-schema",
+        "compound-scene-workflow",
+        "visual-harness"
+      ],
+      "pool": "primary",
+      "domain": "rendering-materials",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "renderDiagnosticsCollect",
+      "state": "probe-required",
+      "contractDelta": "Target-identified frame/render sampling with bounded results.",
+      "route": "runtime render diagnostics",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "rendering-materials",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "lightBakeManage",
+      "state": "probe-required",
+      "contractDelta": "Finite bake job lifecycle and output asset verification.",
+      "route": "version-gated bake API",
+      "prerequisites": [
+        "light-bake-job-api"
+      ],
+      "pool": "primary",
+      "domain": "rendering-materials",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "terrainInspect",
+      "state": "candidate",
+      "contractDelta": "Typed terrain dimensions, layers, materials and asset references.",
+      "route": "terrain asset adapter",
+      "prerequisites": [
+        "terrain-schema"
+      ],
+      "pool": "primary",
+      "domain": "terrain-model",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "terrainCreate",
+      "state": "candidate",
+      "contractDelta": "Create and attach a valid terrain asset/component with reopen proof.",
+      "route": "asset preset plus compound scene workflow",
+      "prerequisites": [
+        "terrain-schema",
+        "asset-create",
+        "compound-scene-workflow"
+      ],
+      "pool": "primary",
+      "domain": "terrain-model",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "terrainEdit",
+      "state": "probe-required",
+      "contractDelta": "Persistent bounded height/layer mutation through a supported API.",
+      "route": "version-gated terrain API",
+      "prerequisites": [
+        "terrain-write-api"
+      ],
+      "pool": "primary",
+      "domain": "terrain-model",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "modelImportConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed import, reimport and mesh/skeleton/LOD output validation.",
+      "route": "model importer adapter",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "model-skeleton-metadata"
+      ],
+      "pool": "primary",
+      "domain": "terrain-model",
+      "proposedExecutionPhase": "P5"
+    },
+    {
+      "name": "localizationInspect",
+      "state": "probe-required",
+      "contractDelta": "Discover enabled package, locales, compiled tables and resource mappings.",
+      "route": "localization package adapter",
+      "prerequisites": [
+        "localization-package-api"
+      ],
+      "pool": "primary",
+      "domain": "localization",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "localizationTableEdit",
+      "state": "probe-required",
+      "contractDelta": "Typed persistent table mutation through documented package API.",
+      "route": "localization package adapter",
+      "prerequisites": [
+        "localization-package-api"
+      ],
+      "pool": "primary",
+      "domain": "localization",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "localizationValidate",
+      "state": "candidate",
+      "contractDelta": "Detect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+      "route": "asset and UI validator",
+      "prerequisites": [
+        "localization-resource-contract"
+      ],
+      "pool": "primary",
+      "domain": "localization",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "localizationPreview",
+      "state": "probe-required",
+      "contractDelta": "Switch locale with acknowledged runtime restart and visual/read-back evidence.",
+      "route": "runtime localization adapter",
+      "prerequisites": [
+        "runtime-session",
+        "localization-package-api"
+      ],
+      "pool": "primary",
+      "domain": "localization",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "runtimeSessionManage",
+      "state": "candidate",
+      "contractDelta": "Attach, identify, stop and reset finite game-view/browser/simulator sessions.",
+      "route": "runtime session foundation",
+      "prerequisites": [
+        "preview-lifecycle",
+        "runtime-transport"
+      ],
+      "pool": "primary",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "runtimeStateObserve",
+      "state": "candidate",
+      "contractDelta": "Bounded allow-listed observations tied to session identity and target kind.",
+      "route": "runtime session foundation",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "runtimeScenarioRun",
+      "state": "candidate",
+      "contractDelta": "Execute finite named steps only; no code string or general method dispatch.",
+      "route": "scenario compiler to typed primitives",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "runtimeScenarioAssert",
+      "state": "candidate",
+      "contractDelta": "Independent state/image/event assertions rather than request echo.",
+      "route": "runtime observation adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "primary",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "buildPresetValidate",
+      "state": "candidate",
+      "contractDelta": "Validate target-specific required/unsupported build options before dispatch.",
+      "route": "build schema adapter",
+      "prerequisites": [
+        "build-schema"
+      ],
+      "pool": "primary",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "buildArtifactInspect",
+      "state": "candidate",
+      "contractDelta": "Verify terminal build outputs, expected files, hashes and target metadata.",
+      "route": "bounded artifact inspector",
+      "prerequisites": [
+        "build-job"
+      ],
+      "pool": "primary",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "buildTargetLaunch",
+      "state": "probe-required",
+      "contractDelta": "Launch the exact produced artifact on a declared target, not preview fallback.",
+      "route": "target-specific launcher",
+      "prerequisites": [
+        "build-job",
+        "named-target"
+      ],
+      "pool": "primary",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "buildTargetSmoke",
+      "state": "probe-required",
+      "contractDelta": "Interact with and observe the launched artifact on its declared target.",
+      "route": "runtime session plus target launcher",
+      "prerequisites": [
+        "runtime-session",
+        "named-target"
+      ],
+      "pool": "primary",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "previewSessionStart",
+      "state": "candidate",
+      "contractDelta": "Start one declared preview target and return verified session identity.",
+      "route": "preview lifecycle adapter",
+      "prerequisites": [
+        "preview-lifecycle",
+        "runtime-transport"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "previewSessionStop",
+      "state": "candidate",
+      "contractDelta": "Stop one session and prove target termination.",
+      "route": "runtime session lifecycle adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "previewSessionInspect",
+      "state": "candidate",
+      "contractDelta": "Read target kind, URL, mode, readiness and stale-session state.",
+      "route": "runtime session state adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "previewResolutionSet",
+      "state": "probe-required",
+      "contractDelta": "Set and read back target resolution through proven IPC.",
+      "route": "version-gated preview resolution IPC",
+      "prerequisites": [
+        "preview-resolution-ipc"
+      ],
+      "pool": "reserve",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "editorPanelCapture",
+      "state": "candidate",
+      "contractDelta": "Capture one named editor panel with exact bounds and image validation.",
+      "route": "fixed Electron panel capture adapter",
+      "prerequisites": [
+        "panel-layout-contract"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "runtimeInputDispatch",
+      "state": "candidate",
+      "contractDelta": "Dispatch bounded keyboard/pointer actions to one session target.",
+      "route": "bounded runtime input adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "runtimeWaitForState",
+      "state": "candidate",
+      "contractDelta": "Bounded condition wait without raw event subscription.",
+      "route": "bounded runtime observation waiter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "runtimeScreenshotAssert",
+      "state": "candidate",
+      "contractDelta": "Compare a target capture using declared tolerance and diagnostics.",
+      "route": "runtime capture assertion adapter",
+      "prerequisites": [
+        "runtime-session",
+        "screenshot-adapter"
+      ],
+      "pool": "reserve",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1"
+    },
+    {
+      "name": "assetBatchImport",
+      "state": "candidate",
+      "contractDelta": "Preflight and import bounded explicit items with per-item outcome.",
+      "route": "bounded asset-db import workflow",
+      "prerequisites": [
+        "asset-import-contract",
+        "mutation-workflow"
+      ],
+      "pool": "reserve",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetBatchOperate",
+      "state": "candidate",
+      "contractDelta": "Bounded move/copy/delete/reimport with partial-failure accounting.",
+      "route": "bounded asset-db lifecycle workflow",
+      "prerequisites": [
+        "asset-operate-contract",
+        "mutation-workflow"
+      ],
+      "pool": "reserve",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "assetMissingReferenceAudit",
+      "state": "candidate",
+      "contractDelta": "Cross-scene and asset missing-reference evidence with recovery locations.",
+      "route": "asset graph and live reference validator",
+      "prerequisites": [
+        "graph-v4",
+        "asset-query-contract"
+      ],
+      "pool": "reserve",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "sceneHierarchyValidate",
+      "state": "candidate",
+      "contractDelta": "Validate duplicate paths, invalid parenting and persistence invariants.",
+      "route": "live scene hierarchy validator",
+      "prerequisites": [
+        "scene-query-contract"
+      ],
+      "pool": "reserve",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "sceneReferenceValidate",
+      "state": "candidate",
+      "contractDelta": "Validate serialized node/component/asset references after reopen.",
+      "route": "serialized and live reference validator",
+      "prerequisites": [
+        "graph-v4",
+        "live-prefab-identity"
+      ],
+      "pool": "reserve",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "prefabInstantiate",
+      "state": "candidate",
+      "contractDelta": "Instantiate and prove persistent prefab identity and overrides.",
+      "route": "typed prefab instantiate workflow",
+      "prerequisites": [
+        "live-prefab-identity",
+        "compound-scene-workflow"
+      ],
+      "pool": "reserve",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "prefabApplyOverrides",
+      "state": "candidate",
+      "contractDelta": "Apply a typed override set and verify source/instance result.",
+      "route": "typed prefab override mutation workflow",
+      "prerequisites": [
+        "live-prefab-identity",
+        "mutation-workflow"
+      ],
+      "pool": "reserve",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "prefabRevertOverrides",
+      "state": "candidate",
+      "contractDelta": "Revert selected overrides and verify restored values.",
+      "route": "typed prefab override revert workflow",
+      "prerequisites": [
+        "live-prefab-identity",
+        "mutation-workflow"
+      ],
+      "pool": "reserve",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2"
+    },
+    {
+      "name": "buildTaskWait",
+      "state": "candidate",
+      "contractDelta": "Wait boundedly for one build task terminal result with cancellation semantics.",
+      "route": "bounded build job waiter",
+      "prerequisites": [
+        "build-job"
+      ],
+      "pool": "reserve",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "buildLogInspect",
+      "state": "candidate",
+      "contractDelta": "Return bounded structured diagnostics for one build task.",
+      "route": "bounded structured build log adapter",
+      "prerequisites": [
+        "build-job"
+      ],
+      "pool": "reserve",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "buildArtifactServe",
+      "state": "candidate",
+      "contractDelta": "Serve one completed web artifact and return verified URL/lifecycle.",
+      "route": "bounded web artifact server",
+      "prerequisites": [
+        "build-job",
+        "web-artifact"
+      ],
+      "pool": "reserve",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    },
+    {
+      "name": "projectSettingsValidate",
+      "state": "candidate",
+      "contractDelta": "Validate cross-setting compatibility for the declared Creator/target profile.",
+      "route": "versioned project and target settings validator",
+      "prerequisites": [
+        "project-settings-read",
+        "build-schema"
+      ],
+      "pool": "reserve",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6"
+    }
+  ]
+}

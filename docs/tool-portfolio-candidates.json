@@ -1,0 +1,1863 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-09-08",
+  "qualificationTarget": {
+    "creator": "3.8.7",
+    "os": "windows-x64",
+    "profile": "full",
+    "artifactClass": "local-operator",
+    "sourceBranch": "cc-3x7"
+  },
+  "baseline": {
+    "sourceRegistrations": 86,
+    "liveQualified": null,
+    "minimumReleaseCount": 157,
+    "minimumNetIfAllCurrentQualify": 71,
+    "requiredApprovalMargin": "requiredNet + max(10, ceil(requiredNet * 0.15)); current static threshold 82"
+  },
+  "states": [
+    "candidate",
+    "probe-required",
+    "replace",
+    "rejected",
+    "approved",
+    "implemented-unverified",
+    "qualified"
+  ],
+  "domains": [
+    {
+      "domain": "ui-layout",
+      "candidates": [
+        {
+          "name": "uiLayoutInspect",
+          "state": "candidate",
+          "contractDelta": "Typed constraint tree and computed world rectangles, not a generic property dump.",
+          "route": "scene query plus layout normalization",
+          "prerequisites": [
+            "scene-query-contract"
+          ],
+          "witnessContractIds": [
+            "scene-query-contract"
+          ],
+          "positiveTestID": "candidate.uiLayoutInspect.positive.v1",
+          "negativeTestID": "candidate.uiLayoutInspect.negative.v1",
+          "fixtureID": "fixture.candidate.uiLayoutInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiLayoutInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "uiLayoutApply",
+          "state": "candidate",
+          "contractDelta": "Atomic bounded layout constraint application with preflight, one snapshot and read-back.",
+          "route": "shared inspector mutation service",
+          "prerequisites": [
+            "scene-query-contract",
+            "mutation-workflow"
+          ],
+          "witnessContractIds": [
+            "scene-query-contract",
+            "mutation-workflow"
+          ],
+          "positiveTestID": "candidate.uiLayoutApply.positive.v1",
+          "negativeTestID": "candidate.uiLayoutApply.negative.v1",
+          "fixtureID": "fixture.candidate.uiLayoutApply.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiLayoutApply/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "uiLayoutValidate",
+          "state": "candidate",
+          "contractDelta": "Detect clipping, overlap, missing anchors and inconsistent safe-area constraints.",
+          "route": "scene geometry validator",
+          "prerequisites": [
+            "scene-query-contract"
+          ],
+          "witnessContractIds": [
+            "scene-query-contract"
+          ],
+          "positiveTestID": "candidate.uiLayoutValidate.positive.v1",
+          "negativeTestID": "candidate.uiLayoutValidate.negative.v1",
+          "fixtureID": "fixture.candidate.uiLayoutValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiLayoutValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "uiResponsivePreview",
+          "state": "probe-required",
+          "contractDelta": "Render and compare one scene across declared resolutions with target-specific evidence.",
+          "route": "runtime session plus screenshot adapter",
+          "prerequisites": [
+            "runtime-session",
+            "preview-resolution"
+          ],
+          "witnessContractIds": [
+            "runtime-session",
+            "preview-resolution"
+          ],
+          "positiveTestID": "candidate.uiResponsivePreview.positive.v1",
+          "negativeTestID": "candidate.uiResponsivePreview.negative.v1",
+          "fixtureID": "fixture.candidate.uiResponsivePreview.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiResponsivePreview/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "uiCreateScrollView",
+          "state": "candidate",
+          "contractDelta": "Create and verify the complete view-mask-content hierarchy, not one prefab node.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.uiCreateScrollView.positive.v1",
+          "negativeTestID": "candidate.uiCreateScrollView.negative.v1",
+          "fixtureID": "fixture.candidate.uiCreateScrollView.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiCreateScrollView/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "uiCreateInputForm",
+          "state": "candidate",
+          "contractDelta": "Create labeled input hierarchy, focus order and validation binding with functional read-back.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.uiCreateInputForm.positive.v1",
+          "negativeTestID": "candidate.uiCreateInputForm.negative.v1",
+          "fixtureID": "fixture.candidate.uiCreateInputForm.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiCreateInputForm/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        }
+      ]
+    },
+    {
+      "domain": "design-prefab",
+      "candidates": [
+        {
+          "name": "referenceImageManage",
+          "state": "probe-required",
+          "contractDelta": "Finite persistent reference-image lifecycle with transform read-back.",
+          "route": "version-gated editor IPC",
+          "prerequisites": [
+            "reference-image-ipc"
+          ],
+          "witnessContractIds": [
+            "reference-image-ipc"
+          ],
+          "positiveTestID": "candidate.referenceImageManage.positive.v1",
+          "negativeTestID": "candidate.referenceImageManage.negative.v1",
+          "fixtureID": "fixture.candidate.referenceImageManage.v1",
+          "evidenceArtifact": "reports/evidence/candidates/referenceImageManage/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "prefabOverrideDiff",
+          "state": "candidate",
+          "contractDelta": "Structural live-instance versus prefab-source override diff with stable identities.",
+          "route": "scene plus asset comparison",
+          "prerequisites": [
+            "live-prefab-identity",
+            "asset-query-contract"
+          ],
+          "witnessContractIds": [
+            "live-prefab-identity",
+            "asset-query-contract"
+          ],
+          "positiveTestID": "candidate.prefabOverrideDiff.positive.v1",
+          "negativeTestID": "candidate.prefabOverrideDiff.negative.v1",
+          "fixtureID": "fixture.candidate.prefabOverrideDiff.v1",
+          "evidenceArtifact": "reports/evidence/candidates/prefabOverrideDiff/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "prefabReferenceAudit",
+          "state": "candidate",
+          "contractDelta": "Detect broken or ambiguous nested prefab and override references after reload.",
+          "route": "scene and asset graph validator",
+          "prerequisites": [
+            "live-prefab-identity",
+            "graph-v4"
+          ],
+          "witnessContractIds": [
+            "live-prefab-identity",
+            "graph-v4"
+          ],
+          "positiveTestID": "candidate.prefabReferenceAudit.positive.v1",
+          "negativeTestID": "candidate.prefabReferenceAudit.negative.v1",
+          "fixtureID": "fixture.candidate.prefabReferenceAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/prefabReferenceAudit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "prefabVariantCreate",
+          "state": "replace",
+          "contractDelta": "Rejected concept: Creator has no native prefab-variant asset.",
+          "route": "none",
+          "prerequisites": [],
+          "replacementReason": "Use a native prefab override/apply workflow candidate.",
+          "proposedExecutionPhase": "P2"
+        }
+      ]
+    },
+    {
+      "domain": "tilemap-atlas",
+      "candidates": [
+        {
+          "name": "tilemapInspect",
+          "state": "candidate",
+          "contractDelta": "Typed TMX map, layer, object and tileset inspection after Creator import.",
+          "route": "asset parser plus imported-data query",
+          "prerequisites": [
+            "tmx-import-contract"
+          ],
+          "witnessContractIds": [
+            "tmx-import-contract"
+          ],
+          "positiveTestID": "candidate.tilemapInspect.positive.v1",
+          "negativeTestID": "candidate.tilemapInspect.negative.v1",
+          "fixtureID": "fixture.candidate.tilemapInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/tilemapInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "tilemapCreate",
+          "state": "replace",
+          "contractDelta": "Creator imports TMX; it does not provide a native map authoring API.",
+          "route": "external Tiled workflow",
+          "prerequisites": [],
+          "replacementReason": "Replace with bounded TMX import and validation outcome.",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "tilemapLayerEdit",
+          "state": "probe-required",
+          "contractDelta": "Persistent layer mutation without corrupting source TMX.",
+          "route": "supported source-format editor only",
+          "prerequisites": [
+            "tmx-roundtrip"
+          ],
+          "witnessContractIds": [
+            "tmx-roundtrip"
+          ],
+          "positiveTestID": "candidate.tilemapLayerEdit.positive.v1",
+          "negativeTestID": "candidate.tilemapLayerEdit.negative.v1",
+          "fixtureID": "fixture.candidate.tilemapLayerEdit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/tilemapLayerEdit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "tilemapObjectEdit",
+          "state": "probe-required",
+          "contractDelta": "Persistent typed object-layer mutation with TMX round-trip.",
+          "route": "supported source-format editor only",
+          "prerequisites": [
+            "tmx-roundtrip"
+          ],
+          "witnessContractIds": [
+            "tmx-roundtrip"
+          ],
+          "positiveTestID": "candidate.tilemapObjectEdit.positive.v1",
+          "negativeTestID": "candidate.tilemapObjectEdit.negative.v1",
+          "fixtureID": "fixture.candidate.tilemapObjectEdit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/tilemapObjectEdit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "tilemapValidate",
+          "state": "candidate",
+          "contractDelta": "Validate tileset links, gids, layer dimensions and imported references.",
+          "route": "TMX plus asset-db validator",
+          "prerequisites": [
+            "tmx-import-contract"
+          ],
+          "witnessContractIds": [
+            "tmx-import-contract"
+          ],
+          "positiveTestID": "candidate.tilemapValidate.positive.v1",
+          "negativeTestID": "candidate.tilemapValidate.negative.v1",
+          "fixtureID": "fixture.candidate.tilemapValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/tilemapValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "spriteAtlasConfigure",
+          "state": "candidate",
+          "contractDelta": "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
+          "route": "importer service plus output validator",
+          "prerequisites": [
+            "importer-schema",
+            "asset-reimport"
+          ],
+          "witnessContractIds": [
+            "importer-schema",
+            "asset-reimport"
+          ],
+          "positiveTestID": "candidate.spriteAtlasConfigure.positive.v1",
+          "negativeTestID": "candidate.spriteAtlasConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.spriteAtlasConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/spriteAtlasConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        }
+      ]
+    },
+    {
+      "domain": "assets-import",
+      "candidates": [
+        {
+          "name": "assetImportSettingsGet",
+          "state": "candidate",
+          "contractDelta": "Typed importer-specific schema and normalized settings, not raw metadata.",
+          "route": "importer registry",
+          "prerequisites": [
+            "importer-schema"
+          ],
+          "witnessContractIds": [
+            "importer-schema"
+          ],
+          "positiveTestID": "candidate.assetImportSettingsGet.positive.v1",
+          "negativeTestID": "candidate.assetImportSettingsGet.negative.v1",
+          "fixtureID": "fixture.candidate.assetImportSettingsGet.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetImportSettingsGet/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "assetImportSettingsSet",
+          "state": "candidate",
+          "contractDelta": "Typed importer mutation with preflight, reimport and output read-back.",
+          "route": "importer registry",
+          "prerequisites": [
+            "importer-schema",
+            "asset-reimport"
+          ],
+          "witnessContractIds": [
+            "importer-schema",
+            "asset-reimport"
+          ],
+          "positiveTestID": "candidate.assetImportSettingsSet.positive.v1",
+          "negativeTestID": "candidate.assetImportSettingsSet.negative.v1",
+          "fixtureID": "fixture.candidate.assetImportSettingsSet.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetImportSettingsSet/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "assetCompressionConfigure",
+          "state": "candidate",
+          "contractDelta": "Platform-aware compression validation plus generated-output evidence.",
+          "route": "importer registry and build artifact check",
+          "prerequisites": [
+            "importer-schema",
+            "asset-reimport",
+            "build-artifact"
+          ],
+          "witnessContractIds": [
+            "importer-schema",
+            "asset-reimport",
+            "build-artifact"
+          ],
+          "positiveTestID": "candidate.assetCompressionConfigure.positive.v1",
+          "negativeTestID": "candidate.assetCompressionConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.assetCompressionConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetCompressionConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "assetManifestExport",
+          "state": "candidate",
+          "contractDelta": "Bounded deterministic manifest with dependencies, hashes and explicit exclusions.",
+          "route": "asset-db query and hashing",
+          "prerequisites": [
+            "asset-query-contract"
+          ],
+          "witnessContractIds": [
+            "asset-query-contract"
+          ],
+          "positiveTestID": "candidate.assetManifestExport.positive.v1",
+          "negativeTestID": "candidate.assetManifestExport.negative.v1",
+          "fixtureID": "fixture.candidate.assetManifestExport.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetManifestExport/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        },
+        {
+          "name": "assetBundleValidate",
+          "state": "probe-required",
+          "contractDelta": "Validate bundle metadata and actual runtime load/release behavior.",
+          "route": "asset-db plus runtime session",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.assetBundleValidate.positive.v1",
+          "negativeTestID": "candidate.assetBundleValidate.negative.v1",
+          "fixtureID": "fixture.candidate.assetBundleValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetBundleValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "assetUsageAnalyze",
+          "state": "candidate",
+          "contractDelta": "Evidence-backed unreferenced candidates with roots, confidence and dynamic-load caveats.",
+          "route": "Cocos Graph analysis",
+          "prerequisites": [
+            "graph-v4"
+          ],
+          "witnessContractIds": [
+            "graph-v4"
+          ],
+          "positiveTestID": "candidate.assetUsageAnalyze.positive.v1",
+          "negativeTestID": "candidate.assetUsageAnalyze.negative.v1",
+          "fixtureID": "fixture.candidate.assetUsageAnalyze.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetUsageAnalyze/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P2"
+        }
+      ]
+    },
+    {
+      "domain": "animation-graph",
+      "candidates": [
+        {
+          "name": "animationGraphCreate",
+          "state": "candidate",
+          "contractDelta": "Create a valid native graph asset and prove import/read-back.",
+          "route": "asset preset plus graph validator",
+          "prerequisites": [
+            "animation-graph-format",
+            "asset-create"
+          ],
+          "witnessContractIds": [
+            "animation-graph-format",
+            "asset-create"
+          ],
+          "positiveTestID": "candidate.animationGraphCreate.positive.v1",
+          "negativeTestID": "candidate.animationGraphCreate.negative.v1",
+          "fixtureID": "fixture.candidate.animationGraphCreate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/animationGraphCreate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "animationGraphInspect",
+          "state": "candidate",
+          "contractDelta": "Typed layers, states, transitions, variables and masks from native serialized data.",
+          "route": "versioned graph reader",
+          "prerequisites": [
+            "animation-graph-format"
+          ],
+          "witnessContractIds": [
+            "animation-graph-format"
+          ],
+          "positiveTestID": "candidate.animationGraphInspect.positive.v1",
+          "negativeTestID": "candidate.animationGraphInspect.negative.v1",
+          "fixtureID": "fixture.candidate.animationGraphInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/animationGraphInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "animationGraphEdit",
+          "state": "probe-required",
+          "contractDelta": "Persistent bounded graph mutations independent of panel selection state.",
+          "route": "non-panel IPC or versioned serializer",
+          "prerequisites": [
+            "animation-graph-write"
+          ],
+          "witnessContractIds": [
+            "animation-graph-write"
+          ],
+          "positiveTestID": "candidate.animationGraphEdit.positive.v1",
+          "negativeTestID": "candidate.animationGraphEdit.negative.v1",
+          "fixtureID": "fixture.candidate.animationGraphEdit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/animationGraphEdit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "animationGraphValidate",
+          "state": "candidate",
+          "contractDelta": "Validate unreachable states, missing clips, invalid variables and transition conditions.",
+          "route": "graph semantic validator",
+          "prerequisites": [
+            "animation-graph-format"
+          ],
+          "witnessContractIds": [
+            "animation-graph-format"
+          ],
+          "positiveTestID": "candidate.animationGraphValidate.positive.v1",
+          "negativeTestID": "candidate.animationGraphValidate.negative.v1",
+          "fixtureID": "fixture.candidate.animationGraphValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/animationGraphValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "animationGraphPreview",
+          "state": "probe-required",
+          "contractDelta": "Run graph and observe transitions/events in a named runtime session.",
+          "route": "runtime session",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.animationGraphPreview.positive.v1",
+          "negativeTestID": "candidate.animationGraphPreview.negative.v1",
+          "fixtureID": "fixture.candidate.animationGraphPreview.v1",
+          "evidenceArtifact": "reports/evidence/candidates/animationGraphPreview/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "animationRetargetValidate",
+          "state": "candidate",
+          "contractDelta": "Check skeleton, joint and clip compatibility without claiming automatic retargeting.",
+          "route": "model and clip metadata validator",
+          "prerequisites": [
+            "model-skeleton-metadata"
+          ],
+          "witnessContractIds": [
+            "model-skeleton-metadata"
+          ],
+          "positiveTestID": "candidate.animationRetargetValidate.positive.v1",
+          "negativeTestID": "candidate.animationRetargetValidate.negative.v1",
+          "fixtureID": "fixture.candidate.animationRetargetValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/animationRetargetValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        }
+      ]
+    },
+    {
+      "domain": "skeletal-animation",
+      "candidates": [
+        {
+          "name": "skeletalAnimationInspect",
+          "state": "candidate",
+          "contractDelta": "Typed skins, tracks, sockets, animations and extension availability.",
+          "route": "Spine/DragonBones asset adapter",
+          "prerequisites": [
+            "skeletal-extension-detection"
+          ],
+          "witnessContractIds": [
+            "skeletal-extension-detection"
+          ],
+          "positiveTestID": "candidate.skeletalAnimationInspect.positive.v1",
+          "negativeTestID": "candidate.skeletalAnimationInspect.negative.v1",
+          "fixtureID": "fixture.candidate.skeletalAnimationInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/skeletalAnimationInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "skeletalAnimationConfigure",
+          "state": "candidate",
+          "contractDelta": "Typed skin, mix and socket setup with component read-back.",
+          "route": "skeletal adapter plus inspector service",
+          "prerequisites": [
+            "skeletal-extension-detection",
+            "mutation-workflow"
+          ],
+          "witnessContractIds": [
+            "skeletal-extension-detection",
+            "mutation-workflow"
+          ],
+          "positiveTestID": "candidate.skeletalAnimationConfigure.positive.v1",
+          "negativeTestID": "candidate.skeletalAnimationConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.skeletalAnimationConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/skeletalAnimationConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "skeletalAnimationPlay",
+          "state": "probe-required",
+          "contractDelta": "Bounded play/queue/stop contract on a named runtime target.",
+          "route": "runtime skeletal adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.skeletalAnimationPlay.positive.v1",
+          "negativeTestID": "candidate.skeletalAnimationPlay.negative.v1",
+          "fixtureID": "fixture.candidate.skeletalAnimationPlay.v1",
+          "evidenceArtifact": "reports/evidence/candidates/skeletalAnimationPlay/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "skeletalAnimationEvents",
+          "state": "probe-required",
+          "contractDelta": "Bounded ordered event observation tied to one playback session.",
+          "route": "runtime event adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.skeletalAnimationEvents.positive.v1",
+          "negativeTestID": "candidate.skeletalAnimationEvents.negative.v1",
+          "fixtureID": "fixture.candidate.skeletalAnimationEvents.v1",
+          "evidenceArtifact": "reports/evidence/candidates/skeletalAnimationEvents/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "skeletalAnimationValidate",
+          "state": "candidate",
+          "contractDelta": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
+          "route": "asset and component validator",
+          "prerequisites": [
+            "skeletal-extension-detection"
+          ],
+          "witnessContractIds": [
+            "skeletal-extension-detection"
+          ],
+          "positiveTestID": "candidate.skeletalAnimationValidate.positive.v1",
+          "negativeTestID": "candidate.skeletalAnimationValidate.negative.v1",
+          "fixtureID": "fixture.candidate.skeletalAnimationValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/skeletalAnimationValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        }
+      ]
+    },
+    {
+      "domain": "audio",
+      "candidates": [
+        {
+          "name": "audioSourceInspect",
+          "state": "candidate",
+          "contractDelta": "Normalized AudioSource and clip state including load mode and platform constraints.",
+          "route": "audio adapter",
+          "prerequisites": [
+            "audio-schema"
+          ],
+          "witnessContractIds": [
+            "audio-schema"
+          ],
+          "positiveTestID": "candidate.audioSourceInspect.positive.v1",
+          "negativeTestID": "candidate.audioSourceInspect.negative.v1",
+          "fixtureID": "fixture.candidate.audioSourceInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioSourceInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "audioSourceConfigure",
+          "state": "candidate",
+          "contractDelta": "Typed bounded source configuration with clip compatibility read-back.",
+          "route": "audio adapter plus inspector service",
+          "prerequisites": [
+            "audio-schema",
+            "mutation-workflow"
+          ],
+          "witnessContractIds": [
+            "audio-schema",
+            "mutation-workflow"
+          ],
+          "positiveTestID": "candidate.audioSourceConfigure.positive.v1",
+          "negativeTestID": "candidate.audioSourceConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.audioSourceConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioSourceConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "audioPlaybackControl",
+          "state": "probe-required",
+          "contractDelta": "Play, pause, stop and seek on a named runtime source with state confirmation.",
+          "route": "runtime audio adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.audioPlaybackControl.positive.v1",
+          "negativeTestID": "candidate.audioPlaybackControl.negative.v1",
+          "fixtureID": "fixture.candidate.audioPlaybackControl.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioPlaybackControl/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "audioPlaybackObserve",
+          "state": "probe-required",
+          "contractDelta": "Bounded playback progress/state observation with activation errors.",
+          "route": "runtime audio adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.audioPlaybackObserve.positive.v1",
+          "negativeTestID": "candidate.audioPlaybackObserve.negative.v1",
+          "fixtureID": "fixture.candidate.audioPlaybackObserve.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioPlaybackObserve/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "audioAssetValidate",
+          "state": "candidate",
+          "contractDelta": "Validate format, decode/load mode, duration and target compatibility.",
+          "route": "asset importer and platform validator",
+          "prerequisites": [
+            "audio-import-contract"
+          ],
+          "witnessContractIds": [
+            "audio-import-contract"
+          ],
+          "positiveTestID": "candidate.audioAssetValidate.positive.v1",
+          "negativeTestID": "candidate.audioAssetValidate.negative.v1",
+          "fixtureID": "fixture.candidate.audioAssetValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioAssetValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P3"
+        }
+      ]
+    },
+    {
+      "domain": "physics-2d",
+      "candidates": [
+        {
+          "name": "physics2dInspect",
+          "state": "candidate",
+          "contractDelta": "Normalized backend, body, collider, group and joint topology.",
+          "route": "physics-2d adapter",
+          "prerequisites": [
+            "physics-2d-backend-matrix"
+          ],
+          "witnessContractIds": [
+            "physics-2d-backend-matrix"
+          ],
+          "positiveTestID": "candidate.physics2dInspect.positive.v1",
+          "negativeTestID": "candidate.physics2dInspect.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics2dConfigure",
+          "state": "probe-required",
+          "contractDelta": "Backend-aware settings and collision matrix mutation with read-back.",
+          "route": "version-gated project settings",
+          "prerequisites": [
+            "project-settings-write"
+          ],
+          "witnessContractIds": [
+            "project-settings-write"
+          ],
+          "positiveTestID": "candidate.physics2dConfigure.positive.v1",
+          "negativeTestID": "candidate.physics2dConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics2dCreateBody",
+          "state": "candidate",
+          "contractDelta": "Compound node/body/collider creation with backend preflight and persistence.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "physics-2d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "physics-2d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.physics2dCreateBody.positive.v1",
+          "negativeTestID": "candidate.physics2dCreateBody.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dCreateBody.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dCreateBody/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics2dCreateJoint",
+          "state": "candidate",
+          "contractDelta": "Typed joint creation with endpoint validation and Builtin rejection.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "physics-2d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "physics-2d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.physics2dCreateJoint.positive.v1",
+          "negativeTestID": "candidate.physics2dCreateJoint.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dCreateJoint.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dCreateJoint/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics2dQuery",
+          "state": "probe-required",
+          "contractDelta": "Runtime raycast/contact/overlap queries identified by backend and session.",
+          "route": "runtime physics adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.physics2dQuery.positive.v1",
+          "negativeTestID": "candidate.physics2dQuery.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dQuery.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dQuery/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics2dValidate",
+          "state": "candidate",
+          "contractDelta": "Reject unsupported backend/component/joint/matrix combinations.",
+          "route": "physics-2d semantic validator",
+          "prerequisites": [
+            "physics-2d-backend-matrix"
+          ],
+          "witnessContractIds": [
+            "physics-2d-backend-matrix"
+          ],
+          "positiveTestID": "candidate.physics2dValidate.positive.v1",
+          "negativeTestID": "candidate.physics2dValidate.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        }
+      ]
+    },
+    {
+      "domain": "physics-3d",
+      "candidates": [
+        {
+          "name": "physics3dInspect",
+          "state": "candidate",
+          "contractDelta": "Normalized backend, rigidbody, collider, material and constraint topology.",
+          "route": "physics-3d adapter",
+          "prerequisites": [
+            "physics-3d-backend-matrix"
+          ],
+          "witnessContractIds": [
+            "physics-3d-backend-matrix"
+          ],
+          "positiveTestID": "candidate.physics3dInspect.positive.v1",
+          "negativeTestID": "candidate.physics3dInspect.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics3dConfigure",
+          "state": "probe-required",
+          "contractDelta": "Backend-aware settings mutation with version/platform read-back.",
+          "route": "version-gated project settings",
+          "prerequisites": [
+            "project-settings-write"
+          ],
+          "witnessContractIds": [
+            "project-settings-write"
+          ],
+          "positiveTestID": "candidate.physics3dConfigure.positive.v1",
+          "negativeTestID": "candidate.physics3dConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics3dCreateBody",
+          "state": "candidate",
+          "contractDelta": "Compound mesh/body/collider creation with backend capability preflight.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "physics-3d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "physics-3d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.physics3dCreateBody.positive.v1",
+          "negativeTestID": "candidate.physics3dCreateBody.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dCreateBody.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dCreateBody/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics3dCreateJoint",
+          "state": "candidate",
+          "contractDelta": "Typed constraint creation with backend-specific validation.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "physics-3d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "physics-3d-backend-matrix",
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.physics3dCreateJoint.positive.v1",
+          "negativeTestID": "candidate.physics3dCreateJoint.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dCreateJoint.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dCreateJoint/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics3dQuery",
+          "state": "probe-required",
+          "contractDelta": "Runtime raycast, sweep, contact and trigger queries tied to backend/session.",
+          "route": "runtime physics adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.physics3dQuery.positive.v1",
+          "negativeTestID": "candidate.physics3dQuery.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dQuery.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dQuery/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "physics3dValidate",
+          "state": "candidate",
+          "contractDelta": "Reject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
+          "route": "physics-3d semantic validator",
+          "prerequisites": [
+            "physics-3d-backend-matrix"
+          ],
+          "witnessContractIds": [
+            "physics-3d-backend-matrix"
+          ],
+          "positiveTestID": "candidate.physics3dValidate.positive.v1",
+          "negativeTestID": "candidate.physics3dValidate.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        }
+      ]
+    },
+    {
+      "domain": "particles",
+      "candidates": [
+        {
+          "name": "particleInspect",
+          "state": "candidate",
+          "contractDelta": "Normalized modules, curves, gradients, assets and current configuration.",
+          "route": "particle adapter",
+          "prerequisites": [
+            "particle-schema"
+          ],
+          "witnessContractIds": [
+            "particle-schema"
+          ],
+          "positiveTestID": "candidate.particleInspect.positive.v1",
+          "negativeTestID": "candidate.particleInspect.negative.v1",
+          "fixtureID": "fixture.candidate.particleInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/particleInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "particleConfigure",
+          "state": "probe-required",
+          "contractDelta": "Typed module/curve mutation with persistent read-back, not panel scraping.",
+          "route": "component metadata adapter",
+          "prerequisites": [
+            "particle-schema"
+          ],
+          "witnessContractIds": [
+            "particle-schema"
+          ],
+          "positiveTestID": "candidate.particleConfigure.positive.v1",
+          "negativeTestID": "candidate.particleConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.particleConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/particleConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "particlePlayback",
+          "state": "probe-required",
+          "contractDelta": "Play, stop, clear and completion observation in a named runtime session.",
+          "route": "runtime particle adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.particlePlayback.positive.v1",
+          "negativeTestID": "candidate.particlePlayback.negative.v1",
+          "fixtureID": "fixture.candidate.particlePlayback.v1",
+          "evidenceArtifact": "reports/evidence/candidates/particlePlayback/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        },
+        {
+          "name": "particleValidate",
+          "state": "candidate",
+          "contractDelta": "Validate ranges, required textures/materials/modules and backend limits.",
+          "route": "particle semantic validator",
+          "prerequisites": [
+            "particle-schema"
+          ],
+          "witnessContractIds": [
+            "particle-schema"
+          ],
+          "positiveTestID": "candidate.particleValidate.positive.v1",
+          "negativeTestID": "candidate.particleValidate.negative.v1",
+          "fixtureID": "fixture.candidate.particleValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/particleValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P4"
+        }
+      ]
+    },
+    {
+      "domain": "tween",
+      "candidates": [
+        {
+          "name": "tweenSequenceCreate",
+          "state": "replace",
+          "contractDelta": "Creator has no native tween sequence asset.",
+          "route": "project-code workflow",
+          "prerequisites": [],
+          "replacementReason": "Do not count generated TypeScript as a native authoring tool.",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "tweenSequenceInspect",
+          "state": "replace",
+          "contractDelta": "No persistent native sequence exists to inspect.",
+          "route": "project-code workflow",
+          "prerequisites": [],
+          "replacementReason": "Replace with script diagnostics or a distinct native workflow.",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "tweenSequenceControl",
+          "state": "replace",
+          "contractDelta": "Runtime control would target generated project code, not a native asset.",
+          "route": "runtime project-code workflow",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "replacementReason": "Cover as composition, not a registered native tool.",
+          "proposedExecutionPhase": "P3"
+        },
+        {
+          "name": "tweenSequenceValidate",
+          "state": "replace",
+          "contractDelta": "Validation belongs to TypeScript compile/runtime behavior.",
+          "route": "diagnostics plus runtime session",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "replacementReason": "Replace in count portfolio.",
+          "proposedExecutionPhase": "P3"
+        }
+      ]
+    },
+    {
+      "domain": "rendering-materials",
+      "candidates": [
+        {
+          "name": "materialEdit",
+          "state": "candidate",
+          "contractDelta": "Typed pass/property mutation followed by import and rendered postcondition.",
+          "route": "material adapter plus importer",
+          "prerequisites": [
+            "material-schema",
+            "asset-reimport",
+            "visual-harness"
+          ],
+          "witnessContractIds": [
+            "material-schema",
+            "asset-reimport",
+            "visual-harness"
+          ],
+          "positiveTestID": "candidate.materialEdit.positive.v1",
+          "negativeTestID": "candidate.materialEdit.negative.v1",
+          "fixtureID": "fixture.candidate.materialEdit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/materialEdit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "shaderValidate",
+          "state": "candidate",
+          "contractDelta": "Return real effect importer/compiler diagnostics tied to source locations.",
+          "route": "effect importer diagnostics",
+          "prerequisites": [
+            "effect-compiler-diagnostics"
+          ],
+          "witnessContractIds": [
+            "effect-compiler-diagnostics"
+          ],
+          "positiveTestID": "candidate.shaderValidate.positive.v1",
+          "negativeTestID": "candidate.shaderValidate.negative.v1",
+          "fixtureID": "fixture.candidate.shaderValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/shaderValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "renderPipelineInspect",
+          "state": "candidate",
+          "contractDelta": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query.",
+          "route": "render adapter",
+          "prerequisites": [
+            "render-pipeline-schema"
+          ],
+          "witnessContractIds": [
+            "render-pipeline-schema"
+          ],
+          "positiveTestID": "candidate.renderPipelineInspect.positive.v1",
+          "negativeTestID": "candidate.renderPipelineInspect.negative.v1",
+          "fixtureID": "fixture.candidate.renderPipelineInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/renderPipelineInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "renderConfigurationApply",
+          "state": "candidate",
+          "contractDelta": "Atomic camera/light/fog/skybox configuration with scene read-back.",
+          "route": "compound scene workflow",
+          "prerequisites": [
+            "render-pipeline-schema",
+            "compound-scene-workflow",
+            "visual-harness"
+          ],
+          "witnessContractIds": [
+            "render-pipeline-schema",
+            "compound-scene-workflow",
+            "visual-harness"
+          ],
+          "positiveTestID": "candidate.renderConfigurationApply.positive.v1",
+          "negativeTestID": "candidate.renderConfigurationApply.negative.v1",
+          "fixtureID": "fixture.candidate.renderConfigurationApply.v1",
+          "evidenceArtifact": "reports/evidence/candidates/renderConfigurationApply/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "renderDiagnosticsCollect",
+          "state": "probe-required",
+          "contractDelta": "Target-identified frame/render sampling with bounded results.",
+          "route": "runtime render diagnostics",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.renderDiagnosticsCollect.positive.v1",
+          "negativeTestID": "candidate.renderDiagnosticsCollect.negative.v1",
+          "fixtureID": "fixture.candidate.renderDiagnosticsCollect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/renderDiagnosticsCollect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "lightBakeManage",
+          "state": "probe-required",
+          "contractDelta": "Finite bake job lifecycle and output asset verification.",
+          "route": "version-gated bake API",
+          "prerequisites": [
+            "light-bake-job-api"
+          ],
+          "witnessContractIds": [
+            "light-bake-job-api"
+          ],
+          "positiveTestID": "candidate.lightBakeManage.positive.v1",
+          "negativeTestID": "candidate.lightBakeManage.negative.v1",
+          "fixtureID": "fixture.candidate.lightBakeManage.v1",
+          "evidenceArtifact": "reports/evidence/candidates/lightBakeManage/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        }
+      ]
+    },
+    {
+      "domain": "terrain-model",
+      "candidates": [
+        {
+          "name": "terrainInspect",
+          "state": "candidate",
+          "contractDelta": "Typed terrain dimensions, layers, materials and asset references.",
+          "route": "terrain asset adapter",
+          "prerequisites": [
+            "terrain-schema"
+          ],
+          "witnessContractIds": [
+            "terrain-schema"
+          ],
+          "positiveTestID": "candidate.terrainInspect.positive.v1",
+          "negativeTestID": "candidate.terrainInspect.negative.v1",
+          "fixtureID": "fixture.candidate.terrainInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/terrainInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "terrainCreate",
+          "state": "candidate",
+          "contractDelta": "Create and attach a valid terrain asset/component with reopen proof.",
+          "route": "asset preset plus compound scene workflow",
+          "prerequisites": [
+            "terrain-schema",
+            "asset-create",
+            "compound-scene-workflow"
+          ],
+          "witnessContractIds": [
+            "terrain-schema",
+            "asset-create",
+            "compound-scene-workflow"
+          ],
+          "positiveTestID": "candidate.terrainCreate.positive.v1",
+          "negativeTestID": "candidate.terrainCreate.negative.v1",
+          "fixtureID": "fixture.candidate.terrainCreate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/terrainCreate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "terrainEdit",
+          "state": "probe-required",
+          "contractDelta": "Persistent bounded height/layer mutation through a supported API.",
+          "route": "version-gated terrain API",
+          "prerequisites": [
+            "terrain-write-api"
+          ],
+          "witnessContractIds": [
+            "terrain-write-api"
+          ],
+          "positiveTestID": "candidate.terrainEdit.positive.v1",
+          "negativeTestID": "candidate.terrainEdit.negative.v1",
+          "fixtureID": "fixture.candidate.terrainEdit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/terrainEdit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        },
+        {
+          "name": "modelImportConfigure",
+          "state": "candidate",
+          "contractDelta": "Typed import, reimport and mesh/skeleton/LOD output validation.",
+          "route": "model importer adapter",
+          "prerequisites": [
+            "importer-schema",
+            "asset-reimport",
+            "model-skeleton-metadata"
+          ],
+          "witnessContractIds": [
+            "importer-schema",
+            "asset-reimport",
+            "model-skeleton-metadata"
+          ],
+          "positiveTestID": "candidate.modelImportConfigure.positive.v1",
+          "negativeTestID": "candidate.modelImportConfigure.negative.v1",
+          "fixtureID": "fixture.candidate.modelImportConfigure.v1",
+          "evidenceArtifact": "reports/evidence/candidates/modelImportConfigure/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P5"
+        }
+      ]
+    },
+    {
+      "domain": "localization",
+      "candidates": [
+        {
+          "name": "localizationInspect",
+          "state": "probe-required",
+          "contractDelta": "Discover enabled package, locales, compiled tables and resource mappings.",
+          "route": "localization package adapter",
+          "prerequisites": [
+            "localization-package-api"
+          ],
+          "witnessContractIds": [
+            "localization-package-api"
+          ],
+          "positiveTestID": "candidate.localizationInspect.positive.v1",
+          "negativeTestID": "candidate.localizationInspect.negative.v1",
+          "fixtureID": "fixture.candidate.localizationInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/localizationInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "localizationTableEdit",
+          "state": "probe-required",
+          "contractDelta": "Typed persistent table mutation through documented package API.",
+          "route": "localization package adapter",
+          "prerequisites": [
+            "localization-package-api"
+          ],
+          "witnessContractIds": [
+            "localization-package-api"
+          ],
+          "positiveTestID": "candidate.localizationTableEdit.positive.v1",
+          "negativeTestID": "candidate.localizationTableEdit.negative.v1",
+          "fixtureID": "fixture.candidate.localizationTableEdit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/localizationTableEdit/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "localizationValidate",
+          "state": "candidate",
+          "contractDelta": "Detect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+          "route": "asset and UI validator",
+          "prerequisites": [
+            "localization-resource-contract"
+          ],
+          "witnessContractIds": [
+            "localization-resource-contract"
+          ],
+          "positiveTestID": "candidate.localizationValidate.positive.v1",
+          "negativeTestID": "candidate.localizationValidate.negative.v1",
+          "fixtureID": "fixture.candidate.localizationValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/localizationValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "localizationPreview",
+          "state": "probe-required",
+          "contractDelta": "Switch locale with acknowledged runtime restart and visual/read-back evidence.",
+          "route": "runtime localization adapter",
+          "prerequisites": [
+            "runtime-session",
+            "localization-package-api"
+          ],
+          "witnessContractIds": [
+            "runtime-session",
+            "localization-package-api"
+          ],
+          "positiveTestID": "candidate.localizationPreview.positive.v1",
+          "negativeTestID": "candidate.localizationPreview.negative.v1",
+          "fixtureID": "fixture.candidate.localizationPreview.v1",
+          "evidenceArtifact": "reports/evidence/candidates/localizationPreview/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        }
+      ]
+    },
+    {
+      "domain": "runtime-qa",
+      "candidates": [
+        {
+          "name": "runtimeSessionManage",
+          "state": "candidate",
+          "contractDelta": "Attach, identify, stop and reset finite game-view/browser/simulator sessions.",
+          "route": "runtime session foundation",
+          "prerequisites": [
+            "preview-lifecycle",
+            "runtime-transport"
+          ],
+          "witnessContractIds": [
+            "preview-lifecycle",
+            "runtime-transport"
+          ],
+          "positiveTestID": "candidate.runtimeSessionManage.positive.v1",
+          "negativeTestID": "candidate.runtimeSessionManage.negative.v1",
+          "fixtureID": "fixture.candidate.runtimeSessionManage.v1",
+          "evidenceArtifact": "reports/evidence/candidates/runtimeSessionManage/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P1"
+        },
+        {
+          "name": "runtimeStateObserve",
+          "state": "candidate",
+          "contractDelta": "Bounded allow-listed observations tied to session identity and target kind.",
+          "route": "runtime session foundation",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.runtimeStateObserve.positive.v1",
+          "negativeTestID": "candidate.runtimeStateObserve.negative.v1",
+          "fixtureID": "fixture.candidate.runtimeStateObserve.v1",
+          "evidenceArtifact": "reports/evidence/candidates/runtimeStateObserve/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "runtimeScenarioRun",
+          "state": "candidate",
+          "contractDelta": "Execute finite named steps only; no code string or general method dispatch.",
+          "route": "scenario compiler to typed primitives",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.runtimeScenarioRun.positive.v1",
+          "negativeTestID": "candidate.runtimeScenarioRun.negative.v1",
+          "fixtureID": "fixture.candidate.runtimeScenarioRun.v1",
+          "evidenceArtifact": "reports/evidence/candidates/runtimeScenarioRun/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "runtimeScenarioAssert",
+          "state": "candidate",
+          "contractDelta": "Independent state/image/event assertions rather than request echo.",
+          "route": "runtime observation adapter",
+          "prerequisites": [
+            "runtime-session"
+          ],
+          "witnessContractIds": [
+            "runtime-session"
+          ],
+          "positiveTestID": "candidate.runtimeScenarioAssert.positive.v1",
+          "negativeTestID": "candidate.runtimeScenarioAssert.negative.v1",
+          "fixtureID": "fixture.candidate.runtimeScenarioAssert.v1",
+          "evidenceArtifact": "reports/evidence/candidates/runtimeScenarioAssert/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        }
+      ]
+    },
+    {
+      "domain": "build-platform",
+      "candidates": [
+        {
+          "name": "buildPresetValidate",
+          "state": "candidate",
+          "contractDelta": "Validate target-specific required/unsupported build options before dispatch.",
+          "route": "build schema adapter",
+          "prerequisites": [
+            "build-schema"
+          ],
+          "witnessContractIds": [
+            "build-schema"
+          ],
+          "positiveTestID": "candidate.buildPresetValidate.positive.v1",
+          "negativeTestID": "candidate.buildPresetValidate.negative.v1",
+          "fixtureID": "fixture.candidate.buildPresetValidate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/buildPresetValidate/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "buildArtifactInspect",
+          "state": "candidate",
+          "contractDelta": "Verify terminal build outputs, expected files, hashes and target metadata.",
+          "route": "bounded artifact inspector",
+          "prerequisites": [
+            "build-job"
+          ],
+          "witnessContractIds": [
+            "build-job"
+          ],
+          "positiveTestID": "candidate.buildArtifactInspect.positive.v1",
+          "negativeTestID": "candidate.buildArtifactInspect.negative.v1",
+          "fixtureID": "fixture.candidate.buildArtifactInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/buildArtifactInspect/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "buildTargetLaunch",
+          "state": "probe-required",
+          "contractDelta": "Launch the exact produced artifact on a declared target, not preview fallback.",
+          "route": "target-specific launcher",
+          "prerequisites": [
+            "build-job",
+            "named-target"
+          ],
+          "witnessContractIds": [
+            "build-job",
+            "named-target"
+          ],
+          "positiveTestID": "candidate.buildTargetLaunch.positive.v1",
+          "negativeTestID": "candidate.buildTargetLaunch.negative.v1",
+          "fixtureID": "fixture.candidate.buildTargetLaunch.v1",
+          "evidenceArtifact": "reports/evidence/candidates/buildTargetLaunch/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        },
+        {
+          "name": "buildTargetSmoke",
+          "state": "probe-required",
+          "contractDelta": "Interact with and observe the launched artifact on its declared target.",
+          "route": "runtime session plus target launcher",
+          "prerequisites": [
+            "runtime-session",
+            "named-target"
+          ],
+          "witnessContractIds": [
+            "runtime-session",
+            "named-target"
+          ],
+          "positiveTestID": "candidate.buildTargetSmoke.positive.v1",
+          "negativeTestID": "candidate.buildTargetSmoke.negative.v1",
+          "fixtureID": "fixture.candidate.buildTargetSmoke.v1",
+          "evidenceArtifact": "reports/evidence/candidates/buildTargetSmoke/<creator>-<artifact-sha>.json",
+          "proposedExecutionPhase": "P6"
+        }
+      ]
+    }
+  ],
+  "reserveCandidates": [
+    {
+      "name": "previewSessionStart",
+      "state": "candidate",
+      "contractDelta": "Start one declared preview target and return verified session identity.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "preview lifecycle adapter",
+      "prerequisites": [
+        "preview-lifecycle",
+        "runtime-transport"
+      ],
+      "witnessContractIds": [
+        "preview-lifecycle",
+        "runtime-transport"
+      ],
+      "positiveTestID": "candidate.previewSessionStart.positive.v1",
+      "negativeTestID": "candidate.previewSessionStart.negative.v1",
+      "fixtureID": "fixture.candidate.previewSessionStart.v1",
+      "evidenceArtifact": "reports/evidence/candidates/previewSessionStart/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "previewSessionStop",
+      "state": "candidate",
+      "contractDelta": "Stop one session and prove target termination.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "runtime session lifecycle adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "witnessContractIds": [
+        "runtime-session"
+      ],
+      "positiveTestID": "candidate.previewSessionStop.positive.v1",
+      "negativeTestID": "candidate.previewSessionStop.negative.v1",
+      "fixtureID": "fixture.candidate.previewSessionStop.v1",
+      "evidenceArtifact": "reports/evidence/candidates/previewSessionStop/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "previewSessionInspect",
+      "state": "candidate",
+      "contractDelta": "Read target kind, URL, mode, readiness and stale-session state.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "runtime session state adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "witnessContractIds": [
+        "runtime-session"
+      ],
+      "positiveTestID": "candidate.previewSessionInspect.positive.v1",
+      "negativeTestID": "candidate.previewSessionInspect.negative.v1",
+      "fixtureID": "fixture.candidate.previewSessionInspect.v1",
+      "evidenceArtifact": "reports/evidence/candidates/previewSessionInspect/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "previewResolutionSet",
+      "state": "probe-required",
+      "contractDelta": "Set and read back target resolution through proven IPC.",
+      "domain": "ui-layout",
+      "proposedExecutionPhase": "P2",
+      "route": "version-gated preview resolution IPC",
+      "prerequisites": [
+        "preview-resolution-ipc"
+      ],
+      "witnessContractIds": [
+        "preview-resolution-ipc"
+      ],
+      "positiveTestID": "candidate.previewResolutionSet.positive.v1",
+      "negativeTestID": "candidate.previewResolutionSet.negative.v1",
+      "fixtureID": "fixture.candidate.previewResolutionSet.v1",
+      "evidenceArtifact": "reports/evidence/candidates/previewResolutionSet/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "editorPanelCapture",
+      "state": "candidate",
+      "contractDelta": "Capture one named editor panel with exact bounds and image validation.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "fixed Electron panel capture adapter",
+      "prerequisites": [
+        "panel-layout-contract"
+      ],
+      "witnessContractIds": [
+        "panel-layout-contract"
+      ],
+      "positiveTestID": "candidate.editorPanelCapture.positive.v1",
+      "negativeTestID": "candidate.editorPanelCapture.negative.v1",
+      "fixtureID": "fixture.candidate.editorPanelCapture.v1",
+      "evidenceArtifact": "reports/evidence/candidates/editorPanelCapture/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "runtimeInputDispatch",
+      "state": "candidate",
+      "contractDelta": "Dispatch bounded keyboard/pointer actions to one session target.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "bounded runtime input adapter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "witnessContractIds": [
+        "runtime-session"
+      ],
+      "positiveTestID": "candidate.runtimeInputDispatch.positive.v1",
+      "negativeTestID": "candidate.runtimeInputDispatch.negative.v1",
+      "fixtureID": "fixture.candidate.runtimeInputDispatch.v1",
+      "evidenceArtifact": "reports/evidence/candidates/runtimeInputDispatch/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "runtimeWaitForState",
+      "state": "candidate",
+      "contractDelta": "Bounded condition wait without raw event subscription.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "bounded runtime observation waiter",
+      "prerequisites": [
+        "runtime-session"
+      ],
+      "witnessContractIds": [
+        "runtime-session"
+      ],
+      "positiveTestID": "candidate.runtimeWaitForState.positive.v1",
+      "negativeTestID": "candidate.runtimeWaitForState.negative.v1",
+      "fixtureID": "fixture.candidate.runtimeWaitForState.v1",
+      "evidenceArtifact": "reports/evidence/candidates/runtimeWaitForState/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "runtimeScreenshotAssert",
+      "state": "candidate",
+      "contractDelta": "Compare a target capture using declared tolerance and diagnostics.",
+      "domain": "runtime-qa",
+      "proposedExecutionPhase": "P1",
+      "route": "runtime capture assertion adapter",
+      "prerequisites": [
+        "runtime-session",
+        "screenshot-adapter"
+      ],
+      "witnessContractIds": [
+        "runtime-session",
+        "screenshot-adapter"
+      ],
+      "positiveTestID": "candidate.runtimeScreenshotAssert.positive.v1",
+      "negativeTestID": "candidate.runtimeScreenshotAssert.negative.v1",
+      "fixtureID": "fixture.candidate.runtimeScreenshotAssert.v1",
+      "evidenceArtifact": "reports/evidence/candidates/runtimeScreenshotAssert/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "assetBatchImport",
+      "state": "candidate",
+      "contractDelta": "Preflight and import bounded explicit items with per-item outcome.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "bounded asset-db import workflow",
+      "prerequisites": [
+        "asset-import-contract",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "asset-import-contract",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.assetBatchImport.positive.v1",
+      "negativeTestID": "candidate.assetBatchImport.negative.v1",
+      "fixtureID": "fixture.candidate.assetBatchImport.v1",
+      "evidenceArtifact": "reports/evidence/candidates/assetBatchImport/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "assetBatchOperate",
+      "state": "candidate",
+      "contractDelta": "Bounded move/copy/delete/reimport with partial-failure accounting.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "bounded asset-db lifecycle workflow",
+      "prerequisites": [
+        "asset-operate-contract",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "asset-operate-contract",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.assetBatchOperate.positive.v1",
+      "negativeTestID": "candidate.assetBatchOperate.negative.v1",
+      "fixtureID": "fixture.candidate.assetBatchOperate.v1",
+      "evidenceArtifact": "reports/evidence/candidates/assetBatchOperate/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "assetMissingReferenceAudit",
+      "state": "candidate",
+      "contractDelta": "Cross-scene and asset missing-reference evidence with recovery locations.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset graph and live reference validator",
+      "prerequisites": [
+        "graph-v4",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "graph-v4",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.assetMissingReferenceAudit.positive.v1",
+      "negativeTestID": "candidate.assetMissingReferenceAudit.negative.v1",
+      "fixtureID": "fixture.candidate.assetMissingReferenceAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/assetMissingReferenceAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "sceneHierarchyValidate",
+      "state": "candidate",
+      "contractDelta": "Validate duplicate paths, invalid parenting and persistence invariants.",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2",
+      "route": "live scene hierarchy validator",
+      "prerequisites": [
+        "scene-query-contract"
+      ],
+      "witnessContractIds": [
+        "scene-query-contract"
+      ],
+      "positiveTestID": "candidate.sceneHierarchyValidate.positive.v1",
+      "negativeTestID": "candidate.sceneHierarchyValidate.negative.v1",
+      "fixtureID": "fixture.candidate.sceneHierarchyValidate.v1",
+      "evidenceArtifact": "reports/evidence/candidates/sceneHierarchyValidate/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "sceneReferenceValidate",
+      "state": "candidate",
+      "contractDelta": "Validate serialized node/component/asset references after reopen.",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2",
+      "route": "serialized and live reference validator",
+      "prerequisites": [
+        "graph-v4",
+        "live-prefab-identity"
+      ],
+      "witnessContractIds": [
+        "graph-v4",
+        "live-prefab-identity"
+      ],
+      "positiveTestID": "candidate.sceneReferenceValidate.positive.v1",
+      "negativeTestID": "candidate.sceneReferenceValidate.negative.v1",
+      "fixtureID": "fixture.candidate.sceneReferenceValidate.v1",
+      "evidenceArtifact": "reports/evidence/candidates/sceneReferenceValidate/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "prefabInstantiate",
+      "state": "candidate",
+      "contractDelta": "Instantiate and prove persistent prefab identity and overrides.",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2",
+      "route": "typed prefab instantiate workflow",
+      "prerequisites": [
+        "live-prefab-identity",
+        "compound-scene-workflow"
+      ],
+      "witnessContractIds": [
+        "live-prefab-identity",
+        "compound-scene-workflow"
+      ],
+      "positiveTestID": "candidate.prefabInstantiate.positive.v1",
+      "negativeTestID": "candidate.prefabInstantiate.negative.v1",
+      "fixtureID": "fixture.candidate.prefabInstantiate.v1",
+      "evidenceArtifact": "reports/evidence/candidates/prefabInstantiate/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "prefabApplyOverrides",
+      "state": "candidate",
+      "contractDelta": "Apply a typed override set and verify source/instance result.",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2",
+      "route": "typed prefab override mutation workflow",
+      "prerequisites": [
+        "live-prefab-identity",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "live-prefab-identity",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.prefabApplyOverrides.positive.v1",
+      "negativeTestID": "candidate.prefabApplyOverrides.negative.v1",
+      "fixtureID": "fixture.candidate.prefabApplyOverrides.v1",
+      "evidenceArtifact": "reports/evidence/candidates/prefabApplyOverrides/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "prefabRevertOverrides",
+      "state": "candidate",
+      "contractDelta": "Revert selected overrides and verify restored values.",
+      "domain": "design-prefab",
+      "proposedExecutionPhase": "P2",
+      "route": "typed prefab override revert workflow",
+      "prerequisites": [
+        "live-prefab-identity",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "live-prefab-identity",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.prefabRevertOverrides.positive.v1",
+      "negativeTestID": "candidate.prefabRevertOverrides.negative.v1",
+      "fixtureID": "fixture.candidate.prefabRevertOverrides.v1",
+      "evidenceArtifact": "reports/evidence/candidates/prefabRevertOverrides/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "buildTaskWait",
+      "state": "candidate",
+      "contractDelta": "Wait boundedly for one build task terminal result with cancellation semantics.",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6",
+      "route": "bounded build job waiter",
+      "prerequisites": [
+        "build-job"
+      ],
+      "witnessContractIds": [
+        "build-job"
+      ],
+      "positiveTestID": "candidate.buildTaskWait.positive.v1",
+      "negativeTestID": "candidate.buildTaskWait.negative.v1",
+      "fixtureID": "fixture.candidate.buildTaskWait.v1",
+      "evidenceArtifact": "reports/evidence/candidates/buildTaskWait/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "buildLogInspect",
+      "state": "candidate",
+      "contractDelta": "Return bounded structured diagnostics for one build task.",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6",
+      "route": "bounded structured build log adapter",
+      "prerequisites": [
+        "build-job"
+      ],
+      "witnessContractIds": [
+        "build-job"
+      ],
+      "positiveTestID": "candidate.buildLogInspect.positive.v1",
+      "negativeTestID": "candidate.buildLogInspect.negative.v1",
+      "fixtureID": "fixture.candidate.buildLogInspect.v1",
+      "evidenceArtifact": "reports/evidence/candidates/buildLogInspect/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "buildArtifactServe",
+      "state": "candidate",
+      "contractDelta": "Serve one completed web artifact and return verified URL/lifecycle.",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6",
+      "route": "bounded web artifact server",
+      "prerequisites": [
+        "build-job",
+        "web-artifact"
+      ],
+      "witnessContractIds": [
+        "build-job",
+        "web-artifact"
+      ],
+      "positiveTestID": "candidate.buildArtifactServe.positive.v1",
+      "negativeTestID": "candidate.buildArtifactServe.negative.v1",
+      "fixtureID": "fixture.candidate.buildArtifactServe.v1",
+      "evidenceArtifact": "reports/evidence/candidates/buildArtifactServe/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "projectSettingsValidate",
+      "state": "candidate",
+      "contractDelta": "Validate cross-setting compatibility for the declared Creator/target profile.",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6",
+      "route": "versioned project and target settings validator",
+      "prerequisites": [
+        "project-settings-read",
+        "build-schema"
+      ],
+      "witnessContractIds": [
+        "project-settings-read",
+        "build-schema"
+      ],
+      "positiveTestID": "candidate.projectSettingsValidate.positive.v1",
+      "negativeTestID": "candidate.projectSettingsValidate.negative.v1",
+      "fixtureID": "fixture.candidate.projectSettingsValidate.v1",
+      "evidenceArtifact": "reports/evidence/candidates/projectSettingsValidate/<creator>-<artifact-sha>.json"
+    }
+  ]
+}
