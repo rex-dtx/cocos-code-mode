@@ -4,6 +4,7 @@ import { ExecuteContext } from './execute-types';
 import { getExecuteGuards, registerExecuteGuard } from './execute-guard-registry';
 import { safetyGuard } from './guards/safety-guard';
 import { serializeGuard } from './guards/serialize-guard';
+import { ToolError } from '../tool-error';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
@@ -63,44 +64,55 @@ export class ExecuteTools {
         ['execute', 'javascript', 'code', 'scene', 'editor', 'runtime', 'eval']
     )
     async executeJavascript(args: { context: string, code: string, args?: Record<string, any>, safety_checks?: boolean, timeout_ms?: number }): Promise<{ result: any }> {
-        const projectPath = (Editor.Project as any).path;
-        let ctx: ExecuteContext = {
-            context: args.context === 'editor' ? 'editor' : 'scene',
-            code: args.code,
-            args: args.args,
-            projectPath,
-            safetyChecks: args.safety_checks !== false,
-        };
+        try {
+            const projectPath = (Editor.Project as any).path;
+            let ctx: ExecuteContext = {
+                context: args.context === 'editor' ? 'editor' : 'scene',
+                code: args.code,
+                args: args.args,
+                projectPath,
+                safetyChecks: args.safety_checks !== false,
+            };
 
-        for (const guard of getExecuteGuards()) {
-            if (guard.before) ctx = (await guard.before(ctx)) ?? ctx;
-        }
-
-        let result: any;
-        const timeoutMs = args.timeout_ms ?? DEFAULT_TIMEOUT_MS;
-        if (ctx.context === 'scene') {
-            result = await withTimeout(Editor.Message.request('scene', 'execute-scene-script', {
-                name: packageJSON.name,
-                method: 'runCode',
-                args: [ctx.code, ctx.args],
-            }), timeoutMs, 'scene');
-            // Arbitrary code may mutate the scene — snapshot so undo covers it.
-            await Editor.Message.request('scene', 'snapshot');
-        } else {
-            result = await withTimeout(runEditorCode(ctx.code, ctx.args), timeoutMs, 'editor');
-        }
-
-        for (const guard of getExecuteGuards()) {
-            if (guard.after) {
-                // Deliberate `!== undefined` (not `??`): serializeGuard returns null to
-                // coerce non-serializable values (function/BigInt/circular). `?? result`
-                // would treat that null as "no change" and resurrect the original value,
-                // which then blows up res.json() downstream.
-                const guarded = await guard.after(ctx, result);
-                if (guarded !== undefined) result = guarded;
+            for (const guard of getExecuteGuards()) {
+                if (guard.before) ctx = (await guard.before(ctx)) ?? ctx;
             }
-        }
 
-        return { result: result === undefined ? null : result };
+            let result: any;
+            const timeoutMs = args.timeout_ms ?? DEFAULT_TIMEOUT_MS;
+            if (ctx.context === 'scene') {
+                result = await withTimeout(Editor.Message.request('scene', 'execute-scene-script', {
+                    name: packageJSON.name,
+                    method: 'runCode',
+                    args: [ctx.code, ctx.args],
+                }), timeoutMs, 'scene');
+                // Arbitrary code may mutate the scene — snapshot so undo covers it.
+                await Editor.Message.request('scene', 'snapshot');
+            } else {
+                result = await withTimeout(runEditorCode(ctx.code, ctx.args), timeoutMs, 'editor');
+            }
+
+            for (const guard of getExecuteGuards()) {
+                if (guard.after) {
+                    // Deliberate `!== undefined` (not `??`): serializeGuard returns null to
+                    // coerce non-serializable values (function/BigInt/circular). `?? result`
+                    // would treat that null as "no change" and resurrect the original value,
+                    // which then blows up res.json() downstream.
+                    const guarded = await guard.after(ctx, result);
+                    if (guarded !== undefined) result = guarded;
+                }
+            }
+
+            return { result: result === undefined ? null : result };
+        } catch (error) {
+            if (error instanceof ToolError) throw error;
+            const message = error instanceof Error ? error.message : String(error);
+            throw new ToolError({
+                code: 'EXECUTE_JAVASCRIPT_FAILED',
+                status: 422,
+                message,
+                recovery: 'Review the execution context, code, safety policy, and timeout before retrying.',
+            });
+        }
     }
 }
