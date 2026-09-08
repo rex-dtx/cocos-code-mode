@@ -14,7 +14,9 @@
     "test": "npm run test:unit",
     "test:unit": "node --test tests/unit/*.test.js",
     "test:live": "node --test tests/live/*.test.js",
-    "test:all": "node --test tests/unit/*.test.js tests/live/*.test.js"
+    "test:all": "node --test tests/unit/*.test.js tests/live/*.test.js",
+    "audit:portfolio": "node scripts/audit-tool-portfolio.js",
+    "audit:portfolio:ready": "node scripts/audit-tool-portfolio.js --require-ready"
   },
   "description": "i18n:cc-bridge-3x.description",
   "main": "./dist/main.js",
