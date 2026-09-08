@@ -74,7 +74,7 @@ export class UiTools {
                 throw new Error(`Failed to create native ${args.uiType} node`);
             }
 
-            for (const component of ['cc.UITransform', nativeComponent]) {
+            for (const component of [nativeComponent, 'cc.UITransform']) {
                 await Editor.Message.request('scene', 'create-component', {
                     uuid: nodeUuid,
                     component,
@@ -156,7 +156,14 @@ export class UiTools {
         if (args.text !== undefined) {
             try {
                 const node = await Editor.Message.request('scene', 'query-node', reference.id) as any;
-                const labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
+                let labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
+                if (!labelChild?.uuid) {
+                    const childUuid = await this.createNativeLabelChild(reference.id);
+                    if (childUuid) {
+                        const refreshed = await Editor.Message.request('scene', 'query-node', reference.id) as any;
+                        labelChild = (refreshed?.children || []).find((c: any) => c.name === 'Label');
+                    }
+                }
                 if (!labelChild?.uuid) {
                     const rbErr = await this.rollbackNode(reference.id);
                     throw new ToolError({
@@ -234,6 +241,24 @@ export class UiTools {
         }
 
         return { reference };
+    }
+
+    private async createNativeLabelChild(parentUuid: string): Promise<string | null> {
+        const result = await Editor.Message.request('scene', 'create-node', {
+            name: 'Label',
+            parent: parentUuid,
+        });
+        const childUuid = Array.isArray(result) ? result[0] : result;
+        if (typeof childUuid !== 'string' || !childUuid) return null;
+
+        for (const component of ['cc.Label', 'cc.UITransform']) {
+            await Editor.Message.request('scene', 'create-component', {
+                uuid: childUuid,
+                component,
+            });
+        }
+        await Editor.Message.request('scene', 'snapshot');
+        return childUuid;
     }
 
     /**
