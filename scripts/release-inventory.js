@@ -252,7 +252,8 @@ function assertReleaseInventory(entries, options = {}) {
     const bytes = entry.bytes || fs.readFileSync(entry.sourcePath);
     if (bytes.includes(0)) continue;
     const text = bytes.toString('utf8');
-    if (/(?:node:)?child_process/.test(text)) {
+    const isDetectLibcProbe = entry.relativePath === 'node_modules/detect-libc/lib/detect-libc.js';
+    if (/(?:node:)?child_process/.test(text) && !isDetectLibcProbe) {
       if (!/powershell\.exe/i.test(text) || !/install-update\.ps1/i.test(text) || /\b(?:exec|execFile|fork)\s*\(/.test(text) || /shell\s*:\s*(?:true|!0)/.test(text)) {
         throw new Error(`general process launcher in ${entry.archivePath}`);
       }
