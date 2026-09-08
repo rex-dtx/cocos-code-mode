@@ -30,8 +30,8 @@
     "method": "GET",
     "emptyInputCount": 36,
     "successCount": 14,
-    "clientErrorCount": 21,
-    "serverErrorCount": 1,
+    "clientErrorCount": 22,
+    "serverErrorCount": 0,
     "successTools": [
       "assetGetTree",
       "nodeGetAvailableComponentTypes",
@@ -48,19 +48,14 @@
       "sceneSnapshot",
       "getEditorPreference"
     ],
-    "serverErrorTools": [
+    "serverErrorTools": [],
+    "remediatedValidationTools": [
       "findNodes"
     ],
-    "serverErrorReproduction": {
-      "request": "GET /tools/findNodes",
-      "status": 500,
-      "validQueries": [
-        "GET /tools/findNodes?name=Canvas",
-        "GET /tools/findNodes?componentType=cc.Sprite",
-        "GET /tools/findNodes?name=__unlikely__"
-      ],
-      "validQueryStatus": 200,
-      "classification": "registered-unverified"
+    "remediatedValidation": {
+      "request": "GET /tools/findNodes?maxResults=5",
+      "status": 400,
+      "errorKeyword": "anyOf"
     },
     "note": "Empty-input GET probes provide baseline input/error evidence, not full behavioral qualification."
   },
@@ -71,7 +66,7 @@
     "verification": {
       "build": "pass",
       "unitTests": "164/164 pass",
-      "liveArtifact": "requires Creator extension reload from the new build"
+      "liveArtifact": "reloaded and verified on commit 16fadda"
     }
   },
   "status": {
@@ -79,6 +74,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, and baseline GET smoke behavior. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, and corrected findNodes validation. It does not qualify every tool behavior."
   }
 }
