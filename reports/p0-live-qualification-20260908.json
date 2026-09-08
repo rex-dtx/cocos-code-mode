@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-08T09:28:46Z",
+  "endpoint": "http://127.0.0.1:49650",
+  "qualificationTarget": {
+    "editor": "3.7.3",
+    "engineVersion": "3.7.3",
+    "nativeVersion": "3.7.3",
+    "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one"
+  },
+  "manual": {
+    "utcpVersion": "1.0.1",
+    "manualVersion": "1.0.0",
+    "liveCount": 86,
+    "uniqueLiveCount": 86,
+    "duplicateNames": [],
+    "sourceCount": 86,
+    "sourceOnlyNames": [],
+    "liveOnlyNames": [],
+    "sourceLiveNamesReconcile": true
+  },
+  "buildInfo": {
+    "version": "2.0.0",
+    "commit": "1410578",
+    "branch": "feat/ccb3x-api-capability-expansion",
+    "dirty": true,
+    "builtAt": "2026-09-08T08:30:35.375Z"
+  },
+  "status": {
+    "endpointReachable": true,
+    "targetVersionConfirmed": true,
+    "manualReconciled": true,
+    "allToolBehaviorQualified": false,
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, and exact 86-name source/manual reconciliation. It does not qualify every tool behavior."
+  }
+}
