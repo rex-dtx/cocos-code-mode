@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-08T10:54:05.329Z",
+  "endpoint": "http://127.0.0.1:49650",
+  "target": "Creator 3.7.3",
+  "artifactCommit": "650c489",
+  "sourceManualReconciled": true,
+  "liveSuite": {
+    "command": "npm run test:live",
+    "tests": 146,
+    "passed": 146,
+    "suites": 28
+  },
+  "directEndpointEvidenceCount": 11,
+  "qualifiedBaseline": 11,
+  "requiredNet": 146,
+  "approvalMargin": 22,
+  "requiredApprovalCount": 168,
+  "rows": [
+    {
+      "name": "assetGetTree",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "assetGetAtPath",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetResolvePath",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "assetReadContent",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetFindReferences",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetQuery",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "assetSaveContent",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetGetAvailableUrl",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetCreate",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetImport",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetOperate",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeGetAvailableComponentTypes",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeComponentsGet",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "sceneGetInfo",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "findNodesByAsset",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "findNodesWithMissingAssets",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "findNodes",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "nodeReset",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "callComponentMethod",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "listComponentMethods",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "listComponentClasses",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeClipboard",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeGetTree",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "nodeGetAtPath",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeCreatePrimitive",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeCreate",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeOperate",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editorEnvInfo",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editorViewport",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editorSelect",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editorHistory",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editorGetLogs",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "animationQuery",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "animationEdit",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "propertyArrayElement",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "materialQuery",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetDbQuery",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "inspectorGet",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "inspectorSet",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "inspectorGetDefinition",
+      "method": "GET",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "nodeComponentManage",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editorQuery",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "sceneManage",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "buildManage",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "previewManage",
+      "method": "POST",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "programManage",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectManage",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "executeJavascript",
+      "method": "POST",
+      "status": "qualified",
+      "evidence": "npm run test:live:direct-endpoint-reference"
+    },
+    {
+      "name": "runScriptDiagnostics",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "getScriptDiagnosticContext",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectReadFile",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectWriteFile",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectSearchFiles",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectReplaceInFile",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectFileExists",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "projectListDirectory",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "createUiNode",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "createLabel",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "createButton",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "createSprite",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "runtimePause",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "runtimeResume",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "runtimeSetTimeScale",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "runtimeGetState",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "nodeBatchSet",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "sceneBatchGet",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "assetBatchQuery",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "getPerformanceSnapshot",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "validateScene",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "captureSceneScreenshot",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "captureEditorScreenshot",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "listEditorWindows",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "sceneSnapshot",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "simulateButtonClick",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "bindButtonClickEvent",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "readPrefabJson",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "editPrefabJson",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "duplicatePrefab",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "readProjectInstruction",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "writeProjectInstruction",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "getEditorPreference",
+      "method": "GET",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "setEditorPreference",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "simulateKeyPress",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "simulateKeyCombo",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "simulateMouseClick",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    },
+    {
+      "name": "simulateMouseDrag",
+      "method": "POST",
+      "status": "registered-unverified",
+      "evidence": "no direct endpoint evidence in live suite"
+    }
+  ]
+}
