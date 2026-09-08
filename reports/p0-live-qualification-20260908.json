@@ -21,10 +21,10 @@
   },
   "buildInfo": {
     "version": "2.0.0",
-    "commit": "1410578",
+    "commit": "650c489",
     "branch": "feat/ccb3x-api-capability-expansion",
-    "dirty": true,
-    "builtAt": "2026-09-08T08:30:35.375Z"
+    "dirty": false,
+    "builtAt": "2026-09-08T10:36:49.426Z"
   },
   "baselineReadSmoke": {
     "method": "GET",
@@ -82,6 +82,15 @@
       "failureClass": "executeJavascript error responses returned opaque Internal tool error instead of expected typed safety/timeout/domain errors",
       "qualificationImpact": "baseline cannot be frozen; executeJavascript remains registered-unverified"
     }
+  },
+  "fullLiveQualification": {
+    "command": "npm run test:live",
+    "tests": 146,
+    "passed": 146,
+    "failed": 0,
+    "suites": 28,
+    "status": "pass",
+    "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
   },
   "status": {
     "endpointReachable": true,
