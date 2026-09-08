@@ -134,7 +134,10 @@ export class SceneTools {
                 componentType: { type: 'string', description: 'Exact component class, e.g. cc.Sprite, cc.Label.' },
                 maxResults: { type: 'number', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT, description: 'Cap results.' }
             },
-            required: []
+            anyOf: [
+                { required: ['name'] },
+                { required: ['componentType'] }
+            ],
         },
         { type: 'object', properties: { nodes: { type: 'array', items: { type: 'object', properties: { reference: InstanceReferenceSchema, name: { type: 'string' }, path: { type: 'string' } } } }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['nodes', 'total'] }, "GET", ['scene', 'node', 'find', 'search', 'name', 'component', 'filter']
     )
