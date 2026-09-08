@@ -82,8 +82,8 @@ describe('live: gap-closure — findNodes, assetResolve +4, scene:new-scene NOT-
     it('requires at least one filter', async (t) => {
       if (skip(t)) return;
       const r = await getJson('/tools/findNodes?maxResults=5');
-      assert.equal(r.ok, false, 'should 500');
-      assert.match(String(r.body.error || r.text), /requires at least one/i);
+      assert.equal(r.status, 400, 'schema rejects missing filters before handler execution');
+      assert.ok(Array.isArray(r.body.validationErrors), JSON.stringify(r.body));
     });
 
     it('path prefix is hierarchy path (contains /)', async (t) => {

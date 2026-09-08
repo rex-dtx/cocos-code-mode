@@ -26,11 +26,59 @@
     "dirty": true,
     "builtAt": "2026-09-08T08:30:35.375Z"
   },
+  "baselineReadSmoke": {
+    "method": "GET",
+    "emptyInputCount": 36,
+    "successCount": 14,
+    "clientErrorCount": 21,
+    "serverErrorCount": 1,
+    "successTools": [
+      "assetGetTree",
+      "nodeGetAvailableComponentTypes",
+      "sceneGetInfo",
+      "findNodesWithMissingAssets",
+      "listComponentClasses",
+      "nodeGetTree",
+      "editorEnvInfo",
+      "editorGetLogs",
+      "projectListDirectory",
+      "runtimeGetState",
+      "getPerformanceSnapshot",
+      "listEditorWindows",
+      "sceneSnapshot",
+      "getEditorPreference"
+    ],
+    "serverErrorTools": [
+      "findNodes"
+    ],
+    "serverErrorReproduction": {
+      "request": "GET /tools/findNodes",
+      "status": 500,
+      "validQueries": [
+        "GET /tools/findNodes?name=Canvas",
+        "GET /tools/findNodes?componentType=cc.Sprite",
+        "GET /tools/findNodes?name=__unlikely__"
+      ],
+      "validQueryStatus": 200,
+      "classification": "registered-unverified"
+    },
+    "note": "Empty-input GET probes provide baseline input/error evidence, not full behavioral qualification."
+  },
+  "sourceRemediation": {
+    "tool": "findNodes",
+    "issue": "Schema allowed empty filters while handler required name or componentType, producing HTTP 500 on empty input.",
+    "fix": "Added anyOf schema requirement for name or componentType so invalid empty requests fail before handler execution.",
+    "verification": {
+      "build": "pass",
+      "unitTests": "164/164 pass",
+      "liveArtifact": "requires Creator extension reload from the new build"
+    }
+  },
   "status": {
     "endpointReachable": true,
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, and exact 86-name source/manual reconciliation. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, and baseline GET smoke behavior. It does not qualify every tool behavior."
   }
 }
