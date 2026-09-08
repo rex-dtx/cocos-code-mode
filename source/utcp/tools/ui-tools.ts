@@ -45,31 +45,51 @@ export class UiTools {
             throw new Error(`Unknown UI type: ${args.uiType}. Available: ${Object.keys(UI_PREFABS).join(', ')}`);
         }
 
-        // M1: prefab uuid lookup + (if no parent) scene-root lookup are independent -> 1 round
+        // Prefer Creator's internal prefab when present. Creator 3.7.3 does not
+        // ship the default_ui Label/Button/Sprite prefabs, so those types use a
+        // native node + component fallback instead of failing after registration.
+        const nativeComponent = ({
+            Label: 'cc.Label',
+            Button: 'cc.Button',
+            Sprite: 'cc.Sprite',
+        } as Record<string, string>)[args.uiType];
         const [assetUuid, sceneRoot] = await Promise.all([
             Editor.Message.request('asset-db', 'query-uuid', prefabUrl),
             args.parentReference?.id ? Promise.resolve(null) : Editor.Message.request('scene', 'query-node-tree'),
         ]) as [string | null, any];
-        if (!assetUuid) {
-            throw new Error(`UI prefab not found at ${prefabUrl} — editor version may not include it.`);
-        }
 
-        const options: any = {
+        const options: Record<string, unknown> = {
             name: args.name || args.uiType,
-            assetUuid,
-            type: 'cc.Prefab',
-            unlinkPrefab: false,
+            parent: args.parentReference?.id || sceneRoot?.uuid,
         };
 
-        if (args.parentReference?.id) {
-            options.parent = args.parentReference.id;
+        if (assetUuid) {
+            options.assetUuid = assetUuid;
+            options.type = 'cc.Prefab';
+            options.unlinkPrefab = false;
+        } else if (nativeComponent) {
+            const result = await Editor.Message.request('scene', 'create-node', options);
+            const nodeUuid = Array.isArray(result) ? result[0] : result;
+            if (typeof nodeUuid !== 'string' || !nodeUuid) {
+                throw new Error(`Failed to create native ${args.uiType} node`);
+            }
+
+            for (const component of ['cc.UITransform', nativeComponent]) {
+                await Editor.Message.request('scene', 'create-component', {
+                    uuid: nodeUuid,
+                    component,
+                });
+            }
+
+            await Editor.Message.request('scene', 'snapshot');
+            return { reference: { id: nodeUuid, type: 'cc.Node' } };
         } else {
-            options.parent = sceneRoot?.uuid;
+            throw new Error(`UI prefab not found at ${prefabUrl} — editor version may not include it.`);
         }
 
         const result = await Editor.Message.request('scene', 'create-node', options);
         const nodeUuid = Array.isArray(result) ? result[0] : result;
-        if (!nodeUuid) throw new Error(`Failed to create ${args.uiType} node`);
+        if (typeof nodeUuid !== 'string' || !nodeUuid) throw new Error(`Failed to create ${args.uiType} node`);
 
         await Editor.Message.request('scene', 'snapshot');
         return { reference: { id: nodeUuid, type: 'cc.Node' } };
