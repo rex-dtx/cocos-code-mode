@@ -78,10 +78,23 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "status": "failed",
-      "failureClass": "executeJavascript error responses returned opaque Internal tool error instead of expected typed safety/timeout/domain errors",
-      "qualificationImpact": "baseline cannot be frozen; executeJavascript remains registered-unverified"
+      "tests": 146,
+      "passed": 146,
+      "failed": 0,
+      "suites": 28,
+      "status": "pass"
     }
+  },
+  "baselineLedger": {
+    "report": "reports/p0-baseline-ledger-20260908.json",
+    "registeredTools": 86,
+    "directEndpointEvidence": 11,
+    "qualifiedBaseline": 11,
+    "registeredUnverified": 75,
+    "requiredNet": 146,
+    "approvalMargin": 22,
+    "requiredApprovalCount": 168,
+    "note": "Conservative one-to-one ledger classification. Broad live tests pass, but tools without direct endpoint evidence remain registered-unverified."
   },
   "fullLiveQualification": {
     "command": "npm run test:live",
