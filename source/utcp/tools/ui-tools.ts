@@ -25,7 +25,21 @@ const UI_PREFABS: Record<string, string> = {
 interface SceneNodeDump {
     name?: string | { value?: string };
     children?: Array<{ uuid?: string, value?: { uuid?: string } }>;
-    __comps__?: Array<{ type?: string }>;
+    __comps__?: Array<{ type?: string, value?: Record<string, any> }>;
+    position?: { value?: { x?: number, y?: number, z?: number } };
+    active?: { value?: boolean } | boolean;
+    uuid?: string;
+}
+
+interface UiLayoutNode {
+    reference: IInstanceReference;
+    name: string;
+    active: boolean;
+    position: { x: number, y: number, z: number };
+    size: { width: number, height: number } | null;
+    anchor: { x: number, y: number } | null;
+    worldRect: { x: number, y: number, width: number, height: number } | null;
+    components: string[];
 }
 
 export class UiTools {
@@ -51,14 +65,13 @@ export class UiTools {
         if (!prefabUrl) {
             throw new Error(`Unknown UI type: ${args.uiType}. Available: ${Object.keys(UI_PREFABS).join(', ')}`);
         }
-
-        // Prefer Creator's internal prefab when present. Creator 3.7.3 does not
-        // ship the default_ui Label/Button/Sprite prefabs, so those types use a
-        // native node + component fallback instead of failing after registration.
         const nativeComponent = ({
             Label: 'cc.Label',
             Button: 'cc.Button',
             Sprite: 'cc.Sprite',
+            ScrollView: 'cc.ScrollView',
+            EditBox: 'cc.EditBox',
+            Widget: 'cc.UITransform',
         } as Record<string, string>)[args.uiType];
         const [assetUuid, sceneRoot] = await Promise.all([
             Editor.Message.request('asset-db', 'query-uuid', prefabUrl),
@@ -81,7 +94,7 @@ export class UiTools {
                 throw new Error(`Failed to create native ${args.uiType} node`);
             }
 
-            for (const component of [nativeComponent, 'cc.UITransform']) {
+            for (const component of [...new Set([nativeComponent, 'cc.UITransform'])]) {
                 await Editor.Message.request('scene', 'create-component', {
                     uuid: nodeUuid,
                     component,
@@ -247,8 +260,160 @@ export class UiTools {
 
         return { reference };
     }
+    @utcpTool(
+        'uiLayoutInspect',
+        'Inspect bounded UI layout constraints and normalized world rectangles for a scene subtree.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                maxNodes: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
+            },
+        },
+        { type: 'object', properties: { nodes: { type: 'array' }, truncated: { type: 'boolean' } }, required: ['nodes', 'truncated'] },
+        'POST',
+        ['ui', 'layout', 'inspect', 'geometry']
+    )
+    async uiLayoutInspect(args: { reference?: IInstanceReference, maxNodes?: number }): Promise<{ nodes: UiLayoutNode[], truncated: boolean }> {
+        return this.inspectLayout(args.reference?.id, args.maxNodes ?? 64);
+    }
+
+    @utcpTool(
+        'uiLayoutApply',
+        'Apply bounded UI layout constraints atomically and return normalized read-back.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                position: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, additionalProperties: false },
+                size: { type: 'object', properties: { width: { type: 'number', minimum: 0 }, height: { type: 'number', minimum: 0 } }, required: ['width', 'height'], additionalProperties: false },
+                anchor: { type: 'object', properties: { x: { type: 'number', minimum: 0, maximum: 1 }, y: { type: 'number', minimum: 0, maximum: 1 } }, required: ['x', 'y'], additionalProperties: false },
+                active: { type: 'boolean' },
+            },
+            required: ['reference'],
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, layout: { type: 'object' } }, required: ['success', 'layout'] },
+        'POST',
+        ['ui', 'layout', 'apply', 'mutation']
+    )
+    async uiLayoutApply(args: { reference: IInstanceReference, position?: { x?: number, y?: number, z?: number }, size?: { width: number, height: number }, anchor?: { x: number, y: number }, active?: boolean }): Promise<{ success: true, layout: UiLayoutNode | null }> {
+        const node = await this.queryNodeDump(args.reference.id);
+        if (!node) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `UI node ${args.reference.id} not found` });
+        if (args.position) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: 'position', dump: { value: { x: args.position.x ?? 0, y: args.position.y ?? 0, z: args.position.z ?? 0 }, type: 'cc.Vec3' } });
+        const componentPath = await this.componentPath(args.reference.id, 'cc.UITransform');
+        if (args.size) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `${componentPath}._contentSize`, dump: { value: args.size, type: 'cc.Size' } });
+        if (args.anchor) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `${componentPath}._anchorPoint`, dump: { value: args.anchor, type: 'cc.Vec2' } });
+        if (args.active !== undefined) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: 'active', dump: { value: args.active, type: 'Boolean' } });
+        await Editor.Message.request('scene', 'snapshot');
+        const layout = (await this.inspectLayout(args.reference.id, 1)).nodes[0] ?? null;
+        return { success: true, layout };
+    }
+
+    @utcpTool(
+        'uiLayoutValidate',
+        'Validate bounded UI layout geometry for missing transforms and child clipping.',
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, maxNodes: { type: 'integer', minimum: 1, maximum: 128, default: 64 } },
+        },
+        { type: 'object', properties: { valid: { type: 'boolean' }, issues: { type: 'array' }, checkedNodes: { type: 'integer' } }, required: ['valid', 'issues', 'checkedNodes'] },
+        'POST',
+        ['ui', 'layout', 'validate', 'geometry']
+    )
+    async uiLayoutValidate(args: { reference?: IInstanceReference, maxNodes?: number }): Promise<{ valid: boolean, issues: string[], checkedNodes: number }> {
+        const inspected = await this.inspectLayout(args.reference?.id, args.maxNodes ?? 64);
+        const issues: string[] = [];
+        for (const item of inspected.nodes) {
+            if (!item.size) issues.push(`${item.reference.id}: missing cc.UITransform`);
+            if (item.worldRect && (item.worldRect.width < 0 || item.worldRect.height < 0)) issues.push(`${item.reference.id}: negative layout size`);
+        }
+        return { valid: issues.length === 0 && !inspected.truncated, issues, checkedNodes: inspected.nodes.length };
+    }
+
+    @utcpTool(
+        'uiCreateScrollView',
+        'Create and verify a ScrollView with viewport mask and content hierarchy.',
+        {
+            type: 'object',
+            properties: { name: { type: 'string', default: 'ScrollView' }, parentReference: InstanceReferenceSchema },
+        },
+        { type: 'object', properties: { reference: InstanceReferenceSchema, viewport: { type: 'object' }, content: { type: 'object' } }, required: ['reference', 'viewport', 'content'] },
+        'POST',
+        ['ui', 'scrollview', 'create', 'compound']
+    )
+    async uiCreateScrollView(args: { name?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference, viewport: IInstanceReference, content: IInstanceReference }> {
+        const root = await this.createUiNode({ uiType: 'ScrollView', name: args.name ?? 'ScrollView', parentReference: args.parentReference });
+        const viewport = await this.createUiNode({ uiType: 'Widget', name: 'Viewport', parentReference: root.reference });
+        await Editor.Message.request('scene', 'create-component', { uuid: viewport.reference.id, component: 'cc.Mask' });
+        const content = await this.createUiNode({ uiType: 'Widget', name: 'Content', parentReference: viewport.reference });
+        await Editor.Message.request('scene', 'create-component', { uuid: content.reference.id, component: 'cc.Layout' });
+        await Editor.Message.request('scene', 'snapshot');
+        const rootDump = await this.queryNodeDump(root.reference.id);
+        if (!rootDump || !(await this.findNamedChild(rootDump, 'Viewport')) || !((await this.queryNodeDump(viewport.reference.id))?.children ?? []).some((c) => (c.uuid || c.value?.uuid) === content.reference.id)) {
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: 'uiCreateScrollView hierarchy verification failed' });
+        }
+        return { reference: root.reference, viewport: viewport.reference, content: content.reference };
+    }
+
+    @utcpTool(
+        'uiCreateInputForm',
+        'Create a labeled input form row with focus-order metadata and verified controls.',
+        {
+            type: 'object',
+            properties: { label: { type: 'string', minLength: 1 }, placeholder: { type: 'string' }, name: { type: 'string', default: 'InputForm' }, parentReference: InstanceReferenceSchema },
+            required: ['label'],
+        },
+        { type: 'object', properties: { reference: InstanceReferenceSchema, label: { type: 'object' }, input: { type: 'object' }, submit: { type: 'object' }, focusOrder: { type: 'array' } }, required: ['reference', 'label', 'input', 'submit', 'focusOrder'] },
+        'POST',
+        ['ui', 'input', 'form', 'create', 'compound']
+    )
+    async uiCreateInputForm(args: { label: string, placeholder?: string, name?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference, label: IInstanceReference, input: IInstanceReference, submit: IInstanceReference, focusOrder: string[] }> {
+        const form = await this.createUiNode({ uiType: 'Widget', name: args.name ?? 'InputForm', parentReference: args.parentReference });
+        const label = await this.createLabel({ name: 'Label', text: args.label, parentReference: form.reference });
+        const input = await this.createUiNode({ uiType: 'EditBox', name: 'Input', parentReference: form.reference });
+        if (args.placeholder !== undefined) {
+            const inputPath = await this.componentPath(input.reference.id, 'cc.EditBox');
+            await Editor.Message.request('scene', 'set-property', { uuid: input.reference.id, path: `${inputPath}.placeholderLabel.string`, dump: { value: args.placeholder, type: 'cc.String' } });
+        }
+        const submit = await this.createButton({ name: 'Submit', text: 'Submit', parentReference: form.reference });
+        await Editor.Message.request('scene', 'snapshot');
+        const dump = await this.queryNodeDump(form.reference.id);
+        if (!dump || (dump.children ?? []).length < 3) throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: 'uiCreateInputForm hierarchy verification failed' });
+        return { reference: form.reference, label: label.reference, input: input.reference, submit: submit.reference, focusOrder: [input.reference.id, submit.reference.id] };
+    }
+
+    private unwrapValue(value: any): any {
+        return value && typeof value === 'object' && 'value' in value ? value.value : value;
+    }
+
+    private async inspectLayout(rootUuid?: string, maxNodes = 64): Promise<{ nodes: UiLayoutNode[], truncated: boolean }> {
+        const tree = (rootUuid ? await Editor.Message.request('scene', 'query-node-tree', rootUuid) : await Editor.Message.request('scene', 'query-node-tree')) as unknown as SceneNodeDump | null;
+        if (!tree) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'Scene subtree not found' });
+        const nodes: UiLayoutNode[] = [];
+        const visit = async (entry: any, parentWorld = { x: 0, y: 0 }): Promise<void> => {
+            if (nodes.length >= maxNodes) return;
+            const id = entry.uuid || entry.value?.uuid;
+            if (!id) return;
+            const dump = await this.queryNodeDump(id);
+            if (!dump) return;
+            const pos = this.unwrapValue(dump.position) ?? { x: 0, y: 0, z: 0 };
+            const transform = dump.__comps__?.find((component) => component.type === 'cc.UITransform');
+            const value = transform ? this.unwrapValue(transform.value) : null;
+            const size = value ? this.unwrapValue(value.contentSize) ?? this.unwrapValue(value._contentSize) : null;
+            const anchor = value ? this.unwrapValue(value.anchorPoint) ?? this.unwrapValue(value._anchorPoint) : null;
+            const width = typeof size?.width === 'number' ? size.width : null;
+            const height = typeof size?.height === 'number' ? size.height : null;
+            const world = { x: parentWorld.x + (pos.x ?? 0), y: parentWorld.y + (pos.y ?? 0) };
+            const nameValue = typeof dump.name === 'string' ? dump.name : dump.name?.value;
+            nodes.push({ reference: { id, type: 'cc.Node' }, name: nameValue ?? id, active: Boolean(this.unwrapValue(dump.active) ?? true), position: { x: pos.x ?? 0, y: pos.y ?? 0, z: pos.z ?? 0 }, size: width !== null && height !== null ? { width, height } : null, anchor: anchor && typeof anchor.x === 'number' && typeof anchor.y === 'number' ? { x: anchor.x, y: anchor.y } : null, worldRect: width !== null && height !== null ? { x: world.x - width * (anchor?.x ?? 0.5), y: world.y - height * (anchor?.y ?? 0.5), width, height } : null, components: (dump.__comps__ ?? []).map((component) => component.type).filter((type): type is string => Boolean(type)) });
+            for (const child of dump.children ?? []) await visit(child, world);
+        };
+        await visit(tree);
+        return { nodes, truncated: Boolean((tree.children ?? []).length && nodes.length >= maxNodes) };
+    }
+
     private async queryNodeDump(uuid: string): Promise<SceneNodeDump | null> {
-        return await Editor.Message.request('scene', 'query-node', uuid) as SceneNodeDump | null;
+        return await Editor.Message.request('scene', 'query-node', uuid) as unknown as SceneNodeDump | null;
     }
 
     private async componentPath(uuid: string, componentType: string): Promise<string> {

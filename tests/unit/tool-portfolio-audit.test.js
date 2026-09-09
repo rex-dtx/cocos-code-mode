@@ -74,7 +74,7 @@ describe('minimum tool portfolio audit', () => {
         mutate: (portfolio) => {
           const candidate = portfolio.domains
             .flatMap((domain) => domain.candidates)
-            .find((row) => row.name === 'uiLayoutInspect');
+            .find((row) => row.name === 'uiAccessibilityAudit');
           candidate.prerequisites = [];
         },
         error: /reviewed non-empty prerequisites required/,
@@ -87,7 +87,7 @@ describe('minimum tool portfolio audit', () => {
         mutate: (portfolio) => {
           const candidate = portfolio.domains
             .flatMap((domain) => domain.candidates)
-            .find((row) => row.name === 'uiLayoutInspect');
+            .find((row) => row.name === 'uiAccessibilityAudit');
           candidate.prerequisites = ['missing-witness-contract'];
           candidate.witnessContractIds = ['missing-witness-contract'];
         },

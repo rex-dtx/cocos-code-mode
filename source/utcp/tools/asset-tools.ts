@@ -446,6 +446,49 @@ export class AssetTools {
         let b64:string; try{ b64=await Editor.Message.request(packageJSON.name,'generate-preview',args.reference.id,args.imageSize||512,args.imageSize||512,(args.jpegQuality||80)/100);} finally{ await Editor.Panel.close(previewPanel); } if(!b64) throw new Error(`Failed to generate preview for asset ${args.reference.id}.`); return {type:"image",data:b64,mimeType:"image/jpeg"};
     }
 
+    @utcpTool('assetImportSettingsGet', 'Read normalized importer settings and source metadata for one asset.', {
+        type: 'object',
+        properties: { reference: InstanceReferenceSchema },
+        required: ['reference'],
+    }, { type: 'object', properties: { reference: InstanceReferenceSchema, importer: { type: 'string' }, settings: { type: 'object' }, source: { type: 'object' } }, required: ['reference', 'importer', 'settings', 'source'] }, 'GET', ['asset', 'import', 'settings', 'inspect'])
+    async assetImportSettingsGet(args: { reference: IInstanceReference }): Promise<{ reference: IInstanceReference, importer: string, settings: Record<string, unknown>, source: Record<string, unknown> }> {
+        const info: any = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
+        if (!info) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${args.reference.id} not found` });
+        const source = { uuid: info.uuid, url: info.url, type: info.type, name: info.name, isDirectory: Boolean(info.isDirectory) };
+        const settings = info.importerSettings ?? info.meta ?? {};
+        return { reference: { id: info.uuid ?? args.reference.id, type: info.type ?? args.reference.type }, importer: info.importer ?? '', settings: typeof settings === 'object' && settings ? settings : {}, source };
+    }
+
+    @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with importer and dependency metadata.', {
+        type: 'object',
+        properties: { assetPath: { type: 'string' }, maxAssets: { type: 'integer', minimum: 1, maximum: 512, default: 128 } },
+    }, { type: 'object', properties: { assets: { type: 'array' }, truncated: { type: 'boolean' }, count: { type: 'integer' } }, required: ['assets', 'truncated', 'count'] }, 'GET', ['asset', 'manifest', 'export', 'dependencies'])
+    async assetManifestExport(args: { assetPath?: string, maxAssets?: number }): Promise<{ assets: Array<Record<string, unknown>>, truncated: boolean, count: number }> {
+        const maxAssets = Math.min(args.maxAssets ?? 128, 512);
+        const pattern = `${normalizePath(args.assetPath)}/**`;
+        const rows: any[] = await queryAssetsCompat({ pattern });
+        const assets = rows.filter((row) => !row.isDirectory).sort((a, b) => String(a.url).localeCompare(String(b.url))).slice(0, maxAssets).map((row) => ({
+            uuid: row.uuid, url: row.url, type: row.type, importer: row.importer ?? '', name: row.name, isSubAsset: Boolean(row.isSubAsset),
+        }));
+        return { assets, truncated: rows.filter((row) => !row.isDirectory).length > assets.length, count: assets.length };
+    }
+
+    @utcpTool('assetUsageAnalyze', 'Find bounded asset candidates with no scene-node references and explicit dynamic-load caveat.', {
+        type: 'object',
+        properties: { assetPath: { type: 'string' }, maxAssets: { type: 'integer', minimum: 1, maximum: 128, default: 64 } },
+    }, { type: 'object', properties: { candidates: { type: 'array' }, checkedAssets: { type: 'integer' }, dynamicLoadCaveat: { type: 'string' } }, required: ['candidates', 'checkedAssets', 'dynamicLoadCaveat'] }, 'GET', ['asset', 'usage', 'analyze', 'references'])
+    async assetUsageAnalyze(args: { assetPath?: string, maxAssets?: number }): Promise<{ candidates: Array<Record<string, unknown>>, checkedAssets: number, dynamicLoadCaveat: string }> {
+        const maxAssets = Math.min(args.maxAssets ?? 64, 128);
+        const rows: any[] = await queryAssetsCompat({ pattern: `${normalizePath(args.assetPath)}/**` });
+        const files = rows.filter((row) => !row.isDirectory && row.uuid).slice(0, maxAssets);
+        const candidates: Array<Record<string, unknown>> = [];
+        for (const row of files) {
+            const refs = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', row.uuid).catch(() => []);
+            if (Array.isArray(refs) && refs.length === 0) candidates.push({ uuid: row.uuid, url: row.url, type: row.type, confidence: 'scene-unreferenced' });
+        }
+        return { candidates, checkedAssets: files.length, dynamicLoadCaveat: 'Scene references do not detect runtime addressables, resources.load, or string-based dynamic loads.' };
+    }
+
     private generateTypescriptClassTemplate(className: string): string {
         return `import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;

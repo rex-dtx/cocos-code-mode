@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T07:41:14Z",
+  "checkedAt": "2026-09-09T07:46:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "2601dd2-dirty",
@@ -11,20 +11,20 @@
   "manual": {
     "utcpVersion": "1.0.1",
     "manualVersion": "1.0.0",
-    "liveCount": 86,
-    "uniqueLiveCount": 86,
+    "liveCount": 95,
+    "uniqueLiveCount": 95,
     "duplicateNames": [],
-    "sourceCount": 86,
+    "sourceCount": 95,
     "sourceOnlyNames": [],
     "liveOnlyNames": [],
     "sourceLiveNamesReconcile": true
   },
   "buildInfo": {
     "version": "2.0.0",
-    "commit": "2601dd2",
+    "commit": "248fd37",
     "branch": "feat/ccb3x-api-capability-expansion",
     "dirty": true,
-    "builtAt": "2026-09-09T07:33:08.523Z"
+    "builtAt": "2026-09-09T08:06:07.506Z"
   },
   "baselineReadSmoke": {
     "method": "GET",
@@ -152,9 +152,31 @@
     "verification": {
       "build": "pass",
       "unitTests": "165/165 pass",
-      "focusedLiveTest": "35/35 pass; both diagnostics endpoints returned structured project compiler errors and bounded source context",
-      "fullLiveSuite": "193/193 pass",
-      "liveArtifact": "2601dd2 dirty=true"
+      "focusedLiveTest": "36/36 pass; both diagnostics endpoints returned structured project compiler errors and bounded source context",
+      "fullLiveSuite": "195/195 pass",
+      "liveArtifact": "248fd37 dirty=true"
+    }
+  },
+  "buttonBindingQualification": {
+    "tool": "bindButtonClickEvent",
+    "issue": "Creator 3.7 EventHandler construction had no direct live qualification.",
+    "verification": {
+      "focusedLiveTest": "13/13 pass",
+      "positive": "cc.Button + cc.Label target with onEnable handler returned handlerCount=1",
+      "negative": "missing handler returned HTTP 500 typed failure",
+      "liveArtifact": "248fd37 dirty=true"
+    }
+  },
+  "runtimeExpansionQualification": {
+    "tools": ["runtimePreviewControl", "uiLayoutInspect", "uiLayoutApply", "uiLayoutValidate", "uiCreateScrollView", "uiCreateInputForm", "assetImportSettingsGet", "assetManifestExport", "assetUsageAnalyze"],
+    "status": "qualified",
+    "verification": {
+      "focusedReadOnlyTest": "37/37 pass",
+      "focusedUiTest": "14/14 pass",
+      "positive": "runtime lifecycle, layout read/apply/validate, ScrollView hierarchy, labeled input form, importer settings, deterministic manifest, and scene usage analysis all returned typed successful outcomes",
+      "negative": "unknown runtime operation, missing layout node, and missing asset returned typed HTTP 400/404 failures",
+      "fullLiveSuite": "197/197 pass",
+      "liveArtifact": "248fd37 dirty=true"
     }
   },
   "versionCompatibilityFindings": [
@@ -193,29 +215,31 @@
   },
   "liveSuites": {
     "focusedGapClosure": {
-      "tests": 10,
-      "passed": 10,
+      "tests": 13,
+      "passed": 13,
       "failed": 0
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 193,
-      "passed": 193,
+      "tests": 197,
+      "passed": 197,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 85,
-    "qualifiedBaseline": 85,
-    "registeredUnverified": 1,
-    "requiredNet": 72,
-    "approvalMargin": 1,
-    "requiredApprovalCount": 90
+    "directEndpointEvidence": 86,
+    "qualifiedBaseline": 86,
+    "qualifiedExpansion": 9,
+    "registeredToolCount": 95,
+    "registeredUnverified": 0,
+    "requiredNet": 71,
+    "approvalMargin": 0,
+    "requiredApprovalCount": 89
   },
   "fullLiveQualification": {
-    "tests": 193,
-    "passed": 193,
+    "tests": 197,
+    "passed": 197,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -224,7 +248,7 @@
     "endpointReachable": true,
     "targetVersionConfirmed": true,
     "manualReconciled": true,
-    "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, bounded off-screen mouse input emission, native button click-event simulation, active-preview runtime pause/resume state transitions, and TypeScript diagnostic/context execution across sixty-nine directly qualified baseline endpoint contracts. bindButtonClickEvent remains unverified until the reloaded artifact contains the Creator 3.7 EventHandler constructor fix."
+    "allToolBehaviorQualified": true,
+    "note": "This check proves the live Creator 3.7.3 endpoint, exact 95-name source/manual reconciliation, 86-tool frozen baseline, nine runtime/UI/asset expansions, baseline GET smoke behavior, native and direct UI creation, compound ScrollView/input-form workflows, layout read/apply/validate, importer settings, deterministic asset manifest, scene usage analysis, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, bounded off-screen mouse input emission, native button click-event simulation, active-preview runtime pause/resume state transitions, TypeScript diagnostic/context execution, and full 197/197 live suite success. Creator 3.8 remains unqualified."
   }
 }

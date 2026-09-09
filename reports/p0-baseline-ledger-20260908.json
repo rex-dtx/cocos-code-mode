@@ -1,21 +1,33 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T07:41:14Z",
+  "checkedAt": "2026-09-09T08:45:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
-  "artifactCommit": "2601dd2-dirty",
+  "artifactCommit": "248fd37-dirty",
   "sourceManualReconciled": true,
+  "registeredToolCount": 95,
+  "expansionTools": [
+    { "name": "runtimePreviewControl", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "uiLayoutInspect", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
+    { "name": "uiLayoutApply", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
+    { "name": "uiLayoutValidate", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
+    { "name": "uiCreateScrollView", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
+    { "name": "uiCreateInputForm", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
+    { "name": "assetImportSettingsGet", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "assetManifestExport", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "assetUsageAnalyze", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" }
+  ],
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 193,
-    "passed": 193,
+    "tests": 197,
+    "passed": 197,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 85,
-  "qualifiedBaseline": 85,
-  "requiredNet": 72,
-  "approvalMargin": 1,
-  "requiredApprovalCount": 90,
+  "directEndpointEvidenceCount": 86,
+  "qualifiedBaseline": 86,
+  "requiredNet": 71,
+  "approvalMargin": 0,
+  "requiredApprovalCount": 89,
   "rows": [
     {
       "name": "assetGetTree",
@@ -464,8 +476,8 @@
     {
       "name": "bindButtonClickEvent",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "readPrefabJson",

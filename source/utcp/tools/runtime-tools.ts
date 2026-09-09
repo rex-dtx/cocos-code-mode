@@ -88,4 +88,62 @@ export class RuntimeTools {
         }
         return { paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
     }
+    @utcpTool(
+        'runtimePreviewControl',
+        'Manage one Creator preview session lifecycle and optionally return runtime state. Operations start, pause, resume, stop, step, or state.',
+        {
+            type: 'object',
+            properties: {
+                operation: { type: 'string', enum: ['start', 'pause', 'resume', 'stop', 'step', 'state'] },
+            },
+            required: ['operation'],
+        },
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                operation: { type: 'string' },
+                state: {
+                    type: 'object',
+                    properties: {
+                        paused: { type: 'boolean' },
+                        timeScale: { type: 'number' },
+                        frameCount: { type: 'number' },
+                    },
+                },
+            },
+            required: ['success', 'operation'],
+        },
+        'POST',
+        ['runtime', 'session', 'preview', 'start', 'stop', 'pause', 'resume', 'step', 'state']
+    )
+    async runtimeSessionManage(args: { operation: 'start' | 'pause' | 'resume' | 'stop' | 'step' | 'state' }): Promise<{
+        success: boolean,
+        operation: string,
+        state?: { paused: boolean, timeScale: number, frameCount: number },
+    }> {
+        switch (args.operation) {
+            case 'start':
+                await Editor.Message.request('scene', 'editor-preview-set-play', true);
+                return { success: true, operation: args.operation };
+            case 'stop':
+                await Editor.Message.request('scene', 'editor-preview-set-play', false);
+                return { success: true, operation: args.operation };
+            case 'pause':
+                await Editor.Message.request('scene', 'editor-preview-call-method', 'pause', true);
+                return { success: true, operation: args.operation };
+            case 'resume':
+                await Editor.Message.request('scene', 'editor-preview-call-method', 'resume', true);
+                return { success: true, operation: args.operation };
+            case 'step':
+                await Editor.Message.request('scene', 'editor-preview-call-method', 'step');
+                return { success: true, operation: args.operation };
+            case 'state': {
+                const state = await this.runtimeGetState();
+                return { success: true, operation: args.operation, state };
+            }
+            default:
+                throw new Error(`runtimeSessionManage: unknown operation ${String(args.operation)}`);
+        }
+    }
 }
