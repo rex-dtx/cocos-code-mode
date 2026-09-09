@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T06:02:30Z",
+  "checkedAt": "2026-09-09T06:20:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -194,24 +194,24 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 174,
-      "passed": 174,
+      "tests": 177,
+      "passed": 177,
       "failed": 0,
       "suites": 30,
       "status": "pass"
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 54,
-    "qualifiedBaseline": 54,
-    "registeredUnverified": 32,
-    "requiredNet": 103,
+    "directEndpointEvidence": 59,
+    "qualifiedBaseline": 59,
+    "registeredUnverified": 27,
+    "requiredNet": 98,
     "approvalMargin": 18,
-    "requiredApprovalCount": 121
+    "requiredApprovalCount": 116
   },
   "fullLiveQualification": {
-    "tests": 176,
-    "passed": 176,
+    "tests": 177,
+    "passed": 177,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -221,6 +221,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and forty directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, project/build reads, and forty-five directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
