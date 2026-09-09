@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:29:30Z",
+  "checkedAt": "2026-09-09T05:33:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -82,8 +82,8 @@
     }
   },
   "readOnlyEndpointQualification": {
-    "tests": 24,
-    "passed": 24,
+    "tests": 26,
+    "passed": 26,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -108,6 +108,11 @@
       "editorQuery",
       "assetDbQuery",
       "materialQuery",
+      "sceneBatchGet",
+      "assetBatchQuery",
+      "validateScene",
+      "captureSceneScreenshot",
+      "captureEditorScreenshot",
       "nodeGetAtPath",
       "listComponentMethods",
       "animationQuery",
@@ -181,12 +186,12 @@
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 41,
-    "qualifiedBaseline": 41,
-    "registeredUnverified": 45,
-    "requiredNet": 116,
+    "directEndpointEvidence": 46,
+    "qualifiedBaseline": 46,
+    "registeredUnverified": 40,
+    "requiredNet": 111,
     "approvalMargin": 18,
-    "requiredApprovalCount": 134
+    "requiredApprovalCount": 129
   },
   "fullLiveQualification": {
     "tests": 171,
@@ -200,6 +205,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty-seven directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and thirty-two directly qualified read-only and bounded read/diagnostic endpoint contracts. It does not qualify every tool behavior."
   }
 }

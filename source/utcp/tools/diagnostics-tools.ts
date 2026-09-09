@@ -7,6 +7,17 @@ import { VERBOSE_DIAGNOSTICS_LIMIT } from '../utils/verbose';
 
 const execFileAsync = promisify(execFile);
 
+function tscCommand(projectPath: string, tsconfig: string): { command: string, args: string[] } {
+    const localTsc = path.join(projectPath, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
+    const compilerArgs = ['--noEmit', '--pretty', 'false', '-p', tsconfig];
+    if (process.platform === 'win32') {
+        const commandLine = [`"${localTsc}"`, ...compilerArgs.map(arg => `"${arg.replace(/"/g, '\\"')}"`)].join(' ');
+        return { command: process.env.ComSpec || 'cmd.exe', args: ['/d', '/s', '/c', commandLine] };
+    }
+    return { command: localTsc, args: compilerArgs };
+}
+
+
 interface TscDiagnostic {
     file: string;
     line: number;
@@ -100,7 +111,8 @@ export class DiagnosticsTools {
         }
 
         try {
-            const { stdout } = await execFileAsync('npx', ['tsc', '--noEmit', '--pretty', 'false', '-p', tsconfig], {
+            const compiler = tscCommand(projectPath, tsconfig);
+            const { stdout } = await execFileAsync(compiler.command, compiler.args, {
                 cwd: projectPath,
                 timeout: 60_000,
                 maxBuffer: 10 * 1024 * 1024,
