@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T06:40:00Z",
+  "checkedAt": "2026-09-09T06:48:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 181,
-    "passed": 181,
+    "tests": 182,
+    "passed": 182,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 67,
-  "qualifiedBaseline": 67,
-  "requiredNet": 90,
+  "directEndpointEvidenceCount": 68,
+  "qualifiedBaseline": 68,
+  "requiredNet": 89,
   "approvalMargin": 18,
-  "requiredApprovalCount": 108,
+  "requiredApprovalCount": 107,
   "rows": [
     {
       "name": "assetGetTree",
@@ -128,8 +128,8 @@
     {
       "name": "callComponentMethod",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "listComponentMethods",

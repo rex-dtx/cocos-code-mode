@@ -237,4 +237,29 @@ describe('live: CC373 native UI creation fallback', () => {
     const invalidOperate = await postTool('assetOperate', { reference: { id: 'missing' } });
     assert.equal(invalidOperate.status, 400);
   });
+
+  it('Creator 3.7 component method invocation reaches callable component APIs', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const created = await postTool('createLabel', { name: '__ccb3x_method_node__' });
+    assert.equal(created.ok, true, JSON.stringify(created.body));
+    const node = created.body.reference;
+    try {
+      const components = await getJson(`/tools/nodeComponentsGet?reference%5Bid%5D=${encodeURIComponent(node.id)}`);
+      assert.equal(components.ok, true);
+      const label = components.body.references.find((item) => item.type === 'cc.Label');
+      assert.equal(typeof label?.id, 'string');
+
+      const result = await postTool('callComponentMethod', {
+        reference: label,
+        methodName: 'unscheduleAllCallbacks',
+      });
+      assert.equal(result.ok, true, JSON.stringify(result.body));
+      assert.ok(result.body === null || result.body.result === null);
+    } finally {
+      await postTool('nodeOperate', { operation: 'delete', reference: node });
+    }
+
+    const invalid = await postTool('callComponentMethod', { reference: node });
+    assert.equal(invalid.status, 400);
+  });
 });
