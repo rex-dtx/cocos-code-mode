@@ -225,4 +225,30 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(ready.status, 200);
     assert.equal(typeof ready.body.result, 'boolean');
   });
+
+  it('assetReadContent reads text assets and rejects binary assets with typed errors', async (t) => {
+    if (skipIfDown(t)) return;
+    const text = await getJson('/tools/assetReadContent?assetPath=db%3A%2F%2Fassets%2Fcc-common%2Fcc-network%2Fgame-network.js&verbose=true');
+    assert.equal(text.status, 200);
+    assert.equal(typeof text.body.content, 'string');
+    assert.equal(text.body.truncated, false);
+
+    const binary = await getJson('/tools/assetReadContent?assetPath=db%3A%2F%2Finternal%2FDefault-Particle.png');
+    assert.equal(binary.status, 422);
+    assert.equal(binary.body.code, 'ASSET_BINARY_UNREADABLE');
+  });
+
+  it('readProjectInstruction rejects traversal with typed invalid-argument error', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/readProjectInstruction?filePath=../package.json');
+    assert.equal(result.status, 400);
+    assert.equal(result.body.code, 'INVALID_ARGUMENT');
+  });
+
+  it('readPrefabJson reports missing prefab targets as typed not-found errors', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/readPrefabJson?assetPath=db%3A%2F%2Fassets%2F__missing-qualification__.prefab');
+    assert.equal(result.status, 404);
+    assert.equal(result.body.code, 'TARGET_NOT_FOUND');
+  });
 });

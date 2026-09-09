@@ -2,6 +2,7 @@ import { utcpTool } from '../decorators';
 import fs from 'fs-extra';
 import path from 'path';
 import { VERBOSE_FILE_BYTES } from '../utils/verbose';
+import { ToolError } from '../tool-error';
 
 // Project instruction files — allowlist mirrors funplay's instruction-tools.
 // Raw fs + path-safety, same pattern as file-tools.ts.
@@ -10,7 +11,13 @@ function resolveSafePath(projectPath: string, relPath: string): string {
     const resolved = path.resolve(projectPath, relPath);
     const rel = path.relative(projectPath, resolved);
     if (rel.startsWith('..') || path.isAbsolute(rel)) {
-        throw new Error(`Path escapes project boundary: ${relPath}`);
+        throw new ToolError({
+            code: 'INVALID_ARGUMENT',
+            status: 400,
+            message: `Path escapes project boundary: ${relPath}`,
+            details: { filePath: relPath },
+            recovery: 'Use a project-relative instruction path.',
+        });
     }
     return resolved;
 }
