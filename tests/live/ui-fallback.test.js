@@ -177,10 +177,12 @@ describe('live: CC373 native UI creation fallback', () => {
     assert.equal(invalid.status, 400);
   });
 
-  it('Creator 3.7 asset create, content save, and delete round-trip', async (t) => {
+  it('Creator 3.7 asset create, import, content save, and delete round-trip', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
     const assetPath = 'db://assets/__ccb3x_qualification__.ts';
+    const importedPath = 'db://assets/__ccb3x_import__.json';
     let reference;
+    let importedReference;
     try {
       const created = await postTool('assetCreate', {
         assetPath,
@@ -197,6 +199,16 @@ describe('live: CC373 native UI creation fallback', () => {
       assert.equal(saved.ok, true, JSON.stringify(saved.body));
       assert.equal(typeof saved.body.reference?.id, 'string');
 
+      const env = await getJson('/tools/editorEnvInfo');
+      assert.equal(env.ok, true);
+      const imported = await postTool('assetImport', {
+        sourceFilesystemPath: `${env.body.projectPath}/package.json`,
+        targetAssetPath: importedPath,
+      });
+      assert.equal(imported.ok, true, JSON.stringify(imported.body));
+      importedReference = imported.body.reference;
+      assert.equal(typeof importedReference?.id, 'string');
+
       const deleted = await postTool('assetOperate', {
         operation: 'delete',
         reference: saved.body.reference,
@@ -204,12 +216,22 @@ describe('live: CC373 native UI creation fallback', () => {
       assert.equal(deleted.ok, true, JSON.stringify(deleted.body));
       assert.equal(typeof deleted.body.reference?.id, 'string');
       reference = undefined;
+
+      const deletedImport = await postTool('assetOperate', {
+        operation: 'delete',
+        reference: importedReference,
+      });
+      assert.equal(deletedImport.ok, true, JSON.stringify(deletedImport.body));
+      importedReference = undefined;
     } finally {
       if (reference?.id) await postTool('assetOperate', { operation: 'delete', reference });
+      if (importedReference?.id) await postTool('assetOperate', { operation: 'delete', reference: importedReference });
     }
 
     const invalidCreate = await postTool('assetCreate', { assetPath });
     assert.equal(invalidCreate.status, 400);
+    const invalidImport = await postTool('assetImport', { targetAssetPath: importedPath });
+    assert.equal(invalidImport.status, 400);
     const invalidSave = await postTool('assetSaveContent', { reference: { id: 'missing' } });
     assert.equal(invalidSave.status, 400);
     const invalidOperate = await postTool('assetOperate', { reference: { id: 'missing' } });
