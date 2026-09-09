@@ -8,14 +8,12 @@ import { VERBOSE_DIAGNOSTICS_LIMIT } from '../utils/verbose';
 const execFileAsync = promisify(execFile);
 
 function tscCommand(projectPath: string, tsconfig: string): { command: string, args: string[] } {
-    const localTsc = path.join(projectPath, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
+    const compilerEntry = path.join(projectPath, 'node_modules', 'typescript', 'bin', 'tsc');
     const compilerArgs = ['--noEmit', '--pretty', 'false', '-p', tsconfig];
-    if (process.platform === 'win32') {
-        // `tsc.cmd` is a batch file; `cmd /c` needs CALL when the command path is quoted.
-        const commandLine = ['call', `"${localTsc}"`, ...compilerArgs.map(arg => `"${arg.replace(/"/g, '\\"')}"`)].join(' ');
-        return { command: process.env.ComSpec || 'cmd.exe', args: ['/d', '/s', '/c', commandLine] };
-    }
-    return { command: localTsc, args: compilerArgs };
+    // Launch the JavaScript entry with Creator's Node executable. This avoids
+    // cmd.exe quoting and `.cmd` batch semantics on Windows while remaining
+    // identical on Creator 3.7 and 3.8 hosts.
+    return { command: process.execPath, args: [compilerEntry, ...compilerArgs] };
 }
 
 
