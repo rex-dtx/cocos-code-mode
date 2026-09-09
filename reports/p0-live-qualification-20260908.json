@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T06:48:00Z",
+  "checkedAt": "2026-09-09T07:02:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -194,20 +194,19 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 182,
-      "passed": 182,
+      "tests": 183,
+      "passed": 183,
       "failed": 0,
-      "suites": 30,
-      "status": "pass"
+      "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 68,
-    "qualifiedBaseline": 68,
-    "registeredUnverified": 18,
-    "requiredNet": 89,
-    "approvalMargin": 18,
-    "requiredApprovalCount": 107
+    "directEndpointEvidence": 70,
+    "qualifiedBaseline": 70,
+    "registeredUnverified": 16,
+    "requiredNet": 87,
+    "approvalMargin": 16,
+    "requiredApprovalCount": 105
   },
   "fullLiveQualification": {
     "tests": 182,

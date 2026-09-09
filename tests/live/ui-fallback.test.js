@@ -262,4 +262,40 @@ describe('live: CC373 native UI creation fallback', () => {
     const invalid = await postTool('callComponentMethod', { reference: node });
     assert.equal(invalid.status, 400);
   });
+
+  it('Creator 3.7 prefab duplicate and JSON edit round-trip', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const assets = await getJson('/tools/assetQuery?importer=prefab&limit=1');
+    assert.equal(assets.ok, true, JSON.stringify(assets.body));
+    const source = assets.body.assets?.[0];
+    assert.equal(typeof source?.uuid, 'string');
+    const targetAssetPath = 'db://assets/__ccb3x_prefab_qualification__.prefab';
+    let duplicate;
+    try {
+      const copied = await postTool('duplicatePrefab', {
+        reference: { id: source.uuid, type: 'cc.Prefab' },
+        targetAssetPath,
+      });
+      assert.equal(copied.ok, true, JSON.stringify(copied.body));
+      duplicate = copied.body.reference;
+      assert.equal(typeof duplicate?.id, 'string');
+
+      const read = await getJson(`/tools/readPrefabJson?reference%5Bid%5D=${encodeURIComponent(duplicate.id)}`);
+      assert.equal(read.ok, true, JSON.stringify(read.body));
+      assert.equal(typeof read.body.content, 'string');
+      const edited = await postTool('editPrefabJson', {
+        reference: duplicate,
+        content: read.body.content,
+      });
+      assert.equal(edited.ok, true, JSON.stringify(edited.body));
+      assert.equal(edited.body.success, true);
+    } finally {
+      if (duplicate?.id) await postTool('assetOperate', { operation: 'delete', reference: duplicate });
+    }
+
+    const invalidDuplicate = await postTool('duplicatePrefab', { targetAssetPath });
+    assert.equal(invalidDuplicate.status, 400);
+    const invalidEdit = await postTool('editPrefabJson', { reference: { id: 'missing' }, content: '{}' });
+    assert.equal(invalidEdit.status, 404);
+  });
 });

@@ -476,14 +476,14 @@
     {
       "name": "editPrefabJson",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "duplicatePrefab",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "readProjectInstruction",
