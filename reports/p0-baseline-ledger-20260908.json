@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T06:24:00Z",
+  "checkedAt": "2026-09-09T06:29:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 178,
-    "passed": 178,
+    "tests": 180,
+    "passed": 180,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 61,
-  "qualifiedBaseline": 61,
-  "requiredNet": 96,
+  "directEndpointEvidenceCount": 63,
+  "qualifiedBaseline": 63,
+  "requiredNet": 94,
   "approvalMargin": 18,
-  "requiredApprovalCount": 114,
+  "requiredApprovalCount": 112,
   "rows": [
     {
       "name": "assetGetTree",
@@ -356,8 +356,8 @@
     {
       "name": "createUiNode",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "createLabel",
@@ -506,8 +506,8 @@
     {
       "name": "setEditorPreference",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "simulateKeyPress",
