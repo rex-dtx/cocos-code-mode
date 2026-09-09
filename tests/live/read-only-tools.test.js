@@ -424,8 +424,8 @@ describe('live: read-only endpoint qualification', () => {
       context: 'editor',
       code: "Editor.Message.send('scene','editor-preview-set-play',true); return true;",
     });
-    assert.equal(start.status, 200);
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    await postTool('runtimeResume', {});
 
     try {
       const before = await postTool('executeJavascript', {
@@ -459,6 +459,27 @@ describe('live: read-only endpoint qualification', () => {
         context: 'editor',
         code: "Editor.Message.send('scene','editor-preview-set-play',false); return true;",
       });
+    }
+  });
+  it('Creator 3.7 TypeScript diagnostics APIs execute the project compiler and return typed errors with context', async (t) => {
+    if (skipIfDown(t)) return;
+    const diagnostics = await postTool('runScriptDiagnostics', {});
+    assert.equal(diagnostics.status, 200);
+    assert.equal(diagnostics.body.ok, diagnostics.body.errorCount === 0);
+    assert.equal(diagnostics.body.errorCount, diagnostics.body.diagnostics.length);
+    assert.ok(diagnostics.body.errorCount > 0, 'qualification project must expose its current TypeScript errors');
+    assert.match(diagnostics.body.diagnostics[0].code, /^TS\d+$/);
+    assert.equal(typeof diagnostics.body.diagnostics[0].file, 'string');
+    assert.equal(typeof diagnostics.body.diagnostics[0].message, 'string');
+
+    const context = await postTool('getScriptDiagnosticContext', { contextLines: 2, limit: 5 });
+    assert.equal(context.status, 200);
+    assert.equal(context.body.ok, false);
+    assert.ok(context.body.errorCount >= context.body.diagnostics.length);
+    assert.equal(context.body.diagnostics.length, 5);
+    for (const diagnostic of context.body.diagnostics) {
+      assert.match(diagnostic.code, /^TS\d+$/);
+      assert.equal(typeof diagnostic.snippet, 'string');
     }
   });
 

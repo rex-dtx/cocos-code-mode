@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T10:10:00Z",
+  "checkedAt": "2026-09-09T07:41:14Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "artifactCommit": "db7367a",
+    "artifactCommit": "2601dd2-dirty",
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one"
@@ -21,10 +21,10 @@
   },
   "buildInfo": {
     "version": "2.0.0",
-    "commit": "4fc6d9a",
+    "commit": "2601dd2",
     "branch": "feat/ccb3x-api-capability-expansion",
-    "dirty": false,
-    "builtAt": "2026-09-09T03:34:20.019Z"
+    "dirty": true,
+    "builtAt": "2026-09-09T07:33:08.523Z"
   },
   "baselineReadSmoke": {
     "method": "GET",
@@ -82,8 +82,8 @@
     }
   },
   "readOnlyEndpointQualification": {
-    "tests": 29,
-    "passed": 29,
+    "tests": 35,
+    "passed": 35,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -104,6 +104,8 @@
       "assetFindReferences",
       "editorViewport",
       "runtimeGetState",
+      "runtimePause",
+      "runtimeResume",
       "runtimeSetTimeScale",
       "editorSelect",
       "editorHistory",
@@ -124,17 +126,9 @@
       "projectManage",
       "animationQuery",
       "assetReadContent",
-      "readPrefabJson"
-    ],
-    "observedPartialTools": [
-      {
-        "tool": "runtimePause",
-        "reason": "POST returns success=true in edit mode, but runtimeGetState remains paused=false because no running preview loop is active."
-      },
-      {
-        "tool": "runtimeResume",
-        "reason": "POST returns success=true in edit mode; live pause/resume state transition requires a running preview."
-      }
+      "readPrefabJson",
+      "runScriptDiagnostics",
+      "getScriptDiagnosticContext"
     ],
     "closedFindings": [
       {
@@ -150,6 +144,18 @@
         "resolution": "Omitted extends defaults to cc.Component; filtered positive request returns matching classes."
       }
     ]
+  },
+  "diagnosticsRemediation": {
+    "tools": ["runScriptDiagnostics", "getScriptDiagnosticContext"],
+    "issue": "Creator's process.execPath is CocosCreator.exe; without Electron Node mode it launches a second editor instance instead of TypeScript's JavaScript entry point.",
+    "fix": "Launch the project TypeScript entry through process.execPath with ELECTRON_RUN_AS_NODE=1, avoiding Windows batch quoting and preserving the Creator-hosted Node runtime.",
+    "verification": {
+      "build": "pass",
+      "unitTests": "165/165 pass",
+      "focusedLiveTest": "35/35 pass; both diagnostics endpoints returned structured project compiler errors and bounded source context",
+      "fullLiveSuite": "193/193 pass",
+      "liveArtifact": "2601dd2 dirty=true"
+    }
   },
   "versionCompatibilityFindings": [
     {
@@ -193,23 +199,23 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 192,
-      "passed": 192,
+      "tests": 193,
+      "passed": 193,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 83,
-    "qualifiedBaseline": 83,
-    "registeredUnverified": 3,
-    "requiredNet": 74,
-    "approvalMargin": 3,
-    "requiredApprovalCount": 92
+    "directEndpointEvidence": 85,
+    "qualifiedBaseline": 85,
+    "registeredUnverified": 1,
+    "requiredNet": 72,
+    "approvalMargin": 1,
+    "requiredApprovalCount": 90
   },
   "fullLiveQualification": {
-    "tests": 192,
-    "passed": 192,
+    "tests": 193,
+    "passed": 193,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -219,6 +225,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, bounded off-screen mouse input emission, native button click-event simulation, and active-preview runtime pause/resume state transitions across sixty-seven directly qualified baseline endpoint contracts. bindButtonClickEvent remains unverified until the reloaded artifact contains the Creator 3.7 EventHandler constructor fix."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, bounded off-screen mouse input emission, native button click-event simulation, active-preview runtime pause/resume state transitions, and TypeScript diagnostic/context execution across sixty-nine directly qualified baseline endpoint contracts. bindButtonClickEvent remains unverified until the reloaded artifact contains the Creator 3.7 EventHandler constructor fix."
   }
 }

@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T10:10:00Z",
+  "checkedAt": "2026-09-09T07:41:14Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
-  "artifactCommit": "db7367a",
+  "artifactCommit": "2601dd2-dirty",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 188,
-    "passed": 188,
+    "tests": 193,
+    "passed": 193,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 83,
-  "qualifiedBaseline": 83,
-  "requiredNet": 74,
-  "approvalMargin": 3,
-  "requiredApprovalCount": 92,
+  "directEndpointEvidenceCount": 85,
+  "qualifiedBaseline": 85,
+  "requiredNet": 72,
+  "approvalMargin": 1,
+  "requiredApprovalCount": 90,
   "rows": [
     {
       "name": "assetGetTree",
@@ -308,14 +308,14 @@
     {
       "name": "runScriptDiagnostics",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "getScriptDiagnosticContext",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "projectReadFile",
