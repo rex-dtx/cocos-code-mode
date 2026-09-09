@@ -769,6 +769,45 @@ describe('live: read-only endpoint qualification', () => {
     const missing = await getJson('/tools/assetImportSettingsGet?reference%5Bid%5D=__missing_asset__');
     assert.equal(missing.status, 404);
   });
+  it('Creator 3.7 physics, audio, and build inspection tools return typed bounded results', async (t) => {
+    if (skipIfDown(t)) return;
+    const physics2d = await getJson('/tools/physics2dInspect');
+    assert.equal(physics2d.status, 200, JSON.stringify(physics2d.body));
+    assert.equal(typeof physics2d.body.count, 'number');
+    const physics2dValidation = await getJson('/tools/physics2dValidate');
+    assert.equal(physics2dValidation.status, 200, JSON.stringify(physics2dValidation.body));
+    assert.equal(typeof physics2dValidation.body.valid, 'boolean');
+    const physics3d = await getJson('/tools/physics3dInspect');
+    assert.equal(physics3d.status, 200, JSON.stringify(physics3d.body));
+    const audioFixture = await postTool('executeJavascript', {
+      context: 'scene',
+      code: "const sc=cc.director.getScene();const old=sc.getChildByName('__audio_inspect_fixture__');if(old){old.removeFromParent();old.destroy();}const n=new cc.Node('__audio_inspect_fixture__');sc.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');const a=n.addComponent(A);a.volume=0.25;a.loop=true;a.playOnAwake=false;return n.uuid;",
+    });
+    assert.equal(audioFixture.status, 200, JSON.stringify(audioFixture.body));
+    const audioId = audioFixture.body.result;
+    const audio = await getJson(`/tools/audioSourceInspect?reference%5Bid%5D=${encodeURIComponent(audioId)}`);
+    assert.equal(audio.status, 200, JSON.stringify(audio.body));
+    assert.equal(audio.body.count, 1);
+    assert.equal(audio.body.sources[0].properties.volume.value, 0.25);
+    assert.equal(audio.body.sources[0].properties.loop.value, true);
+    assert.equal(audio.body.sources[0].properties.playOnAwake.value, false);
+    const audioCleanup = await postTool('executeJavascript', {
+      context: 'scene',
+      code: "const n=cc.director.getScene().getChildByName('__audio_inspect_fixture__');if(n){n.removeFromParent();n.destroy();}return true;",
+    });
+    assert.equal(audioCleanup.status, 200, JSON.stringify(audioCleanup.body));
+    const preset = await postTool('buildPresetValidate', { options: { platform: 'web-mobile' } });
+    assert.equal(preset.status, 200, JSON.stringify(preset.body));
+    assert.equal(preset.body.valid, true);
+    const invalidPreset = await postTool('buildPresetValidate', { options: {} });
+    assert.equal(invalidPreset.status, 200);
+    assert.equal(invalidPreset.body.valid, false);
+    const artifact = await getJson('/tools/buildArtifactInspect?artifactPath=.&maxFiles=1');
+    assert.equal(artifact.status, 200, JSON.stringify(artifact.body));
+    assert.equal(artifact.body.exists, true);
+    const missingAudio = await getJson('/tools/audioAssetValidate?reference%5Bid%5D=__missing_audio__');
+    assert.equal(missingAudio.status, 404);
+  });
   it('readProjectInstruction rejects traversal with typed invalid-argument error', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/readProjectInstruction?filePath=../package.json');

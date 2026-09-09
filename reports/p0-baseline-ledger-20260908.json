@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T08:45:00Z",
+  "checkedAt": "2026-09-09T09:16:09Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
-  "artifactCommit": "248fd37-dirty",
+  "artifactCommit": "1f33b05-dirty",
   "sourceManualReconciled": true,
-  "registeredToolCount": 95,
+  "registeredToolCount": 103,
   "expansionTools": [
     { "name": "runtimePreviewControl", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
     { "name": "uiLayoutInspect", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
@@ -13,21 +13,30 @@
     { "name": "uiLayoutValidate", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
     { "name": "uiCreateScrollView", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
     { "name": "uiCreateInputForm", "status": "qualified", "evidence": "tests/live/ui-fallback.test.js; npm run test:live" },
+    { "name": "uiLayoutReport", "status": "qualified", "evidence": "tests/live/ui-layout-report.test.js; npm run test:live" },
     { "name": "assetImportSettingsGet", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
     { "name": "assetManifestExport", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
-    { "name": "assetUsageAnalyze", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" }
+    { "name": "assetUsageAnalyze", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "physics2dInspect", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "physics2dValidate", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "physics3dInspect", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "audioSourceInspect", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "audioAssetValidate", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "buildPresetValidate", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" },
+    { "name": "buildArtifactInspect", "status": "qualified", "evidence": "tests/live/read-only-tools.test.js; npm run test:live" }
   ],
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 197,
-    "passed": 197,
-    "suites": 30
+    "tests": 199,
+    "passed": 199,
+    "suites": 31
   },
   "directEndpointEvidenceCount": 86,
   "qualifiedBaseline": 86,
+  "qualifiedExpansion": 17,
   "requiredNet": 71,
-  "approvalMargin": 0,
-  "requiredApprovalCount": 89,
+  "approvalMargin": 11,
+  "requiredApprovalCount": 82,
   "rows": [
     {
       "name": "assetGetTree",

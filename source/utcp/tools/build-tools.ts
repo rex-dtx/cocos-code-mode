@@ -1,5 +1,6 @@
 import { JsonSchema } from '@utcp/sdk';
 import { SuccessIndicatorSchema, ISuccessIndicator } from '../schemas';
+import { utcpTool } from '../decorators';
 
 // Slim view of a build task for agent consumption (full IBuildTaskItemJSON is huge)
 interface IBuildTaskSummary {
@@ -31,6 +32,8 @@ const BuildTaskSummarySchema: JsonSchema = {
     },
     required: ['id', 'progress', 'state']
 };
+const BUILD_TERMINAL_STATES = new Set(['success', 'succeeded', 'failed', 'error', 'cancelled', 'canceled', 'done', 'finished']);
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 function slimTask(task: any): IBuildTaskSummary {
     return {
@@ -108,5 +111,39 @@ export class BuildTools {
         }
         await Editor.Message.request('builder', message, args.taskId);
         return { success: true };
+    }
+    @utcpTool('buildTaskWait', 'Wait boundedly for one build task to reach a terminal state.', {
+        type: 'object',
+        properties: { taskId: { type: 'string' }, timeoutMs: { type: 'integer', minimum: 0, maximum: 120000, default: 30000 }, pollMs: { type: 'integer', minimum: 50, maximum: 5000, default: 500 } },
+        required: ['taskId'],
+    }, { type: 'object', properties: { completed: { type: 'boolean' }, timedOut: { type: 'boolean' }, task: { type: 'object' } }, required: ['completed', 'timedOut', 'task'] }, 'GET', ['build', 'task', 'wait', 'poll'])
+    async buildTaskWait(args: { taskId: string, timeoutMs?: number, pollMs?: number }): Promise<{ completed: boolean, timedOut: boolean, task: IBuildTaskSummary }> {
+        if (!args.taskId) throw new Error('buildTaskWait requires taskId');
+        const timeoutMs = Math.min(Math.max(args.timeoutMs ?? 30000, 0), 120000);
+        const pollMs = Math.min(Math.max(args.pollMs ?? 500, 50), 5000);
+        const deadline = Date.now() + timeoutMs;
+        let item: any;
+        do {
+            item = await Editor.Message.request('builder', 'query-task', args.taskId);
+            if (!item) throw new Error(`Build task ${args.taskId} not found`);
+            const task = slimTask(item);
+            if (BUILD_TERMINAL_STATES.has(String(task.state).toLowerCase())) return { completed: true, timedOut: false, task };
+            if (Date.now() >= deadline) return { completed: false, timedOut: true, task };
+            await sleep(Math.min(pollMs, Math.max(1, deadline - Date.now())));
+        } while (true);
+    }
+    @utcpTool('buildLogInspect', 'Inspect bounded structured diagnostics exposed by one Creator build task.', {
+        type: 'object',
+        properties: { taskId: { type: 'string' }, maxEntries: { type: 'integer', minimum: 1, maximum: 256, default: 64 } },
+        required: ['taskId'],
+    }, { type: 'object', properties: { available: { type: 'boolean' }, task: { type: 'object' }, entries: { type: 'array' }, count: { type: 'integer' } }, required: ['available', 'task', 'entries', 'count'] }, 'GET', ['build', 'log', 'diagnostics', 'inspect'])
+    async buildLogInspect(args: { taskId: string, maxEntries?: number }): Promise<{ available: boolean, task: IBuildTaskSummary, entries: Array<unknown>, count: number }> {
+        if (!args.taskId) throw new Error('buildLogInspect requires taskId');
+        const item: any = await Editor.Message.request('builder', 'query-task', args.taskId);
+        if (!item) throw new Error(`Build task ${args.taskId} not found`);
+        const raw = item.logs ?? item.log ?? item.output ?? item.diagnostics;
+        const entries = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(/\r?\n/).filter(Boolean) : [];
+        const bounded = entries.slice(0, Math.min(Math.max(args.maxEntries ?? 64, 1), 256));
+        return { available: entries.length > 0, task: slimTask(item), entries: bounded, count: bounded.length };
     }
 }

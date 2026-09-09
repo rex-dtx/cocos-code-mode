@@ -11,6 +11,7 @@ import { AssetTreeItemSchema, IAssetTreeItem } from '../schemas';
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES, VERBOSE_FILE_BYTES } from '../utils/verbose';
 import { assetQueryMemo, invalidateAfterWrite } from '../utils/memo-cache';
+import { createHash } from 'crypto';
 
 // helpers (shared by previewManage + kept methods)
 async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }): Promise<any[]> {
@@ -25,6 +26,16 @@ async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }
     const result = await Editor.Message.request('asset-db', 'query-assets', (options.pattern ?? 'db://assets/**') as any);
     if (Array.isArray(result)) assetQueryMemo.set(cacheKey, result);
     return Array.isArray(result) ? result : [];
+}
+async function sha256File(filePath: string): Promise<string> {
+    const hash = createHash('sha256');
+    await new Promise<void>((resolve, reject) => {
+        const stream = fs.createReadStream(filePath);
+        stream.on('data', (chunk) => hash.update(chunk));
+        stream.on('error', reject);
+        stream.on('end', resolve);
+    });
+    return hash.digest('hex');
 }
 async function toAssetUrl(id: string): Promise<string> {
     if (!id) throw new Error('Asset reference id is empty');
@@ -471,6 +482,41 @@ export class AssetTools {
             uuid: row.uuid, url: row.url, type: row.type, importer: row.importer ?? '', name: row.name, isSubAsset: Boolean(row.isSubAsset),
         }));
         return { assets, truncated: rows.filter((row) => !row.isDirectory).length > assets.length, count: assets.length };
+    }
+    @utcpTool('assetCatalogManifest', 'Build a bounded deterministic asset catalog with source hashes and explicit exclusions.', {
+        type: 'object',
+        properties: {
+            assetPath: { type: 'string' },
+            maxAssets: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
+            maxFileBytes: { type: 'integer', minimum: 1, maximum: 10485760, default: 10485760 },
+        },
+    }, { type: 'object', properties: { assets: { type: 'array' }, exclusions: { type: 'array' }, truncated: { type: 'boolean' }, count: { type: 'integer' } }, required: ['assets', 'exclusions', 'truncated', 'count'] }, 'GET', ['asset', 'catalog', 'manifest', 'hash', 'sha256'])
+    async assetCatalogManifest(args: { assetPath?: string, maxAssets?: number, maxFileBytes?: number }): Promise<{ assets: Array<Record<string, unknown>>, exclusions: Array<Record<string, unknown>>, truncated: boolean, count: number }> {
+        const maxAssets = Math.min(Math.max(args.maxAssets ?? 64, 1), 128);
+        const maxFileBytes = Math.min(Math.max(args.maxFileBytes ?? 10485760, 1), 10485760);
+        const rows: any[] = await queryAssetsCompat({ pattern: `${normalizePath(args.assetPath)}/**` });
+        const files = rows.filter((row) => !row.isDirectory).sort((a, b) => String(a.url).localeCompare(String(b.url)));
+        const assets: Array<Record<string, unknown>> = [];
+        const exclusions: Array<Record<string, unknown>> = [];
+        for (const row of files.slice(0, maxAssets)) {
+            const info: any = row.file ? row : await Editor.Message.request('asset-db', 'query-asset-info', row.uuid ?? row.url).catch(() => null);
+            const sourcePath = typeof info?.file === 'string' ? info.file : '';
+            if (!sourcePath) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
+                continue;
+            }
+            const stat = await fs.stat(sourcePath).catch(() => null);
+            if (!stat?.isFile()) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
+                continue;
+            }
+            if (stat.size > maxFileBytes) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-too-large', bytes: stat.size, maxFileBytes });
+                continue;
+            }
+            assets.push({ uuid: row.uuid, url: row.url, type: row.type, importer: row.importer ?? info?.importer ?? '', bytes: stat.size, sha256: await sha256File(sourcePath) });
+        }
+        return { assets, exclusions, truncated: files.length > maxAssets, count: assets.length };
     }
 
     @utcpTool('assetUsageAnalyze', 'Find bounded asset candidates with no scene-node references and explicit dynamic-load caveat.', {
