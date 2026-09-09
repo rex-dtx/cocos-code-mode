@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T04:56:24Z",
+  "checkedAt": "2026-09-09T05:09:22Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
-  "artifactCommit": "9ff0d1f",
+  "artifactCommit": "0c51c87",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
@@ -11,11 +11,11 @@
     "passed": 168,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 34,
-  "qualifiedBaseline": 34,
-  "requiredNet": 123,
-  "approvalMargin": 19,
-  "requiredApprovalCount": 142,
+  "directEndpointEvidenceCount": 37,
+  "qualifiedBaseline": 37,
+  "requiredNet": 120,
+  "approvalMargin": 18,
+  "requiredApprovalCount": 138,
   "rows": [
     {
       "name": "assetGetTree",
@@ -134,8 +134,8 @@
     {
       "name": "listComponentMethods",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "listComponentClasses",
@@ -158,8 +158,8 @@
     {
       "name": "nodeGetAtPath",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "nodeCreatePrimitive",
@@ -212,8 +212,8 @@
     {
       "name": "animationQuery",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "animationEdit",

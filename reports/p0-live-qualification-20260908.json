@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T04:56:24Z",
+  "checkedAt": "2026-09-09T05:09:22Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "artifactCommit": "9ff0d1f",
+    "artifactCommit": "0c51c87",
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one"
@@ -75,16 +75,16 @@
     "fix": "Create native nodes and components when those internal prefabs are absent; resolve component and child paths from Creator query-node dumps.",
     "verification": {
       "build": "pass",
-      "unitTests": "164/164 pass",
+      "unitTests": "165/165 pass",
       "focusedLiveTest": "1/1 pass with three created component types and cleanup",
       "textSmoke": "createLabel and createButton returned HTTP 200 with optional text",
-      "liveArtifact": "1100957 dirty=false"
+      "liveArtifact": "0c51c87 dirty=false"
     }
   },
   "readOnlyEndpointQualification": {
     "command": "node --test tests/live/read-only-tools.test.js",
-    "tests": 21,
-    "passed": 21,
+    "tests": 22,
+    "passed": 22,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -105,6 +105,9 @@
       "sceneSnapshot",
       "editorQuery",
       "assetDbQuery",
+      "nodeGetAtPath",
+      "listComponentMethods",
+      "animationQuery",
       "assetReadContent",
       "readPrefabJson"
     ],
@@ -133,25 +136,24 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 168,
-      "passed": 168,
+      "tests": 169,
+      "passed": 169,
       "failed": 0,
       "suites": 30,
       "status": "pass"
     }
   },
   "baselineLedger": {
-    "report": "reports/p0-baseline-ledger-20260908.json",
-    "directEndpointEvidence": 34,
-    "qualifiedBaseline": 34,
-    "registeredUnverified": 52,
-    "requiredNet": 123,
-    "approvalMargin": 19,
-    "requiredApprovalCount": 142
+    "directEndpointEvidence": 37,
+    "qualifiedBaseline": 37,
+    "registeredUnverified": 49,
+    "requiredNet": 120,
+    "approvalMargin": 18,
+    "requiredApprovalCount": 138
   },
   "fullLiveQualification": {
-    "tests": 168,
-    "passed": 168,
+    "tests": 169,
+    "passed": 169,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -161,6 +163,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty-three directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
   }
 }
