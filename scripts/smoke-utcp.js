@@ -44,10 +44,10 @@ async function main() {
         const keys = Object.keys(m).sort();
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
-        assert.equal(n, 86, `tools.length expected 86 got ${n}`);
+        assert.equal(n, 88, `tools.length expected 88 got ${n}`);
         // Code Mode validates each tool with a strict schema; metadata must stay in the profile registry.
         assert.ok(m.tools.every((tool) => !Object.hasOwn(tool, 'annotations')), 'manual tools must not expose annotations');
-        ok(`manual valid: 86 tools, keys ${keys.join(',')}`);
+        ok(`manual valid: 88 tools, keys ${keys.join(',')}`);
         // check ccp3x template present (bare or per-port) + no duplicate URL among
         // new-format ccp* names — dup URL is what caused double tool registration.
         // Legacy names are purged by ConfigManager on read, so they never appear here.
@@ -59,7 +59,7 @@ async function main() {
             const names = templates.map(t => t.name);
             const has3x = names.some(n => /^ccp3x(_\d+)?$/.test(n));
             assert.ok(has3x, `ccp3x template present, found ${names.join(',')}`);
-            const isCcp = (n) => /^ccb[23]x(_\d+)?$/.test(n);
+            const isCcp = (n) => /^ccp[23]x(_\d+)?$/.test(n);
             const urls = templates.filter(t => isCcp(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
             assert.equal(new Set(urls).size, urls.length, `ccp* dup URL, got ${urls.join(',')}`);
             ok('config has ccp3x template, no dup URL');
