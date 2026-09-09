@@ -299,4 +299,41 @@ describe('live: CC373 native UI creation fallback', () => {
     assert.equal(invalidEdit.status, 404);
   });
 
+  it('Creator 3.7 property array API reorders node children and validates input', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const parentResult = await postTool('nodeCreate', { name: '__ccb3x_array_parent__' });
+    assert.equal(parentResult.ok, true, JSON.stringify(parentResult.body));
+    const parent = parentResult.body.reference;
+    const children = [];
+    try {
+      for (const name of ['__ccb3x_array_a__', '__ccb3x_array_b__']) {
+        const created = await postTool('nodeCreate', { name, parentReference: parent });
+        assert.equal(created.ok, true, JSON.stringify(created.body));
+        children.push(created.body.reference);
+      }
+
+      const moved = await postTool('propertyArrayElement', {
+        operation: 'move',
+        reference: parent,
+        propertyPath: 'children',
+        index: 0,
+        toIndex: 1,
+      });
+      assert.equal(moved.ok, true, JSON.stringify(moved.body));
+      assert.equal(moved.body.success, true);
+    } finally {
+      for (const reference of [...children, parent]) {
+        await postTool('nodeOperate', { operation: 'delete', reference });
+      }
+    }
+
+    const invalid = await postTool('propertyArrayElement', {
+      operation: 'move',
+      reference: parent,
+      propertyPath: 'children',
+      index: 0,
+    });
+    assert.equal(invalid.status, 400);
+  });
+
 });
