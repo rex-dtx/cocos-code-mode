@@ -131,4 +131,98 @@ describe('live: read-only endpoint qualification', () => {
     assert.ok(Array.isArray(result.body.windows));
     assert.ok(result.body.windows.some((window) => Number.isInteger(window.id) && typeof window.title === 'string'));
   });
+
+  it('assetGetAvailableUrl returns a non-colliding database URL', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/assetGetAvailableUrl?assetPath=db%3A%2F%2Fassets%2F__qualification_probe__.txt');
+    assert.equal(result.status, 200);
+    assert.match(result.body.url, /^db:\/\/assets\/__qualification_probe__\.txt/);
+
+    const invalid = await getJson('/tools/assetGetAvailableUrl');
+    assert.equal(invalid.status, 400);
+    assert.deepEqual(invalid.body.missingInputs, ['assetPath']);
+  });
+
+  it('assetFindReferences returns typed dependency references for an image asset', async (t) => {
+    if (skipIfDown(t)) return;
+    const assets = await getJson('/tools/assetQuery?importer=image&limit=1');
+    assert.equal(assets.status, 200);
+    const id = assets.body.assets?.[0]?.uuid;
+    assert.equal(typeof id, 'string');
+
+    const result = await getJson(`/tools/assetFindReferences?reference%5Bid%5D=${encodeURIComponent(id)}&limit=5`);
+    assert.equal(result.status, 200);
+    assert.ok(Array.isArray(result.body.references));
+    assert.ok(result.body.references.length > 0);
+    assert.equal(typeof result.body.total, 'number');
+    assert.equal(typeof result.body.truncated, 'boolean');
+
+    const invalid = await getJson('/tools/assetFindReferences');
+    assert.equal(invalid.status, 400);
+    assert.deepEqual(invalid.body.missingInputs, ['reference']);
+  });
+
+  it('runtimeGetState returns typed runtime state', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/runtimeGetState');
+    assert.equal(result.status, 200);
+    assert.equal(typeof result.body.paused, 'boolean');
+    assert.equal(typeof result.body.timeScale, 'number');
+    assert.equal(typeof result.body.frameCount, 'number');
+  });
+
+  it('getPerformanceSnapshot returns internally consistent counters', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/getPerformanceSnapshot');
+    assert.equal(result.status, 200);
+    assert.ok(Number.isInteger(result.body.nodeCount));
+    assert.ok(Number.isInteger(result.body.componentCount));
+    assert.ok(Number.isInteger(result.body.uiNodeCount));
+    assert.ok(Number.isInteger(result.body.maxDepth));
+    assert.ok(Number.isInteger(result.body.activeNodes));
+    assert.ok(result.body.activeNodes <= result.body.nodeCount);
+    assert.ok(Array.isArray(result.body.warnings));
+  });
+
+  it('sceneSnapshot enforces bounded tree output and truncation markers', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/sceneSnapshot?maxNodes=1&maxDepth=0');
+    assert.equal(result.status, 200);
+    assert.equal(result.body.nodeCount, 1);
+    assert.ok(result.body.tree);
+    assert.ok(result.body.truncated);
+
+    const invalid = await getJson('/tools/sceneSnapshot?maxNodes=0');
+    assert.equal(invalid.status, 400);
+    assert.ok(invalid.body.validationErrors.some((error) => error.path === 'maxNodes' && error.keyword === 'minimum'));
+  });
+
+  it('editorQuery exposes stable editor vocabulary categories', async (t) => {
+    if (skipIfDown(t)) return;
+    const ready = await getJson('/tools/editorQuery?category=ready');
+    assert.equal(ready.status, 200);
+    assert.equal(typeof ready.body.ready, 'boolean');
+
+    const layers = await getJson('/tools/editorQuery?category=layers');
+    assert.equal(layers.status, 200);
+    assert.ok(Array.isArray(layers.body.values));
+    assert.ok(layers.body.values.length > 0);
+
+    const assetTypes = await getJson('/tools/editorQuery?category=asset_types');
+    assert.equal(assetTypes.status, 200);
+    assert.ok(Array.isArray(assetTypes.body.types));
+    assert.ok(assetTypes.body.types.length > 0);
+  });
+
+  it('assetDbQuery returns typed database readiness state', async (t) => {
+    if (skipIfDown(t)) return;
+    const databases = await getJson('/tools/assetDbQuery?operation=databases');
+    assert.equal(databases.status, 200);
+    assert.ok(Array.isArray(databases.body.result));
+    assert.ok(databases.body.result.includes('assets'));
+
+    const ready = await getJson('/tools/assetDbQuery?operation=ready');
+    assert.equal(ready.status, 200);
+    assert.equal(typeof ready.body.result, 'boolean');
+  });
 });

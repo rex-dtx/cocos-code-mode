@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T03:43:57Z",
+  "checkedAt": "2026-09-09T04:11:35Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "4fc6d9a",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 158,
-    "passed": 158,
+    "tests": 165,
+    "passed": 165,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 25,
-  "qualifiedBaseline": 25,
-  "requiredNet": 132,
+  "directEndpointEvidenceCount": 29,
+  "qualifiedBaseline": 29,
+  "requiredNet": 128,
   "approvalMargin": 20,
-  "requiredApprovalCount": 152,
+  "requiredApprovalCount": 148,
   "rows": [
     {
       "name": "assetGetTree",
@@ -62,8 +62,8 @@
     {
       "name": "assetGetAvailableUrl",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "assetCreate",
@@ -398,8 +398,8 @@
     {
       "name": "runtimeGetState",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "nodeBatchSet",
@@ -422,8 +422,8 @@
     {
       "name": "getPerformanceSnapshot",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "validateScene",
@@ -452,8 +452,8 @@
     {
       "name": "sceneSnapshot",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "simulateButtonClick",
