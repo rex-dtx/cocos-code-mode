@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:29:30Z",
+  "checkedAt": "2026-09-09T05:33:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
@@ -11,11 +11,11 @@
     "passed": 171,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 41,
-  "qualifiedBaseline": 41,
-  "requiredNet": 116,
+  "directEndpointEvidenceCount": 46,
+  "qualifiedBaseline": 46,
+  "requiredNet": 111,
   "approvalMargin": 18,
-  "requiredApprovalCount": 134,
+  "requiredApprovalCount": 129,
   "rows": [
     {
       "name": "assetGetTree",
@@ -410,14 +410,14 @@
     {
       "name": "sceneBatchGet",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "assetBatchQuery",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "getPerformanceSnapshot",
@@ -428,20 +428,20 @@
     {
       "name": "validateScene",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "curl live probe; node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "captureSceneScreenshot",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "captureEditorScreenshot",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "listEditorWindows",

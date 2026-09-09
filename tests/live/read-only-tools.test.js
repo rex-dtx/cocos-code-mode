@@ -191,6 +191,75 @@ describe('live: read-only endpoint qualification', () => {
     assert.deepEqual(invalid.body.missingInputs, ['reference']);
   });
 
+  it('batch read APIs preserve ordering, bounds, and validation', async (t) => {
+    if (skipIfDown(t)) return;
+    const sceneBatch = await getJson('/tools/sceneBatchGet', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        entries: [
+          { target: 'CurrentSceneGlobals', fields: ['ambient'] },
+          { target: 'ProjectSettings', fields: ['general'] },
+        ],
+      }),
+    });
+    assert.equal(sceneBatch.status, 200);
+    assert.equal(sceneBatch.body.results.length, 2);
+    assert.equal(sceneBatch.body.results[0].reference.id, 'CurrentSceneGlobals');
+    assert.equal(sceneBatch.body.results[1].reference.id, 'ProjectSettings');
+
+    const assetBatch = await getJson('/tools/assetBatchQuery', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ queries: [{ importer: 'material', limit: 1 }, { ccType: 'cc.ImageAsset', limit: 1 }] }),
+    });
+    assert.equal(assetBatch.status, 200);
+    assert.equal(assetBatch.body.results.length, 2);
+    assert.ok(assetBatch.body.results.every(result => Array.isArray(result.assets) && result.assets.length <= 1));
+
+    const emptySceneBatch = await getJson('/tools/sceneBatchGet', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ entries: [] }),
+    });
+    assert.equal(emptySceneBatch.status, 400);
+
+    const unfilteredAssetBatch = await getJson('/tools/assetBatchQuery', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ queries: [{}] }),
+    });
+    assert.equal(unfilteredAssetBatch.status, 400);
+  });
+
+  it('Creator 3.7 screenshots return validated JPEG and PNG payloads', async (t) => {
+    if (skipIfDown(t)) return;
+    const scene = await getJson('/tools/captureSceneScreenshot', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ imageSize: 64, jpegQuality: 70 }),
+    });
+    assert.equal(scene.status, 200);
+    assert.equal(scene.body.mimeType, 'image/jpeg');
+    assert.ok(scene.body.data.startsWith('/9j/'));
+
+    const editor = await getJson('/tools/captureEditorScreenshot', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+    assert.equal(editor.status, 200);
+    assert.equal(editor.body.mimeType, 'image/png');
+    assert.ok(editor.body.data.startsWith('iVBOR'));
+
+    const invalid = await getJson('/tools/captureSceneScreenshot', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ imageSize: 0 }),
+    });
+    assert.equal(invalid.status, 400);
+  });
+
   it('assetFindReferences returns typed dependency references for an image asset', async (t) => {
     if (skipIfDown(t)) return;
     const assets = await getJson('/tools/assetQuery?importer=image&limit=1');
