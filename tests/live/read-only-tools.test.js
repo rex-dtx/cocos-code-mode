@@ -159,6 +159,38 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(missing.body.code, 'TARGET_NOT_FOUND');
   });
 
+  it('asset and material reverse reads return bounded typed results', async (t) => {
+    if (skipIfDown(t)) return;
+    const materialAssets = await getJson('/tools/assetQuery?importer=material&limit=1');
+    assert.equal(materialAssets.status, 200);
+    const material = materialAssets.body.assets?.[0];
+    assert.equal(typeof material?.uuid, 'string');
+
+    const effects = await getJson('/tools/materialQuery?operation=effects&limit=5');
+    assert.equal(effects.status, 200);
+    assert.ok(Array.isArray(effects.body.result));
+    assert.equal(typeof effects.body.total, 'number');
+    assert.equal(typeof effects.body.truncated, 'boolean');
+
+    const materialInfo = await getJson(`/tools/materialQuery?operation=material&reference%5Bid%5D=${encodeURIComponent(material.uuid)}`);
+    assert.equal(materialInfo.status, 200);
+    assert.ok(materialInfo.body.result && typeof materialInfo.body.result === 'object');
+
+    const nodesByAsset = await getJson(`/tools/findNodesByAsset?reference%5Bid%5D=${encodeURIComponent(material.uuid)}&limit=5`);
+    assert.equal(nodesByAsset.status, 200);
+    assert.deepEqual(Object.keys(nodesByAsset.body).sort(), ['references', 'total', 'truncated'].sort());
+    assert.ok(Array.isArray(nodesByAsset.body.references));
+
+    const missingNodes = await getJson('/tools/findNodesWithMissingAssets?limit=5');
+    assert.equal(missingNodes.status, 200);
+    assert.deepEqual(Object.keys(missingNodes.body).sort(), ['references', 'total', 'truncated'].sort());
+    assert.ok(Array.isArray(missingNodes.body.references));
+
+    const invalid = await getJson('/tools/findNodesByAsset');
+    assert.equal(invalid.status, 400);
+    assert.deepEqual(invalid.body.missingInputs, ['reference']);
+  });
+
   it('assetFindReferences returns typed dependency references for an image asset', async (t) => {
     if (skipIfDown(t)) return;
     const assets = await getJson('/tools/assetQuery?importer=image&limit=1');

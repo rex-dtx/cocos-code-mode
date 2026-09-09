@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:17:42Z",
+  "checkedAt": "2026-09-09T05:29:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -82,8 +82,8 @@
     }
   },
   "readOnlyEndpointQualification": {
-    "tests": 23,
-    "passed": 23,
+    "tests": 24,
+    "passed": 24,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -99,12 +99,15 @@
       "editorGetLogs",
       "assetGetAvailableUrl",
       "assetGetAtPath",
+      "findNodesByAsset",
+      "findNodesWithMissingAssets",
       "assetFindReferences",
       "runtimeGetState",
       "getPerformanceSnapshot",
       "sceneSnapshot",
       "editorQuery",
       "assetDbQuery",
+      "materialQuery",
       "nodeGetAtPath",
       "listComponentMethods",
       "animationQuery",
@@ -150,6 +153,17 @@
       "evidence": "unit compatibility contract and source guard; Creator 3.7.3 registry lacks the message"
     }
   ],
+  "creatorLogAssessment": {
+    "command": "GET /tools/editorGetLogs?limit=200",
+    "actionableIssues": [],
+    "expectedNegativeProbeErrors": [
+      "executeJavascript timeout, syntax, runtime-reference, thrown-error, and safety-block checks",
+      "typed unsupported probes for editorQuery(sorted_plugins) and assetDbQuery(missing)",
+      "typed invalid/not-found/binary-input checks from read-only qualification"
+    ],
+    "benignProjectWarning": "Spine: Animation not found: animation; no bridge failure or test failure observed, and no mutation is required.",
+    "assessment": "Current Creator log errors are expected evidence from negative-contract probes; no compatibility fix is warranted for Creator 3.7.3."
+  },
   "liveSuites": {
     "focusedGapClosure": {
       "command": "node --test tests/live/gap-closure.test.js",
@@ -159,24 +173,24 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 170,
-      "passed": 170,
+      "tests": 171,
+      "passed": 171,
       "failed": 0,
       "suites": 30,
       "status": "pass"
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 38,
-    "qualifiedBaseline": 38,
-    "registeredUnverified": 48,
-    "requiredNet": 119,
+    "directEndpointEvidence": 41,
+    "qualifiedBaseline": 41,
+    "registeredUnverified": 45,
+    "requiredNet": 116,
     "approvalMargin": 18,
-    "requiredApprovalCount": 137
+    "requiredApprovalCount": 134
   },
   "fullLiveQualification": {
-    "tests": 170,
-    "passed": 170,
+    "tests": 171,
+    "passed": 171,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -186,6 +200,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty-four directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty-seven directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
   }
 }
