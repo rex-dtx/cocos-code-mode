@@ -1,5 +1,6 @@
 import { utcpTool } from '../decorators';
 import { Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
+import { ToolError } from '../tool-error';
 import path from 'path';
 import os from 'os';
 import { basename, extname } from 'path';
@@ -215,15 +216,47 @@ export class AssetTools {
             if (infR?.file) fpR = infR.file;
             else fpR = await Editor.Message.request('asset-db', 'query-path', ident).catch(() => null);
         }
-        if (!fpR) throw new Error('Asset not found: ' + ident);
+        if (!fpR) {
+            throw new ToolError({
+                code: 'TARGET_NOT_FOUND',
+                status: 404,
+                message: `Asset not found: ${ident}`,
+                details: { asset: ident },
+                recovery: 'Use assetGetTree or assetResolvePath to inspect available assets.',
+            });
+        }
         const fpResolved = fpR as string;
         const extR = path.extname(fpResolved).toLowerCase();
         const BINARY = ['.png', '.jpg', '.jpeg', '.webp', '.mp3', '.ogg', '.wav', '.ttf', '.woff', '.mp4', '.mov', '.zip', '.gz', '.bmp', '.tga', '.psd'];
-        if ((BINARY as string[]).includes(extR)) throw new Error('Extension ' + extR + ' is binary and not readable as text.');
+        if ((BINARY as string[]).includes(extR)) {
+            throw new ToolError({
+                code: 'ASSET_BINARY_UNREADABLE',
+                status: 422,
+                message: `Asset ${ident} is binary and cannot be read as UTF-8 text.`,
+                details: { asset: ident, extension: extR },
+                recovery: 'Use assetResolvePath, previewManage, or assetGetAvailableUrl for binary assets.',
+            });
+        }
         const stat: any = await (fs as any).stat(fpResolved).catch(() => null);
-        if (!stat) throw new Error('File not found on disk: ' + fpResolved);
+        if (!stat) {
+            throw new ToolError({
+                code: 'TARGET_NOT_FOUND',
+                status: 404,
+                message: `Asset file not found on disk: ${ident}`,
+                details: { asset: ident, filesystemPath: fpResolved },
+                recovery: 'Refresh the asset database and retry assetResolvePath.',
+            });
+        }
         const cap = boundedPositive(args.maxBytes, args.verbose ? VERBOSE_FILE_BYTES : 512 * 1024, VERBOSE_FILE_BYTES);
-        if (stat.size > cap) throw new Error('File is ' + stat.size + ' bytes, over the ' + cap + ' byte cap. ' + (args.verbose ? 'Already at verbose cap (10MB).' : 'Pass verbose=true or maxBytes to raise it.'));
+        if (stat.size > cap) {
+            throw new ToolError({
+                code: 'PAYLOAD_TOO_LARGE',
+                status: 413,
+                message: `Asset is ${stat.size} bytes, over the ${cap} byte cap.`,
+                details: { asset: ident, bytes: stat.size, cap },
+                recovery: args.verbose ? 'The asset exceeds the maximum 10MB readable size.' : 'Pass verbose=true or a larger maxBytes value.',
+            });
+        }
         const content = await (fs as any).readFile(fpResolved, 'utf8');
         return { content, filesystemPath: fpResolved, bytes: stat.size, truncated: false };
     }

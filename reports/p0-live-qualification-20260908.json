@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T04:11:35Z",
+  "checkedAt": "2026-09-09T04:40:12Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "editor": "3.7.3",
@@ -83,8 +83,8 @@
   },
   "readOnlyEndpointQualification": {
     "command": "node --test tests/live/read-only-tools.test.js",
-    "tests": 18,
-    "passed": 18,
+    "tests": 21,
+    "passed": 21,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -101,7 +101,9 @@
       "assetGetAvailableUrl",
       "runtimeGetState",
       "getPerformanceSnapshot",
-      "sceneSnapshot"
+      "sceneSnapshot",
+      "assetReadContent",
+      "readPrefabJson"
     ],
     "observedPartialTools": [
       "assetFindReferences",
@@ -132,8 +134,8 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 165,
-      "passed": 165,
+      "tests": 168,
+      "passed": 168,
       "failed": 0,
       "suites": 30,
       "status": "pass"
@@ -142,18 +144,17 @@
   "baselineLedger": {
     "report": "reports/p0-baseline-ledger-20260908.json",
     "registeredTools": 86,
-    "directEndpointEvidence": 29,
-    "qualifiedBaseline": 29,
-    "registeredUnverified": 57,
-    "requiredNet": 128,
-    "approvalMargin": 20,
-    "requiredApprovalCount": 148,
+    "directEndpointEvidence": 31,
+    "qualifiedBaseline": 31,
+    "registeredUnverified": 55,
+    "requiredNet": 126,
+    "approvalMargin": 19,
+    "requiredApprovalCount": 145,
     "note": "Conservative one-to-one ledger classification. Broad live tests pass, but tools without direct endpoint evidence remain registered-unverified; partial aggregate/read contracts are tracked separately."
   },
   "fullLiveQualification": {
-    "command": "npm run test:live",
-    "tests": 165,
-    "passed": 165,
+    "tests": 168,
+    "passed": 168,
     "failed": 0,
     "suites": 30,
     "status": "pass",
@@ -164,6 +165,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and fifteen directly qualified read-only endpoint contracts plus three partial aggregate/read contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and seventeen directly qualified read-only endpoint contracts plus three partial aggregate/read contracts. It does not qualify every tool behavior."
   }
 }

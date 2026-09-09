@@ -20,12 +20,19 @@ async function resolvePrefab(ident: string): Promise<{ url: string, uuid: string
     const isDbUrl = ident.startsWith('db://');
     const url = isDbUrl ? ident : undefined;
     const uuid = isDbUrl ? undefined : ident;
-
     let info: any = null;
+
     if (uuid) info = await Editor.Message.request('asset-db', 'query-asset-info', uuid).catch(() => null);
     else if (url) info = await Editor.Message.request('asset-db', 'query-asset-info', url).catch(() => null);
-    if (!info) throw new Error(`Prefab not found: ${ident}`);
-
+    if (!info) {
+        throw new ToolError({
+            code: 'TARGET_NOT_FOUND',
+            status: 404,
+            message: `Prefab not found: ${ident}`,
+            details: { asset: ident },
+            recovery: 'Use assetGetTree or assetResolvePath to inspect available prefab assets.',
+        });
+    }
     const resolvedUrl: string | undefined = info?.url || url;
     const resolvedUuid: string | undefined = info?.uuid || uuid;
     if (!resolvedUrl || !resolvedUuid) throw new Error(`Prefab not found: ${ident}`);
