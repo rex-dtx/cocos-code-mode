@@ -14,6 +14,17 @@ const FROZEN_MINIMUM_RELEASE_COUNT = 157;
 const FROZEN_PRIMARY_COUNT = 80;
 const FROZEN_RESERVE_COUNT = 20;
 const FROZEN_REQUIRED_APPROVAL_COUNT = 82;
+const IMPLEMENTED_EXPANSION_NAMES = new Set([
+  'runtimePreviewControl',
+  'uiLayoutInspect',
+  'uiLayoutApply',
+  'uiLayoutValidate',
+  'uiCreateScrollView',
+  'uiCreateInputForm',
+  'assetImportSettingsGet',
+  'assetManifestExport',
+  'assetUsageAnalyze',
+]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',
   'tilemapCreate',
@@ -109,6 +120,7 @@ function main() {
   const portfolioPath = portfolioIndex >= 0 ? path.resolve(process.argv[portfolioIndex + 1]) : PORTFOLIO_PATH;
   const portfolio = JSON.parse(fs.readFileSync(portfolioPath, 'utf8'));
   const sourceNames = sourceToolNames();
+  const baselineSourceNames = new Set([...sourceNames].filter((name) => !IMPLEMENTED_EXPANSION_NAMES.has(name)));
   const witnessContracts = JSON.parse(fs.readFileSync(WITNESS_CONTRACTS_PATH, 'utf8'));
   const witnessRows = witnessContracts.contracts || [];
   const witnessIds = new Set(witnessRows.map((row) => row.id));
@@ -154,10 +166,10 @@ function main() {
   const names = all.map((row) => row.name);
   const duplicateNames = [...new Set(names.filter((name, index) => names.indexOf(name) !== index))];
   if (duplicateNames.length) fail(`duplicate portfolio names: ${duplicateNames.join(', ')}`);
-  const baselineOverlap = names.filter((name) => sourceNames.has(name));
+  const baselineOverlap = names.filter((name) => baselineSourceNames.has(name));
   if (baselineOverlap.length) fail(`portfolio names already registered: ${baselineOverlap.join(', ')}`);
 
-  if (sourceNames.size !== FROZEN_BASELINE_COUNT
+  if (baselineSourceNames.size !== FROZEN_BASELINE_COUNT
       || portfolio.baseline.sourceRegistrations !== FROZEN_BASELINE_COUNT) {
     fail(`frozen cc-3x7 source baseline drift: expected ${FROZEN_BASELINE_COUNT}`);
   }
@@ -191,7 +203,9 @@ function main() {
 
   console.log(JSON.stringify({
     ok: true,
-    baselineCount: sourceNames.size,
+    baselineCount: baselineSourceNames.size,
+    registeredToolCount: sourceNames.size,
+    expansionToolCount: IMPLEMENTED_EXPANSION_NAMES.size,
     primaryCandidateCount: primary.length,
     reserveCandidateCount: reserve.length,
     replaceCount: replacementRows.length,

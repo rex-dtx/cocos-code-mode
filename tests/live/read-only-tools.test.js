@@ -461,6 +461,22 @@ describe('live: read-only endpoint qualification', () => {
       });
     }
   });
+  it('Creator 3.7 preview control returns lifecycle outcomes and state', async (t) => {
+    if (skipIfDown(t)) return;
+    const state = await postTool('runtimePreviewControl', { operation: 'state' });
+    assert.equal(state.status, 200);
+    assert.deepEqual(state.body.operation, 'state');
+    assert.equal(state.body.success, true);
+    assert.equal(typeof state.body.state?.paused, 'boolean');
+    assert.equal(typeof state.body.state?.timeScale, 'number');
+
+    const stopped = await postTool('runtimePreviewControl', { operation: 'stop' });
+    assert.equal(stopped.status, 200);
+    assert.deepEqual(stopped.body, { success: true, operation: 'stop' });
+
+    const invalid = await postTool('runtimePreviewControl', { operation: 'invalid' });
+    assert.equal(invalid.status, 400);
+  });
   it('Creator 3.7 TypeScript diagnostics APIs execute the project compiler and return typed errors with context', async (t) => {
     if (skipIfDown(t)) return;
     const diagnostics = await postTool('runScriptDiagnostics', {});
@@ -733,6 +749,26 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(binary.body.code, 'ASSET_BINARY_UNREADABLE');
   });
 
+  it('Creator 3.7 asset importer, manifest, and usage inspections return bounded evidence', async (t) => {
+    if (skipIfDown(t)) return;
+    const settings = await getJson('/tools/assetImportSettingsGet?reference%5Bid%5D=4e03008c-cb99-412b-90dc-6dbe0c7a2a28');
+    assert.equal(settings.status, 200, JSON.stringify(settings.body));
+    assert.equal(settings.body.importer, 'typescript');
+    assert.equal(settings.body.source.uuid, '4e03008c-cb99-412b-90dc-6dbe0c7a2a28');
+
+    const manifest = await getJson('/tools/assetManifestExport?maxAssets=5');
+    assert.equal(manifest.status, 200, JSON.stringify(manifest.body));
+    assert.ok(manifest.body.assets.length <= 5);
+    assert.equal(manifest.body.assets[0].url <= manifest.body.assets.at(-1).url, true);
+
+    const usage = await getJson('/tools/assetUsageAnalyze?maxAssets=3');
+    assert.equal(usage.status, 200, JSON.stringify(usage.body));
+    assert.equal(usage.body.checkedAssets, 3);
+    assert.match(usage.body.dynamicLoadCaveat, /dynamic/i);
+
+    const missing = await getJson('/tools/assetImportSettingsGet?reference%5Bid%5D=__missing_asset__');
+    assert.equal(missing.status, 404);
+  });
   it('readProjectInstruction rejects traversal with typed invalid-argument error', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/readProjectInstruction?filePath=../package.json');

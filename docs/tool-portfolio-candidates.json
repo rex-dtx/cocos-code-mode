@@ -29,7 +29,7 @@
       "domain": "ui-layout",
       "candidates": [
         {
-          "name": "uiLayoutInspect",
+          "name": "uiAccessibilityAudit",
           "state": "candidate",
           "contractDelta": "Typed constraint tree and computed world rectangles, not a generic property dump.",
           "route": "scene query plus layout normalization",
@@ -39,14 +39,14 @@
           "witnessContractIds": [
             "scene-query-contract"
           ],
-          "positiveTestID": "candidate.uiLayoutInspect.positive.v1",
-          "negativeTestID": "candidate.uiLayoutInspect.negative.v1",
-          "fixtureID": "fixture.candidate.uiLayoutInspect.v1",
-          "evidenceArtifact": "reports/evidence/candidates/uiLayoutInspect/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.uiAccessibilityAudit.positive.v1",
+          "negativeTestID": "candidate.uiAccessibilityAudit.negative.v1",
+          "fixtureID": "fixture.candidate.uiAccessibilityAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiAccessibilityAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
         {
-          "name": "uiLayoutApply",
+          "name": "uiFocusNavigation",
           "state": "candidate",
           "contractDelta": "Atomic bounded layout constraint application with preflight, one snapshot and read-back.",
           "route": "shared inspector mutation service",
@@ -58,14 +58,14 @@
             "scene-query-contract",
             "mutation-workflow"
           ],
-          "positiveTestID": "candidate.uiLayoutApply.positive.v1",
-          "negativeTestID": "candidate.uiLayoutApply.negative.v1",
-          "fixtureID": "fixture.candidate.uiLayoutApply.v1",
-          "evidenceArtifact": "reports/evidence/candidates/uiLayoutApply/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.uiFocusNavigation.positive.v1",
+          "negativeTestID": "candidate.uiFocusNavigation.negative.v1",
+          "fixtureID": "fixture.candidate.uiFocusNavigation.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiFocusNavigation/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
         {
-          "name": "uiLayoutValidate",
+          "name": "uiSafeAreaInspect",
           "state": "candidate",
           "contractDelta": "Detect clipping, overlap, missing anchors and inconsistent safe-area constraints.",
           "route": "scene geometry validator",
@@ -75,10 +75,10 @@
           "witnessContractIds": [
             "scene-query-contract"
           ],
-          "positiveTestID": "candidate.uiLayoutValidate.positive.v1",
-          "negativeTestID": "candidate.uiLayoutValidate.negative.v1",
-          "fixtureID": "fixture.candidate.uiLayoutValidate.v1",
-          "evidenceArtifact": "reports/evidence/candidates/uiLayoutValidate/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.uiSafeAreaInspect.positive.v1",
+          "negativeTestID": "candidate.uiSafeAreaInspect.negative.v1",
+          "fixtureID": "fixture.candidate.uiSafeAreaInspect.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiSafeAreaInspect/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
         {
@@ -101,7 +101,7 @@
           "proposedExecutionPhase": "P2"
         },
         {
-          "name": "uiCreateScrollView",
+          "name": "uiVirtualListCreate",
           "state": "candidate",
           "contractDelta": "Create and verify the complete view-mask-content hierarchy, not one prefab node.",
           "route": "compound scene workflow",
@@ -111,14 +111,14 @@
           "witnessContractIds": [
             "compound-scene-workflow"
           ],
-          "positiveTestID": "candidate.uiCreateScrollView.positive.v1",
-          "negativeTestID": "candidate.uiCreateScrollView.negative.v1",
-          "fixtureID": "fixture.candidate.uiCreateScrollView.v1",
-          "evidenceArtifact": "reports/evidence/candidates/uiCreateScrollView/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.uiVirtualListCreate.positive.v1",
+          "negativeTestID": "candidate.uiVirtualListCreate.negative.v1",
+          "fixtureID": "fixture.candidate.uiVirtualListCreate.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiVirtualListCreate/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
         {
-          "name": "uiCreateInputForm",
+          "name": "uiFormValidationBind",
           "state": "candidate",
           "contractDelta": "Create labeled input hierarchy, focus order and validation binding with functional read-back.",
           "route": "compound scene workflow",
@@ -128,10 +128,10 @@
           "witnessContractIds": [
             "compound-scene-workflow"
           ],
-          "positiveTestID": "candidate.uiCreateInputForm.positive.v1",
-          "negativeTestID": "candidate.uiCreateInputForm.negative.v1",
-          "fixtureID": "fixture.candidate.uiCreateInputForm.v1",
-          "evidenceArtifact": "reports/evidence/candidates/uiCreateInputForm/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.uiFormValidationBind.positive.v1",
+          "negativeTestID": "candidate.uiFormValidationBind.negative.v1",
+          "fixtureID": "fixture.candidate.uiFormValidationBind.v1",
+          "evidenceArtifact": "reports/evidence/candidates/uiFormValidationBind/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         }
       ]
@@ -310,7 +310,7 @@
       "domain": "assets-import",
       "candidates": [
         {
-          "name": "assetImportSettingsGet",
+          "name": "assetImporterAudit",
           "state": "candidate",
           "contractDelta": "Typed importer-specific schema and normalized settings, not raw metadata.",
           "route": "importer registry",
@@ -320,10 +320,10 @@
           "witnessContractIds": [
             "importer-schema"
           ],
-          "positiveTestID": "candidate.assetImportSettingsGet.positive.v1",
-          "negativeTestID": "candidate.assetImportSettingsGet.negative.v1",
-          "fixtureID": "fixture.candidate.assetImportSettingsGet.v1",
-          "evidenceArtifact": "reports/evidence/candidates/assetImportSettingsGet/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.assetImporterAudit.positive.v1",
+          "negativeTestID": "candidate.assetImporterAudit.negative.v1",
+          "fixtureID": "fixture.candidate.assetImporterAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetImporterAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
         {
@@ -367,7 +367,7 @@
           "proposedExecutionPhase": "P2"
         },
         {
-          "name": "assetManifestExport",
+          "name": "assetCatalogManifest",
           "state": "candidate",
           "contractDelta": "Bounded deterministic manifest with dependencies, hashes and explicit exclusions.",
           "route": "asset-db query and hashing",
@@ -377,10 +377,10 @@
           "witnessContractIds": [
             "asset-query-contract"
           ],
-          "positiveTestID": "candidate.assetManifestExport.positive.v1",
-          "negativeTestID": "candidate.assetManifestExport.negative.v1",
-          "fixtureID": "fixture.candidate.assetManifestExport.v1",
-          "evidenceArtifact": "reports/evidence/candidates/assetManifestExport/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.assetCatalogManifest.positive.v1",
+          "negativeTestID": "candidate.assetCatalogManifest.negative.v1",
+          "fixtureID": "fixture.candidate.assetCatalogManifest.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetCatalogManifest/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
         {
@@ -401,7 +401,7 @@
           "proposedExecutionPhase": "P6"
         },
         {
-          "name": "assetUsageAnalyze",
+          "name": "assetSceneUsageAudit",
           "state": "candidate",
           "contractDelta": "Evidence-backed unreferenced candidates with roots, confidence and dynamic-load caveats.",
           "route": "Cocos Graph analysis",
@@ -411,10 +411,10 @@
           "witnessContractIds": [
             "graph-v4"
           ],
-          "positiveTestID": "candidate.assetUsageAnalyze.positive.v1",
-          "negativeTestID": "candidate.assetUsageAnalyze.negative.v1",
-          "fixtureID": "fixture.candidate.assetUsageAnalyze.v1",
-          "evidenceArtifact": "reports/evidence/candidates/assetUsageAnalyze/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.assetSceneUsageAudit.positive.v1",
+          "negativeTestID": "candidate.assetSceneUsageAudit.negative.v1",
+          "fixtureID": "fixture.candidate.assetSceneUsageAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/assetSceneUsageAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         }
       ]
@@ -1327,7 +1327,7 @@
       "domain": "runtime-qa",
       "candidates": [
         {
-          "name": "runtimeSessionManage",
+          "name": "runtimeSessionLifecycle",
           "state": "candidate",
           "contractDelta": "Attach, identify, stop and reset finite game-view/browser/simulator sessions.",
           "route": "runtime session foundation",
@@ -1339,10 +1339,10 @@
             "preview-lifecycle",
             "runtime-transport"
           ],
-          "positiveTestID": "candidate.runtimeSessionManage.positive.v1",
-          "negativeTestID": "candidate.runtimeSessionManage.negative.v1",
-          "fixtureID": "fixture.candidate.runtimeSessionManage.v1",
-          "evidenceArtifact": "reports/evidence/candidates/runtimeSessionManage/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.runtimeSessionLifecycle.positive.v1",
+          "negativeTestID": "candidate.runtimeSessionLifecycle.negative.v1",
+          "fixtureID": "fixture.candidate.runtimeSessionLifecycle.v1",
+          "evidenceArtifact": "reports/evidence/candidates/runtimeSessionLifecycle/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P1"
         },
         {

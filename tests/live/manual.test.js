@@ -14,12 +14,12 @@ describe('live: manual & server — migrated from scripts/smoke-utcp.js', () => 
     return false;
   }
 
-  it('GET /utcp has 86 tools and strict keys', async (t) => {
+  it('GET /utcp has 95 tools and strict keys', async (t) => {
     if (skipIfDown(t)) return;
     const r = await getJson('/utcp');
     assert.equal(r.ok, true, `GET /utcp -> ${r.status}`);
     assert.deepEqual(Object.keys(r.body).sort(), ['manual_version', 'tools', 'utcp_version']);
-    assert.equal(r.body.tools.length, 86, `tools.length expected 86 got ${r.body.tools.length}`);
+    assert.equal(r.body.tools.length, 95, `tools.length expected 95 got ${r.body.tools.length}`);
   });
 
   it('config has ccb3x template, no duplicate ccb* URL', async (t) => {

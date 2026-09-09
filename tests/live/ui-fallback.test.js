@@ -392,5 +392,77 @@ describe('live: CC373 native UI creation fallback', () => {
     const missingReference = await postTool('simulateButtonClick', {});
     assert.equal(missingReference.status, 400);
   });
+  it('Creator 3.7 binds native Button click handlers through EventHandler', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
 
+    const created = await postTool('createButton', { name: '__ccb3x_bind_button__' });
+    assert.equal(created.ok, true, JSON.stringify(created.body));
+    const reference = created.body.reference;
+    try {
+      const label = await postTool('nodeComponentManage', {
+        operation: 'add',
+        reference,
+        componentType: 'cc.Label',
+      });
+      assert.equal(label.ok, true, JSON.stringify(label.body));
+
+      const bound = await postTool('bindButtonClickEvent', {
+        reference,
+        componentType: 'cc.Label',
+        handlerName: 'onEnable',
+        customEventData: 'qualification',
+      });
+      assert.equal(bound.ok, true, JSON.stringify(bound.body));
+      assert.equal(bound.body.handlerCount, 1);
+
+      const missingHandler = await postTool('bindButtonClickEvent', {
+        reference,
+        componentType: 'cc.Label',
+        handlerName: '__missing_handler__',
+      });
+      assert.equal(missingHandler.status, 500);
+    } finally {
+      await postTool('nodeOperate', { operation: 'delete', reference });
+    }
+  });
+
+  it('Creator 3.7 UI layout and compound form workflows round-trip', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const roots = [];
+    try {
+      const form = await postTool('uiCreateInputForm', { label: 'Email', placeholder: 'you@example.com' });
+      assert.equal(form.ok, true, JSON.stringify(form.body));
+      roots.push(form.body.reference);
+      assert.equal(form.body.focusOrder.length, 2);
+
+      const inspected = await postTool('uiLayoutInspect', { reference: form.body.reference, maxNodes: 8 });
+      assert.equal(inspected.ok, true, JSON.stringify(inspected.body));
+      assert.ok(inspected.body.nodes.length >= 4);
+
+      const applied = await postTool('uiLayoutApply', {
+        reference: form.body.reference,
+        size: { width: 480, height: 96 },
+      });
+      assert.equal(applied.ok, true, JSON.stringify(applied.body));
+      assert.equal(applied.body.success, true);
+      assert.deepEqual(applied.body.layout.size, { width: 480, height: 96 });
+
+      const valid = await postTool('uiLayoutValidate', { reference: form.body.reference, maxNodes: 8 });
+      assert.equal(valid.ok, true, JSON.stringify(valid.body));
+      assert.equal(valid.body.valid, true);
+
+      const scroll = await postTool('uiCreateScrollView', { name: '__ccb3x_scroll_probe__' });
+      assert.equal(scroll.ok, true, JSON.stringify(scroll.body));
+      roots.push(scroll.body.reference);
+      assert.ok(scroll.body.viewport?.id && scroll.body.content?.id);
+
+      const missing = await postTool('uiLayoutApply', {
+        reference: { id: '__ccb3x_missing_layout__', type: 'cc.Node' },
+        size: { width: 1, height: 1 },
+      });
+      assert.equal(missing.status, 404);
+    } finally {
+      for (const reference of roots) await postTool('nodeOperate', { operation: 'delete', reference });
+    }
+  });
 });
