@@ -1,3 +1,5 @@
+import { buildUiLayoutReport, LayoutReportRequest } from './ui-layout-report';
+
 export function load() { }
 export function unload() { }
 let _originalConsoleError: (...data: unknown[]) => void = () => { };
@@ -323,6 +325,15 @@ export const methods = {
         return null;
     },
 
+    async uiLayoutReport(request: LayoutReportRequest): Promise<unknown> {
+        const cc = (globalThis as { cc?: { director?: { getScene?: () => unknown } } }).cc;
+        const scene = cc?.director?.getScene?.();
+        if (!scene || typeof scene !== 'object') {
+            return { error: { code: 'UI_LAYOUT_SCENE_UNAVAILABLE', message: 'Live scene graph is unavailable', evidence: {} } };
+        }
+        return buildUiLayoutReport(scene as Parameters<typeof buildUiLayoutReport>[0], request);
+    },
+
     async simulateButtonClick(nodeUuid: string): Promise<{ handlersFired: number, method: string }> {
         const cc = (globalThis as any)['cc'];
         const node = await methods.findRuntimeNodeUuid(nodeUuid);
@@ -390,5 +401,28 @@ export const methods = {
             timeScale: director?.getScheduler()?.getTimeScale?.() ?? 1,
             frameCount: director?.totalFrames ?? 0,
         };
-    }
+    },
+    async inspectLocalization(): Promise<{ supported: boolean, currentLanguage: string | null, languages: string[], directions: Record<string, string>, error?: string }> {
+        try {
+            const mod = require('db://localization-editor/l10n');
+            const l10n = mod.l10n;
+            const languages = Array.from(l10n.languages ?? []) as string[];
+            const directions: Record<string, string> = {};
+            for (const language of languages.slice(0, 32)) directions[language] = String(l10n.direction(language));
+            return { supported: true, currentLanguage: l10n.currentLanguage ?? null, languages, directions };
+        } catch (error: any) {
+            return { supported: false, currentLanguage: null, languages: [], directions: {}, error: String(error?.message ?? error) };
+        }
+    },
+    async validateLocalization(keys: string[]): Promise<{ supported: boolean, language: string | null, checkedKeys: number, missingKeys: string[], error?: string }> {
+        try {
+            const mod = require('db://localization-editor/l10n');
+            const l10n = mod.l10n;
+            const boundedKeys = Array.from(new Set((keys ?? []).filter((key): key is string => typeof key === 'string' && key.length > 0))).slice(0, 256);
+            const missingKeys = boundedKeys.filter((key) => !l10n.exists(key));
+            return { supported: true, language: l10n.currentLanguage ?? null, checkedKeys: boundedKeys.length, missingKeys };
+        } catch (error: any) {
+            return { supported: false, language: null, checkedKeys: 0, missingKeys: [], error: String(error?.message ?? error) };
+        }
+    },
 };

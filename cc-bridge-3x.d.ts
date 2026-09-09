@@ -288,6 +288,42 @@ declare namespace cc_bridge_3x {
         dbName?: string
     }): { result: any };
 
+    /** Read-only bounded live 2D UI layout diagnostics. Optional overlay returns a transient bounded PNG payload and never mutates scene state. */
+    function uiLayoutReport(args: {
+        root?: InstanceReference,
+        rootPath?: string,
+        designResolution: { width: number, height: number },
+        viewport: { width: number, height: number },
+        fitMode?: "fitWidth" | "fitHeight" | "contain" | "cover" | "stretch" | "none",
+        maxNodes?: number,
+        maxIssues?: number,
+        maxBytes?: number,
+        overlay?: boolean,
+        alignmentTolerance?: number,
+        gapTolerance?: number
+    }): {
+        complete: boolean,
+        designResolution: Size,
+        viewport: Size,
+        fitMode: string,
+        fit: { scale: Vector2, offset: Vector2 },
+        root: { uuid: string, path: string, name: string },
+        nodes: any[],
+        issues: any[],
+        truncation: any[],
+        overlay: {
+            requested: boolean, valid: boolean, rendered: boolean, cleaned: boolean,
+            maxArtifactBytes: number, maxResponseBytes: number, responseBytes: number,
+            sourceNodeCount: number, sourceIssueCount: number,
+            artifact?: { mimeType: "image/png", encoding: "base64", data: string, byteLength: number, width: number, height: number, scale: Vector2 },
+            error?: { code: string, message: string, evidence: Record<string, any> },
+            dirtyBefore?: boolean, dirtyAfter?: boolean, dirtyPreserved?: boolean
+        },
+        tolerances: { alignment: number, gap: number }
+    } | {
+        error: { code: string, message: string, evidence: Record<string, any> }
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
