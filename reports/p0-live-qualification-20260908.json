@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:39:30Z",
+  "checkedAt": "2026-09-09T05:45:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -82,8 +82,8 @@
     }
   },
   "readOnlyEndpointQualification": {
-    "tests": 26,
-    "passed": 26,
+    "tests": 27,
+    "passed": 27,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -103,6 +103,10 @@
       "findNodesWithMissingAssets",
       "assetFindReferences",
       "runtimeGetState",
+      "runtimeSetTimeScale",
+      "editorSelect",
+      "editorHistory",
+      "nodeBatchSet",
       "getPerformanceSnapshot",
       "sceneSnapshot",
       "editorQuery",
@@ -119,7 +123,16 @@
       "assetReadContent",
       "readPrefabJson"
     ],
-    "observedPartialTools": [],
+    "observedPartialTools": [
+      {
+        "tool": "runtimePause",
+        "reason": "POST returns success=true in edit mode, but runtimeGetState remains paused=false because no running preview loop is active."
+      },
+      {
+        "tool": "runtimeResume",
+        "reason": "POST returns success=true in edit mode; live pause/resume state transition requires a running preview."
+      }
+    ],
     "closedFindings": [
       {
         "tool": "projectReadFile",
@@ -178,24 +191,24 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 173,
-      "passed": 173,
+      "tests": 174,
+      "passed": 174,
       "failed": 0,
       "suites": 30,
       "status": "pass"
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 46,
-    "qualifiedBaseline": 46,
-    "registeredUnverified": 40,
-    "requiredNet": 111,
+    "directEndpointEvidence": 50,
+    "qualifiedBaseline": 50,
+    "registeredUnverified": 36,
+    "requiredNet": 107,
     "approvalMargin": 18,
-    "requiredApprovalCount": 129
+    "requiredApprovalCount": 125
   },
   "fullLiveQualification": {
-    "tests": 173,
-    "passed": 173,
+    "tests": 174,
+    "passed": 174,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -205,6 +218,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and thirty-two directly qualified read-only and bounded read/diagnostic endpoint contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and thirty-six directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
