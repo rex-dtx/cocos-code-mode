@@ -2,6 +2,7 @@ import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { TextDecoder } from 'util';
 import { isMessageNotExposed } from '../utils/editor-message-error';
+import { ToolError } from '../tool-error';
 const DEFAULT_EFFECT_RESULTS = 200;
 const MAX_EFFECT_RESULTS = 1000;
 const DEFAULT_RAW_DATA_BYTES = 512 * 1024;
@@ -185,7 +186,13 @@ export class MaterialTools {
                 try {
                     return { result: await Editor.Message.request('asset-db', 'query-missing-asset-info' as any, args.reference.id) };
                 } catch (e: any) {
-                    if (isMessageNotExposed(e, 'asset-db', 'query-missing-asset-info')) throw new Error('assetDbQuery "missing" is not supported on this editor version (message added after 3.7.3)');
+                    if (isMessageNotExposed(e, 'asset-db', 'query-missing-asset-info')) {
+                        throw new ToolError({
+                            code: 'UNSUPPORTED_EDITOR_API',
+                            message: 'assetDbQuery "missing" is not supported by Cocos Creator 3.7.3.',
+                            recovery: 'Use meta or data for a known asset reference, or upgrade to a Creator version exposing query-missing-asset-info.',
+                        });
+                    }
                     throw e;
                 }
             }

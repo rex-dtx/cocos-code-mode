@@ -217,6 +217,10 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(assetTypes.status, 200);
     assert.ok(Array.isArray(assetTypes.body.types));
     assert.ok(assetTypes.body.types.length > 0);
+
+    const unsupported = await getJson('/tools/editorQuery?category=sorted_plugins');
+    assert.equal(unsupported.status, 422);
+    assert.equal(unsupported.body.code, 'UNSUPPORTED_EDITOR_API');
   });
 
   it('assetDbQuery returns typed database readiness state', async (t) => {
@@ -229,6 +233,10 @@ describe('live: read-only endpoint qualification', () => {
     const ready = await getJson('/tools/assetDbQuery?operation=ready');
     assert.equal(ready.status, 200);
     assert.equal(typeof ready.body.result, 'boolean');
+
+    const unsupported = await getJson('/tools/assetDbQuery?operation=missing&reference%5Bid%5D=__unknown_asset_uuid__');
+    assert.equal(unsupported.status, 422);
+    assert.equal(unsupported.body.code, 'UNSUPPORTED_EDITOR_API');
   });
 
   it('assetReadContent reads text assets and rejects binary assets with typed errors', async (t) => {
