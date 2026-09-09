@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:09:22Z",
+  "checkedAt": "2026-09-09T05:17:42Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "artifactCommit": "0c51c87",
+    "artifactCommit": "db7367a",
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one"
@@ -78,13 +78,12 @@
       "unitTests": "165/165 pass",
       "focusedLiveTest": "1/1 pass with three created component types and cleanup",
       "textSmoke": "createLabel and createButton returned HTTP 200 with optional text",
-      "liveArtifact": "0c51c87 dirty=false"
+      "liveArtifact": "db7367a dirty=false"
     }
   },
   "readOnlyEndpointQualification": {
-    "command": "node --test tests/live/read-only-tools.test.js",
-    "tests": 22,
-    "passed": 22,
+    "tests": 23,
+    "passed": 23,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -99,6 +98,7 @@
       "getEditorPreference",
       "editorGetLogs",
       "assetGetAvailableUrl",
+      "assetGetAtPath",
       "assetFindReferences",
       "runtimeGetState",
       "getPerformanceSnapshot",
@@ -127,6 +127,29 @@
       }
     ]
   },
+  "versionCompatibilityFindings": [
+    {
+      "api": "programming/query-sorted-plugins",
+      "tool": "editorQuery(sorted_plugins)",
+      "creator373": "not exposed; live probe returns Message does not exist",
+      "newerEditorPlan": "Verify and enable on Creator 3.8+ only; retain typed UNSUPPORTED_EDITOR_API on 3.7.3.",
+      "evidence": "live executeJavascript probe on Creator 3.7.3; source guard states added after 3.7.3"
+    },
+    {
+      "api": "asset-db/query-missing-asset-info",
+      "tool": "assetDbQuery(missing)",
+      "creator373": "not exposed; live probe returns Message does not exist",
+      "newerEditorPlan": "Verify and enable on a Creator version exposing the message; retain typed unsupported response on 3.7.3.",
+      "evidence": "live executeJavascript probe on Creator 3.7.3; creator-types reference records 3.8.7 typing"
+    },
+    {
+      "api": "project/set-config",
+      "tool": "projectManage(set)",
+      "creator373": "not exposed; compatibility probe is typed unsupported",
+      "newerEditorPlan": "Verify and enable using the documented Creator 3.8 IPC signature; no filesystem fallback.",
+      "evidence": "unit compatibility contract and source guard; Creator 3.7.3 registry lacks the message"
+    }
+  ],
   "liveSuites": {
     "focusedGapClosure": {
       "command": "node --test tests/live/gap-closure.test.js",
@@ -136,24 +159,24 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 169,
-      "passed": 169,
+      "tests": 170,
+      "passed": 170,
       "failed": 0,
       "suites": 30,
       "status": "pass"
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 37,
-    "qualifiedBaseline": 37,
-    "registeredUnverified": 49,
-    "requiredNet": 120,
+    "directEndpointEvidence": 38,
+    "qualifiedBaseline": 38,
+    "registeredUnverified": 48,
+    "requiredNet": 119,
     "approvalMargin": 18,
-    "requiredApprovalCount": 138
+    "requiredApprovalCount": 137
   },
   "fullLiveQualification": {
-    "tests": 169,
-    "passed": 169,
+    "tests": 170,
+    "passed": 170,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -163,6 +186,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty-three directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and twenty-four directly qualified read-only endpoint contracts. It does not qualify every tool behavior."
   }
 }
