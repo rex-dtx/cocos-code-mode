@@ -142,4 +142,38 @@ describe('live: CC373 native UI creation fallback', () => {
     });
     assert.equal(invalidPrimitive.status, 400);
   });
+
+
+  it('Creator 3.7 editor preference setter preserves typed values', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const result = await postTool('setEditorPreference', { key: 'serverPort', value: 49650 });
+    assert.equal(result.ok, true);
+    assert.equal(result.body.success, true);
+    assert.equal(result.body.key, 'serverPort');
+    assert.equal(result.body.value, 49650);
+
+    const invalid = await postTool('setEditorPreference', { value: 49650 });
+    assert.equal(invalid.status, 400);
+  });
+
+  it('Creator 3.7 direct UI node API creates and validates native controls', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const created = await postTool('createUiNode', {
+      uiType: 'Label',
+      name: '__ccb3x_direct_ui_node__',
+    });
+    assert.equal(created.ok, true, JSON.stringify(created.body));
+    const reference = created.body.reference;
+    assert.equal(typeof reference?.id, 'string');
+    try {
+      const components = await getJson(`/tools/nodeComponentsGet?reference%5Bid%5D=${encodeURIComponent(reference.id)}`);
+      assert.equal(components.ok, true);
+      assert.ok(components.body.references.some((item) => item.type === 'cc.Label'));
+    } finally {
+      await postTool('nodeOperate', { operation: 'delete', reference });
+    }
+
+    const invalid = await postTool('createUiNode', { uiType: 'Unknown' });
+    assert.equal(invalid.status, 400);
+  });
 });

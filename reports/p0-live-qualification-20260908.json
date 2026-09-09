@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T06:24:00Z",
+  "checkedAt": "2026-09-09T06:29:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -194,24 +194,24 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 178,
-      "passed": 178,
+      "tests": 180,
+      "passed": 180,
       "failed": 0,
       "suites": 30,
       "status": "pass"
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 61,
-    "qualifiedBaseline": 61,
-    "registeredUnverified": 25,
-    "requiredNet": 96,
+    "directEndpointEvidence": 63,
+    "qualifiedBaseline": 63,
+    "registeredUnverified": 23,
+    "requiredNet": 94,
     "approvalMargin": 18,
-    "requiredApprovalCount": 114
+    "requiredApprovalCount": 112
   },
   "fullLiveQualification": {
-    "tests": 178,
-    "passed": 178,
+    "tests": 180,
+    "passed": 180,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -221,6 +221,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, project/build reads, node lifecycle/component/inspector/reset operations, and forty-seven directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, and forty-nine directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
