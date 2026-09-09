@@ -290,8 +290,8 @@
     {
       "name": "programManage",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "projectManage",

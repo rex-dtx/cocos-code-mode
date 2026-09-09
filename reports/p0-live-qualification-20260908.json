@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T07:22:00Z",
+  "checkedAt": "2026-09-09T07:39:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -193,23 +193,23 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 184,
-      "passed": 184,
+      "tests": 185,
+      "passed": 185,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 73,
-    "qualifiedBaseline": 73,
-    "registeredUnverified": 13,
-    "requiredNet": 84,
-    "approvalMargin": 13,
-    "requiredApprovalCount": 102
+    "directEndpointEvidence": 74,
+    "qualifiedBaseline": 74,
+    "registeredUnverified": 12,
+    "requiredNet": 83,
+    "approvalMargin": 12,
+    "requiredApprovalCount": 101
   },
   "fullLiveQualification": {
-    "tests": 184,
-    "passed": 184,
+    "tests": 185,
+    "passed": 185,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -219,6 +219,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, and project/instruction file mutation across fifty-seven directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, and registered browser program discovery across fifty-eight directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
