@@ -3,13 +3,20 @@
 // runtime node graph + EventHandler are live.
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
+import { ToolError } from '../tool-error';
 
 const EVENT_PACKAGE = 'cc-bridge-3x';
 
 async function ensureRuntimeNode(id: string): Promise<void> {
     const exists = await Editor.Message.request('scene', 'query-node', id);
     if (exists === null || exists === undefined) {
-        throw new Error(`Node ${id} not found in editor scene`);
+        throw new ToolError({
+            code: 'NOT_FOUND',
+            status: 404,
+            message: `Node ${id} not found in editor scene`,
+            details: { id },
+            recovery: 'Pass a current scene node reference.',
+        });
     }
 }
 
