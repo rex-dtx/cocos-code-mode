@@ -72,4 +72,23 @@ describe('response-trimmer — trims null/undefined/empty containers before seri
       components: [{ reference: { id: 'x', type: 'cc.UITransform' } }],
     });
   });
+
+  it('preserves schema-required empty output arrays', () => {
+    const out = trimResponse({
+      references: [],
+      total: 0,
+      truncated: false,
+      optional: [],
+    }, {
+      type: 'object',
+      required: ['references', 'total', 'truncated'],
+      properties: {
+        references: { type: 'array', items: { type: 'object' } },
+        total: { type: 'number' },
+        truncated: { type: 'boolean' },
+        optional: { type: 'array' },
+      },
+    });
+    assert.deepEqual(out, { references: [], total: 0, truncated: false });
+  });
 });
