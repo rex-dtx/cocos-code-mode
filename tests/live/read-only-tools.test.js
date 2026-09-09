@@ -47,6 +47,29 @@ describe('live: read-only endpoint qualification', () => {
     assert.deepEqual(invalid.body.missingInputs, ['pattern']);
   });
 
+  it('projectReadFile rejects paths outside the project as invalid input', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/projectReadFile?filePath=../package.json');
+    assert.equal(result.status, 400);
+    assert.equal(result.body.code, 'INVALID_ARGUMENT');
+  });
+
+  it('projectListDirectory rejects paths outside the project as invalid input', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/projectListDirectory?dirPath=..');
+    assert.equal(result.status, 400);
+    assert.equal(result.body.code, 'INVALID_ARGUMENT');
+  });
+
+  it('listComponentClasses defaults to component classes and applies its filter', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/listComponentClasses?filter=Label');
+    assert.equal(result.status, 200);
+    assert.ok(Array.isArray(result.body.classes));
+    assert.ok(result.body.classes.length > 0);
+    assert.ok(result.body.classes.every((name) => name.toLowerCase().includes('label')));
+  });
+
   it('listEditorWindows returns typed live window records', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/listEditorWindows');

@@ -3,6 +3,7 @@ import { invalidateAfterWrite } from '../utils/memo-cache';
 import fs from 'fs-extra';
 import path from 'path';
 import { VERBOSE_FILE_BYTES, VERBOSE_SEARCH_LIMIT } from '../utils/verbose';
+import { ToolError } from '../tool-error';
 
 const MAX_FILE_BYTES = 512 * 1024; // 512KB read cap
 const MAX_SEARCH_RESULTS = 100;
@@ -19,7 +20,13 @@ function resolveSafePath(projectPath: string, relPath: string): string {
     const resolved = path.resolve(projectPath, relPath);
     const rel = path.relative(projectPath, resolved);
     if (rel.startsWith('..') || path.isAbsolute(rel)) {
-        throw new Error(`Path escapes project boundary: ${relPath}`);
+        throw new ToolError({
+            code: 'INVALID_ARGUMENT',
+            status: 400,
+            message: `Path escapes project boundary: ${relPath}`,
+            details: { path: relPath },
+            recovery: 'Pass a path relative to the open project without parent-directory traversal.',
+        });
     }
     return resolved;
 }
