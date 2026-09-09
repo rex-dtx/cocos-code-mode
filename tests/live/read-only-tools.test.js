@@ -470,6 +470,38 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(typeof gizmo.body.gizmoCoordinate, 'string');
   });
 
+  it('Creator 3.7 project and build managers expose bounded read state', async (t) => {
+    if (skipIfDown(t)) return;
+    const project = await getJson('/tools/projectManage', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'get', limit: 20 }),
+    });
+    assert.equal(project.status, 200);
+    assert.ok(project.body.config && typeof project.body.config === 'object');
+    assert.equal(typeof project.body.total, 'number');
+    assert.equal(typeof project.body.truncated, 'boolean');
+    assert.equal(project.body.truncated, false);
+
+    const tasks = await getJson('/tools/buildManage', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'tasks_info', limit: 5 }),
+    });
+    assert.equal(tasks.status, 200);
+    assert.equal(typeof tasks.body.workerReady, 'boolean');
+    assert.equal(typeof tasks.body.free, 'boolean');
+    assert.equal(typeof tasks.body.total, 'number');
+    assert.equal(typeof tasks.body.truncated, 'boolean');
+
+    const invalid = await getJson('/tools/projectManage', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'set' }),
+    });
+    assert.equal(invalid.status, 400);
+  });
+
   it('scene read queries preserve empty results and type missing nodes', async (t) => {
     if (skipIfDown(t)) return;
     const tree = await getJson('/tools/nodeGetTree?maxDepth=1&maxNodes=50');

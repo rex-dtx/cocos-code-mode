@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:56:30Z",
+  "checkedAt": "2026-09-09T06:02:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 175,
-    "passed": 175,
+    "tests": 176,
+    "passed": 176,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 52,
-  "qualifiedBaseline": 52,
-  "requiredNet": 105,
+  "directEndpointEvidenceCount": 54,
+  "qualifiedBaseline": 54,
+  "requiredNet": 103,
   "approvalMargin": 18,
-  "requiredApprovalCount": 123,
+  "requiredApprovalCount": 121,
   "rows": [
     {
       "name": "assetGetTree",
@@ -278,8 +278,8 @@
     {
       "name": "buildManage",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "previewManage",
@@ -296,8 +296,8 @@
     {
       "name": "projectManage",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "executeJavascript",
