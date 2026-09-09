@@ -239,6 +239,35 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(unsupported.body.code, 'UNSUPPORTED_EDITOR_API');
   });
 
+  it('scene read queries preserve empty results and type missing nodes', async (t) => {
+    if (skipIfDown(t)) return;
+    const tree = await getJson('/tools/nodeGetTree?maxDepth=1&maxNodes=50');
+    assert.equal(tree.status, 200);
+    const canvas = tree.body.children.find((node) => node.name === 'Canvas');
+    assert.ok(canvas?.reference?.id, 'Canvas reference');
+
+    const pathHit = await getJson('/tools/nodeGetAtPath?hierarchyPath=%2FCanvas');
+    assert.equal(pathHit.status, 200);
+    assert.equal(pathHit.body.references[0].id, canvas.reference.id);
+
+    const pathMiss = await getJson('/tools/nodeGetAtPath?hierarchyPath=%2F__missing__');
+    assert.equal(pathMiss.status, 200);
+    assert.deepEqual(pathMiss.body.references, []);
+
+    const methods = await getJson(`/tools/listComponentMethods?reference%5Bid%5D=${encodeURIComponent(canvas.reference.id)}`);
+    assert.equal(methods.status, 200);
+    assert.ok(Array.isArray(methods.body.components));
+
+    const missingMethods = await getJson('/tools/listComponentMethods?reference%5Bid%5D=__missing_node_uuid__');
+    assert.equal(missingMethods.status, 404);
+    assert.equal(missingMethods.body.code, 'TARGET_NOT_FOUND');
+
+    const animationState = await getJson('/tools/animationQuery?operation=state');
+    assert.equal(animationState.status, 200);
+    assert.ok(Object.prototype.hasOwnProperty.call(animationState.body, 'result'));
+    assert.equal(animationState.body.result, null);
+  });
+
   it('assetReadContent reads text assets and rejects binary assets with typed errors', async (t) => {
     if (skipIfDown(t)) return;
     const text = await getJson('/tools/assetReadContent?assetPath=db%3A%2F%2Fassets%2Fcc-common%2Fcc-network%2Fgame-network.js&verbose=true');

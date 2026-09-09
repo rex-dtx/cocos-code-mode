@@ -290,7 +290,13 @@ export class SceneTools {
             throw new Error('listComponentMethods requires reference.id (node uuid)');
         }
         if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
-            throw new Error(`Node ${args.reference.id} not found`);
+            throw new ToolError({
+                code: 'TARGET_NOT_FOUND',
+                status: 404,
+                message: `Node not found: ${args.reference.id}`,
+                details: { requestedId: args.reference.id },
+                recovery: 'Call nodeGetTree or sceneGetInfo to inspect the active scene and use a current node reference.',
+            });
         }
         const raw = await Editor.Message.request('scene', 'query-component-function-of-node', args.reference.id);
         if (raw === null || raw === undefined) {
@@ -554,7 +560,7 @@ export class SceneTools {
                 hierarchyPath: { type: 'string', description: 'Path to the node in the scene hierarchy"' },
             },
             required: ['hierarchyPath']
-        }, { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } } }, "GET",  ['scene', 'node', 'get', 'path', 'find', 'look', 'instance', 'hierarchy']
+        }, { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET",  ['scene', 'node', 'get', 'path', 'find', 'look', 'instance', 'hierarchy']
     )
     async nodeGetAtPath(args: { hierarchyPath: string }): Promise<{ references: IInstanceReference[] }> {
         const nodeTree = await Editor.Message.request('scene', 'query-node-tree');
