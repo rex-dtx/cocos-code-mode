@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Base64ImageSchema, IBase64Image, ISuccessIndicator, SuccessIndicatorSchema, InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { isMessageNotExposed } from '../utils/editor-message-error';
+import { ToolError } from '../tool-error';
 
 export class EditorTools {
 
@@ -342,7 +343,13 @@ export class EditorTools {
                 try {
                     return { result: await Editor.Message.request('programming', 'query-sorted-plugins' as any) };
                 } catch (e: any) {
-                    if (isMessageNotExposed(e, 'programming', 'query-sorted-plugins')) throw new Error('editorQuery "sorted_plugins" is not supported on this editor version (message added after 3.7.3)');
+                    if (isMessageNotExposed(e, 'programming', 'query-sorted-plugins')) {
+                        throw new ToolError({
+                            code: 'UNSUPPORTED_EDITOR_API',
+                            message: 'editorQuery "sorted_plugins" is not supported by Cocos Creator 3.7.3.',
+                            recovery: 'Use shared_settings or another supported editorQuery category.',
+                        });
+                    }
                     throw e;
                 }
             }
