@@ -1,6 +1,7 @@
 import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
+import { IProperty } from '@cocos/creator-types/editor/packages/scene/@types/public';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -20,6 +21,12 @@ const UI_PREFABS: Record<string, string> = {
     PageView: 'db://internal/default_ui/PageView.prefab',
     SafeArea: 'db://internal/default_ui/SafeArea.prefab',
 };
+
+interface SceneNodeDump {
+    name?: string | { value?: string };
+    children?: Array<{ uuid?: string, value?: { uuid?: string } }>;
+    __comps__?: Array<{ type?: string }>;
+}
 
 export class UiTools {
 
@@ -115,13 +122,13 @@ export class UiTools {
     async createLabel(args: { name?: string, text?: string, fontSize?: number, color?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
         const { reference } = await this.createUiNode({ uiType: 'Label', name: args.name || 'Label', parentReference: args.parentReference });
 
-        // Set Label component properties via property paths
         if (args.text !== undefined || args.fontSize !== undefined || args.color !== undefined) {
+            const componentPath = await this.componentPath(reference.id, 'cc.Label');
             const paths: string[] = [];
-            const dumps: any[] = [];
-            if (args.text !== undefined) { paths.push('__comps__.0.string'); dumps.push({ value: args.text, type: 'cc.String' }); }
-            if (args.fontSize !== undefined) { paths.push('__comps__.0.fontSize'); dumps.push({ value: args.fontSize, type: 'cc.Integer' }); }
-            if (args.color !== undefined) { paths.push('__comps__.0.color'); dumps.push({ value: args.color, type: 'cc.Color' }); }
+            const dumps: IProperty[] = [];
+            if (args.text !== undefined) { paths.push(`${componentPath}.string`); dumps.push({ value: args.text, type: 'cc.String' }); }
+            if (args.fontSize !== undefined) { paths.push(`${componentPath}.fontSize`); dumps.push({ value: args.fontSize, type: 'cc.Integer' }); }
+            if (args.color !== undefined) { paths.push(`${componentPath}.color`); dumps.push({ value: args.color, type: 'cc.Color' }); }
 
             for (let i = 0; i < paths.length; i++) {
                 await Editor.Message.request('scene', 'set-property', { uuid: reference.id, path: paths[i], dump: dumps[i] });
@@ -155,16 +162,12 @@ export class UiTools {
         // the button reads its text (docs §2 "trả sai còn tệ hơn ném lỗi").
         if (args.text !== undefined) {
             try {
-                const node = await Editor.Message.request('scene', 'query-node', reference.id) as any;
-                let labelChild = (node?.children || []).find((c: any) => c.name === 'Label');
-                if (!labelChild?.uuid) {
-                    const childUuid = await this.createNativeLabelChild(reference.id);
-                    if (childUuid) {
-                        const refreshed = await Editor.Message.request('scene', 'query-node', reference.id) as any;
-                        labelChild = (refreshed?.children || []).find((c: any) => c.name === 'Label');
-                    }
+                const node = await this.queryNodeDump(reference.id);
+                let labelChildUuid = await this.findNamedChild(node, 'Label');
+                if (!labelChildUuid) {
+                    labelChildUuid = await this.createNativeLabelChild(reference.id);
                 }
-                if (!labelChild?.uuid) {
+                if (!labelChildUuid) {
                     const rbErr = await this.rollbackNode(reference.id);
                     throw new ToolError({
                         code: 'PARTIAL_MUTATION',
@@ -174,26 +177,27 @@ export class UiTools {
                         recovery: 'Node was rolled back, safe to retry; or query-node to verify structure',
                     });
                 }
-                const ok = await Editor.Message.request('scene', 'set-property', { uuid: labelChild.uuid, path: '__comps__.0.string', dump: { value: args.text, type: 'cc.String' } }) as boolean;
+                const labelPath = await this.componentPath(labelChildUuid, 'cc.Label');
+                const ok = await Editor.Message.request('scene', 'set-property', { uuid: labelChildUuid, path: `${labelPath}.string`, dump: { value: args.text, type: 'cc.String' } }) as boolean;
                 if (ok === false) {
                     const rbErr = await this.rollbackNode(reference.id);
                     throw new ToolError({
                         code: 'PARTIAL_MUTATION',
-                        status: 500,
-                        message: `createButton: set-property refused for label text on ${labelChild.uuid} (button ${reference.id})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; button was rolled back, safe to retry'}`,
-                        details: { createdNodeId: reference.id, labelChildUuid: labelChild.uuid },
+                        message: `createButton: set-property refused for label text on ${labelChildUuid} (button ${reference.id})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; button was rolled back, safe to retry'}`,
+                        details: { createdNodeId: reference.id, labelChildUuid },
                         recovery: 'Button was rolled back, safe to retry',
                     });
                 }
                 await Editor.Message.request('scene', 'snapshot');
-            } catch (err: any) {
+            } catch (err: unknown) {
                 if (err instanceof ToolError) throw err;
                 const rbErr = await this.rollbackNode(reference.id);
+                const errorMessage = err instanceof Error ? err.message : String(err);
                 throw new ToolError({
                     code: 'PARTIAL_MUTATION',
                     status: 500,
-                    message: `createButton: follow-up IPC failed for button ${reference.id} (${err?.message || err})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
-                    details: { createdNodeId: reference.id, error: err?.message || String(err) },
+                    message: `createButton: follow-up IPC failed for button ${reference.id} (${errorMessage})${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
+                    details: { createdNodeId: reference.id, error: errorMessage },
                     recovery: 'Button was rolled back, safe to retry',
                 });
             }
@@ -222,9 +226,10 @@ export class UiTools {
 
         // No swallow: an unassigned spriteFrame must not read as a successful create.
         if (args.spriteFrameUuid) {
+            const componentPath = await this.componentPath(reference.id, 'cc.Sprite');
             const ok = await Editor.Message.request('scene', 'set-property', {
                 uuid: reference.id,
-                path: '__comps__.0.spriteFrame',
+                path: `${componentPath}.spriteFrame`,
                 dump: { value: { uuid: args.spriteFrameUuid }, type: 'cc.SpriteFrame' },
             }) as boolean;
             if (ok === false) {
@@ -242,6 +247,30 @@ export class UiTools {
 
         return { reference };
     }
+    private async queryNodeDump(uuid: string): Promise<SceneNodeDump | null> {
+        return await Editor.Message.request('scene', 'query-node', uuid) as SceneNodeDump | null;
+    }
+
+    private async componentPath(uuid: string, componentType: string): Promise<string> {
+        const node = await this.queryNodeDump(uuid);
+        const index = node?.__comps__?.findIndex((component) => component.type === componentType) ?? -1;
+        if (index < 0) {
+            throw new Error(`Component ${componentType} not found on node ${uuid}`);
+        }
+        return `__comps__.${index}`;
+    }
+
+    private async findNamedChild(node: SceneNodeDump | null, name: string): Promise<string | null> {
+        for (const child of node?.children ?? []) {
+            const uuid = child.uuid || child.value?.uuid;
+            if (!uuid) continue;
+            const childDump = await this.queryNodeDump(uuid);
+            const childName = typeof childDump?.name === 'string' ? childDump.name : childDump?.name?.value;
+            if (childName === name) return uuid;
+        }
+        return null;
+    }
+
 
     private async createNativeLabelChild(parentUuid: string): Promise<string | null> {
         const result = await Editor.Message.request('scene', 'create-node', {
