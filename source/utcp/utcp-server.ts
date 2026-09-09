@@ -31,6 +31,7 @@ import './tools/prefab-json-tools';
 import './tools/instruction-tools';
 import './tools/preference-tools';
 import './tools/input-tools';
+import './tools/expansion-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';

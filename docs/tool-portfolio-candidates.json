@@ -624,7 +624,7 @@
       "domain": "audio",
       "candidates": [
         {
-          "name": "audioSourceInspect",
+          "name": "audioSourceAudit",
           "state": "candidate",
           "contractDelta": "Normalized AudioSource and clip state including load mode and platform constraints.",
           "route": "audio adapter",
@@ -634,10 +634,10 @@
           "witnessContractIds": [
             "audio-schema"
           ],
-          "positiveTestID": "candidate.audioSourceInspect.positive.v1",
-          "negativeTestID": "candidate.audioSourceInspect.negative.v1",
-          "fixtureID": "fixture.candidate.audioSourceInspect.v1",
-          "evidenceArtifact": "reports/evidence/candidates/audioSourceInspect/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.audioSourceAudit.positive.v1",
+          "negativeTestID": "candidate.audioSourceAudit.negative.v1",
+          "fixtureID": "fixture.candidate.audioSourceAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioSourceAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P3"
         },
         {
@@ -694,7 +694,7 @@
           "proposedExecutionPhase": "P3"
         },
         {
-          "name": "audioAssetValidate",
+          "name": "audioAssetCompatibilityAudit",
           "state": "candidate",
           "contractDelta": "Validate format, decode/load mode, duration and target compatibility.",
           "route": "asset importer and platform validator",
@@ -704,10 +704,10 @@
           "witnessContractIds": [
             "audio-import-contract"
           ],
-          "positiveTestID": "candidate.audioAssetValidate.positive.v1",
-          "negativeTestID": "candidate.audioAssetValidate.negative.v1",
-          "fixtureID": "fixture.candidate.audioAssetValidate.v1",
-          "evidenceArtifact": "reports/evidence/candidates/audioAssetValidate/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.audioAssetCompatibilityAudit.positive.v1",
+          "negativeTestID": "candidate.audioAssetCompatibilityAudit.negative.v1",
+          "fixtureID": "fixture.candidate.audioAssetCompatibilityAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/audioAssetCompatibilityAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P3"
         }
       ]
@@ -716,7 +716,7 @@
       "domain": "physics-2d",
       "candidates": [
         {
-          "name": "physics2dInspect",
+          "name": "physics2dTopologyAudit",
           "state": "candidate",
           "contractDelta": "Normalized backend, body, collider, group and joint topology.",
           "route": "physics-2d adapter",
@@ -726,10 +726,10 @@
           "witnessContractIds": [
             "physics-2d-backend-matrix"
           ],
-          "positiveTestID": "candidate.physics2dInspect.positive.v1",
-          "negativeTestID": "candidate.physics2dInspect.negative.v1",
-          "fixtureID": "fixture.candidate.physics2dInspect.v1",
-          "evidenceArtifact": "reports/evidence/candidates/physics2dInspect/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.physics2dTopologyAudit.positive.v1",
+          "negativeTestID": "candidate.physics2dTopologyAudit.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dTopologyAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dTopologyAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P4"
         },
         {
@@ -805,7 +805,7 @@
           "proposedExecutionPhase": "P4"
         },
         {
-          "name": "physics2dValidate",
+          "name": "physics2dCompatibilityAudit",
           "state": "candidate",
           "contractDelta": "Reject unsupported backend/component/joint/matrix combinations.",
           "route": "physics-2d semantic validator",
@@ -815,10 +815,10 @@
           "witnessContractIds": [
             "physics-2d-backend-matrix"
           ],
-          "positiveTestID": "candidate.physics2dValidate.positive.v1",
-          "negativeTestID": "candidate.physics2dValidate.negative.v1",
-          "fixtureID": "fixture.candidate.physics2dValidate.v1",
-          "evidenceArtifact": "reports/evidence/candidates/physics2dValidate/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.physics2dCompatibilityAudit.positive.v1",
+          "negativeTestID": "candidate.physics2dCompatibilityAudit.negative.v1",
+          "fixtureID": "fixture.candidate.physics2dCompatibilityAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics2dCompatibilityAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P4"
         }
       ]
@@ -827,7 +827,7 @@
       "domain": "physics-3d",
       "candidates": [
         {
-          "name": "physics3dInspect",
+          "name": "physics3dTopologyAudit",
           "state": "candidate",
           "contractDelta": "Normalized backend, rigidbody, collider, material and constraint topology.",
           "route": "physics-3d adapter",
@@ -837,10 +837,10 @@
           "witnessContractIds": [
             "physics-3d-backend-matrix"
           ],
-          "positiveTestID": "candidate.physics3dInspect.positive.v1",
-          "negativeTestID": "candidate.physics3dInspect.negative.v1",
-          "fixtureID": "fixture.candidate.physics3dInspect.v1",
-          "evidenceArtifact": "reports/evidence/candidates/physics3dInspect/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.physics3dTopologyAudit.positive.v1",
+          "negativeTestID": "candidate.physics3dTopologyAudit.negative.v1",
+          "fixtureID": "fixture.candidate.physics3dTopologyAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/physics3dTopologyAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P4"
         },
         {
@@ -1402,7 +1402,7 @@
       "domain": "build-platform",
       "candidates": [
         {
-          "name": "buildPresetValidate",
+          "name": "buildPresetAudit",
           "state": "candidate",
           "contractDelta": "Validate target-specific required/unsupported build options before dispatch.",
           "route": "build schema adapter",
@@ -1412,14 +1412,14 @@
           "witnessContractIds": [
             "build-schema"
           ],
-          "positiveTestID": "candidate.buildPresetValidate.positive.v1",
-          "negativeTestID": "candidate.buildPresetValidate.negative.v1",
-          "fixtureID": "fixture.candidate.buildPresetValidate.v1",
-          "evidenceArtifact": "reports/evidence/candidates/buildPresetValidate/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.buildPresetAudit.positive.v1",
+          "negativeTestID": "candidate.buildPresetAudit.negative.v1",
+          "fixtureID": "fixture.candidate.buildPresetAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/buildPresetAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P6"
         },
         {
-          "name": "buildArtifactInspect",
+          "name": "buildOutputAudit",
           "state": "candidate",
           "contractDelta": "Verify terminal build outputs, expected files, hashes and target metadata.",
           "route": "bounded artifact inspector",
@@ -1429,10 +1429,10 @@
           "witnessContractIds": [
             "build-job"
           ],
-          "positiveTestID": "candidate.buildArtifactInspect.positive.v1",
-          "negativeTestID": "candidate.buildArtifactInspect.negative.v1",
-          "fixtureID": "fixture.candidate.buildArtifactInspect.v1",
-          "evidenceArtifact": "reports/evidence/candidates/buildArtifactInspect/<creator>-<artifact-sha>.json",
+          "positiveTestID": "candidate.buildOutputAudit.positive.v1",
+          "negativeTestID": "candidate.buildOutputAudit.negative.v1",
+          "fixtureID": "fixture.candidate.buildOutputAudit.v1",
+          "evidenceArtifact": "reports/evidence/candidates/buildOutputAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P6"
         },
         {
