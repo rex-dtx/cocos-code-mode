@@ -335,5 +335,23 @@ describe('live: CC373 native UI creation fallback', () => {
     });
     assert.equal(invalid.status, 400);
   });
+  it('Creator 3.7 keyboard input APIs emit safe editor events and reject malformed combos', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+
+    const press = await postTool('simulateKeyPress', { key: 'Escape' });
+    assert.equal(press.ok, true, JSON.stringify(press.body));
+    assert.deepEqual(press.body, { success: true, key: 'Escape' });
+
+    const combo = await postTool('simulateKeyCombo', { combo: 'Ctrl+Shift+Escape' });
+    assert.equal(combo.ok, true, JSON.stringify(combo.body));
+    assert.deepEqual(combo.body, { success: true, combo: 'Ctrl+Shift+Escape' });
+
+    const missingKey = await postTool('simulateKeyPress', {});
+    assert.equal(missingKey.status, 400);
+    const modifierOnly = await postTool('simulateKeyCombo', { combo: 'Ctrl+' });
+    assert.equal(modifierOnly.status, 400);
+    const unsupportedModifier = await postTool('simulateKeyCombo', { combo: 'Super+D' });
+    assert.equal(unsupportedModifier.status, 400);
+  });
 
 });

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T08:25:00Z",
+  "checkedAt": "2026-09-09T09:05:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
@@ -11,11 +11,11 @@
     "passed": 188,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 76,
-  "qualifiedBaseline": 76,
-  "requiredNet": 81,
-  "approvalMargin": 10,
-  "requiredApprovalCount": 99,
+  "directEndpointEvidenceCount": 78,
+  "qualifiedBaseline": 78,
+  "requiredNet": 79,
+  "approvalMargin": 8,
+  "requiredApprovalCount": 97,
   "rows": [
     {
       "name": "assetGetTree",
@@ -512,14 +512,14 @@
     {
       "name": "simulateKeyPress",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "simulateKeyCombo",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "simulateMouseClick",
