@@ -424,6 +424,52 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(history.body.success, true);
   });
 
+  it('Creator 3.7 viewport query and toggles round-trip', async (t) => {
+    if (skipIfDown(t)) return;
+    const before = await getJson('/tools/editorViewport', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'query_viewport' }),
+    });
+    assert.equal(before.status, 200);
+    assert.equal(typeof before.body.is2D, 'boolean');
+    assert.equal(typeof before.body.gridVisible, 'boolean');
+
+    const toggled = await getJson('/tools/editorViewport', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'set_grid_visible', enabled: !before.body.gridVisible }),
+    });
+    assert.equal(toggled.status, 200);
+    assert.equal(toggled.body.success, true);
+
+    const after = await getJson('/tools/editorViewport', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'query_viewport' }),
+    });
+    assert.equal(after.status, 200);
+    assert.equal(after.body.gridVisible, !before.body.gridVisible);
+
+    const restored = await getJson('/tools/editorViewport', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'set_grid_visible', enabled: before.body.gridVisible }),
+    });
+    assert.equal(restored.status, 200);
+    assert.equal(restored.body.success, true);
+
+    const gizmo = await getJson('/tools/editorViewport', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'query_gizmo' }),
+    });
+    assert.equal(gizmo.status, 200);
+    assert.equal(typeof gizmo.body.gizmoTool, 'string');
+    assert.equal(typeof gizmo.body.gizmoPivot, 'string');
+    assert.equal(typeof gizmo.body.gizmoCoordinate, 'string');
+  });
+
   it('scene read queries preserve empty results and type missing nodes', async (t) => {
     if (skipIfDown(t)) return;
     const tree = await getJson('/tools/nodeGetTree?maxDepth=1&maxNodes=50');

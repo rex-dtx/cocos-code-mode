@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:45:30Z",
+  "checkedAt": "2026-09-09T05:56:30Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -82,8 +82,8 @@
     }
   },
   "readOnlyEndpointQualification": {
-    "tests": 27,
-    "passed": 27,
+    "tests": 28,
+    "passed": 28,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
@@ -102,6 +102,7 @@
       "findNodesByAsset",
       "findNodesWithMissingAssets",
       "assetFindReferences",
+      "editorViewport",
       "runtimeGetState",
       "runtimeSetTimeScale",
       "editorSelect",
@@ -199,16 +200,16 @@
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 50,
-    "qualifiedBaseline": 50,
-    "registeredUnverified": 36,
-    "requiredNet": 107,
+    "directEndpointEvidence": 52,
+    "qualifiedBaseline": 52,
+    "registeredUnverified": 34,
+    "requiredNet": 105,
     "approvalMargin": 18,
-    "requiredApprovalCount": 125
+    "requiredApprovalCount": 123
   },
   "fullLiveQualification": {
-    "tests": 174,
-    "passed": 174,
+    "tests": 175,
+    "passed": 175,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -218,6 +219,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and thirty-six directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and thirty-eight directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
