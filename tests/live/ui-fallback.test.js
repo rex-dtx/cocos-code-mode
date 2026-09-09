@@ -298,4 +298,5 @@ describe('live: CC373 native UI creation fallback', () => {
     const invalidEdit = await postTool('editPrefabJson', { reference: { id: 'missing' }, content: '{}' });
     assert.equal(invalidEdit.status, 404);
   });
+
 });

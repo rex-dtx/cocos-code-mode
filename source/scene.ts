@@ -371,7 +371,7 @@ export const methods = {
             throw new Error(`Component '${componentType}' has no method '${handlerName}'`);
         }
 
-        const handler = new cc.EventHandler();
+        const handler = new cc.Component.EventHandler();
         handler.target = target;
         handler.component = componentType;
         handler.handler = handlerName;
