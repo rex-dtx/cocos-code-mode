@@ -70,6 +70,60 @@ describe('live: read-only endpoint qualification', () => {
     assert.ok(result.body.classes.every((name) => name.toLowerCase().includes('label')));
   });
 
+  it('projectFileExists reports known files and rejects project traversal', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/projectFileExists?filePath=package.json');
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.body, { exists: true, isDirectory: false });
+
+    const invalid = await getJson('/tools/projectFileExists?filePath=../package.json');
+    assert.equal(invalid.status, 400);
+    assert.equal(invalid.body.code, 'INVALID_ARGUMENT');
+  });
+
+  it('readProjectInstruction distinguishes an existing instruction from a missing file', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/readProjectInstruction?filePath=README.md');
+    assert.equal(result.status, 200);
+    assert.equal(result.body.exists, true);
+    assert.equal(result.body.filePath, 'README.md');
+    assert.ok(result.body.content.includes('CC30 New Slot Base'));
+
+    const missing = await getJson('/tools/readProjectInstruction?filePath=.missing-qualification-file');
+    assert.equal(missing.status, 200);
+    assert.deepEqual(missing.body, {
+      content: '',
+      exists: false,
+      filePath: '.missing-qualification-file',
+      bytes: 0,
+    });
+  });
+  it('getEditorPreference reads the live server port and rejects a non-string key', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/getEditorPreference?key=serverPort');
+    assert.equal(result.status, 200);
+    assert.equal(result.body.key, 'serverPort');
+    assert.equal(result.body.value, 49650);
+
+    const invalid = await getJson('/tools/getEditorPreference?key%5B%5D=serverPort');
+    assert.equal(invalid.status, 400);
+    assert.ok(invalid.body.validationErrors.some((error) => error.path === 'key' && error.keyword === 'type'));
+  });
+
+  it('editorGetLogs returns a bounded log window and rejects zero count', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await getJson('/tools/editorGetLogs?count=3');
+    assert.equal(result.status, 200);
+    assert.ok(Array.isArray(result.body.logLines));
+    assert.ok(result.body.logLines.length <= 3);
+    assert.equal(typeof result.body.total, 'number');
+    assert.equal(typeof result.body.truncated, 'boolean');
+
+    const invalid = await getJson('/tools/editorGetLogs?count=0');
+    assert.equal(invalid.status, 400);
+    assert.ok(invalid.body.validationErrors.some((error) => error.path === 'count' && error.keyword === 'minimum'));
+  });
+
   it('listEditorWindows returns typed live window records', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/listEditorWindows');
