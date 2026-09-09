@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T05:09:22Z",
+  "checkedAt": "2026-09-09T05:17:42Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
-  "artifactCommit": "0c51c87",
+  "artifactCommit": "db7367a",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
@@ -11,11 +11,11 @@
     "passed": 168,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 37,
-  "qualifiedBaseline": 37,
-  "requiredNet": 120,
+  "directEndpointEvidenceCount": 38,
+  "qualifiedBaseline": 38,
+  "requiredNet": 119,
   "approvalMargin": 18,
-  "requiredApprovalCount": 138,
+  "requiredApprovalCount": 137,
   "rows": [
     {
       "name": "assetGetTree",
@@ -26,8 +26,8 @@
     {
       "name": "assetGetAtPath",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "assetResolvePath",
