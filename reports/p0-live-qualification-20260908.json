@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T08:18:00Z",
+  "checkedAt": "2026-09-09T08:25:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -193,19 +193,19 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 187,
-      "passed": 187,
+      "tests": 188,
+      "passed": 188,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 75,
-    "qualifiedBaseline": 75,
-    "registeredUnverified": 11,
-    "requiredNet": 82,
-    "approvalMargin": 11,
-    "requiredApprovalCount": 100
+    "directEndpointEvidence": 76,
+    "qualifiedBaseline": 76,
+    "registeredUnverified": 10,
+    "requiredNet": 81,
+    "approvalMargin": 10,
+    "requiredApprovalCount": 99
   },
   "fullLiveQualification": {
     "tests": 187,
@@ -219,6 +219,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, and real animation clip selection across fifty-nine directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, and node-child array reordering across sixty directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
