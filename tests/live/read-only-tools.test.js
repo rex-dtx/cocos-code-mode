@@ -143,6 +143,22 @@ describe('live: read-only endpoint qualification', () => {
     assert.deepEqual(invalid.body.missingInputs, ['assetPath']);
   });
 
+  it('assetGetAtPath resolves assets and types missing paths', async (t) => {
+    if (skipIfDown(t)) return;
+    const assets = await getJson('/tools/assetQuery?importer=image&limit=1');
+    assert.equal(assets.status, 200);
+    const asset = assets.body.assets?.[0];
+    assert.equal(typeof asset?.url, 'string');
+
+    const result = await getJson(`/tools/assetGetAtPath?assetPath=${encodeURIComponent(asset.url)}`);
+    assert.equal(result.status, 200);
+    assert.equal(result.body.reference.id, asset.uuid);
+
+    const missing = await getJson('/tools/assetGetAtPath?assetPath=db%3A%2F%2Fassets%2F__missing__%2Fnone.png');
+    assert.equal(missing.status, 404);
+    assert.equal(missing.body.code, 'TARGET_NOT_FOUND');
+  });
+
   it('assetFindReferences returns typed dependency references for an image asset', async (t) => {
     if (skipIfDown(t)) return;
     const assets = await getJson('/tools/assetQuery?importer=image&limit=1');
