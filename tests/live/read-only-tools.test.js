@@ -356,6 +356,74 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(unsupported.body.code, 'UNSUPPORTED_EDITOR_API');
   });
 
+  it('Creator 3.7 runtime and editor control APIs return observable outcomes', async (t) => {
+    if (skipIfDown(t)) return;
+    const state = await getJson('/tools/runtimeGetState');
+    assert.equal(state.status, 200);
+    assert.equal(typeof state.body.timeScale, 'number');
+
+    const slowed = await getJson('/tools/runtimeSetTimeScale', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ scale: 0.5 }),
+    });
+    assert.equal(slowed.status, 200);
+    assert.equal(slowed.body.success, true);
+    assert.equal(slowed.body.scale, 0.5);
+    const restored = await getJson('/tools/runtimeSetTimeScale', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ scale: 1 }),
+    });
+    assert.equal(restored.status, 200);
+    assert.equal(restored.body.scale, 1);
+
+    const found = await getJson('/tools/findNodes?name=Canvas&maxResults=1');
+    assert.equal(found.status, 200);
+    const reference = found.body.nodes?.[0]?.reference;
+    assert.equal(typeof reference?.id, 'string');
+
+    const selected = await getJson('/tools/editorSelect', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'select', references: [reference] }),
+    });
+    assert.equal(selected.status, 200);
+    assert.ok(selected.body.selected.includes(reference.id));
+
+    const queried = await getJson('/tools/editorSelect', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'query' }),
+    });
+    assert.equal(queried.status, 200);
+    assert.ok(queried.body.selected.includes(reference.id));
+
+    const batchSet = await getJson('/tools/nodeBatchSet', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ entries: [{ reference, propertyPaths: ['active'], values: [true] }] }),
+    });
+    assert.equal(batchSet.status, 200);
+    assert.equal(batchSet.body.success, true);
+
+    const cleared = await getJson('/tools/editorSelect', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'clear' }),
+    });
+    assert.equal(cleared.status, 200);
+    assert.deepEqual(cleared.body.selected ?? [], []);
+
+    const history = await getJson('/tools/editorHistory', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ operation: 'abort' }),
+    });
+    assert.equal(history.status, 200);
+    assert.equal(history.body.success, true);
+  });
+
   it('scene read queries preserve empty results and type missing nodes', async (t) => {
     if (skipIfDown(t)) return;
     const tree = await getJson('/tools/nodeGetTree?maxDepth=1&maxNodes=50');
