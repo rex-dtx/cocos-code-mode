@@ -340,10 +340,9 @@ export class SceneTools {
         { type: 'object', properties: { classes: { type: 'array', items: { type: 'string' } } }, required: ['classes'] }, "GET", ['scene', 'class', 'component', 'list', 'types', 'script']
     )
     async listComponentClasses(args: { extends?: string, excludeSelf?: boolean, filter?: string }): Promise<{ classes: string[] }> {
-        const options: { extends?: string, excludeSelf?: boolean } = {};
-        if (args.extends) {
-            options.extends = args.extends;
-        }
+        const options: { extends?: string, excludeSelf?: boolean } = {
+            extends: args.extends || 'cc.Component',
+        };
         if (args.excludeSelf) {
             options.excludeSelf = true;
         }
