@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T06:35:00Z",
+  "checkedAt": "2026-09-09T06:40:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -202,12 +202,12 @@
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 66,
-    "qualifiedBaseline": 66,
-    "registeredUnverified": 20,
-    "requiredNet": 91,
+    "directEndpointEvidence": 67,
+    "qualifiedBaseline": 67,
+    "registeredUnverified": 19,
+    "requiredNet": 90,
     "approvalMargin": 18,
-    "requiredApprovalCount": 109
+    "requiredApprovalCount": 108
   },
   "fullLiveQualification": {
     "tests": 181,
@@ -221,6 +221,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, and asset create/save/delete operations across fifty-two directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, and asset create/import/save/delete operations across fifty-three directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
