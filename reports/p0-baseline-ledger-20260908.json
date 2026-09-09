@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T02:15:53Z",
+  "checkedAt": "2026-09-09T02:26:05Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "1100957",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 147,
-    "passed": 147,
-    "suites": 29
+    "tests": 151,
+    "passed": 151,
+    "suites": 30
   },
-  "directEndpointEvidenceCount": 14,
-  "qualifiedBaseline": 14,
-  "requiredNet": 143,
-  "approvalMargin": 22,
-  "requiredApprovalCount": 165,
+  "directEndpointEvidenceCount": 18,
+  "qualifiedBaseline": 18,
+  "requiredNet": 139,
+  "approvalMargin": 21,
+  "requiredApprovalCount": 160,
   "rows": [
     {
       "name": "assetGetTree",
@@ -86,8 +86,8 @@
     {
       "name": "nodeGetAvailableComponentTypes",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:read-only-endpoint-qualification"
     },
     {
       "name": "nodeComponentsGet",
@@ -182,8 +182,8 @@
     {
       "name": "editorEnvInfo",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:read-only-endpoint-qualification"
     },
     {
       "name": "editorViewport",
@@ -332,8 +332,8 @@
     {
       "name": "projectSearchFiles",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:read-only-endpoint-qualification"
     },
     {
       "name": "projectReplaceInFile",
@@ -446,8 +446,8 @@
     {
       "name": "listEditorWindows",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:read-only-endpoint-qualification"
     },
     {
       "name": "sceneSnapshot",
