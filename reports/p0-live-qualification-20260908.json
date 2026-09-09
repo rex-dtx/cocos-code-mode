@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-08T09:28:46Z",
+  "checkedAt": "2026-09-09T02:15:53Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "editor": "3.7.3",
@@ -21,10 +21,10 @@
   },
   "buildInfo": {
     "version": "2.0.0",
-    "commit": "650c489",
+    "commit": "1100957",
     "branch": "feat/ccb3x-api-capability-expansion",
     "dirty": false,
-    "builtAt": "2026-09-08T10:36:49.426Z"
+    "builtAt": "2026-09-09T02:10:26.005Z"
   },
   "baselineReadSmoke": {
     "method": "GET",
@@ -69,6 +69,18 @@
       "liveArtifact": "reloaded and verified on commit 16fadda"
     }
   },
+  "uiFallbackRemediation": {
+    "tools": ["createLabel", "createButton", "createSprite"],
+    "issue": "Creator 3.7.3 does not provide the default_ui Label, Button, or Sprite prefabs.",
+    "fix": "Create native nodes and components when those internal prefabs are absent; resolve component and child paths from Creator query-node dumps.",
+    "verification": {
+      "build": "pass",
+      "unitTests": "164/164 pass",
+      "focusedLiveTest": "1/1 pass with three created component types and cleanup",
+      "textSmoke": "createLabel and createButton returned HTTP 200 with optional text",
+      "liveArtifact": "1100957 dirty=false"
+    }
+  },
   "liveSuites": {
     "focusedGapClosure": {
       "command": "node --test tests/live/gap-closure.test.js",
@@ -78,30 +90,30 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 146,
-      "passed": 146,
+      "tests": 147,
+      "passed": 147,
       "failed": 0,
-      "suites": 28,
+      "suites": 29,
       "status": "pass"
     }
   },
   "baselineLedger": {
     "report": "reports/p0-baseline-ledger-20260908.json",
     "registeredTools": 86,
-    "directEndpointEvidence": 11,
-    "qualifiedBaseline": 11,
-    "registeredUnverified": 75,
-    "requiredNet": 146,
+    "directEndpointEvidence": 14,
+    "qualifiedBaseline": 14,
+    "registeredUnverified": 72,
+    "requiredNet": 143,
     "approvalMargin": 22,
-    "requiredApprovalCount": 168,
+    "requiredApprovalCount": 165,
     "note": "Conservative one-to-one ledger classification. Broad live tests pass, but tools without direct endpoint evidence remain registered-unverified."
   },
   "fullLiveQualification": {
     "command": "npm run test:live",
-    "tests": 146,
-    "passed": 146,
+    "tests": 147,
+    "passed": 147,
     "failed": 0,
-    "suites": 28,
+    "suites": 29,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
   },
@@ -110,6 +122,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, and corrected findNodes validation. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, and native Label/Button/Sprite creation fallback. It does not qualify every tool behavior."
   }
 }

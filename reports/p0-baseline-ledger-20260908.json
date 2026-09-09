@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-08T10:54:05.329Z",
+  "checkedAt": "2026-09-09T02:15:53Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
-  "artifactCommit": "650c489",
+  "artifactCommit": "1100957",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 146,
-    "passed": 146,
-    "suites": 28
+    "tests": 147,
+    "passed": 147,
+    "suites": 29
   },
-  "directEndpointEvidenceCount": 11,
-  "qualifiedBaseline": 11,
-  "requiredNet": 146,
+  "directEndpointEvidenceCount": 14,
+  "qualifiedBaseline": 14,
+  "requiredNet": 143,
   "approvalMargin": 22,
-  "requiredApprovalCount": 168,
+  "requiredApprovalCount": 165,
   "rows": [
     {
       "name": "assetGetTree",
@@ -362,20 +362,20 @@
     {
       "name": "createLabel",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:CC373-native-UI-fallback"
     },
     {
       "name": "createButton",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:CC373-native-UI-fallback"
     },
     {
       "name": "createSprite",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "npm run test:live:CC373-native-UI-fallback"
     },
     {
       "name": "runtimePause",
