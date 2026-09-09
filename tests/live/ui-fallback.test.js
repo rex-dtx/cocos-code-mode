@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { postTool, healthCheck } = require('../helpers/utcp-client');
+const { postTool, getJson, healthCheck } = require('../helpers/utcp-client');
 
 describe('live: CC373 native UI creation fallback', () => {
   let health;
@@ -18,7 +18,7 @@ describe('live: CC373 native UI creation fallback', () => {
         assert.equal(typeof reference?.id, 'string');
         created.push(reference);
 
-        const components = await postTool('nodeComponentsGet', { reference });
+        const components = await getJson(`/tools/nodeComponentsGet?reference%5Bid%5D=${encodeURIComponent(reference.id)}`);
         assert.equal(components.ok, true, `${tool} components: ${JSON.stringify(components.body)}`);
         assert.ok(components.body.references.some((item) => item.type === component), `${tool} missing ${component}`);
       }
