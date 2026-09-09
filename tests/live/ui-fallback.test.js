@@ -176,4 +176,43 @@ describe('live: CC373 native UI creation fallback', () => {
     const invalid = await postTool('createUiNode', { uiType: 'Unknown' });
     assert.equal(invalid.status, 400);
   });
+
+  it('Creator 3.7 asset create, content save, and delete round-trip', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const assetPath = 'db://assets/__ccb3x_qualification__.ts';
+    let reference;
+    try {
+      const created = await postTool('assetCreate', {
+        assetPath,
+        preset: 'typescript',
+      });
+      assert.equal(created.ok, true, JSON.stringify(created.body));
+      reference = created.body.reference;
+      assert.equal(typeof reference?.id, 'string');
+
+      const saved = await postTool('assetSaveContent', {
+        reference,
+        content: 'export const ccb3xQualification = 1;\n',
+      });
+      assert.equal(saved.ok, true, JSON.stringify(saved.body));
+      assert.equal(typeof saved.body.reference?.id, 'string');
+
+      const deleted = await postTool('assetOperate', {
+        operation: 'delete',
+        reference: saved.body.reference,
+      });
+      assert.equal(deleted.ok, true, JSON.stringify(deleted.body));
+      assert.equal(typeof deleted.body.reference?.id, 'string');
+      reference = undefined;
+    } finally {
+      if (reference?.id) await postTool('assetOperate', { operation: 'delete', reference });
+    }
+
+    const invalidCreate = await postTool('assetCreate', { assetPath });
+    assert.equal(invalidCreate.status, 400);
+    const invalidSave = await postTool('assetSaveContent', { reference: { id: 'missing' } });
+    assert.equal(invalidSave.status, 400);
+    const invalidOperate = await postTool('assetOperate', { reference: { id: 'missing' } });
+    assert.equal(invalidOperate.status, 400);
+  });
 });
