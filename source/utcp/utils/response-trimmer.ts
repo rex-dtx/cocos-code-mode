@@ -2,7 +2,16 @@
 // Required output fields remain present when their declared value is empty.
 // Optional empty containers are still removed to keep payloads compact.
 
+function schemaForValue(value: unknown, schema: any): any {
+    if (!schema || typeof schema !== 'object' || !Array.isArray(schema.oneOf ?? schema.anyOf)) return schema;
+    const alternatives = schema.oneOf ?? schema.anyOf;
+    const selected = alternatives.find((alternative: any) => Array.isArray(alternative?.required)
+        && alternative.required.every((key: unknown) => typeof key === 'string' && !!value && typeof value === 'object' && key in value));
+    return selected ? { ...schema, ...selected, properties: schema.properties } : schema;
+}
+
 export function trimResponse(value: any, schema?: any): any {
+    schema = schemaForValue(value, schema);
     if (value === null || value === undefined) return undefined;
 
     if (Array.isArray(value)) {

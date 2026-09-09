@@ -27,5 +27,19 @@ export function slimOutputsSchema(schema: JsonSchema | undefined): JsonSchema | 
     }
 
     if (Array.isArray(s.required)) slim.required = s.required;
+
+    for (const key of ['oneOf', 'anyOf']) {
+        const alternatives = s[key];
+        if (Array.isArray(alternatives)) {
+            slim[key] = alternatives
+                .filter((alternative: unknown) => alternative && typeof alternative === 'object')
+                .map((alternative: Record<string, unknown>) => {
+                    const branch: Record<string, unknown> = {};
+                    if (Array.isArray(alternative.required)) branch.required = alternative.required;
+                    if (alternative.properties && typeof alternative.properties === 'object') branch.properties = alternative.properties;
+                    return branch;
+                });
+        }
+    }
     return slim;
 }

@@ -2,6 +2,8 @@ import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { IProperty } from '@cocos/creator-types/editor/packages/scene/@types/public';
+import { finalizeUiLayoutReport } from '../../ui-layout-report';
+import type { LayoutReport, LayoutReportRequest, LayoutReportResult } from '../../ui-layout-report';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -40,6 +42,15 @@ interface UiLayoutNode {
     anchor: { x: number, y: number } | null;
     worldRect: { x: number, y: number, width: number, height: number } | null;
     components: string[];
+}
+async function ensureSceneComponents(uuid: string, components: string[]): Promise<void> {
+    for (const component of [...new Set(components)]) {
+        const raw = await Editor.Message.request('scene', 'query-node', uuid);
+        const dump = raw && typeof raw === 'object' ? raw as unknown as SceneNodeDump : null;
+        const existing = new Set((dump?.__comps__ ?? []).map((item) => item.type).filter((type): type is string => typeof type === 'string'));
+        if (existing.has(component)) continue;
+        await Editor.Message.request('scene', 'create-component', { uuid, component });
+    }
 }
 
 export class UiTools {
@@ -84,33 +95,19 @@ export class UiTools {
         };
 
         if (assetUuid) {
-            options.assetUuid = assetUuid;
-            options.type = 'cc.Prefab';
-            options.unlinkPrefab = false;
-        } else if (nativeComponent) {
             const result = await Editor.Message.request('scene', 'create-node', options);
             const nodeUuid = Array.isArray(result) ? result[0] : result;
-            if (typeof nodeUuid !== 'string' || !nodeUuid) {
-                throw new Error(`Failed to create native ${args.uiType} node`);
-            }
-
-            for (const component of [...new Set([nativeComponent, 'cc.UITransform'])]) {
-                await Editor.Message.request('scene', 'create-component', {
-                    uuid: nodeUuid,
-                    component,
-                });
-            }
-
+            if (typeof nodeUuid !== 'string' || !nodeUuid) throw new Error(`Failed to create ${args.uiType} node`);
             await Editor.Message.request('scene', 'snapshot');
             return { reference: { id: nodeUuid, type: 'cc.Node' } };
-        } else {
-            throw new Error(`UI prefab not found at ${prefabUrl} — editor version may not include it.`);
         }
-
+        if (!nativeComponent) throw new Error(`UI prefab not found at ${prefabUrl} — editor version may not include it.`);
         const result = await Editor.Message.request('scene', 'create-node', options);
         const nodeUuid = Array.isArray(result) ? result[0] : result;
-        if (typeof nodeUuid !== 'string' || !nodeUuid) throw new Error(`Failed to create ${args.uiType} node`);
-
+        if (typeof nodeUuid !== 'string' || !nodeUuid) {
+            throw new Error(`Failed to create native ${args.uiType} node`);
+        }
+        await ensureSceneComponents(nodeUuid, [nativeComponent, 'cc.UITransform']);
         await Editor.Message.request('scene', 'snapshot');
         return { reference: { id: nodeUuid, type: 'cc.Node' } };
     }
@@ -260,6 +257,93 @@ export class UiTools {
 
         return { reference };
     }
+    @utcpTool(
+        'uiLayoutReport',
+        'Return a bounded, read-only live 2D UI layout report with optional ephemeral overlay.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                root: { type: 'object', additionalProperties: false, properties: { id: { type: 'string' }, type: { type: 'string' } } },
+                rootPath: { type: 'string' },
+                designResolution: { type: 'object', additionalProperties: false, properties: { width: { type: 'number', exclusiveMinimum: 0 }, height: { type: 'number', exclusiveMinimum: 0 } }, required: ['width', 'height'] },
+                viewport: { type: 'object', additionalProperties: false, properties: { width: { type: 'number', exclusiveMinimum: 0 }, height: { type: 'number', exclusiveMinimum: 0 } }, required: ['width', 'height'] },
+                fitMode: { type: 'string', enum: ['fitWidth', 'fitHeight', 'contain', 'cover', 'stretch', 'none'], default: 'contain' },
+                maxNodes: { type: 'integer', minimum: 1, maximum: 5000, default: 128 },
+                maxIssues: { type: 'integer', minimum: 1, maximum: 5000, default: 256 },
+                maxBytes: { type: 'integer', minimum: 256, maximum: 2097152, default: 524288 },
+                overlay: { type: 'boolean', default: false },
+                alignmentTolerance: { type: 'number', minimum: 0, maximum: 1000, default: 1 },
+                gapTolerance: { type: 'number', minimum: 0, maximum: 1000, default: 2 },
+            },
+            required: ['designResolution', 'viewport'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                complete: { type: 'boolean' },
+                designResolution: { type: 'object' },
+                viewport: { type: 'object' },
+                fitMode: { type: 'string' },
+                fit: { type: 'object' },
+                root: { type: 'object' },
+                nodes: { type: 'array' },
+                issues: { type: 'array' },
+                truncation: { type: 'array' },
+                overlay: { type: 'object' },
+                tolerances: { type: 'object' },
+                error: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['code', 'message', 'evidence'],
+                    properties: { code: { type: 'string' }, message: { type: 'string' }, evidence: { type: 'object' } },
+                },
+            },
+            oneOf: [
+                { required: ['error'] },
+                { required: ['complete', 'designResolution', 'viewport', 'fitMode', 'fit', 'root', 'nodes', 'issues', 'truncation', 'overlay', 'tolerances'] },
+            ],
+        },
+        'POST',
+        ['ui', 'layout', 'report', 'geometry', 'diagnostics']
+    )
+    async uiLayoutReport(args: LayoutReportRequest): Promise<LayoutReportResult> {
+        let dirtyBefore: boolean | undefined;
+        try {
+            const value = await Editor.Message.request('scene', 'query-dirty');
+            if (typeof value === 'boolean') dirtyBefore = value;
+        } catch (error) { console.warn('[uiLayoutReport] failed to read dirty-before state', error); }
+
+        const raw = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'uiLayoutReport', args: [args] }) as unknown;
+        let dirtyAfter: boolean | undefined;
+        try {
+            const value = await Editor.Message.request('scene', 'query-dirty');
+            if (typeof value === 'boolean') dirtyAfter = value;
+        } catch (error) { console.warn('[uiLayoutReport] failed to read dirty-after state', error); }
+
+        if (raw && typeof raw === 'object' && 'overlay' in raw) {
+            const result = raw as LayoutReport;
+            if (dirtyBefore !== undefined) result.overlay.dirtyBefore = dirtyBefore;
+            if (dirtyAfter !== undefined) result.overlay.dirtyAfter = dirtyAfter;
+            if (dirtyBefore !== undefined && dirtyAfter !== undefined) result.overlay.dirtyPreserved = dirtyBefore === dirtyAfter;
+            if (result.overlay.requested && result.overlay.dirtyPreserved !== true) {
+                delete result.overlay.artifact;
+                result.overlay.valid = false;
+                result.overlay.rendered = false;
+                result.overlay.error = {
+                    code: dirtyBefore === undefined || dirtyAfter === undefined ? 'OVERLAY_DIRTY_STATE_UNAVAILABLE' : 'OVERLAY_DIRTY_STATE_CHANGED',
+                    message: dirtyBefore === undefined || dirtyAfter === undefined
+                        ? 'Scene dirty state could not be verified before and after overlay rendering'
+                        : 'Scene dirty state changed while rendering the overlay',
+                    evidence: { dirtyBefore, dirtyAfter },
+                };
+            }
+            return finalizeUiLayoutReport(result, Math.min(args.maxBytes ?? 512 * 1024, 2 * 1024 * 1024));
+        }
+        return raw as LayoutReportResult;
+    }
+
     @utcpTool(
         'uiLayoutInspect',
         'Inspect bounded UI layout constraints and normalized world rectangles for a scene subtree.',
@@ -444,13 +528,7 @@ export class UiTools {
         });
         const childUuid = Array.isArray(result) ? result[0] : result;
         if (typeof childUuid !== 'string' || !childUuid) return null;
-
-        for (const component of ['cc.Label', 'cc.UITransform']) {
-            await Editor.Message.request('scene', 'create-component', {
-                uuid: childUuid,
-                component,
-            });
-        }
+        await ensureSceneComponents(childUuid, ['cc.Label', 'cc.UITransform']);
         await Editor.Message.request('scene', 'snapshot');
         return childUuid;
     }
