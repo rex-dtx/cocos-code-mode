@@ -207,6 +207,35 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(invalid.status, 400);
   });
 
+  it('Creator 3.7 animation editor selects a real clip and rejects incomplete edits', async (t) => {
+    if (skipIfDown(t)) return;
+    const nodes = await getJson('/tools/findNodes?componentType=cc.Animation&maxResults=5');
+    assert.equal(nodes.status, 200, JSON.stringify(nodes.body));
+    assert.ok(nodes.body.nodes.length > 0);
+
+    let clip;
+    for (const item of nodes.body.nodes) {
+      const clips = await getJson(`/tools/animationQuery?operation=clips_info&nodeReference%5Bid%5D=${encodeURIComponent(item.reference.id)}`);
+      assert.equal(clips.status, 200, JSON.stringify(clips.body));
+      const first = clips.body.result?.clipsMenu?.[0];
+      if (first?.uuid) {
+        clip = { id: first.uuid, type: 'cc.AnimationClip' };
+        break;
+      }
+    }
+    assert.equal(typeof clip?.id, 'string');
+
+    const selected = await postTool('animationEdit', {
+      operation: 'set_edit_clip',
+      clipReference: clip,
+    });
+    assert.equal(selected.status, 200, JSON.stringify(selected.body));
+    assert.equal(selected.body.success, true);
+
+    const invalid = await postTool('animationEdit', { operation: '__ccb3x_invalid__' });
+    assert.equal(invalid.status, 400);
+  });
+
   it('editorGetLogs returns a bounded log window and rejects zero count', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/editorGetLogs?count=3');
