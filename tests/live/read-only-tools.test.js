@@ -160,6 +160,22 @@ describe('live: read-only endpoint qualification', () => {
     });
     assert.equal(invalidInstruction.status, 400);
   });
+
+  it('Creator 3.7 program manager reports a registered browser target', async (t) => {
+    if (skipIfDown(t)) return;
+    const result = await postTool('programManage', {
+      operation: 'get_info',
+      programName: 'browser',
+    });
+    assert.equal(result.status, 200, JSON.stringify(result.body));
+    assert.equal(typeof result.body.path, 'string');
+
+    const invalid = await postTool('programManage', {
+      operation: 'get_info',
+      programName: '__ccb3x_missing_program__',
+    });
+    assert.equal(invalid.status, 500);
+  });
   it('getEditorPreference reads the live server port and rejects a non-string key', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/getEditorPreference?key=serverPort');
