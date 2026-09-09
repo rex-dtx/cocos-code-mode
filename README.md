@@ -22,15 +22,15 @@ This opens endless possibilities for interaction between different environments.
 All this becomes possible with community-friendly, flexible and open solution from UTCP team: [CodeMode](https://github.com/universal-tool-calling-protocol/code-mode) and it's MCP Server.
 You can read more about Code Mode concept in papers from [Anthropic](https://www.anthropic.com/engineering/code-execution-with-mcp), [Apple](https://machinelearning.apple.com/research/codeact) and [Cloudflare](https://blog.cloudflare.com/code-mode/).
 
-## Tools (85 — 10 consolidated replaces 26 legacy + 2 additive + 16 đợt 1 + 6 đợt 2 + 14 đợt 3 + 2 đợt 4 batch-read)
+## Tools (88 — 10 consolidated replaces 26 legacy + 2 additive + 16 đợt 1 + 6 đợt 2 + 14 đợt 3 + 2 đợt 4 batch-read + 2 scene script health)
 
 ![Tools <> UI Mapping](tools_screenshot.jpg)
 
-> **2.0.x breaking:** 26 legacy tools removed (was 68 at A1 shims → 45 via 10 consolidated). Legacy 1.x clients must migrate — see `docs/consolidated-migration.md` + codemod. **2.1:** +1 `assetReadContent` (text read) → 46. **2.2:** +1 `executeJavascript` (JS escape hatch, safety-guarded) → 47. **Đợt 1:** +2 diagnostics +6 files +4 UI +4 runtime → **63**. **Đợt 2:** +1 batch +2 validation +3 screenshot → **69**. **Đợt 3:** +1 sceneSnapshot +2 events +3 prefabJSON +2 instruction +2 preference +4 input → **83**. **Đợt 4:** +2 `sceneBatchGet`/`assetBatchQuery` (batch-read) + perf (M1 parallel + M4 memo + `verbose=true` convention) → **85**.
+* **2.5:** +2 `sceneScriptHealthScan`/`sceneScriptRepair` for missing or invalid script components → **88**.
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
-| **Scene** (13) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, clipboard. *`nodeGetTree` bounded `maxDepth`=4/`maxNodes`=200 by default; `fields` filter |
+| **Scene** (15) | `sceneGetInfo`, `findNodesByAsset`, `findNodesWithMissingAssets`, `sceneScriptHealthScan`, `sceneScriptRepair`, `nodeReset`, `callComponentMethod`, `listComponentMethods`, `listComponentClasses`, `nodeClipboard`, `nodeGetTree`*, `nodeGetAtPath`, `nodeCreatePrimitive`, `nodeCreate`, `nodeOperate` | Hierarchy, prefab, script health and repair. *`nodeGetTree` bounded `maxDepth`=4/`maxNodes`=200 by default; `fields` filter |
 | **Assets** (11) | `assetGetTree`*, `assetGetAtPath`, `assetResolvePath`, `assetReadContent`, `assetFindReferences`, `assetQuery`, `assetSaveContent`, `assetGetAvailableUrl`, `assetCreate`, `assetImport`, `assetOperate` | Browse/search/create/import/mutate. *`assetGetTree` bounded `maxDepth`=4/`maxNodes`=200 by default |
 | **Inspector** (3) | `inspectorGet`*, `inspectorSet`*, `inspectorGetDefinition`* | Dump/set + TS definitions. *`fields[]`/`section` |
 | **Components** (3) | `nodeGetAvailableComponentTypes`, `nodeComponentsGet`, `nodeComponentManage`* | Discover + attach |
@@ -58,7 +58,7 @@ You can read more about Code Mode concept in papers from [Anthropic](https://www
 | **Screenshot** (3) | `captureSceneScreenshot`, `captureEditorScreenshot`, `listEditorWindows` | Scene/editor capture, window listing |
 | **Consolidated** (10) | `inspectorGet/Set/Definition`, `nodeComponentManage`, `editorQuery`, `sceneManage`, `previewManage`, `programManage`, `projectManage`, `buildManage` | Replaces 26 legacy — now the only surface |
 
-* QA: `scripts/smoke-utcp.js` (expects 85) · Perf: `a769a46` bench + `e419276` trim.
+* QA: `scripts/smoke-utcp.js` (expects 88) · Perf: `a769a46` bench + `e419276` trim.
 
 ### Verbose convention
 
@@ -101,6 +101,21 @@ const { dump } = await ccb3x.inspectorGet({ target: 'instance', reference: ref, 
 await ccb3x.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
 
 // 2.0.0: legacy removed — use consolidated names above.
+```
+
+### Missing or invalid script repair
+
+Use the read-only scan first. It walks the open scene/prefab, compares each serialized component class against the editor's currently registered component classes, and returns the exact node path, component UUID, and class ID. Repair is deliberately explicit: pass the affected node plus component reference (or expected class ID), then provide either the replacement class ID or a script asset reference. The bridge verifies the replacement is registered, removes only the selected component, adds the replacement, snapshots for undo, and reads back the created component. A missing source script cannot be recreated automatically; restore the script asset or choose an existing registered replacement.
+
+```typescript
+const report = await ccb3x.sceneScriptHealthScan({ limit: 200 });
+const finding = report.findings[0];
+await ccb3x.sceneScriptRepair({
+  nodeReference: finding.nodeReference,
+  componentReference: finding.componentReference,
+  expectedClassId: finding.classId,
+  scriptReference: { id: 'restored-script-uuid', type: 'cc.Script' },
+});
 ```
 
 ## Architecture

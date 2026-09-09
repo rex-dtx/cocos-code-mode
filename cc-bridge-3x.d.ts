@@ -153,6 +153,29 @@ declare namespace cc_bridge_3x {
     /** Find all nodes whose asset references are missing/broken. QA/health check for scene integrity. */
     function findNodesWithMissingAssets(): { references: InstanceReference[] };
 
+    /** Scan the open scene/prefab for unregistered script classes and return exact node paths plus repair inputs. */
+    function sceneScriptHealthScan(args?: { limit?: number }): {
+        findings: {
+            nodeReference: InstanceReference,
+            nodeName: string,
+            nodePath: string,
+            componentReference?: InstanceReference,
+            classId: string,
+            repair: string
+        }[],
+        total: number,
+        truncated: boolean
+    };
+
+    /** Replace one invalid script component with an existing registered class or script asset. */
+    function sceneScriptRepair(args: {
+        nodeReference: InstanceReference,
+        componentReference?: InstanceReference,
+        expectedClassId?: string,
+        replacementClassId?: string,
+        scriptReference?: InstanceReference
+    }): { success: boolean, removedComponent?: string, createdComponent: InstanceReference };
+
     /** Reset nodes, one component, or one property to defaults. operation property needs a single uuid + propertyPath. */
     function nodeReset(args: { operation: "node" | "component" | "property", references: InstanceReference[], propertyPath?: string }): { success: boolean, error?: string };
 

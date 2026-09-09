@@ -12,6 +12,24 @@ function boundedListLimit(limit: number | undefined): number {
     return Math.min(Math.max(limit ?? DEFAULT_LIST_LIMIT, 1), MAX_LIST_LIMIT);
 }
 
+function componentUuid(component: any): string | undefined {
+    return component?.value?.uuid?.value ?? component?.value?.uuid ?? component?.uuid;
+}
+
+function componentClassId(component: any): string | undefined {
+    const value = component?.value;
+    return value?.__type__?.value ?? value?.__type__ ?? component?.cid ?? value?.cid ?? component?.type;
+}
+
+function componentCandidates(componentType: any): string[] {
+    return [componentType?.name, componentType?.type, componentType?.cid, componentType?.classId]
+        .filter((value): value is string => typeof value === 'string' && value.length > 0);
+}
+
+function findComponentType(componentTypes: any[], requested: string): any | undefined {
+    return componentTypes.find((candidate) => componentCandidates(candidate).includes(requested));
+}
+
 export class SceneTools {
 
     /** @deprecated use sceneManage({ operation: 'open', reference }) — not registered, kept for delegation */
@@ -177,6 +195,124 @@ export class SceneTools {
             }
         }
         return { nodes: hits, total, truncated: total > limit };
+    }
+
+    @utcpTool(
+        'sceneScriptHealthScan',
+        'Scan the open scene or prefab for script components whose class is no longer registered. Read-only; returns node paths and repair candidates.',
+        {
+            type: 'object',
+            properties: {
+                limit: { type: 'number', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT }
+            }
+        },
+        {
+            type: 'object',
+            properties: {
+                findings: { type: 'array', items: { type: 'object' } },
+                total: { type: 'number' },
+                truncated: { type: 'boolean' }
+            },
+            required: ['findings', 'total', 'truncated']
+        },
+        'GET',
+        ['scene', 'script', 'missing', 'invalid', 'scan', 'health', 'repair']
+    )
+    async sceneScriptHealthScan(args: { limit?: number } = {}): Promise<{ findings: Array<Record<string, unknown>>, total: number, truncated: boolean }> {
+        const tree = await Editor.Message.request('scene', 'query-node-tree');
+        if (!tree) throw new Error('sceneScriptHealthScan: no open scene or prefab');
+        const componentTypes = await Editor.Message.request('scene', 'query-components');
+        if (!Array.isArray(componentTypes)) throw new Error('sceneScriptHealthScan: failed to query registered component types');
+        const registered = new Set(componentTypes.flatMap((candidate: unknown) => componentCandidates(candidate)));
+        const findings: Array<Record<string, unknown>> = [];
+        const rootName = typeof tree.name === 'string'
+            ? tree.name
+            : (tree.name && typeof tree.name.value === 'string' ? tree.name.value : '');
+        const stack: Array<{ node: any, path: string }> = [{ node: (await this.findPrefabEditRoot(tree)) ?? tree, path: rootName }];
+        while (stack.length) {
+            const { node, path: nodePath } = stack.pop()!;
+            const components = node.components || node.__comps__ || [];
+            for (const component of components) {
+                const classId = componentClassId(component);
+                const uuid = componentUuid(component);
+                if (!classId || registered.has(classId) || classId.startsWith('cc.')) continue;
+                findings.push({
+                    nodeReference: { id: node.uuid, type: 'cc.Node' },
+                    nodeName: node.name || '',
+                    nodePath,
+                    componentReference: uuid ? { id: uuid, type: 'cc.Component' } : undefined,
+                    classId,
+                    repair: 'Provide scriptReference or replacementClassId to sceneScriptRepair'
+                });
+            }
+            for (const child of [...(node.children || [])].reverse()) {
+                stack.push({ node: child, path: nodePath ? `${nodePath}/${child.name || ''}` : child.name || '' });
+            }
+        }
+        const limit = boundedListLimit(args.limit);
+        return { findings: findings.slice(0, limit), total: findings.length, truncated: findings.length > limit };
+    }
+
+    @utcpTool(
+        'sceneScriptRepair',
+        'Replace one missing or invalid script component after verifying the target and replacement class. Uses editor undo snapshot and verifies the new component.',
+        {
+            type: 'object',
+            properties: {
+                nodeReference: InstanceReferenceSchema,
+                componentReference: InstanceReferenceSchema,
+                expectedClassId: { type: 'string' },
+                replacementClassId: { type: 'string' },
+                scriptReference: InstanceReferenceSchema
+            },
+            required: ['nodeReference'],
+            anyOf: [
+                { required: ['componentReference'] },
+                { required: ['expectedClassId'] }
+            ],
+            oneOf: [
+                { required: ['replacementClassId'] },
+                { required: ['scriptReference'] }
+            ]
+        },
+        {
+            type: 'object',
+            properties: { success: { type: 'boolean' }, removedComponent: { type: 'string' }, createdComponent: InstanceReferenceSchema },
+            required: ['success', 'createdComponent']
+        },
+        'POST',
+        ['scene', 'script', 'missing', 'invalid', 'repair', 'replace', 'component']
+    )
+    async sceneScriptRepair(args: { nodeReference: IInstanceReference, componentReference?: IInstanceReference, expectedClassId?: string, replacementClassId?: string, scriptReference?: IInstanceReference }): Promise<{ success: boolean, removedComponent?: string, createdComponent: IInstanceReference }> {
+        const nodeUuid = args.nodeReference?.id;
+        if (!nodeUuid) throw new Error('sceneScriptRepair requires nodeReference.id');
+        const node = await Editor.Message.request('scene', 'query-node', nodeUuid);
+        if (!node) throw new Error(`sceneScriptRepair: node ${nodeUuid} not found`);
+        const components = node.__comps__ || [];
+        const target = components.find((component: unknown) => {
+            const uuid = componentUuid(component);
+            const classId = componentClassId(component);
+            return (args.componentReference?.id && uuid === args.componentReference.id)
+                || (!args.componentReference?.id && args.expectedClassId && classId === args.expectedClassId);
+        });
+        if (!target) throw new Error('sceneScriptRepair: target component not found on node; rescan before retrying');
+        const oldUuid = componentUuid(target);
+        if (!oldUuid) throw new Error('sceneScriptRepair: target component has no uuid');
+        const replacement = args.scriptReference?.id
+            ? await Editor.Message.request('scene', 'query-script-cid', args.scriptReference.id)
+            : args.replacementClassId;
+        if (typeof replacement !== 'string' || !replacement) throw new Error('sceneScriptRepair: replacement script is missing or invalid');
+        const available = await Editor.Message.request('scene', 'query-components');
+        if (!Array.isArray(available) || !findComponentType(available, replacement)) {
+            throw new Error(`sceneScriptRepair: replacement class '${replacement}' is not registered; keep the invalid component unchanged`);
+        }
+        await Editor.Message.request('scene', 'remove-component', { uuid: oldUuid });
+        await Editor.Message.request('scene', 'create-component', { uuid: nodeUuid, component: replacement });
+        const after = await Editor.Message.request('scene', 'query-node', nodeUuid);
+        const created = (after?.__comps__ || []).find((component: unknown) => componentClassId(component) === replacement && componentUuid(component) !== oldUuid);
+        if (!created || !componentUuid(created)) throw new Error('sceneScriptRepair: replacement was not found after create-component');
+        await Editor.Message.request('scene', 'snapshot');
+        return { success: true, removedComponent: oldUuid, createdComponent: { id: componentUuid(created)!, type: replacement } };
     }
 
     @utcpTool(
