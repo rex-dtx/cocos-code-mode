@@ -10,9 +10,9 @@ const execFileAsync = promisify(execFile);
 function tscCommand(projectPath: string, tsconfig: string): { command: string, args: string[] } {
     const compilerEntry = path.join(projectPath, 'node_modules', 'typescript', 'bin', 'tsc');
     const compilerArgs = ['--noEmit', '--pretty', 'false', '-p', tsconfig];
-    // Launch the JavaScript entry with Creator's Node executable. This avoids
-    // cmd.exe quoting and `.cmd` batch semantics on Windows while remaining
-    // identical on Creator 3.7 and 3.8 hosts.
+    // Creator is an Electron host, so its executable must be switched into
+    // Node mode before it can launch TypeScript's JavaScript entry point.
+    // This avoids Windows `.cmd` quoting while working in Creator 3.7 and 3.8.
     return { command: process.execPath, args: [compilerEntry, ...compilerArgs] };
 }
 
@@ -113,6 +113,7 @@ export class DiagnosticsTools {
             const compiler = tscCommand(projectPath, tsconfig);
             const { stdout } = await execFileAsync(compiler.command, compiler.args, {
                 cwd: projectPath,
+                env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
                 timeout: 60_000,
                 maxBuffer: 10 * 1024 * 1024,
             });
