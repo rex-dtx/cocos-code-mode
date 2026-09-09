@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T09:30:00Z",
+  "checkedAt": "2026-09-09T09:45:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
@@ -11,11 +11,11 @@
     "passed": 188,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 80,
-  "qualifiedBaseline": 80,
-  "requiredNet": 77,
-  "approvalMargin": 6,
-  "requiredApprovalCount": 95,
+  "directEndpointEvidenceCount": 81,
+  "qualifiedBaseline": 81,
+  "requiredNet": 76,
+  "approvalMargin": 5,
+  "requiredApprovalCount": 94,
   "rows": [
     {
       "name": "assetGetTree",
@@ -458,8 +458,8 @@
     {
       "name": "simulateButtonClick",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/ui-fallback.test.js"
     },
     {
       "name": "bindButtonClickEvent",

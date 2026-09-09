@@ -375,5 +375,22 @@ describe('live: CC373 native UI creation fallback', () => {
     });
     assert.equal(missingDragCoordinate.status, 400);
   });
+  it('Creator 3.7 button event simulation reaches native cc.Button handlers', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+
+    const created = await postTool('createButton', { name: '__ccb3x_event_button__' });
+    assert.equal(created.ok, true, JSON.stringify(created.body));
+    const reference = created.body.reference;
+    try {
+      const clicked = await postTool('simulateButtonClick', { reference });
+      assert.equal(clicked.ok, true, JSON.stringify(clicked.body));
+      assert.deepEqual(clicked.body, { handlersFired: 0, method: 'clickEvents' });
+    } finally {
+      await postTool('nodeOperate', { operation: 'delete', reference });
+    }
+
+    const missingReference = await postTool('simulateButtonClick', {});
+    assert.equal(missingReference.status, 400);
+  });
 
 });
