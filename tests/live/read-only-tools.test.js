@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { getJson, healthCheck } = require('../helpers/utcp-client');
+const { getJson, postTool, healthCheck } = require('../helpers/utcp-client');
 
 describe('live: read-only endpoint qualification', () => {
   let health;
@@ -97,6 +97,68 @@ describe('live: read-only endpoint qualification', () => {
       filePath: '.missing-qualification-file',
       bytes: 0,
     });
+  });
+
+  it('Creator 3.7 project file and instruction mutation round-trip', async (t) => {
+    if (skipIfDown(t)) return;
+    const assetPath = 'assets/__ccb3x_project_write_qualification__.txt';
+    const instructionPath = '__ccb3x_instruction_qualification__.md';
+    let assetReference;
+    try {
+      const written = await postTool('projectWriteFile', {
+        filePath: assetPath,
+        content: 'ccb3x-marker-A\nccb3x-marker-A\n',
+      });
+      assert.equal(written.status, 200, JSON.stringify(written.body));
+      assert.equal(written.body.success, true);
+      assert.equal(written.body.bytesWritten, Buffer.byteLength('ccb3x-marker-A\nccb3x-marker-A\n'));
+
+      const replaced = await postTool('projectReplaceInFile', {
+        filePath: assetPath,
+        search: 'ccb3x-marker-A',
+        replace: 'ccb3x-marker-B',
+      });
+      assert.equal(replaced.status, 200, JSON.stringify(replaced.body));
+      assert.deepEqual(replaced.body, { success: true, replacements: 2 });
+
+      const read = await getJson(`/tools/projectReadFile?filePath=${encodeURIComponent(assetPath)}`);
+      assert.equal(read.status, 200);
+      assert.equal(read.body.content, 'ccb3x-marker-B\nccb3x-marker-B\n');
+
+      const instruction = await postTool('writeProjectInstruction', {
+        filePath: instructionPath,
+        content: '# ccb3x qualification\n',
+      });
+      assert.equal(instruction.status, 200, JSON.stringify(instruction.body));
+      assert.equal(instruction.body.success, true);
+      const readInstruction = await getJson(`/tools/readProjectInstruction?filePath=${encodeURIComponent(instructionPath)}`);
+      assert.equal(readInstruction.status, 200);
+      assert.equal(readInstruction.body.content, '# ccb3x qualification\n');
+
+      const asset = await getJson(`/tools/assetGetAtPath?assetPath=${encodeURIComponent(`db://${assetPath}`)}`);
+      assert.equal(asset.status, 200, JSON.stringify(asset.body));
+      assetReference = asset.body.reference;
+      assert.equal(typeof assetReference?.id, 'string');
+    } finally {
+      if (assetReference?.id) {
+        await postTool('assetOperate', { operation: 'delete', reference: assetReference });
+      }
+      await postTool('projectWriteFile', { filePath: instructionPath, content: '' });
+    }
+
+    const invalidWrite = await postTool('projectWriteFile', { filePath: '../outside.txt', content: 'x' });
+    assert.equal(invalidWrite.status, 400);
+    const invalidReplace = await postTool('projectReplaceInFile', {
+      filePath: 'missing-qualification-file.txt',
+      search: 'x',
+      replace: 'y',
+    });
+    assert.equal(invalidReplace.status, 500);
+    const invalidInstruction = await postTool('writeProjectInstruction', {
+      filePath: '../outside.md',
+      content: 'x',
+    });
+    assert.equal(invalidInstruction.status, 400);
   });
   it('getEditorPreference reads the live server port and rejects a non-string key', async (t) => {
     if (skipIfDown(t)) return;
