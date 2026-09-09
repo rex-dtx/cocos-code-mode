@@ -353,5 +353,27 @@ describe('live: CC373 native UI creation fallback', () => {
     const unsupportedModifier = await postTool('simulateKeyCombo', { combo: 'Super+D' });
     assert.equal(unsupportedModifier.status, 400);
   });
+  it('Creator 3.7 mouse input APIs emit bounded off-screen events and validate coordinates', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+
+    const click = await postTool('simulateMouseClick', {
+      x: -100, y: -100, button: 'right', clickCount: 2,
+    });
+    assert.equal(click.ok, true, JSON.stringify(click.body));
+    assert.deepEqual(click.body, { success: true });
+
+    const drag = await postTool('simulateMouseDrag', {
+      x: -100, y: -100, x2: -90, y2: -90, steps: 2,
+    });
+    assert.equal(drag.ok, true, JSON.stringify(drag.body));
+    assert.deepEqual(drag.body, { success: true });
+
+    const missingClickCoordinate = await postTool('simulateMouseClick', { x: -100 });
+    assert.equal(missingClickCoordinate.status, 400);
+    const missingDragCoordinate = await postTool('simulateMouseDrag', {
+      x: -100, y: -100, x2: -90,
+    });
+    assert.equal(missingDragCoordinate.status, 400);
+  });
 
 });

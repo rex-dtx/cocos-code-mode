@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T09:05:00Z",
+  "checkedAt": "2026-09-09T09:30:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -193,23 +193,23 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 189,
-      "passed": 189,
+      "tests": 190,
+      "passed": 190,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 78,
-    "qualifiedBaseline": 78,
-    "registeredUnverified": 8,
-    "requiredNet": 79,
-    "approvalMargin": 8,
-    "requiredApprovalCount": 97
+    "directEndpointEvidence": 80,
+    "qualifiedBaseline": 80,
+    "registeredUnverified": 6,
+    "requiredNet": 77,
+    "approvalMargin": 6,
+    "requiredApprovalCount": 95
   },
   "fullLiveQualification": {
-    "tests": 189,
-    "passed": 189,
+    "tests": 190,
+    "passed": 190,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -219,6 +219,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, and safe keyboard input emission across sixty-two directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, and bounded off-screen mouse input emission across sixty-four directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
   }
 }
