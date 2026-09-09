@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T09:45:00Z",
+  "checkedAt": "2026-09-09T10:10:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -193,23 +193,23 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 191,
-      "passed": 191,
+      "tests": 192,
+      "passed": 192,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 81,
-    "qualifiedBaseline": 81,
-    "registeredUnverified": 5,
-    "requiredNet": 76,
-    "approvalMargin": 5,
-    "requiredApprovalCount": 94
+    "directEndpointEvidence": 83,
+    "qualifiedBaseline": 83,
+    "registeredUnverified": 3,
+    "requiredNet": 74,
+    "approvalMargin": 3,
+    "requiredApprovalCount": 92
   },
   "fullLiveQualification": {
-    "tests": 191,
-    "passed": 191,
+    "tests": 192,
+    "passed": 192,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"
@@ -219,6 +219,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, bounded off-screen mouse input emission, and native button click-event simulation across sixty-five directly qualified baseline endpoint contracts. runtimePause/runtimeResume remain partial until verified during an active preview."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, native and direct UI creation, project/build reads, node lifecycle/component/inspector/reset/clipboard/primitive operations, preference persistence, asset create/import/save/delete operations, callable component invocation, prefab duplicate/raw-JSON edit operations, project/instruction file mutation, registered browser program discovery, active-scene save lifecycle, real animation clip selection, node-child array reordering, safe keyboard input emission, bounded off-screen mouse input emission, native button click-event simulation, and active-preview runtime pause/resume state transitions across sixty-seven directly qualified baseline endpoint contracts. bindButtonClickEvent remains unverified until the reloaded artifact contains the Creator 3.7 EventHandler constructor fix."
   }
 }

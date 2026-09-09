@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T09:45:00Z",
+  "checkedAt": "2026-09-09T10:10:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "db7367a",
@@ -11,11 +11,11 @@
     "passed": 188,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 81,
-  "qualifiedBaseline": 81,
-  "requiredNet": 76,
-  "approvalMargin": 5,
-  "requiredApprovalCount": 94,
+  "directEndpointEvidenceCount": 83,
+  "qualifiedBaseline": 83,
+  "requiredNet": 74,
+  "approvalMargin": 3,
+  "requiredApprovalCount": 92,
   "rows": [
     {
       "name": "assetGetTree",
@@ -380,14 +380,14 @@
     {
       "name": "runtimePause",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "runtimeResume",
       "method": "POST",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "runtimeSetTimeScale",

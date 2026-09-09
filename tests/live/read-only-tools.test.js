@@ -418,6 +418,49 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(typeof result.body.timeScale, 'number');
     assert.equal(typeof result.body.frameCount, 'number');
   });
+  it('Creator 3.7 runtime pause and resume change the live preview paused flag', async (t) => {
+    if (skipIfDown(t)) return;
+    const start = await postTool('executeJavascript', {
+      context: 'editor',
+      code: "Editor.Message.send('scene','editor-preview-set-play',true); return true;",
+    });
+    assert.equal(start.status, 200);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    try {
+      const before = await postTool('executeJavascript', {
+        context: 'scene',
+        code: 'return { paused: cc.game.isPaused() };',
+      });
+      assert.equal(before.status, 200);
+      assert.equal(before.body.result.paused, false);
+
+      const paused = await postTool('runtimePause', {});
+      assert.equal(paused.status, 200);
+      assert.deepEqual(paused.body, { success: true });
+      const during = await postTool('executeJavascript', {
+        context: 'scene',
+        code: 'return { paused: cc.game.isPaused() };',
+      });
+      assert.equal(during.status, 200);
+      assert.equal(during.body.result.paused, true);
+
+      const resumed = await postTool('runtimeResume', {});
+      assert.equal(resumed.status, 200);
+      assert.deepEqual(resumed.body, { success: true });
+      const after = await postTool('executeJavascript', {
+        context: 'scene',
+        code: 'return { paused: cc.game.isPaused() };',
+      });
+      assert.equal(after.status, 200);
+      assert.equal(after.body.result.paused, false);
+    } finally {
+      await postTool('executeJavascript', {
+        context: 'editor',
+        code: "Editor.Message.send('scene','editor-preview-set-play',false); return true;",
+      });
+    }
+  });
 
   it('getPerformanceSnapshot returns internally consistent counters', async (t) => {
     if (skipIfDown(t)) return;
