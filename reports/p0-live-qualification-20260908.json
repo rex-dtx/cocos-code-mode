@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T07:39:00Z",
+  "checkedAt": "2026-09-09T07:57:00Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "artifactCommit": "db7367a",
@@ -193,23 +193,23 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 185,
-      "passed": 185,
+      "tests": 186,
+      "passed": 186,
       "failed": 0,
       "suites": 30
     }
   },
   "baselineLedger": {
-    "directEndpointEvidence": 74,
-    "qualifiedBaseline": 74,
-    "registeredUnverified": 12,
-    "requiredNet": 83,
-    "approvalMargin": 12,
-    "requiredApprovalCount": 101
+    "directEndpointEvidence": 75,
+    "qualifiedBaseline": 75,
+    "registeredUnverified": 11,
+    "requiredNet": 82,
+    "approvalMargin": 11,
+    "requiredApprovalCount": 100
   },
   "fullLiveQualification": {
-    "tests": 185,
-    "passed": 185,
+    "tests": 186,
+    "passed": 186,
     "failed": 0,
     "status": "pass",
     "scope": "live contract and behavior coverage; not a one-test-per-registered-tool ledger"

@@ -177,6 +177,7 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(invalid.status, 500);
   });
   it('getEditorPreference reads the live server port and rejects a non-string key', async (t) => {
+
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/getEditorPreference?key=serverPort');
     assert.equal(result.status, 200);
@@ -186,6 +187,24 @@ describe('live: read-only endpoint qualification', () => {
     const invalid = await getJson('/tools/getEditorPreference?key%5B%5D=serverPort');
     assert.equal(invalid.status, 400);
     assert.ok(invalid.body.validationErrors.some((error) => error.path === 'key' && error.keyword === 'type'));
+  });
+
+  it('Creator 3.7 scene manager saves the active scene and validates operations', async (t) => {
+    if (skipIfDown(t)) return;
+    const before = await getJson('/tools/sceneGetInfo');
+    assert.equal(before.status, 200);
+    assert.equal(typeof before.body.dirty, 'boolean');
+
+    const saved = await postTool('sceneManage', { operation: 'save' });
+    assert.equal(saved.status, 200, JSON.stringify(saved.body));
+    assert.equal(saved.body.success, true);
+
+    const after = await getJson('/tools/sceneGetInfo');
+    assert.equal(after.status, 200);
+    assert.equal(after.body.dirty, false);
+
+    const invalid = await postTool('sceneManage', { operation: '__ccb3x_invalid__' });
+    assert.equal(invalid.status, 400);
   });
 
   it('editorGetLogs returns a bounded log window and rejects zero count', async (t) => {
