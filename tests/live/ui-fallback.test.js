@@ -91,4 +91,55 @@ describe('live: CC373 native UI creation fallback', () => {
       assert.equal(invalid.status, 400, `${tool}: ${JSON.stringify(invalid.body)}`);
     }
   });
+
+  it('Creator 3.7 primitive creation and node clipboard round-trip', async (t) => {
+    if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const created = await postTool('nodeCreate', { name: '__ccb3x_clipboard_source__' });
+    assert.equal(created.ok, true, JSON.stringify(created.body));
+    const source = created.body.reference;
+    let pasted;
+    let primitive;
+    try {
+      const copied = await postTool('nodeClipboard', {
+        operation: 'copy',
+        references: [source],
+      });
+      assert.equal(copied.ok, true);
+      assert.equal(copied.body.success, true);
+      assert.equal(copied.body.references.length, 1);
+
+      const pastedResult = await postTool('nodeClipboard', {
+        operation: 'paste',
+        references: copied.body.references,
+        targetReference: source,
+        pasteAsChild: true,
+      });
+      assert.equal(pastedResult.ok, true);
+      assert.equal(pastedResult.body.success, true);
+      pasted = pastedResult.body.references?.[0];
+      assert.equal(typeof pasted?.id, 'string');
+
+      const primitiveResult = await postTool('nodeCreatePrimitive', {
+        name: '__ccb3x_primitive__',
+        primitiveType: 'Cube',
+      });
+      assert.equal(primitiveResult.ok, true);
+      primitive = primitiveResult.body.reference;
+      assert.equal(typeof primitive?.id, 'string');
+    } finally {
+      if (pasted?.id) await postTool('nodeOperate', { operation: 'delete', reference: pasted });
+      if (primitive?.id) await postTool('nodeOperate', { operation: 'delete', reference: primitive });
+      await postTool('nodeOperate', { operation: 'delete', reference: source });
+    }
+
+    const invalidClipboard = await postTool('nodeClipboard', {
+      references: [source],
+    });
+    assert.equal(invalidClipboard.status, 400);
+    const invalidPrimitive = await postTool('nodeCreatePrimitive', {
+      name: '__ccb3x_invalid_primitive__',
+      primitiveType: 'Unknown',
+    });
+    assert.equal(invalidPrimitive.status, 400);
+  });
 });
