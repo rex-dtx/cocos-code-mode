@@ -11,7 +11,8 @@ function tscCommand(projectPath: string, tsconfig: string): { command: string, a
     const localTsc = path.join(projectPath, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
     const compilerArgs = ['--noEmit', '--pretty', 'false', '-p', tsconfig];
     if (process.platform === 'win32') {
-        const commandLine = [`"${localTsc}"`, ...compilerArgs.map(arg => `"${arg.replace(/"/g, '\\"')}"`)].join(' ');
+        // `tsc.cmd` is a batch file; `cmd /c` needs CALL when the command path is quoted.
+        const commandLine = ['call', `"${localTsc}"`, ...compilerArgs.map(arg => `"${arg.replace(/"/g, '\\"')}"`)].join(' ');
         return { command: process.env.ComSpec || 'cmd.exe', args: ['/d', '/s', '/c', commandLine] };
     }
     return { command: localTsc, args: compilerArgs };
