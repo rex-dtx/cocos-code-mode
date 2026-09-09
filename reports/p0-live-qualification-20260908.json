@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T04:40:12Z",
+  "checkedAt": "2026-09-09T04:41:43Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "editor": "3.7.3",
+  "artifactCommit": "ef9ba69",
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one"
