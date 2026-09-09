@@ -93,7 +93,7 @@ export class AssetTools {
     }
 
     @utcpTool('assetGetAtPath','Get asset reference by db:// path.',{type:'object',properties:{assetPath:{type:'string'}},required:['assetPath']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"GET",['asset','get','path','look','find'])
-    async assetGetAtPath(args:{assetPath:string}):Promise<{reference:IInstanceReference}>{ const p=normalizePath(args.assetPath); const info=await Editor.Message.request('asset-db','query-asset-info',p); if(!info) throw new Error(`Asset not found at path: ${p}`); return {reference:{id:info.uuid, type:info.type}}; }
+    async assetGetAtPath(args:{assetPath:string}):Promise<{reference:IInstanceReference}>{ const p=normalizePath(args.assetPath); const info=await Editor.Message.request('asset-db','query-asset-info',p); if(!info) throw new ToolError({code:'TARGET_NOT_FOUND',status:404,message:`Asset not found at path: ${p}`,details:{assetPath:p},recovery:'Use assetQuery to discover a current db:// asset path before retrying.'}); return {reference:{id:info.uuid, type:info.type}}; }
 
     @utcpTool(
         'assetResolvePath',
