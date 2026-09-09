@@ -289,7 +289,8 @@ export class SceneTools {
         if (!args.reference || !args.reference.id) {
             throw new Error('listComponentMethods requires reference.id (node uuid)');
         }
-        if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
+        const queriedNode = await Editor.Message.request('scene', 'query-node', args.reference.id);
+        if (queriedNode == null) {
             throw new ToolError({
                 code: 'TARGET_NOT_FOUND',
                 status: 404,
