@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T02:26:05Z",
+  "checkedAt": "2026-09-09T03:38:14Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
     "editor": "3.7.3",
@@ -21,10 +21,10 @@
   },
   "buildInfo": {
     "version": "2.0.0",
-    "commit": "1100957",
+    "commit": "4fc6d9a",
     "branch": "feat/ccb3x-api-capability-expansion",
     "dirty": false,
-    "builtAt": "2026-09-09T02:10:26.005Z"
+    "builtAt": "2026-09-09T03:34:20.019Z"
   },
   "baselineReadSmoke": {
     "method": "GET",
@@ -82,28 +82,31 @@
     }
   },
   "readOnlyEndpointQualification": {
-    "command": "npm run test:live:read-only-endpoint-qualification",
-    "tests": 4,
-    "passed": 4,
+    "command": "node --test tests/live/read-only-tools.test.js",
+    "tests": 7,
+    "passed": 7,
     "failed": 0,
     "qualifiedTools": [
       "editorEnvInfo",
       "nodeGetAvailableComponentTypes",
       "projectSearchFiles",
+      "projectReadFile",
+      "projectListDirectory",
+      "listComponentClasses",
       "listEditorWindows"
     ],
-    "unqualifiedFindings": [
+    "closedFindings": [
       {
         "tool": "projectReadFile",
-        "observation": "filePath=../package.json returned HTTP 500 INTERNAL_ERROR"
+        "resolution": "Parent traversal returns HTTP 400 INVALID_ARGUMENT with recovery guidance."
       },
       {
         "tool": "projectListDirectory",
-        "observation": "dirPath=.. returned HTTP 500 INTERNAL_ERROR"
+        "resolution": "Parent traversal returns HTTP 400 INVALID_ARGUMENT with recovery guidance."
       },
       {
         "tool": "listComponentClasses",
-        "observation": "positive request returned null instead of a class list"
+        "resolution": "Omitted extends defaults to cc.Component; filtered positive request returns matching classes."
       }
     ]
   },
@@ -116,8 +119,8 @@
     },
     "fullLiveSuite": {
       "command": "npm run test:live",
-      "tests": 151,
-      "passed": 151,
+      "tests": 154,
+      "passed": 154,
       "failed": 0,
       "suites": 30,
       "status": "pass"
@@ -126,18 +129,18 @@
   "baselineLedger": {
     "report": "reports/p0-baseline-ledger-20260908.json",
     "registeredTools": 86,
-    "directEndpointEvidence": 18,
-    "qualifiedBaseline": 18,
-    "registeredUnverified": 68,
-    "requiredNet": 139,
+    "directEndpointEvidence": 21,
+    "qualifiedBaseline": 21,
+    "registeredUnverified": 65,
+    "requiredNet": 136,
     "approvalMargin": 21,
-    "requiredApprovalCount": 160,
+    "requiredApprovalCount": 157,
     "note": "Conservative one-to-one ledger classification. Broad live tests pass, but tools without direct endpoint evidence remain registered-unverified."
   },
   "fullLiveQualification": {
     "command": "npm run test:live",
-    "tests": 151,
-    "passed": 151,
+    "tests": 154,
+    "passed": 154,
     "failed": 0,
     "suites": 30,
     "status": "pass",
@@ -148,6 +151,6 @@
     "targetVersionConfirmed": true,
     "manualReconciled": true,
     "allToolBehaviorQualified": false,
-    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and four directly exercised read-only endpoint contracts. It does not qualify every tool behavior."
+    "note": "This check proves live endpoint, Creator 3.7.3 identity, exact 86-name source/manual reconciliation, baseline GET smoke behavior, corrected findNodes validation, native Label/Button/Sprite creation fallback, and seven directly exercised read-only endpoint contracts. It does not qualify every tool behavior."
   }
 }

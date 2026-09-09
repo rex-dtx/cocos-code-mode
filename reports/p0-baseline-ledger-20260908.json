@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-09T02:26:05Z",
+  "checkedAt": "2026-09-09T03:38:14Z",
   "endpoint": "http://127.0.0.1:49650",
   "target": "Creator 3.7.3",
   "artifactCommit": "1100957",
   "sourceManualReconciled": true,
   "liveSuite": {
     "command": "npm run test:live",
-    "tests": 151,
-    "passed": 151,
+    "tests": 154,
+    "passed": 154,
     "suites": 30
   },
-  "directEndpointEvidenceCount": 18,
-  "qualifiedBaseline": 18,
-  "requiredNet": 139,
+  "directEndpointEvidenceCount": 21,
+  "qualifiedBaseline": 21,
+  "requiredNet": 136,
   "approvalMargin": 21,
-  "requiredApprovalCount": 160,
+  "requiredApprovalCount": 157,
   "rows": [
     {
       "name": "assetGetTree",
@@ -140,8 +140,8 @@
     {
       "name": "listComponentClasses",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "nodeClipboard",
@@ -320,8 +320,8 @@
     {
       "name": "projectReadFile",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "projectWriteFile",
@@ -350,8 +350,8 @@
     {
       "name": "projectListDirectory",
       "method": "GET",
-      "status": "registered-unverified",
-      "evidence": "no direct endpoint evidence in live suite"
+      "status": "qualified",
+      "evidence": "node --test tests/live/read-only-tools.test.js"
     },
     {
       "name": "createUiNode",
