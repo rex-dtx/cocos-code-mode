@@ -160,6 +160,11 @@ describe('live: read-only endpoint qualification', () => {
     const invalid = await getJson('/tools/assetFindReferences');
     assert.equal(invalid.status, 400);
     assert.deepEqual(invalid.body.missingInputs, ['reference']);
+    const empty = await getJson('/tools/assetFindReferences?reference%5Bid%5D=__unknown_asset_uuid__&limit=5');
+    assert.equal(empty.status, 200);
+    assert.deepEqual(empty.body.references, []);
+    assert.equal(empty.body.total, 0);
+    assert.equal(empty.body.truncated, false);
   });
 
   it('runtimeGetState returns typed runtime state', async (t) => {

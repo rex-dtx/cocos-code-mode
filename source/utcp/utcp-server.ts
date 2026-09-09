@@ -442,9 +442,8 @@ export class UtcpServerManager {
                     res.setHeader('X-Duration-Ms', String(ms));
                     debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
 
-                    // ponytail: trim null/undefined/empty containers before serializing.
-                    // Reduces response payload ~15-30% for property dumps and nested objects.
-                    const trimmed = trimResponse(result);
+                    // Preserve schema-required empty arrays/objects while trimming optional payload noise.
+                    const trimmed = trimResponse(result, toolDef.outputs);
 
                     // Wrap in envelope if enabled
                     if (envelopeEnabled) {
