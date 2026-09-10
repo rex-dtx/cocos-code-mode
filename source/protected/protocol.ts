@@ -1,5 +1,6 @@
 import { KeyLike, sign as ed25519Sign, verify as ed25519Verify } from "crypto"
 import { canonicalizeToBytes, IJson, parseCanonicalJson } from "./canonical-json";
+import { decodeBase64UrlBuffer, encodeBase64Url as encodeCompatBase64Url } from "./node14-compat";
 import type { ExecutionEnvelope } from "./primitive-contract";
 
 export const PROTOCOL_VERSION = 1 as const;
@@ -95,12 +96,12 @@ export function assertKeyId(keyId: string): void {
 }
 
 export function encodeBase64Url(bytes: Uint8Array): string {
-  return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString("base64url");
+  return encodeCompatBase64Url(bytes);
 }
 
 export function decodeBase64Url(value: string, maxBytes: number, exactBytes?: number): Buffer {
   if (!BASE64URL_PATTERN.test(value) || value.includes("=")) throw new TypeError("invalid unpadded base64url");
-  const decoded = Buffer.from(value, "base64url");
+  const decoded = decodeBase64UrlBuffer(value);
   if (decoded.length === 0 || decoded.length > maxBytes || encodeBase64Url(decoded) !== value) {
     throw new RangeError("base64url decoded length or encoding is invalid");
   }

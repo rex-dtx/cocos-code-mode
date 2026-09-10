@@ -33,27 +33,35 @@ function percentile(values, p) {
   return sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1))];
 }
 
-async function loadLocalToken() {
+async function loadLocalAuth(boundPort) {
   const dir = path.join(os.homedir(), '.cc-bridge', 'local-auth');
-  if (!fs.existsSync(dir)) return '';
-  const files = fs.readdirSync(dir).filter((name) => name.endsWith('.json'));
-  let newest = '';
+  if (!fs.existsSync(dir)) return null;
+  const files = fs.readdirSync(dir).filter((name) => name.endsWith('.env'));
+  let newest = null;
   let mtime = 0;
   for (const name of files) {
     const full = path.join(dir, name);
     const stat = fs.statSync(full);
-    if (stat.mtimeMs >= mtime) {
+    if (stat.mtimeMs < mtime) continue;
+    const lines = fs.readFileSync(full, 'utf8').split(/\r?\n/);
+    const portLine = lines.find((line) => line.startsWith('CCB_BOUND_PORT='));
+    if (boundPort && portLine !== `CCB_BOUND_PORT=${boundPort}`) continue;
+    const instanceLine = lines.find((line) => line.startsWith('CCB_RELAY_INSTANCE_ID='));
+    const tokenLine = lines.find((line) => line.startsWith('CCB_LOCAL_TOKEN='));
+    const relayInstanceId = instanceLine ? instanceLine.slice('CCB_RELAY_INSTANCE_ID='.length) : '';
+    const token = tokenLine ? tokenLine.slice('CCB_LOCAL_TOKEN='.length) : '';
+    if (relayInstanceId && token) {
       mtime = stat.mtimeMs;
-      newest = JSON.parse(fs.readFileSync(full, 'utf8')).token;
+      newest = { relayInstanceId, token };
     }
   }
-  return typeof newest === 'string' ? newest : '';
+  return newest;
 }
 
 async function main() {
   const base = discoverUtcp();
   const gatewayHealth = process.env.CCB_GATEWAY_HEALTH || 'http://127.0.0.1:8787/ccb/v1/health';
-  const token = await loadLocalToken();
+  const localAuth = await loadLocalAuth(new URL(base).port);
   const [build, manual, health] = await Promise.all([
     get(`${base}/build-info`),
     get(`${base}/utcp`),
@@ -79,7 +87,11 @@ async function main() {
     throw new Error('live Creator 3x UTCP is not ready');
   }
   const headers = { 'content-type': 'application/json' };
-  if (token) headers['x-ccb-local-token'] = token;
+  if (localAuth) {
+    headers['x-ccb-local-token'] = localAuth.token;
+    headers['x-ccb-relay-instance'] = localAuth.relayInstanceId;
+    headers['x-ccb-bound-port'] = new URL(base).port;
+  }
   const first = await fetch(`${base}/tools/sceneGetInfo`, { method: 'GET', headers, redirect: 'error' });
   const firstText = await first.text();
   if (first.status === 422 && /CCB_GATEWAY_UNAVAILABLE/.test(firstText)) {

@@ -1,7 +1,7 @@
 import { KeyLike } from "crypto";
 import { canonicalizeJson } from "./canonical-json";
 import { ExecutionEnvelopeSchema } from "./primitive-contract";
-import { verifyGatewayDecision, verifyProtectedRequest } from "./protocol";
+import { verifyGatewayDecision, verifyProtectedRequest, decodeBase64Url, encodeBase64Url } from "./protocol";
 import { ProtectedRequestSchema, SignedGatewayDecisionSchema, SignedProtectedRequestSchema } from "./schemas";
 
 export type NegativeFixtureStage = "request-signature" | "decision-signature" | "request-schema" | "primitive-schema";
@@ -50,9 +50,9 @@ function applyMutation(root: unknown, fixture: NegativeFixture): unknown {
 
 function mutateSignedPayload(wrapper: unknown, fixture: NegativeFixture): unknown {
   const parsed = SignedProtectedRequestSchema.or(SignedGatewayDecisionSchema).parse(wrapper);
-  const payload = JSON.parse(Buffer.from(parsed.payload, "base64url").toString("utf8"));
+  const payload = JSON.parse(decodeBase64Url(parsed.payload, 512 * 1024).toString("utf8"));
   const mutated = applyMutation(payload, fixture);
-  return { ...parsed, payload: Buffer.from(canonicalizeJson(mutated)).toString("base64url") };
+  return { ...parsed, payload: encodeBase64Url(Buffer.from(canonicalizeJson(mutated))) };
 }
 
 export function runNegativeFixture(

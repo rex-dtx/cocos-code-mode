@@ -17,6 +17,8 @@ const forbidden = [
   /require\(['"](?:stream|timers)\/promises['"]\)/,
   /\bAbortSignal\.timeout\s*\(/,
   /\.at\s*\(/,
+  /\.toString\(['"]base64url['"]\)/,
+  /Buffer\.from\([^)]*,\s*['"]base64url['"]\)/,
 ];
 const updaterProcess = [
   /require\(['"]child_process['"]\)/,
