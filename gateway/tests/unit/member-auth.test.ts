@@ -52,7 +52,11 @@ async function signToken(options: {
 async function requestThroughAuth(token?: string): Promise<Response> {
   const app = express();
   app.get("/protected", createMemberAuthMiddleware(verifier), requireCcBridgeProduct, (req, res) => {
-    res.json({ memberId: req.toolAuth?.member_id, products: req.toolAuth?.products });
+    res.json({
+      memberId: req.toolAuth?.member_id,
+      products: req.toolAuth?.products,
+      clearance: req.toolAuth?.clearance,
+    });
   });
   const server = createServer(app);
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -71,7 +75,17 @@ describe("independent member JWT verification", () => {
   it("accepts a valid EdDSA token and maps its shared identity claims", async () => {
     const response = await requestThroughAuth(await signToken());
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ memberId: "member-1", products: ["cc_bridge"] });
+    expect(await response.json()).toEqual({
+      memberId: "member-1",
+      products: ["cc_bridge"],
+      clearance: "restricted",
+    });
+  });
+
+  it("preserves explicit signed clearance instead of applying the role default", async () => {
+    const response = await requestThroughAuth(await signToken({ extra: { clearance: "internal" } }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ clearance: "internal" });
   });
 
   it("denies a valid identity token without the cc_bridge product", async () => {

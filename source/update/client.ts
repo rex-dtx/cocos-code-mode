@@ -1,7 +1,6 @@
 import { createHash } from "crypto"
 import { createWriteStream, mkdirSync, renameSync, rmSync } from "fs"
 import { dirname } from "path"
-import { finished } from "stream/promises"
 import { URL } from "url"
 import { CcbError } from "../protected/errors";
 
@@ -112,8 +111,11 @@ export async function downloadReleaseArtifact(
       digest.update(chunk);
       if (!output.write(chunk)) await new Promise<void>((resolve) => output.once("drain", resolve));
     }
-    output.end();
-    await finished(output);
+    await new Promise<void>((resolve, reject) => {
+      output.once("error", reject);
+      output.once("finish", resolve);
+      output.end();
+    });
     const sha256 = digest.digest("hex");
     if (total !== declared || sha256 !== expectedSha256) throw new CcbError("CCB_SIGNATURE_INVALID", "Release artifact size or hash does not match signed metadata.");
     renameSync(partial, destination);

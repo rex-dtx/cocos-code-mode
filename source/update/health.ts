@@ -1,4 +1,4 @@
-import { setTimeout as delay } from "timers/promises"
+import { setTimeout as scheduleTimeout, clearTimeout } from "timers"
 import type { RelayState } from "../protected/state-machine";
 import { CcbError } from "../protected/errors";
 
@@ -42,15 +42,18 @@ export async function evaluateUpdateHealth(input: UpdateHealthInput): Promise<Up
   if (failures.length > 0) return { healthy: false, failures };
 
   const startedAt = Date.now();
-  const signal = AbortSignal.timeout(input.protectedProbeTimeoutMs);
+  const controller = new AbortController();
+  const timeoutHandle = scheduleTimeout(() => controller.abort(), input.protectedProbeTimeoutMs);
   let probeOutcome: "passed" | "failed" | "timeout";
   try {
     probeOutcome = await Promise.race([
-      input.protectedProbe(signal).then((ok) => ok ? "passed" as const : "failed" as const).catch(() => "failed" as const),
-      delay(input.protectedProbeTimeoutMs, undefined, { ref: false }).then(() => "timeout" as const),
+      input.protectedProbe(controller.signal).then((ok) => ok ? "passed" as const : "failed" as const).catch(() => "failed" as const),
+      new Promise<"timeout">((resolve) => scheduleTimeout(() => resolve("timeout"), input.protectedProbeTimeoutMs)),
     ]);
   } catch {
     probeOutcome = "failed";
+  } finally {
+    clearTimeout(timeoutHandle);
   }
   const probeDurationMs = Date.now() - startedAt;
   if (probeOutcome === "passed") return { healthy: true, failures, probeDurationMs };

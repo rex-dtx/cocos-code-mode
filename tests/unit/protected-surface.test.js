@@ -26,7 +26,9 @@ describe("protected customer surface", () => {
     const distRoot = path.resolve(__dirname, "../../dist");
     const incompatible = javascriptFiles(distRoot).flatMap((filePath) => {
       const source = fs.readFileSync(filePath, "utf8");
-      return /(?:require|from)\(["']node:|from ["']node:/.test(source) ? [path.relative(distRoot, filePath)] : [];
+      return /(?:require|from)\(["']node:|from ["']node:|require\(["'](?:stream|timers)\/promises["']\)|AbortSignal\.timeout/.test(source)
+        ? [path.relative(distRoot, filePath)]
+        : [];
     });
     assert.deepEqual(incompatible, []);
   });
