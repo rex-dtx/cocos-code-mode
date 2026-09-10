@@ -810,7 +810,7 @@
         },
         {
           "name": "physics2dCompatibilityAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Reject unsupported backend/component/joint/matrix combinations.",
           "route": "physics-2d semantic validator",
           "prerequisites": [
@@ -823,6 +823,7 @@
           "negativeTestID": "candidate.physics2dCompatibilityAudit.negative.v1",
           "fixtureID": "fixture.candidate.physics2dCompatibilityAudit.v1",
           "evidenceArtifact": "reports/evidence/candidates/physics2dCompatibilityAudit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/physics2dCompatibilityAudit",
           "proposedExecutionPhase": "P4"
         }
       ]
@@ -1697,7 +1698,7 @@
     },
     {
       "name": "sceneHierarchyValidate",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Validate duplicate paths, invalid parenting and persistence invariants.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
@@ -1711,7 +1712,8 @@
       "positiveTestID": "candidate.sceneHierarchyValidate.positive.v1",
       "negativeTestID": "candidate.sceneHierarchyValidate.negative.v1",
       "fixtureID": "fixture.candidate.sceneHierarchyValidate.v1",
-      "evidenceArtifact": "reports/evidence/candidates/sceneHierarchyValidate/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/sceneHierarchyValidate/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/sceneHierarchyValidate"
     },
     {
       "name": "sceneReferenceValidate",

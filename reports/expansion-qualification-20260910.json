@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-10T04:58:00Z",
+  "checkedAt": "2026-09-10T11:16:22Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "artifactCommit": "e3b735d",
+    "artifactCommit": "489ac5f",
     "dirty": true,
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "os": "windows-x64",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
-    "manualCount": 119,
-    "uniqueManualCount": 119
+    "manualCount": 121,
+    "uniqueManualCount": 121
   },
   "testCommand": "UTCP_PORT=49650 node --test tests/live/candidate-expansion-qualification.test.js",
   "testResult": {
-    "tests": 3,
-    "passed": 3,
+    "tests": 4,
+    "passed": 4,
     "failed": 0,
     "fixturesCleaned": true
   },
@@ -67,6 +67,14 @@
     "buildTaskWait": {
       "positive": "real Creator build task 1789015174581 reached success; wait with numeric task id returned completed=true and timedOut=false",
       "negative": "missing task id returned HTTP 404 TARGET_NOT_FOUND"
+    },
+    "sceneHierarchyValidate": {
+      "positive": "fixture subtree returned valid=true; duplicate sibling path returned valid=false; limit=1 returned truncated=true",
+      "negative": "missing root returned HTTP 404 TARGET_NOT_FOUND and limit=0 returned HTTP 400"
+    },
+    "physics2dCompatibilityAudit": {
+      "positive": "real RigidBody2D plus BoxCollider2D fixture returned valid=true for backend=box2d",
+      "negative": "the same fixture returned valid=false for backend=builtin with explicit backend capability issue"
     }
   },
   "registeredUnverified": {
@@ -78,11 +86,11 @@
   "countReconciliation": {
     "qualifiedBaseline": 86,
     "previouslyQualifiedExpansion": 17,
-    "newlyQualifiedExpansion": 12,
-    "qualifiedRegisteredTools": 115,
+    "newlyQualifiedExpansion": 14,
+    "qualifiedRegisteredTools": 117,
     "registeredUnverifiedExpansion": 4,
-    "registeredToolCount": 119,
-    "remainingGapTo157": 42,
-    "remainingGapIfFourUnverifiedQualify": 38
+    "registeredToolCount": 121,
+    "remainingGapTo157": 40,
+    "remainingGapIfFourUnverifiedQualify": 36
   }
 }

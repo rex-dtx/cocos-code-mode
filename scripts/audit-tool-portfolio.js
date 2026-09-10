@@ -44,10 +44,12 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'buildLogInspect',
   'audioSourceAudit',
   'physics2dTopologyAudit',
+  'physics2dCompatibilityAudit',
   'physics3dTopologyAudit',
   'physics3dValidate',
   'sceneScriptHealthScan',
   'sceneScriptRepair',
+  'sceneHierarchyValidate',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

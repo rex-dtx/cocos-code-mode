@@ -107,6 +107,47 @@ export class ExpansionTools {
         }).filter((row) => row.bodies.length > 0 || row.colliders.length > 0 || row.joints.length > 0);
         return { valid: issues.length === 0, nodes: topology, issues, checkedNodes: topology.length };
     }
+
+    @utcpTool(
+        'physics2dCompatibilityAudit',
+        'Validate bounded 2D physics components against an explicit Creator backend capability matrix.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['builtin', 'box2d'], description: 'Target Creator 2D physics backend.' },
+                reference: InstanceReferenceSchema,
+            },
+            required: ['backend'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                valid: { type: 'boolean' },
+                backend: { type: 'string', enum: ['builtin', 'box2d'] },
+                nodes: { type: 'array' },
+                issues: { type: 'array', items: { type: 'string' } },
+                checkedNodes: { type: 'integer' },
+            },
+            required: ['valid', 'backend', 'nodes', 'issues', 'checkedNodes'],
+        },
+        'GET',
+        ['physics', '2d', 'compatibility', 'backend', 'audit']
+    )
+    async physics2dCompatibilityAudit(args: { backend: 'builtin' | 'box2d', reference?: IInstanceReference }): Promise<{ valid: boolean, backend: 'builtin' | 'box2d', nodes: Array<Record<string, unknown>>, issues: string[], checkedNodes: number }> {
+        const topology = await this.physics2dTopologyAudit({ reference: args.reference });
+        const issues = [...topology.issues];
+        if (args.backend === 'builtin') {
+            for (const row of topology.nodes) {
+                const bodies = row.bodies as string[];
+                const joints = row.joints as string[];
+                if (bodies.length > 0) issues.push(`${row.name}: ${bodies.join(', ')} requires the box2d backend`);
+                if (joints.length > 0) issues.push(`${row.name}: ${joints.join(', ')} requires the box2d backend`);
+            }
+        }
+        return { valid: issues.length === 0, backend: args.backend, nodes: topology.nodes, issues, checkedNodes: topology.checkedNodes };
+    }
     @utcpTool('physics3dInspect', 'Inspect bounded 3D rigid bodies, colliders, materials and joints in the open scene.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { nodes: { type: 'array' }, count: { type: 'integer' } }, required: ['nodes', 'count'] }, 'GET', ['physics', '3d', 'inspect'])
     async physics3dInspect(args: { reference?: IInstanceReference }): Promise<{ nodes: Array<Record<string, unknown>>, count: number }> {
         const nodes = await sceneNodes(args.reference?.id);
