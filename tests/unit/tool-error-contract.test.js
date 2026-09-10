@@ -4,6 +4,8 @@ const assert = require('node:assert/strict');
 const { requireDist } = require('../helpers/require-dist');
 
 const { ToolError, toToolErrorResponse } = requireDist('utcp/tool-error.js');
+const { shouldLogToolError, expectedTestWitnessId } = requireDist('utcp/utcp-server.js');
+
 
 describe('typed UTCP tool errors', () => {
   it('preserves an actionable typed error over HTTP', () => {
@@ -31,6 +33,28 @@ describe('typed UTCP tool errors', () => {
       status: 500,
       body: { error: 'Internal tool error.', code: 'INTERNAL_ERROR' },
     });
+  });
+  it('keeps expected typed client failures out of Creator error logs', () => {
+    assert.equal(shouldLogToolError(new ToolError({
+      code: 'TARGET_NOT_FOUND',
+      status: 404,
+      message: 'Fixture target not found',
+    })), false);
+    assert.equal(shouldLogToolError(new Error('unexpected failure')), true);
+  });
+  it('accepts only safe explicit witness markers', () => {
+    assert.equal(expectedTestWitnessId({
+      'x-ccb-expected-error': 'true',
+      'x-ccb-test-id': 'candidate.assetImporterAudit.negative.v1',
+    }), 'candidate.assetImporterAudit.negative.v1');
+    assert.equal(expectedTestWitnessId({
+      'x-ccb-expected-error': 'false',
+      'x-ccb-test-id': 'candidate.assetImporterAudit.negative.v1',
+    }), undefined);
+    assert.equal(expectedTestWitnessId({
+      'x-ccb-expected-error': 'true',
+      'x-ccb-test-id': 'contains spaces',
+    }), undefined);
   });
 
   it('classifies unsupported editor APIs with a recovery action', () => {

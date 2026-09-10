@@ -32,6 +32,17 @@ async function getJson(urlPath, init) {
   let body; try { body = JSON.parse(text); } catch { body = text; }
   return { ok: r.ok, status: r.status, body, text, base: b };
 }
+async function getExpectedErrorJson(urlPath, testId, init = {}) {
+  return getJson(urlPath, {
+    ...init,
+    headers: {
+      ...init.headers,
+      'x-ccb-expected-error': 'true',
+      'x-ccb-test-id': testId,
+    },
+  });
+}
+
 
 async function postTool(toolPath, body) {
   return getJson(`/tools/${toolPath}`, {
@@ -59,4 +70,4 @@ function resVal(body) {
   return null;
 }
 
-module.exports = { discoverBase, getJson, postTool, healthCheck, resVal };
+module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, healthCheck, resVal };

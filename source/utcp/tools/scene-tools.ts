@@ -198,6 +198,107 @@ export class SceneTools {
     }
 
     @utcpTool(
+        'sceneHierarchyValidate',
+        'Validate scene hierarchy identity, unique paths, and parent-child topology within bounded traversal.',
+        {
+            type: 'object',
+            properties: {
+                rootReference: InstanceReferenceSchema,
+                limit: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: MAX_LIST_LIMIT }
+            }
+        },
+        {
+            type: 'object',
+            properties: {
+                valid: { type: 'boolean' },
+                checkedNodes: { type: 'integer' },
+                issues: { type: 'array', items: { type: 'string' } },
+                truncated: { type: 'boolean' }
+            },
+            required: ['valid', 'checkedNodes', 'issues', 'truncated']
+        },
+        'GET',
+        ['scene', 'hierarchy', 'validate', 'parent', 'path', 'integrity']
+    )
+    async sceneHierarchyValidate(args: { rootReference?: IInstanceReference, limit?: number } = {}): Promise<{ valid: boolean, checkedNodes: number, issues: string[], truncated: boolean }> {
+        const tree = await Editor.Message.request('scene', 'query-node-tree') as any;
+        if (!tree) throw new Error('sceneHierarchyValidate: no open scene or failed to query scene tree');
+        let root = tree;
+        if (args.rootReference?.id) {
+            const candidates = [tree];
+            root = undefined;
+            while (candidates.length) {
+                const candidate = candidates.pop();
+                if (candidate?.uuid === args.rootReference.id) {
+                    root = candidate;
+                    break;
+                }
+                if (Array.isArray(candidate?.children)) candidates.push(...candidate.children);
+            }
+            if (!root) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Hierarchy root ${args.rootReference.id} not found`, recovery: 'Query the current scene tree and retry with an existing node id.' });
+        }
+        const limit = boundedListLimit(args.limit);
+        const issues: string[] = [];
+        const seenObjects = new Set<object>();
+        const seenUuids = new Map<string, string>();
+        const parentByUuid = new Map<string, string>();
+        const stack: Array<{ node: any, path: string, parentPath: string }> = [{ node: root, path: root.name || '', parentPath: '' }];
+        let checkedNodes = 0;
+        let truncated = false;
+        while (stack.length) {
+            if (checkedNodes >= limit) {
+                truncated = true;
+                break;
+            }
+            const current = stack.pop()!;
+            const node = current.node;
+            if (!node || typeof node !== 'object') {
+                issues.push(`invalid node at ${current.path || '(root)'}`);
+                continue;
+            }
+            if (seenObjects.has(node)) {
+                issues.push(`cycle or repeated node object at ${current.path || '(root)'}`);
+                continue;
+            }
+            seenObjects.add(node);
+            checkedNodes++;
+            const path = current.path || '(root)';
+            const uuid = typeof node.uuid === 'string' ? node.uuid : '';
+            if (!uuid) {
+                issues.push(`missing uuid at ${path}`);
+            } else {
+                const firstPath = seenUuids.get(uuid);
+                if (firstPath) {
+                    issues.push(`duplicate uuid ${uuid} at ${path}; first seen at ${firstPath}`);
+                    const firstParent = parentByUuid.get(uuid);
+                    if (firstParent !== undefined && firstParent !== current.parentPath) {
+                        issues.push(`invalid parenting for ${uuid}: ${firstParent} and ${current.parentPath || '(root)'}`);
+                    }
+                } else {
+                    seenUuids.set(uuid, path);
+                    parentByUuid.set(uuid, current.parentPath);
+                }
+            }
+            const childPaths = new Set<string>();
+            const children = Array.isArray(node.children) ? node.children : [];
+            for (let index = children.length - 1; index >= 0; index--) {
+                const child = children[index];
+                const childName = typeof child?.name === 'string' ? child.name : '';
+                const childPath = path === '(root)' ? childName || `(child-${index})` : `${path}/${childName || `(child-${index})`}`;
+                if (childPaths.has(childPath)) issues.push(`duplicate path ${childPath}`);
+                childPaths.add(childPath);
+                stack.push({ node: child, path: childPath, parentPath: path });
+            }
+        }
+        return {
+            valid: issues.length === 0 && !truncated,
+            checkedNodes,
+            issues: issues.slice(0, MAX_LIST_LIMIT),
+            truncated
+        };
+    }
+
+    @utcpTool(
         'sceneScriptHealthScan',
         'Scan the open scene or prefab for script components whose class is no longer registered. Read-only; returns node paths and repair candidates.',
         {

@@ -43,7 +43,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
-import { toToolErrorResponse } from './tool-error';
+import { ToolError, toToolErrorResponse } from './tool-error';
 
 export interface SchemaValidationError {
     path: string;
@@ -58,6 +58,16 @@ function isPlainJsonObject(value: unknown): value is object {
 function isSchema(value: unknown): value is JsonSchema {
     return isPlainJsonObject(value);
 }
+export function shouldLogToolError(error: unknown): boolean {
+    return !(error instanceof ToolError && error.status < 500);
+}
+
+export function expectedTestWitnessId(headers: Record<string, unknown>): string | undefined {
+    if (headers['x-ccb-expected-error'] !== 'true') return undefined;
+    const id = headers['x-ccb-test-id'];
+    return typeof id === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(id) ? id : undefined;
+}
+
 
 function schemaKeywordNumber(schema: JsonSchema, keyword: string): number | undefined {
     const value = schema[keyword];
@@ -454,11 +464,16 @@ export class UtcpServerManager {
                     }
 
                 } catch (err: any) {
-                    console.error(`Error in tool ${toolDef.name}:`, err);
                     const ms2 = Date.now() - ((req as any)._t0 ?? t0);
                     const response = toToolErrorResponse(err);
+                    const testId = expectedTestWitnessId(req.headers);
+                    if (testId && err instanceof ToolError && err.status < 500) {
+                        console.info(`[TEST ${testId}] Expected ${err.code} from ${toolDef.name}`);
+                    } else if (shouldLogToolError(err)) {
+                        console.error(`Error in tool ${toolDef.name}:`, err);
+                    }
                     res.setHeader('X-Duration-Ms', String(ms2));
-                    debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, durationMs: ms2 });
+                    debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, testId, durationMs: ms2 });
                     res.status(response.status).json(response.body);
                 }
             };

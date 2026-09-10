@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { getJson, postTool, healthCheck } = require('../helpers/utcp-client');
+const { getJson, getExpectedErrorJson, postTool, healthCheck } = require('../helpers/utcp-client');
 
 describe('live: candidate expansion qualification witnesses', () => {
   let health;
@@ -30,9 +30,50 @@ describe('live: candidate expansion qualification witnesses', () => {
     assert.equal(importer.body.importer, 'typescript');
     assert.equal(importer.body.source.uuid, '4e03008c-cb99-412b-90dc-6dbe0c7a2a28');
 
-    const missingImporter = await getJson('/tools/assetImporterAudit?reference%5Bid%5D=__missing_candidate_asset__');
+    const missingImporter = await getExpectedErrorJson('/tools/assetImporterAudit?reference%5Bid%5D=__missing_candidate_asset__', 'candidate.assetImporterAudit.negative.v1');
     assert.equal(missingImporter.status, 404);
     assert.equal(missingImporter.body.code, 'TARGET_NOT_FOUND');
+  });
+
+  it('qualifies bounded scene hierarchy validation with duplicate-path and limit witnesses', async (t) => {
+    if (skipIfDown(t)) return;
+    const fixture = await postTool('executeJavascript', {
+      context: 'scene',
+      code: `const sc=cc.director.getScene();for(const name of ['__candidate_hierarchy__']){const old=sc.getChildByName(name);if(old){old.removeFromParent();old.destroy();}}
+const root=new cc.Node('__candidate_hierarchy__');sc.addChild(root);const child=new cc.Node('__candidate_leaf__');root.addChild(child);return {root:root.uuid,child:child.uuid};`,
+    });
+    assert.equal(fixture.status, 200, JSON.stringify(fixture.body));
+    try {
+      const valid = await getJson(`/tools/sceneHierarchyValidate?rootReference%5Bid%5D=${encodeURIComponent(fixture.body.result.root)}&limit=1000`);
+      assert.equal(valid.status, 200, JSON.stringify(valid.body));
+      assert.equal(valid.body.valid, true);
+      assert.ok(valid.body.checkedNodes >= 2);
+      assert.deepEqual(valid.body.issues, []);
+      const duplicate = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `const root=cc.director.getScene().getChildByName('__candidate_hierarchy__');root.addChild(new cc.Node('__candidate_duplicate__'));root.addChild(new cc.Node('__candidate_duplicate__'));return true;`,
+      });
+      assert.equal(duplicate.status, 200, JSON.stringify(duplicate.body));
+      const invalid = await getJson(`/tools/sceneHierarchyValidate?rootReference%5Bid%5D=${encodeURIComponent(fixture.body.result.root)}&limit=1000`);
+      assert.equal(invalid.status, 200, JSON.stringify(invalid.body));
+      assert.equal(invalid.body.valid, false);
+      assert.ok(invalid.body.issues.some((issue) => issue.includes('duplicate path')));
+      const bounded = await getJson(`/tools/sceneHierarchyValidate?rootReference%5Bid%5D=${encodeURIComponent(fixture.body.result.root)}&limit=1`);
+      assert.equal(bounded.status, 200, JSON.stringify(bounded.body));
+      assert.equal(bounded.body.valid, false);
+      assert.equal(bounded.body.truncated, true);
+      const invalidLimit = await getJson('/tools/sceneHierarchyValidate?limit=0');
+      const missingRoot = await getExpectedErrorJson('/tools/sceneHierarchyValidate?rootReference%5Bid%5D=__missing_hierarchy_root__', 'candidate.sceneHierarchyValidate.negative.v1');
+      assert.equal(missingRoot.status, 404);
+      assert.equal(missingRoot.body.code, 'TARGET_NOT_FOUND');
+      assert.equal(invalidLimit.status, 400);
+    } finally {
+      const cleanup = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `const n=cc.director.getScene().getChildByName('__candidate_hierarchy__');if(n){n.removeFromParent();n.destroy();}return true;`,
+      });
+      assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
+    }
   });
 
   it('qualifies particle, terrain, and physics topology audits with real scene fixtures', async (t) => {
@@ -65,7 +106,7 @@ return out;`,
       assert.equal(particle.status, 200, JSON.stringify(particle.body));
       assert.equal(particle.body.count, 1);
       assert.equal(particle.body.systems[0].type, 'cc.ParticleSystem');
-      const particleInspectNegative = await getJson('/tools/particleInspect?reference%5Bid%5D=__missing_candidate_node__');
+      const particleInspectNegative = await getExpectedErrorJson('/tools/particleInspect?reference%5Bid%5D=__missing_candidate_node__', 'candidate.particleInspect.negative.v1');
       assert.equal(particleInspectNegative.status, 404);
       const particleValid = await getJson(`/tools/particleValidate?reference%5Bid%5D=${encodeURIComponent(ids.__candidate_particle__.id)}`);
       const particleNegative = await getJson(`/tools/particleValidate?reference%5Bid%5D=${encodeURIComponent(ids.__candidate_p2__.id)}`);
@@ -76,7 +117,7 @@ return out;`,
       const terrain = await getJson(`/tools/terrainInspect?reference%5Bid%5D=${encodeURIComponent(ids.__candidate_terrain__.id)}`);
       assert.equal(terrain.status, 200, JSON.stringify(terrain.body));
       assert.equal(terrain.body.count, 1);
-      const terrainNegative = await getJson('/tools/terrainInspect?reference%5Bid%5D=__missing_candidate_node__');
+      const terrainNegative = await getExpectedErrorJson('/tools/terrainInspect?reference%5Bid%5D=__missing_candidate_node__', 'candidate.terrainInspect.negative.v1');
       assert.equal(terrainNegative.status, 404);
 
       const p2 = await getJson(`/tools/physics2dTopologyAudit?reference%5Bid%5D=${encodeURIComponent(ids.__candidate_p2__.id)}`);
@@ -87,11 +128,19 @@ return out;`,
       assert.equal(p2Negative.status, 200);
       assert.equal(p2Negative.body.valid, false);
       assert.match(p2Negative.body.issues[0], /no collider/);
+      const p2Box2d = await getJson(`/tools/physics2dCompatibilityAudit?backend=box2d&reference%5Bid%5D=${encodeURIComponent(ids.__candidate_p2__.id)}`);
+      assert.equal(p2Box2d.status, 200, JSON.stringify(p2Box2d.body));
+      assert.equal(p2Box2d.body.valid, true);
+      assert.equal(p2Box2d.body.backend, 'box2d');
+      const p2Builtin = await getJson(`/tools/physics2dCompatibilityAudit?backend=builtin&reference%5Bid%5D=${encodeURIComponent(ids.__candidate_p2__.id)}`);
+      assert.equal(p2Builtin.status, 200, JSON.stringify(p2Builtin.body));
+      assert.equal(p2Builtin.body.valid, false);
+      assert.match(p2Builtin.body.issues[0], /requires the box2d backend/);
 
       const p3 = await getJson(`/tools/physics3dTopologyAudit?reference%5Bid%5D=${encodeURIComponent(ids.__candidate_p3__.id)}`);
       assert.equal(p3.status, 200, JSON.stringify(p3.body));
       assert.equal(p3.body.valid, true);
-      const p3Negative = await getJson('/tools/physics3dTopologyAudit?reference%5Bid%5D=__missing_candidate_node__');
+      const p3Negative = await getExpectedErrorJson('/tools/physics3dTopologyAudit?reference%5Bid%5D=__missing_candidate_node__', 'candidate.physics3dTopologyAudit.negative.v1');
       assert.equal(p3Negative.status, 404);
       const p3Valid = await getJson(`/tools/physics3dValidate?reference%5Bid%5D=${encodeURIComponent(ids.__candidate_p3__.id)}`);
       assert.equal(p3Valid.status, 200);
@@ -105,7 +154,7 @@ return out;`,
       assert.equal(audio.body.valid, true);
       assert.equal(audio.body.checkedSources, 1);
       assert.equal(audio.body.sources[0].clip.uuid, 'a0e999f9-01fa-45df-a8e5-6f996e15735a');
-      const audioNegative = await getJson('/tools/audioSourceAudit?reference%5Bid%5D=__missing_candidate_node__');
+      const audioNegative = await getExpectedErrorJson('/tools/audioSourceAudit?reference%5Bid%5D=__missing_candidate_node__', 'candidate.audioSourceAudit.negative.v1');
       assert.equal(audioNegative.status, 404);
     } finally {
       const cleanup = await postTool('executeJavascript', {
@@ -127,7 +176,7 @@ return out;`,
     assert.equal(waited.body.completed, true);
     assert.equal(waited.body.timedOut, false);
     assert.equal(String(waited.body.task.id), String(terminalTask.id));
-    const missingTask = await getJson('/tools/buildTaskWait?taskId=__missing_candidate_build_task__');
+    const missingTask = await getExpectedErrorJson('/tools/buildTaskWait?taskId=__missing_candidate_build_task__', 'candidate.buildTaskWait.negative.v1');
     assert.equal(missingTask.status, 404);
     assert.equal(missingTask.body.code, 'TARGET_NOT_FOUND');
     const output = await getJson('/tools/buildOutputAudit?artifactPath=.&expectedFiles%5B0%5D%5Bpath%5D=package.json');
