@@ -1,4 +1,4 @@
-import { existsSync, rmSync } from 'fs';
+import { existsSync, readFileSync, rmSync } from 'fs';
 import { join, resolve } from 'path';
 import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
@@ -148,7 +148,18 @@ export const methods: Record<string, Function> = {
             bootLog('error', `Update check failed: ${body.code}`);
             return { staged: false, ...body };
         }
-    }
+    },
+    async getBootLog(count = 100) {
+        const limit = Number.isSafeInteger(count) ? Math.min(Math.max(count, 1), 500) : 100;
+        try {
+            const lines = readFileSync(BOOT_LOG_PATH, 'utf8').split(/\r?\n/).filter(Boolean);
+            return { path: BOOT_LOG_PATH, lines: lines.slice(-limit) };
+        } catch (error) {
+            return { path: BOOT_LOG_PATH, lines: [`Unable to read boot log: ${error instanceof Error ? error.message : String(error)}`] };
+        }
+    },
+
+    
 };
 
 export async function load() {
@@ -164,6 +175,8 @@ export async function load() {
         try {
             relayHost = new ProtectedRelayHost();
             relayHost.activateIfConfigured();
+            const lockReason = relayHost.state.reason;
+            bootLog('info', `Protected relay state=${relayHost.state.state}${lockReason ? ` code=${lockReason.code} reason=${lockReason.error}` : ''}`);
             if (relayHost.identity) bootLog("info", `relay identity=${relayHost.identity.deviceKeyId}`);
         } catch (err) {
             relayHost = null;

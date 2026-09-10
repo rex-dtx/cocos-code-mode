@@ -9,6 +9,15 @@
         </ui-prop>
     </ui-section>
 
+    <!-- Runtime Logs Section -->
+    <ui-section class="config" header="Runtime Logs" expand>
+        <div class="log-toolbar">
+            <span class="desc">Startup, connection, and failure diagnostics.</span>
+            <ui-button id="refresh-boot-log-btn" class="blue">Refresh</ui-button>
+        </div>
+        <pre id="boot-log-output" class="boot-log-output">Loading logs...</pre>
+    </ui-section>
+
     <!-- UTCP Config Section -->
     <ui-section class="config" header="UTCP Configuration" expand>
         <ui-prop>

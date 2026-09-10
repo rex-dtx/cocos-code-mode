@@ -14,6 +14,8 @@ module.exports = Editor.Panel.define({
         app: '.panel',
         portInput: '#port-input',
         savePortBtn: '#save-port-btn',
+        bootLogOutput: '#boot-log-output',
+        refreshBootLogBtn: '#refresh-boot-log-btn',
 
         // MCP Integration
         mcpConfigCode: '#mcp-config-code',
@@ -44,7 +46,21 @@ module.exports = Editor.Panel.define({
 
             this.updateMcpCodeBlock();
             this.fetchBridgeList();
+            this.refreshBootLog();
         },
+
+        async refreshBootLog() {
+            const output = this.$.bootLogOutput as HTMLElement;
+            if (!output) return;
+            try {
+                const result = await Editor.Message.request(packageJSON.name, 'get-boot-log', 200) as { path: string, lines: string[] };
+                output.textContent = `${result.lines.join('\n')}\n\nLog file: ${result.path}`;
+                output.scrollTop = output.scrollHeight;
+            } catch (error) {
+                output.textContent = `Unable to load boot log: ${error instanceof Error ? error.message : String(error)}`;
+            }
+        },
+
 
         async saveSettings() {
             const newPath = (this.$.utcpConfigPathInput as any).value;
@@ -196,11 +212,13 @@ module.exports = Editor.Panel.define({
         const addBtn = this.$.addBridgeBtn as HTMLElement;
         if (addBtn) addBtn.addEventListener('click', () => this.addBridgeTemplate());
 
+        const refreshBootLogBtn = this.$.refreshBootLogBtn as HTMLElement;
+        if (refreshBootLogBtn) refreshBootLogBtn.addEventListener('click', () => this.refreshBootLog());
         const list = this.$.bridgeList as HTMLElement;
         if (list) {
             list.addEventListener('click', (e: any) => {
-                // Handle delete clicks
                 const btn = e.target.closest('.remove-btn');
+                // Handle delete clicks
                 if (btn) {
                     // In new structure, btn is inside .bridge-item-content inside ui-section
                     const section = btn.closest('.bridge-item-section');
