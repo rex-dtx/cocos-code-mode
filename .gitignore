@@ -33,5 +33,6 @@ _tmp_*
 plans/
 
 # Cocos scene graph offline cache
+gateway/artifacts/local-delivery/
 .cocos-graph/
 plans

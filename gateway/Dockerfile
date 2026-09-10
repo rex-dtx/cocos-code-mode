@@ -3,7 +3,10 @@ FROM node:22-alpine AS build
 RUN apk add --no-cache python3 make g++
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY artifacts/local-delivery/dtx-tool-auth-1.0.0.tgz /tmp/dtx-tool-auth-1.0.0.tgz
+RUN node -e "const fs=require('fs'); const p=require('./package.json'); p.dependencies['@dtx/tool-auth']='file:/tmp/dtx-tool-auth-1.0.0.tgz'; fs.writeFileSync('package.json', JSON.stringify(p));" \
+ && yarn install --no-lockfile \
+ && node -e "const fs=require('fs'); const p=require('./package.json'); p.dependencies['@dtx/tool-auth']='1.0.0'; fs.writeFileSync('package.json', JSON.stringify(p));"
 COPY tsconfig.json vitest.config.ts ./
 COPY src ./src
 COPY scripts ./scripts
