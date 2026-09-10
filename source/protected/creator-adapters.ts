@@ -229,11 +229,11 @@ async function assetQuery(channel: CreatorChannel, args: Record<string, unknown>
         channel("asset-db", "query-uuid", root),
       ]);
       const byUrl = new Map<string, Record<string, unknown>>();
-      const rootNode: Record<string, unknown> = { reference: { id: typeof rootUuid === "string" && rootUuid ? rootUuid : root, type: "folder" }, name: root.split("/").at(-1) ?? "assets", children: [] };
+      const rootNode: Record<string, unknown> = { reference: { id: typeof rootUuid === "string" && rootUuid ? rootUuid : root, type: "folder" }, name: root.split("/").pop() || "assets", children: [] };
       byUrl.set(root, rootNode);
       for (const asset of assets) {
         if (!asset || typeof asset !== "object" || !("url" in asset) || typeof asset.url !== "string" || asset.url === root) continue;
-        byUrl.set(asset.url, { reference: { id: "uuid" in asset ? asset.uuid : asset.url, type: "isDirectory" in asset && asset.isDirectory ? "folder" : "type" in asset ? asset.type : "cc.Asset" }, name: "name" in asset ? asset.name : asset.url.split("/").at(-1), children: [] });
+        byUrl.set(asset.url, { reference: { id: "uuid" in asset ? asset.uuid : asset.url, type: "isDirectory" in asset && asset.isDirectory ? "folder" : "type" in asset ? asset.type : "cc.Asset" }, name: "name" in asset ? asset.name : asset.url.split("/").pop(), children: [] });
       }
       for (const [url, child] of byUrl) {
         if (url === root) continue;

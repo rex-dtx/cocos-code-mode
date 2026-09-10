@@ -151,6 +151,7 @@ export const methods: Record<string, Function> = {
 
 export async function load() {
     bootLog("info", `Loaded ${formatBuildInfo()}`);
+    bootLog("info", `Runtime node=${process.version} electron=${process.versions.electron || "unknown"}`);
     try {
         const configManager = getConfigManager();
         await configManager.initialize();

@@ -12,6 +12,11 @@ const forbidden = [
   /\bexecuteJavascript\b/,
   /\.utcp-debug/,
   /\bDEBUG_LOG_DIR\b/,
+  /require\(['"]node:/,
+  /from\s+['"]node:/,
+  /require\(['"](?:stream|timers)\/promises['"]\)/,
+  /\bAbortSignal\.timeout\s*\(/,
+  /\.at\s*\(/,
 ];
 const updaterProcess = [
   /require\(['"]child_process['"]\)/,
