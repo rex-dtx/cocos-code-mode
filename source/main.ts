@@ -106,9 +106,11 @@ export const methods: Record<string, Function> = {
             if (!authBinding) throw new Error('UTCP server started without a local authentication binding');
             utcpServer = nextServer;
             await getConfigManager().updatePort(actualPort, authBinding.relayInstanceId, authBinding.tokenPath);
+            bootLog('info', `UTCP connected/listening at http://localhost:${actualPort}/utcp`);
             console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
         } catch (err) {
             utcpServer = null;
+            bootLog('error', 'UTCP disconnected after restart failure', err);
             console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
         }
     },
@@ -258,8 +260,9 @@ export async function unload() {
     if (currentServer) {
         console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
         const port = currentServer.port;
+        bootLog('info', `UTCP disconnecting from port ${port}`);
         await currentServer.stop();
-        await getConfigManager().removeCocosEditorTemplate(port).catch(() => {});
+        bootLog('info', `UTCP disconnected from port ${port}`);
     }
     currentRelay?.close();
     if (shouldRollback) {

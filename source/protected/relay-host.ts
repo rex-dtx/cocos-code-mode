@@ -12,6 +12,7 @@ import { decodeBase64UrlBuffer, randomUUID } from "./node14-compat";
 import { SignedRequestCache } from "./request-builder";
 import { loadPublicToolManifest } from "./public-tool-loader";
 import manifestJson from "./public-tool-manifest.json";
+import { bootLog } from "./boot-log";
 
 function readGatewayFile(): Record<string, string> {
   try {
@@ -120,6 +121,7 @@ export class ProtectedRelayHost {
     if (this.bootFailure || !this.identity || !this.packageHash) {
       const failure = this.bootFailure ?? new CcbError("CCB_BUILD_INCOMPATIBLE", "Relay identity or installed package digest is unavailable.");
       this.state.lock({ code: failure.body.code, error: failure.body.error, details: failure.body.details });
+      bootLog("error", `Protected relay disconnected: ${failure.body.code} ${failure.body.error}`);
       return;
     }
     const file = readGatewayFile();
@@ -131,11 +133,13 @@ export class ProtectedRelayHost {
     const approvedDeviceKeyId = process.env.CCB_APPROVED_DEVICE_KEY_ID || file.approvedDeviceKeyId;
     const keyId = process.env.CCB_EXECUTION_KEY_ID || file.executionKeyId || "execution-dev-1";
     if (!origin || !projectId || !memberCredential || !executionKey || approvedDeviceId !== this.identity.deviceId || approvedDeviceKeyId !== this.identity.deviceKeyId) {
+      const error = "Protected tools stay locked until this exact local identity is enrolled and approved.";
       this.state.lock({
         code: "CCB_DEVICE_DENIED",
-        error: "Protected tools stay locked until this exact local identity is enrolled and approved.",
+        error,
         details: { deviceId: this.identity.deviceId, deviceKeyId: this.identity.deviceKeyId },
       });
+      bootLog("error", `Protected relay disconnected: CCB_DEVICE_DENIED ${error}`);
       return;
     }
     try {
@@ -148,18 +152,24 @@ export class ProtectedRelayHost {
       this.executionKeys = new Map([[keyId, createPublicKey({ key: decodeBase64UrlBuffer(executionKey), format: "der", type: "spki" })]]);
       this.projectId = projectId;
       this.state.activate();
+      bootLog("info", `Protected relay connected to Gateway (origin=${origin}, project=${projectId})`);
     } catch (error) {
       this.client = null;
       this.executionKeys.clear();
       this.projectId = null;
-      this.state.lock({ code: error instanceof CcbError ? error.body.code : "CCB_GATEWAY_UNAVAILABLE", error: error instanceof CcbError ? error.body.error : "Protected relay failed to activate." });
+      const code = error instanceof CcbError ? error.body.code : "CCB_GATEWAY_UNAVAILABLE";
+      const message = error instanceof CcbError ? error.body.error : "Protected relay failed to activate.";
+      this.state.lock({ code, error: message });
+      bootLog("error", `Protected relay disconnected: ${code} ${message}`);
     }
   }
 
   close(): void {
+    const wasConnected = this.client !== null || this.state.state === "ACTIVE";
     this.client?.close();
     this.client = null;
     this.executionKeys.clear();
     this.projectId = null;
+    if (wasConnected) bootLog("info", "Protected relay disconnected from Gateway");
   }
 }
