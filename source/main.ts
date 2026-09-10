@@ -1,5 +1,5 @@
-import { existsSync, rmSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, rmSync } from 'fs';
+import { join, resolve } from 'path';
 import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { getConfigManager } from './utcp/config-manager';

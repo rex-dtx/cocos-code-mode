@@ -1,5 +1,5 @@
-import { createHash, createPublicKey } from "node:crypto";
-import type { KeyLike } from "node:crypto";
+import { createHash, createPublicKey } from "crypto"
+import type { KeyLike } from "crypto"
 import { CcbError } from "../protected/errors";
 import { decodeBase64Url } from "../protected/protocol";
 import {

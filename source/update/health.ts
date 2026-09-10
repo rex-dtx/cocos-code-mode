@@ -1,4 +1,4 @@
-import { setTimeout as delay } from "node:timers/promises";
+import { setTimeout as delay } from "timers/promises"
 import type { RelayState } from "../protected/state-machine";
 import { CcbError } from "../protected/errors";
 

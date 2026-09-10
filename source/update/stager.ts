@@ -1,8 +1,8 @@
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, posix } from "node:path";
-import { TextDecoder } from "node:util";
-import { inflateRawSync } from "node:zlib";
+import { createHash } from "crypto"
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
+import { dirname, join, posix } from "path"
+import { TextDecoder } from "util"
+import { inflateRawSync } from "zlib"
 import { z } from "zod";
 import { CcbError } from "../protected/errors";
 

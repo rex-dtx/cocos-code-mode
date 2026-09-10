@@ -1,8 +1,8 @@
-import { createHash } from "node:crypto";
-import { createWriteStream, mkdirSync, renameSync, rmSync } from "node:fs";
-import { dirname } from "node:path";
-import { finished } from "node:stream/promises";
-import { URL } from "node:url";
+import { createHash } from "crypto"
+import { createWriteStream, mkdirSync, renameSync, rmSync } from "fs"
+import { dirname } from "path"
+import { finished } from "stream/promises"
+import { URL } from "url"
 import { CcbError } from "../protected/errors";
 
 const MAX_REDIRECTS = 3;

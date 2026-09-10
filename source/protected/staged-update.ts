@@ -1,6 +1,6 @@
-import { createHash } from "node:crypto";
-import { closeSync, existsSync, lstatSync, openSync, readFileSync, readSync, readdirSync, statSync } from "node:fs";
-import { dirname, relative, resolve, sep } from "node:path";
+import { createHash } from "crypto"
+import { closeSync, existsSync, lstatSync, openSync, readFileSync, readSync, readdirSync, statSync } from "fs"
+import { dirname, relative, resolve, sep } from "path"
 import { z } from "zod";
 import { CcbError } from "./errors";
 

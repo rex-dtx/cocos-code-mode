@@ -1,7 +1,7 @@
-import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { createHash } from "crypto"
+import { existsSync, lstatSync, readFileSync } from "fs"
+import { homedir } from "os"
+import { join } from "path"
 import { z } from "zod";
 import { parseCanonicalJson } from "../protected/canonical-json";
 import { CcbError } from "../protected/errors";

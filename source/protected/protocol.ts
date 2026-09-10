@@ -1,4 +1,4 @@
-import { KeyLike, sign as ed25519Sign, verify as ed25519Verify } from "node:crypto";
+import { KeyLike, sign as ed25519Sign, verify as ed25519Verify } from "crypto"
 import { canonicalizeToBytes, IJson, parseCanonicalJson } from "./canonical-json";
 import type { ExecutionEnvelope } from "./primitive-contract";
 

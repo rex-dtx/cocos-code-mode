@@ -1,5 +1,5 @@
-import { verify as ed25519Verify } from "node:crypto";
-import type { KeyLike } from "node:crypto";
+import { verify as ed25519Verify } from "crypto"
+import type { KeyLike } from "crypto"
 import { z } from "zod";
 import { parseCanonicalJson } from "../protected/canonical-json";
 import { CcbError } from "../protected/errors";

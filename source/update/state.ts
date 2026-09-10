@@ -1,5 +1,5 @@
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { homedir } from "os"
+import { join } from "path"
 import { z } from "zod";
 import { CcbError } from "../protected/errors";
 import { readPrivateJson, writePrivateJsonAtomic } from "../protected/durable-file";

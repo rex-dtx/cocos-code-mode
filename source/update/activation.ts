@@ -1,9 +1,9 @@
-import { createHash } from "node:crypto";
-import { spawn } from "node:child_process";
-import { once } from "node:events";
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { isAbsolute, join, resolve } from "node:path";
+import { createHash } from "crypto"
+import { spawn } from "child_process"
+import { once } from "events"
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "fs"
+import { homedir } from "os"
+import { isAbsolute, join, resolve } from "path"
 import { CcbError } from "../protected/errors";
 import { prepareActivation } from "../protected/staged-update";
 
