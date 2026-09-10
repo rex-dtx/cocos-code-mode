@@ -46,6 +46,8 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'physics2dTopologyAudit',
   'physics3dTopologyAudit',
   'physics3dValidate',
+  'sceneScriptHealthScan',
+  'sceneScriptRepair',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',
