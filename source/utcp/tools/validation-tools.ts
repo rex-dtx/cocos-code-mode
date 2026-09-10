@@ -20,7 +20,7 @@ export class ValidationTools {
                 activeNodes: { type: 'number' },
                 warnings: { type: 'array', items: { type: 'string' } },
             },
-            required: ['nodeCount', 'componentCount'],
+                required: ['nodeCount', 'componentCount', 'warnings'],
         },
         'GET',
         ['performance', 'snapshot', 'scene', 'count', 'health', 'memory']
