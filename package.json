@@ -127,6 +127,11 @@
           "showBuildInfo"
         ]
       },
+      "get-boot-log": {
+        "methods": [
+          "getBootLog"
+        ]
+      },
       "show-info": {
         "methods": [
           "showInfo"
