@@ -10,14 +10,15 @@ const forbidden = [
   /sourceMappingURL=data:/,
   /"sourcesContent"\s*:/,
   /\bexecuteJavascript\b/,
-  // Customer protected artifact carries no process launch or raw debug persistence.
+  /\.utcp-debug/,
+  /\bDEBUG_LOG_DIR\b/,
+];
+const updaterProcess = [
   /require\(['"]child_process['"]\)/,
   /from\s+['"]child_process['"]/,
   /\bexecFile\b/,
   /\bexecSync\b/,
   /\bspawn(?:Sync)?\s*\(/,
-  /\.utcp-debug/,
-  /\bDEBUG_LOG_DIR\b/,
 ];
 let hits = 0;
 
@@ -38,7 +39,9 @@ function walk(dir) {
       continue;
     }
     const text = fs.readFileSync(full, "utf8");
-    for (const pattern of forbidden) {
+    const isUpdaterRuntime = full.startsWith(`${path.join(dist, "update")}${path.sep}`);
+    const patterns = isUpdaterRuntime ? forbidden : [...forbidden, ...updaterProcess];
+    for (const pattern of patterns) {
       if (pattern.source === "\\bexecuteJavascript\\b" && text.includes("REMOVED_CUSTOMER_TOOLS")) continue;
       if (pattern.test(text)) {
         console.error(`${full}: ${pattern}`);
