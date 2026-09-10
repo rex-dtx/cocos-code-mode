@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-09-08",
+  "updated": "2026-09-10",
   "qualificationTarget": {
-    "creator": "3.8.7",
+    "creator": "3.7.3",
     "os": "windows-x64",
     "profile": "full",
     "artifactClass": "local-operator",
@@ -311,7 +311,7 @@
       "candidates": [
         {
           "name": "assetImporterAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed importer-specific schema and normalized settings, not raw metadata.",
           "route": "importer registry",
           "prerequisites": [
@@ -324,6 +324,7 @@
           "negativeTestID": "candidate.assetImporterAudit.negative.v1",
           "fixtureID": "fixture.candidate.assetImporterAudit.v1",
           "evidenceArtifact": "reports/evidence/candidates/assetImporterAudit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/assetImporterAudit",
           "proposedExecutionPhase": "P2"
         },
         {
@@ -368,7 +369,7 @@
         },
         {
           "name": "assetCatalogManifest",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Bounded deterministic manifest with dependencies, hashes and explicit exclusions.",
           "route": "asset-db query and hashing",
           "prerequisites": [
@@ -381,6 +382,7 @@
           "negativeTestID": "candidate.assetCatalogManifest.negative.v1",
           "fixtureID": "fixture.candidate.assetCatalogManifest.v1",
           "evidenceArtifact": "reports/evidence/candidates/assetCatalogManifest/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/assetCatalogManifest",
           "proposedExecutionPhase": "P2"
         },
         {
@@ -625,7 +627,7 @@
       "candidates": [
         {
           "name": "audioSourceAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Normalized AudioSource and clip state including load mode and platform constraints.",
           "route": "audio adapter",
           "prerequisites": [
@@ -638,6 +640,7 @@
           "negativeTestID": "candidate.audioSourceAudit.negative.v1",
           "fixtureID": "fixture.candidate.audioSourceAudit.v1",
           "evidenceArtifact": "reports/evidence/candidates/audioSourceAudit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/audioSourceAudit",
           "proposedExecutionPhase": "P3"
         },
         {
@@ -717,7 +720,7 @@
       "candidates": [
         {
           "name": "physics2dTopologyAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Normalized backend, body, collider, group and joint topology.",
           "route": "physics-2d adapter",
           "prerequisites": [
@@ -730,6 +733,7 @@
           "negativeTestID": "candidate.physics2dTopologyAudit.negative.v1",
           "fixtureID": "fixture.candidate.physics2dTopologyAudit.v1",
           "evidenceArtifact": "reports/evidence/candidates/physics2dTopologyAudit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/physics2dTopologyAudit",
           "proposedExecutionPhase": "P4"
         },
         {
@@ -828,7 +832,7 @@
       "candidates": [
         {
           "name": "physics3dTopologyAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Normalized backend, rigidbody, collider, material and constraint topology.",
           "route": "physics-3d adapter",
           "prerequisites": [
@@ -841,6 +845,7 @@
           "negativeTestID": "candidate.physics3dTopologyAudit.negative.v1",
           "fixtureID": "fixture.candidate.physics3dTopologyAudit.v1",
           "evidenceArtifact": "reports/evidence/candidates/physics3dTopologyAudit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/physics3dTopologyAudit",
           "proposedExecutionPhase": "P4"
         },
         {
@@ -917,7 +922,7 @@
         },
         {
           "name": "physics3dValidate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Reject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
           "route": "physics-3d semantic validator",
           "prerequisites": [
@@ -930,6 +935,7 @@
           "negativeTestID": "candidate.physics3dValidate.negative.v1",
           "fixtureID": "fixture.candidate.physics3dValidate.v1",
           "evidenceArtifact": "reports/evidence/candidates/physics3dValidate/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/physics3dValidate",
           "proposedExecutionPhase": "P4"
         }
       ]
@@ -939,7 +945,7 @@
       "candidates": [
         {
           "name": "particleInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Normalized modules, curves, gradients, assets and current configuration.",
           "route": "particle adapter",
           "prerequisites": [
@@ -952,6 +958,7 @@
           "negativeTestID": "candidate.particleInspect.negative.v1",
           "fixtureID": "fixture.candidate.particleInspect.v1",
           "evidenceArtifact": "reports/evidence/candidates/particleInspect/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/particleInspect",
           "proposedExecutionPhase": "P4"
         },
         {
@@ -990,7 +997,7 @@
         },
         {
           "name": "particleValidate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Validate ranges, required textures/materials/modules and backend limits.",
           "route": "particle semantic validator",
           "prerequisites": [
@@ -1003,6 +1010,7 @@
           "negativeTestID": "candidate.particleValidate.negative.v1",
           "fixtureID": "fixture.candidate.particleValidate.v1",
           "evidenceArtifact": "reports/evidence/candidates/particleValidate/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/particleValidate",
           "proposedExecutionPhase": "P4"
         }
       ]
@@ -1172,7 +1180,7 @@
       "candidates": [
         {
           "name": "terrainInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed terrain dimensions, layers, materials and asset references.",
           "route": "terrain asset adapter",
           "prerequisites": [
@@ -1185,6 +1193,7 @@
           "negativeTestID": "candidate.terrainInspect.negative.v1",
           "fixtureID": "fixture.candidate.terrainInspect.v1",
           "evidenceArtifact": "reports/evidence/candidates/terrainInspect/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/terrainInspect",
           "proposedExecutionPhase": "P5"
         },
         {
@@ -1420,7 +1429,7 @@
         },
         {
           "name": "buildOutputAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Verify terminal build outputs, expected files, hashes and target metadata.",
           "route": "bounded artifact inspector",
           "prerequisites": [
@@ -1433,6 +1442,7 @@
           "negativeTestID": "candidate.buildOutputAudit.negative.v1",
           "fixtureID": "fixture.candidate.buildOutputAudit.v1",
           "evidenceArtifact": "reports/evidence/candidates/buildOutputAudit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/buildOutputAudit",
           "proposedExecutionPhase": "P6"
         },
         {
@@ -1785,10 +1795,8 @@
     },
     {
       "name": "buildTaskWait",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Wait boundedly for one build task terminal result with cancellation semantics.",
-      "domain": "build-platform",
-      "proposedExecutionPhase": "P6",
       "route": "bounded build job waiter",
       "prerequisites": [
         "build-job"
@@ -1796,10 +1804,14 @@
       "witnessContractIds": [
         "build-job"
       ],
+      "pool": "reserve",
+      "domain": "build-platform",
+      "proposedExecutionPhase": "P6",
       "positiveTestID": "candidate.buildTaskWait.positive.v1",
       "negativeTestID": "candidate.buildTaskWait.negative.v1",
       "fixtureID": "fixture.candidate.buildTaskWait.v1",
-      "evidenceArtifact": "reports/evidence/candidates/buildTaskWait/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/buildTaskWait/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/buildTaskWait"
     },
     {
       "name": "buildLogInspect",

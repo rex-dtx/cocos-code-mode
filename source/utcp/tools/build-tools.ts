@@ -1,7 +1,7 @@
 import { JsonSchema } from '@utcp/sdk';
 import { SuccessIndicatorSchema, ISuccessIndicator } from '../schemas';
 import { utcpTool } from '../decorators';
-
+import { ToolError } from '../tool-error';
 // Slim view of a build task for agent consumption (full IBuildTaskItemJSON is huge)
 interface IBuildTaskSummary {
     id: string;
@@ -114,18 +114,19 @@ export class BuildTools {
     }
     @utcpTool('buildTaskWait', 'Wait boundedly for one build task to reach a terminal state.', {
         type: 'object',
-        properties: { taskId: { type: 'string' }, timeoutMs: { type: 'integer', minimum: 0, maximum: 120000, default: 30000 }, pollMs: { type: 'integer', minimum: 50, maximum: 5000, default: 500 } },
+        properties: { taskId: { type: ['string', 'integer'] }, timeoutMs: { type: 'integer', minimum: 0, maximum: 120000, default: 30000 }, pollMs: { type: 'integer', minimum: 50, maximum: 5000, default: 500 } },
         required: ['taskId'],
     }, { type: 'object', properties: { completed: { type: 'boolean' }, timedOut: { type: 'boolean' }, task: { type: 'object' } }, required: ['completed', 'timedOut', 'task'] }, 'GET', ['build', 'task', 'wait', 'poll'])
-    async buildTaskWait(args: { taskId: string, timeoutMs?: number, pollMs?: number }): Promise<{ completed: boolean, timedOut: boolean, task: IBuildTaskSummary }> {
-        if (!args.taskId) throw new Error('buildTaskWait requires taskId');
+    async buildTaskWait(args: { taskId: string | number, timeoutMs?: number, pollMs?: number }): Promise<{ completed: boolean, timedOut: boolean, task: IBuildTaskSummary }> {
+        const taskId = String(args.taskId ?? '');
+        if (!taskId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'buildTaskWait requires taskId', recovery: 'Provide a Creator builder task id.' });
         const timeoutMs = Math.min(Math.max(args.timeoutMs ?? 30000, 0), 120000);
         const pollMs = Math.min(Math.max(args.pollMs ?? 500, 50), 5000);
         const deadline = Date.now() + timeoutMs;
         let item: any;
         do {
-            item = await Editor.Message.request('builder', 'query-task', args.taskId);
-            if (!item) throw new Error(`Build task ${args.taskId} not found`);
+            item = await Editor.Message.request('builder', 'query-task', taskId);
+            if (!item) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Build task ${taskId} not found`, recovery: 'Query build tasks and retry with an existing task id.' });
             const task = slimTask(item);
             if (BUILD_TERMINAL_STATES.has(String(task.state).toLowerCase())) return { completed: true, timedOut: false, task };
             if (Date.now() >= deadline) return { completed: false, timedOut: true, task };
@@ -134,13 +135,14 @@ export class BuildTools {
     }
     @utcpTool('buildLogInspect', 'Inspect bounded structured diagnostics exposed by one Creator build task.', {
         type: 'object',
-        properties: { taskId: { type: 'string' }, maxEntries: { type: 'integer', minimum: 1, maximum: 256, default: 64 } },
+        properties: { taskId: { type: ['string', 'integer'] }, maxEntries: { type: 'integer', minimum: 1, maximum: 256, default: 64 } },
         required: ['taskId'],
     }, { type: 'object', properties: { available: { type: 'boolean' }, task: { type: 'object' }, entries: { type: 'array' }, count: { type: 'integer' } }, required: ['available', 'task', 'entries', 'count'] }, 'GET', ['build', 'log', 'diagnostics', 'inspect'])
-    async buildLogInspect(args: { taskId: string, maxEntries?: number }): Promise<{ available: boolean, task: IBuildTaskSummary, entries: Array<unknown>, count: number }> {
-        if (!args.taskId) throw new Error('buildLogInspect requires taskId');
-        const item: any = await Editor.Message.request('builder', 'query-task', args.taskId);
-        if (!item) throw new Error(`Build task ${args.taskId} not found`);
+    async buildLogInspect(args: { taskId: string | number, maxEntries?: number }): Promise<{ available: boolean, task: IBuildTaskSummary, entries: Array<unknown>, count: number }> {
+        const taskId = String(args.taskId ?? '');
+        if (!taskId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'buildLogInspect requires taskId', recovery: 'Provide a Creator builder task id.' });
+        const item: any = await Editor.Message.request('builder', 'query-task', taskId);
+        if (!item) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Build task ${taskId} not found`, recovery: 'Query build tasks and retry with an existing task id.' });
         const raw = item.logs ?? item.log ?? item.output ?? item.diagnostics;
         const entries = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(/\r?\n/).filter(Boolean) : [];
         const bounded = entries.slice(0, Math.min(Math.max(args.maxEntries ?? 64, 1), 256));
