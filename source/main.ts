@@ -185,7 +185,7 @@ export async function load() {
             bootLog("error", "Protected relay failed to boot; menus and local tools still start", err);
         }
         const releaseOrigin = process.env.CCB_RELEASE_ORIGIN;
-        if (releaseOrigin && relayHost?.identity && relayHost.packageHash && relayHost.targetPayloadHash) {
+        if (releaseOrigin && relayHost?.identity) {
             const configuredRing = process.env.CCB_RELEASE_RING;
             const allowedRing = configuredRing === '3' || configuredRing === '10' ? configuredRing : '1';
             const build = getBuildInfo();
@@ -202,7 +202,9 @@ export async function load() {
                     allowedRing,
                 },
             });
-            updateManager.initializeInstalledTarget(relayHost.targetPayloadHash);
+            if (relayHost.targetPayloadHash) {
+                updateManager.initializeInstalledTarget(relayHost.targetPayloadHash);
+            }
         }
         if (process.env.CCB_DISABLE_LOCAL_UTCP === "1") {
             bootLog("info", "Local broker disabled by CCB_DISABLE_LOCAL_UTCP=1");
