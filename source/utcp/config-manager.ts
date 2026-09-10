@@ -203,7 +203,7 @@ export class UtcpConfigManager {
         return typeof port === 'number' ? port : 0;
     }
 
-    async updatePort(port: number, relayInstanceId?: string, tokenPath?: string): Promise<void> {
+    async updatePort(port: number, relayInstanceId: string, tokenPath: string): Promise<void> {
         await Editor.Profile.setConfig(packageJSON.name, 'serverPort', port);
         await this.ensureCocosEditorTemplate(port, relayInstanceId, tokenPath);
     }

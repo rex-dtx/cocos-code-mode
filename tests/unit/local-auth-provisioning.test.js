@@ -28,7 +28,7 @@ describe('fresh-install local authentication provisioning', () => {
       const manager = getConfigManager();
       const configPath = join(root, '.utcp_config.json');
       await manager.setConfigPath(configPath);
-      await manager.ensureCocosEditorTemplate(port, relayInstanceId, auth.tokenPath);
+      await manager.updatePort(port, relayInstanceId, auth.tokenPath);
 
       const configText = readFileSync(configPath, 'utf8');
       const config = JSON.parse(configText);

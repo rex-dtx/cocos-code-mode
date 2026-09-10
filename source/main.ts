@@ -102,8 +102,10 @@ export const methods: Record<string, Function> = {
             await previousServer.stop();
             const nextServer = new UtcpServerManager(relayHost ?? undefined);
             const actualPort = await nextServer.start(newPort);
+            const authBinding = nextServer.getLocalAuthBinding();
+            if (!authBinding) throw new Error('UTCP server started without a local authentication binding');
             utcpServer = nextServer;
-            await getConfigManager().updatePort(actualPort);
+            await getConfigManager().updatePort(actualPort, authBinding.relayInstanceId, authBinding.tokenPath);
             console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
         } catch (err) {
             utcpServer = null;
@@ -202,8 +204,10 @@ export async function load() {
         }
         try {
             const actualPort = await utcpServer.start(port);
+            const authBinding = utcpServer.getLocalAuthBinding();
+            if (!authBinding) throw new Error('UTCP server started without a local authentication binding');
             const url = `http://localhost:${actualPort}/utcp`;
-            await configManager.updatePort(actualPort);
+            await configManager.updatePort(actualPort, authBinding.relayInstanceId, authBinding.tokenPath);
             bootLog("info", `UTCP listening at ${url}; boot log ${BOOT_LOG_PATH}`);
             stageUpdateInBackground();
             await finishPendingHealth(true);
