@@ -16,7 +16,8 @@ function sha256(bytes) {
 
 function usage() {
   return [
-    'Usage: node scripts/install-package.js --zip <bundle.zip> --project <cocos-project> [--manifest <package-manifest.json>] [--replace]',
+    'Usage: npm run install:package -- --zip <bundle.zip> --project <cocos-project> [--manifest <package-manifest.json>] [--replace]',
+    'Shortcut: npm run install:package <bundle.zip> <cocos-project> [--replace]',
     '',
     '--replace  Back up an existing extension directory before installing the bundle.',
   ].join('\n');
@@ -157,8 +158,11 @@ function installPackage({ zipPath, projectPath, manifestPath, replace }) {
 
 if (require.main === module) {
   const args = process.argv.slice(2);
-  const zipPath = option(args, '--zip');
-  const projectPath = option(args, '--project');
+  const namedZipPath = option(args, '--zip');
+  const namedProjectPath = option(args, '--project');
+  const positional = args.filter((arg) => !arg.startsWith('--'));
+  const zipPath = namedZipPath || positional[0];
+  const projectPath = namedProjectPath || positional[1];
   const manifestPath = option(args, '--manifest');
   if (!zipPath || !projectPath || args.includes('--help')) {
     console.error(usage());
