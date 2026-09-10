@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-10T04:58:00Z",
+  "endpoint": "http://127.0.0.1:49650",
+  "qualificationTarget": {
+    "artifactCommit": "e3b735d",
+    "dirty": true,
+    "engineVersion": "3.7.3",
+    "nativeVersion": "3.7.3",
+    "os": "windows-x64",
+    "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+    "manualCount": 119,
+    "uniqueManualCount": 119
+  },
+  "testCommand": "UTCP_PORT=49650 node --test tests/live/candidate-expansion-qualification.test.js",
+  "testResult": {
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "fixturesCleaned": true
+  },
+  "qualified": {
+    "assetCatalogManifest": {
+      "positive": "maxAssets=3 returned exactly three deterministic assets with 64-character SHA-256 hashes",
+      "negative": "maxAssets=0 returned HTTP 400 validation failure"
+    },
+    "assetImporterAudit": {
+      "positive": "known TypeScript asset returned HTTP 200, valid=true, importer=typescript and matching UUID",
+      "negative": "unknown asset returned HTTP 404 TARGET_NOT_FOUND"
+    },
+    "audioSourceAudit": {
+      "positive": "real cc.AudioSource fixture with a real cc.AudioClip asset returned valid=true, normalized clip UUID and playback properties",
+      "negative": "missing node returned HTTP 404"
+    },
+    "particleInspect": {
+      "positive": "real cc.ParticleSystem fixture returned HTTP 200, count=1 and type=cc.ParticleSystem",
+      "negative": "missing node returned HTTP 404"
+    },
+    "particleValidate": {
+      "positive": "real particle fixture returned valid=true and checked one node",
+      "negative": "scene node without particle returned valid=false"
+    },
+    "terrainInspect": {
+      "positive": "real cc.Terrain fixture returned HTTP 200 and count=1",
+      "negative": "missing node returned HTTP 404"
+    },
+    "physics2dTopologyAudit": {
+      "positive": "cc.RigidBody2D plus cc.BoxCollider2D fixture returned valid=true with typed topology",
+      "negative": "rigid body without collider returned valid=false with missing-collider issue"
+    },
+    "physics3dTopologyAudit": {
+      "positive": "cc.RigidBody plus cc.BoxCollider fixture returned valid=true with typed topology",
+      "negative": "missing node returned HTTP 404"
+    },
+    "physics3dValidate": {
+      "positive": "3D body plus collider fixture returned valid=true",
+      "negative": "3D body without collider returned valid=false with missing-collider issue"
+    },
+    "buildOutputAudit": {
+      "positive": "package.json inside project root returned valid=true and one checked file",
+      "negative": "missing expected artifact returned valid=false with typed missing-file issue"
+    },
+    "sceneScriptHealthScan": {
+      "positive": "bounded scan returned HTTP 200 with numeric total, findings array and truncated=false",
+      "negative": "limit=0 returned HTTP 400 validation failure"
+    },
+    "buildTaskWait": {
+      "positive": "real Creator build task 1789015174581 reached success; wait with numeric task id returned completed=true and timedOut=false",
+      "negative": "missing task id returned HTTP 404 TARGET_NOT_FOUND"
+    }
+  },
+  "registeredUnverified": {
+    "buildLogInspect": "No real Creator build task with exposed diagnostics was available in this run.",
+    "localizationInspect": "Current project reports localization unsupported; unsupported-only result is not qualification.",
+    "localizationValidate": "Current project reports localization unsupported; no supported key/resource fixture was available.",
+    "sceneScriptRepair": "No missing-script component fixture and persistent replacement witness were available in this run."
+  },
+  "countReconciliation": {
+    "qualifiedBaseline": 86,
+    "previouslyQualifiedExpansion": 17,
+    "newlyQualifiedExpansion": 12,
+    "qualifiedRegisteredTools": 115,
+    "registeredUnverifiedExpansion": 4,
+    "registeredToolCount": 119,
+    "remainingGapTo157": 42,
+    "remainingGapIfFourUnverifiedQualify": 38
+  }
+}
