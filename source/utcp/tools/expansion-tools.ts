@@ -1180,9 +1180,140 @@ export class ExpansionTools {
         if (source.isDirectory) issues.push('asset reference resolves to a directory');
         return { valid: issues.length === 0, importer, settings, source, issues };
     }
-    @utcpTool('localizationValidate', 'Validate a bounded list of localization keys in the current Creator language.', { type: 'object', properties: { keys: { type: 'array', maxItems: 256, items: { type: 'string', minLength: 1 } } }, required: ['keys'] }, { type: 'object', properties: { supported: { type: 'boolean' }, language: { type: ['string', 'null'] }, checkedKeys: { type: 'integer' }, missingKeys: { type: 'array' }, error: { type: 'string' } }, required: ['supported', 'language', 'checkedKeys', 'missingKeys'] }, 'GET', ['localization', 'validate', 'keys'])
+    @utcpTool(
+        'localizationValidate',
+        'Validate 1-256 unique localization keys in the current Creator language through the fixed package scene seam.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                keys: {
+                    type: 'array',
+                    minItems: 1,
+                    maxItems: 256,
+                    uniqueItems: true,
+                    items: { type: 'string', minLength: 1, maxLength: 256 },
+                },
+            },
+            required: ['keys'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                supported: { type: 'boolean' },
+                language: { type: ['string', 'null'], minLength: 1, maxLength: 256 },
+                checkedKeys: { type: 'integer', minimum: 0, maximum: 256 },
+                missingKeys: {
+                    type: 'array',
+                    maxItems: 256,
+                    uniqueItems: true,
+                    items: { type: 'string', minLength: 1, maxLength: 256 },
+                },
+                error: { type: 'string', minLength: 1, maxLength: 512 },
+            },
+            required: ['supported', 'language', 'checkedKeys', 'missingKeys'],
+            allOf: [{
+                if: { properties: { supported: { const: false } }, required: ['supported'] },
+                then: { required: ['error'] },
+            }],
+        },
+        'GET',
+        ['localization', 'validate', 'keys'],
+    )
     async localizationValidate(args: { keys: string[] }): Promise<{ supported: boolean, language: string | null, checkedKeys: number, missingKeys: string[], error?: string }> {
-        return await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'validateLocalization', args: [args.keys] }) as any;
+        const input = args as unknown;
+        const inputRecord = input && typeof input === 'object' && !Array.isArray(input)
+            ? input as Record<string, unknown>
+            : null;
+        const keys = inputRecord?.keys;
+        const inputKeys = inputRecord ? Object.keys(inputRecord) : [];
+        if (!Array.isArray(keys)
+            || keys.length < 1
+            || keys.length > 256
+            || inputKeys.length !== 1
+            || inputKeys[0] !== 'keys') {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'localizationValidate requires only keys with 1-256 nonempty unique strings.',
+            });
+        }
+
+        const uniqueKeys = new Set<string>();
+        for (const key of keys) {
+            if (typeof key !== 'string' || key.length < 1 || key.length > 256 || uniqueKeys.has(key)) {
+                throw new ToolError({
+                    code: 'INVALID_ARGUMENT',
+                    status: 400,
+                    message: 'localizationValidate keys must be nonempty unique strings of at most 256 characters.',
+                });
+            }
+            uniqueKeys.add(key);
+        }
+
+        let raw: unknown;
+        try {
+            raw = await Editor.Message.request('scene', 'execute-scene-script', {
+                name: 'cc-bridge-3x',
+                method: 'validateLocalization',
+                args: [keys],
+            });
+        } catch (error) {
+            throw new ToolError({
+                code: 'LOCALIZATION_VALIDATION_FAILED',
+                status: 502,
+                message: 'Creator scene transport failed while validating localization keys.',
+                details: { cause: String(error instanceof Error ? error.message : error).slice(0, 512) },
+                recovery: 'Retry after the Creator scene process and cc-bridge-3x package are ready.',
+            });
+        }
+
+        if (!raw || typeof raw !== 'object' || Array.isArray(raw)
+            || typeof (raw as Record<string, unknown>).supported !== 'boolean') {
+            throw new ToolError({
+                code: 'LOCALIZATION_INVALID_RESPONSE',
+                status: 502,
+                message: 'Creator localization validation returned an invalid response.',
+                recovery: 'Retry with a compatible cc-bridge-3x scene package.',
+            });
+        }
+
+        const response = raw as Record<string, unknown>;
+        if (response.supported === false) {
+            const reportedError = typeof response.error === 'string' ? response.error.trim() : '';
+            return {
+                supported: false,
+                language: null,
+                checkedKeys: 0,
+                missingKeys: [],
+                error: (reportedError || 'Creator localization package is unavailable.').slice(0, 512),
+            };
+        }
+
+        const language = response.language;
+        const checkedKeys = response.checkedKeys;
+        const missingKeys = response.missingKeys;
+        if ((language !== null && (typeof language !== 'string' || language.length < 1 || language.length > 256))
+            || !Number.isInteger(checkedKeys)
+            || checkedKeys !== keys.length
+            || !Array.isArray(missingKeys)
+            || missingKeys.some((key) => typeof key !== 'string' || !uniqueKeys.has(key))) {
+            throw new ToolError({
+                code: 'LOCALIZATION_INVALID_RESPONSE',
+                status: 502,
+                message: 'Creator localization validation returned an invalid response.',
+                recovery: 'Retry with a compatible cc-bridge-3x scene package.',
+            });
+        }
+
+        const missingSet = new Set(missingKeys as string[]);
+        return {
+            supported: true,
+            language: language as string | null,
+            checkedKeys: keys.length,
+            missingKeys: keys.filter((key) => missingSet.has(key)),
+        };
     }
 
     @utcpTool('buildPresetValidate', 'Validate bounded build options before dispatching a Creator build task.', { type: 'object', properties: { options: { type: 'object' } }, required: ['options'] }, { type: 'object', properties: { valid: { type: 'boolean' }, issues: { type: 'array' }, platform: { type: 'string' } }, required: ['valid', 'issues', 'platform'] }, 'POST', ['build', 'preset', 'validate'])
