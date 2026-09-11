@@ -110,6 +110,31 @@ A project skill that operates Cocos should treat registration as a session boots
 
 Keep the skill focused on workflow rules. The live manual remains the source of truth for tool names, TypeScript interfaces, and capabilities.
 
+## ALX-inspired CCB capabilities
+
+CCB may adopt useful editor workflows observed in external tools, but the implementation remains independent. The current CCB-native additions include:
+
+- `uiLayoutAlign` for bounded multi-node alignment and distribution.
+- `nodeGetPath` for reverse UUID-to-hierarchy lookup.
+
+Example:
+
+```typescript
+const path = await ccb3x.nodeGetPath({
+  reference: { id: buttonUuid, type: 'cc.Node' },
+  relativeTo: { id: canvasUuid, type: 'cc.Node' },
+  includeRoot: false,
+});
+// path.path => "Panel/SpinButton"
+```
+
+For layout mutation, inspect the target nodes first, require stable references, and prefer `uiLayoutAlign` over manually calculating coordinates. It validates node count, duplicate references, UITransform data, and same-parent constraints, then reads the result back.
+
+See:
+
+- [ALX capability comparison](./alx-capability-comparison.md) for the independent reimplementation map.
+- [Independent CCB strategy](./independent-ccb-strategy.md) for roadmap, qualification, and non-dependency rules.
+
 ## Troubleshooting
 
 | Symptom | Action |

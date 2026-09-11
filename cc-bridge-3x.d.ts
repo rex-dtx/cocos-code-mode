@@ -101,6 +101,24 @@ declare namespace cc_bridge_3x {
         limit?: number
     }): { assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean };
 
+    /** Export a deterministic, read-only asset manifest; dependency metadata is present only when Creator exposes it. */
+    function assetManifestExport(args: {
+        assetPath?: string,
+        maxAssets?: number
+    }): {
+        assets: {
+            uuid: string,
+            url: string,
+            type: string,
+            importer: string,
+            name: string,
+            isSubAsset: boolean,
+            dependencies?: string[]
+        }[],
+        truncated: boolean,
+        count: number
+    };
+
     /** Overwrite the content of an existing text-based asset (TypeScript, JSON, effect, txt...). Identify by db:// path or uuid. Binary not supported. */
     function assetSaveContent(args: { assetPath?: string, reference?: InstanceReference, content: string }): { reference: InstanceReference, filesystemPath?: string };
 
