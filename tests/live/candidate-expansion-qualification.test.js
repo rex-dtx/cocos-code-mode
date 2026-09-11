@@ -249,6 +249,21 @@ return out;`,
     }
   });
 
+  it('probes runtime lifecycle transport and rejects unavailable preview sessions', async (t) => {
+    if (skipIfDown(t)) return;
+    const targetId = `candidate-preview-${Date.now()}`;
+    const unsupported = await postExpectedErrorTool('runtimeSessionLifecycle', {
+      operation: 'attach', targetKind: 'browser-preview', targetId,
+    }, 'candidate.runtimeSessionLifecycle.negative.v1');
+    assert.equal(unsupported.status, 422, JSON.stringify(unsupported.body));
+    assert.equal(unsupported.body.code, 'UNSUPPORTED_RUNTIME_TRANSPORT');
+
+    const unavailable = await postExpectedErrorTool('runtimeSessionLifecycle', {
+      operation: 'attach', targetKind: 'game-view', targetId,
+    }, 'candidate.runtimeSessionLifecycle.negative.v1');
+    assert.equal(unavailable.status, 409, JSON.stringify(unavailable.body));
+    assert.equal(unavailable.body.code, 'RUNTIME_NOT_READY');
+  });
   it('qualifies bounded build output audit and scene script health scan', async (t) => {
     if (skipIfDown(t)) return;
     const tasks = await postTool('buildManage', { operation: 'tasks_info', limit: 20 });

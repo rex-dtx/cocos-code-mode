@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-11T02:50:05Z",
+  "checkedAt": "2026-09-11T04:38:44Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "artifactCommit": "0e1f752",
+    "artifactCommit": "78ae7aa",
     "dirty": true,
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "os": "windows-x64",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
-    "manualCount": 123,
-    "uniqueManualCount": 123
+    "manualCount": 124,
+    "uniqueManualCount": 124
   },
   "testCommand": "UTCP_PORT=49650 node --test tests/live/candidate-expansion-qualification.test.js",
   "testResult": {
-    "tests": 6,
-    "passed": 6,
+    "tests": 7,
+    "passed": 7,
     "failed": 0,
     "fixturesCleaned": true
   },
@@ -41,6 +41,7 @@
     "buildLogInspect": "No real Creator build task with exposed diagnostics was available in this run.",
     "localizationInspect": "Current project reports localization unsupported; unsupported-only result is not qualification.",
     "localizationValidate": "Current project reports localization unsupported; no supported key/resource fixture was available.",
+    "runtimeSessionLifecycle": "Game-view attach rejects an unavailable preview and browser-preview is unsupported; no verified start/stop target lifecycle was available.",
     "sceneScriptRepair": "No missing-script component fixture and persistent replacement witness were available in this run."
   },
   "countReconciliation": {
@@ -48,9 +49,9 @@
     "previouslyQualifiedExpansion": 17,
     "newlyQualifiedExpansion": 16,
     "qualifiedRegisteredTools": 119,
-    "registeredUnverifiedExpansion": 4,
-    "registeredToolCount": 123,
+    "registeredUnverifiedExpansion": 5,
+    "registeredToolCount": 124,
     "remainingGapTo157": 38,
-    "remainingGapIfFourUnverifiedQualify": 34
+    "remainingGapIfAllUnverifiedQualify": 33
   }
 }

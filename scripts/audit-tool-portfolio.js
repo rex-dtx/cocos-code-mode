@@ -16,6 +16,7 @@ const FROZEN_RESERVE_COUNT = 20;
 const FROZEN_REQUIRED_APPROVAL_COUNT = 82;
 const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'runtimePreviewControl',
+  'runtimeSessionLifecycle',
   'uiLayoutInspect',
   'uiLayoutApply',
   'uiLayoutValidate',

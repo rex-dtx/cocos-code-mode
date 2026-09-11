@@ -392,14 +392,19 @@ export const methods = {
         return { handlerCount: button.clickEvents.length };
     },
 
-    async runtimeGetState(): Promise<{ paused: boolean, timeScale: number, frameCount: number }> {
+    async runtimeGetState(): Promise<{ running: boolean, paused: boolean, timeScale: number, frameCount: number }> {
         const cc = (globalThis as any)['cc'];
         const game = cc?.game;
+        const scheduler = cc?.director?.getScheduler?.();
         const director = cc?.director;
+        if (!game || typeof game.isPlaying !== 'boolean' || !scheduler || typeof scheduler.getTimeScale !== 'function' || typeof scheduler.getTimeScale() !== 'number' || !director || typeof director.totalFrames !== 'number') {
+            throw new Error('Runtime preview state is unavailable');
+        }
         return {
-            paused: game?.paused ?? false,
-            timeScale: director?.getScheduler()?.getTimeScale?.() ?? 1,
-            frameCount: director?.totalFrames ?? 0,
+            running: game.isPlaying,
+            paused: game.paused,
+            timeScale: scheduler.getTimeScale(),
+            frameCount: director.totalFrames,
         };
     },
     async inspectLocalization(): Promise<{ supported: boolean, currentLanguage: string | null, languages: string[], directions: Record<string, string>, error?: string }> {
