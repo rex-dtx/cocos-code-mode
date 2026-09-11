@@ -56,6 +56,75 @@ function normalizePath(p?: string): string {
     if (path2.endsWith('/')) path2=path2.slice(0,-1);
     return `db://assets/${path2}`;
 }
+const MAX_MANIFEST_ASSET_PATH_LENGTH = 256;
+const MAX_MANIFEST_DEPENDENCIES = 128;
+
+function normalizeManifestAssetPath(value: unknown): string {
+    if (value === undefined) return 'db://assets';
+    if (typeof value !== 'string') {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport assetPath must be a string.' });
+    }
+    const input = value.trim();
+    if (!input || input.length > MAX_MANIFEST_ASSET_PATH_LENGTH || /[\u0000-\u001f\u007f]/.test(input)) {
+        throw new ToolError({
+            code: 'INVALID_ARGUMENT',
+            status: 400,
+            message: `assetManifestExport assetPath must be a normalized non-empty path of at most ${MAX_MANIFEST_ASSET_PATH_LENGTH} characters.`,
+        });
+    }
+    const normalized = normalizePath(input);
+    if (normalized !== 'db://assets' && !normalized.startsWith('db://assets/')) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport assetPath must resolve inside db://assets.' });
+    }
+    const segments = normalized.slice('db://assets'.length).split('/').filter(Boolean);
+    if (segments.some((segment) => segment === '.' || segment === '..' || /[*?[\]]/.test(segment))) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport assetPath contains an invalid path segment.' });
+    }
+    return normalized;
+}
+
+function isManifestRow(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function manifestDependencies(row: unknown): string[] | undefined {
+    if (!isManifestRow(row) || !Array.isArray(row.depends)) return undefined;
+    return [...new Set(row.depends.filter((dependency: unknown): dependency is string => typeof dependency === 'string' && dependency.length > 0))]
+        .sort()
+        .slice(0, MAX_MANIFEST_DEPENDENCIES);
+}
+
+function validateManifestMaxAssets(value: unknown): number {
+    if (value === undefined) return 128;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 512) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport maxAssets must be an integer from 1 to 512.' });
+    }
+    return value;
+}
+
+function assetManifestItem(row: Record<string, unknown>): Record<string, unknown> {
+    const dependencies = manifestDependencies(row);
+    return {
+        uuid: row.uuid,
+        url: row.url,
+        type: row.type,
+        importer: row.importer ?? '',
+        name: row.name,
+        isSubAsset: Boolean(row.isSubAsset),
+        ...(dependencies ? { dependencies } : {}),
+    };
+}
+
+function assetManifestError(error: unknown): ToolError {
+    return new ToolError({
+        code: 'ASSET_QUERY_FAILED',
+        status: 502,
+        message: 'assetManifestExport could not query the Creator asset database.',
+        details: { cause: error instanceof Error ? error.message : String(error) },
+        recovery: 'Retry after the Creator asset database is ready.',
+    });
+}
+
 function boundedPositive(value: unknown, fallback: number, maximum: number): number {
     return typeof value === 'number' && Number.isFinite(value) && value > 0
         ? Math.min(value, maximum)
@@ -472,16 +541,57 @@ export class AssetTools {
 
     @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with importer and dependency metadata.', {
         type: 'object',
-        properties: { assetPath: { type: 'string' }, maxAssets: { type: 'integer', minimum: 1, maximum: 512, default: 128 } },
-    }, { type: 'object', properties: { assets: { type: 'array' }, truncated: { type: 'boolean' }, count: { type: 'integer' } }, required: ['assets', 'truncated', 'count'] }, 'GET', ['asset', 'manifest', 'export', 'dependencies'])
+        properties: {
+            assetPath: { type: 'string', minLength: 1, maxLength: MAX_MANIFEST_ASSET_PATH_LENGTH },
+            maxAssets: { type: 'integer', minimum: 1, maximum: 512, default: 128 },
+        },
+    }, {
+        type: 'object',
+        properties: {
+            assets: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        uuid: { type: 'string' },
+                        url: { type: 'string' },
+                        type: { type: 'string' },
+                        importer: { type: 'string' },
+                        name: { type: 'string' },
+                        isSubAsset: { type: 'boolean' },
+                        dependencies: { type: 'array', items: { type: 'string' }, maxItems: MAX_MANIFEST_DEPENDENCIES },
+                    },
+                    required: ['uuid', 'url', 'type', 'importer', 'name', 'isSubAsset'],
+                },
+            },
+            truncated: { type: 'boolean' },
+            count: { type: 'integer' },
+        },
+        required: ['assets', 'truncated', 'count'],
+    }, 'GET', ['asset', 'manifest', 'export', 'dependencies'])
     async assetManifestExport(args: { assetPath?: string, maxAssets?: number }): Promise<{ assets: Array<Record<string, unknown>>, truncated: boolean, count: number }> {
-        const maxAssets = Math.min(args.maxAssets ?? 128, 512);
-        const pattern = `${normalizePath(args.assetPath)}/**`;
-        const rows: any[] = await queryAssetsCompat({ pattern });
-        const assets = rows.filter((row) => !row.isDirectory).sort((a, b) => String(a.url).localeCompare(String(b.url))).slice(0, maxAssets).map((row) => ({
-            uuid: row.uuid, url: row.url, type: row.type, importer: row.importer ?? '', name: row.name, isSubAsset: Boolean(row.isSubAsset),
-        }));
-        return { assets, truncated: rows.filter((row) => !row.isDirectory).length > assets.length, count: assets.length };
+        const maxAssets = validateManifestMaxAssets(args?.maxAssets);
+        const rootPath = normalizeManifestAssetPath(args?.assetPath);
+        const pattern = `${rootPath}/**`;
+        let rows: unknown[];
+        try {
+            rows = await queryAssetsCompat({ pattern });
+        } catch (error: unknown) {
+            throw assetManifestError(error);
+        }
+        const files = rows
+            .filter(isManifestRow)
+            .filter((row) => !row.isDirectory)
+            .sort((a, b) => {
+                const leftUrl = String(a.url);
+                const rightUrl = String(b.url);
+                if (leftUrl !== rightUrl) return leftUrl < rightUrl ? -1 : 1;
+                const leftUuid = String(a.uuid);
+                const rightUuid = String(b.uuid);
+                return leftUuid === rightUuid ? 0 : leftUuid < rightUuid ? -1 : 1;
+            });
+        const assets = files.slice(0, maxAssets).map(assetManifestItem);
+        return { assets, truncated: files.length > assets.length, count: assets.length };
     }
     @utcpTool('assetCatalogManifest', 'Build a bounded deterministic asset catalog with source hashes and explicit exclusions.', {
         type: 'object',

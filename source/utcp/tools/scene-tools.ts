@@ -30,6 +30,27 @@ function findComponentType(componentTypes: any[], requested: string): any | unde
     return componentTypes.find((candidate) => componentCandidates(candidate).includes(requested));
 }
 
+interface SceneTreeNode {
+    uuid?: string;
+    name?: string | { value?: string };
+    children?: SceneTreeNode[];
+}
+
+function sceneTreeNodeName(node: SceneTreeNode): string {
+    if (typeof node.name === 'string') return node.name;
+    return node.name?.value ?? node.uuid ?? '';
+}
+
+function findSceneTreeNode(root: SceneTreeNode, uuid: string): SceneTreeNode | null {
+    const stack: SceneTreeNode[] = [root];
+    while (stack.length) {
+        const node = stack.pop()!;
+        if (node.uuid === uuid) return node;
+        for (const child of node.children ?? []) stack.push(child);
+    }
+    return null;
+}
+
 export class SceneTools {
 
     /** @deprecated use sceneManage({ operation: 'open', reference }) — not registered, kept for delegation */
@@ -195,6 +216,62 @@ export class SceneTools {
             }
         }
         return { nodes: hits, total, truncated: total > limit };
+    }
+
+    @utcpTool(
+        'nodeGetPath',
+        'Resolve a node UUID to its stable hierarchy path in the open scene or prefab. Use this reverse lookup before generating getChildByPath/find calls.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                reference: InstanceReferenceSchema,
+                relativeTo: InstanceReferenceSchema,
+                includeRoot: { type: 'boolean', default: true },
+            },
+            required: ['reference'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                reference: InstanceReferenceSchema,
+                path: { type: 'string' },
+                segments: { type: 'array', items: { type: 'string' } },
+                relativeTo: InstanceReferenceSchema,
+            },
+            required: ['reference', 'path', 'segments'],
+        },
+        'GET',
+        ['scene', 'node', 'path', 'hierarchy', 'reverse', 'lookup']
+    )
+    async nodeGetPath(args: { reference: IInstanceReference, relativeTo?: IInstanceReference, includeRoot?: boolean }): Promise<{ reference: IInstanceReference, path: string, segments: string[], relativeTo?: IInstanceReference }> {
+        const tree = await Editor.Message.request('scene', 'query-node-tree') as unknown as SceneTreeNode | null;
+        if (!tree) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'No open scene or prefab hierarchy' });
+        const root = args.relativeTo?.id
+            ? findSceneTreeNode(tree, args.relativeTo.id)
+            : ((await this.findPrefabEditRoot(tree)) as unknown as SceneTreeNode | null) ?? tree;
+        if (!root) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `Relative root ${args.relativeTo?.id} not found` });
+
+        const stack: Array<{ node: SceneTreeNode, segments: string[] }> = [{ node: root, segments: [sceneTreeNodeName(root)] }];
+        while (stack.length) {
+            const current = stack.pop()!;
+            if (current.node.uuid === args.reference.id) {
+                const segments = args.includeRoot === false ? current.segments.slice(1) : current.segments;
+                return {
+                    reference: { id: args.reference.id, type: 'cc.Node' },
+                    path: segments.join('/'),
+                    segments,
+                    ...(args.relativeTo ? { relativeTo: args.relativeTo } : {}),
+                };
+            }
+            const children = current.node.children ?? [];
+            for (let index = children.length - 1; index >= 0; index--) {
+                const child = children[index];
+                stack.push({ node: child, segments: [...current.segments, sceneTreeNodeName(child)] });
+            }
+        }
+        throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `Node ${args.reference.id} is not inside the requested hierarchy` });
     }
 
     @utcpTool(
@@ -1167,6 +1244,22 @@ export class SceneTools {
     }
 
     // Helpers
+
+    private treeNodeName(node: SceneTreeNode): string {
+        if (typeof node.name === 'string') return node.name;
+        return node.name?.value ?? node.uuid ?? '';
+    }
+
+    private findTreeNode(root: SceneTreeNode, uuid: string): SceneTreeNode | null {
+        const stack: SceneTreeNode[] = [root];
+        while (stack.length) {
+            const node = stack.pop()!;
+            if (node.uuid === uuid) return node;
+            const children = node.children ?? [];
+            for (let index = children.length - 1; index >= 0; index--) stack.push(children[index]);
+        }
+        return null;
+    }
 
     /**
      * When a prefab is open for editing, 'query-current-scene' reports the prefab

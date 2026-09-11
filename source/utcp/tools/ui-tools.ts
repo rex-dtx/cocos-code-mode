@@ -8,6 +8,7 @@ import type { UiSafeAreaInspectRequest, UiSafeAreaInspectResult } from '../../ui
 import { isCandidateRequest } from '../../ui-layout-validate';
 import type { UiLayoutValidateRequest, UiLayoutValidateResult } from '../../ui-layout-validate';
 import type { UiAccessibilityAuditRequest, UiAccessibilityAuditResult } from '../../ui-accessibility-audit';
+import { calculateLayoutAlignment, LayoutAlignAxis, LayoutAlignEdge, LayoutAlignmentUpdate, LayoutAlignOperation } from '../../ui-layout-align';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -35,6 +36,7 @@ interface SceneNodeDump {
     position?: { value?: { x?: number, y?: number, z?: number } };
     active?: { value?: boolean } | boolean;
     uuid?: string;
+    parent?: { value?: { uuid?: string }, uuid?: string };
 }
 
 interface UiLayoutNode {
@@ -572,6 +574,103 @@ export class UiTools {
         return { success: true, layout };
     }
 
+
+    @utcpTool(
+        'uiLayoutAlign',
+        'Align or evenly distribute 2D UI nodes that share one parent. Uses local UITransform bounds, preserves Z, preflights every node, snapshots once, and rolls back partial writes.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                references: { type: 'array', minItems: 2, maxItems: 100, uniqueItems: true, items: InstanceReferenceSchema },
+                operation: { type: 'string', enum: ['align', 'distribute'] },
+                axis: { type: 'string', enum: ['horizontal', 'vertical'] },
+                edge: { type: 'string', enum: ['left', 'right', 'center', 'top', 'bottom', 'middle'], description: 'Required only for align. Horizontal accepts left/right/center; vertical accepts top/bottom/middle.' },
+            },
+            required: ['references', 'operation', 'axis'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                success: { type: 'boolean', const: true },
+                references: { type: 'array', items: InstanceReferenceSchema },
+                layouts: { type: 'array', items: { type: 'object' } },
+            },
+            required: ['success', 'references', 'layouts'],
+        },
+        'POST',
+        ['ui', 'layout', 'align', 'distribute', 'batch', 'mutation']
+    )
+    async uiLayoutAlign(args: { references: IInstanceReference[], operation: LayoutAlignOperation, axis: LayoutAlignAxis, edge?: LayoutAlignEdge }): Promise<{ success: true, references: IInstanceReference[], layouts: UiLayoutNode[] }> {
+        const minimum = args.operation === 'align' ? 2 : 3;
+        if (args.references.length < minimum) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${args.operation} requires at least ${minimum} nodes` });
+        }
+        const uniqueIds = [...new Set(args.references.map((reference) => reference.id))];
+        if (uniqueIds.length !== args.references.length) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain unique node UUIDs' });
+        }
+
+        const dumps = await Promise.all(uniqueIds.map(async (id) => ({ id, dump: await this.queryNodeDump(id) })));
+        const parentIds = new Set<string>();
+        const items = dumps.map(({ id, dump }) => {
+            if (!dump) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `UI node ${id} not found` });
+            const parentId = dump.parent?.value?.uuid ?? dump.parent?.uuid;
+            if (!parentId) throw new ToolError({ code: 'INVALID_TARGET', status: 422, message: `UI node ${id} has no queryable parent` });
+            parentIds.add(parentId);
+            const position = this.unwrapValue(dump.position) ?? { x: 0, y: 0, z: 0 };
+            const transform = dump.__comps__?.find((component) => component.type === 'cc.UITransform');
+            const value = transform ? this.unwrapValue(transform.value) : null;
+            const size = value ? this.unwrapValue(value.contentSize) ?? this.unwrapValue(value._contentSize) : null;
+            const anchor = value ? this.unwrapValue(value.anchorPoint) ?? this.unwrapValue(value._anchorPoint) : null;
+            if (typeof size?.width !== 'number' || typeof size?.height !== 'number' || typeof anchor?.x !== 'number' || typeof anchor?.y !== 'number') {
+                throw new ToolError({ code: 'INVALID_TARGET', status: 422, message: `UI node ${id} requires a readable cc.UITransform size and anchor` });
+            }
+            return {
+                id,
+                position: { x: position.x ?? 0, y: position.y ?? 0, z: position.z ?? 0 },
+                worldRect: {
+                    x: (position.x ?? 0) - size.width * anchor.x,
+                    y: (position.y ?? 0) - size.height * anchor.y,
+                    width: size.width,
+                    height: size.height,
+                },
+            };
+        });
+        if (parentIds.size !== 1) {
+            throw new ToolError({ code: 'INVALID_TARGET', status: 422, message: 'uiLayoutAlign requires all nodes to share one parent so local-space writes remain deterministic' });
+        }
+
+        let updates: LayoutAlignmentUpdate[];
+        try {
+            updates = calculateLayoutAlignment(items, args.operation, args.axis, args.edge);
+        } catch (error: unknown) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: error instanceof Error ? error.message : String(error) });
+        }
+        const originals = new Map(items.map((item) => [item.id, item.position]));
+        const applied: string[] = [];
+        let layouts: UiLayoutNode[] = [];
+        try {
+            for (const update of updates) {
+                const accepted = await Editor.Message.request('scene', 'set-property', { uuid: update.id, path: 'position', dump: { value: update.position, type: 'cc.Vec3' } });
+                if (accepted === false) throw new Error(`Creator refused position update for ${update.id}`);
+                applied.push(update.id);
+            }
+            layouts = (await Promise.all(uniqueIds.map(async (id) => (await this.inspectLayout(id, 1)).nodes[0] ?? null)))
+                .filter((layout): layout is UiLayoutNode => layout !== null);
+            if (layouts.length !== uniqueIds.length) throw new Error('Creator did not return every updated node during read-back');
+            await Editor.Message.request('scene', 'snapshot');
+        } catch (error: unknown) {
+            for (const id of applied.reverse()) {
+                const original = originals.get(id);
+                if (original) await Editor.Message.request('scene', 'set-property', { uuid: id, path: 'position', dump: { value: original, type: 'cc.Vec3' } }).catch(() => undefined);
+            }
+            await Editor.Message.request('scene', 'snapshot-abort').catch(() => undefined);
+            throw new ToolError({ code: 'MUTATION_FAILED', status: 500, message: error instanceof Error ? error.message : String(error) });
+        }
+        return { success: true, references: uniqueIds.map((id) => ({ id, type: 'cc.Node' })), layouts };
+    }
     @utcpTool(
         'uiLayoutValidate',
         'Validate bounded, read-only UI geometry for clipping, overlap, anchors, and safe-area constraints.',
