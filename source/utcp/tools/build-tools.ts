@@ -16,6 +16,106 @@ interface IBuildTaskSummary {
     platform?: string;
     buildPath?: string;
 }
+interface BuildDiagnostic {
+    message: string;
+    severity?: string;
+    code?: string;
+    file?: string;
+    line?: number;
+}
+
+interface BuildLogInspectResult {
+    available: boolean;
+    terminal: boolean;
+    state: string;
+    progress: number;
+    task: IBuildTaskSummary;
+    entries: BuildDiagnostic[];
+    count: number;
+    truncated: boolean;
+}
+
+function normalizeSeverity(value: unknown): string | undefined {
+    if (typeof value !== 'string' || !value.trim()) return undefined;
+    const severity = value.trim().toLowerCase();
+    return severity === 'warn' ? 'warning' : severity;
+}
+
+function normalizeDiagnosticLine(value: string): BuildDiagnostic {
+    const text = value.trim();
+    let message = text;
+    let file: string | undefined;
+    let line: number | undefined;
+    const location = text.match(/^(.*?)(?:\((\d+)(?:,\d+)?\)|:(\d+)(?::\d+)?):\s*(.*)$/);
+    if (location) {
+        file = location[1].trim() || undefined;
+        line = Number(location[2] || location[3]);
+        message = location[4].trim();
+    }
+    const severityMatch = message.match(/^(error|warning|warn|info|debug)\b\s*:?\s*/i);
+    const severity = normalizeSeverity(severityMatch?.[1]);
+    if (severityMatch) message = message.slice(severityMatch[0].length).trim();
+    const codeMatch = message.match(/^(?:\[([A-Za-z][\w.-]*)\]|([A-Z][A-Z0-9_.-]{1,31}))\s*:?\s*/);
+    const code = (codeMatch?.[1] || codeMatch?.[2])?.trim() || undefined;
+    if (codeMatch) message = message.slice(codeMatch[0].length).trim();
+    const validLine = typeof line === 'number' && Number.isInteger(line) && line > 0 ? line : undefined;
+    return {
+        message,
+        ...(severity ? { severity } : {}),
+        ...(code ? { code } : {}),
+        ...(file ? { file } : {}),
+        ...(validLine !== undefined ? { line: validLine } : {}),
+    };
+}
+
+export function normalizeBuildDiagnostic(value: unknown): BuildDiagnostic | null {
+    if (typeof value === 'string') {
+        const line = normalizeDiagnosticLine(value);
+        return line.message ? line : null;
+    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const item = value as Record<string, unknown>;
+    const text = [item.message, item.text, item.detailMessage, item.value].find((candidate): candidate is string => typeof candidate === 'string' && candidate.trim().length > 0);
+    if (!text) return null;
+    const parsed = normalizeDiagnosticLine(text);
+    const severity = normalizeSeverity(item.severity ?? item.level ?? item.type) || parsed.severity;
+    const code = typeof item.code === 'string' && item.code.trim() ? item.code.trim() : parsed.code;
+    const fileValue = item.file ?? item.path ?? item.filename;
+    const file = typeof fileValue === 'string' && fileValue.trim() ? fileValue.trim() : parsed.file;
+    const lineValue = typeof item.line === 'number' ? item.line : typeof item.line === 'string' ? Number(item.line) : parsed.line;
+    const validLine = typeof lineValue === 'number' && Number.isInteger(lineValue) && lineValue > 0 ? lineValue : undefined;
+    return {
+        message: parsed.message,
+        ...(severity ? { severity } : {}),
+        ...(code ? { code } : {}),
+        ...(file ? { file } : {}),
+        ...(validLine !== undefined ? { line: validLine } : {}),
+    };
+}
+
+export function normalizeBuildDiagnostics(raw: unknown): { available: boolean, entries: BuildDiagnostic[] } {
+    const values = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(/\r?\n/).filter((line) => line.trim()) : [];
+    return { available: Array.isArray(raw) || typeof raw === 'string', entries: values.map(normalizeBuildDiagnostic).filter((entry): entry is BuildDiagnostic => !!entry) };
+}
+
+function boundedDiagnostics(entries: BuildDiagnostic[], maxEntries: number, maxBytes: number): { entries: BuildDiagnostic[], truncated: boolean } {
+    const bounded: BuildDiagnostic[] = [];
+    let bytes = 2;
+    for (const entry of entries) {
+        if (bounded.length >= maxEntries) return { entries: bounded, truncated: true };
+        const entryBytes = Buffer.byteLength(JSON.stringify(entry), 'utf8');
+        const nextBytes = bytes + (bounded.length ? 1 : 0) + entryBytes;
+        if (nextBytes > maxBytes) return { entries: bounded, truncated: true };
+        bounded.push(entry);
+        bytes = nextBytes;
+    }
+    return { entries: bounded, truncated: false };
+}
+
+const BUILD_LOG_DEFAULT_ENTRIES = 64;
+const BUILD_LOG_MAX_ENTRIES = 256;
+const BUILD_LOG_DEFAULT_BYTES = 512 * 1024;
+const BUILD_LOG_MAX_BYTES = 2 * 1024 * 1024;
 
 const BuildTaskSummarySchema: JsonSchema = {
     type: 'object',
@@ -33,7 +133,7 @@ const BuildTaskSummarySchema: JsonSchema = {
     },
     required: ['id', 'progress', 'state']
 };
-const BUILD_TERMINAL_STATES = new Set(['success', 'succeeded', 'failed', 'error', 'cancelled', 'canceled', 'done', 'finished']);
+const BUILD_TERMINAL_STATES: Record<string, true> = { success: true, succeeded: true, failed: true, failure: true, error: true, cancelled: true, canceled: true, cancel: true, done: true, finished: true };
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 function slimTask(task: any): IBuildTaskSummary {
@@ -155,24 +255,72 @@ export class BuildTools {
             item = await Editor.Message.request('builder', 'query-task', taskId);
             if (!item) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Build task ${taskId} not found`, recovery: 'Query build tasks and retry with an existing task id.' });
             const task = slimTask(item);
-            if (BUILD_TERMINAL_STATES.has(String(task.state).toLowerCase())) return { completed: true, timedOut: false, task };
+            if (BUILD_TERMINAL_STATES[String(task.state).toLowerCase()] === true) return { completed: true, timedOut: false, task };
             if (Date.now() >= deadline) return { completed: false, timedOut: true, task };
             await sleep(Math.min(pollMs, Math.max(1, deadline - Date.now())));
         } while (true);
     }
     @utcpTool('buildLogInspect', 'Inspect bounded structured diagnostics exposed by one Creator build task.', {
         type: 'object',
-        properties: { taskId: { type: ['string', 'integer'] }, maxEntries: { type: 'integer', minimum: 1, maximum: 256, default: 64 } },
+        additionalProperties: false,
+        properties: {
+            taskId: { type: ['string', 'integer'] },
+            maxEntries: { type: 'integer', minimum: 1, maximum: BUILD_LOG_MAX_ENTRIES, default: BUILD_LOG_DEFAULT_ENTRIES },
+            maxBytes: { type: 'integer', minimum: 256, maximum: BUILD_LOG_MAX_BYTES, default: BUILD_LOG_DEFAULT_BYTES },
+        },
         required: ['taskId'],
-    }, { type: 'object', properties: { available: { type: 'boolean' }, task: { type: 'object' }, entries: { type: 'array' }, count: { type: 'integer' } }, required: ['available', 'task', 'entries', 'count'] }, 'GET', ['build', 'log', 'diagnostics', 'inspect'])
-    async buildLogInspect(args: { taskId: string | number, maxEntries?: number }): Promise<{ available: boolean, task: IBuildTaskSummary, entries: Array<unknown>, count: number }> {
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            available: { type: 'boolean' },
+            terminal: { type: 'boolean' },
+            state: { type: 'string' },
+            progress: { type: 'number' },
+            task: BuildTaskSummarySchema,
+            entries: { type: 'array', items: { type: 'object', additionalProperties: false, properties: { message: { type: 'string' }, severity: { type: 'string' }, code: { type: 'string' }, file: { type: 'string' }, line: { type: 'integer' } }, required: ['message'] } },
+            count: { type: 'integer' },
+            truncated: { type: 'boolean' },
+        },
+        required: ['available', 'terminal', 'state', 'progress', 'task', 'entries', 'count', 'truncated'],
+    }, 'GET', ['build', 'log', 'diagnostics', 'inspect'])
+    async buildLogInspect(args: { taskId: string | number, maxEntries?: number, maxBytes?: number }): Promise<BuildLogInspectResult> {
         const taskId = String(args.taskId ?? '');
         if (!taskId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'buildLogInspect requires taskId', recovery: 'Provide a Creator builder task id.' });
-        const item: any = await Editor.Message.request('builder', 'query-task', taskId);
-        if (!item) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Build task ${taskId} not found`, recovery: 'Query build tasks and retry with an existing task id.' });
-        const raw = item.logs ?? item.log ?? item.output ?? item.diagnostics;
-        const entries = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(/\r?\n/).filter(Boolean) : [];
-        const bounded = entries.slice(0, Math.min(Math.max(args.maxEntries ?? 64, 1), 256));
-        return { available: entries.length > 0, task: slimTask(item), entries: bounded, count: bounded.length };
+        let item: unknown;
+        try {
+            item = await Editor.Message.request('builder', 'query-task', taskId);
+        } catch (error: unknown) {
+            throw new ToolError({
+                code: 'BUILD_TASK_QUERY_FAILED',
+                status: 502,
+                message: `Failed to query build task ${taskId}.`,
+                details: { cause: error instanceof Error ? error.message : String(error) },
+                recovery: 'Retry after the Creator builder is ready.',
+            });
+        }
+        if (!item || typeof item !== 'object' || Array.isArray(item)) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Build task ${taskId} not found`, recovery: 'Query build tasks and retry with an existing task id.' });
+        const taskData = item as Record<string, unknown>;
+        const task = slimTask(taskData);
+        if (typeof task.id !== 'string' || !task.id || typeof task.state !== 'string' || !task.state ||
+            typeof task.progress !== 'number' || !Number.isFinite(task.progress)) {
+            throw new ToolError({ code: 'BUILD_TASK_INVALID_RESPONSE', status: 502, message: `Build task ${taskId} returned an invalid summary.`, recovery: 'Retry after the Creator builder returns a complete task record.' });
+        }
+        const rawCandidates = [taskData.logs, taskData.log, taskData.output, taskData.diagnostics, taskData.detailMessage];
+        const raw = rawCandidates.find((candidate) => Array.isArray(candidate) || typeof candidate === 'string');
+        const normalized = normalizeBuildDiagnostics(raw);
+        const maxEntries = Math.min(Math.max(args.maxEntries ?? BUILD_LOG_DEFAULT_ENTRIES, 1), BUILD_LOG_MAX_ENTRIES);
+        const maxBytes = Math.min(Math.max(args.maxBytes ?? BUILD_LOG_DEFAULT_BYTES, 256), BUILD_LOG_MAX_BYTES);
+        const bounded = boundedDiagnostics(normalized.entries, maxEntries, maxBytes);
+        return {
+            available: normalized.available,
+            terminal: BUILD_TERMINAL_STATES[task.state.toLowerCase()] === true,
+            state: task.state,
+            progress: task.progress,
+            task,
+            entries: bounded.entries,
+            count: bounded.entries.length,
+            truncated: bounded.truncated,
+        };
     }
 }

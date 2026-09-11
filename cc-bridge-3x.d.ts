@@ -528,6 +528,39 @@ declare namespace cc_bridge_3x {
         complete: boolean
     };
 
+    /** Candidate: inspect one Creator builder task through query-task only. Returns terminal state/progress and normalized, bounded diagnostics when the public task payload exposes logs; unavailable logs are reported with available=false and no fabricated entries. */
+    function buildLogInspect(args: {
+        taskId: string | number,
+        maxEntries?: number,
+        maxBytes?: number
+    }): {
+        available: boolean,
+        terminal: boolean,
+        state: string,
+        progress: number,
+        task: {
+            id: string,
+            progress: number,
+            state: string,
+            message?: string,
+            time?: string,
+            stage?: string,
+            dirty?: boolean,
+            name?: string,
+            platform?: string,
+            buildPath?: string
+        },
+        entries: Array<{
+            message: string,
+            severity?: string,
+            code?: string,
+            file?: string,
+            line?: number
+        }>,
+        count: number,
+        truncated: boolean
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
