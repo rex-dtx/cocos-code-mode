@@ -29,11 +29,13 @@ export interface BuildPresetAuditResult {
 }
 
 interface OptionRule {
-    type: 'string' | 'boolean' | 'number' | 'array' | 'object' | 'sourceMaps';
+    type: 'string' | 'boolean' | 'number' | 'array' | 'object' | 'sourceMaps' | 'stringOrObject' | 'objectOrArray';
     enum?: readonly string[];
     min?: number;
     max?: number;
     required?: boolean;
+    items?: OptionRule;
+    shape?: Record<string, OptionRule>;
 }
 
 const COMMON_RULES: Record<string, OptionRule> = {
@@ -57,7 +59,7 @@ const COMMON_RULES: Record<string, OptionRule> = {
     mainBundleCompressionType: { type: 'string', enum: ['none', 'merge_dep', 'merge_all_json', 'subpackage', 'zip'] },
     mainBundleIsRemote: { type: 'boolean' },
     useBuiltinServer: { type: 'boolean' },
-    server: { type: 'string', max: 2048 },
+    remoteServerAddress: { type: 'string', max: 2048 },
     startSceneAssetBundle: { type: 'boolean' },
     moveRemoteBundleScript: { type: 'boolean' },
     buildMode: { type: 'string', enum: ['normal', 'bundle', 'script'] },
@@ -68,10 +70,10 @@ const COMMON_RULES: Record<string, OptionRule> = {
     useBuildAutoAtlasCache: { type: 'boolean' },
     nativeCodeBundleMode: { type: 'string', enum: ['wasm', 'asmjs', 'both'] },
     wasmCompressionMode: { type: 'string', enum: ['brotli'] },
-    packages: { type: 'object' },
-    polyfills: { type: 'object' },
-    includeModules: { type: 'array', max: 256 },
-    includedModules: { type: 'array', max: 256 },
+    packages: { type: 'stringOrObject' },
+    polyfills: { type: 'object', shape: { asyncFunctions: { type: 'boolean' }, coreJs: { type: 'boolean' }, targets: { type: 'string', max: 256 } } },
+    includeModules: { type: 'array', max: 256, items: { type: 'string', max: 256 } },
+    includedModules: { type: 'array', max: 256, items: { type: 'string', max: 256 } },
     replaceSplashScreen: { type: 'boolean' },
 };
 
@@ -83,13 +85,14 @@ const PLATFORM_RULES: Record<BuildPresetPlatform, Record<string, OptionRule>> = 
     },
     'web-desktop': {
         useWebGPU: { type: 'boolean' },
-        resolution: { type: 'object' },
+        remoteServerAddress: { type: 'string', max: 2048 },
+        resolution: { type: 'object', shape: { designWidth: { type: 'number', min: 1 }, designHeight: { type: 'number', min: 1 } } },
     },
     android: {
         packageName: { type: 'string', max: 256 },
         apiLevel: { type: 'number', min: 1 },
-        appABIs: { type: 'array', max: 8 },
-        orientation: { type: 'object' },
+        appABIs: { type: 'array', max: 8, items: { type: 'string', enum: ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'] } },
+        orientation: { type: 'object', shape: { landscapeRight: { type: 'boolean' }, landscapeLeft: { type: 'boolean' }, portrait: { type: 'boolean' }, upsideDown: { type: 'boolean' } } },
         useDebugKeystore: { type: 'boolean' },
         appBundle: { type: 'boolean' },
         androidInstant: { type: 'boolean' },
@@ -100,21 +103,21 @@ const PLATFORM_RULES: Record<BuildPresetPlatform, Record<string, OptionRule>> = 
         javaHome: { type: 'string', max: 512 },
         javaPath: { type: 'string', max: 512 },
         swappy: { type: 'boolean' },
-        renderBackEnd: { type: 'object' },
+        renderBackEnd: { type: 'object', shape: { vulkan: { type: 'boolean' }, gles3: { type: 'boolean' }, gles2: { type: 'boolean' } } },
     },
     ios: {
         executableName: { type: 'string', max: 256 },
         packageName: { type: 'string', max: 256 },
-        orientation: { type: 'object' },
+        orientation: { type: 'object', shape: { landscapeRight: { type: 'boolean' }, landscapeLeft: { type: 'boolean' }, portrait: { type: 'boolean' }, upsideDown: { type: 'boolean' } } },
         skipUpdateXcodeProject: { type: 'boolean' },
-        renderBackEnd: { type: 'object' },
-        osTarget: { type: 'object' },
+        renderBackEnd: { type: 'object', shape: { metal: { type: 'boolean' }, gles3: { type: 'boolean' }, gles2: { type: 'boolean' } } },
+        osTarget: { type: 'object', shape: { iphoneos: { type: 'boolean' }, simulator: { type: 'boolean' } } },
         developerTeam: { type: 'string', max: 256 },
         targetVersion: { type: 'string', max: 64 },
     },
     windows: {
         executableName: { type: 'string', max: 256 },
-        renderBackEnd: { type: 'object' },
+        renderBackEnd: { type: 'object', shape: { vulkan: { type: 'boolean' }, gles3: { type: 'boolean' }, gles2: { type: 'boolean' } } },
         targetPlatform: { type: 'string', enum: ['x64'] },
         serverMode: { type: 'boolean' },
         vsData: { type: 'string', max: 512 },
@@ -122,7 +125,7 @@ const PLATFORM_RULES: Record<BuildPresetPlatform, Record<string, OptionRule>> = 
     mac: {
         executableName: { type: 'string', max: 256 },
         packageName: { type: 'string', max: 256 },
-        renderBackEnd: { type: 'object' },
+        renderBackEnd: { type: 'object', shape: { metal: { type: 'boolean' }, gles3: { type: 'boolean' }, gles2: { type: 'boolean' } } },
         supportM1: { type: 'boolean' },
         skipUpdateXcodeProject: { type: 'boolean' },
         targetVersion: { type: 'string', max: 64 },
@@ -150,13 +153,15 @@ function boundedIssueValue(value: unknown): unknown {
 function matchesType(value: unknown, rule: OptionRule): boolean {
     if (rule.type === 'array') return Array.isArray(value);
     if (rule.type === 'object') return isPlainObject(value);
+    if (rule.type === 'stringOrObject') return typeof value === 'string' || isPlainObject(value);
+    if (rule.type === 'objectOrArray') return isPlainObject(value) || Array.isArray(value);
     if (rule.type === 'sourceMaps') return typeof value === 'boolean' || value === 'inline';
     return typeof value === rule.type;
 }
 
 function validateRule(path: string, value: unknown, rule: OptionRule): BuildPresetIssue | undefined {
     if (!matchesType(value, rule)) return { code: 'INVALID_OPTION', path, value: boundedIssueValue(value), message: `${path} must be a ${rule.type === 'sourceMaps' ? 'boolean or "inline"' : rule.type}.` };
-    if (rule.type === 'sourceMaps') return undefined;
+    if (rule.type === 'sourceMaps' || rule.type === 'stringOrObject' || rule.type === 'objectOrArray') return undefined;
     if (rule.type === 'string' && typeof value === 'string') {
         if (value.length === 0) return { code: 'INVALID_OPTION', path, value: '', message: `${path} must not be empty.` };
         if (rule.max !== undefined && value.length > rule.max) return { code: 'INVALID_OPTION', path, value: boundedIssueValue(value), message: `${path} exceeds ${rule.max} characters.` };
@@ -165,8 +170,29 @@ function validateRule(path: string, value: unknown, rule: OptionRule): BuildPres
     if (rule.type === 'number' && typeof value === 'number') {
         if (!Number.isFinite(value) || (rule.min !== undefined && value < rule.min) || (rule.max !== undefined && value > rule.max)) return { code: 'INVALID_OPTION', path, value: boundedIssueValue(value), message: `${path} is outside its supported numeric range.` };
     }
-    if (rule.type === 'array' && Array.isArray(value) && rule.max !== undefined && value.length > rule.max) return { code: 'INVALID_OPTION', path, value: value.length, message: `${path} contains more than ${rule.max} items.` };
+    if (rule.type === 'array' && Array.isArray(value)) {
+        if (rule.max !== undefined && value.length > rule.max) return { code: 'INVALID_OPTION', path, value: value.length, message: `${path} contains more than ${rule.max} items.` };
+        if (rule.items) for (let index = 0; index < value.length; index += 1) {
+            const issue = validateRule(`${path}[${index}]`, value[index], rule.items);
+            if (issue) return issue;
+        }
+    }
     return undefined;
+}
+
+function validateShape(path: string, value: Record<string, unknown>, shape: Record<string, OptionRule>): BuildPresetIssue[] {
+    const issues: BuildPresetIssue[] = [];
+    for (const key of Object.keys(value).slice(0, 32)) {
+        const displayKey = key.length > 128 ? `${key.slice(0, 125)}...` : key;
+        const rule = Object.prototype.hasOwnProperty.call(shape, key) ? shape[key] : undefined;
+        if (!rule) {
+            issues.push({ code: 'UNKNOWN_OPTION', path: `${path}.${displayKey}`, message: `${path}.${displayKey} is not recognized.` });
+            continue;
+        }
+        const issue = validateRule(`${path}.${displayKey}`, value[key], rule);
+        if (issue) issues.push(issue);
+    }
+    return issues;
 }
 
 const PLATFORM_OPTION_NAMES: Record<string, true> = {};
