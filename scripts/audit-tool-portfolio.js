@@ -45,6 +45,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'audioSourceAudit',
   'physics2dTopologyAudit',
   'physics2dCompatibilityAudit',
+  'physics2dCreateBody',
   'physics3dTopologyAudit',
   'physics3dValidate',
   'sceneScriptHealthScan',

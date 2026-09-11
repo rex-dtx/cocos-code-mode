@@ -52,6 +52,18 @@ async function postTool(toolPath, body) {
   });
 }
 
+async function postExpectedErrorTool(toolPath, body, testId) {
+  return getJson(`/tools/${toolPath}`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-ccb-expected-error': 'true',
+      'x-ccb-test-id': testId,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 async function healthCheck() {
   try {
     const r = await getJson('/utcp');
@@ -70,4 +82,4 @@ function resVal(body) {
   return null;
 }
 
-module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, healthCheck, resVal };
+module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, healthCheck, resVal };

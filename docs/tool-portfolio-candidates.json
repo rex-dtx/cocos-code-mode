@@ -755,7 +755,7 @@
         },
         {
           "name": "physics2dCreateBody",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Compound node/body/collider creation with backend preflight and persistence.",
           "route": "compound scene workflow",
           "prerequisites": [
@@ -770,6 +770,7 @@
           "negativeTestID": "candidate.physics2dCreateBody.negative.v1",
           "fixtureID": "fixture.candidate.physics2dCreateBody.v1",
           "evidenceArtifact": "reports/evidence/candidates/physics2dCreateBody/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/physics2dCreateBody",
           "proposedExecutionPhase": "P4"
         },
         {

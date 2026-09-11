@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { getJson, getExpectedErrorJson, postTool, healthCheck } = require('../helpers/utcp-client');
+const { getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, healthCheck } = require('../helpers/utcp-client');
 
 describe('live: candidate expansion qualification witnesses', () => {
   let health;
@@ -162,6 +162,49 @@ return out;`,
         code: `const sc=cc.director.getScene();for(const name of ['__candidate_particle__','__candidate_terrain__','__candidate_p2__','__candidate_p2_bad__','__candidate_p3__','__candidate_p3_bad__','__candidate_audio__']){const n=sc.getChildByName(name);if(n){n.removeFromParent();n.destroy();}}return true;`,
       });
       assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
+    }
+  });
+
+  it('qualifies compound Box2D body creation with rollback-safe preflight', async (t) => {
+    if (skipIfDown(t)) return;
+    const name = '__candidate_create_p2_body__';
+    const cleanup = async () => {
+      const removed = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `const sc=cc.director.getScene();const n=sc.getChildByName('${name}');if(n){n.removeFromParent();n.destroy();}return !sc.getChildByName('${name}');`,
+      });
+      assert.equal(removed.status, 200, JSON.stringify(removed.body));
+      assert.equal(removed.body.result, true);
+      const snapshot = await postTool('executeJavascript', {
+        context: 'editor',
+        code: `await Editor.Message.request('scene','snapshot');return true;`,
+      });
+      assert.equal(snapshot.status, 200, JSON.stringify(snapshot.body));
+    };
+    await cleanup();
+    try {
+      const builtin = await postExpectedErrorTool('physics2dCreateBody', { backend: 'builtin', name }, 'candidate.physics2dCreateBody.negative.v1');
+      assert.equal(builtin.status, 422, JSON.stringify(builtin.body));
+      assert.equal(builtin.body.code, 'UNSUPPORTED_BACKEND');
+      const absentAfterPreflight = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `return !cc.director.getScene().getChildByName('${name}');`,
+      });
+      assert.equal(absentAfterPreflight.body.result, true);
+
+      const created = await postTool('physics2dCreateBody', { backend: 'box2d', collider: 'circle', name });
+      assert.equal(created.status, 200, JSON.stringify(created.body));
+      assert.equal(created.body.backend, 'box2d');
+      assert.equal(created.body.bodyType, 'cc.RigidBody2D');
+      assert.equal(created.body.colliderType, 'cc.CircleCollider2D');
+      assert.ok(created.body.components.includes('cc.RigidBody2D'));
+      assert.ok(created.body.components.includes('cc.CircleCollider2D'));
+      const topology = await getJson(`/tools/physics2dTopologyAudit?reference%5Bid%5D=${encodeURIComponent(created.body.reference.id)}`);
+      assert.equal(topology.status, 200, JSON.stringify(topology.body));
+      assert.equal(topology.body.valid, true);
+      assert.deepEqual(topology.body.nodes[0].colliders, ['cc.CircleCollider2D']);
+    } finally {
+      await cleanup();
     }
   });
 
