@@ -73,7 +73,7 @@ function stageUpdateInBackground(): void {
         const body = toCcbErrorBody(error);
         const transport = typeof body.details.transport === 'string' ? ` transport=${body.details.transport}` : '';
         const status = typeof body.details.status === 'number' ? ` status=${body.details.status}` : '';
-        const detailError = typeof body.details.detail === 'string' ? ` detail=${body.details.detail}` : '';
+        const detailError = typeof body.details.detail === 'string' ? ` detail=${body.details.detail}` : ` message=${body.error.replace(/[\r\n]+/g, ' ').slice(0, 160)}`;
         bootLog('error', `Background update check failed: ${body.code}${transport}${status}${detailError}`);
     });
 }
