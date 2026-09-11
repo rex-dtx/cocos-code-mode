@@ -1,5 +1,5 @@
 import { createHash } from "crypto"
-import { createWriteStream, mkdirSync, renameSync, rmSync } from "fs"
+import { createWriteStream, mkdirSync, readFileSync, renameSync, rmSync } from "fs"
 import { request as httpsRequest } from "https"
 import { dirname } from "path"
 import { URL } from "url"
@@ -16,6 +16,9 @@ function node14Fetch(url: URL, signal?: AbortSignal): Promise<Response> {
       path: `${url.pathname}${url.search}`,
       method: "GET",
       headers: { "accept-encoding": "identity" },
+      ca: process.env.CCB_RELEASE_CA_PATH || process.env.NODE_EXTRA_CA_CERTS
+        ? readFileSync(process.env.CCB_RELEASE_CA_PATH || process.env.NODE_EXTRA_CA_CERTS!)
+        : undefined,
     }, (incoming) => {
       const pending: Array<{ resolve: (value: ReadResult) => void; reject: (error: Error) => void }> = [];
       const chunks: Buffer[] = [];
