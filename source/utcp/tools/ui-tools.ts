@@ -4,6 +4,7 @@ import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { IProperty } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { finalizeUiLayoutReport } from '../../ui-layout-report';
 import type { LayoutReport, LayoutReportRequest, LayoutReportResult } from '../../ui-layout-report';
+import type { UiSafeAreaInspectRequest, UiSafeAreaInspectResult } from '../../ui-safe-area-inspect';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -343,6 +344,77 @@ export class UiTools {
         }
         return raw as LayoutReportResult;
     }
+    @utcpTool(
+        'uiSafeAreaInspect',
+        'Inspect bounded 2D UI geometry against a caller-provided safe-area rectangle or root-relative insets without mutating the scene.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                root: InstanceReferenceSchema,
+                rootPath: { type: 'string', minLength: 1, maxLength: 256 },
+                safeArea: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        rect: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                                x: { type: 'number' }, y: { type: 'number' },
+                                width: { type: 'number', exclusiveMinimum: 0 },
+                                height: { type: 'number', exclusiveMinimum: 0 },
+                            },
+                            required: ['x', 'y', 'width', 'height'],
+                        },
+                        insets: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                                top: { type: 'number', minimum: 0 }, right: { type: 'number', minimum: 0 },
+                                bottom: { type: 'number', minimum: 0 }, left: { type: 'number', minimum: 0 },
+                            },
+                            required: ['top', 'right', 'bottom', 'left'],
+                        },
+                        x: { type: 'number' }, y: { type: 'number' },
+                        width: { type: 'number', exclusiveMinimum: 0 },
+                        height: { type: 'number', exclusiveMinimum: 0 },
+                    },
+                    oneOf: [
+                        { required: ['rect'] },
+                        { required: ['insets'] },
+                        { required: ['x', 'y', 'width', 'height'] },
+                    ],
+                },
+                maxNodes: { type: 'integer', minimum: 1, maximum: 5000, default: 128 },
+                maxIssues: { type: 'integer', minimum: 1, maximum: 5000, default: 256 },
+            },
+            required: ['safeArea'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                complete: { type: 'boolean' }, valid: { type: 'boolean' }, truncated: { type: 'boolean' },
+                safeArea: { type: 'object' }, root: { type: 'object' },
+                checkedNodes: { type: 'integer' }, nodes: { type: 'array' }, issues: { type: 'array' },
+                truncation: { type: 'array' },
+                error: { type: 'object', additionalProperties: false, required: ['code', 'message', 'evidence'], properties: { code: { type: 'string' }, message: { type: 'string' }, evidence: { type: 'object' } } },
+            },
+            oneOf: [
+                { required: ['error'] },
+                { required: ['complete', 'valid', 'safeArea', 'root', 'checkedNodes', 'nodes', 'issues', 'truncation', 'truncated'] },
+            ],
+        },
+        'POST',
+        ['ui', 'safe-area', 'inspect', 'geometry', 'diagnostics']
+    )
+    async uiSafeAreaInspect(args: UiSafeAreaInspectRequest): Promise<UiSafeAreaInspectResult> {
+        return await Editor.Message.request('scene', 'execute-scene-script', {
+            name: 'cc-bridge-3x', method: 'uiSafeAreaInspect', args: [args],
+        }) as UiSafeAreaInspectResult;
+    }
+
 
     @utcpTool(
         'uiLayoutInspect',
