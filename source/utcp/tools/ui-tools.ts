@@ -5,6 +5,8 @@ import { IProperty } from '@cocos/creator-types/editor/packages/scene/@types/pub
 import { finalizeUiLayoutReport } from '../../ui-layout-report';
 import type { LayoutReport, LayoutReportRequest, LayoutReportResult } from '../../ui-layout-report';
 import type { UiSafeAreaInspectRequest, UiSafeAreaInspectResult } from '../../ui-safe-area-inspect';
+import { isCandidateRequest } from '../../ui-layout-validate';
+import type { UiLayoutValidateRequest, UiLayoutValidateResult } from '../../ui-layout-validate';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -467,17 +469,63 @@ export class UiTools {
 
     @utcpTool(
         'uiLayoutValidate',
-        'Validate bounded UI layout geometry for missing transforms and child clipping.',
+        'Validate bounded, read-only UI geometry for clipping, overlap, anchors, and safe-area constraints.',
         {
             type: 'object',
-            properties: { reference: InstanceReferenceSchema, maxNodes: { type: 'integer', minimum: 1, maximum: 128, default: 64 } },
+            additionalProperties: false,
+            properties: {
+                reference: InstanceReferenceSchema,
+                root: InstanceReferenceSchema,
+                rootPath: { type: 'string', minLength: 1, maxLength: 256 },
+                designResolution: { type: 'object', additionalProperties: false, properties: { width: { type: 'number', exclusiveMinimum: 0 }, height: { type: 'number', exclusiveMinimum: 0 } }, required: ['width', 'height'] },
+                viewport: { type: 'object', additionalProperties: false, properties: { width: { type: 'number', exclusiveMinimum: 0 }, height: { type: 'number', exclusiveMinimum: 0 } }, required: ['width', 'height'] },
+                fitMode: { type: 'string', enum: ['fitWidth', 'fitHeight', 'contain', 'cover', 'stretch', 'none'], default: 'contain' },
+                safeArea: {
+                    type: 'object', additionalProperties: false,
+                    properties: {
+                        rect: { type: 'object', additionalProperties: false, properties: { x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number', exclusiveMinimum: 0 }, height: { type: 'number', exclusiveMinimum: 0 } }, required: ['x', 'y', 'width', 'height'] },
+                        insets: { type: 'object', additionalProperties: false, properties: { top: { type: 'number', minimum: 0 }, right: { type: 'number', minimum: 0 }, bottom: { type: 'number', minimum: 0 }, left: { type: 'number', minimum: 0 } }, required: ['top', 'right', 'bottom', 'left'] },
+                        x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number', exclusiveMinimum: 0 }, height: { type: 'number', exclusiveMinimum: 0 },
+                    },
+                    oneOf: [{ required: ['rect'] }, { required: ['insets'] }, { required: ['x', 'y', 'width', 'height'] }],
+                },
+                maxNodes: { type: 'integer', minimum: 1, maximum: 5000, default: 128 },
+                maxIssues: { type: 'integer', minimum: 1, maximum: 5000, default: 256 },
+                checks: {
+                    type: 'object', additionalProperties: false,
+                    properties: { clipping: { type: 'boolean', default: true }, overlap: { type: 'boolean', default: true }, anchors: { type: 'boolean', default: true }, safeArea: { type: 'boolean', default: true } },
+                },
+            },
+            anyOf: [
+                { required: ['reference'] },
+                {
+                    oneOf: [{ required: ['root'] }, { required: ['rootPath'] }],
+                    anyOf: [{ required: ['designResolution', 'viewport'] }, { required: ['safeArea'] }],
+                },
+            ],
         },
-        { type: 'object', properties: { valid: { type: 'boolean' }, issues: { type: 'array' }, checkedNodes: { type: 'integer' } }, required: ['valid', 'issues', 'checkedNodes'] },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                valid: { type: 'boolean' }, complete: { type: 'boolean' }, truncated: { type: 'boolean' },
+                checkedNodes: { type: 'integer' }, root: { type: 'object' }, nodes: { type: 'array' }, issues: { type: 'array' },
+                truncation: { type: 'array' }, geometry: { type: 'object' }, safeArea: { type: 'object' },
+                error: { type: 'object', additionalProperties: false, required: ['code', 'message', 'evidence'], properties: { code: { type: 'string' }, message: { type: 'string' }, evidence: { type: 'object' } } },
+            },
+            oneOf: [{ required: ['error'] }, { required: ['valid', 'complete', 'truncated', 'checkedNodes', 'root', 'nodes', 'issues', 'truncation'] }],
+        },
         'POST',
-        ['ui', 'layout', 'validate', 'geometry']
+        ['ui', 'layout', 'validate', 'geometry', 'diagnostics']
     )
-    async uiLayoutValidate(args: { reference?: IInstanceReference, maxNodes?: number }): Promise<{ valid: boolean, issues: string[], checkedNodes: number }> {
-        const inspected = await this.inspectLayout(args.reference?.id, args.maxNodes ?? 64);
+    async uiLayoutValidate(args: ({ reference?: IInstanceReference } & UiLayoutValidateRequest)): Promise<UiLayoutValidateResult | { valid: boolean, issues: string[], checkedNodes: number }> {
+        if (isCandidateRequest(args)) {
+            return await Editor.Message.request('scene', 'execute-scene-script', {
+                name: 'cc-bridge-3x', method: 'uiLayoutValidate', args: [args],
+            }) as UiLayoutValidateResult;
+        }
+        const legacyArgs = args as { reference?: IInstanceReference; maxNodes?: number };
+        const inspected = await this.inspectLayout(legacyArgs.reference?.id, legacyArgs.maxNodes ?? 64);
         const issues: string[] = [];
         for (const item of inspected.nodes) {
             if (!item.size) issues.push(`${item.reference.id}: missing cc.UITransform`);

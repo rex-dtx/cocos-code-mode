@@ -64,6 +64,8 @@ export interface LayoutReportNode {
     screenCorners: Point[];
     screenAabb: Aabb;
     anchor: Point;
+    /** Whether the live UITransform exposed an anchorPoint value. */
+    anchorProvided: boolean;
     size: { width: number; height: number };
     constraints: Record<string, any>;
 }
@@ -609,15 +611,18 @@ export function buildUiLayoutReport(sceneRoot: LiveNode, request: LayoutReportRe
         if (isUiNode(node) && transform) {
             const rawSize = readProperty(transform, 'contentSize', '_contentSize') ?? { width: 0, height: 0 };
             const size = { width: num(rawSize.width), height: num(rawSize.height) };
-            const rawAnchor = readProperty(transform, 'anchorPoint', '_anchorPoint') ?? { x: 0.5, y: 0.5 };
-            const anchor = point(rawAnchor);
+            const rawAnchor = readProperty(transform, 'anchorPoint', '_anchorPoint');
+            const anchorProvided = rawAnchor !== undefined && rawAnchor !== null
+                && typeof rawAnchor.x === 'number' && Number.isFinite(rawAnchor.x)
+                && typeof rawAnchor.y === 'number' && Number.isFinite(rawAnchor.y);
+            const anchor = point(rawAnchor ?? { x: 0.5, y: 0.5 });
             const matrix = extractMatrix(node.worldMatrix ?? node._worldMatrix);
             const world = transformCorners(localCorners(size, anchor), matrix);
             const screen = mapCorners(world, fit);
             item = {
                 uuid: node.uuid ?? '', path, name: node.name ?? node.uuid ?? '', active: isActive(node), siblingIndex, components: componentsOf(node).map(componentType),
                 localTransform: { position: point(node.position), scale: point(node.scale ?? { x: 1, y: 1 }), rotation: node.rotation ?? null, eulerAngles: node.eulerAngles ?? null, skewX: num(node.skewX), skewY: num(node.skewY) },
-                worldMatrix: matrix, worldCorners: world, designAabb: aabbFromCorners(world), screenCorners: screen, screenAabb: aabbFromCorners(screen), anchor, size, constraints: collectConstraints(node),
+                worldMatrix: matrix, worldCorners: world, designAabb: aabbFromCorners(world), screenCorners: screen, screenAabb: aabbFromCorners(screen), anchor, anchorProvided, size, constraints: collectConstraints(node),
             };
             if (report.nodes.length < maxNodes) {
                 report.nodes.push(item);

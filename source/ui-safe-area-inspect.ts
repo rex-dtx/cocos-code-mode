@@ -92,7 +92,7 @@ function contained(a: Aabb, b: Aabb): boolean {
         && a.y + a.height <= b.y + b.height + EPSILON;
 }
 
-function normalizedSafeArea(request: UiSafeAreaInspectRequest, rootBounds: Aabb): { rect: SafeAreaRect; insets?: SafeAreaInsets } | UiSafeAreaInspectError {
+export function normalizedSafeArea(request: UiSafeAreaInspectRequest, rootBounds: Aabb): { rect: SafeAreaRect; insets?: SafeAreaInsets } | UiSafeAreaInspectError {
     const value = request.safeArea;
     if (!value || typeof value !== 'object') return error('UI_SAFE_AREA_INVALID_INPUT', 'safeArea must be a rectangle or insets object');
     const inlineRect = ('x' in value || 'y' in value || 'width' in value || 'height' in value)
