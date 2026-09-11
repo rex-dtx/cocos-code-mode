@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-10T11:16:22Z",
+  "checkedAt": "2026-09-11T02:12:39Z",
   "endpoint": "http://127.0.0.1:49650",
   "qualificationTarget": {
-    "artifactCommit": "489ac5f",
+    "artifactCommit": "772e019",
     "dirty": true,
     "engineVersion": "3.7.3",
     "nativeVersion": "3.7.3",
     "os": "windows-x64",
     "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
-    "manualCount": 121,
-    "uniqueManualCount": 121
+    "manualCount": 122,
+    "uniqueManualCount": 122
   },
   "testCommand": "UTCP_PORT=49650 node --test tests/live/candidate-expansion-qualification.test.js",
   "testResult": {
-    "tests": 4,
-    "passed": 4,
+    "tests": 5,
+    "passed": 5,
     "failed": 0,
     "fixturesCleaned": true
   },
@@ -75,6 +75,10 @@
     "physics2dCompatibilityAudit": {
       "positive": "real RigidBody2D plus BoxCollider2D fixture returned valid=true for backend=box2d",
       "negative": "the same fixture returned valid=false for backend=builtin with explicit backend capability issue"
+    },
+    "physics2dCreateBody": {
+      "positive": "Box2D circle-body creation returned verified node, RigidBody2D, CircleCollider2D and valid topology",
+      "negative": "Builtin preflight returned HTTP 422 UNSUPPORTED_BACKEND and left no node behind"
     }
   },
   "registeredUnverified": {
@@ -86,11 +90,11 @@
   "countReconciliation": {
     "qualifiedBaseline": 86,
     "previouslyQualifiedExpansion": 17,
-    "newlyQualifiedExpansion": 14,
-    "qualifiedRegisteredTools": 117,
+    "newlyQualifiedExpansion": 15,
+    "qualifiedRegisteredTools": 118,
     "registeredUnverifiedExpansion": 4,
-    "registeredToolCount": 121,
-    "remainingGapTo157": 40,
-    "remainingGapIfFourUnverifiedQualify": 36
+    "registeredToolCount": 122,
+    "remainingGapTo157": 39,
+    "remainingGapIfFourUnverifiedQualify": 35
   }
 }

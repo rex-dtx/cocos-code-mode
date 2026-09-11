@@ -148,6 +148,93 @@ export class ExpansionTools {
         }
         return { valid: issues.length === 0, backend: args.backend, nodes: topology.nodes, issues, checkedNodes: topology.checkedNodes };
     }
+
+    @utcpTool(
+        'physics2dCreateBody',
+        'Create one verified Box2D rigid-body node with a bounded collider choice, snapshot, read-back, and rollback on failure.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['builtin', 'box2d'] },
+                collider: { type: 'string', enum: ['box', 'circle'], default: 'box' },
+                name: { type: 'string', minLength: 1, maxLength: 128, default: 'Physics2DBody' },
+                parentReference: InstanceReferenceSchema,
+            },
+            required: ['backend'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                reference: InstanceReferenceSchema,
+                backend: { type: 'string', enum: ['box2d'] },
+                bodyType: { type: 'string' },
+                colliderType: { type: 'string' },
+                components: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['reference', 'backend', 'bodyType', 'colliderType', 'components'],
+        },
+        'POST',
+        ['physics', '2d', 'create', 'body', 'collider', 'compound']
+    )
+    async physics2dCreateBody(args: { backend: 'builtin' | 'box2d', collider?: 'box' | 'circle', name?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference, backend: 'box2d', bodyType: string, colliderType: string, components: string[] }> {
+        if (args.backend !== 'box2d') {
+            throw new ToolError({
+                code: 'UNSUPPORTED_BACKEND',
+                status: 422,
+                message: 'physics2dCreateBody requires the box2d backend; Creator Builtin provides collision detection without rigid bodies.',
+                recovery: 'Select the box2d backend or create collider-only nodes with the ordinary component tools.',
+            });
+        }
+        const colliderType = args.collider === 'circle' ? 'cc.CircleCollider2D' : 'cc.BoxCollider2D';
+        let nodeUuid: string | undefined;
+        try {
+            let parentUuid = args.parentReference?.id;
+            if (parentUuid) {
+                const parent = await Editor.Message.request('scene', 'query-node', parentUuid);
+                if (!parent) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Parent node ${parentUuid} not found` });
+            } else {
+                const root = await Editor.Message.request('scene', 'query-node-tree') as unknown as NodeRecord | null;
+                parentUuid = root?.uuid;
+                if (!parentUuid) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'Open scene root not found' });
+            }
+            const created = await Editor.Message.request('scene', 'create-node', { name: args.name ?? 'Physics2DBody', parent: parentUuid });
+            nodeUuid = Array.isArray(created) ? created[0] : created;
+            if (typeof nodeUuid !== 'string' || !nodeUuid) throw new Error('Creator did not return a node UUID');
+            await Editor.Message.request('scene', 'create-component', { uuid: nodeUuid, component: 'cc.RigidBody2D' });
+            await Editor.Message.request('scene', 'create-component', { uuid: nodeUuid, component: colliderType });
+            await Editor.Message.request('scene', 'snapshot');
+            const dump = await Editor.Message.request('scene', 'query-node', nodeUuid) as unknown as NodeRecord | null;
+            const components = dump ? componentTypes(dump) : [];
+            if (!dump || !components.includes('cc.RigidBody2D') || !components.includes(colliderType)) {
+                throw new Error(`Creator read-back did not contain cc.RigidBody2D and ${colliderType}`);
+            }
+            return {
+                reference: { id: nodeUuid, type: 'cc.Node' },
+                backend: 'box2d',
+                bodyType: 'cc.RigidBody2D',
+                colliderType,
+                components,
+            };
+        } catch (error) {
+            if (nodeUuid) {
+                try {
+                    await Editor.Message.request('scene', 'remove-node', { uuid: nodeUuid });
+                    await Editor.Message.request('scene', 'snapshot');
+                } catch (rollbackError) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: `physics2dCreateBody failed and node ${nodeUuid} could not be rolled back`,
+                        details: { cause: error instanceof Error ? error.message : String(error), rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) },
+                        recovery: `Delete node ${nodeUuid} manually before retrying.`,
+                    });
+                }
+            }
+            throw error;
+        }
+    }
     @utcpTool('physics3dInspect', 'Inspect bounded 3D rigid bodies, colliders, materials and joints in the open scene.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { nodes: { type: 'array' }, count: { type: 'integer' } }, required: ['nodes', 'count'] }, 'GET', ['physics', '3d', 'inspect'])
     async physics3dInspect(args: { reference?: IInstanceReference }): Promise<{ nodes: Array<Record<string, unknown>>, count: number }> {
         const nodes = await sceneNodes(args.reference?.id);
