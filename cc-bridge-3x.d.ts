@@ -409,6 +409,28 @@ declare namespace cc_bridge_3x {
         jointType: "cc.FixedConstraint" | "cc.HingeConstraint" | "cc.PointToPointConstraint"
     };
 
+    /** Candidate: configure bounded serialized cc.AudioSource properties on one existing typed node or AudioSource component. Only volume, loop, playOnAwake, and a proven cc.AudioClip UUID are accepted; no playback is started. Typed preflight, one successful scene snapshot, read-back, and rollback on failure are part of the contract. Live evidence is required before qualification. */
+    function audioSourceConfigure(args: {
+        reference: InstanceReference & { type: "cc.Node" | "cc.AudioSource" },
+        properties: {
+            volume?: number,
+            loop?: boolean,
+            playOnAwake?: boolean,
+            clip?: InstanceReference & { type: "cc.AudioClip" }
+        }
+    }): {
+        reference: InstanceReference,
+        componentReference: InstanceReference,
+        properties: {
+            volume: number,
+            loop: boolean,
+            playOnAwake: boolean,
+            clip: (InstanceReference & { type: "cc.AudioClip" }) | null
+        },
+        changed: Array<"volume" | "loop" | "playOnAwake" | "clip">,
+        verified: true
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
