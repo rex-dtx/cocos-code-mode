@@ -604,6 +604,19 @@ declare namespace cc_bridge_3x {
         valid: boolean,
         complete: boolean
     };
+    /** Candidate: inspect a bounded, read-only project-local build artifact inventory. artifactPath must be relative and contained by the project; traversal and control characters are rejected. Files are returned in lexical order up to maxFiles. */
+    function buildArtifactInspect(args: {
+        artifactPath: string,
+        maxFiles?: number
+    }): {
+        exists: boolean,
+        files: Array<{
+            path: string,
+            bytes: number
+        }>,
+        count: number,
+        truncated: boolean
+    };
 
     /** Candidate: inspect one Creator builder task through query-task only. Returns terminal state/progress and normalized, bounded diagnostics when the public task payload exposes logs; unavailable logs are reported with available=false and no fabricated entries. */
     function buildLogInspect(args: {
