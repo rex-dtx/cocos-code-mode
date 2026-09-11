@@ -1325,22 +1325,191 @@ export class ExpansionTools {
         return { valid: issues.length === 0, issues, platform };
     }
 
-    @utcpTool('buildArtifactInspect', 'Inspect a bounded project-local build artifact file inventory with byte sizes.', { type: 'object', properties: { artifactPath: { type: 'string' }, maxFiles: { type: 'integer', minimum: 1, maximum: 256, default: 64 } }, required: ['artifactPath'] }, { type: 'object', properties: { exists: { type: 'boolean' }, files: { type: 'array' }, count: { type: 'integer' } }, required: ['exists', 'files', 'count'] }, 'GET', ['build', 'artifact', 'inspect'])
-    async buildArtifactInspect(args: { artifactPath: string, maxFiles?: number }): Promise<{ exists: boolean, files: Array<Record<string, unknown>>, count: number }> {
-        const projectRoot = path.resolve((Editor.Project as any).path);
-        const target = path.resolve(projectRoot, args.artifactPath);
-        if (!target.startsWith(projectRoot + path.sep) && target !== projectRoot) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'artifactPath must remain inside the project' });
-        const stat = await fs.stat(target).catch(() => null);
-        if (!stat) return { exists: false, files: [], count: 0 };
-        const files: Array<Record<string, unknown>> = [];
-        const walk = async (current: string): Promise<void> => {
-            if (files.length >= Math.min(args.maxFiles ?? 64, 256)) return;
-            const currentStat = await fs.stat(current);
-            if (currentStat.isDirectory()) { for (const entry of await fs.readdir(current)) await walk(path.join(current, entry)); }
-            else files.push({ path: path.relative(projectRoot, current).replace(/\\/g, '/'), bytes: currentStat.size });
+    @utcpTool('buildArtifactInspect', 'Inspect a bounded project-local build artifact file inventory with byte sizes.', {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            artifactPath: { type: 'string', minLength: 1 },
+            maxFiles: { type: 'integer', minimum: 1, maximum: 256, default: 64 },
+        },
+        required: ['artifactPath'],
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            exists: { type: 'boolean' },
+            files: {
+                type: 'array',
+                maxItems: 256,
+                items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        path: { type: 'string' },
+                        bytes: { type: 'integer', minimum: 0 },
+                    },
+                    required: ['path', 'bytes'],
+                },
+            },
+            count: { type: 'integer', minimum: 0, maximum: 256 },
+            truncated: { type: 'boolean' },
+        },
+        required: ['exists', 'files', 'count', 'truncated'],
+    }, 'GET', ['build', 'artifact', 'inspect'])
+    async buildArtifactInspect(args: { artifactPath: string, maxFiles?: number }): Promise<{
+        exists: boolean,
+        files: Array<{ path: string, bytes: number }>,
+        count: number,
+        truncated: boolean,
+    }> {
+        const artifactPath = (args as { artifactPath?: unknown } | undefined)?.artifactPath;
+        const maxFilesValue = (args as { maxFiles?: unknown } | undefined)?.maxFiles;
+        if (typeof artifactPath !== 'string'
+            || artifactPath.length === 0
+            || /[\u0000-\u001f\u007f-\u009f]/u.test(artifactPath)
+            || path.isAbsolute(artifactPath)
+            || path.posix.isAbsolute(artifactPath)
+            || path.win32.isAbsolute(artifactPath)
+            || /^[A-Za-z]:/.test(artifactPath)
+            || artifactPath.split(/[\\/]+/).some((segment) => segment === '..')) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'artifactPath must be a nonempty relative path without traversal or control characters',
+            });
+        }
+        if (maxFilesValue !== undefined
+            && (!Number.isInteger(maxFilesValue) || (maxFilesValue as number) < 1 || (maxFilesValue as number) > 256)) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'maxFiles must be an integer between 1 and 256',
+            });
+        }
+        const maxFiles = (maxFilesValue as number | undefined) ?? 64;
+        const isWithinProject = (candidate: string, projectRoot: string): boolean => {
+            const relative = path.relative(projectRoot, candidate);
+            return relative === '' || (!path.isAbsolute(relative) && relative !== '..' && !relative.startsWith(`..${path.sep}`));
         };
-        await walk(target);
-        return { exists: true, files, count: files.length };
+        const isMissingError = (error: unknown): boolean => {
+            const code = (error as { code?: unknown } | null)?.code;
+            return code === 'ENOENT' || code === 'ENOTDIR';
+        };
+        const filesystemError = (operation: string, error: unknown): ToolError => new ToolError({
+            code: 'BUILD_ARTIFACT_INSPECT_FAILED',
+            status: 502,
+            message: `Failed to ${operation} while inspecting the build artifact.`,
+            details: { cause: (error instanceof Error ? error.message : String(error)).slice(0, 512) },
+            recovery: 'Retry after the project filesystem is available.',
+        });
+
+        let projectRoot: string;
+        try {
+            projectRoot = await fs.realpath(path.resolve(Editor.Project.path));
+        } catch (error) {
+            throw filesystemError('resolve the project path', error);
+        }
+        const target = path.resolve(projectRoot, artifactPath);
+        if (!isWithinProject(target, projectRoot)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'artifactPath must remain inside the project' });
+        }
+
+        let targetRealpath: string;
+        try {
+            targetRealpath = await fs.realpath(target);
+        } catch (error) {
+            if (isMissingError(error)) return { exists: false, files: [], count: 0, truncated: false };
+            throw filesystemError('resolve the artifact path', error);
+        }
+        if (!isWithinProject(targetRealpath, projectRoot)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'artifactPath must remain inside the project' });
+        }
+
+        const files: Array<{ path: string, bytes: number }> = [];
+        const visitedDirectories = new Set<string>();
+        let truncated = false;
+        type FrontierEntry = { current: string, relative: string };
+        const frontier: FrontierEntry[] = [{
+            current: target,
+            relative: path.relative(projectRoot, target).replace(/\\/g, '/'),
+        }];
+        const compareEntries = (left: FrontierEntry, right: FrontierEntry): number => {
+            if (left.relative < right.relative) return -1;
+            if (left.relative > right.relative) return 1;
+            return left.current < right.current ? -1 : left.current > right.current ? 1 : 0;
+        };
+        const pushFrontier = (entry: FrontierEntry): void => {
+            frontier.push(entry);
+            let index = frontier.length - 1;
+            while (index > 0) {
+                const parent = Math.floor((index - 1) / 2);
+                if (compareEntries(frontier[parent], entry) <= 0) break;
+                frontier[index] = frontier[parent];
+                index = parent;
+            }
+            frontier[index] = entry;
+        };
+        const popFrontier = (): FrontierEntry | undefined => {
+            const first = frontier[0];
+            const last = frontier.pop();
+            if (!first || !last || frontier.length === 0) return first;
+            let index = 0;
+            while (true) {
+                const left = index * 2 + 1;
+                if (left >= frontier.length) break;
+                const right = left + 1;
+                const child = right < frontier.length && compareEntries(frontier[right], frontier[left]) < 0 ? right : left;
+                if (compareEntries(frontier[child], last) >= 0) break;
+                frontier[index] = frontier[child];
+                index = child;
+            }
+            frontier[index] = last;
+            return first;
+        };
+
+        while (frontier.length > 0) {
+            const next = popFrontier();
+            if (!next) break;
+            let realCurrent: string;
+            try {
+                realCurrent = await fs.realpath(next.current);
+            } catch (error) {
+                throw filesystemError('resolve an artifact entry', error);
+            }
+            if (!isWithinProject(realCurrent, projectRoot)) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'artifactPath must remain inside the project' });
+            }
+            let currentStat: { isDirectory(): boolean, size: number };
+            try {
+                currentStat = await fs.stat(next.current);
+            } catch (error) {
+                throw filesystemError('read an artifact entry', error);
+            }
+            if (!currentStat.isDirectory()) {
+                if (files.length >= maxFiles) {
+                    truncated = true;
+                    break;
+                }
+                files.push({ path: next.relative, bytes: currentStat.size });
+                continue;
+            }
+            if (visitedDirectories.has(realCurrent)) continue;
+            visitedDirectories.add(realCurrent);
+            let entries: string[];
+            try {
+                entries = await fs.readdir(next.current);
+            } catch (error) {
+                throw filesystemError('read an artifact directory', error);
+            }
+            for (const entry of entries) {
+                const current = path.join(next.current, entry);
+                pushFrontier({
+                    current,
+                    relative: path.relative(projectRoot, current).replace(/\\/g, '/'),
+                });
+            }
+        }
+        return { exists: true, files, count: files.length, truncated };
     }
     @utcpTool('buildOutputAudit', 'Verify bounded build output files, byte sizes and SHA-256 hashes against an expected manifest.', {
         type: 'object',
