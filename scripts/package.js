@@ -72,8 +72,8 @@ async function createZip(outputPath, entries) {
   archive.pipe(output);
   for (const entry of entries) {
     const options = { name: entry.archivePath, date: archiveDate, mode: entry.mode };
-    if (entry.bytes) archive.append(entry.bytes, options);
-    else archive.file(entry.sourcePath, options);
+    const bytes = entry.bytes || fs.readFileSync(entry.sourcePath);
+    archive.append(bytes, options);
   }
   await archive.finalize();
   await closed;
