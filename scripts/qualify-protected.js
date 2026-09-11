@@ -20,7 +20,34 @@ function checkConfiguration() {
   if (!process.env.CCB_ADMIN_CREDENTIAL) console.warn('CCB_ADMIN_CREDENTIAL not set; admin operations will be skipped.');
   if (process.env.CCB_RELEASE_ORIGIN && !/^https:\/\//.test(process.env.CCB_RELEASE_ORIGIN)) fail('CCB_RELEASE_ORIGIN must use HTTPS when configured');
 }
+function statusReport() {
+  const checks = [
+    { gate: "release-origin", variables: ["CCB_RELEASE_ORIGIN"] },
+    { gate: "signed-release-inputs", variables: ["CCB_RELEASE_ROOT_METADATA_PATH", "CCB_RELEASE_ZIP", "CCB_RELEASE_ROOT_PATH", "CCB_RELEASE_ROOT_SHA256"] },
+    { gate: "member-authentication", variables: ["CCB_MEMBER_CREDENTIAL"] },
+    { gate: "project-binding", variables: ["CCB_PROJECT_ID"] },
+    { gate: "device-identity", variables: ["CCB_DEVICE_IDENTITY_PATH"], optional: true },
+    { gate: "execution-verification", variables: ["CCB_EXECUTION_KEY_ID", "CCB_EXECUTION_PUBLIC_KEY"] },
+    { gate: "admin-authentication", variables: ["CCB_ADMIN_CREDENTIAL"] },
+    { gate: "scoped-grant", variables: ["CCB_GRANT_DEVICE_ID", "CCB_GRANT_PROJECT_ID", "CCB_GRANT_OPERATION_CLASS"] },
+  ].map((check) => {
+    const configured = check.variables.every((name) => Boolean(process.env[name]));
+    return { gate: check.gate, configured, optional: Boolean(check.optional), variables: check.variables };
+  });
+  const requiredChecks = checks.filter((check) => !check.optional);
+  const next = requiredChecks.find((check) => !check.configured);
+  console.log(JSON.stringify({
+    readyForAutomation: !next,
+    nextBlockedGate: next ? next.gate : null,
+    checks,
+  }, null, 2));
+}
+
 function main() {
+  if (process.argv.includes("--status")) {
+    statusReport();
+    return;
+  }
   checkConfiguration();
   run('check-live-prereqs.js', []);
   run('enroll-device.js', []);
