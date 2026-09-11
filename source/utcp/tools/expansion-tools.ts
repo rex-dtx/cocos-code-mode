@@ -235,6 +235,116 @@ export class ExpansionTools {
             throw error;
         }
     }
+
+    @utcpTool(
+        'physics2dCreateJoint',
+        'Create one verified Box2D 2D joint between two existing rigid-body nodes with endpoint validation and rollback.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['builtin', 'box2d'] },
+                joint: { type: 'string', enum: ['distance', 'spring', 'hinge', 'slider', 'fixed'], default: 'distance' },
+                bodyReference: InstanceReferenceSchema,
+                connectedBodyReference: InstanceReferenceSchema,
+            },
+            required: ['backend', 'bodyReference', 'connectedBodyReference'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['box2d'] },
+                jointReference: InstanceReferenceSchema,
+                bodyReference: InstanceReferenceSchema,
+                connectedBodyReference: InstanceReferenceSchema,
+                jointType: { type: 'string' },
+            },
+            required: ['backend', 'jointReference', 'bodyReference', 'connectedBodyReference', 'jointType'],
+        },
+        'POST',
+        ['physics', '2d', 'create', 'joint', 'compound']
+    )
+    async physics2dCreateJoint(args: { backend: 'builtin' | 'box2d', joint?: 'distance' | 'spring' | 'hinge' | 'slider' | 'fixed', bodyReference: IInstanceReference, connectedBodyReference: IInstanceReference }): Promise<{ backend: 'box2d', jointReference: IInstanceReference, bodyReference: IInstanceReference, connectedBodyReference: IInstanceReference, jointType: string }> {
+        if (args.backend !== 'box2d') {
+            throw new ToolError({
+                code: 'UNSUPPORTED_BACKEND',
+                status: 422,
+                message: 'physics2dCreateJoint requires the box2d backend; Creator Builtin does not support 2D joints.',
+                recovery: 'Select the box2d backend or omit the joint and use collider-only nodes.',
+            });
+        }
+        if (args.bodyReference.id === args.connectedBodyReference.id) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'A 2D joint requires two distinct rigid-body nodes' });
+        }
+        const body = await Editor.Message.request('scene', 'query-node', args.bodyReference.id) as unknown as NodeRecord | null;
+        const connected = await Editor.Message.request('scene', 'query-node', args.connectedBodyReference.id) as unknown as NodeRecord | null;
+        if (!body) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Body node ${args.bodyReference.id} not found` });
+        if (!connected) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Connected body node ${args.connectedBodyReference.id} not found` });
+        const componentUuid = (component: ComponentRecord): string | undefined => component.value?.uuid?.value ?? component.value?.uuid ?? component.cid ?? component.value?.cid;
+        const bodyComponent = body.__comps__?.find((component) => componentType(component) === 'cc.RigidBody2D');
+        const connectedBodyComponent = connected.__comps__?.find((component) => componentType(component) === 'cc.RigidBody2D');
+        if (!bodyComponent) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Body node ${args.bodyReference.id} has no cc.RigidBody2D` });
+        if (!connectedBodyComponent) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Connected body node ${args.connectedBodyReference.id} has no cc.RigidBody2D` });
+        const connectedBodyUuid = componentUuid(connectedBodyComponent);
+        if (!connectedBodyUuid) throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: `Connected body ${args.connectedBodyReference.id} has no serialized component UUID` });
+        const jointType = ({
+            distance: 'cc.DistanceJoint2D',
+            spring: 'cc.SpringJoint2D',
+            hinge: 'cc.HingeJoint2D',
+            slider: 'cc.SliderJoint2D',
+            fixed: 'cc.FixedJoint2D',
+        } as const)[args.joint ?? 'distance'];
+        let jointUuid: string | undefined;
+        const containsUuid = (value: unknown, uuid: string): boolean => {
+            if (value === uuid) return true;
+            if (!value || typeof value !== 'object') return false;
+            return Object.values(value as Record<string, unknown>).some((item) => containsUuid(item, uuid));
+        };
+        try {
+            await Editor.Message.request('scene', 'create-component', { uuid: args.bodyReference.id, component: jointType });
+            const afterCreate = await Editor.Message.request('scene', 'query-node', args.bodyReference.id) as unknown as NodeRecord | null;
+            const joint = afterCreate?.__comps__?.find((component) => componentType(component) === jointType);
+            jointUuid = joint ? componentUuid(joint) : undefined;
+            if (!jointUuid) throw new Error(`Creator did not return the ${jointType} component UUID`);
+            const jointIndex = afterCreate?.__comps__?.findIndex((component) => componentType(component) === jointType) ?? -1;
+            const setResult = await Editor.Message.request('scene', 'set-property', {
+                uuid: args.bodyReference.id,
+                path: `_components.${jointIndex}.connectedBody`,
+                dump: { value: { uuid: connectedBodyUuid }, type: 'cc.RigidBody2D' },
+            });
+            if (setResult === false) throw new Error(`Creator refused connectedBody assignment for ${jointType}`);
+            await Editor.Message.request('scene', 'snapshot');
+            const verified = await Editor.Message.request('scene', 'query-node', args.bodyReference.id) as unknown as NodeRecord | null;
+            const verifiedJoint = verified?.__comps__?.find((component) => componentType(component) === jointType);
+            if (!verifiedJoint || !containsUuid(verifiedJoint.value, connectedBodyUuid)) {
+                throw new Error(`Creator read-back did not verify ${jointType}.connectedBody`);
+            }
+            return {
+                backend: 'box2d',
+                jointReference: { id: jointUuid, type: jointType },
+                bodyReference: args.bodyReference,
+                connectedBodyReference: args.connectedBodyReference,
+                jointType,
+            };
+        } catch (error) {
+            if (jointUuid) {
+                try {
+                    await Editor.Message.request('scene', 'remove-component', { uuid: jointUuid });
+                    await Editor.Message.request('scene', 'snapshot');
+                } catch (rollbackError) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: `physics2dCreateJoint failed and joint ${jointUuid} could not be rolled back`,
+                        details: { cause: error instanceof Error ? error.message : String(error), rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) },
+                        recovery: `Remove component ${jointUuid} manually before retrying.`,
+                    });
+                }
+            }
+            throw error;
+        }
+    }
     @utcpTool('physics3dInspect', 'Inspect bounded 3D rigid bodies, colliders, materials and joints in the open scene.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { nodes: { type: 'array' }, count: { type: 'integer' } }, required: ['nodes', 'count'] }, 'GET', ['physics', '3d', 'inspect'])
     async physics3dInspect(args: { reference?: IInstanceReference }): Promise<{ nodes: Array<Record<string, unknown>>, count: number }> {
         const nodes = await sceneNodes(args.reference?.id);
