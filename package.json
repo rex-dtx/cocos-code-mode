@@ -16,6 +16,7 @@
     "sign-release": "node ./scripts/sign-release.js",
     "assemble:release": "node ./scripts/assemble-release-set.js",
     "enroll:device": "node ./scripts/enroll-device.js",
+    "manage:device": "node ./scripts/manage-device.js",
     "serve:release": "node ./scripts/serve-release.js",
     "forbidden-material": "node ./scripts/forbidden-material-witness.js",
     "support-bundle": "node ./scripts/support-bundle.js",
