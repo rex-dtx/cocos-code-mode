@@ -84,7 +84,10 @@ export class UpdateManager {
   private async metadata(name: "root" | "target" | "policy", signal?: AbortSignal): Promise<SignedMetadata> {
     const input = await fetchReleaseJson(this.origin, new URL(`metadata/${name}.json`, this.origin).href, METADATA_LIMIT, signal);
     try { return SignedMetadataSchema.parse(input); }
-    catch { throw new CcbError("CCB_CANONICAL_INVALID", `Release ${name} wrapper is invalid.`); }
+    catch (error) {
+      const detail = error instanceof Error ? error.message.replace(/[\r\n]+/g, " ").slice(0, 160) : "schema parse failed";
+      throw new CcbError("CCB_CANONICAL_INVALID", `Release ${name} wrapper is invalid.`, { detail });
+    }
   }
 
   private async run(signal?: AbortSignal): Promise<StagedUpdate> {
