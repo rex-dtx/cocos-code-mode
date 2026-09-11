@@ -33,6 +33,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'buildPresetValidate',
   'buildArtifactInspect',
   'uiLayoutReport',
+  'uiSafeAreaInspect',
   'particleInspect',
   'particleValidate',
   'terrainInspect',

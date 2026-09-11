@@ -347,6 +347,31 @@ declare namespace cc_bridge_3x {
         error: { code: string, message: string, evidence: Record<string, any> }
     };
 
+    /** Candidate: inspect bounded live 2D UI bounds against a caller-provided safe-area rectangle or root-relative insets. Read-only; live evidence is required before qualification. */
+    function uiSafeAreaInspect(args: {
+        root?: InstanceReference,
+        rootPath?: string,
+        safeArea: {
+            rect?: { x: number, y: number, width: number, height: number },
+            insets?: { top: number, right: number, bottom: number, left: number },
+            x?: number, y?: number, width?: number, height?: number
+        },
+        maxNodes?: number,
+        maxIssues?: number
+    }): {
+        complete: boolean,
+        valid: boolean,
+        truncated: boolean,
+        safeArea: { rect: { x: number, y: number, width: number, height: number }, insets?: { top: number, right: number, bottom: number, left: number } },
+        root: { uuid: string, path: string, name: string },
+        checkedNodes: number,
+        nodes: Array<{ uuid: string, path: string, name: string, active: boolean, bounds: { x: number, y: number, width: number, height: number }, inside: boolean, overlaps: boolean, outside: boolean }>,
+        issues: Array<{ code: "SAFE_AREA_OUTSIDE" | "SAFE_AREA_CLIPPED", severity: "error" | "warning", nodeId: string, message: string, evidence: Record<string, unknown> }>,
+        truncation: unknown[]
+    } | {
+        error: { code: string, message: string, evidence: Record<string, unknown> }
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
