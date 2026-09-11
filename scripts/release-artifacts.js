@@ -76,6 +76,7 @@ function fileDigest(projectRoot, relativePath) {
 
 function createProvenance(projectRoot, zipPath, manifestArtifact, sbomArtifact) {
   const zipBytes = fs.readFileSync(zipPath);
+  const buildInfo = readBuildInfo(projectRoot);
   const builtAt = new Date(Number(process.env.SOURCE_DATE_EPOCH || '315532800') * 1000).toISOString();
   return {
     _type: 'https://in-toto.io/Statement/v1',
