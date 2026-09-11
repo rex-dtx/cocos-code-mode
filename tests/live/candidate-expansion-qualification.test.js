@@ -271,6 +271,61 @@ return out;`,
     }
   });
 
+  it('witnesses bounded PhysX 3D fixed-constraint creation and typed negative preflight', async (t) => {
+    if (skipIfDown(t)) return;
+    const names = ['__candidate_create_p3_joint_a__', '__candidate_create_p3_joint_b__'];
+    const cleanup = async () => {
+      const removed = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `const sc=cc.director.getScene();for(const name of ${JSON.stringify(names)}){const n=sc.getChildByName(name);if(n){n.removeFromParent();n.destroy();}}return ${JSON.stringify(names)}.every(name=>!sc.getChildByName(name));`,
+      });
+      assert.equal(removed.status, 200, JSON.stringify(removed.body));
+      assert.equal(removed.body.result, true);
+      const snapshot = await postTool('executeJavascript', { context: 'editor', code: `await Editor.Message.request('scene','snapshot');return true;` });
+      assert.equal(snapshot.status, 200, JSON.stringify(snapshot.body));
+    };
+    await cleanup();
+    try {
+      const first = await postTool('physics3dCreateBody', { backend: 'physx', collider: 'box', name: names[0] });
+      const second = await postTool('physics3dCreateBody', { backend: 'physx', collider: 'box', name: names[1] });
+      assert.equal(first.status, 200, JSON.stringify(first.body));
+      assert.equal(second.status, 200, JSON.stringify(second.body));
+      const bodyReference = first.body.reference;
+      const connectedBodyReference = second.body.reference;
+      const builtin = await postExpectedErrorTool('physics3dCreateJoint', {
+        backend: 'builtin', bodyReference, connectedBodyReference,
+      }, 'candidate.physics3dCreateJoint.negative.v1');
+      assert.equal(builtin.status, 422, JSON.stringify(builtin.body));
+      assert.equal(builtin.body.code, 'UNSUPPORTED_BACKEND');
+      const unsupportedType = await postExpectedErrorTool('physics3dCreateJoint', {
+        backend: 'physx', joint: 'distance', bodyReference, connectedBodyReference,
+      }, 'candidate.physics3dCreateJoint.negative.v1');
+      assert.equal(unsupportedType.status, 422, JSON.stringify(unsupportedType.body));
+      assert.equal(unsupportedType.body.code, 'UNSUPPORTED_JOINT');
+      const sameEndpoint = await postExpectedErrorTool('physics3dCreateJoint', {
+        backend: 'physx', bodyReference, connectedBodyReference: bodyReference,
+      }, 'candidate.physics3dCreateJoint.negative.v1');
+      assert.equal(sameEndpoint.status, 400, JSON.stringify(sameEndpoint.body));
+      assert.equal(sameEndpoint.body.code, 'INVALID_ARGUMENT');
+      const created = await postTool('physics3dCreateJoint', {
+        backend: 'physx', joint: 'fixed', bodyReference, connectedBodyReference,
+      });
+      assert.equal(created.status, 200, JSON.stringify(created.body));
+      assert.equal(created.body.backend, 'physx');
+      assert.equal(created.body.jointType, 'cc.FixedConstraint');
+      assert.equal(created.body.jointReference.type, 'cc.FixedConstraint');
+      const topology = await getJson(`/tools/physics3dTopologyAudit?reference%5Bid%5D=${encodeURIComponent(bodyReference.id)}`);
+      assert.equal(topology.status, 200, JSON.stringify(topology.body));
+      assert.equal(topology.body.valid, true);
+      assert.deepEqual(topology.body.nodes[0].joints, ['cc.FixedConstraint']);
+      const jointDump = await getJson(`/tools/inspectorGet?target=instance&reference%5Bid%5D=${encodeURIComponent(created.body.jointReference.id)}&reference%5Btype%5D=cc.FixedConstraint&fields%5B0%5D=connectedBody`);
+      assert.equal(jointDump.status, 200, JSON.stringify(jointDump.body));
+      assert.equal(jointDump.body.dump.connectedBody.uuid, second.body.bodyReference.id);
+    } finally {
+      await cleanup();
+    }
+  });
+
   it('qualifies typed Box2D joint creation and endpoint validation', async (t) => {
     if (skipIfDown(t)) return;
     const names = ['__candidate_joint_body_a__', '__candidate_joint_body_b__'];
