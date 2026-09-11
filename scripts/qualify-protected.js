@@ -1,8 +1,17 @@
 'use strict';
-
 const { spawnSync } = require('node:child_process');
+const os = require('node:os');
 const path = require('node:path');
+const fs = require('node:fs');
 const root = path.join(__dirname, '..');
+const credentialDir = path.join(os.homedir(), '.cc-bridge', 'credentials');
+const defaultCredentialFiles = {
+  CCB_MEMBER_CREDENTIAL_FILE: path.join(credentialDir, 'member.jwt'),
+  CCB_ADMIN_CREDENTIAL_FILE: path.join(credentialDir, 'admin.jwt'),
+};
+for (const [name, file] of Object.entries(defaultCredentialFiles)) {
+  if (!process.env[name] && fs.existsSync(file)) process.env[name] = file;
+}
 const required = [
   { variables: ['CCB_MEMBER_CREDENTIAL', 'CCB_MEMBER_CREDENTIAL_FILE'], label: 'member EdDSA JWT', any: true },
 ];
