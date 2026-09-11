@@ -496,9 +496,13 @@ export class UiTools {
                     properties: { clipping: { type: 'boolean', default: true }, overlap: { type: 'boolean', default: true }, anchors: { type: 'boolean', default: true }, safeArea: { type: 'boolean', default: true } },
                 },
             },
-            anyOf: [
-                { required: ['reference'] },
+            oneOf: [
                 {
+                    required: ['reference'],
+                    not: { anyOf: [{ required: ['root'] }, { required: ['rootPath'] }, { required: ['designResolution'] }, { required: ['viewport'] }, { required: ['safeArea'] }, { required: ['checks'] }] },
+                },
+                {
+                    not: { required: ['reference'] },
                     oneOf: [{ required: ['root'] }, { required: ['rootPath'] }],
                     anyOf: [{ required: ['designResolution', 'viewport'] }, { required: ['safeArea'] }],
                 },
@@ -513,7 +517,11 @@ export class UiTools {
                 truncation: { type: 'array' }, geometry: { type: 'object' }, safeArea: { type: 'object' },
                 error: { type: 'object', additionalProperties: false, required: ['code', 'message', 'evidence'], properties: { code: { type: 'string' }, message: { type: 'string' }, evidence: { type: 'object' } } },
             },
-            oneOf: [{ required: ['error'] }, { required: ['valid', 'complete', 'truncated', 'checkedNodes', 'root', 'nodes', 'issues', 'truncation'] }],
+            oneOf: [
+                { required: ['error'] },
+                { required: ['valid', 'complete', 'truncated', 'checkedNodes', 'root', 'nodes', 'issues', 'truncation'] },
+                { required: ['valid', 'issues', 'checkedNodes'] },
+            ],
         },
         'POST',
         ['ui', 'layout', 'validate', 'geometry', 'diagnostics']

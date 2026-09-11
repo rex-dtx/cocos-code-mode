@@ -52,4 +52,5 @@ describe('uiLayoutValidate', () => {
     const invalid = buildUiLayoutValidate(fixture(), { root: { id: 'root' }, safeArea: { rect: { x: 0, y: 0, width: 0, height: 50 } } });
     assert.equal(invalid.error.code, 'UI_LAYOUT_VALIDATE_INVALID_INPUT');
   });
+
 });
