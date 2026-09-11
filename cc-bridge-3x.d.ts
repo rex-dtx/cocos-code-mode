@@ -5,6 +5,15 @@
 // STATIC hand-written. See source/utcp/tools/*.ts for impl.
 
 type InstanceReference = { id: string; type: string };
+
+type AssetImportSettingValue = null | string | number | boolean | AssetImportSettingValue[] | { [key: string]: AssetImportSettingValue };
+interface AssetImportSettingsSource {
+    uuid: string;
+    url: string;
+    type: string;
+    name: string;
+    isDirectory: boolean;
+}
 interface IAssetTree {
     filesystemPath?: string;
     reference: InstanceReference;
@@ -100,6 +109,14 @@ declare namespace cc_bridge_3x {
         isBundle?: boolean,
         limit?: number
     }): { assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean };
+
+    /** Read bounded normalized generic importer settings and explicit source identity for one asset. */
+    function assetImportSettingsGet(args: { reference: InstanceReference }): {
+        reference: InstanceReference,
+        importer: string,
+        settings: { [key: string]: AssetImportSettingValue },
+        source: AssetImportSettingsSource
+    };
 
     /** Export a deterministic, read-only asset manifest; dependency metadata is present only when Creator exposes it. */
     function assetManifestExport(args: {
