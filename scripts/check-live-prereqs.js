@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-const utcp = process.env.CCB_UTCP_URL || "http://127.0.0.1:49650/utcp";
+const utcp = process.env.CCB_UTCP_URL || "http://127.0.0.1:58458/utcp";
 const gateway = process.env.CCB_GATEWAY_HEALTH || "http://127.0.0.1:8787/ccb/v1/health";
 
 async function get(url) {

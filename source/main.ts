@@ -98,9 +98,10 @@ export const methods: Record<string, Function> = {
         }
 
         const previousServer = utcpServer;
+        let nextServer: UtcpServerManager | undefined;
         try {
             await previousServer.stop();
-            const nextServer = new UtcpServerManager(relayHost ?? undefined);
+            nextServer = new UtcpServerManager(relayHost ?? undefined);
             const actualPort = await nextServer.start(newPort);
             const authBinding = nextServer.getLocalAuthBinding();
             if (!authBinding) throw new Error('UTCP server started without a local authentication binding');
@@ -110,6 +111,7 @@ export const methods: Record<string, Function> = {
             console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
         } catch (err) {
             utcpServer = null;
+            if (nextServer) await nextServer.stop().catch(() => undefined);
             bootLog('error', 'UTCP disconnected after restart failure', err);
             console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
         }

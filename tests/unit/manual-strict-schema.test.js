@@ -64,9 +64,9 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
   it('restart semantics are socket-close-safe (no reload-menu)', () => {
     const mainSrc = readSource('main.ts');
     assert.match(mainSrc, /await previousServer\.stop\(\)/, 'restartServer must await previousServer.stop()');
-    assert.match(mainSrc, /const nextServer = new UtcpServerManager\(/, 'restartServer must create a fresh manager');
+    assert.match(mainSrc, /nextServer = new UtcpServerManager\(/, 'restartServer must create a fresh manager');
     assert.match(mainSrc, /utcpServer = nextServer/, 'restartServer must reassign utcpServer to the fresh manager');
-    assert.match(mainSrc, /await getConfigManager\(\)\.updatePort\(actualPort\)/, 'restartServer must update config after start');
+    assert.match(mainSrc, /await getConfigManager\(\)\.updatePort\(actualPort(?:,[^)]+)?\)/, 'restartServer must update config after start');
     const serverSrc = readSource('utcp/utcp-server.ts');
     assert.match(serverSrc, /await http\.close\(\)/, 'stop() must await LocalHttpServer.close()');
     assert.match(serverSrc, /this\.port = 0/, 'stop() must clear port');
