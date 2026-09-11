@@ -154,6 +154,167 @@ function boundedPositive(value: unknown, fallback: number, maximum: number): num
         : fallback;
 }
 
+const MAX_IMPORT_REFERENCE_ID_LENGTH = 256;
+const MAX_IMPORT_REFERENCE_TYPE_LENGTH = 128;
+const MAX_IMPORT_SOURCE_URL_LENGTH = 2048;
+const MAX_IMPORT_SOURCE_NAME_LENGTH = 256;
+const MAX_IMPORT_METADATA_DEPTH = 6;
+const MAX_IMPORT_METADATA_OBJECT_PROPERTIES = 64;
+const MAX_IMPORT_METADATA_ARRAY_ITEMS = 64;
+const MAX_IMPORT_METADATA_ENTRIES = 256;
+const MAX_IMPORT_METADATA_KEY_LENGTH = 128;
+const MAX_IMPORT_METADATA_STRING_LENGTH = 2048;
+const OMIT_IMPORT_METADATA = Symbol('omit-import-metadata');
+
+type AssetImportMetadataValue =
+    | string
+    | number
+    | boolean
+    | null
+    | AssetImportMetadataValue[]
+    | { [key: string]: AssetImportMetadataValue };
+
+interface AssetImportSettingsSource {
+    uuid: string;
+    url: string;
+    type: string;
+    name: string;
+    isDirectory: boolean;
+}
+
+interface AssetImportSettingsResult {
+    reference: IInstanceReference;
+    importer: string;
+    settings: Record<string, AssetImportMetadataValue>;
+    source: AssetImportSettingsSource;
+}
+
+interface ImportMetadataBudget {
+    remainingEntries: number;
+    ancestors: WeakSet<object>;
+}
+
+function invalidImportReference(message: string): ToolError {
+    return new ToolError({
+        code: 'INVALID_ARGUMENT',
+        status: 400,
+        message,
+        recovery: 'Provide an asset reference with a non-empty id and, when present, a non-empty type string.',
+    });
+}
+
+function validateImportReference(args: unknown): IInstanceReference {
+    if (!args || typeof args !== 'object' || Array.isArray(args)) {
+        throw invalidImportReference('assetImportSettingsGet requires a reference object.');
+    }
+    const reference = Reflect.get(args, 'reference');
+    if (!reference || typeof reference !== 'object' || Array.isArray(reference)) {
+        throw invalidImportReference('assetImportSettingsGet reference must be an object.');
+    }
+    const id = Reflect.get(reference, 'id');
+    const type = Reflect.get(reference, 'type');
+    if (typeof id !== 'string' || !id || id !== id.trim() || id.length > MAX_IMPORT_REFERENCE_ID_LENGTH || /[\u0000-\u001f\u007f]/.test(id)) {
+        throw invalidImportReference(`assetImportSettingsGet reference.id must be a normalized non-empty string of at most ${MAX_IMPORT_REFERENCE_ID_LENGTH} characters.`);
+    }
+    if (type !== undefined && (typeof type !== 'string' || !type || type !== type.trim() || type.length > MAX_IMPORT_REFERENCE_TYPE_LENGTH || /[\u0000-\u001f\u007f]/.test(type))) {
+        throw invalidImportReference(`assetImportSettingsGet reference.type must be a normalized non-empty string of at most ${MAX_IMPORT_REFERENCE_TYPE_LENGTH} characters when provided.`);
+    }
+    return type === undefined ? { id } : { id, type };
+}
+
+function boundedImportText(value: unknown, maximum: number, fallback = ''): string {
+    return typeof value === 'string' ? value.slice(0, maximum) : fallback;
+}
+
+function isValidImportIdentity(value: unknown, maximum: number): value is string {
+    return typeof value === 'string'
+        && value.length > 0
+        && value.length <= maximum
+        && value === value.trim()
+        && !/[\u0000-\u001f\u007f]/.test(value);
+}
+
+function normalizeImportMetadataValue(
+    value: unknown,
+    depth: number,
+    budget: ImportMetadataBudget,
+): AssetImportMetadataValue | typeof OMIT_IMPORT_METADATA {
+    if (value === null || typeof value === 'boolean') return value;
+    if (typeof value === 'string') return value.slice(0, MAX_IMPORT_METADATA_STRING_LENGTH);
+    if (typeof value === 'number') return Number.isFinite(value) ? value : OMIT_IMPORT_METADATA;
+    if (typeof value !== 'object' || depth >= MAX_IMPORT_METADATA_DEPTH || budget.ancestors.has(value)) {
+        return OMIT_IMPORT_METADATA;
+    }
+
+    budget.ancestors.add(value);
+    if (Array.isArray(value)) {
+        const normalized: AssetImportMetadataValue[] = [];
+        const itemCount = Math.min(value.length, MAX_IMPORT_METADATA_ARRAY_ITEMS);
+        for (let index = 0; index < itemCount && budget.remainingEntries > 0; index++) {
+            budget.remainingEntries--;
+            let item: unknown;
+            try {
+                item = value[index];
+            } catch {
+                normalized.push(null);
+                continue;
+            }
+            const bounded = normalizeImportMetadataValue(item, depth + 1, budget);
+            normalized.push(bounded === OMIT_IMPORT_METADATA ? null : bounded);
+        }
+        budget.ancestors.delete(value);
+        return normalized;
+    }
+
+    const normalized: Record<string, AssetImportMetadataValue> = {};
+    let acceptedProperties = 0;
+    let keys: string[];
+    try {
+        keys = Object.keys(value).sort();
+    } catch {
+        return normalized;
+    }
+    for (const key of keys) {
+        if (acceptedProperties >= MAX_IMPORT_METADATA_OBJECT_PROPERTIES || budget.remainingEntries <= 0) break;
+        if (!key || key.length > MAX_IMPORT_METADATA_KEY_LENGTH || key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+        budget.remainingEntries--;
+        let propertyValue: unknown;
+        try {
+            propertyValue = Reflect.get(value, key);
+        } catch {
+            continue;
+        }
+        const bounded = normalizeImportMetadataValue(propertyValue, depth + 1, budget);
+        if (bounded === OMIT_IMPORT_METADATA) continue;
+        normalized[key] = bounded;
+        acceptedProperties++;
+    }
+    budget.ancestors.delete(value);
+    return normalized;
+}
+
+function normalizeImportSettings(value: unknown): Record<string, AssetImportMetadataValue> {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+    const normalized = normalizeImportMetadataValue(value, 0, {
+        remainingEntries: MAX_IMPORT_METADATA_ENTRIES,
+        ancestors: new WeakSet<object>(),
+    });
+    return normalized !== OMIT_IMPORT_METADATA && normalized !== null && !Array.isArray(normalized) && typeof normalized === 'object'
+        ? normalized
+        : {};
+}
+
+function assetImportSettingsQueryError(error: unknown): ToolError {
+    return new ToolError({
+        code: 'ASSET_QUERY_FAILED',
+        status: 502,
+        message: 'assetImportSettingsGet could not query the Creator asset database.',
+        details: { cause: boundedImportText(error instanceof Error ? error.message : String(error), 512) },
+        recovery: 'Retry after the Creator asset database is ready.',
+    });
+}
+
+
 
 export class AssetTools {
 
@@ -550,17 +711,84 @@ export class AssetTools {
         let b64:string; try{ b64=await Editor.Message.request(packageJSON.name,'generate-preview',args.reference.id,args.imageSize||512,args.imageSize||512,(args.jpegQuality||80)/100);} finally{ await Editor.Panel.close(previewPanel); } if(!b64) throw new Error(`Failed to generate preview for asset ${args.reference.id}.`); return {type:"image",data:b64,mimeType:"image/jpeg"};
     }
 
-    @utcpTool('assetImportSettingsGet', 'Read normalized importer settings and source metadata for one asset.', {
+    @utcpTool('assetImportSettingsGet', 'Read bounded normalized generic importer settings and explicit source identity for one asset.', {
         type: 'object',
+        additionalProperties: false,
         properties: { reference: InstanceReferenceSchema },
         required: ['reference'],
-    }, { type: 'object', properties: { reference: InstanceReferenceSchema, importer: { type: 'string' }, settings: { type: 'object' }, source: { type: 'object' } }, required: ['reference', 'importer', 'settings', 'source'] }, 'GET', ['asset', 'import', 'settings', 'inspect'])
-    async assetImportSettingsGet(args: { reference: IInstanceReference }): Promise<{ reference: IInstanceReference, importer: string, settings: Record<string, unknown>, source: Record<string, unknown> }> {
-        const info: any = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
-        if (!info) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${args.reference.id} not found` });
-        const source = { uuid: info.uuid, url: info.url, type: info.type, name: info.name, isDirectory: Boolean(info.isDirectory) };
-        const settings = info.importerSettings ?? info.meta ?? {};
-        return { reference: { id: info.uuid ?? args.reference.id, type: info.type ?? args.reference.type }, importer: info.importer ?? '', settings: typeof settings === 'object' && settings ? settings : {}, source };
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            reference: InstanceReferenceSchema,
+            importer: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_TYPE_LENGTH },
+            settings: {
+                type: 'object',
+                maxProperties: MAX_IMPORT_METADATA_OBJECT_PROPERTIES,
+                additionalProperties: true,
+                description: `Generic JSON-compatible importer settings bounded to ${MAX_IMPORT_METADATA_DEPTH} levels, ${MAX_IMPORT_METADATA_ENTRIES} entries, ${MAX_IMPORT_METADATA_OBJECT_PROPERTIES} properties per object, ${MAX_IMPORT_METADATA_ARRAY_ITEMS} items per array, and ${MAX_IMPORT_METADATA_STRING_LENGTH} characters per string.`,
+            },
+            source: {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                    uuid: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_ID_LENGTH },
+                    url: { type: 'string', maxLength: MAX_IMPORT_SOURCE_URL_LENGTH },
+                    type: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_TYPE_LENGTH },
+                    name: { type: 'string', maxLength: MAX_IMPORT_SOURCE_NAME_LENGTH },
+                    isDirectory: { type: 'boolean' },
+                },
+                required: ['uuid', 'url', 'type', 'name', 'isDirectory'],
+            },
+        },
+        required: ['reference', 'importer', 'settings', 'source'],
+    }, 'GET', ['asset', 'import', 'settings', 'inspect'])
+    async assetImportSettingsGet(args: { reference: IInstanceReference }): Promise<AssetImportSettingsResult> {
+        const requestedReference = validateImportReference(args);
+        let info: unknown;
+        try {
+            info = await Editor.Message.request('asset-db', 'query-asset-info', requestedReference.id);
+        } catch (error: unknown) {
+            throw assetImportSettingsQueryError(error);
+        }
+        if (info === null || info === undefined) {
+            throw new ToolError({
+                code: 'TARGET_NOT_FOUND',
+                status: 404,
+                message: `Asset ${requestedReference.id} not found.`,
+                details: { reference: requestedReference },
+                recovery: 'Use assetQuery to discover a current asset reference before retrying.',
+            });
+        }
+        if (typeof info !== 'object' || Array.isArray(info)) {
+            throw assetImportSettingsQueryError(new Error('Creator returned an invalid asset record.'));
+        }
+
+        const uuidValue = Reflect.get(info, 'uuid');
+        const urlValue = Reflect.get(info, 'url');
+        const typeValue = Reflect.get(info, 'type');
+        if (!isValidImportIdentity(uuidValue, MAX_IMPORT_REFERENCE_ID_LENGTH)
+            || !isValidImportIdentity(urlValue, MAX_IMPORT_SOURCE_URL_LENGTH)
+            || !isValidImportIdentity(typeValue, MAX_IMPORT_REFERENCE_TYPE_LENGTH)) {
+            throw assetImportSettingsQueryError(new Error('Creator returned an asset record without a valid uuid, url, and type.'));
+        }
+        const uuid = uuidValue;
+        const url = urlValue;
+        const type = typeValue;
+        const importerSettings = Reflect.get(info, 'importerSettings');
+        const meta = Reflect.get(info, 'meta');
+        return {
+            reference: { id: uuid, type },
+            importer: boundedImportText(Reflect.get(info, 'importer'), MAX_IMPORT_REFERENCE_TYPE_LENGTH),
+            settings: normalizeImportSettings(importerSettings ?? meta),
+            source: {
+                uuid,
+                url: boundedImportText(Reflect.get(info, 'url'), MAX_IMPORT_SOURCE_URL_LENGTH),
+                type,
+                name: boundedImportText(Reflect.get(info, 'name'), MAX_IMPORT_SOURCE_NAME_LENGTH),
+                isDirectory: Reflect.get(info, 'isDirectory') === true,
+            },
+        };
     }
 
     @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with importer and dependency metadata.', {
