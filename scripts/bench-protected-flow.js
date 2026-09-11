@@ -94,12 +94,16 @@ async function main() {
   }
   const first = await fetch(`${base}/tools/sceneGetInfo`, { method: 'GET', headers, redirect: 'error' });
   const firstText = await first.text();
-  if (first.status === 422 && /CCB_GATEWAY_UNAVAILABLE/.test(firstText)) {
-    report.failClosed = { status: 422, code: 'CCB_GATEWAY_UNAVAILABLE' };
-    fs.mkdirSync(path.dirname(REPORT), { recursive: true });
-    fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
-    console.log(JSON.stringify(report, null, 2));
-    return;
+  if (first.status === 422) {
+    let body;
+    try { body = JSON.parse(firstText); } catch { body = null; }
+    if (body && typeof body.code === 'string' && /^CCB_(?:GATEWAY_UNAVAILABLE|BUILD_INCOMPATIBLE)$/.test(body.code)) {
+      report.failClosed = { status: first.status, code: body.code };
+      fs.mkdirSync(path.dirname(REPORT), { recursive: true });
+      fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
+      console.log(JSON.stringify(report, null, 2));
+      return;
+    }
   }
   if (!first.ok) throw new Error(`sceneGetInfo -> ${first.status}: ${firstText.slice(0, 200)}`);
   const samples = Number(process.env.CCB_BENCH_SAMPLES || '20');
