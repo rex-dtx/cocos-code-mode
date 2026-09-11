@@ -1340,7 +1340,7 @@
       "candidates": [
         {
           "name": "runtimeSessionLifecycle",
-          "state": "candidate",
+          "state": "implemented-unverified",
           "contractDelta": "Attach, identify, stop and reset finite game-view/browser/simulator sessions.",
           "route": "runtime session foundation",
           "prerequisites": [
