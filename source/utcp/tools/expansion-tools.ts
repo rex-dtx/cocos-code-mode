@@ -5,6 +5,35 @@ import { IProperty } from '@cocos/creator-types/editor/packages/scene/@types/pub
 import fs from 'fs-extra';
 import path from 'path';
 import { createHash } from 'crypto';
+import { AUDIO_TARGETS, AudioAssetInfo, AudioAssetReference, AudioCompatibilityAuditResult, AudioTarget, buildAudioAssetCompatibilityAudit } from '../../audio-asset-compatibility-audit';
+const AUDIO_COMPAT_ISSUE_SCHEMA: any = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        code: { type: 'string', enum: ['ASSET_NOT_FOUND', 'TYPE_MISMATCH', 'UNSUPPORTED_FORMAT', 'UNKNOWN_METADATA', 'IMPORT_FAILED', 'TARGET_UNSUPPORTED'] },
+        assetId: { type: 'string' },
+        field: { type: 'string' },
+        value: {},
+        message: { type: 'string' },
+    },
+    required: ['code', 'assetId', 'message'],
+};
+const AUDIO_COMPAT_ITEM_SCHEMA: any = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        reference: { type: 'object' },
+        target: { type: 'string', enum: [...AUDIO_TARGETS] },
+        valid: { type: 'boolean' },
+        url: { type: 'string' },
+        path: { type: 'string' },
+        extension: { type: 'string' },
+        importer: { type: 'string' },
+        loadMode: { type: 'string' },
+        issues: { type: 'array', maxItems: 256, items: AUDIO_COMPAT_ISSUE_SCHEMA },
+    },
+    required: ['reference', 'target', 'valid', 'issues'],
+};
 
 interface ComponentRecord { type?: string; cid?: string; value?: Record<string, any>; }
 interface NodeRecord { uuid?: string; name?: any; children?: NodeRecord[]; __comps__?: ComponentRecord[]; }
@@ -1058,6 +1087,86 @@ export class ExpansionTools {
         const issues: string[] = [];
         if (!/audio|clip|sound/i.test(String(info.type ?? '')) && !/audio|sound/i.test(String(info.importer ?? ''))) issues.push('asset importer/type is not recognized as audio');
         return { valid: issues.length === 0, importer: info.importer ?? '', type: info.type ?? '', issues };
+    }
+
+    @utcpTool(
+        'audioAssetCompatibilityAudit',
+        'Audit an explicit bounded list of typed cc.AudioClip assets against a declared web or native target. Uses only public asset metadata; it does not claim decode, duration, or playback success.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                assets: {
+                    type: 'array',
+                    minItems: 1,
+                    maxItems: 64,
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            id: { type: 'string', minLength: 1 },
+                            type: { type: 'string', const: 'cc.AudioClip' },
+                        },
+                        required: ['id', 'type'],
+                    },
+                },
+                target: { type: 'string', enum: [...AUDIO_TARGETS] },
+                maxIssues: { type: 'integer', minimum: 1, maximum: 256, default: 256 },
+            },
+            required: ['assets', 'target'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                target: { type: 'string', enum: [...AUDIO_TARGETS] },
+                valid: { type: 'boolean' },
+                complete: { type: 'boolean' },
+                items: { type: 'array', maxItems: 64, items: AUDIO_COMPAT_ITEM_SCHEMA },
+                issues: { type: 'array', maxItems: 256, items: AUDIO_COMPAT_ISSUE_SCHEMA },
+            },
+            required: ['target', 'valid', 'complete', 'items', 'issues'],
+        },
+        'POST',
+        ['audio', 'asset', 'compatibility', 'audit', 'target'],
+    )
+    async audioAssetCompatibilityAudit(args: {
+        assets: IInstanceReference[];
+        target: AudioTarget;
+        maxIssues?: number;
+    }): Promise<AudioCompatibilityAuditResult> {
+        if (!Array.isArray(args?.assets) || args.assets.length < 1 || args.assets.length > 64 || typeof args?.target !== 'string' || !AUDIO_TARGETS.includes(args.target as AudioTarget)) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'audioAssetCompatibilityAudit requires 1-64 typed cc.AudioClip references and one supported target.',
+            });
+        }
+        if (args.assets.some((reference) => !reference || typeof reference !== 'object' || typeof reference.id !== 'string' || !reference.id || reference.type !== 'cc.AudioClip' || Object.keys(reference).some((key) => !['id', 'type'].includes(key)))) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'audioAssetCompatibilityAudit assets must be typed cc.AudioClip references with only id and type.',
+            });
+        }
+        if (args.maxIssues !== undefined && (!Number.isInteger(args.maxIssues) || args.maxIssues < 1 || args.maxIssues > 256)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'audioAssetCompatibilityAudit maxIssues must be an integer from 1 to 256.' });
+        }
+        const entries = await Promise.all(args.assets.map(async (reference) => {
+            try {
+                const info = await Editor.Message.request('asset-db', 'query-asset-info', reference.id) as AudioAssetInfo | null;
+                return { reference: { id: reference.id, type: 'cc.AudioClip' as const } satisfies AudioAssetReference, info };
+            } catch (error) {
+                throw new ToolError({
+                    code: 'ASSET_QUERY_FAILED',
+                    status: 502,
+                    message: `Public asset database query failed for ${reference.id}.`,
+                    details: { cause: error instanceof Error ? error.message : String(error) },
+                    recovery: 'Retry after the Creator asset database is ready.',
+                });
+            }
+        }));
+        return buildAudioAssetCompatibilityAudit(args.target, entries, args.maxIssues);
     }
     @utcpTool('assetImporterAudit', 'Audit one asset importer with normalized source identity, settings and bounded compatibility findings.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, importer: { type: 'string' }, settings: { type: 'object' }, source: { type: 'object' }, issues: { type: 'array' } }, required: ['valid', 'importer', 'settings', 'source', 'issues'] }, 'GET', ['asset', 'importer', 'audit'])
     async assetImporterAudit(args: { reference: IInstanceReference }): Promise<{ valid: boolean, importer: string, settings: Record<string, unknown>, source: Record<string, unknown>, issues: string[] }> {
