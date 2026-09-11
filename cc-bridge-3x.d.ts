@@ -410,6 +410,24 @@ declare namespace cc_bridge_3x {
         error: { code: string, message: string, evidence: Record<string, any> }
     };
 
+    /** Inspect a bounded, read-only UI subtree and return normalized layout values in Creator tree order. */
+    function uiLayoutInspect(args: {
+        reference?: InstanceReference & { type: "cc.Node" },
+        maxNodes?: number
+    }): {
+        nodes: Array<{
+            reference: InstanceReference & { type: "cc.Node" },
+            name: string,
+            active: boolean,
+            position: { x: number, y: number, z: number },
+            size: { width: number, height: number } | null,
+            anchor: { x: number, y: number } | null,
+            worldRect: { x: number, y: number, width: number, height: number } | null,
+            components: string[]
+        }>,
+        truncated: boolean
+    };
+
     /** Candidate: inspect active UI nodes for inferred labels, known interactability components, and duplicate or missing labels. Read-only inference only; no screen-reader runtime support is claimed. */
     function uiAccessibilityAudit(args: {
         root?: InstanceReference,
