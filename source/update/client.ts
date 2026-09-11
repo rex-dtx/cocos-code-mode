@@ -1,10 +1,59 @@
 import { createHash } from "crypto"
 import { createWriteStream, mkdirSync, renameSync, rmSync } from "fs"
+import { request as httpsRequest } from "https"
 import { dirname } from "path"
 import { URL } from "url"
 import { CcbError } from "../protected/errors";
 
 const MAX_REDIRECTS = 3;
+type Reader = { getReader(): ReadableStreamDefaultReader<Uint8Array> };
+
+function node14Fetch(url: URL, signal?: AbortSignal): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    const request = httpsRequest({
+      hostname: url.hostname,
+      port: url.port || 443,
+      path: `${url.pathname}${url.search}`,
+      method: "GET",
+      headers: { "accept-encoding": "identity" },
+    }, (incoming) => {
+      const pending: Array<{ resolve: (value: ReadResult) => void; reject: (error: Error) => void }> = [];
+      const chunks: Buffer[] = [];
+      let ended = false;
+      let failure: Error | null = null;
+      const flush = () => {
+        while (pending.length && chunks.length) pending.shift()!.resolve({ done: false, value: new Uint8Array(chunks.shift()!) });
+        if (ended && !chunks.length) while (pending.length) pending.shift()!.resolve({ done: true, value: undefined });
+        if (failure) while (pending.length) pending.shift()!.reject(failure);
+      };
+      incoming.once("end", () => { ended = true; flush(); });
+      incoming.once("error", (error: Error) => { failure = error; flush(); });
+      const status = incoming.statusCode || 0;
+      const headers = { get(name: string): string | null {
+        const value = incoming.headers[name.toLowerCase()];
+        return Array.isArray(value) ? value.join(", ") : value == null ? null : String(value);
+      } };
+      const body: Reader = { getReader: () => ({
+        read: () => new Promise<ReadResult>((readResolve, readReject) => {
+          if (failure) readReject(failure);
+          else if (chunks.length) readResolve({ done: false, value: new Uint8Array(chunks.shift()!) });
+          else if (ended) readResolve({ done: true, value: undefined });
+          else pending.push({ resolve: readResolve, reject: readReject });
+        }),
+        cancel: async () => { incoming.destroy(); },
+      } as ReadableStreamDefaultReader<Uint8Array>) };
+      resolve({ status, ok: status >= 200 && status < 300, headers, body } as unknown as Response);
+    });
+    request.once("error", reject);
+    if (signal) {
+      if (signal.aborted) request.destroy();
+      else signal.addEventListener("abort", () => request.destroy(), { once: true });
+    }
+    request.end();
+  });
+}
+
+type ReadResult = { done: boolean; value?: Uint8Array };
 
 export function assertReleaseOrigin(origin: string): URL {
   const url = new URL(origin);
@@ -26,7 +75,9 @@ async function fetchRelease(origin: URL, input: URL, signal?: AbortSignal): Prom
   let url = assertReleaseArtifactUrl(origin, input.href);
   for (let redirects = 0; redirects <= MAX_REDIRECTS; redirects += 1) {
     let response: Response;
-    try { response = await fetch(url, { redirect: "manual", signal, headers: { "accept-encoding": "identity" } }); }
+    try { response = typeof fetch === "function"
+      ? await fetch(url, { redirect: "manual", signal, headers: { "accept-encoding": "identity" } })
+      : await node14Fetch(url, signal); }
     catch (error) {
       const cause = error && typeof error === "object" && "cause" in error
         ? (error.cause && typeof error.cause === "object" && "code" in error.cause ? error.cause.code : undefined)
