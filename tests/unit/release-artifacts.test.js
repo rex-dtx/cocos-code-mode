@@ -116,7 +116,7 @@ describe('release sidecar contracts', () => {
       const manifest = writeCanonicalJson(path.join(root, 'manifest.json'), { files: [] });
       const sbom = writeCanonicalJson(path.join(root, 'sbom.json'), { components: [] });
       const statement = createProvenance(root, zipPath, manifest, sbom);
-      assert.equal(statement.subject[0].name, 'cc-bridge-3x.zip');
+      assert.equal(statement.predicate.buildDefinition.internalParameters.builtAt, '1980-01-01T00:00:00.000Z');
       assert.equal(statement.predicate.buildDefinition.resolvedDependencies.length, 2);
       assert.equal(statement.predicate.runDetails.byproducts.length, 2);
     } finally {
