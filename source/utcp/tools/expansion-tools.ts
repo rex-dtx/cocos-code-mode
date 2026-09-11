@@ -1,6 +1,7 @@
 import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
+import { IProperty } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import fs from 'fs-extra';
 import path from 'path';
 import { createHash } from 'crypto';
@@ -36,6 +37,22 @@ function propertyValue(value: unknown): unknown {
 function componentUuid(component: ComponentRecord | undefined): unknown {
     const raw = component as (ComponentRecord & { uuid?: unknown }) | undefined;
     return propertyValue(component?.value?.uuid ?? raw?.uuid);
+}
+
+function referenceUuid(value: unknown): string | undefined {
+    const unwrapped = propertyValue(value);
+    if (typeof unwrapped === 'string' && unwrapped) return unwrapped;
+    if (!unwrapped || typeof unwrapped !== 'object') return undefined;
+    const uuid = propertyValue((unwrapped as Record<string, unknown>).uuid);
+    return typeof uuid === 'string' && uuid ? uuid : undefined;
+}
+
+function cloneDump<T>(value: T): T {
+    return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function dumpsEqual(left: unknown, right: unknown): boolean {
+    return JSON.stringify(left) === JSON.stringify(right);
 }
 async function hashFile(filePath: string): Promise<string> {
     const hash = createHash('sha256');
@@ -745,6 +762,276 @@ export class ExpansionTools {
         const nodes = await sceneNodes(args.reference?.id);
         const sources = nodes.flatMap((node) => (node.__comps__ ?? []).filter((component) => componentType(component) === 'cc.AudioSource').map((component) => ({ node: { id: node.uuid, type: 'cc.Node' }, name: nodeName(node), properties: audioProperties(component) })));
         return { sources, count: sources.length };
+    }
+    @utcpTool(
+        'audioSourceConfigure',
+        'Configure bounded serialized AudioSource properties on one existing node or component, with typed preflight, read-back, and rollback. Does not start or otherwise control playback.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                reference: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        id: { type: 'string', minLength: 1 },
+                        type: { type: 'string', enum: ['cc.Node', 'cc.AudioSource'] },
+                    },
+                    required: ['id', 'type'],
+                },
+                properties: {
+                    type: 'object',
+                    additionalProperties: false,
+                    minProperties: 1,
+                    properties: {
+                        volume: { type: 'number', minimum: 0, maximum: 1 },
+                        loop: { type: 'boolean' },
+                        playOnAwake: { type: 'boolean' },
+                        clip: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                                id: { type: 'string', minLength: 1 },
+                                type: { type: 'string', const: 'cc.AudioClip' },
+                            },
+                            required: ['id', 'type'],
+                        },
+                    },
+                },
+            },
+            required: ['reference', 'properties'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                reference: InstanceReferenceSchema,
+                componentReference: InstanceReferenceSchema,
+                properties: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        volume: { type: 'number' },
+                        loop: { type: 'boolean' },
+                        playOnAwake: { type: 'boolean' },
+                        clip: {
+                            anyOf: [
+                                { type: 'null' },
+                                {
+                                    type: 'object',
+                                    additionalProperties: false,
+                                    properties: { id: { type: 'string' }, type: { type: 'string', const: 'cc.AudioClip' } },
+                                    required: ['id', 'type'],
+                                },
+                            ],
+                        },
+                    },
+                    required: ['volume', 'loop', 'playOnAwake', 'clip'],
+                },
+                changed: { type: 'array', minItems: 1, maxItems: 4, items: { type: 'string', enum: ['volume', 'loop', 'playOnAwake', 'clip'] } },
+                verified: { type: 'boolean', const: true },
+            },
+            required: ['reference', 'componentReference', 'properties', 'changed', 'verified'],
+        },
+        'POST',
+        ['audio', 'source', 'configure', 'mutation']
+    )
+    async audioSourceConfigure(args: {
+        reference: IInstanceReference,
+        properties: {
+            volume?: number,
+            loop?: boolean,
+            playOnAwake?: boolean,
+            clip?: IInstanceReference,
+        },
+    }): Promise<{
+        reference: IInstanceReference,
+        componentReference: IInstanceReference,
+        properties: { volume: number, loop: boolean, playOnAwake: boolean, clip: IInstanceReference | null },
+        changed: Array<'volume' | 'loop' | 'playOnAwake' | 'clip'>,
+        verified: true,
+    }> {
+        const requested = args?.properties;
+        const allowedKeys = ['volume', 'loop', 'playOnAwake', 'clip'] as const;
+        const changed = requested && typeof requested === 'object' && !Array.isArray(requested)
+            ? allowedKeys.filter((key) => Object.prototype.hasOwnProperty.call(requested, key))
+            : [];
+        if (!args?.reference?.id || !['cc.Node', 'cc.AudioSource'].includes(String(args.reference.type))) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'audioSourceConfigure requires a typed cc.Node or cc.AudioSource reference.' });
+        }
+        if (!requested || typeof requested !== 'object' || Array.isArray(requested) || changed.length === 0 || Object.keys(requested).some((key) => !allowedKeys.includes(key as typeof allowedKeys[number]))) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'audioSourceConfigure properties must contain at least one of volume, loop, playOnAwake, or clip and no other fields.' });
+        }
+        if (Object.prototype.hasOwnProperty.call(requested, 'volume') && (typeof requested.volume !== 'number' || !Number.isFinite(requested.volume) || requested.volume < 0 || requested.volume > 1)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'audioSourceConfigure volume must be a finite number between 0 and 1.' });
+        }
+        for (const key of ['loop', 'playOnAwake'] as const) {
+            if (Object.prototype.hasOwnProperty.call(requested, key) && typeof requested[key] !== 'boolean') {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `audioSourceConfigure ${key} must be boolean.` });
+            }
+        }
+        if (Object.prototype.hasOwnProperty.call(requested, 'clip')) {
+            const clip = requested.clip;
+            if (!clip || typeof clip !== 'object' || !clip.id || clip.type !== 'cc.AudioClip' || Object.keys(clip).some((key) => !['id', 'type'].includes(key))) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'audioSourceConfigure clip must be a typed cc.AudioClip asset reference.' });
+            }
+        }
+
+        let node: NodeRecord | null;
+        let source: ComponentRecord | undefined;
+        if (args.reference.type === 'cc.Node') {
+            node = await Editor.Message.request('scene', 'query-node', args.reference.id) as unknown as NodeRecord | null;
+            if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `AudioSource node ${args.reference.id} not found.` });
+            const sources = (node.__comps__ ?? []).filter((component) => componentType(component) === 'cc.AudioSource');
+            if (sources.length === 0) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Node ${args.reference.id} has no cc.AudioSource component.` });
+            if (sources.length > 1) throw new ToolError({ code: 'AMBIGUOUS_TARGET', status: 409, message: `Node ${args.reference.id} has multiple cc.AudioSource components; pass a component reference.` });
+            source = sources[0];
+        } else {
+            const component = await Editor.Message.request('scene', 'query-component', args.reference.id) as unknown as ComponentRecord | null;
+            if (!component) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `AudioSource component ${args.reference.id} not found.` });
+            if (componentType(component) !== 'cc.AudioSource') throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Component ${args.reference.id} is ${componentType(component) || 'unknown'}, not cc.AudioSource.` });
+            const nodeUuid = referenceUuid(component.value?.node);
+            if (!nodeUuid) throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: `AudioSource component ${args.reference.id} has no serialized node reference.` });
+            node = await Editor.Message.request('scene', 'query-node', nodeUuid) as unknown as NodeRecord | null;
+            if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Parent node ${nodeUuid} for AudioSource ${args.reference.id} not found.` });
+            source = (node.__comps__ ?? []).find((candidate) => componentUuid(candidate) === args.reference.id);
+            if (!source || componentType(source) !== 'cc.AudioSource') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `AudioSource component ${args.reference.id} was not found on parent node ${nodeUuid}.` });
+        }
+
+        const nodeUuid = node.uuid;
+        const sourceUuid = componentUuid(source);
+        const sourceIndex = (node.__comps__ ?? []).indexOf(source);
+        if (!nodeUuid || typeof sourceUuid !== 'string' || !sourceUuid || sourceIndex < 0) {
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: 'The target AudioSource does not expose stable serialized node and component UUIDs.' });
+        }
+
+        const expectedTypes: Record<typeof allowedKeys[number], string[]> = {
+            volume: ['Float', 'Number', 'cc.Float', 'cc.Number'],
+            loop: ['Boolean', 'cc.Boolean'],
+            playOnAwake: ['Boolean', 'cc.Boolean'],
+            clip: ['cc.AudioClip'],
+        };
+        const originals = new Map<typeof allowedKeys[number], IProperty>();
+        for (const key of changed) {
+            const dump = source.value?.[key];
+            const type = dump && typeof dump === 'object' ? (dump as Record<string, unknown>).type : undefined;
+            if (!dump || typeof dump !== 'object' || !('value' in dump) || typeof type !== 'string' || !expectedTypes[key].includes(type)) {
+                throw new ToolError({
+                    code: 'UNSUPPORTED_PROPERTY',
+                    status: 422,
+                    message: `AudioSource.${key} is unavailable or has an unsupported serialized type.`,
+                    details: { property: key, actualType: type ?? null, expectedTypes: expectedTypes[key] },
+                });
+            }
+            originals.set(key, cloneDump(dump as IProperty));
+        }
+        if (requested.clip) {
+            const asset = await Editor.Message.request('asset-db', 'query-asset-info', requested.clip.id) as { type?: unknown } | null;
+            if (!asset) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Audio clip asset ${requested.clip.id} not found.` });
+            if (asset.type !== 'cc.AudioClip') {
+                throw new ToolError({
+                    code: 'TYPE_MISMATCH',
+                    status: 422,
+                    message: `Asset ${requested.clip.id} is ${asset.type || 'unknown'}, not cc.AudioClip.`,
+                    details: { asset: requested.clip.id, expectedType: 'cc.AudioClip', actualType: asset.type ?? null },
+                });
+            }
+        }
+
+        const pathFor = (key: typeof allowedKeys[number]) => `__comps__.${sourceIndex}.${key}`;
+        const requestedDump = (key: typeof allowedKeys[number]): IProperty => {
+            const original = originals.get(key)!;
+            const value = key === 'clip' ? { uuid: requested.clip!.id } : requested[key];
+            return { ...original, value };
+        };
+        const attempted: Array<typeof allowedKeys[number]> = [];
+        const currentSource = (dump: NodeRecord | null): ComponentRecord | undefined =>
+            dump?.__comps__?.find((component) => componentUuid(component) === sourceUuid && componentType(component) === 'cc.AudioSource');
+        const normalizedProperties = (component: ComponentRecord): { volume: number, loop: boolean, playOnAwake: boolean, clip: IInstanceReference | null } => {
+            const clipUuid = referenceUuid(component.value?.clip);
+            return {
+                volume: propertyValue(component.value?.volume) as number,
+                loop: propertyValue(component.value?.loop) as boolean,
+                playOnAwake: propertyValue(component.value?.playOnAwake) as boolean,
+                clip: clipUuid ? { id: clipUuid, type: 'cc.AudioClip' } : null,
+            };
+        };
+
+        try {
+            for (const key of changed) {
+                attempted.push(key);
+                const ok = await Editor.Message.request('scene', 'set-property', { uuid: nodeUuid, path: pathFor(key), dump: requestedDump(key) });
+                if (ok === false) throw new ToolError({ code: 'MUTATION_FAILED', status: 500, message: `Creator refused AudioSource.${key} on ${nodeUuid}.` });
+            }
+            const snapshotResult = await Editor.Message.request('scene', 'snapshot') as unknown;
+            if (snapshotResult === false) throw new ToolError({ code: 'MUTATION_FAILED', status: 500, message: `Creator refused AudioSource snapshot for ${nodeUuid}.` });
+            const verifiedNode = await Editor.Message.request('scene', 'query-node', nodeUuid) as unknown as NodeRecord | null;
+            const verifiedSource = currentSource(verifiedNode);
+            if (!verifiedSource) throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: `AudioSource ${sourceUuid} was not found during read-back.` });
+            const readback = normalizedProperties(verifiedSource);
+            for (const key of changed) {
+                const expected = key === 'clip' ? requested.clip!.id : requested[key];
+                const actual = key === 'clip' ? readback.clip?.id : readback[key];
+                if (actual !== expected) {
+                    throw new ToolError({
+                        code: 'POSTCONDITION_FAILED',
+                        status: 500,
+                        message: `AudioSource.${key} read-back did not match the requested value.`,
+                        details: { property: key, expected, actual },
+                    });
+                }
+            }
+            return {
+                reference: { id: nodeUuid, type: 'cc.Node' },
+                componentReference: { id: sourceUuid, type: 'cc.AudioSource' },
+                properties: readback,
+                changed,
+                verified: true,
+            };
+        } catch (error) {
+            if (attempted.length > 0) {
+                try {
+                    const rollbackErrors: string[] = [];
+                    for (const key of [...attempted].reverse()) {
+                        try {
+                            const ok = await Editor.Message.request('scene', 'set-property', { uuid: nodeUuid, path: pathFor(key), dump: originals.get(key)! });
+                            if (ok === false) throw new Error(`Creator refused rollback of AudioSource.${key}`);
+                        } catch (rollbackFieldError) {
+                            rollbackErrors.push(rollbackFieldError instanceof Error ? rollbackFieldError.message : String(rollbackFieldError));
+                        }
+                    }
+                    const rolledBackNode = await Editor.Message.request('scene', 'query-node', nodeUuid) as unknown as NodeRecord | null;
+                    const rolledBackSource = currentSource(rolledBackNode);
+                    if (!rolledBackSource || attempted.some((key) => !dumpsEqual(rolledBackSource.value?.[key], originals.get(key)))) {
+                        rollbackErrors.push(`AudioSource ${sourceUuid} rollback read-back did not match the captured values`);
+                    }
+                    const rollbackSnapshot = await Editor.Message.request('scene', 'snapshot') as unknown;
+                    if (rollbackSnapshot === false) rollbackErrors.push('Creator refused AudioSource rollback snapshot');
+                    if (rollbackErrors.length > 0) throw new Error(rollbackErrors.join('; '));
+                } catch (rollbackError) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: `audioSourceConfigure failed and AudioSource ${sourceUuid} could not be rolled back.`,
+                        details: {
+                            cause: error instanceof Error ? error.message : String(error),
+                            rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+                            node: { id: nodeUuid, type: 'cc.Node' },
+                            component: { id: sourceUuid, type: 'cc.AudioSource' },
+                        },
+                        recovery: `Inspect AudioSource ${sourceUuid} on node ${nodeUuid} and restore its serialized properties before retrying.`,
+                    });
+                }
+            }
+            if (error instanceof ToolError) throw error;
+            throw new ToolError({
+                code: 'MUTATION_FAILED',
+                status: 500,
+                message: `audioSourceConfigure failed for AudioSource ${sourceUuid}.`,
+                details: { cause: error instanceof Error ? error.message : String(error) },
+                recovery: 'The changed AudioSource properties were rolled back and verified; inspect the target before retrying.',
+            });
+        }
     }
     @utcpTool('audioSourceAudit', 'Audit bounded AudioSource clip and playback compatibility with normalized properties.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { valid: { type: 'boolean' }, sources: { type: 'array' }, issues: { type: 'array' }, checkedSources: { type: 'integer' } }, required: ['valid', 'sources', 'issues', 'checkedSources'] }, 'GET', ['audio', 'source', 'audit', 'compatibility'])
     async audioSourceAudit(args: { reference?: IInstanceReference }): Promise<{ valid: boolean, sources: Array<Record<string, unknown>>, issues: string[], checkedSources: number }> {

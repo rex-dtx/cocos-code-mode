@@ -32,7 +32,7 @@ export function getToolProfileMeta(name: string): ToolProfileMeta | undefined {
 // Infer annotations from tool name + HTTP method when not explicitly provided.
 export function inferAnnotations(name: string, httpMethod: string): ToolAnnotations {
     const readOnly = /^(get|list|find|read|search|check|validate|exists|capture|query|inspect|runtimeGet)/.test(name);
-    const destructive = /(delete|remove|clear|replace|write|reset|set_|execute|run|invoke|emit|simulate|create|add|save|pause|resume)/.test(name);
+    const destructive = /(delete|remove|clear|replace|write|reset|set_|configure|execute|run|invoke|emit|simulate|create|add|save|pause|resume)/.test(name);
     const idempotent = readOnly || /^(set|select|open|pause|resume|stop|refresh)/.test(name);
 
     let accessLevel: AccessLevel;
