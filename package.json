@@ -18,6 +18,7 @@
     "enroll:device": "node ./scripts/enroll-device.js",
     "manage:device": "node ./scripts/manage-device.js",
     "qualify:protected": "node ./scripts/qualify-protected.js",
+    "verify:release": "node ./scripts/verify-release-set.js",
     "serve:release": "node ./scripts/serve-release.js",
     "forbidden-material": "node ./scripts/forbidden-material-witness.js",
     "support-bundle": "node ./scripts/support-bundle.js",
