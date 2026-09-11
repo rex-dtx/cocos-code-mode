@@ -530,17 +530,54 @@ export class UiTools {
         'Inspect bounded UI layout constraints and normalized world rectangles for a scene subtree.',
         {
             type: 'object',
+            additionalProperties: false,
             properties: {
-                reference: InstanceReferenceSchema,
+                reference: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: { id: { type: 'string', minLength: 1 }, type: { type: 'string', const: 'cc.Node' } },
+                    required: ['id'],
+                },
                 maxNodes: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
             },
         },
-        { type: 'object', properties: { nodes: { type: 'array' }, truncated: { type: 'boolean' } }, required: ['nodes', 'truncated'] },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                nodes: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            reference: {
+                                type: 'object',
+                                additionalProperties: false,
+                                properties: { id: { type: 'string' }, type: { type: 'string', const: 'cc.Node' } },
+                                required: ['id', 'type'],
+                            },
+                            name: { type: 'string' },
+                            active: { type: 'boolean' },
+                            position: { type: 'object', additionalProperties: false, properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'] },
+                            size: { type: ['object', 'null'] },
+                            anchor: { type: ['object', 'null'] },
+                            worldRect: { type: ['object', 'null'] },
+                            components: { type: 'array', items: { type: 'string' } },
+                        },
+                        required: ['reference', 'name', 'active', 'position', 'size', 'anchor', 'worldRect', 'components'],
+                    },
+                },
+                truncated: { type: 'boolean' },
+            },
+            required: ['nodes', 'truncated'],
+        },
         'POST',
         ['ui', 'layout', 'inspect', 'geometry']
     )
     async uiLayoutInspect(args: { reference?: IInstanceReference, maxNodes?: number }): Promise<{ nodes: UiLayoutNode[], truncated: boolean }> {
-        return this.inspectLayout(args.reference?.id, args.maxNodes ?? 64);
+        const { rootUuid, maxNodes } = this.validateUiLayoutInspectArgs(args);
+        return this.inspectLayout(rootUuid, maxNodes, true);
     }
 
     @utcpTool(
@@ -619,20 +656,24 @@ export class UiTools {
             const parentId = dump.parent?.value?.uuid ?? dump.parent?.uuid;
             if (!parentId) throw new ToolError({ code: 'INVALID_TARGET', status: 422, message: `UI node ${id} has no queryable parent` });
             parentIds.add(parentId);
-            const position = this.unwrapValue(dump.position) ?? { x: 0, y: 0, z: 0 };
+            const positionValue = this.unwrapValue(dump.position);
+            const position = this.isRecord(positionValue) ? positionValue : { x: 0, y: 0, z: 0 };
             const transform = dump.__comps__?.find((component) => component.type === 'cc.UITransform');
             const value = transform ? this.unwrapValue(transform.value) : null;
-            const size = value ? this.unwrapValue(value.contentSize) ?? this.unwrapValue(value._contentSize) : null;
-            const anchor = value ? this.unwrapValue(value.anchorPoint) ?? this.unwrapValue(value._anchorPoint) : null;
+            const transformRecord = this.isRecord(value) ? value : null;
+            const sizeValue = transformRecord ? this.unwrapValue(transformRecord.contentSize) ?? this.unwrapValue(transformRecord._contentSize) : null;
+            const anchorValue = transformRecord ? this.unwrapValue(transformRecord.anchorPoint) ?? this.unwrapValue(transformRecord._anchorPoint) : null;
+            const size = this.isRecord(sizeValue) ? sizeValue : null;
+            const anchor = this.isRecord(anchorValue) ? anchorValue : null;
             if (typeof size?.width !== 'number' || typeof size?.height !== 'number' || typeof anchor?.x !== 'number' || typeof anchor?.y !== 'number') {
                 throw new ToolError({ code: 'INVALID_TARGET', status: 422, message: `UI node ${id} requires a readable cc.UITransform size and anchor` });
             }
             return {
                 id,
-                position: { x: position.x ?? 0, y: position.y ?? 0, z: position.z ?? 0 },
+                position: { x: this.finiteNumber(position.x, 0), y: this.finiteNumber(position.y, 0), z: this.finiteNumber(position.z, 0) },
                 worldRect: {
-                    x: (position.x ?? 0) - size.width * anchor.x,
-                    y: (position.y ?? 0) - size.height * anchor.y,
+                    x: this.finiteNumber(position.x, 0) - size.width * anchor.x,
+                    y: this.finiteNumber(position.y, 0) - size.height * anchor.y,
                     width: size.width,
                     height: size.height,
                 },
@@ -664,7 +705,7 @@ export class UiTools {
         } catch (error: unknown) {
             for (const id of applied.reverse()) {
                 const original = originals.get(id);
-                if (original) await Editor.Message.request('scene', 'set-property', { uuid: id, path: 'position', dump: { value: original, type: 'cc.Vec3' } }).catch(() => undefined);
+                if (original) await Editor.Message.request('scene', 'set-property', { uuid: id, path: 'position', dump: { value: original, type: 'cc.Vec3' } });
             }
             await Editor.Message.request('scene', 'snapshot-abort').catch(() => undefined);
             throw new ToolError({ code: 'MUTATION_FAILED', status: 500, message: error instanceof Error ? error.message : String(error) });
@@ -798,35 +839,176 @@ export class UiTools {
         return { reference: form.reference, label: label.reference, input: input.reference, submit: submit.reference, focusOrder: [input.reference.id, submit.reference.id] };
     }
 
-    private unwrapValue(value: any): any {
-        return value && typeof value === 'object' && 'value' in value ? value.value : value;
+    private unwrapValue(value: unknown): unknown {
+        return this.isRecord(value) && 'value' in value ? value.value : value;
+    }
+    private validateUiLayoutInspectArgs(args: unknown): { rootUuid?: string, maxNodes: number } {
+        if (!args || typeof args !== 'object' || Array.isArray(args)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect arguments must be an object.' });
+        }
+        const input = args as Record<string, unknown>;
+        if (Object.keys(input).some((key) => key !== 'reference' && key !== 'maxNodes')) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect accepts only reference and maxNodes.' });
+        }
+        let rootUuid: string | undefined;
+        if (input.reference !== undefined) {
+            const reference = input.reference;
+            if (!reference || typeof reference !== 'object' || Array.isArray(reference)) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect reference must be a typed cc.Node reference.' });
+            }
+            const typedReference = reference as Record<string, unknown>;
+            if (Object.keys(typedReference).some((key) => key !== 'id' && key !== 'type')
+                || typeof typedReference.id !== 'string' || typedReference.id.trim().length === 0
+                || typedReference.type !== 'cc.Node') {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect reference must contain only a non-empty id and type cc.Node.' });
+            }
+            rootUuid = typedReference.id;
+        }
+        const maxNodes = input.maxNodes === undefined ? 64 : input.maxNodes;
+        if (typeof maxNodes !== 'number' || !Number.isInteger(maxNodes) || maxNodes < 1 || maxNodes > 128) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect maxNodes must be an integer from 1 to 128.' });
+        }
+        return { rootUuid, maxNodes };
     }
 
-    private async inspectLayout(rootUuid?: string, maxNodes = 64): Promise<{ nodes: UiLayoutNode[], truncated: boolean }> {
-        const tree = (rootUuid ? await Editor.Message.request('scene', 'query-node-tree', rootUuid) : await Editor.Message.request('scene', 'query-node-tree')) as unknown as SceneNodeDump | null;
-        if (!tree) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'Scene subtree not found' });
-        const nodes: UiLayoutNode[] = [];
-        const visit = async (entry: any, parentWorld = { x: 0, y: 0 }): Promise<void> => {
-            if (nodes.length >= maxNodes) return;
-            const id = entry.uuid || entry.value?.uuid;
-            if (!id) return;
-            const dump = await this.queryNodeDump(id);
-            if (!dump) return;
-            const pos = this.unwrapValue(dump.position) ?? { x: 0, y: 0, z: 0 };
-            const transform = dump.__comps__?.find((component) => component.type === 'cc.UITransform');
-            const value = transform ? this.unwrapValue(transform.value) : null;
-            const size = value ? this.unwrapValue(value.contentSize) ?? this.unwrapValue(value._contentSize) : null;
-            const anchor = value ? this.unwrapValue(value.anchorPoint) ?? this.unwrapValue(value._anchorPoint) : null;
-            const width = typeof size?.width === 'number' ? size.width : null;
-            const height = typeof size?.height === 'number' ? size.height : null;
-            const world = { x: parentWorld.x + (pos.x ?? 0), y: parentWorld.y + (pos.y ?? 0) };
-            const nameValue = typeof dump.name === 'string' ? dump.name : dump.name?.value;
-            nodes.push({ reference: { id, type: 'cc.Node' }, name: nameValue ?? id, active: Boolean(this.unwrapValue(dump.active) ?? true), position: { x: pos.x ?? 0, y: pos.y ?? 0, z: pos.z ?? 0 }, size: width !== null && height !== null ? { width, height } : null, anchor: anchor && typeof anchor.x === 'number' && typeof anchor.y === 'number' ? { x: anchor.x, y: anchor.y } : null, worldRect: width !== null && height !== null ? { x: world.x - width * (anchor?.x ?? 0.5), y: world.y - height * (anchor?.y ?? 0.5), width, height } : null, components: (dump.__comps__ ?? []).map((component) => component.type).filter((type): type is string => Boolean(type)) });
-            for (const child of dump.children ?? []) await visit(child, world);
-        };
-        await visit(tree);
-        return { nodes, truncated: Boolean((tree.children ?? []).length && nodes.length >= maxNodes) };
+    private isRecord(value: unknown): value is Record<string, unknown> {
+        return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
     }
+
+    private finiteNumber(value: unknown, fallback: number): number {
+        return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+    }
+
+    private childUuid(entry: unknown): string {
+        if (!this.isRecord(entry)) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: 'uiLayoutInspect received a malformed child reference from Creator.' });
+        }
+        const direct = entry.uuid;
+        const wrapped = this.isRecord(entry.value) ? entry.value.uuid : undefined;
+        const id = typeof direct === 'string' ? direct : wrapped;
+        if (typeof id !== 'string' || id.trim().length === 0) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: 'uiLayoutInspect received a child reference without a valid UUID from Creator.' });
+        }
+        return id;
+    }
+
+    private normalizeLayoutDump(id: string, dump: unknown, strict = true): SceneNodeDump {
+        if (!strict) return dump as SceneNodeDump;
+        if (!this.isRecord(dump) || typeof dump.uuid !== 'string' || dump.uuid.trim().length === 0 || dump.uuid !== id) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: `uiLayoutInspect received a malformed node payload for ${id}.` });
+        }
+        if (dump.children !== undefined && !Array.isArray(dump.children)) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: `uiLayoutInspect received malformed children for node ${id}.` });
+        }
+        if (dump.__comps__ !== undefined && !Array.isArray(dump.__comps__)) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: `uiLayoutInspect received malformed components for node ${id}.` });
+        }
+        return dump as SceneNodeDump;
+    }
+
+    private async inspectLayout(rootUuid: string | undefined, maxNodes = 64, strict = false): Promise<{ nodes: UiLayoutNode[], truncated: boolean }> {
+        let tree: unknown;
+        try {
+            tree = rootUuid
+                ? await Editor.Message.request('scene', 'query-node-tree', rootUuid)
+                : await Editor.Message.request('scene', 'query-node-tree');
+        } catch (error: unknown) {
+            if (!strict) throw error;
+            throw new ToolError({
+                code: 'UI_LAYOUT_QUERY_FAILED',
+                status: 502,
+                message: 'uiLayoutInspect could not query the Creator scene hierarchy.',
+                details: { cause: error instanceof Error ? error.message : String(error) },
+                recovery: 'Retry after the Creator scene is ready.',
+            });
+        }
+        if (tree === null || tree === undefined) {
+            throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'Scene subtree not found' });
+        }
+        if (strict && (!this.isRecord(tree) || typeof tree.uuid !== 'string' || tree.uuid.trim().length === 0 || (tree.children !== undefined && !Array.isArray(tree.children)))) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: 'uiLayoutInspect received a malformed scene hierarchy from Creator.' });
+        }
+
+        const nodes: UiLayoutNode[] = [];
+        const visited = new Set<string>();
+        let truncated = false;
+        const visit = async (id: string, parentWorld = { x: 0, y: 0 }, orderedChildren?: unknown[]): Promise<void> => {
+            if (visited.has(id)) return;
+            if (nodes.length >= maxNodes) {
+                truncated = true;
+                return;
+            }
+            visited.add(id);
+
+            let rawDump: unknown;
+            try {
+                rawDump = await this.queryNodeDump(id);
+            } catch (error: unknown) {
+                if (!strict) throw error;
+                throw new ToolError({
+                    code: 'UI_LAYOUT_QUERY_FAILED',
+                    status: 502,
+                    message: `uiLayoutInspect could not query node ${id}.`,
+                    details: { cause: error instanceof Error ? error.message : String(error) },
+                    recovery: 'Retry after the Creator scene is ready.',
+                });
+            }
+            if (rawDump === null || rawDump === undefined) {
+                throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `UI node ${id} not found` });
+            }
+            const dump = this.normalizeLayoutDump(id, rawDump, strict);
+            const pos = this.isRecord(this.unwrapValue(dump.position)) ? this.unwrapValue(dump.position) as Record<string, unknown> : {};
+            const x = this.finiteNumber(pos.x, 0);
+            const y = this.finiteNumber(pos.y, 0);
+            const z = this.finiteNumber(pos.z, 0);
+            const transform = dump.__comps__?.find((component) => this.isRecord(component) && component.type === 'cc.UITransform') as { type?: string, value?: Record<string, unknown> } | undefined;
+            const value = transform ? this.unwrapValue(transform.value) : null;
+            const transformValue = this.isRecord(value) ? value : null;
+            const sizeValue = transformValue ? this.unwrapValue(transformValue.contentSize) ?? this.unwrapValue(transformValue._contentSize) : null;
+            const anchorValue = transformValue ? this.unwrapValue(transformValue.anchorPoint) ?? this.unwrapValue(transformValue._anchorPoint) : null;
+            const sizeRecord = this.isRecord(sizeValue) ? sizeValue : null;
+            const anchorRecord = this.isRecord(anchorValue) ? anchorValue : null;
+            const width = this.finiteNumber(sizeRecord?.width, Number.NaN);
+            const height = this.finiteNumber(sizeRecord?.height, Number.NaN);
+            const anchorX = this.finiteNumber(anchorRecord?.x, Number.NaN);
+            const anchorY = this.finiteNumber(anchorRecord?.y, Number.NaN);
+            const nameValue = typeof dump.name === 'string' ? dump.name : this.isRecord(dump.name) && typeof dump.name.value === 'string' ? dump.name.value : strict ? '' : id;
+            const activeValue = this.unwrapValue(dump.active);
+            const active = typeof activeValue === 'boolean' ? activeValue : true;
+            const world = { x: parentWorld.x + x, y: parentWorld.y + y };
+            const hasSize = Number.isFinite(width) && Number.isFinite(height);
+            const hasAnchor = Number.isFinite(anchorX) && Number.isFinite(anchorY);
+            nodes.push({
+                reference: { id, type: 'cc.Node' },
+                name: nameValue,
+                active,
+                position: { x, y, z },
+                size: hasSize ? { width, height } : null,
+                anchor: hasAnchor ? { x: anchorX, y: anchorY } : null,
+                worldRect: hasSize ? { x: world.x - width * (hasAnchor ? anchorX : 0.5), y: world.y - height * (hasAnchor ? anchorY : 0.5), width, height } : null,
+                components: (dump.__comps__ ?? []).filter((component): component is { type?: string } => this.isRecord(component)).map((component) => component.type).filter((type): type is string => typeof type === 'string'),
+            });
+
+            const children = orderedChildren ?? dump.children ?? [];
+            for (const child of children) {
+                const childId = this.childUuid(child);
+                if (visited.has(childId)) continue;
+                if (nodes.length >= maxNodes) {
+                    truncated = true;
+                    return;
+                }
+                if (this.isRecord(child) && 'children' in child && child.children !== undefined && !Array.isArray(child.children)) {
+                    throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: `uiLayoutInspect received malformed hierarchy children for node ${childId}.` });
+                }
+                const childChildren = this.isRecord(child) && Array.isArray(child.children) ? child.children : undefined;
+                await visit(childId, world, childChildren);
+            }
+        };
+
+        await visit(tree.uuid, { x: 0, y: 0 }, tree.children);
+        return { nodes, truncated };
+    }
+ 
 
     private async queryNodeDump(uuid: string): Promise<SceneNodeDump | null> {
         return await Editor.Message.request('scene', 'query-node', uuid) as unknown as SceneNodeDump | null;
