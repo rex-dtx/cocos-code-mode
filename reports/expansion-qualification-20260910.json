@@ -36,7 +36,7 @@
     "physics2dCompatibilityAudit": { "positive": "real RigidBody2D plus BoxCollider2D fixture returned valid=true for backend=box2d", "negative": "the same fixture returned valid=false for backend=builtin with explicit backend capability issue" },
     "physics2dCreateBody": { "positive": "Box2D circle-body creation returned verified node, RigidBody2D, CircleCollider2D and valid topology", "negative": "Builtin preflight returned HTTP 422 UNSUPPORTED_BACKEND and left no node behind" },
     "physics2dCreateJoint": { "positive": "Box2D DistanceJoint2D creation returned a verified joint with connectedBody bound to the connected RigidBody2D component UUID", "negative": "Builtin preflight returned HTTP 422 UNSUPPORTED_BACKEND and same-endpoint validation returned HTTP 400" },
-    "physics3dCreateBody": { "positive": "PhysX box-body creation returned verified node, RigidBody, BoxCollider, Vec3 size and cleanup", "negative": "Builtin backend and sphere collider returned HTTP 422 typed preflight errors without creating the fixture node" }
+    "physics3dCreateBody": { "positive": "PhysX-only bounded box-body creation returned verified node, RigidBody, BoxCollider, Vec3 size and cleanup", "negative": "Builtin backend and sphere collider returned HTTP 422 typed preflight errors without creating the fixture node; sphere/capsule/mesh variants are not qualified" }
   },
   "registeredUnverified": {
     "buildLogInspect": "No real Creator build task with exposed diagnostics was available in this run.",
