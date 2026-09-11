@@ -7,19 +7,25 @@ services:
     init: true
     environment:
       NODE_ENV: production
-      CCB_GATEWAY_HOST: 0.0.0.0
-      CCB_GATEWAY_PORT: "8787"
+      CCB_GATEWAY_HOST: ${CCB_GATEWAY_HOST:-0.0.0.0}
+      CCB_GATEWAY_PORT: "${CCB_GATEWAY_PORT:-8787}"
       CCB_CACHE_DIR: /data
       CCB_DB_PATH: /data/cc-bridge.db
-      CCB_ALLOWED_HOSTS: 127.0.0.1,localhost,cc-bridge-gateway
+      CCB_ALLOWED_HOSTS: ${CCB_ALLOWED_HOSTS:-127.0.0.1,localhost,192.168.20.100}
       CCB_EXECUTION_KEY_ID: ${CCB_EXECUTION_KEY_ID:-}
       CCB_ALLOW_MEMORY_SIGNER: ${CCB_ALLOW_MEMORY_SIGNER:-}
       CCB_EXECUTION_PRIVATE_KEY_PKCS8: ${CCB_EXECUTION_PRIVATE_KEY_PKCS8:-}
       CCB_SIGNER_SOCKET: ${CCB_SIGNER_SOCKET:-}
-      DTX_MEMBER_JWT_ISSUER: mcpdocs
+      CCB_RELEASE_TARGETS_KEY_ID: ${CCB_RELEASE_TARGETS_KEY_ID:-release-targets}
+      CCB_RELEASE_TARGETS_PUBLIC_KEY_PEM: ${CCB_RELEASE_TARGETS_PUBLIC_KEY_PEM:-}
+      CCB_RELEASE_POLICY_KEY_ID: ${CCB_RELEASE_POLICY_KEY_ID:-rollout-policy}
+      CCB_RELEASE_POLICY_PUBLIC_KEY_PEM: ${CCB_RELEASE_POLICY_PUBLIC_KEY_PEM:-}
+      CCB_RELEASE_TARGETS_THRESHOLD: ${CCB_RELEASE_TARGETS_THRESHOLD:-1}
+      CCB_RELEASE_POLICY_THRESHOLD: ${CCB_RELEASE_POLICY_THRESHOLD:-1}
+      DTX_MEMBER_JWT_ISSUER: ${DTX_MEMBER_JWT_ISSUER:-mcpdocs}
       DTX_MEMBER_JWT_PUBLIC_KEY_PATH: /run/secrets/member-jwt-public.pem
     ports:
-      - "${CCB_GATEWAY_PUBLISH_PORT:-8787}:8787"
+      - "${CCB_GATEWAY_PUBLISH_PORT:-8787}:${CCB_GATEWAY_PORT:-8787}"
     volumes:
       - cc-bridge-data:/data
       - signer-sock:/run/cc-bridge
@@ -30,7 +36,7 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:8787/ccb/v1/health').then(async(r)=>{const b=await r.json().catch(()=>null);process.exit(r.ok&&b?.ok===true&&b?.signer==='configured'?0:1)}).catch(()=>process.exit(1))",
+          "fetch(`http://127.0.0.1:${CCB_GATEWAY_PORT:-8787}/ccb/v1/health`).then(async(r)=>{const b=await r.json().catch(()=>null);process.exit(r.ok&&b?.ok===true&&b?.signer==='configured'?0:1)}).catch(()=>process.exit(1))",
         ]
       interval: 15s
       timeout: 5s
