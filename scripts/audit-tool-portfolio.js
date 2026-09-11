@@ -48,6 +48,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'physics2dCompatibilityAudit',
   'physics2dCreateBody',
   'physics2dCreateJoint',
+  'physics3dCreateBody',
   'physics3dTopologyAudit',
   'physics3dValidate',
   'sceneScriptHealthScan',

@@ -345,6 +345,194 @@ export class ExpansionTools {
             throw error;
         }
     }
+    @utcpTool(
+        'physics3dCreateBody',
+        'Create one verified PhysX rigid-body node with a bounded box collider, serialized size, and rollback on failure.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['builtin', 'cannon', 'physx'], description: 'Target Creator 3D physics backend.' },
+                collider: { type: 'string', enum: ['box', 'sphere', 'capsule', 'mesh'], default: 'box' },
+                size: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        x: { type: 'number', minimum: 0.001, maximum: 100000 },
+                        y: { type: 'number', minimum: 0.001, maximum: 100000 },
+                        z: { type: 'number', minimum: 0.001, maximum: 100000 },
+                    },
+                    required: ['x', 'y', 'z'],
+                    default: { x: 1, y: 1, z: 1 },
+                },
+                name: { type: 'string', minLength: 1, maxLength: 128, default: 'Physics3DBody' },
+                parentReference: InstanceReferenceSchema,
+            },
+            required: ['backend'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                reference: InstanceReferenceSchema,
+                bodyReference: InstanceReferenceSchema,
+                colliderReference: InstanceReferenceSchema,
+                backend: { type: 'string', enum: ['physx'] },
+                bodyType: { type: 'string', enum: ['cc.RigidBody'] },
+                colliderType: { type: 'string', enum: ['cc.BoxCollider'] },
+                collider: { type: 'string', enum: ['box'] },
+                size: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        x: { type: 'number' },
+                        y: { type: 'number' },
+                        z: { type: 'number' },
+                    },
+                    required: ['x', 'y', 'z'],
+                },
+                components: { type: 'array', items: { type: 'string' } },
+                verified: { type: 'boolean' },
+            },
+            required: ['reference', 'bodyReference', 'colliderReference', 'backend', 'bodyType', 'colliderType', 'collider', 'size', 'components', 'verified'],
+        },
+        'POST',
+        ['physics', '3d', 'create', 'body', 'collider', 'compound']
+    )
+    async physics3dCreateBody(args: {
+        backend: 'builtin' | 'cannon' | 'physx',
+        collider?: 'box' | 'sphere' | 'capsule' | 'mesh',
+        size?: { x: number, y: number, z: number },
+        name?: string,
+        parentReference?: IInstanceReference,
+    }): Promise<{
+        reference: IInstanceReference,
+        bodyReference: IInstanceReference,
+        colliderReference: IInstanceReference,
+        backend: 'physx',
+        bodyType: 'cc.RigidBody',
+        colliderType: 'cc.BoxCollider',
+        collider: 'box',
+        size: { x: number, y: number, z: number },
+        components: string[],
+        verified: true,
+    }> {
+        if (args.backend !== 'physx') {
+            throw new ToolError({
+                code: 'UNSUPPORTED_BACKEND',
+                status: 422,
+                message: `physics3dCreateBody supports only the bounded PhysX backend contract; "${args.backend}" is not supported for rigid-body creation.`,
+                recovery: 'Select the physx backend or use ordinary component tools without a physics-backend claim.',
+            });
+        }
+        const collider = args.collider ?? 'box';
+        if (collider !== 'box') {
+            throw new ToolError({
+                code: 'UNSUPPORTED_COLLIDER',
+                status: 422,
+                message: `physics3dCreateBody supports only the bounded PhysX box collider contract; "${collider}" is not supported.`,
+                recovery: 'Use collider "box"; create other collider classes only after their backend combination is qualified.',
+            });
+        }
+        const size = args.size ?? { x: 1, y: 1, z: 1 };
+        if (![size.x, size.y, size.z].every((value) => Number.isFinite(value) && value >= 0.001 && value <= 100000)) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'physics3dCreateBody size axes must be finite numbers between 0.001 and 100000.',
+            });
+        }
+
+        const bodyType = 'cc.RigidBody' as const;
+        const colliderType = 'cc.BoxCollider' as const;
+        const name = args.name ?? 'Physics3DBody';
+        let nodeUuid: string | undefined;
+        try {
+            let parentUuid = args.parentReference?.id;
+            if (parentUuid) {
+                const parent = await Editor.Message.request('scene', 'query-node', parentUuid);
+                if (!parent) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Parent node ${parentUuid} not found` });
+            } else {
+                const root = await Editor.Message.request('scene', 'query-node-tree') as unknown as NodeRecord | null;
+                parentUuid = root?.uuid;
+                if (!parentUuid) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'Open scene root not found' });
+            }
+
+            const created = await Editor.Message.request('scene', 'create-node', { name, parent: parentUuid });
+            nodeUuid = Array.isArray(created) ? created[0] : created;
+            if (typeof nodeUuid !== 'string' || !nodeUuid) throw new Error('Creator did not return a node UUID');
+            await Editor.Message.request('scene', 'create-component', { uuid: nodeUuid, component: bodyType });
+            await Editor.Message.request('scene', 'create-component', { uuid: nodeUuid, component: colliderType });
+
+            const afterCreate = await Editor.Message.request('scene', 'query-node', nodeUuid) as unknown as NodeRecord | null;
+            const colliderIndex = afterCreate?.__comps__?.findIndex((component) => componentType(component) === colliderType) ?? -1;
+            if (!afterCreate || colliderIndex < 0 || !componentTypes(afterCreate).includes(bodyType)) {
+                throw new Error(`Creator read-back did not contain ${bodyType} and ${colliderType}`);
+            }
+            const setResult = await Editor.Message.request('scene', 'set-property', {
+                uuid: nodeUuid,
+                path: `__comps__.${colliderIndex}.size`,
+                dump: { value: size, type: 'cc.Vec3' },
+            });
+            if (setResult === false) throw new Error(`Creator refused ${colliderType}.size assignment`);
+            await Editor.Message.request('scene', 'snapshot');
+
+            const verifiedNode = await Editor.Message.request('scene', 'query-node', nodeUuid) as unknown as NodeRecord | null;
+            const verifiedComponents = verifiedNode?.__comps__ ?? [];
+            const verifiedBody = verifiedComponents.find((component) => componentType(component) === bodyType);
+            const verifiedCollider = verifiedComponents.find((component) => componentType(component) === colliderType);
+            const verifiedSize = propertyValue(verifiedCollider?.value?.size) as Record<string, unknown> | undefined;
+            const bodyUuid = propertyValue(verifiedBody?.value?.uuid);
+            const colliderUuid = propertyValue(verifiedCollider?.value?.uuid);
+            const components = verifiedNode ? componentTypes(verifiedNode) : [];
+            if (
+                !verifiedNode
+                || nodeName(verifiedNode) !== name
+                || typeof bodyUuid !== 'string'
+                || typeof colliderUuid !== 'string'
+                || verifiedSize?.x !== size.x
+                || verifiedSize?.y !== size.y
+                || verifiedSize?.z !== size.z
+            ) {
+                throw new Error(`Creator read-back did not verify ${name}, component references, and ${colliderType}.size`);
+            }
+            return {
+                reference: { id: nodeUuid, type: 'cc.Node' },
+                bodyReference: { id: bodyUuid, type: bodyType },
+                colliderReference: { id: colliderUuid, type: colliderType },
+                backend: 'physx',
+                bodyType,
+                colliderType,
+                collider: 'box',
+                size,
+                components,
+                verified: true,
+            };
+        } catch (error) {
+            if (nodeUuid) {
+                try {
+                    await Editor.Message.request('scene', 'remove-node', { uuid: nodeUuid });
+                    const remaining = await Editor.Message.request('scene', 'query-node', nodeUuid);
+                    if (remaining) throw new Error(`node ${nodeUuid} still exists after remove-node`);
+                    await Editor.Message.request('scene', 'snapshot');
+                } catch (rollbackError) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: `physics3dCreateBody failed and node ${nodeUuid} could not be rolled back`,
+                        details: {
+                            cause: error instanceof Error ? error.message : String(error),
+                            rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+                            createdNode: { id: nodeUuid, type: 'cc.Node' },
+                        },
+                        recovery: `Delete node ${nodeUuid} manually before retrying.`,
+                    });
+                }
+            }
+            throw error;
+        }
+    }
+
     @utcpTool('physics3dInspect', 'Inspect bounded 3D rigid bodies, colliders, materials and joints in the open scene.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { nodes: { type: 'array' }, count: { type: 'integer' } }, required: ['nodes', 'count'] }, 'GET', ['physics', '3d', 'inspect'])
     async physics3dInspect(args: { reference?: IInstanceReference }): Promise<{ nodes: Array<Record<string, unknown>>, count: number }> {
         const nodes = await sceneNodes(args.reference?.id);
