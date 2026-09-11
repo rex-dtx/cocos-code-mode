@@ -870,7 +870,7 @@
         },
         {
           "name": "physics3dCreateBody",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Compound mesh/body/collider creation with backend capability preflight.",
           "route": "compound scene workflow",
           "prerequisites": [

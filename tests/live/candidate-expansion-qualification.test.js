@@ -208,6 +208,69 @@ return out;`,
     }
   });
 
+  it('witnesses bounded PhysX box-body creation, preflight rejection, and read-back', async (t) => {
+    if (skipIfDown(t)) return;
+    const name = '__candidate_create_p3_body__';
+    const cleanup = async () => {
+      const removed = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `const sc=cc.director.getScene();const n=sc.getChildByName('${name}');if(n){n.removeFromParent();n.destroy();}return !sc.getChildByName('${name}');`,
+      });
+      assert.equal(removed.status, 200, JSON.stringify(removed.body));
+      assert.equal(removed.body.result, true);
+      const snapshot = await postTool('executeJavascript', {
+        context: 'editor',
+        code: `await Editor.Message.request('scene','snapshot');return true;`,
+      });
+      assert.equal(snapshot.status, 200, JSON.stringify(snapshot.body));
+    };
+    await cleanup();
+    try {
+      const unsupportedBackend = await postExpectedErrorTool('physics3dCreateBody', {
+        backend: 'builtin', collider: 'box', name,
+      }, 'candidate.physics3dCreateBody.negative.v1');
+      assert.equal(unsupportedBackend.status, 422, JSON.stringify(unsupportedBackend.body));
+      assert.equal(unsupportedBackend.body.code, 'UNSUPPORTED_BACKEND');
+      const unsupportedCollider = await postExpectedErrorTool('physics3dCreateBody', {
+        backend: 'physx', collider: 'sphere', name,
+      }, 'candidate.physics3dCreateBody.negative.v1');
+      assert.equal(unsupportedCollider.status, 422, JSON.stringify(unsupportedCollider.body));
+      assert.equal(unsupportedCollider.body.code, 'UNSUPPORTED_COLLIDER');
+      const absentAfterPreflight = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `return !cc.director.getScene().getChildByName('${name}');`,
+      });
+      assert.equal(absentAfterPreflight.status, 200, JSON.stringify(absentAfterPreflight.body));
+      assert.equal(absentAfterPreflight.body.result, true);
+
+      const requestedSize = { x: 1.25, y: 2.5, z: 3.75 };
+      const created = await postTool('physics3dCreateBody', {
+        backend: 'physx', collider: 'box', name, size: requestedSize,
+      });
+      assert.equal(created.status, 200, JSON.stringify(created.body));
+      assert.equal(created.body.backend, 'physx');
+      assert.equal(created.body.bodyType, 'cc.RigidBody');
+      assert.equal(created.body.colliderType, 'cc.BoxCollider');
+      assert.equal(created.body.verified, true);
+      assert.deepEqual(created.body.size, requestedSize);
+      assert.ok(created.body.components.includes('cc.RigidBody'));
+      assert.ok(created.body.components.includes('cc.BoxCollider'));
+      assert.equal(created.body.bodyReference.type, 'cc.RigidBody');
+      assert.equal(created.body.colliderReference.type, 'cc.BoxCollider');
+
+      const topology = await getJson(`/tools/physics3dTopologyAudit?reference%5Bid%5D=${encodeURIComponent(created.body.reference.id)}`);
+      assert.equal(topology.status, 200, JSON.stringify(topology.body));
+      assert.equal(topology.body.valid, true);
+      assert.deepEqual(topology.body.nodes[0].bodies, ['cc.RigidBody']);
+      assert.deepEqual(topology.body.nodes[0].colliders, ['cc.BoxCollider']);
+      const colliderDump = await getJson(`/tools/inspectorGet?target=instance&reference%5Bid%5D=${encodeURIComponent(created.body.colliderReference.id)}&reference%5Btype%5D=cc.BoxCollider&fields%5B0%5D=size`);
+      assert.equal(colliderDump.status, 200, JSON.stringify(colliderDump.body));
+      assert.deepEqual(colliderDump.body.dump.size, requestedSize);
+    } finally {
+      await cleanup();
+    }
+  });
+
   it('qualifies typed Box2D joint creation and endpoint validation', async (t) => {
     if (skipIfDown(t)) return;
     const names = ['__candidate_joint_body_a__', '__candidate_joint_body_b__'];
