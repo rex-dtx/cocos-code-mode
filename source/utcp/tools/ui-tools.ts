@@ -7,6 +7,7 @@ import type { LayoutReport, LayoutReportRequest, LayoutReportResult } from '../.
 import type { UiSafeAreaInspectRequest, UiSafeAreaInspectResult } from '../../ui-safe-area-inspect';
 import { isCandidateRequest } from '../../ui-layout-validate';
 import type { UiLayoutValidateRequest, UiLayoutValidateResult } from '../../ui-layout-validate';
+import type { UiAccessibilityAuditRequest, UiAccessibilityAuditResult } from '../../ui-accessibility-audit';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -346,6 +347,110 @@ export class UiTools {
         }
         return raw as LayoutReportResult;
     }
+    @utcpTool(
+        'uiAccessibilityAudit',
+        'Audit active UI nodes for inferred labels, known interactable components, and missing or duplicate labels. Read-only inference only; it does not provide or verify screen-reader runtime support.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                root: InstanceReferenceSchema,
+                rootPath: { type: 'string', minLength: 1, maxLength: 256 },
+                maxNodes: { type: 'integer', minimum: 1, maximum: 5000, default: 128 },
+                maxIssues: { type: 'integer', minimum: 1, maximum: 5000, default: 256 },
+            },
+            oneOf: [
+                { required: ['root'], not: { required: ['rootPath'] } },
+                { required: ['rootPath'], not: { required: ['root'] } },
+            ],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                complete: { type: 'boolean' },
+                valid: { type: 'boolean' },
+                truncated: { type: 'boolean' },
+                checkedNodes: { type: 'integer', minimum: 0 },
+                root: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: { uuid: { type: 'string' }, path: { type: 'string' }, name: { type: 'string' } },
+                    required: ['uuid', 'path', 'name'],
+                },
+                nodes: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            uuid: { type: 'string' },
+                            path: { type: 'string' },
+                            name: { type: 'string' },
+                            active: { type: 'boolean', const: true },
+                            role: { type: 'string', enum: ['button', 'toggle', 'slider', 'edit-box', 'label', 'generic'] },
+                            label: { type: ['string', 'null'] },
+                            labelSource: { type: ['string', 'null'], enum: ['label', 'descendant-label', 'edit-box-placeholder', 'node-name', null] },
+                            interactable: { type: 'boolean' },
+                            interactionComponent: { type: ['string', 'null'], enum: ['cc.Button', 'cc.Toggle', 'cc.Slider', 'cc.EditBox', null] },
+                            components: { type: 'array', items: { type: 'string' } },
+                        },
+                        required: ['uuid', 'path', 'name', 'active', 'role', 'label', 'labelSource', 'interactable', 'interactionComponent', 'components'],
+                    },
+                },
+                issues: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            code: { type: 'string', enum: ['MISSING_ACCESSIBLE_LABEL', 'DUPLICATE_ACCESSIBLE_LABEL'] },
+                            severity: { type: 'string', const: 'warning' },
+                            nodeId: { type: 'string' },
+                            relatedNodeIds: { type: 'array', items: { type: 'string' } },
+                            message: { type: 'string' },
+                            evidence: { type: 'object' },
+                        },
+                        required: ['code', 'severity', 'nodeId', 'relatedNodeIds', 'message', 'evidence'],
+                    },
+                },
+                truncation: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            kind: { type: 'string', enum: ['nodes', 'issues'] },
+                            limit: { type: 'integer' },
+                            omitted: { type: 'integer', minimum: 0 },
+                            reason: { type: 'string' },
+                        },
+                        required: ['kind', 'limit', 'reason'],
+                    },
+                },
+                error: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: { code: { type: 'string' }, message: { type: 'string' }, evidence: { type: 'object' } },
+                    required: ['code', 'message', 'evidence'],
+                },
+            },
+            oneOf: [
+                { required: ['error'] },
+                { required: ['complete', 'valid', 'truncated', 'checkedNodes', 'root', 'nodes', 'issues', 'truncation'] },
+            ],
+        },
+        'GET',
+        ['ui', 'accessibility', 'audit', 'label', 'interactable', 'read-only']
+    )
+    async uiAccessibilityAudit(args: UiAccessibilityAuditRequest): Promise<UiAccessibilityAuditResult> {
+        return await Editor.Message.request('scene', 'execute-scene-script', {
+            name: 'cc-bridge-3x',
+            method: 'uiAccessibilityAudit',
+            args: [args],
+        }) as UiAccessibilityAuditResult;
+    }
+
     @utcpTool(
         'uiSafeAreaInspect',
         'Inspect bounded 2D UI geometry against a caller-provided safe-area rectangle or root-relative insets without mutating the scene.',

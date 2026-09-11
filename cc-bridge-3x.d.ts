@@ -347,6 +347,43 @@ declare namespace cc_bridge_3x {
         error: { code: string, message: string, evidence: Record<string, any> }
     };
 
+    /** Candidate: inspect active UI nodes for inferred labels, known interactability components, and duplicate or missing labels. Read-only inference only; no screen-reader runtime support is claimed. */
+    function uiAccessibilityAudit(args: {
+        root?: InstanceReference,
+        rootPath?: string,
+        maxNodes?: number,
+        maxIssues?: number
+    }): {
+        complete: boolean,
+        valid: boolean,
+        truncated: boolean,
+        checkedNodes: number,
+        root: { uuid: string, path: string, name: string },
+        nodes: Array<{
+            uuid: string,
+            path: string,
+            name: string,
+            active: true,
+            role: "button" | "toggle" | "slider" | "edit-box" | "label" | "generic",
+            label: string | null,
+            labelSource: "label" | "descendant-label" | "edit-box-placeholder" | "node-name" | null,
+            interactable: boolean,
+            interactionComponent: "cc.Button" | "cc.Toggle" | "cc.Slider" | "cc.EditBox" | null,
+            components: string[]
+        }>,
+        issues: Array<{
+            code: "MISSING_ACCESSIBLE_LABEL" | "DUPLICATE_ACCESSIBLE_LABEL",
+            severity: "warning",
+            nodeId: string,
+            relatedNodeIds: string[],
+            message: string,
+            evidence: Record<string, unknown>
+        }>,
+        truncation: Array<{ kind: "nodes" | "issues", limit: number, omitted?: number, reason: string }>
+    } | {
+        error: { code: string, message: string, evidence: Record<string, unknown> }
+    };
+
     /** Candidate: inspect bounded live 2D UI bounds against a caller-provided safe-area rectangle or root-relative insets. Read-only; live evidence is required before qualification. */
     function uiSafeAreaInspect(args: {
         root?: InstanceReference,
