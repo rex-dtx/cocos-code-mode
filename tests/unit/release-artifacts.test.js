@@ -58,7 +58,7 @@ describe('deterministic release inventory', () => {
     try {
       const entries = collectPackageEntries(root, 'cc-bridge-3x', { name: 'cc-bridge-3x', version: '2.0.0-dev.abc1234' }, fixtureInputs);
       const paths = entries.map((entry) => entry.archivePath);
-      assert.deepEqual(paths, [...paths].sort((a, b) => a.localeCompare(b)));
+      assert.deepEqual(paths, [...paths].sort((a, b) => a < b ? -1 : a > b ? 1 : 0));
       assert(paths.includes('cc-bridge-3x/node_modules/prod/index.js'));
       assert(paths.includes('cc-bridge-3x/scripts/install-update.ps1'));
       assert(!paths.some((value) => value.includes('/node_modules/dev/')));

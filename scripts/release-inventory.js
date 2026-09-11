@@ -198,7 +198,7 @@ function collectPackageEntries(projectRoot, packageName, patchedPackageJson, opt
     mode: 0o644,
   });
 
-  entries.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
+  entries.sort((left, right) => left.relativePath < right.relativePath ? -1 : left.relativePath > right.relativePath ? 1 : 0);
   assignArchivePaths(entries, packageName);
   return entries;
 }
