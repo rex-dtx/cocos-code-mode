@@ -208,7 +208,7 @@ export async function load() {
                     allowedRing,
                 },
             });
-            if (relayHost.targetPayloadHash) {
+            if (relayHost.targetPayloadHash && updateManager.shouldInitializeInstalledTarget()) {
                 updateManager.initializeInstalledTarget(relayHost.targetPayloadHash);
             }
         }

@@ -53,6 +53,11 @@ export class UpdateManager {
     this.stateStore.initializeInstalledTarget(targetPayloadSha256);
   }
 
+  shouldInitializeInstalledTarget(): boolean {
+    const state = this.stateStore.load();
+    return state.activationState === "idle" || state.activationState === "active" || Boolean(state.activeTargetPayloadSha256);
+  }
+
   beginActivationLaunch(): void {
     this.stateStore.beginActivationLaunch();
   }
