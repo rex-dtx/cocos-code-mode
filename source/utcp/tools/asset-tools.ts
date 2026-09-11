@@ -58,29 +58,50 @@ function normalizePath(p?: string): string {
 }
 const MAX_MANIFEST_ASSET_PATH_LENGTH = 256;
 const MAX_MANIFEST_DEPENDENCIES = 128;
+const MAX_USAGE_REFERENCES = 128;
 
-function normalizeManifestAssetPath(value: unknown): string {
+function normalizeBoundedAssetPath(value: unknown, toolName: string): string {
     if (value === undefined) return 'db://assets';
     if (typeof value !== 'string') {
-        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport assetPath must be a string.' });
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${toolName} assetPath must be a string.` });
     }
     const input = value.trim();
     if (!input || input.length > MAX_MANIFEST_ASSET_PATH_LENGTH || /[\u0000-\u001f\u007f]/.test(input)) {
         throw new ToolError({
             code: 'INVALID_ARGUMENT',
             status: 400,
-            message: `assetManifestExport assetPath must be a normalized non-empty path of at most ${MAX_MANIFEST_ASSET_PATH_LENGTH} characters.`,
+            message: `${toolName} assetPath must be a normalized non-empty path of at most ${MAX_MANIFEST_ASSET_PATH_LENGTH} characters.`,
         });
     }
     const normalized = normalizePath(input);
     if (normalized !== 'db://assets' && !normalized.startsWith('db://assets/')) {
-        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport assetPath must resolve inside db://assets.' });
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${toolName} assetPath must resolve inside db://assets.` });
     }
     const segments = normalized.slice('db://assets'.length).split('/').filter(Boolean);
     if (segments.some((segment) => segment === '.' || segment === '..' || /[*?[\]]/.test(segment))) {
-        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport assetPath contains an invalid path segment.' });
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${toolName} assetPath contains an invalid path segment.` });
     }
     return normalized;
+}
+
+function normalizeManifestAssetPath(value: unknown): string {
+    return normalizeBoundedAssetPath(value, 'assetManifestExport');
+}
+
+function validateManifestMaxAssets(value: unknown): number {
+    if (value === undefined) return 128;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 512) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport maxAssets must be an integer from 1 to 512.' });
+    }
+    return value;
+}
+
+function validateUsageMaxAssets(value: unknown): number {
+    if (value === undefined) return 64;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 128) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetUsageAnalyze maxAssets must be an integer from 1 to 128.' });
+    }
+    return value;
 }
 
 function isManifestRow(value: unknown): value is Record<string, unknown> {
@@ -92,14 +113,6 @@ function manifestDependencies(row: unknown): string[] | undefined {
     return [...new Set(row.depends.filter((dependency: unknown): dependency is string => typeof dependency === 'string' && dependency.length > 0))]
         .sort()
         .slice(0, MAX_MANIFEST_DEPENDENCIES);
-}
-
-function validateManifestMaxAssets(value: unknown): number {
-    if (value === undefined) return 128;
-    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 512) {
-        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport maxAssets must be an integer from 1 to 512.' });
-    }
-    return value;
 }
 
 function assetManifestItem(row: Record<string, unknown>): Record<string, unknown> {
@@ -125,11 +138,22 @@ function assetManifestError(error: unknown): ToolError {
     });
 }
 
+function assetUsageError(error: unknown): ToolError {
+    return new ToolError({
+        code: 'ASSET_QUERY_FAILED',
+        status: 502,
+        message: 'assetUsageAnalyze could not query the Creator asset database.',
+        details: { cause: error instanceof Error ? error.message : String(error) },
+        recovery: 'Retry after the Creator asset database is ready.',
+    });
+}
+
 function boundedPositive(value: unknown, fallback: number, maximum: number): number {
     return typeof value === 'number' && Number.isFinite(value) && value > 0
         ? Math.min(value, maximum)
         : fallback;
 }
+
 
 export class AssetTools {
 
@@ -629,20 +653,143 @@ export class AssetTools {
         return { assets, exclusions, truncated: files.length > maxAssets, count: assets.length };
     }
 
-    @utcpTool('assetUsageAnalyze', 'Find bounded asset candidates with no scene-node references and explicit dynamic-load caveat.', {
+    @utcpTool('assetUsageAnalyze', 'Probe bounded asset usage through node references in the currently open scene only; results are not project-wide usage proof.', {
         type: 'object',
-        properties: { assetPath: { type: 'string' }, maxAssets: { type: 'integer', minimum: 1, maximum: 128, default: 64 } },
-    }, { type: 'object', properties: { candidates: { type: 'array' }, checkedAssets: { type: 'integer' }, dynamicLoadCaveat: { type: 'string' } }, required: ['candidates', 'checkedAssets', 'dynamicLoadCaveat'] }, 'GET', ['asset', 'usage', 'analyze', 'references'])
-    async assetUsageAnalyze(args: { assetPath?: string, maxAssets?: number }): Promise<{ candidates: Array<Record<string, unknown>>, checkedAssets: number, dynamicLoadCaveat: string }> {
-        const maxAssets = Math.min(args.maxAssets ?? 64, 128);
-        const rows: any[] = await queryAssetsCompat({ pattern: `${normalizePath(args.assetPath)}/**` });
-        const files = rows.filter((row) => !row.isDirectory && row.uuid).slice(0, maxAssets);
-        const candidates: Array<Record<string, unknown>> = [];
-        for (const row of files) {
-            const refs = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', row.uuid).catch(() => []);
-            if (Array.isArray(refs) && refs.length === 0) candidates.push({ uuid: row.uuid, url: row.url, type: row.type, confidence: 'scene-unreferenced' });
+        properties: {
+            assetPath: { type: 'string', minLength: 1, maxLength: MAX_MANIFEST_ASSET_PATH_LENGTH },
+            maxAssets: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
+        },
+    }, {
+        type: 'object',
+        properties: {
+            candidates: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        uuid: { type: 'string' },
+                        url: { type: 'string' },
+                        type: { type: 'string' },
+                        confidence: { type: 'string', enum: ['scene-unreferenced'] },
+                        referenceCount: { type: 'integer', minimum: 0 },
+                        references: { type: 'array', items: InstanceReferenceSchema, maxItems: MAX_USAGE_REFERENCES },
+                    },
+                    required: ['uuid', 'url', 'confidence', 'referenceCount', 'references'],
+                },
+                maxItems: 128,
+            },
+            checkedAssets: { type: 'integer' },
+            referenceEvidence: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        uuid: { type: 'string' },
+                        url: { type: 'string' },
+                        type: { type: 'string' },
+                        status: { type: 'string', enum: ['referenced', 'unreferenced', 'unknown'] },
+                        referenceCount: { type: 'integer', minimum: 0 },
+                        references: { type: 'array', items: InstanceReferenceSchema, maxItems: MAX_USAGE_REFERENCES },
+                        truncated: { type: 'boolean' },
+                        error: { type: 'string' },
+                    },
+                    required: ['uuid', 'url', 'status', 'references', 'truncated'],
+                },
+                maxItems: 128,
+            },
+            referenceQueryCaveat: { type: 'string' },
+            dynamicLoadCaveat: { type: 'string' },
+        },
+        required: ['candidates', 'checkedAssets', 'referenceEvidence', 'referenceQueryCaveat', 'dynamicLoadCaveat'],
+    }, 'GET', ['asset', 'usage', 'analyze', 'references'])
+    async assetUsageAnalyze(args: { assetPath?: string, maxAssets?: number } = {}): Promise<{
+        candidates: Array<Record<string, unknown>>,
+        checkedAssets: number,
+        referenceEvidence: Array<Record<string, unknown>>,
+        referenceQueryCaveat: string,
+        dynamicLoadCaveat: string
+    }> {
+        const maxAssets = validateUsageMaxAssets(args?.maxAssets);
+        const rootPath = normalizeBoundedAssetPath(args?.assetPath, 'assetUsageAnalyze');
+        let rows: unknown[];
+        try {
+            rows = await queryAssetsCompat({ pattern: `${rootPath}/**` });
+        } catch (error: unknown) {
+            throw assetUsageError(error);
         }
-        return { candidates, checkedAssets: files.length, dynamicLoadCaveat: 'Scene references do not detect runtime addressables, resources.load, or string-based dynamic loads.' };
+        const files = rows
+            .filter(isManifestRow)
+            .filter((row) => !row.isDirectory && typeof row.uuid === 'string' && row.uuid.length > 0 && typeof row.url === 'string')
+            .map((row) => row as Record<string, unknown> & { uuid: string, url: string })
+            .sort((left, right) => {
+                if (left.url !== right.url) return left.url < right.url ? -1 : 1;
+                return left.uuid === right.uuid ? 0 : left.uuid < right.uuid ? -1 : 1;
+            })
+            .slice(0, maxAssets);
+        const candidates: Array<Record<string, unknown>> = [];
+        const referenceEvidence: Array<Record<string, unknown>> = [];
+        for (const row of files) {
+            let referenceIds: string[] | null;
+            let queryError: unknown;
+            try {
+                const rawReferences: unknown = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', row.uuid);
+                if (!Array.isArray(rawReferences)) throw new Error('Creator returned a non-array scene reference result.');
+                referenceIds = [];
+                for (const reference of rawReferences) {
+                    const id = typeof reference === 'string'
+                        ? reference
+                        : reference && typeof reference === 'object'
+                            ? (Reflect.get(reference, 'uuid') ?? Reflect.get(reference, 'id'))
+                            : undefined;
+                    if (typeof id !== 'string' || !id) throw new Error('Creator returned an invalid scene reference.');
+                    referenceIds.push(id);
+                }
+                referenceIds = [...new Set(referenceIds)].sort();
+            } catch (error: unknown) {
+                referenceIds = null;
+                queryError = error;
+            }
+            if (referenceIds === null) {
+                referenceEvidence.push({
+                    uuid: row.uuid,
+                    url: row.url,
+                    ...(typeof row.type === 'string' ? { type: row.type } : {}),
+                    status: 'unknown',
+                    references: [],
+                    truncated: false,
+                    error: (queryError instanceof Error ? queryError.message : String(queryError)).slice(0, 256),
+                });
+                continue;
+            }
+            const references = referenceIds.slice(0, MAX_USAGE_REFERENCES).map((id) => ({ id, type: 'cc.Node' }));
+            const evidence = {
+                uuid: row.uuid,
+                url: row.url,
+                ...(typeof row.type === 'string' ? { type: row.type } : {}),
+                status: referenceIds.length === 0 ? 'unreferenced' : 'referenced',
+                referenceCount: referenceIds.length,
+                references,
+                truncated: referenceIds.length > references.length,
+            };
+            referenceEvidence.push(evidence);
+            if (referenceIds.length === 0) {
+                candidates.push({
+                    uuid: row.uuid,
+                    url: row.url,
+                    ...(typeof row.type === 'string' ? { type: row.type } : {}),
+                    confidence: 'scene-unreferenced',
+                    referenceCount: evidence.referenceCount,
+                    references: evidence.references,
+                });
+            }
+        }
+        return {
+            candidates,
+            checkedAssets: files.length,
+            referenceEvidence,
+            referenceQueryCaveat: 'A scene reference query error or malformed response produces unknown status and is never classified as unreferenced.',
+            dynamicLoadCaveat: 'This open-scene probe does not inspect closed scenes, prefabs, serialized asset-to-asset references, runtime addressables, resources.load, or string-based dynamic loads.',
+        };
     }
 
     private generateTypescriptClassTemplate(className: string): string {
