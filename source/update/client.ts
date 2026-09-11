@@ -29,6 +29,7 @@ function node14Fetch(url: URL, signal?: AbortSignal): Promise<Response> {
         if (ended && !chunks.length) while (pending.length) pending.shift()!.resolve({ done: true, value: undefined });
         if (failure) while (pending.length) pending.shift()!.reject(failure);
       };
+      incoming.on("data", (chunk: Buffer) => { chunks.push(Buffer.from(chunk)); flush(); });
       incoming.once("end", () => { ended = true; flush(); });
       incoming.once("error", (error: Error) => { failure = error; flush(); });
       const status = incoming.statusCode || 0;
