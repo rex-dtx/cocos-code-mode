@@ -1,3 +1,4 @@
+import { buildUiAccessibilityAudit, UiAccessibilityAuditRequest } from './ui-accessibility-audit';
 import { buildUiLayoutReport, LayoutReportRequest } from './ui-layout-report';
 import { buildUiSafeAreaInspect, UiSafeAreaInspectRequest } from './ui-safe-area-inspect';
 import { buildUiLayoutValidate, UiLayoutValidateRequest } from './ui-layout-validate';
@@ -334,6 +335,15 @@ export const methods = {
             return { error: { code: 'UI_LAYOUT_SCENE_UNAVAILABLE', message: 'Live scene graph is unavailable', evidence: {} } };
         }
         return buildUiLayoutReport(scene as Parameters<typeof buildUiLayoutReport>[0], request);
+    },
+
+    async uiAccessibilityAudit(request: UiAccessibilityAuditRequest): Promise<unknown> {
+        const cc = (globalThis as { cc?: { director?: { getScene?: () => unknown } } }).cc;
+        const scene = cc?.director?.getScene?.();
+        if (!scene || typeof scene !== 'object') {
+            return { error: { code: 'UI_ACCESSIBILITY_SCENE_UNAVAILABLE', message: 'Live scene graph is unavailable', evidence: {} } };
+        }
+        return buildUiAccessibilityAudit(scene as Parameters<typeof buildUiAccessibilityAudit>[0], request);
     },
 
     async uiSafeAreaInspect(request: UiSafeAreaInspectRequest): Promise<unknown> {
