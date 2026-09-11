@@ -165,7 +165,7 @@ export function buildUiLayoutValidate(sceneRoot: Parameters<typeof buildUiLayout
         safeArea = normalized;
     }
     const issues = selectedIssues(layout, checks, safeArea);
-    const truncation = layout.truncation.filter((item) => item.kind === 'nodes').map((item) => ({ ...item, reason: 'layout validation node limit reached' }));
+    const truncation = layout.truncation.map((item) => ({ ...item, reason: item.kind === 'nodes' ? 'layout validation node limit reached' : 'layout validation issue limit reached' }));
     if (issues.length > maxIssues) {
         truncation.push({ kind: 'issues', limit: maxIssues, omitted: issues.length - maxIssues, reason: 'layout validation issue limit reached' });
         issues.length = maxIssues;

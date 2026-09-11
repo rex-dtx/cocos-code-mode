@@ -392,7 +392,8 @@ declare namespace cc_bridge_3x {
         nodes: unknown[],
         issues: unknown[],
         truncation: unknown[]
-    } | { error: { code: string, message: string, evidence: Record<string, unknown> } };
+    } | { error: { code: string, message: string, evidence: Record<string, unknown> } }
+      | { valid: boolean, issues: string[], checkedNodes: number };
 
     /** Candidate: create one bounded PhysX 3D constraint between two existing cc.RigidBody nodes. Other backends, constraint types, and generic mesh/compound behavior are unsupported until separately qualified. */
     function physics3dCreateJoint(args: {
@@ -414,7 +415,6 @@ declare namespace cc_bridge_3x {
     /** Consolidated: set properties (instance or settings). */
     function inspectorSet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, propertyPaths?: string[], values?: any[], propertyPath?: string, value?: any }): { success: boolean, error?: string };
     /** Consolidated: TS definition (instance or settings). */
-    function inspectorGetDefinition(args: { target: "instance" | "CommonTypes" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, section?: string }): { definition: string, sections: string[], totalSections: number };
     /** Consolidated: add/remove component on node. */
     function nodeComponentManage(args: { operation: "add" | "remove", reference: InstanceReference, componentType?: string }): { reference?: InstanceReference, success?: boolean };
     /** Consolidated: query editor state or vocabularies. Use instead of removed editorIntrospect/editorListTypes. Plus: shared_settings (= programming builtins) and sorted_plugins (typed after 3.7 — may report not-supported on 3.7.3). */
