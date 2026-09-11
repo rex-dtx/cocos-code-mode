@@ -372,6 +372,28 @@ declare namespace cc_bridge_3x {
         error: { code: string, message: string, evidence: Record<string, unknown> }
     };
 
+    /** Candidate: validate bounded UI geometry for clipping, overlap, anchors and optional safe-area constraints. Read-only; live evidence is required before qualification. */
+    function uiLayoutValidate(args: {
+        root?: InstanceReference,
+        rootPath?: string,
+        designResolution?: { width: number, height: number },
+        viewport?: { width: number, height: number },
+        fitMode?: "fitWidth" | "fitHeight" | "contain" | "cover" | "stretch" | "none",
+        safeArea?: { rect?: { x: number, y: number, width: number, height: number }, insets?: { top: number, right: number, bottom: number, left: number } },
+        maxNodes?: number,
+        maxIssues?: number,
+        checks?: { clipping?: boolean, overlap?: boolean, anchors?: boolean, safeArea?: boolean }
+    }): {
+        complete: boolean,
+        valid: boolean,
+        truncated: boolean,
+        checkedNodes: number,
+        root: Record<string, unknown>,
+        nodes: unknown[],
+        issues: unknown[],
+        truncation: unknown[]
+    } | { error: { code: string, message: string, evidence: Record<string, unknown> } };
+
     /** Candidate: create one bounded PhysX 3D constraint between two existing cc.RigidBody nodes. Other backends, constraint types, and generic mesh/compound behavior are unsupported until separately qualified. */
     function physics3dCreateJoint(args: {
         backend: "builtin" | "cannon" | "physx",

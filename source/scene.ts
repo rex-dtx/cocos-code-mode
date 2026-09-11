@@ -1,5 +1,6 @@
 import { buildUiLayoutReport, LayoutReportRequest } from './ui-layout-report';
 import { buildUiSafeAreaInspect, UiSafeAreaInspectRequest } from './ui-safe-area-inspect';
+import { buildUiLayoutValidate, UiLayoutValidateRequest } from './ui-layout-validate';
 
 export function load() { }
 export function unload() { }
@@ -342,6 +343,14 @@ export const methods = {
             return { error: { code: 'UI_SAFE_AREA_SCENE_UNAVAILABLE', message: 'Live scene graph is unavailable', evidence: {} } };
         }
         return buildUiSafeAreaInspect(scene as Parameters<typeof buildUiSafeAreaInspect>[0], request);
+    },
+    async uiLayoutValidate(request: UiLayoutValidateRequest): Promise<unknown> {
+        const cc = (globalThis as { cc?: { director?: { getScene?: () => unknown } } }).cc;
+        const scene = cc?.director?.getScene?.();
+        if (!scene || typeof scene !== 'object') {
+            return { error: { code: 'UI_LAYOUT_VALIDATE_SCENE_UNAVAILABLE', message: 'Live scene graph is unavailable', evidence: {} } };
+        }
+        return buildUiLayoutValidate(scene as Parameters<typeof buildUiLayoutValidate>[0], request);
     },
 
     async simulateButtonClick(nodeUuid: string): Promise<{ handlersFired: number, method: string }> {
