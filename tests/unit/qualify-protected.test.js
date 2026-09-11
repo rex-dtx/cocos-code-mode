@@ -8,7 +8,7 @@ const { test } = require('node:test');
 test('qualification orchestrator stops before credentials are available', () => {
   const result = spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'scripts', 'qualify-protected.js')], {
     cwd: path.resolve(__dirname, '..', '..'),
-    env: { ...process.env, CCB_MEMBER_CREDENTIAL: '' },
+    env: { ...process.env, CCB_MEMBER_CREDENTIAL: '', CCB_MEMBER_CREDENTIAL_FILE: '' },
     encoding: 'utf8',
   });
   assert.notEqual(result.status, 0);
@@ -36,4 +36,22 @@ test('qualification status reports missing gates without exposing secret values'
   assert.equal(report.nextBlockedGate, 'release-origin');
   assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, true);
   assert.equal(report.checks.find((check) => check.gate === 'project-binding').configured, false);
+});
+
+test('qualification status accepts file-backed member and admin credentials', () => {
+  const result = spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'scripts', 'qualify-protected.js'), '--status'], {
+    cwd: path.resolve(__dirname, '..', '..'),
+    env: {
+      ...process.env,
+      CCB_MEMBER_CREDENTIAL: '',
+      CCB_MEMBER_CREDENTIAL_FILE: path.resolve(__filename),
+      CCB_ADMIN_CREDENTIAL: '',
+      CCB_ADMIN_CREDENTIAL_FILE: path.resolve(__filename),
+    },
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, true);
+  assert.equal(report.checks.find((check) => check.gate === 'admin-authentication').configured, true);
 });

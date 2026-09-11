@@ -5,9 +5,10 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { canonicalize } = require('./sign-release');
+const { readCredential } = require('./credential-input');
 
 const origin = new URL(process.env.CCB_GATEWAY_ORIGIN || 'http://127.0.0.1:8787');
-const credential = process.env.CCB_MEMBER_CREDENTIAL;
+const credential = readCredential('CCB_MEMBER_CREDENTIAL', 'CCB_MEMBER_CREDENTIAL_FILE');
 const label = process.env.CCB_DEVICE_LABEL || os.hostname().slice(0, 64);
 const identityPath = path.resolve(process.env.CCB_DEVICE_IDENTITY_PATH || path.join(os.homedir(), '.cc-bridge', 'identity', 'device-identity-v1.json'));
 

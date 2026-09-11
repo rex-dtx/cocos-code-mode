@@ -1,9 +1,10 @@
 'use strict';
 
 const { URL } = require('node:url');
+const { readCredential } = require('./credential-input');
 
 const origin = new URL(process.env.CCB_GATEWAY_ORIGIN || 'http://127.0.0.1:8787');
-const credential = process.env.CCB_ADMIN_CREDENTIAL;
+const credential = readCredential('CCB_ADMIN_CREDENTIAL', 'CCB_ADMIN_CREDENTIAL_FILE');
 
 function fail(message) { throw new Error(message); }
 function validateOrigin() {

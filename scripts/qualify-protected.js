@@ -4,7 +4,7 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 const required = [
-  ['CCB_MEMBER_CREDENTIAL', 'member EdDSA JWT'],
+  { variables: ['CCB_MEMBER_CREDENTIAL', 'CCB_MEMBER_CREDENTIAL_FILE'], label: 'member EdDSA JWT', any: true },
 ];
 
 function fail(message) { throw new Error(message); }
@@ -14,24 +14,28 @@ function run(command, args) {
   if (result.status !== 0) fail(`${command} failed with exit ${result.status}`);
 }
 function checkConfiguration() {
-  const missing = required.filter(([name]) => !process.env[name]).map(([name, label]) => `${name} (${label})`);
+  const missing = required
+    .filter((input) => input.any ? !input.variables.some((name) => process.env[name]) : !input.variables.every((name) => process.env[name]))
+    .map((input) => `${input.variables.join(' or ')} (${input.label})`);
   if (missing.length) fail(`missing required protected qualification inputs:\n- ${missing.join('\n- ')}`);
   if (!process.env.CCB_PROJECT_ID) console.warn('CCB_PROJECT_ID not set; enrollment can proceed, protected execution cannot.');
-  if (!process.env.CCB_ADMIN_CREDENTIAL) console.warn('CCB_ADMIN_CREDENTIAL not set; admin operations will be skipped.');
+  if (!process.env.CCB_ADMIN_CREDENTIAL && !process.env.CCB_ADMIN_CREDENTIAL_FILE) console.warn('Admin credential not set; admin operations will be skipped.');
   if (process.env.CCB_RELEASE_ORIGIN && !/^https:\/\//.test(process.env.CCB_RELEASE_ORIGIN)) fail('CCB_RELEASE_ORIGIN must use HTTPS when configured');
 }
 function statusReport() {
   const checks = [
     { gate: "release-origin", variables: ["CCB_RELEASE_ORIGIN"] },
     { gate: "signed-release-inputs", variables: ["CCB_RELEASE_ROOT_METADATA_PATH", "CCB_RELEASE_ZIP", "CCB_RELEASE_ROOT_PATH", "CCB_RELEASE_ROOT_SHA256"] },
-    { gate: "member-authentication", variables: ["CCB_MEMBER_CREDENTIAL"] },
+    { gate: "member-authentication", variables: ["CCB_MEMBER_CREDENTIAL", "CCB_MEMBER_CREDENTIAL_FILE"], any: true },
     { gate: "project-binding", variables: ["CCB_PROJECT_ID"] },
     { gate: "device-identity", variables: ["CCB_DEVICE_IDENTITY_PATH"], optional: true },
     { gate: "execution-verification", variables: ["CCB_EXECUTION_KEY_ID", "CCB_EXECUTION_PUBLIC_KEY"] },
-    { gate: "admin-authentication", variables: ["CCB_ADMIN_CREDENTIAL"] },
+    { gate: "admin-authentication", variables: ["CCB_ADMIN_CREDENTIAL", "CCB_ADMIN_CREDENTIAL_FILE"], any: true },
     { gate: "scoped-grant", variables: ["CCB_GRANT_DEVICE_ID", "CCB_GRANT_PROJECT_ID", "CCB_GRANT_OPERATION_CLASS"] },
   ].map((check) => {
-    const configured = check.variables.every((name) => Boolean(process.env[name]));
+    const configured = check.any
+      ? check.variables.some((name) => Boolean(process.env[name]))
+      : check.variables.every((name) => Boolean(process.env[name]));
     return { gate: check.gate, configured, optional: Boolean(check.optional), variables: check.variables };
   });
   const requiredChecks = checks.filter((check) => !check.optional);
@@ -51,7 +55,7 @@ function main() {
   checkConfiguration();
   run('check-live-prereqs.js', []);
   run('enroll-device.js', []);
-  if (process.env.CCB_ADMIN_CREDENTIAL) {
+  if (process.env.CCB_ADMIN_CREDENTIAL || process.env.CCB_ADMIN_CREDENTIAL_FILE) {
     run('manage-device.js', ['list-devices']);
     if (process.env.CCB_APPROVED_DEVICE_ID) run('manage-device.js', ['approve', process.env.CCB_APPROVED_DEVICE_ID]);
     if (process.env.CCB_GRANT_OPERATION_CLASS && process.env.CCB_GRANT_DEVICE_ID && process.env.CCB_GRANT_PROJECT_ID) {
