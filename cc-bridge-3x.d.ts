@@ -566,6 +566,20 @@ declare namespace cc_bridge_3x {
         }>
     };
 
+    /** Candidate: validate 1-256 unique localization keys (each at most 256 characters) in the current Creator language through the fixed cc-bridge-3x package scene seam. Unsupported localization packages return supported=false; this call never changes language or restarts Creator. */
+    function localizationValidate(args: { keys: string[] }): {
+        supported: true,
+        language: string | null,
+        checkedKeys: number,
+        missingKeys: string[]
+    } | {
+        supported: false,
+        language: null,
+        checkedKeys: 0,
+        missingKeys: [],
+        error: string
+    };
+
     /** Candidate: pure, read-only audit of bounded public Creator build options for six explicit targets. Reports normalized platform, supported/unsupported/unknown options, errors and warnings; it never dispatches a build or claims an artifact. Candidate remains unqualified. */
     function buildPresetAudit(args: {
         platform: "web-mobile" | "web-desktop" | "android" | "ios" | "windows" | "mac" | string,
