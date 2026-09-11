@@ -468,6 +468,41 @@ declare namespace cc_bridge_3x {
         verified: true
     };
 
+    /** Candidate: audit up to 64 explicitly typed cc.AudioClip assets against a declared target using only public asset metadata. Reports source extension/importer and exposed web load mode; it does not claim decode, duration, or playback success. Candidate remains unqualified until live importer evidence exists. */
+    function audioAssetCompatibilityAudit(args: {
+        assets: Array<InstanceReference & { type: "cc.AudioClip" }>,
+        target: "web-mobile" | "web-desktop" | "native-mobile" | "native-desktop",
+        maxIssues?: number
+    }): {
+        target: "web-mobile" | "web-desktop" | "native-mobile" | "native-desktop",
+        valid: boolean,
+        complete: boolean,
+        items: Array<{
+            reference: InstanceReference & { type: "cc.AudioClip" },
+            target: "web-mobile" | "web-desktop" | "native-mobile" | "native-desktop",
+            valid: boolean,
+            url?: string,
+            path?: string,
+            extension?: string,
+            importer?: string,
+            loadMode?: string,
+            issues: Array<{
+                code: "ASSET_NOT_FOUND" | "TYPE_MISMATCH" | "UNSUPPORTED_FORMAT" | "UNKNOWN_METADATA",
+                assetId: string,
+                field?: string,
+                value?: unknown,
+                message: string
+            }>
+        }>,
+        issues: Array<{
+            code: "ASSET_NOT_FOUND" | "TYPE_MISMATCH" | "UNSUPPORTED_FORMAT" | "UNKNOWN_METADATA",
+            assetId: string,
+            field?: string,
+            value?: unknown,
+            message: string
+        }>
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };
