@@ -119,6 +119,34 @@ declare namespace cc_bridge_3x {
         count: number
     };
 
+    /** Probe bounded asset usage against the currently open scene only; excludes closed scenes, prefabs, serialized asset-to-asset references, and dynamic loads. */
+    function assetUsageAnalyze(args: {
+        assetPath?: string,
+        maxAssets?: number
+    }): {
+        candidates: {
+            uuid: string,
+            url: string,
+            type?: string,
+            confidence: "scene-unreferenced",
+            referenceCount: number,
+            references: InstanceReference[]
+        }[],
+        checkedAssets: number,
+        referenceEvidence: {
+            uuid: string,
+            url: string,
+            type?: string,
+            status: "referenced" | "unreferenced" | "unknown",
+            referenceCount?: number,
+            references: InstanceReference[],
+            truncated: boolean,
+            error?: string
+        }[],
+        referenceQueryCaveat: string,
+        dynamicLoadCaveat: string
+    };
+
     /** Overwrite the content of an existing text-based asset (TypeScript, JSON, effect, txt...). Identify by db:// path or uuid. Binary not supported. */
     function assetSaveContent(args: { assetPath?: string, reference?: InstanceReference, content: string }): { reference: InstanceReference, filesystemPath?: string };
 
