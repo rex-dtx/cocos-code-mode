@@ -18,6 +18,8 @@ export interface LayoutReportRequest {
     overlay?: boolean;
     alignmentTolerance?: number;
     gapTolerance?: number;
+    /** Internal geometry-only mode used by narrower read-only audits. */
+    diagnostics?: boolean;
 }
 
 interface LiveComponent { type?: string; [key: string]: any }
@@ -620,7 +622,7 @@ export function buildUiLayoutReport(sceneRoot: LiveNode, request: LayoutReportRe
             if (report.nodes.length < maxNodes) {
                 report.nodes.push(item);
                 if (item.uuid) nodeById.set(item.uuid, item);
-                if (item.active) {
+                if (item.active && request.diagnostics !== false) {
                     if (size.width <= 0 || size.height <= 0) addIssue(report, issue('NON_POSITIVE_SIZE', 'error', item, 'UITransform has non-positive content size', { size }));
                     if (anchor.x < 0 || anchor.x > 1 || anchor.y < 0 || anchor.y > 1) addIssue(report, issue('ANCHOR_OUT_OF_RANGE', 'warning', item, 'Anchor point lies outside the normalized range', { anchor }));
                     const viewportAabb = { x: 0, y: 0, width: request.viewport.width, height: request.viewport.height };
@@ -660,14 +662,16 @@ export function buildUiLayoutReport(sceneRoot: LiveNode, request: LayoutReportRe
         report.complete = false;
         report.truncation.push({ kind: 'nodes', limit: maxNodes, omitted: omittedEligibleNodes, reason: 'eligible UI node inventory limit reached' });
     }
-    for (const item of report.nodes) {
-        if (!item.active) continue;
-        const live = item.uuid ? liveById.get(item.uuid) : undefined;
-        if (live) evaluateWidget(item, live, nodeById, alignmentTolerance, report.issues);
-        if (live) evaluateScrollView(item, live, liveById, nodeById, report.issues);
+    if (request.diagnostics !== false) {
+        for (const item of report.nodes) {
+            if (!item.active) continue;
+            const live = item.uuid ? liveById.get(item.uuid) : undefined;
+            if (live) evaluateWidget(item, live, nodeById, alignmentTolerance, report.issues);
+            if (live) evaluateScrollView(item, live, liveById, nodeById, report.issues);
+        }
+        detectSiblingDiagnostics(report, gapTolerance, alignmentTolerance);
+        evaluateParentLayouts(report, liveById, nodeById, gapTolerance);
     }
-    detectSiblingDiagnostics(report, gapTolerance, alignmentTolerance);
-    evaluateParentLayouts(report, liveById, nodeById, gapTolerance);
     if (report.issues.length > maxIssues) {
         const omitted = report.issues.length - maxIssues;
         report.issues.length = maxIssues;
