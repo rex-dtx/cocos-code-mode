@@ -31,7 +31,9 @@ async function fetchRelease(origin: URL, input: URL, signal?: AbortSignal): Prom
       const cause = error && typeof error === "object" && "cause" in error
         ? (error.cause && typeof error.cause === "object" && "code" in error.cause ? error.cause.code : undefined)
         : undefined;
-      const transport = typeof cause === "string" ? cause.slice(0, 64) : undefined;
+      const transport = typeof cause === "string"
+        ? cause.slice(0, 64)
+        : error instanceof Error ? error.message.replace(/[\r\n]+/g, " ").slice(0, 96) : undefined;
       throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release artifact request failed.", transport ? { transport } : {});
     }
     if (response.status >= 300 && response.status < 400) {
@@ -40,7 +42,7 @@ async function fetchRelease(origin: URL, input: URL, signal?: AbortSignal): Prom
       url = assertReleaseArtifactUrl(origin, new URL(location, url).href);
       continue;
     }
-    if (!response.ok) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", `Release origin returned HTTP ${response.status}.`);
+    if (!response.ok) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", `Release origin returned HTTP ${response.status}.`, { status: response.status });
     const encoding = response.headers.get("content-encoding");
     if (encoding && encoding.toLowerCase() !== "identity") throw new CcbError("CCB_CANONICAL_INVALID", "Compressed release responses are not accepted.");
     return response;
