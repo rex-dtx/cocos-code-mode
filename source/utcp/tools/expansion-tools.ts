@@ -33,6 +33,10 @@ function propertyValue(value: unknown): unknown {
     if (!value || typeof value !== 'object' || !('value' in value)) return value;
     return value.value;
 }
+function componentUuid(component: ComponentRecord | undefined): unknown {
+    const raw = component as (ComponentRecord & { uuid?: unknown }) | undefined;
+    return propertyValue(component?.value?.uuid ?? raw?.uuid);
+}
 async function hashFile(filePath: string): Promise<string> {
     const hash = createHash('sha256');
     await new Promise<void>((resolve, reject) => {
@@ -617,8 +621,8 @@ export class ExpansionTools {
         const connectedBodyComponent = connected.__comps__?.find((component) => componentType(component) === 'cc.RigidBody');
         if (!bodyComponent) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Body node ${bodyId} has no cc.RigidBody` });
         if (!connectedBodyComponent) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Connected body node ${connectedBodyId} has no cc.RigidBody` });
-        const bodyComponentUuid = propertyValue(bodyComponent.value?.uuid);
-        const connectedBodyUuid = propertyValue(connectedBodyComponent.value?.uuid);
+        const bodyComponentUuid = componentUuid(bodyComponent);
+        const connectedBodyUuid = componentUuid(connectedBodyComponent);
         if (typeof bodyComponentUuid !== 'string' || !bodyComponentUuid) {
             throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: `Body ${bodyId} has no serialized cc.RigidBody component UUID` });
         }
@@ -633,7 +637,7 @@ export class ExpansionTools {
             const afterCreate = await Editor.Message.request('scene', 'query-node', bodyId) as unknown as NodeRecord | null;
             const jointIndex = afterCreate?.__comps__?.findIndex((component) => componentType(component) === jointType) ?? -1;
             const joint = jointIndex >= 0 ? afterCreate?.__comps__?.[jointIndex] : undefined;
-            const readBackJointUuid = joint ? propertyValue(joint.value?.uuid) : undefined;
+            const readBackJointUuid = joint ? componentUuid(joint) : undefined;
             if (typeof readBackJointUuid === 'string' && readBackJointUuid) jointUuid = readBackJointUuid;
             if (!afterCreate || jointIndex < 0 || typeof readBackJointUuid !== 'string' || !readBackJointUuid) {
                 throw new Error(`Creator read-back did not contain ${jointType} with a serialized component UUID`);
@@ -653,7 +657,7 @@ export class ExpansionTools {
                 if (!value || typeof value !== 'object') return false;
                 return Object.values(value as Record<string, unknown>).some((item) => containsUuid(item, uuid));
             };
-            const verifiedJointUuid = propertyValue(verifiedJoint?.value?.uuid);
+            const verifiedJointUuid = componentUuid(verifiedJoint);
             if (
                 !verifiedJoint
                 || typeof verifiedJointUuid !== 'string'
@@ -672,23 +676,32 @@ export class ExpansionTools {
                 jointType,
             };
         } catch (error) {
-            if (jointUuid) {
-                try {
+            try {
+                if (!jointUuid) {
+                    const rollbackNode = await Editor.Message.request('scene', 'query-node', bodyId) as unknown as NodeRecord | null;
+                    const rollbackJoint = rollbackNode?.__comps__?.find((component) => componentType(component) === jointType);
+                    const discoveredUuid = rollbackJoint ? componentUuid(rollbackJoint) : undefined;
+                    if (typeof discoveredUuid === 'string' && discoveredUuid) jointUuid = discoveredUuid;
+                }
+                if (jointUuid) {
                     await Editor.Message.request('scene', 'remove-component', { uuid: jointUuid });
                     await Editor.Message.request('scene', 'snapshot');
-                } catch (rollbackError) {
-                    throw new ToolError({
-                        code: 'ROLLBACK_FAILED',
-                        status: 500,
-                        message: `physics3dCreateJoint failed and joint ${jointUuid} could not be rolled back`,
-                        details: {
-                            cause: error instanceof Error ? error.message : String(error),
-                            rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
-                            createdJoint: { id: jointUuid, type: jointType },
-                        },
-                        recovery: `Remove component ${jointUuid} manually before retrying.`,
-                    });
+                    const afterRollback = await Editor.Message.request('scene', 'query-node', bodyId) as unknown as NodeRecord | null;
+                    const remains = afterRollback?.__comps__?.some((component) => componentUuid(component) === jointUuid);
+                    if (remains) throw new Error(`joint component ${jointUuid} remains after rollback`);
                 }
+            } catch (rollbackError) {
+                throw new ToolError({
+                    code: 'ROLLBACK_FAILED',
+                    status: 500,
+                    message: `physics3dCreateJoint failed and the created joint could not be rolled back`,
+                    details: {
+                        cause: error instanceof Error ? error.message : String(error),
+                        rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+                        createdJoint: jointUuid ? { id: jointUuid, type: jointType } : undefined,
+                    },
+                    recovery: jointUuid ? `Remove component ${jointUuid} manually before retrying.` : 'Inspect the body node for an orphaned joint before retrying.',
+                });
             }
             throw error;
         }
@@ -697,7 +710,7 @@ export class ExpansionTools {
     @utcpTool('physics3dInspect', 'Inspect bounded 3D rigid bodies, colliders, materials and joints in the open scene.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { nodes: { type: 'array' }, count: { type: 'integer' } }, required: ['nodes', 'count'] }, 'GET', ['physics', '3d', 'inspect'])
     async physics3dInspect(args: { reference?: IInstanceReference }): Promise<{ nodes: Array<Record<string, unknown>>, count: number }> {
         const nodes = await sceneNodes(args.reference?.id);
-        const rows = nodes.map((node) => ({ node: { id: node.uuid, type: 'cc.Node' }, name: nodeName(node), components: componentTypes(node).filter((type) => /RigidBody$|Collider$|Joint$|PhysicsSystem/.test(type)) })).filter((row) => row.components.length > 0);
+        const rows = nodes.map((node) => ({ node: { id: node.uuid, type: 'cc.Node' }, name: nodeName(node), components: componentTypes(node).filter((type) => /RigidBody$|Collider$|Joint$|Constraint$|PhysicsSystem/.test(type)) })).filter((row) => row.components.length > 0);
         return { nodes: rows, count: rows.length };
     }
     @utcpTool('physics3dTopologyAudit', 'Audit bounded 3D rigid body, collider, joint and physics-system topology.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { valid: { type: 'boolean' }, nodes: { type: 'array' }, issues: { type: 'array' }, checkedNodes: { type: 'integer' } }, required: ['valid', 'nodes', 'issues', 'checkedNodes'] }, 'GET', ['physics', '3d', 'topology', 'audit'])
@@ -708,7 +721,7 @@ export class ExpansionTools {
             const types = componentTypes(node);
             const bodies = types.filter((type) => /RigidBody$/.test(type));
             const colliders = types.filter((type) => /Collider$/.test(type));
-            const joints = types.filter((type) => /Joint$/.test(type));
+            const joints = types.filter((type) => /Joint$|Constraint$/.test(type));
             const systems = types.filter((type) => /PhysicsSystem/.test(type));
             if (joints.length > 0 && bodies.length === 0) issues.push(`${nodeName(node)}: joint has no rigid body on the same node`);
             return { node: { id: node.uuid, type: 'cc.Node' }, name: nodeName(node), bodies, colliders, joints, systems };
