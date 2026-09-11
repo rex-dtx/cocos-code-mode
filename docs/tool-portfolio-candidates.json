@@ -775,7 +775,7 @@
         },
         {
           "name": "physics2dCreateJoint",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed joint creation with endpoint validation and Builtin rejection.",
           "route": "compound scene workflow",
           "prerequisites": [
@@ -790,6 +790,7 @@
           "negativeTestID": "candidate.physics2dCreateJoint.negative.v1",
           "fixtureID": "fixture.candidate.physics2dCreateJoint.v1",
           "evidenceArtifact": "reports/evidence/candidates/physics2dCreateJoint/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "reports/expansion-qualification-20260910.json#/qualified/physics2dCreateJoint",
           "proposedExecutionPhase": "P4"
         },
         {
