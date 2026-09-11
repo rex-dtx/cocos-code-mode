@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "candidate": "physics3dCreateBody",
+  "creatorVersion": "3.7.3",
+  "artifactCommit": "5f8547a",
+  "artifactDirty": true,
+  "endpoint": "http://127.0.0.1:49650",
+  "executionContext": "scene-editor",
+  "contract": "PhysX-only bounded box body with BoxCollider and Vec3 size",
+  "positiveTestID": "candidate.physics3dCreateBody.positive.v1",
+  "negativeTestID": "candidate.physics3dCreateBody.negative.v1",
+  "positive": {
+    "command": "UTCP_PORT=49650 node --test --test-name-pattern=\"PhysX box-body\" tests/live/candidate-expansion-qualification.test.js",
+    "result": "passed",
+    "observed": ["cc.RigidBody", "cc.BoxCollider", "requested Vec3 size read back", "topology valid", "fixture cleaned"]
+  },
+  "negative": {
+    "builtinBackend": { "status": 422, "code": "UNSUPPORTED_BACKEND", "mutation": false },
+    "sphereCollider": { "status": 422, "code": "UNSUPPORTED_COLLIDER", "mutation": false }
+  },
+  "scope": "Sphere, capsule and mesh variants are not qualified."
+}

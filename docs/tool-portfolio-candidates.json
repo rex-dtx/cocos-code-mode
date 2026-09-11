@@ -871,7 +871,7 @@
         {
           "name": "physics3dCreateBody",
           "state": "qualified",
-          "contractDelta": "Compound mesh/body/collider creation with backend capability preflight.",
+          "contractDelta": "Create one PhysX rigid-body node with one BoxCollider and bounded Vec3 size, with backend preflight, read-back and rollback.",
           "route": "compound scene workflow",
           "prerequisites": [
             "physics-3d-backend-matrix",
