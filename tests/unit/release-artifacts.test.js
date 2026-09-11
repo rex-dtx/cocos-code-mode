@@ -8,6 +8,7 @@ const path = require('node:path');
 const { assignArchivePaths, collectPackageEntries, createPackageManifest } = require('../../scripts/release-inventory');
 const { createSbom, createProvenance, writeCanonicalJson } = require('../../scripts/release-artifacts');
 const { signTarget, decodeBase64UrlStrict } = require('../../scripts/sign-release');
+const { rollbackTargets } = require('../../scripts/sign-policy');
 const { generateKeyPairSync } = require('node:crypto');
 
 function fixture() {
@@ -135,5 +136,20 @@ describe('offline target signer primitives', () => {
     assert.equal(decodeBase64UrlStrict(signed.payload).toString('utf8').includes('schemaVersion'), true);
     assert.equal(signed.signatures[0].signature.length > 80, true);
     assert.throws(() => decodeBase64UrlStrict(`${signed.payload}=`), /unpadded/);
+  });
+});
+
+describe('rollout policy signer inputs', () => {
+  it('accepts only a bounded unique rollback-target allowlist', () => {
+    const previous = process.env.CCB_POLICY_ROLLBACK_TARGET_SHA256;
+    try {
+      process.env.CCB_POLICY_ROLLBACK_TARGET_SHA256 = `${'a'.repeat(64)}, ${'b'.repeat(64)},${'a'.repeat(64)}`;
+      assert.deepEqual(rollbackTargets(), ['a'.repeat(64), 'b'.repeat(64)]);
+      process.env.CCB_POLICY_ROLLBACK_TARGET_SHA256 = 'not-a-digest';
+      assert.throws(() => rollbackTargets(), /at most 8 comma-separated/);
+    } finally {
+      if (previous === undefined) delete process.env.CCB_POLICY_ROLLBACK_TARGET_SHA256;
+      else process.env.CCB_POLICY_ROLLBACK_TARGET_SHA256 = previous;
+    }
   });
 });

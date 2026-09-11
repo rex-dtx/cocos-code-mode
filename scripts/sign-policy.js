@@ -27,6 +27,16 @@ function exactIso(name) {
   if (!Number.isFinite(Date.parse(value))) throw new Error(`${name} must be an ISO-8601 timestamp`);
   return value;
 }
+function rollbackTargets() {
+  const value = process.env.CCB_POLICY_ROLLBACK_TARGET_SHA256;
+  if (!value) return [];
+  const targets = value.split(',').map((entry) => entry.trim());
+  if (targets.length > 8 || targets.some((entry) => !SHA256_PATTERN.test(entry))) {
+    throw new Error('CCB_POLICY_ROLLBACK_TARGET_SHA256 must contain at most 8 comma-separated SHA-256 digests');
+  }
+  return [...new Set(targets)];
+}
+
 
 function buildPolicyBody() {
   const targetPayloadSha256 = requiredEnv('CCB_POLICY_TARGET_SHA256');
@@ -44,7 +54,7 @@ function buildPolicyBody() {
     percentage: Number(process.env.CCB_POLICY_PERCENTAGE || '100'),
     recommended: process.env.CCB_POLICY_RECOMMENDED !== '0',
     blockedBuilds: [],
-    rollbackTargetPayloadSha256: [],
+    rollbackTargetPayloadSha256: rollbackTargets(),
     disabledOperations: [],
     emergencyStop: process.env.CCB_POLICY_EMERGENCY_STOP === '1',
   };
@@ -82,4 +92,4 @@ if (require.main === module) {
   try { main(); } catch (error) { console.error(`sign-policy failed: ${error.message}`); process.exitCode = 1; }
 }
 
-module.exports = { buildPolicyBody, signPolicy };
+module.exports = { buildPolicyBody, rollbackTargets, signPolicy };
