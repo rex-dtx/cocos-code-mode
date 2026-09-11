@@ -503,6 +503,31 @@ declare namespace cc_bridge_3x {
         }>
     };
 
+    /** Candidate: pure, read-only audit of bounded public Creator build options for six explicit targets. Reports normalized platform, supported/unsupported/unknown options, errors and warnings; it never dispatches a build or claims an artifact. Candidate remains unqualified. */
+    function buildPresetAudit(args: {
+        platform: "web-mobile" | "web-desktop" | "android" | "ios" | "windows" | "mac" | string,
+        options: Record<string, unknown>
+    }): {
+        platform: string,
+        supportedOptions: string[],
+        unsupportedOptions: string[],
+        unknownOptions: string[],
+        errors: Array<{
+            code: "UNKNOWN_PLATFORM" | "INVALID_OPTIONS" | "MISSING_REQUIRED_OPTION" | "INVALID_OPTION" | "UNSUPPORTED_OPTION" | "UNKNOWN_OPTION" | "OPTIONS_TRUNCATED",
+            path?: string,
+            value?: unknown,
+            message: string
+        }>,
+        warnings: Array<{
+            code: "UNKNOWN_PLATFORM" | "INVALID_OPTIONS" | "MISSING_REQUIRED_OPTION" | "INVALID_OPTION" | "UNSUPPORTED_OPTION" | "UNKNOWN_OPTION" | "OPTIONS_TRUNCATED",
+            path?: string,
+            value?: unknown,
+            message: string
+        }>,
+        valid: boolean,
+        complete: boolean
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };

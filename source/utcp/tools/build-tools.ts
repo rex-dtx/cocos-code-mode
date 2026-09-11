@@ -2,6 +2,7 @@ import { JsonSchema } from '@utcp/sdk';
 import { SuccessIndicatorSchema, ISuccessIndicator } from '../schemas';
 import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
+import { buildBuildPresetAudit, BuildPresetAuditResult } from '../../build-preset-audit';
 // Slim view of a build task for agent consumption (full IBuildTaskItemJSON is huge)
 interface IBuildTaskSummary {
     id: string;
@@ -51,6 +52,32 @@ function slimTask(task: any): IBuildTaskSummary {
 }
 
 export class BuildTools {
+    @utcpTool('buildPresetAudit', 'Audit a bounded build preset against a public target profile without dispatching or mutating a build task.', {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            platform: { type: 'string', minLength: 1, maxLength: 32 },
+            options: { type: 'object', maxProperties: 64, additionalProperties: true },
+        },
+        required: ['platform', 'options'],
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            platform: { type: 'string' },
+            supportedOptions: { type: 'array', items: { type: 'string' } },
+            unsupportedOptions: { type: 'array', items: { type: 'string' } },
+            unknownOptions: { type: 'array', items: { type: 'string' } },
+            errors: { type: 'array', items: { type: 'object' } },
+            warnings: { type: 'array', items: { type: 'object' } },
+            valid: { type: 'boolean' },
+            complete: { type: 'boolean' },
+        },
+        required: ['platform', 'supportedOptions', 'unsupportedOptions', 'unknownOptions', 'errors', 'warnings', 'valid', 'complete'],
+    }, 'POST', ['build', 'preset', 'audit', 'read-only'])
+    async buildPresetAudit(args: { platform: string, options: Record<string, unknown> }): Promise<BuildPresetAuditResult> {
+        return buildBuildPresetAudit(args.platform, args.options);
+    }
 
     /** @deprecated Use buildManage({ operation: 'panel_open' }) — not registered, kept for delegation */
     async buildPanelOpen(args: { panel?: string }): Promise<ISuccessIndicator> {
