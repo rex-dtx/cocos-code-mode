@@ -27,7 +27,13 @@ async function fetchRelease(origin: URL, input: URL, signal?: AbortSignal): Prom
   for (let redirects = 0; redirects <= MAX_REDIRECTS; redirects += 1) {
     let response: Response;
     try { response = await fetch(url, { redirect: "manual", signal, headers: { "accept-encoding": "identity" } }); }
-    catch { throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release artifact request failed."); }
+    catch (error) {
+      const cause = error && typeof error === "object" && "cause" in error
+        ? (error.cause && typeof error.cause === "object" && "code" in error.cause ? error.cause.code : undefined)
+        : undefined;
+      const transport = typeof cause === "string" ? cause.slice(0, 64) : undefined;
+      throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release artifact request failed.", transport ? { transport } : {});
+    }
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get("location");
       if (!location || redirects === MAX_REDIRECTS) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Release redirect chain is invalid or too long.");

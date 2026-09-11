@@ -70,7 +70,9 @@ function stageUpdateInBackground(): void {
         stagedUpdate = result;
         bootLog('info', `Signed update staged: ${result.accepted.target.package.version}`);
     }).catch((error) => {
-        bootLog('error', `Background update check failed: ${toCcbErrorBody(error).code}`);
+        const body = toCcbErrorBody(error);
+        const transport = typeof body.details.transport === 'string' ? ` transport=${body.details.transport}` : '';
+        bootLog('error', `Background update check failed: ${body.code}${transport}`);
     });
 }
 
