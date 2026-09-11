@@ -372,6 +372,20 @@ declare namespace cc_bridge_3x {
         error: { code: string, message: string, evidence: Record<string, unknown> }
     };
 
+    /** Candidate: create one bounded PhysX 3D constraint between two existing cc.RigidBody nodes. Other backends, constraint types, and generic mesh/compound behavior are unsupported until separately qualified. */
+    function physics3dCreateJoint(args: {
+        backend: "builtin" | "cannon" | "physx",
+        joint?: "fixed" | "hinge" | "pointToPoint",
+        bodyReference: InstanceReference,
+        connectedBodyReference: InstanceReference
+    }): {
+        backend: "physx",
+        jointReference: InstanceReference,
+        bodyReference: InstanceReference,
+        connectedBodyReference: InstanceReference,
+        jointType: "cc.FixedConstraint" | "cc.HingeConstraint" | "cc.PointToPointConstraint"
+    };
+
     // ── Consolidated (preferred) ── 10 tools replace 26 legacy (removed in 2.0.x)
     /** Consolidated: get properties (instance or settings). Use instead of removed inspectorGet*Properties. */
     function inspectorGet(args: { target: "instance" | "CurrentSceneGlobals" | "ProjectSettings", reference?: InstanceReference, fields?: string[] }): { dump: any };

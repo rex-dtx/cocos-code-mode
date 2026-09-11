@@ -532,6 +532,167 @@ export class ExpansionTools {
             throw error;
         }
     }
+    @utcpTool(
+        'physics3dCreateJoint',
+        'Create one verified PhysX 3D constraint between two existing rigid-body nodes with bounded endpoint validation and rollback.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['builtin', 'cannon', 'physx'], description: 'Target Creator 3D physics backend.' },
+                joint: { type: 'string', enum: ['fixed', 'hinge', 'pointToPoint'], default: 'fixed', description: 'Bounded Creator 3D constraint type.' },
+                bodyReference: InstanceReferenceSchema,
+                connectedBodyReference: InstanceReferenceSchema,
+            },
+            required: ['backend', 'bodyReference', 'connectedBodyReference'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                backend: { type: 'string', enum: ['physx'] },
+                jointReference: InstanceReferenceSchema,
+                bodyReference: InstanceReferenceSchema,
+                connectedBodyReference: InstanceReferenceSchema,
+                jointType: { type: 'string', enum: ['cc.FixedConstraint', 'cc.HingeConstraint', 'cc.PointToPointConstraint'] },
+            },
+            required: ['backend', 'jointReference', 'bodyReference', 'connectedBodyReference', 'jointType'],
+        },
+        'POST',
+        ['physics', '3d', 'create', 'joint', 'compound']
+    )
+    async physics3dCreateJoint(args: {
+        backend: 'builtin' | 'cannon' | 'physx',
+        joint?: 'fixed' | 'hinge' | 'pointToPoint',
+        bodyReference: IInstanceReference,
+        connectedBodyReference: IInstanceReference,
+    }): Promise<{
+        backend: 'physx',
+        jointReference: IInstanceReference,
+        bodyReference: IInstanceReference,
+        connectedBodyReference: IInstanceReference,
+        jointType: 'cc.FixedConstraint' | 'cc.HingeConstraint' | 'cc.PointToPointConstraint',
+    }> {
+        if (args.backend !== 'physx') {
+            throw new ToolError({
+                code: 'UNSUPPORTED_BACKEND',
+                status: 422,
+                message: `physics3dCreateJoint supports only the bounded PhysX backend contract; "${args.backend}" is not supported for constraint creation.`,
+                recovery: 'Select the physx backend or use ordinary component tools without a physics-backend claim.',
+            });
+        }
+        const bodyId = args.bodyReference?.id;
+        const connectedBodyId = args.connectedBodyReference?.id;
+        if (typeof bodyId !== 'string' || !bodyId || typeof connectedBodyId !== 'string' || !connectedBodyId) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'physics3dCreateJoint requires non-empty bodyReference and connectedBodyReference ids.',
+            });
+        }
+        if (bodyId === connectedBodyId) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'A 3D joint requires two distinct rigid-body nodes' });
+        }
+
+        const jointTypeByName = {
+            fixed: 'cc.FixedConstraint',
+            hinge: 'cc.HingeConstraint',
+            pointToPoint: 'cc.PointToPointConstraint',
+        } as const;
+        const jointType = jointTypeByName[args.joint ?? 'fixed'];
+        if (!jointType) {
+            throw new ToolError({
+                code: 'UNSUPPORTED_JOINT',
+                status: 422,
+                message: `physics3dCreateJoint supports only fixed, hinge, and pointToPoint PhysX constraints; "${String(args.joint)}" is not supported.`,
+                recovery: 'Use joint "fixed", "hinge", or "pointToPoint" with the physx backend.',
+            });
+        }
+
+        const body = await Editor.Message.request('scene', 'query-node', bodyId) as unknown as NodeRecord | null;
+        const connected = await Editor.Message.request('scene', 'query-node', connectedBodyId) as unknown as NodeRecord | null;
+        if (!body) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Body node ${bodyId} not found` });
+        if (!connected) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Connected body node ${connectedBodyId} not found` });
+        const bodyComponent = body.__comps__?.find((component) => componentType(component) === 'cc.RigidBody');
+        const connectedBodyComponent = connected.__comps__?.find((component) => componentType(component) === 'cc.RigidBody');
+        if (!bodyComponent) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Body node ${bodyId} has no cc.RigidBody` });
+        if (!connectedBodyComponent) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Connected body node ${connectedBodyId} has no cc.RigidBody` });
+        const bodyComponentUuid = propertyValue(bodyComponent.value?.uuid);
+        const connectedBodyUuid = propertyValue(connectedBodyComponent.value?.uuid);
+        if (typeof bodyComponentUuid !== 'string' || !bodyComponentUuid) {
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: `Body ${bodyId} has no serialized cc.RigidBody component UUID` });
+        }
+        if (typeof connectedBodyUuid !== 'string' || !connectedBodyUuid) {
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: `Connected body ${connectedBodyId} has no serialized cc.RigidBody component UUID` });
+        }
+
+        let jointUuid: string | undefined;
+        try {
+            const created = await Editor.Message.request('scene', 'create-component', { uuid: bodyId, component: jointType });
+            if (typeof created === 'string' && created) jointUuid = created;
+            const afterCreate = await Editor.Message.request('scene', 'query-node', bodyId) as unknown as NodeRecord | null;
+            const jointIndex = afterCreate?.__comps__?.findIndex((component) => componentType(component) === jointType) ?? -1;
+            const joint = jointIndex >= 0 ? afterCreate?.__comps__?.[jointIndex] : undefined;
+            const readBackJointUuid = joint ? propertyValue(joint.value?.uuid) : undefined;
+            if (typeof readBackJointUuid === 'string' && readBackJointUuid) jointUuid = readBackJointUuid;
+            if (!afterCreate || jointIndex < 0 || typeof readBackJointUuid !== 'string' || !readBackJointUuid) {
+                throw new Error(`Creator read-back did not contain ${jointType} with a serialized component UUID`);
+            }
+            const setResult = await Editor.Message.request('scene', 'set-property', {
+                uuid: bodyId,
+                path: `_components.${jointIndex}.connectedBody`,
+                dump: { value: { uuid: connectedBodyUuid }, type: 'cc.RigidBody' },
+            });
+            if (setResult === false) throw new Error(`Creator refused ${jointType}.connectedBody assignment`);
+            await Editor.Message.request('scene', 'snapshot');
+
+            const verified = await Editor.Message.request('scene', 'query-node', bodyId) as unknown as NodeRecord | null;
+            const verifiedJoint = verified?.__comps__?.find((component) => componentType(component) === jointType);
+            const containsUuid = (value: unknown, uuid: string): boolean => {
+                if (value === uuid) return true;
+                if (!value || typeof value !== 'object') return false;
+                return Object.values(value as Record<string, unknown>).some((item) => containsUuid(item, uuid));
+            };
+            const verifiedJointUuid = propertyValue(verifiedJoint?.value?.uuid);
+            if (
+                !verifiedJoint
+                || typeof verifiedJointUuid !== 'string'
+                || !jointUuid
+                || verifiedJointUuid !== jointUuid
+                || !containsUuid(verifiedJoint.value?.connectedBody, connectedBodyUuid)
+            ) {
+                throw new Error(`Creator read-back did not verify ${jointType}.connectedBody and component UUID`);
+            }
+            const verifiedUuid = jointUuid;
+            return {
+                backend: 'physx',
+                jointReference: { id: verifiedUuid, type: jointType },
+                bodyReference: args.bodyReference,
+                connectedBodyReference: args.connectedBodyReference,
+                jointType,
+            };
+        } catch (error) {
+            if (jointUuid) {
+                try {
+                    await Editor.Message.request('scene', 'remove-component', { uuid: jointUuid });
+                    await Editor.Message.request('scene', 'snapshot');
+                } catch (rollbackError) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: `physics3dCreateJoint failed and joint ${jointUuid} could not be rolled back`,
+                        details: {
+                            cause: error instanceof Error ? error.message : String(error),
+                            rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+                            createdJoint: { id: jointUuid, type: jointType },
+                        },
+                        recovery: `Remove component ${jointUuid} manually before retrying.`,
+                    });
+                }
+            }
+            throw error;
+        }
+    }
 
     @utcpTool('physics3dInspect', 'Inspect bounded 3D rigid bodies, colliders, materials and joints in the open scene.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { nodes: { type: 'array' }, count: { type: 'integer' } }, required: ['nodes', 'count'] }, 'GET', ['physics', '3d', 'inspect'])
     async physics3dInspect(args: { reference?: IInstanceReference }): Promise<{ nodes: Array<Record<string, unknown>>, count: number }> {
