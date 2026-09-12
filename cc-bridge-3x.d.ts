@@ -441,12 +441,14 @@ declare namespace cc_bridge_3x {
         openPanel?: boolean
     }): { requestId: string, submitted: boolean, cancelled: boolean, timedOut: boolean, values: { [name: string]: string | boolean } };
 
-    /** Get last N editor log entries. */
+    /** Read bounded project log entries with optional plain-text filtering. */
     function editorGetLogs(args: {
-        count: number,
+        count?: number,
         showStack?: boolean,
-        order: "newest-to-oldest" | "oldest-to-newest"
-    }): { logLines: string[] };
+        order?: "newest-to-oldest" | "oldest-to-newest",
+        pattern?: string,
+        maxBytes?: number
+    }): { logLines: string[], total: number, truncated: boolean };
 
     /** Inspect materials, shader effects and the render pipeline. Read-only — use inspectorSetProperty to change material properties. Result shapes are whatever the engine returns and are not yet runtime-verified. */
     function materialQuery(args: {
