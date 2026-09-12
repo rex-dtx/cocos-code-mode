@@ -3,6 +3,10 @@
 ## Unreleased
 
 - Add `editorLog` for agent messages in the Creator editor console/project log, with `debug/info/warn/error`, optional JSON data, and bounded input validation. `debug` maps to `console.log` with a `[debug]` prefix.
+- Add `editorAsk` and `editorPrompt` through a bounded, nonmodal **Agent Inbox** with choice buttons and text/select/confirm fields. Defaults only log/quietly notify, never open or focus a panel; the user opens it from the menu. Panel opening and modal native dialogs require explicit opt-in. Creator 3.7 native dialogs use `Dialog.info/warn/error`, with deterministic timeout but manual dismissal.
+- Correct `uiLayoutInspect` world rectangles using live node world matrices and each node's own UITransform corners; preserve bounded traversal and legacy Apply/Align/Validate read-back. Missing geometry fails explicitly.
+- Bound the entire successful `buildLogInspect` UTF-8 JSON response, including task metadata; reject invalid limits before IPC and fail explicitly when mandatory identity/state cannot fit.
+- Preserve nested required output fields using the complete schema during HTTP response trimming, while keeping the discovery manual compact; accept Creator's wrapped node UUID dump values during UI inspection.
 
 ## 2.2.0 — 2026-09-05 — Cocos Graph v4 + Typed Recovery Errors + 3x Baseline Consolidation
 

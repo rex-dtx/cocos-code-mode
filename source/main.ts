@@ -8,6 +8,7 @@ import { join } from 'path';
 import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { cancelEditorAsk } from './utcp/editor-ask';
 import { cancelEditorPrompt, getEditorPrompt, respondEditorPrompt } from './utcp/editor-prompt';
+import { cancelEditorTask, disposeEditorControl, getEditorControl } from './utcp/editor-control-plane';
 
 let utcpServer: UtcpServerManager | null = null;
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
@@ -16,6 +17,8 @@ const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 export const methods: { [key: string]: (...any: any) => any } = {
     getEditorPrompt,
     respondEditorPrompt,
+    getEditorControl,
+    cancelEditorTask,
     openAgentInbox() {
         return Editor.Panel.open(`${packageJSON.name}.prompt`);
     },
@@ -171,6 +174,7 @@ export async function load() {
 export function unload() {
     cancelEditorAsk();
     cancelEditorPrompt();
+    disposeEditorControl();
     if (utcpServer) {
         console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
         const port = (utcpServer as any).port ?? 0;
