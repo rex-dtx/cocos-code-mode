@@ -40,6 +40,17 @@
     "typescript": "^5.8.2"
   },
   "panels": {
+    "prompt": {
+      "title": "Agent Inbox",
+      "type": "dockable",
+      "main": "dist/panels/prompt",
+      "size": {
+        "min-width": 320,
+        "min-height": 240,
+        "width": 480,
+        "height": 560
+      }
+    },
     "configuration": {
       "title": "Configuration",
       "type": "dockable",
@@ -68,6 +79,11 @@
       "script": "./dist/scene.js"
     },
     "menu": [
+      {
+        "path": "CC Bridge 3x",
+        "label": "Agent Inbox",
+        "message": "open-agent-inbox"
+      },
       {
         "path": "CC Bridge 3x",
         "label": "i18n:cc-bridge-3x.open_panel",
@@ -100,6 +116,15 @@
       }
     ],
     "messages": {
+      "editor-prompt-get": {
+        "methods": ["getEditorPrompt"]
+      },
+      "editor-prompt-response": {
+        "methods": ["respondEditorPrompt"]
+      },
+      "open-agent-inbox": {
+        "methods": ["openAgentInbox"]
+      },
       "open-panel": {
         "methods": [
           "openPanel"

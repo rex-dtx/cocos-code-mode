@@ -6,6 +6,12 @@
 
 type InstanceReference = { id: string; type: string };
 
+interface EditorPromptFieldBase { name: string; label: string; required?: boolean }
+type EditorPromptField =
+    | (EditorPromptFieldBase & { type: "text"; defaultValue?: string; maxLength?: number })
+    | (EditorPromptFieldBase & { type: "select"; options: string[]; defaultValue?: string })
+    | (EditorPromptFieldBase & { type: "confirm"; defaultValue?: boolean });
+
 type AssetImportSettingValue = null | string | number | boolean | AssetImportSettingValue[] | { [key: string]: AssetImportSettingValue };
 interface AssetImportSettingsSource {
     uuid: string;
@@ -359,6 +365,28 @@ declare namespace cc_bridge_3x {
         message: string,
         data?: unknown
     }): { success: true, level: "debug" | "info" | "warn" | "error", message: string };
+
+    /** Nonmodal Agent Inbox question by default, without opening/focusing the panel. User opens CC Bridge 3x > Agent Inbox. Native dialogs require explicit presentation:"native"; openPanel:true permits panel activation. Default buttons OK/Cancel, cancelId last button. Deadline 1-300000ms, default 60000. Native timeout does not dismiss the native window. */
+    function editorAsk(args: {
+        title: string,
+        message: string,
+        detail?: string,
+        type?: "info" | "warning" | "error" | "question",
+        buttons?: string[],
+        cancelId?: number,
+        timeoutMs?: number,
+        presentation?: "panel" | "native",
+        openPanel?: boolean
+    }): { buttonIndex: number | null, buttonLabel: string | null, cancelled: boolean, timedOut: boolean };
+
+    /** Nonmodal Agent Inbox form; does not open/focus by default. openPanel:true explicitly permits activation. 1-16 uniquely named fields, text <=4096 chars, select <=64 options; required confirm means checked. One inbox request at a time (409 otherwise). Deadline 1-300000ms, default 60000. Do not request secrets. */
+    function editorPrompt(args: {
+        title: string,
+        message: string,
+        fields: EditorPromptField[],
+        timeoutMs?: number,
+        openPanel?: boolean
+    }): { requestId: string, submitted: boolean, cancelled: boolean, timedOut: boolean, values: { [name: string]: string | boolean } };
 
     /** Get last N editor log entries. */
     function editorGetLogs(args: {

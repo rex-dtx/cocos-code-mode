@@ -6,12 +6,19 @@ import { exec } from 'child_process';
 import { homedir } from 'os';
 import { join } from 'path';
 import { mkdirSync, readdirSync, unlinkSync } from 'fs';
+import { cancelEditorAsk } from './utcp/editor-ask';
+import { cancelEditorPrompt, getEditorPrompt, respondEditorPrompt } from './utcp/editor-prompt';
 
 let utcpServer: UtcpServerManager | null = null;
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
 
 export const methods: { [key: string]: (...any: any) => any } = {
+    getEditorPrompt,
+    respondEditorPrompt,
+    openAgentInbox() {
+        return Editor.Panel.open(`${packageJSON.name}.prompt`);
+    },
 
     openPanel() {
         Editor.Panel.open(packageJSON.name + '.configuration');
@@ -27,6 +34,8 @@ export const methods: { [key: string]: (...any: any) => any } = {
     },
 
     async restartServer(newPort?: number) {
+        cancelEditorAsk();
+        cancelEditorPrompt();
         if (!utcpServer) {
             console.warn(`[${packageJSON.name}] UTCP Server is not running.`);
             return;
@@ -160,6 +169,8 @@ export async function load() {
 }
 
 export function unload() {
+    cancelEditorAsk();
+    cancelEditorPrompt();
     if (utcpServer) {
         console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
         const port = (utcpServer as any).port ?? 0;

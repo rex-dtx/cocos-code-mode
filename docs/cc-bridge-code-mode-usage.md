@@ -95,6 +95,52 @@ return await ccb3x.editorLog({
 
 `debug` uses `console.log` with a `[debug]` prefix so the existing project-log reader can recognize it. Read entries back with `editorGetLogs`; use `showStack: true` when the message contains multiple lines. The tool follows normal profile exposure (full by default); enable it explicitly for a core/custom profile. After rebuilding, reload the extension and re-register the manual to discover the new API.
 
+### Ask the user or collect structured input
+
+Both tools appear in the full `/utcp` manual after rebuilding/reloading the extension and re-registering it. Enable them explicitly when using a core/custom profile.
+
+**Nonblocking by default:** `editorAsk` uses choice buttons in the nonmodal **Agent Inbox**, and `editorPrompt` uses a form in the same panel. Neither automatically opens a window or moves focus. A pending request logs a short notice; the user opens **CC Bridge 3x > Agent Inbox** when convenient. An already open inbox updates through broadcasts without being activated. The response deadline includes time waiting for the user to open the inbox.
+
+`openPanel: true` is an explicit opt-in to `Editor.Panel.open`, which may activate/focus the panel; omit it to avoid interrupting mouse/keyboard work. `editorAsk` additionally supports `presentation: 'native'` as explicit opt-in to a modal native dialog that can block/focus Creator. No foregrounding, OS input automation, or control focus is performed by the default tools.
+
+```typescript
+const answer = await ccb3x.editorAsk({
+  title: 'Agent confirmation',
+  message: 'Apply the inspected changes?',
+  detail: 'Only the selected nodes will be modified.',
+  type: 'question',
+  buttons: ['Apply', 'Cancel'],
+  cancelId: 1,
+  timeoutMs: 60000,
+});
+return answer; // { buttonIndex, buttonLabel, cancelled, timedOut }
+```
+
+Buttons default to `['OK', 'Cancel']`; `cancelId` defaults to the final button. Pass 1–8 unique non-blank labels (maximum 80 characters each); the cancellation index must be inside that array. A selected cancellation button returns its index/label with `cancelled: true`; closing/cancelling the inbox returns null button fields.
+
+Only with `presentation: 'native'`: Creator **3.7.3 has no public `Editor.Dialog.messageBox`**, so the implementation uses native `info`/`warn`/`error` wrappers with `buttons`, `default`, and `cancel` options. `question` maps to `info`; `warning` maps to `warn`. A cancellation button selection is indistinguishable from native Escape/window-close, so both set `cancelled`.
+
+**A native timeout ends the API request, not the dialog.** It returns null button fields and `timedOut: true` (`cancelled: false`). Dismiss the remaining dialog in Creator; another native question returns `EDITOR_INTERACTION_BUSY` (409) until the original dialog settles. Late clicks cannot change the completed result.
+
+```typescript
+return await ccb3x.editorPrompt({
+  title: 'Agent input',
+  message: 'Choose how the selected scene should be updated.',
+  fields: [
+    { name: 'label', label: 'Display label', type: 'text', required: true, maxLength: 120 },
+    { name: 'mode', label: 'Mode', type: 'select', options: ['Preview', 'Apply'], defaultValue: 'Preview', required: true },
+    { name: 'reviewed', label: 'I reviewed the changes', type: 'confirm', required: true },
+  ],
+  timeoutMs: 120000,
+});
+```
+
+`editorPrompt` posts to the dedicated **Agent Inbox** panel without opening it. Submit returns `{ requestId, submitted: true, cancelled: false, timedOut: false, values }`; cancel/Escape/panel-close and timeout return empty values and exactly their corresponding flag. Required confirmation fields must be checked. Optional text/select fields may return `''`; confirm fields return booleans. Invalid submissions stay open for correction. Closing the panel or restarting/unloading the extension cancels pending requests. Questions and forms share one inbox slot: concurrent requests are rejected with HTTP 409 instead of replacing the user's input.
+
+Limits: both tools require a non-blank title (≤256 characters) and message (≤4096). Ask detail is ≤8192. Deadlines are 1–300000ms, default 60000ms, including panel startup. Prompts accept 1–16 fields with unique names matching `[A-Za-z][A-Za-z0-9_]{0,63}` (reserved `constructor`/`prototype`/`__proto__` rejected), labels ≤256, text ≤4096 (or lower `maxLength`), and 1–64 unique non-blank select options ≤256 characters. Text/selection defaults must fit their constraints. Unsupported properties, unsafe field names, and invalid values return HTTP 400.
+
+Prompts render labels and options as text, never HTML. Request IDs reject stale/double responses; timers and active requests are cleared on every completion. The panel clears values on completion/deadline and remains open with status for reuse. Do not request passwords or secrets: submitted values travel through the normal tool response/debug logging pipeline. Only act on explicit submission/selection; cancellation and timeout are not approval.
+
 ### Inspect and modify a scene
 
 1. `nodeGetTree` to locate a node and retain its reference.
