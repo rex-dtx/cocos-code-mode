@@ -15,7 +15,7 @@ describe('editor contract bounds', () => {
   it('aligns defaults and caps for bounded editor reads', () => {
     const editor = readSource('utcp/tools/editor-tools.ts');
     const components = readSource('utcp/tools/component-tools.ts');
-    assert.match(editor, /count: \{ type: 'number', minimum: 1, maximum: 1000.*default: 10/);
+    assert.match(editor, /count: \{ type: 'integer', minimum: 1, maximum: 1000,.*default: 10/);
     assert.doesNotMatch(editor, /required: \['count', 'order'\]/);
     assert.match(components, /includeInternal: \{ type: 'boolean', default: false/);
     assert.match(components, /limit: \{ type: 'number', minimum: 1, maximum: 1000, default: 200/);

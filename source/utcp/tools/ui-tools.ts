@@ -615,6 +615,59 @@ export class UiTools {
 
 
     @utcpTool(
+        'uiFocusNavigation',
+        'Compute deterministic bounded focus order and adjacent navigation links from readable UI node layout. Read-only; does not claim runtime focus support.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                references: { type: 'array', minItems: 1, maxItems: 100, uniqueItems: true, items: InstanceReferenceSchema },
+                axis: { type: 'string', enum: ['horizontal', 'vertical'] },
+                direction: { type: 'string', enum: ['ascending', 'descending'], default: 'ascending' },
+            },
+            required: ['references', 'axis'],
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                references: { type: 'array', items: InstanceReferenceSchema },
+                links: { type: 'array', items: { type: 'object' } },
+            },
+            required: ['references', 'links'],
+        },
+        'GET',
+        ['ui', 'focus', 'navigation', 'layout', 'inspect']
+    )
+    async uiFocusNavigation(args: { references: IInstanceReference[], axis: 'horizontal' | 'vertical', direction?: 'ascending' | 'descending' }): Promise<{ references: IInstanceReference[], links: Array<{ from: IInstanceReference, to: IInstanceReference | null }> }> {
+        if (!Array.isArray(args.references) || args.references.length < 1 || args.references.length > 100) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiFocusNavigation references must contain 1 to 100 nodes.' });
+        }
+        const ids = args.references.map((reference) => reference?.id);
+        if (ids.some((id) => typeof id !== 'string' || id.trim().length === 0) || new Set(ids).size !== ids.length) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiFocusNavigation references must contain unique non-empty node UUIDs.' });
+        }
+        const validIds = ids as string[];
+        const dumps = await Promise.all(validIds.map(async (id) => ({ id, dump: await this.queryNodeDump(id) })));
+        const ordered = dumps.map(({ id, dump }) => {
+            if (!dump) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `UI node ${id} not found` });
+            const position = this.unwrapValue(dump.position);
+            const point = this.isRecord(position) ? position : {};
+            const coordinate = this.finiteNumber(args.axis === 'horizontal' ? point.x : point.y, NaN);
+            if (!Number.isFinite(coordinate)) {
+                throw new ToolError({ code: 'INVALID_TARGET', status: 422, message: `UI node ${id} has no readable position for ${args.axis} navigation.` });
+            }
+            return { id, coordinate };
+        }).sort((a, b) => {
+            const delta = a.coordinate - b.coordinate;
+            return (args.direction ?? 'ascending') === 'descending' ? -delta || validIds.indexOf(a.id) - validIds.indexOf(b.id) : delta || validIds.indexOf(a.id) - validIds.indexOf(b.id);
+        });
+        const references = ordered.map(({ id }) => ({ id, type: 'cc.Node' }));
+        const links = references.map((from, index) => ({ from, to: references[index + 1] ?? null }));
+        return { references, links };
+    }
+
+    @utcpTool(
         'uiLayoutAlign',
         'Align or evenly distribute 2D UI nodes that share one parent. Uses local UITransform bounds, preserves Z, preflights every node, snapshots once, and rolls back partial writes.',
         {

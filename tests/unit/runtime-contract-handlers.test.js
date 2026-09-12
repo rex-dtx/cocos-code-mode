@@ -31,4 +31,13 @@ describe('runtime contract handlers', () => {
     assert.match(snapshot, /if \(nodeTruncated\) item\.truncated = nodeTruncated;/);
     assert.doesNotMatch(snapshot, /if \(truncated\) item\.truncated = truncated;/);
   });
+
+  it('exposes bounded runtime state observation with typed stopped-session behavior', () => {
+    const sessions = readSource('utcp/tools/runtime-session-tools.ts');
+
+    assert.match(sessions, /'runtimeStateObserve'/);
+    assert.match(sessions, /RUNTIME_SESSION_STOPPED/);
+    assert.match(sessions, /UNSUPPORTED_RUNTIME_TRANSPORT/);
+    assert.match(sessions, /await this\.readState\(\)/);
+  });
 });

@@ -6,6 +6,16 @@ import path from 'path';
 import { VERBOSE_DIAGNOSTICS_LIMIT } from '../utils/verbose';
 
 const execFileAsync = promisify(execFile);
+const MAX_DIAGNOSTICS = VERBOSE_DIAGNOSTICS_LIMIT;
+
+function resolveProjectTsconfig(projectPath: string, requested?: string): string {
+    const candidate = requested ? path.resolve(projectPath, requested) : path.join(projectPath, 'tsconfig.json');
+    const relative = path.relative(projectPath, candidate);
+    if (!relative || relative.startsWith('..') || path.isAbsolute(relative) || path.isAbsolute(requested ?? '') || /[\u0000-\u001f\u007f]/.test(requested ?? '')) {
+        throw new Error('tsconfigPath must identify a project-local relative file without traversal or control characters.');
+    }
+    return candidate;
+}
 
 function tscCommand(projectPath: string, tsconfig: string): { command: string, args: string[] } {
     const compilerEntry = path.join(projectPath, 'node_modules', 'typescript', 'bin', 'tsc');
@@ -103,7 +113,7 @@ export class DiagnosticsTools {
     )
     async runScriptDiagnostics(args: { tsconfigPath?: string }): Promise<{ ok: boolean, errorCount: number, diagnostics: TscDiagnostic[] }> {
         const projectPath = (Editor.Project as any).path as string;
-        const tsconfig = args.tsconfigPath ? path.resolve(projectPath, args.tsconfigPath) : path.join(projectPath, 'tsconfig.json');
+        const tsconfig = resolveProjectTsconfig(projectPath, args.tsconfigPath);
 
         if (!fs.existsSync(tsconfig)) {
             throw new Error(`tsconfig not found: ${tsconfig}`);
@@ -119,14 +129,14 @@ export class DiagnosticsTools {
             });
             // tsc exits 0 with no output when clean
             const diagnostics = parseTscOutput(stdout, projectPath);
-            return { ok: diagnostics.length === 0, errorCount: diagnostics.length, diagnostics };
+            return { ok: diagnostics.length === 0, errorCount: diagnostics.length, diagnostics: diagnostics.slice(0, MAX_DIAGNOSTICS) };
         } catch (err: unknown) {
             // TypeScript uses a non-zero exit for compiler errors, but project-level
             // failures (for example no inputs or a missing compiler) have no file location.
             const output = readCommandErrorField(err, 'stdout') + readCommandErrorField(err, 'stderr');
             const diagnostics = parseTscOutput(output, projectPath);
             if (diagnostics.length > 0) {
-                return { ok: false, errorCount: diagnostics.length, diagnostics };
+                return { ok: false, errorCount: diagnostics.length, diagnostics: diagnostics.slice(0, MAX_DIAGNOSTICS) };
             }
             const failure = createTscFailureDiagnostic(output, readCommandErrorField(err, 'message'), tsconfig);
             return { ok: false, errorCount: failure.length, diagnostics: failure };
