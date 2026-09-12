@@ -1,0 +1,4971 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T16:38:30.160876+00:00",
+  "scope": {
+    "competitors": [
+      "ALX 163-tool catalog",
+      "CCB2 96-tool manifest"
+    ],
+    "qualificationTarget": {
+      "creator": "3.7.3",
+      "os": "windows-x64",
+      "profile": "full",
+      "artifactClass": "local-operator",
+      "sourceBranch": "cc-3x7"
+    },
+    "ccbBuild": {
+      "commit": "3c24c78",
+      "branch": "feat/ccb3x-api-capability-expansion",
+      "dirty": true,
+      "builtAt": "2026-09-12T16:28:16.834Z"
+    }
+  },
+  "rules": [
+    "Every source catalog row is represented exactly once.",
+    "Rows mapped to the same bounded CCB contract are consolidated at the CCB surface; raw competitor names are retained for traceability.",
+    "covered-contract means a current bounded CCB source contract exists; it does not imply live qualification.",
+    "probe-required and unsupported-creator rows receive no behavioral parity credit.",
+    "intentional-exclusion rows are accounted design decisions, not missing registrations.",
+    "liveWitnessFiles records witness source presence only; runtime qualification remains governed by evidence artifacts and portfolio state."
+  ],
+  "inputHashes": {
+    "G:/alx-tool-api.txt": "5ef0a2bdc70b3a00f705dbc943b5bacb62dae7d618800f9a55155195ceea9ef4",
+    "G:/_ws/_helpers/cc-code-mode-cst-2x/parity/cc-bridge-2x.manifest.json": "6f2038812771060fecf070a17b1531e088e4e0058b052005d71a156f65447926",
+    "docs/alx-capability-comparison.md": "7a3075e5163c429156b48ee62430becbe0d62304a4993257ca5eba0bc531e109",
+    "docs/independent-ccb-strategy.md": "b14ed38e9c76ef1f35279dd2fe50389906d3c5ad9d9f24e195c317671eb472e3",
+    "docs/parity-v2-v3.md": "289577513a2d1b1124ff93accb948dcbc63a98df21e7d1075e8147862c218705",
+    "docs/tool-portfolio-candidates.json": "4240d57bd6e4188aee329be131505b8072dee1a6bf72937146a5152ecc92cb40"
+  },
+  "denominator": {
+    "sourceCatalogTools": {
+      "ALX": 163,
+      "CCB2": 96
+    },
+    "rawUnionRows": 259,
+    "accountedRows": 259,
+    "allRowsAccounted": true,
+    "consolidatedCcbContractSignatures": 106
+  },
+  "summaryByCatalogCategory": {
+    "ALX:assetAdvanced": {
+      "total": 11,
+      "accounted": 11,
+      "coveredContract": 11,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 8
+    },
+    "ALX:broadcast": {
+      "total": 5,
+      "accounted": 5,
+      "coveredContract": 5,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 0
+    },
+    "ALX:component": {
+      "total": 7,
+      "accounted": 7,
+      "coveredContract": 7,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 7
+    },
+    "ALX:debug": {
+      "total": 10,
+      "accounted": 10,
+      "coveredContract": 8,
+      "composedContract": 1,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 1,
+      "rowsWithLiveWitnessSource": 9
+    },
+    "ALX:node": {
+      "total": 13,
+      "accounted": 13,
+      "coveredContract": 13,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 13
+    },
+    "ALX:prefab": {
+      "total": 10,
+      "accounted": 10,
+      "coveredContract": 10,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 4
+    },
+    "ALX:preferences": {
+      "total": 7,
+      "accounted": 7,
+      "coveredContract": 3,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 4,
+      "rowsWithLiveWitnessSource": 3
+    },
+    "ALX:project": {
+      "total": 26,
+      "accounted": 26,
+      "coveredContract": 22,
+      "composedContract": 3,
+      "restrictedEquivalent": 1,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 26
+    },
+    "ALX:referenceImage": {
+      "total": 12,
+      "accounted": 12,
+      "coveredContract": 0,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 12,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 0
+    },
+    "ALX:scene": {
+      "total": 8,
+      "accounted": 8,
+      "coveredContract": 7,
+      "composedContract": 1,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 8
+    },
+    "ALX:sceneAdvanced": {
+      "total": 23,
+      "accounted": 23,
+      "coveredContract": 18,
+      "composedContract": 0,
+      "restrictedEquivalent": 1,
+      "probeRequired": 3,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 1,
+      "rowsWithLiveWitnessSource": 17
+    },
+    "ALX:sceneView": {
+      "total": 20,
+      "accounted": 20,
+      "coveredContract": 20,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 0,
+      "rowsWithLiveWitnessSource": 20
+    },
+    "ALX:server": {
+      "total": 6,
+      "accounted": 6,
+      "coveredContract": 2,
+      "composedContract": 0,
+      "restrictedEquivalent": 1,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 3,
+      "rowsWithLiveWitnessSource": 3
+    },
+    "ALX:template": {
+      "total": 2,
+      "accounted": 2,
+      "coveredContract": 1,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 1,
+      "rowsWithLiveWitnessSource": 1
+    },
+    "ALX:validation": {
+      "total": 3,
+      "accounted": 3,
+      "coveredContract": 0,
+      "composedContract": 0,
+      "restrictedEquivalent": 0,
+      "probeRequired": 0,
+      "unsupportedCreator": 0,
+      "intentionalExclusion": 3,
+      "rowsWithLiveWitnessSource": 0
+    },
+    "CCB2:ccb2-surface": {
+      "total": 96,
+      "accounted": 96,
+      "coveredContract": 88,
+      "composedContract": 4,
+      "restrictedEquivalent": 1,
+      "probeRequired": 0,
+      "unsupportedCreator": 2,
+      "intentionalExclusion": 1,
+      "rowsWithLiveWitnessSource": 92
+    }
+  },
+  "rows": [
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "get_current_scene",
+      "description": "Get current scene information",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneGetInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "get_scene_list",
+      "description": "Get all scenes in the project",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "audio-asset-compatibility-audit.test.js",
+        "gap-closure.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "open_scene",
+      "description": "Open a scene by path",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "save_scene",
+      "description": "Save current scene",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "create_scene",
+      "description": "Create a new scene asset",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "assetCreate",
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts",
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The workflow is covered by a bounded composition rather than a one-tool name mirror."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "save_scene_as",
+      "description": "Save scene as new file",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "close_scene",
+      "description": "Close current scene",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "scene",
+      "competitorTool": "get_scene_hierarchy",
+      "description": "Get the complete hierarchy of current scene",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeGetTree"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "create_node",
+      "description": "Create a new node in the scene. Supports creating empty nodes, nodes with components, or instantiating from assets (prefabs, etc.). IMPORTANT: You should always provide parentUuid to specify where to create the node.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeCreate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "get_node_info",
+      "description": "Get node information by UUID",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "find_nodes",
+      "description": "Find nodes by name pattern",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "findNodes"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "animation-witness.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "find_node_by_name",
+      "description": "Find first node by exact name",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "findNodes"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "animation-witness.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "get_all_nodes",
+      "description": "Get all nodes in the scene with their UUIDs",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeGetTree"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "set_node_property",
+      "description": "Set node property value (prefer using set_node_transform for active/layer/mobility/position/rotation/scale)",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "set_node_transform",
+      "description": "Set node transform properties (position, rotation, scale) with unified interface. Automatically handles 2D/3D node differences.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "delete_node",
+      "description": "Delete a node from scene",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "move_node",
+      "description": "Move node to new parent",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "duplicate_node",
+      "description": "Duplicate a node",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "detect_node_type",
+      "description": "Detect if a node is 2D or 3D based on its components and properties",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "add_component",
+      "description": "Add a component to a specific node. IMPORTANT: You must provide the nodeUuid parameter to specify which node to add the component to.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeComponentManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "remove_component",
+      "description": "Remove a component from a node. componentType must be the component's classId (cid, i.e. the type field from getComponents), not the script name or class name. Use getComponents to get the correct cid.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeComponentManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "get_components",
+      "description": "Get all components of a node",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeComponentsGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\component-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "get_component_info",
+      "description": "Get specific component information",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "set_component_property",
+      "description": "Set component property values for UI components or custom script components. Supports setting properties of built-in UI components (e.g., cc.Label, cc.Sprite) and custom script components. Note: For node basic properties (name, active, layer, etc.), use set_node_property. For node transform properties (position, rotation, scale, etc.), use set_node_transform.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "attach_script",
+      "description": "Attach a script component to a node",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeComponentManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "component",
+      "competitorTool": "get_available_components",
+      "description": "Get list of available component types",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeGetAvailableComponentTypes"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\component-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "get_prefab_list",
+      "description": "Get all prefabs in the project",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "audio-asset-compatibility-audit.test.js",
+        "gap-closure.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "load_prefab",
+      "description": "Load a prefab by path",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "readPrefabJson"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\prefab-json-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "instantiate_prefab",
+      "description": "Instantiate a prefab in the scene",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabInstantiate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabInstantiate": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "create_prefab",
+      "description": "Create a prefab from a node with all children and components",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "update_prefab",
+      "description": "Update an existing prefab",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabApplyOverrides"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabApplyOverrides": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "revert_prefab",
+      "description": "Revert prefab instance to original",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabRevertOverrides"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabRevertOverrides": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "get_prefab_info",
+      "description": "Get detailed prefab information",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabOverrideDiff"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabOverrideDiff": "qualified"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "validate_prefab",
+      "description": "Validate a prefab file format",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabReferenceAudit"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabReferenceAudit": "qualified"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "duplicate_prefab",
+      "description": "Duplicate an existing prefab",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "duplicatePrefab"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\prefab-json-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "prefab",
+      "competitorTool": "restore_prefab_node",
+      "description": "Restore prefab node using prefab asset (built-in undo record)",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabRevertOverrides"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabRevertOverrides": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "run_project",
+      "description": "Run the project in preview mode",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "build_project",
+      "description": "Build the project",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "buildManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "get_project_info",
+      "description": "Get project information",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "editorEnvInfo",
+        "projectManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts",
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The workflow is covered by a bounded composition rather than a one-tool name mirror."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "get_project_settings",
+      "description": "Get project settings",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "refresh_assets",
+      "description": "Refresh asset database",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "import_asset",
+      "description": "Import an asset file",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetImport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "get_asset_info",
+      "description": "Get asset information",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "assetGetAtPath",
+        "assetImportSettingsGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The workflow is covered by a bounded composition rather than a one-tool name mirror."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "get_assets",
+      "description": "Get assets by type",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "audio-asset-compatibility-audit.test.js",
+        "gap-closure.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "get_build_settings",
+      "description": "Get build settings - shows current limitations",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "buildManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "open_build_panel",
+      "description": "Open the build panel in the editor",
+      "disposition": "restricted-equivalent",
+      "ccbTools": [
+        "buildManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "CCB exposes build lifecycle operations without requiring panel focus."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "check_builder_status",
+      "description": "Check if builder worker is ready",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "buildManage",
+        "buildTaskWait"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\build-tools.ts",
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {
+        "buildTaskWait": "qualified"
+      },
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The workflow is covered by a bounded composition rather than a one-tool name mirror."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "start_preview_server",
+      "description": "Start preview server",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "stop_preview_server",
+      "description": "Stop preview server",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "create_asset",
+      "description": "Create a new asset file or folder",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetCreate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "copy_asset",
+      "description": "Copy an asset to another location",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "move_asset",
+      "description": "Move an asset to another location",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "delete_asset",
+      "description": "Delete an asset",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "save_asset",
+      "description": "Save asset content",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetSaveContent"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "reimport_asset",
+      "description": "Reimport an asset",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "query_asset_path",
+      "description": "Get asset disk path",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetResolvePath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "gap-closure.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "query_asset_uuid",
+      "description": "Get asset UUID from URL",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetResolvePath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "gap-closure.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "query_asset_url",
+      "description": "Get asset URL from UUID",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetResolvePath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "gap-closure.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "find_asset_by_name",
+      "description": "Find assets by name (supports partial matching and multiple results)",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "audio-asset-compatibility-audit.test.js",
+        "gap-closure.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "get_asset_details",
+      "description": "Get detailed asset information including spriteFrame sub-assets",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetImportSettingsGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "get_console_logs",
+      "description": "Get editor console logs",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorGetLogs"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "clear_console",
+      "description": "Clear editor console",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "CCB keeps console clearing out of the agent surface; log reading is bounded and non-destructive."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "execute_script",
+      "description": "Execute JavaScript in scene context",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "executeJavascript"
+      ],
+      "ccbSourceFiles": [
+        "source/utcp/execute/execute-tool.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "audio-source-configure.test.js",
+        "candidate-expansion-qualification.test.js",
+        "execute-js-components.test.js",
+        "execute-js-core.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "get_node_tree",
+      "description": "Get detailed node tree for debugging",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeGetTree"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "get_performance_stats",
+      "description": "Get performance statistics",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getPerformanceSnapshot"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\validation-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "validate_scene",
+      "description": "Validate current scene for issues",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "validateScene",
+        "sceneHierarchyValidate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts",
+        "source\\utcp\\tools\\validation-tools.ts"
+      ],
+      "candidateStates": {
+        "sceneHierarchyValidate": "qualified"
+      },
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js"
+      ],
+      "rationale": "The workflow is covered by a bounded composition rather than a one-tool name mirror."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "get_editor_info",
+      "description": "Get editor and environment information",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorEnvInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "get_project_logs",
+      "description": "Get project logs from temp/logs/project.log file",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorGetLogs"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "get_log_file_info",
+      "description": "Get information about the project log file",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorGetLogs"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "debug",
+      "competitorTool": "search_project_logs",
+      "description": "Search for specific patterns or errors in project logs",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorGetLogs"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "open_preferences_settings",
+      "description": "Open preferences settings panel",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Opening editor UI is not required for preference automation."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "query_preferences_config",
+      "description": "Query preferences configuration",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getEditorPreference"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\preference-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "set_preferences_config",
+      "description": "Set preferences configuration",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "setEditorPreference"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\preference-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "get_all_preferences",
+      "description": "Get all available preferences categories",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getEditorPreference"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\preference-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "reset_preferences",
+      "description": "Reset preferences to default values",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Bulk reset is intentionally excluded; use bounded key writes."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "export_preferences",
+      "description": "Export current preferences configuration",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Bulk preference export is intentionally excluded from the editor tool surface."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "preferences",
+      "competitorTool": "import_preferences",
+      "description": "Import preferences configuration from file",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Bulk preference import is intentionally excluded from the editor tool surface."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "server",
+      "competitorTool": "query_server_ip_list",
+      "description": "Query server IP list",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Network-interface discovery is transport administration, not Creator authoring."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "server",
+      "competitorTool": "query_sorted_server_ip_list",
+      "description": "Get sorted server IP list",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Network-interface discovery is transport administration, not Creator authoring."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "server",
+      "competitorTool": "query_server_port",
+      "description": "Query editor server current port",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getEditorPreference"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\preference-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "server",
+      "competitorTool": "get_server_status",
+      "description": "Get comprehensive server status information",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorEnvInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "server",
+      "competitorTool": "check_server_connectivity",
+      "description": "Check server connectivity and network status",
+      "disposition": "restricted-equivalent",
+      "ccbTools": [
+        "editorEnvInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "CCB reports the active editor endpoint and provenance; generic network probing is excluded."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "server",
+      "competitorTool": "get_network_interfaces",
+      "description": "Get available network interfaces",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Network-interface discovery is transport administration, not Creator authoring."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "broadcast",
+      "competitorTool": "get_broadcast_log",
+      "description": "Get recent broadcast messages log",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "broadcastObserve"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "broadcast",
+      "competitorTool": "listen_broadcast",
+      "description": "Start listening for specific broadcast messages",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "broadcastObserve"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "broadcast",
+      "competitorTool": "stop_listening",
+      "description": "Stop listening for specific broadcast messages",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "broadcastObserve"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "broadcast",
+      "competitorTool": "clear_broadcast_log",
+      "description": "Clear the broadcast messages log",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "broadcastObserve"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "broadcast",
+      "competitorTool": "get_active_listeners",
+      "description": "Get list of active broadcast listeners",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "broadcastObserve"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "reset_node_property",
+      "description": "Reset node property to default value",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeReset"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "move_array_element",
+      "description": "Move array element position",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "propertyArrayElement"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\property-array-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "remove_array_element",
+      "description": "Remove array element at specific index",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "propertyArrayElement"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\property-array-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "copy_node",
+      "description": "Copy node for later paste operation",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeClipboard"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "paste_node",
+      "description": "Paste previously copied nodes",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeClipboard"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "cut_node",
+      "description": "Cut node (copy + mark for move)",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeClipboard"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "reset_node_transform",
+      "description": "Reset node position, rotation and scale",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeReset"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "reset_component",
+      "description": "Reset component to default values",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeReset"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "restore_prefab",
+      "description": "Restore prefab instance from asset",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabRevertOverrides"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabRevertOverrides": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "execute_component_method",
+      "description": "Execute method on component",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "callComponentMethod"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "execute_scene_script",
+      "description": "Execute scene script method",
+      "disposition": "restricted-equivalent",
+      "ccbTools": [
+        "executeJavascript"
+      ],
+      "ccbSourceFiles": [
+        "source/utcp/execute/execute-tool.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "audio-source-configure.test.js",
+        "candidate-expansion-qualification.test.js",
+        "execute-js-components.test.js",
+        "execute-js-core.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "CCB exposes guarded executeJavascript rather than arbitrary scene-script handler dispatch."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "scene_snapshot",
+      "description": "Create scene state snapshot",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneSnapshot"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-snapshot-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "scene_snapshot_abort",
+      "description": "Abort scene snapshot creation",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Snapshot abort remains an internal rollback primitive, not a public tool."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "begin_undo_recording",
+      "description": "Begin recording undo data",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "editorUndoTransactionProbe"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "end_undo_recording",
+      "description": "End recording undo data",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "editorUndoTransactionProbe"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "cancel_undo_recording",
+      "description": "Cancel undo recording",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "editorUndoTransactionProbe"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "soft_reload_scene",
+      "description": "Soft reload current scene",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "query_scene_ready",
+      "description": "Check if scene is ready",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorState"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "query_scene_dirty",
+      "description": "Check if scene has unsaved changes",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneGetInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "query_scene_classes",
+      "description": "Query all registered classes",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "listComponentClasses"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "query_scene_components",
+      "description": "Query available scene components",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeGetAvailableComponentTypes"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\component-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "query_component_has_script",
+      "description": "Check if component has script",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneAdvanced",
+      "competitorTool": "query_nodes_by_asset_uuid",
+      "description": "Find nodes that use specific asset UUID",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "findNodesByAsset"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "change_gizmo_tool",
+      "description": "Change Gizmo tool",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_gizmo_tool_name",
+      "description": "Get current Gizmo tool name",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "change_gizmo_pivot",
+      "description": "Change transform pivot point",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_gizmo_pivot",
+      "description": "Get current Gizmo pivot point",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_gizmo_view_mode",
+      "description": "Query view mode (view/select)",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "change_gizmo_coordinate",
+      "description": "Change coordinate system",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_gizmo_coordinate",
+      "description": "Get current coordinate system",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "change_view_mode_2d_3d",
+      "description": "Change 2D/3D view mode",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_view_mode_2d_3d",
+      "description": "Get current view mode",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "set_grid_visible",
+      "description": "Show/hide grid",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_grid_visible",
+      "description": "Query grid visibility status",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "set_icon_gizmo_3d",
+      "description": "Set IconGizmo to 3D or 2D mode",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_icon_gizmo_3d",
+      "description": "Query IconGizmo mode",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "set_icon_gizmo_size",
+      "description": "Set IconGizmo size",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "query_icon_gizmo_size",
+      "description": "Query IconGizmo size",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "focus_camera_on_nodes",
+      "description": "Focus scene camera on nodes",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "align_camera_with_view",
+      "description": "Apply scene camera position and angle to selected node",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "align_view_with_node",
+      "description": "Apply selected node position and angle to current view",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "get_scene_view_status",
+      "description": "Get comprehensive scene view status",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "sceneView",
+      "competitorTool": "reset_scene_view",
+      "description": "Reset scene view to default settings",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorViewport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "add_reference_image",
+      "description": "Add reference image(s) to scene",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "remove_reference_image",
+      "description": "Remove reference image(s)",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "switch_reference_image",
+      "description": "Switch to specific reference image",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "set_reference_image_data",
+      "description": "Set reference image transform and display properties",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "query_reference_image_config",
+      "description": "Query reference image configuration",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "query_current_reference_image",
+      "description": "Query current reference image data",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "refresh_reference_image",
+      "description": "Refresh reference image display",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "set_reference_image_position",
+      "description": "Set reference image position",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "set_reference_image_scale",
+      "description": "Set reference image scale",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "set_reference_image_opacity",
+      "description": "Set reference image opacity",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "list_reference_images",
+      "description": "List all available reference images",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "referenceImage",
+      "competitorTool": "clear_all_reference_images",
+      "description": "Clear all reference images",
+      "disposition": "probe-required",
+      "ccbTools": [
+        "referenceImageManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "referenceImageManage": "probe-required"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "save_asset_meta",
+      "description": "Save asset meta information",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "generate_available_url",
+      "description": "Generate an available URL based on input URL",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetGetAvailableUrl"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "query_asset_db_ready",
+      "description": "Check if asset database is ready",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetDbQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\material-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "open_asset_external",
+      "description": "Open asset with external program",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "programManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "batch_import_assets",
+      "description": "Import multiple assets in batch",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetBatchImport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {
+        "assetBatchImport": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "batch_delete_assets",
+      "description": "Delete multiple assets in batch",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetBatchOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {
+        "assetBatchOperate": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "validate_asset_references",
+      "description": "Validate asset references and find broken links",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetMissingReferenceAudit"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {
+        "assetMissingReferenceAudit": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "get_asset_dependencies",
+      "description": "Get asset dependency tree",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetFindReferences"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "get_unused_assets",
+      "description": "Find unused assets in project",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetUsageAnalyze"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "compress_textures",
+      "description": "Batch compress texture assets",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetCompressionConfigure"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {
+        "assetCompressionConfigure": "qualified"
+      },
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "assetAdvanced",
+      "competitorTool": "export_asset_manifest",
+      "description": "Export asset manifest/inventory",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetManifestExport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "validation",
+      "competitorTool": "validate_json_params",
+      "description": "Validate and fix JSON parameters before sending to other tools",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Client-side request validation is provided by UTCP schemas, not an editor tool."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "validation",
+      "competitorTool": "safe_string_value",
+      "description": "Create a safe string value that won't cause JSON parsing issues",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Client-side string formatting is not an editor capability."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "validation",
+      "competitorTool": "format_mcp_request",
+      "description": "Format a complete MCP request with proper JSON escaping",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Client-side request formatting belongs to the gateway."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "get_node_path",
+      "description": "Get the hierarchy path (as a \"/\"-separated string) from the scene's Canvas node down to the node matching the given UUID, e.g. \"Canvas/Panel/Button\". Returns an error if the UUID is not found or the node is not a descendant of Canvas.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeGetPath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "node",
+      "competitorTool": "align_nodes",
+      "description": "Align or distribute multiple 2D nodes relative to each other by their cc.UITransform bounding boxes. Nodes may live under different parents — alignment is computed in world space and each node position is updated in place. Mode \"align\" snaps all nodes to a shared edge or center: left/right/center align horizontally, up/down/middle align vertically (needs >= 2 nodes). Mode \"distribute\" spaces nodes evenly along horizontal or vertical, keeping the two outermost nodes fixed (needs >= 3 nodes). Rotation and non-uniform scale are accounted for.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "uiLayoutAlign"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\ui-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "compress_uuid",
+      "description": "Compress a full UUID to a shorter form using Editor.Utils.UUID.compressUUID",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetResolvePath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "gap-closure.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "project",
+      "competitorTool": "decompress_uuid",
+      "description": "Decompress a compressed UUID back to full form using Editor.Utils.UUID.decompressUUID",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetResolvePath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "gap-closure.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "template",
+      "competitorTool": "clone_slotmachine_project",
+      "description": "when user create a new game|project and it is a slotmachine. Create a new slot machine game project by cloning from a template.",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Vendor-specific template cloning is intentionally excluded; CCB owns independent studio workflows."
+    },
+    {
+      "sourceCatalog": "ALX",
+      "competitorCategory": "template",
+      "competitorTool": "remove_scene_prefabs",
+      "description": "Remove prefab instance nodes (game modes, modules, mechanics) from the cloned game scenes under a project path, matching a provided list of names.",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "animationEdit",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "animationEdit"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\animation-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "animationQuery",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "animationQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\animation-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetBatchQuery",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetBatchQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\batch-read-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetCopy",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetCreate",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetCreate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetCreateFolder",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetCreate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetDelete",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetExchangeUuid",
+      "description": "",
+      "disposition": "unsupported-creator",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Creator 3.7.3 exposes no exchange-uuid message."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetGetAvailableUrl",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetGetAvailableUrl"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetGetPreview",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetImport",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetImport"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetMove",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetQuery",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "audio-asset-compatibility-audit.test.js",
+        "gap-closure.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetReadContent",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetReadContent"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetRefresh",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetResolve",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetResolvePath"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "gap-closure.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetSaveMeta",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "assetWriteContent",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "assetSaveContent"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "batchSetProperties",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeBatchSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\batch-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "bindButtonClickEvent",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "bindButtonClickEvent"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\event-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "callComponentMethod",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "callComponentMethod"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "captureEditorScreenshot",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "captureEditorScreenshot"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\screenshot-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "componentQuery",
+      "description": "",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "nodeComponentsGet",
+        "listComponentClasses"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\component-tools.ts",
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow is covered by a bounded CCB3 composition."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "createButton",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "createButton"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\ui-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "createLabel",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "createLabel"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\ui-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "createSprite",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "createSprite"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\ui-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "createUiNode",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "createUiNode"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\ui-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "duplicatePrefab",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "duplicatePrefab"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\prefab-json-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editPrefabJson",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editPrefabJson"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\prefab-json-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorEnvInfo",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorEnvInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorGetLogs",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorGetLogs"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorGetScenePreview",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorListTypes",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorQuery"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorOperate",
+      "description": "",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "sceneManage",
+        "assetOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts",
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "asset-import-settings-qualification.test.js",
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow is covered by a bounded CCB3 composition."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorSelect",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorSelect"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "editorUndo",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "editorHistory"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\editor-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "executeJavascript",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "executeJavascript"
+      ],
+      "ccbSourceFiles": [
+        "source/utcp/execute/execute-tool.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "audio-source-configure.test.js",
+        "candidate-expansion-qualification.test.js",
+        "execute-js-components.test.js",
+        "execute-js-core.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "findNodes",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "findNodes"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "animation-witness.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "findNodesByAsset",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "findNodesByAsset"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "findNodesWithMissingAssets",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "findNodesWithMissingAssets"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "getEditorPreference",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getEditorPreference"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\preference-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "getPerformanceSnapshot",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getPerformanceSnapshot"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\validation-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "getScriptDiagnosticContext",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "getScriptDiagnosticContext"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\diagnostics-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "listComponentMethods",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "listComponentMethods"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "listEditorWindows",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "listEditorWindows"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\screenshot-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeClipboard",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeClipboard"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeComponentManage",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeComponentManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeCreate",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeCreate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeCreatePrimitive",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeCreatePrimitive"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeDuplicate",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeMove",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeQuery",
+      "description": "",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "nodeGetTree",
+        "inspectorGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts",
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "candidate-expansion-qualification.test.js",
+        "cocos-graph.test.js",
+        "manual.test.js",
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow is covered by a bounded CCB3 composition."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeRemove",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeOperate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "ui-fallback.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js",
+        "ui-safe-area-inspect.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeReset",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeReset"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeSetProperty",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "nodeSetPropertyUndo",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "prefabSync",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "prefabApplyOverrides"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\advanced-capability-tools.ts"
+      ],
+      "candidateStates": {
+        "prefabApplyOverrides": "candidate"
+      },
+      "liveWitnessFiles": [],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "previewGetUrl",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "previewOpenInBrowser",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "previewManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "manual.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "probeSceneIpc",
+      "description": "",
+      "disposition": "intentional-exclusion",
+      "ccbTools": [],
+      "ccbSourceFiles": [],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "Version-specific bridge diagnostics are intentionally not part of the Creator 3.x authoring surface."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "programGetInfo",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "programManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "programOpen",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "programManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectFileExists",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectFileExists"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\file-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectGetConfig",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectListDirectory",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectListDirectory"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\file-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectReadFile",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectReadFile"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\file-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectReplaceInFile",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectReplaceInFile"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\file-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectSaveConfig",
+      "description": "",
+      "disposition": "unsupported-creator",
+      "ccbTools": [
+        "projectManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "Creator 3.7.3 exposes no project:set-config message; projectManage fails closed with typed 422."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectSearchFiles",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectSearchFiles"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\file-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "projectWriteFile",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "projectWriteFile"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\file-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "propertyArrayElement",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "propertyArrayElement"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\property-array-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "readPrefabJson",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "readPrefabJson"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\prefab-json-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "readProjectInstruction",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "readProjectInstruction"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\instruction-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "runScriptDiagnostics",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "runScriptDiagnostics"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\diagnostics-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "runtimeGetState",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "runtimeGetState"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\runtime-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "runtimePause",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "runtimePause"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\runtime-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "runtimeResume",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "runtimeResume"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\runtime-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "runtimeSetTimeScale",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "runtimeSetTimeScale"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\runtime-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneBatchGet",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneBatchGet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\batch-read-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneClose",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneCreateNodeHL",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "nodeCreate"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneInfo",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneGetInfo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "cocos-graph.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneNew",
+      "description": "",
+      "disposition": "composed-contract",
+      "ccbTools": [
+        "assetCreate",
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\asset-tools.ts",
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js",
+        "ui-fallback.test.js"
+      ],
+      "rationale": "Creator 3.7.3 exposes no new-scene message; CCB uses assetCreate plus sceneManage open."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneOpen",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneScript",
+      "description": "",
+      "disposition": "restricted-equivalent",
+      "ccbTools": [
+        "executeJavascript"
+      ],
+      "ccbSourceFiles": [
+        "source/utcp/execute/execute-tool.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "alx-inspired-editor-qualification.test.js",
+        "audio-source-configure.test.js",
+        "candidate-expansion-qualification.test.js",
+        "execute-js-components.test.js",
+        "execute-js-core.test.js",
+        "gap-closure.test.js",
+        "read-only-tools.test.js",
+        "ui-layout-inspect.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "CCB exposes guarded executeJavascript rather than arbitrary scene-script handler dispatch."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneSetPropertyHL",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "inspectorSet"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js",
+        "ui-layout-report.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "sceneSnapshot",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "sceneSnapshot"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\scene-snapshot-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "setEditorPreference",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "setEditorPreference"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\preference-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "simulateButtonClick",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "simulateButtonClick"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\event-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "simulateKeyCombo",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "simulateKeyCombo"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\input-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "simulateKeyPress",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "simulateKeyPress"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\input-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "simulateMouseClick",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "simulateMouseClick"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\input-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "simulateMouseDrag",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "simulateMouseDrag"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\input-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "ui-fallback.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "urlOpen",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "programManage"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\consolidated-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "validateScene",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "validateScene"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\validation-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    },
+    {
+      "sourceCatalog": "CCB2",
+      "competitorCategory": "ccb2-surface",
+      "competitorTool": "writeProjectInstruction",
+      "description": "",
+      "disposition": "covered-contract",
+      "ccbTools": [
+        "writeProjectInstruction"
+      ],
+      "ccbSourceFiles": [
+        "source\\utcp\\tools\\instruction-tools.ts"
+      ],
+      "candidateStates": {},
+      "liveWitnessFiles": [
+        "read-only-tools.test.js"
+      ],
+      "rationale": "The v2 workflow has a current CCB3 contract."
+    }
+  ]
+}

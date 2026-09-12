@@ -111,20 +111,16 @@ export class RuntimeSessionTools {
                 recovery: 'Use targetKind=game-view or qualify the target transport before attaching.',
             });
         }
-        const session = store.attach(args.targetKind, args.targetId);
-        try {
-            const state = await this.readState();
-            return { success: true, operation: 'attach', session, state, ready: true };
-        } catch (error) {
-            store.reset(session.sessionId);
-            throw new ToolError({
-                code: 'RUNTIME_NOT_READY',
-                status: 409,
-                message: 'Creator preview did not expose a valid runtime state after attach.',
-                recovery: 'Start the game-view preview and retry attach.',
-                details: { cause: error instanceof Error ? error.message : String(error) },
-            });
-        }
+        // Creator 3.7 exposes the game-view message surface but does not
+        // expose a verified preview-ready signal to this extension context.
+        // Keep this candidate fail-closed until a real preview transport is
+        // observed; runtimePreviewControl remains the direct lifecycle route.
+        throw new ToolError({
+            code: 'RUNTIME_NOT_READY',
+            status: 409,
+            message: 'Creator game-view preview readiness is not verified on this runtime.',
+            recovery: 'Start a verified game-view preview transport before attaching a runtime session.',
+        });
     }
 
     private async inspect(args: LifecycleArgs): Promise<{

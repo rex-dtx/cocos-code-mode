@@ -6,7 +6,7 @@ import os from 'os';
 import { basename, extname } from 'path';
 import fs from 'fs-extra';
 import packageJSON from '../../../package.json';
-import { AssetInfo, AssetOperationOption, IAssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
+import { AssetInfo, AssetOperationOption, IAssetInfo, IAssetMeta } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { AssetTreeItemSchema, IAssetTreeItem } from '../schemas';
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES, VERBOSE_FILE_BYTES } from '../utils/verbose';
@@ -96,6 +96,13 @@ function validateManifestMaxAssets(value: unknown): number {
     }
     return value;
 }
+function validateManifestMaxFileBytes(value: unknown): number {
+    if (value === undefined) return 10 * 1024 * 1024;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 50 * 1024 * 1024) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetManifestExport maxFileBytes must be an integer from 1 to 52428800.' });
+    }
+    return value;
+}
 
 function validateUsageMaxAssets(value: unknown): number {
     if (value === undefined) return 64;
@@ -103,6 +110,53 @@ function validateUsageMaxAssets(value: unknown): number {
         throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetUsageAnalyze maxAssets must be an integer from 1 to 128.' });
     }
     return value;
+}
+function validateUsageMaxGraphAssets(value: unknown): number {
+    if (value === undefined) return 5000;
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 5000) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetUsageAnalyze maxGraphAssets must be an integer from 1 to 5000.' });
+    }
+    return value;
+}
+
+const SERIALIZED_ASSET_EXTENSIONS = new Set([
+    '.scene', '.prefab', '.anim', '.mtl', '.effect', '.json', '.pac', '.labelatlas',
+    '.terrain', '.animgraph', '.animgraphvari', '.animask', '.plist', '.tmx', '.tsx',
+]);
+const SERIALIZED_GRAPH_FILE_BYTES = 5 * 1024 * 1024;
+
+function assetUuidBase(value: string): string {
+    const separator = value.indexOf('@');
+    return separator < 0 ? value : value.slice(0, separator);
+}
+
+function serializedAssetReferences(content: string): string[] {
+    const references = new Set<string>();
+    const pattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:@[A-Za-z0-9_-]+)?/gi;
+    for (const match of content.matchAll(pattern)) references.add(assetUuidBase(match[0].toLowerCase()));
+    return [...references].sort();
+}
+const ASSET_GRAPH_EXCLUSION_REASONS = ['source-file-unavailable', 'source-file-too-large', 'source-read-failed'] as const;
+
+function serializedAssetReferenceOccurrences(content: string): Array<{ id: string, line: number }> {
+    const occurrences: Array<{ id: string, line: number }> = [];
+    const pattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:@[A-Za-z0-9_-]+)?/gi;
+    for (const match of content.matchAll(pattern)) {
+        occurrences.push({
+            id: assetUuidBase(match[0].toLowerCase()),
+            line: content.slice(0, match.index ?? 0).split('\n').length,
+        });
+    }
+    return occurrences;
+}
+function isAssetGraphRoot(row: Record<string, unknown>): boolean {
+    const extension = extname(typeof row.url === 'string' ? row.url : '').toLowerCase();
+    return row.type === 'cc.SceneAsset'
+        || row.type === 'cc.Prefab'
+        || row.importer === 'scene'
+        || row.importer === 'prefab'
+        || extension === '.scene'
+        || extension === '.prefab';
 }
 
 function isManifestRow(value: unknown): value is Record<string, unknown> {
@@ -116,18 +170,6 @@ function manifestDependencies(row: unknown): string[] | undefined {
         .slice(0, MAX_MANIFEST_DEPENDENCIES);
 }
 
-function assetManifestItem(row: Record<string, unknown>): Record<string, unknown> {
-    const dependencies = manifestDependencies(row);
-    return {
-        uuid: row.uuid,
-        url: row.url,
-        type: row.type,
-        importer: row.importer ?? '',
-        name: row.name,
-        isSubAsset: Boolean(row.isSubAsset),
-        ...(dependencies ? { dependencies } : {}),
-    };
-}
 
 function assetManifestError(error: unknown): ToolError {
     return new ToolError({
@@ -183,9 +225,26 @@ interface AssetImportSettingsSource {
     isDirectory: boolean;
 }
 
+interface AssetImportSettingDescriptor {
+    path: string;
+    type: string;
+    readonly: boolean;
+    visible: boolean;
+    displayName?: string;
+    enumValues?: AssetImportMetadataValue[];
+}
+
+interface AssetImportSettingsSchema {
+    importer: string;
+    className: string;
+    properties: AssetImportSettingDescriptor[];
+    mutablePaths: string[];
+}
+
 interface AssetImportSettingsResult {
     reference: IInstanceReference;
     importer: string;
+    schema: AssetImportSettingsSchema;
     settings: Record<string, AssetImportMetadataValue>;
     source: AssetImportSettingsSource;
 }
@@ -294,15 +353,67 @@ function normalizeImportMetadataValue(
     return normalized;
 }
 
-function normalizeImportSettings(value: unknown): Record<string, AssetImportMetadataValue> {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
-    const normalized = normalizeImportMetadataValue(value, 0, {
-        remainingEntries: MAX_IMPORT_METADATA_ENTRIES,
-        ancestors: new WeakSet<object>(),
-    });
-    return normalized !== OMIT_IMPORT_METADATA && normalized !== null && !Array.isArray(normalized) && typeof normalized === 'object'
-        ? normalized
-        : {};
+function importSettingDescriptor(path: string, property: unknown): AssetImportSettingDescriptor | null {
+    if (!property || typeof property !== 'object' || Array.isArray(property)) return null;
+    const type = boundedImportText(Reflect.get(property, 'type'), MAX_IMPORT_REFERENCE_TYPE_LENGTH);
+    if (!type) return null;
+    const displayName = boundedImportText(Reflect.get(property, 'displayName'), MAX_IMPORT_SOURCE_NAME_LENGTH);
+    const enumList = Reflect.get(property, 'enumList');
+    const enumValues = Array.isArray(enumList)
+        ? enumList.slice(0, MAX_IMPORT_METADATA_ARRAY_ITEMS).map((item: unknown) => {
+            const value = item && typeof item === 'object' ? Reflect.get(item, 'value') : item;
+            const normalized = normalizeImportMetadataValue(value, 0, { remainingEntries: MAX_IMPORT_METADATA_ENTRIES, ancestors: new WeakSet<object>() });
+            return normalized === OMIT_IMPORT_METADATA ? null : normalized;
+        })
+        : undefined;
+    return {
+        path,
+        type,
+        readonly: Reflect.get(property, 'readonly') === true,
+        visible: Reflect.get(property, 'visible') !== false,
+        ...(displayName ? { displayName } : {}),
+        ...(enumValues ? { enumValues } : {}),
+    };
+}
+
+function normalizeImporterProperties(
+    importerName: string,
+    className: string,
+    properties: unknown,
+): { schema: AssetImportSettingsSchema, settings: Record<string, AssetImportMetadataValue> } {
+    if (!properties || typeof properties !== 'object' || Array.isArray(properties)) {
+        throw new Error(`Importer '${importerName}' returned an invalid property map.`);
+    }
+    const settings: Record<string, AssetImportMetadataValue> = {};
+    const descriptors: AssetImportSettingDescriptor[] = [];
+    const budget: ImportMetadataBudget = { remainingEntries: MAX_IMPORT_METADATA_ENTRIES, ancestors: new WeakSet<object>() };
+    for (const path of Object.keys(properties).sort().slice(0, MAX_IMPORT_METADATA_OBJECT_PROPERTIES)) {
+        const property = Reflect.get(properties, path);
+        const descriptor = importSettingDescriptor(path, property);
+        if (!descriptor) continue;
+        const normalized = normalizeImportMetadataValue(Reflect.get(property, 'value'), 0, budget);
+        if (normalized === OMIT_IMPORT_METADATA) continue;
+        descriptors.push(descriptor);
+        settings[path] = normalized;
+    }
+    return {
+        schema: {
+            importer: importerName,
+            className: boundedImportText(className, MAX_IMPORT_REFERENCE_TYPE_LENGTH),
+            properties: descriptors,
+            mutablePaths: descriptors.filter((descriptor) => !descriptor.readonly).map((descriptor) => descriptor.path),
+        },
+        settings,
+    };
+}
+
+function importSettingAtPath(settings: Record<string, AssetImportMetadataValue>, path: string): AssetImportMetadataValue | undefined {
+    let current: AssetImportMetadataValue | undefined = settings;
+    for (const segment of path.split('.')) {
+        if (!current || typeof current !== 'object' || Array.isArray(current) || !Object.prototype.hasOwnProperty.call(current, segment)) return undefined;
+        current = current[segment];
+    }
+    return current;
 }
 
 function assetImportSettingsQueryError(error: unknown): ToolError {
@@ -334,6 +445,54 @@ function validateImportSet(args: unknown): { reference: IInstanceReference, path
 
 function assetImportSettingsSetError(error: unknown): ToolError {
     return new ToolError({ code: 'ASSET_IMPORT_FAILED', status: 502, message: 'assetImportSettingsSet could not update and reimport the asset.', details: { cause: boundedImportText(error instanceof Error ? error.message : String(error), 512) }, recovery: 'Verify the asset importer and property path, then retry.' });
+}
+type TextureCompressionPlatform = 'miniGame' | 'web' | 'ios' | 'android' | 'pc';
+
+interface TextureCompressionFormat {
+    format: string;
+    quality: string | number;
+}
+
+interface TextureCompressionOutputEvidence {
+    extension: string;
+    path: string;
+    bytes: number;
+    sha256: string;
+}
+
+function validateCompressionArgs(args: unknown): { reference: IInstanceReference, presetId: string, platform: TextureCompressionPlatform } {
+    const reference = validateImportReference(args);
+    const presetId = Reflect.get(args as object, 'presetId');
+    const platform = Reflect.get(args as object, 'platform');
+    if (typeof presetId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(presetId)) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetCompressionConfigure presetId must be a normalized identifier of at most 128 characters.' });
+    }
+    if (!['miniGame', 'web', 'ios', 'android', 'pc'].includes(platform)) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetCompressionConfigure platform is unsupported.' });
+    }
+    return { reference, presetId, platform };
+}
+
+function compressionFormats(value: unknown): TextureCompressionFormat[] {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+    return Object.keys(value).sort().slice(0, 32).map((format) => {
+        const config = Reflect.get(value, format);
+        const quality = config && typeof config === 'object' ? Reflect.get(config, 'quality') : config;
+        return { format, quality: typeof quality === 'number' || typeof quality === 'string' ? quality : '' };
+    });
+}
+
+async function compressionOutputEvidence(library: unknown): Promise<TextureCompressionOutputEvidence[]> {
+    if (!library || typeof library !== 'object' || Array.isArray(library)) return [];
+    const output: TextureCompressionOutputEvidence[] = [];
+    for (const extension of Object.keys(library).sort().slice(0, 32)) {
+        const filePath = Reflect.get(library, extension);
+        if (typeof filePath !== 'string' || !await fs.pathExists(filePath)) continue;
+        const stat = await fs.stat(filePath);
+        if (!stat.isFile()) continue;
+        output.push({ extension, path: filePath, bytes: stat.size, sha256: await sha256File(filePath) });
+    }
+    return output;
 }
 
 
@@ -713,6 +872,135 @@ export class AssetTools {
     }, { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, "POST", ['asset', 'operate', 'move', 'copy', 'delete', 'open', 'refresh', 'reimport', 'meta'])
     async assetOperate(args:{operation:string,reference:IInstanceReference,targetAssetPath?:string,meta?:any,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ const assetOptions={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; const sourceUrl=await toAssetUrl(args.reference.id); const hasTarget=!!args.targetAssetPath; args.targetAssetPath=normalizePath(args.targetAssetPath); let result:AssetInfo|null=null; switch(args.operation){ case 'move': if(!hasTarget) throw new Error('targetAssetPath is required for move'); result=await Editor.Message.request('asset-db','move-asset',sourceUrl,args.targetAssetPath,assetOptions); break; case 'copy': if(!hasTarget) throw new Error('targetAssetPath is required for copy'); result=await Editor.Message.request('asset-db','copy-asset',sourceUrl,args.targetAssetPath,assetOptions); break; case 'delete': result=await Editor.Message.request('asset-db','delete-asset',sourceUrl); break; case 'open': await Editor.Message.request('asset-db','open-asset',args.reference.id); result=null; break; case 'refresh': await Editor.Message.request('asset-db','refresh-asset',sourceUrl); result=null; break; case 'reimport': await Editor.Message.request('asset-db','reimport-asset',sourceUrl); result=null; break; case 'save_meta': { if(args.meta===undefined||args.meta===null) throw new Error('save_meta requires meta (read it with assetDbQuery meta, mutate, pass back)'); const payload=typeof args.meta==='string'?args.meta:JSON.stringify(args.meta); const saved=await Editor.Message.request('asset-db','save-asset-meta',args.reference.id,payload); if(!saved) throw new Error(`Failed to save meta for ${args.reference.id}`); result=null; break; } default: throw new Error(`Unknown operation: ${args.operation}`);} if (result || ['move','copy','delete','refresh','reimport'].includes(args.operation)) invalidateAfterWrite(); return {reference:{id:result?.uuid??args.reference.id, type:result?.type??args.reference.type??''}}; }
 
+    @utcpTool('assetBatchImport', 'Import a bounded batch of external files and return per-item outcomes without stopping on one failure.', {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            items: {
+                type: 'array',
+                minItems: 1,
+                maxItems: 64,
+                items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        sourceFilesystemPath: { type: 'string', minLength: 1, maxLength: 2048 },
+                        targetAssetPath: { type: 'string', minLength: 1, maxLength: 2048 },
+                        imageType: { type: 'string', enum: ['raw', 'texture', 'normal-map', 'sprite-frame', 'texture-cube'] },
+                        options: { type: 'object', properties: { overwrite: { type: 'boolean' }, rename: { type: 'boolean' } } },
+                    },
+                    required: ['sourceFilesystemPath', 'targetAssetPath'],
+                },
+            },
+        },
+        required: ['items'],
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            outcomes: { type: 'array', maxItems: 64, items: { type: 'object' } },
+            succeeded: { type: 'integer', minimum: 0, maximum: 64 },
+            failed: { type: 'integer', minimum: 0, maximum: 64 },
+            partial: { type: 'boolean' },
+        },
+        required: ['outcomes', 'succeeded', 'failed', 'partial'],
+    }, 'POST', ['asset', 'batch', 'import', 'items'])
+    async assetBatchImport(args: { items: Array<{ sourceFilesystemPath: string, targetAssetPath: string, imageType?: string, options?: { overwrite?: boolean, rename?: boolean } }> }): Promise<{
+        outcomes: Array<Record<string, unknown>>,
+        succeeded: number,
+        failed: number,
+        partial: boolean,
+    }> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 64) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetBatchImport items must contain 1 to 64 entries.' });
+        }
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (let index = 0; index < args.items.length; index += 1) {
+            const item = args.items[index];
+            try {
+                const result = await this.assetImport(item);
+                outcomes.push({ index, ok: true, reference: result.reference });
+            } catch (error: unknown) {
+                outcomes.push({
+                    index,
+                    ok: false,
+                    error: {
+                        code: error instanceof ToolError ? error.code : 'ASSET_IMPORT_FAILED',
+                        status: error instanceof ToolError ? error.status : 502,
+                        message: boundedImportText(error instanceof Error ? error.message : String(error), 512),
+                    },
+                });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('assetBatchOperate', 'Apply a bounded batch of asset operations and return per-item outcomes with partial recovery.', {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            items: {
+                type: 'array',
+                minItems: 1,
+                maxItems: 64,
+                items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        operation: { type: 'string', enum: ['move', 'copy', 'delete', 'open', 'refresh', 'reimport', 'save_meta'] },
+                        reference: InstanceReferenceSchema,
+                        targetAssetPath: { type: 'string', maxLength: 2048 },
+                        meta: { type: 'object' },
+                        options: { type: 'object', properties: { overwrite: { type: 'boolean' }, rename: { type: 'boolean' } } },
+                    },
+                    required: ['operation', 'reference'],
+                },
+            },
+        },
+        required: ['items'],
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            outcomes: { type: 'array', maxItems: 64, items: { type: 'object' } },
+            succeeded: { type: 'integer', minimum: 0, maximum: 64 },
+            failed: { type: 'integer', minimum: 0, maximum: 64 },
+            partial: { type: 'boolean' },
+        },
+        required: ['outcomes', 'succeeded', 'failed', 'partial'],
+    }, 'POST', ['asset', 'batch', 'operate', 'items'])
+    async assetBatchOperate(args: { items: Array<{ operation: string, reference: IInstanceReference, targetAssetPath?: string, meta?: unknown, options?: { overwrite?: boolean, rename?: boolean } }> }): Promise<{
+        outcomes: Array<Record<string, unknown>>,
+        succeeded: number,
+        failed: number,
+        partial: boolean,
+    }> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 64) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetBatchOperate items must contain 1 to 64 entries.' });
+        }
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (let index = 0; index < args.items.length; index += 1) {
+            const item = args.items[index];
+            try {
+                const result = await this.assetOperate(item);
+                outcomes.push({ index, ok: true, reference: result.reference });
+            } catch (error: unknown) {
+                outcomes.push({
+                    index,
+                    ok: false,
+                    error: {
+                        code: error instanceof ToolError ? error.code : 'ASSET_OPERATION_FAILED',
+                        status: error instanceof ToolError ? error.status : 502,
+                        message: boundedImportText(error instanceof Error ? error.message : String(error), 512),
+                    },
+                });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
     // assetGetPreview is now via previewManage (consolidated) — method kept for delegation, no @utcpTool
     async assetGetPreview(args: { reference: IInstanceReference, imageSize?: number, jpegQuality?: number, transparentColor?: { r: number, g: number, b: number } }): Promise<IBase64Image> {
         const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id);
@@ -733,7 +1021,7 @@ export class AssetTools {
         let b64:string; try{ b64=await Editor.Message.request(packageJSON.name,'generate-preview',args.reference.id,args.imageSize||512,args.imageSize||512,(args.jpegQuality||80)/100);} finally{ await Editor.Panel.close(previewPanel); } if(!b64) throw new Error(`Failed to generate preview for asset ${args.reference.id}.`); return {type:"image",data:b64,mimeType:"image/jpeg"};
     }
 
-    @utcpTool('assetImportSettingsGet', 'Read bounded normalized generic importer settings and explicit source identity for one asset.', {
+    @utcpTool('assetImportSettingsGet', 'Read bounded importer-specific settings, typed property descriptors, and explicit source identity for one asset.', {
         type: 'object',
         additionalProperties: false,
         properties: { reference: InstanceReferenceSchema },
@@ -744,11 +1032,38 @@ export class AssetTools {
         properties: {
             reference: InstanceReferenceSchema,
             importer: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_TYPE_LENGTH },
+            schema: {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                    importer: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_TYPE_LENGTH },
+                    className: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_TYPE_LENGTH },
+                    properties: {
+                        type: 'array',
+                        maxItems: MAX_IMPORT_METADATA_OBJECT_PROPERTIES,
+                        items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                                path: { type: 'string', maxLength: MAX_IMPORT_METADATA_KEY_LENGTH },
+                                type: { type: 'string', maxLength: MAX_IMPORT_REFERENCE_TYPE_LENGTH },
+                                readonly: { type: 'boolean' },
+                                visible: { type: 'boolean' },
+                                displayName: { type: 'string', maxLength: MAX_IMPORT_SOURCE_NAME_LENGTH },
+                                enumValues: { type: 'array', maxItems: MAX_IMPORT_METADATA_ARRAY_ITEMS },
+                            },
+                            required: ['path', 'type', 'readonly', 'visible'],
+                        },
+                    },
+                    mutablePaths: { type: 'array', maxItems: MAX_IMPORT_METADATA_OBJECT_PROPERTIES, items: { type: 'string', maxLength: MAX_IMPORT_METADATA_KEY_LENGTH } },
+                },
+                required: ['importer', 'className', 'properties', 'mutablePaths'],
+            },
             settings: {
                 type: 'object',
                 maxProperties: MAX_IMPORT_METADATA_OBJECT_PROPERTIES,
                 additionalProperties: true,
-                description: `Generic JSON-compatible importer settings bounded to ${MAX_IMPORT_METADATA_DEPTH} levels, ${MAX_IMPORT_METADATA_ENTRIES} entries, ${MAX_IMPORT_METADATA_OBJECT_PROPERTIES} properties per object, ${MAX_IMPORT_METADATA_ARRAY_ITEMS} items per array, and ${MAX_IMPORT_METADATA_STRING_LENGTH} characters per string.`,
+                description: 'Importer-normalized JSON-compatible property values keyed by the typed schema paths.',
             },
             source: {
                 type: 'object',
@@ -763,7 +1078,7 @@ export class AssetTools {
                 required: ['uuid', 'url', 'type', 'name', 'isDirectory'],
             },
         },
-        required: ['reference', 'importer', 'settings', 'source'],
+        required: ['reference', 'importer', 'schema', 'settings', 'source'],
     }, 'GET', ['asset', 'import', 'settings', 'inspect'])
     async assetImportSettingsGet(args: { reference: IInstanceReference }): Promise<AssetImportSettingsResult> {
         const requestedReference = validateImportReference(args);
@@ -798,12 +1113,33 @@ export class AssetTools {
         const uuid = uuidValue;
         const url = urlValue;
         const type = typeValue;
-        const importerSettings = Reflect.get(info, 'importerSettings');
-        const meta = Reflect.get(info, 'meta');
+        const importerName = boundedImportText(Reflect.get(info, 'importer'), MAX_IMPORT_REFERENCE_TYPE_LENGTH);
+        const importer = ImporterManager.getInstance().getImporter(importerName);
+        if (!importer) {
+            throw new ToolError({
+                code: 'UNSUPPORTED_OPERATION',
+                status: 422,
+                message: `No registered importer supports '${importerName}'.`,
+                recovery: 'Use assetQuery to select an asset whose Creator importer has a typed bridge adapter.',
+            });
+        }
+        let normalized: { schema: AssetImportSettingsSchema, settings: Record<string, AssetImportMetadataValue> };
+        try {
+            normalized = normalizeImporterProperties(importerName, importer.className, await importer.getProperties(info as IAssetInfo));
+        } catch (error: unknown) {
+            throw new ToolError({
+                code: 'IMPORTER_INSPECTION_FAILED',
+                status: 502,
+                message: `Importer '${importerName}' could not expose typed settings.`,
+                details: { cause: boundedImportText(error instanceof Error ? error.message : String(error), 512) },
+                recovery: 'Retry after the asset importer and its metadata are ready.',
+            });
+        }
         return {
             reference: { id: uuid, type },
-            importer: boundedImportText(Reflect.get(info, 'importer'), MAX_IMPORT_REFERENCE_TYPE_LENGTH),
-            settings: normalizeImportSettings(importerSettings ?? meta),
+            importer: importerName,
+            schema: normalized.schema,
+            settings: normalized.settings,
             source: {
                 uuid,
                 url: boundedImportText(Reflect.get(info, 'url'), MAX_IMPORT_SOURCE_URL_LENGTH),
@@ -822,41 +1158,224 @@ export class AssetTools {
         },
         required: ['reference', 'path', 'value'],
     }, {
-        type: 'object', additionalProperties: false,
-        properties: { changed: { type: 'boolean' }, result: { type: 'object' } },
-        required: ['changed', 'result'],
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            changed: { type: 'boolean' },
+            path: { type: 'string', maxLength: MAX_IMPORT_SET_PATH_LENGTH },
+            previous: {},
+            readBack: {},
+            result: { type: 'object' },
+        },
+        required: ['changed', 'path', 'previous', 'readBack', 'result'],
     }, 'POST', ['asset', 'import', 'settings', 'configure', 'reimport'])
-    async assetImportSettingsSet(args: { reference: IInstanceReference, path: string, value: unknown }): Promise<{ changed: boolean, result: AssetImportSettingsResult }> {
+    async assetImportSettingsSet(args: { reference: IInstanceReference, path: string, value: unknown }): Promise<{ changed: boolean, path: string, previous: AssetImportMetadataValue, readBack: AssetImportMetadataValue, result: AssetImportSettingsResult }> {
         const request = validateImportSet(args);
+        const before = await this.assetImportSettingsGet({ reference: request.reference });
+        const descriptor = before.schema.properties.find((property) => property.path === request.path);
+        if (!descriptor) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Importer '${before.importer}' does not expose typed property '${request.path}'.` });
+        }
+        if (descriptor.readonly) {
+            throw new ToolError({ code: 'READ_ONLY_PROPERTY', status: 422, message: `Importer property '${request.path}' is read-only.` });
+        }
+        const previous = importSettingAtPath(before.settings, request.path);
+        if (previous === undefined) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Importer property '${request.path}' has no readable preflight value.` });
+        }
+        if (JSON.stringify(previous) === JSON.stringify(request.value)) {
+            return { changed: false, path: request.path, previous, readBack: previous, result: before };
+        }
+
+        const info = await Editor.Message.request('asset-db', 'query-asset-info', request.reference.id);
+        if (!info || typeof info !== 'object' || Array.isArray(info)) {
+            throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${request.reference.id} not found.` });
+        }
+        const record = info as unknown as IAssetInfo;
+        const importer = ImporterManager.getInstance().getImporter(before.importer);
+        if (!importer) throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: `No registered importer supports '${before.importer}'.` });
+
+        let mutationStarted = false;
         try {
-            const info = await Editor.Message.request('asset-db', 'query-asset-info', request.reference.id);
-            if (!info || typeof info !== 'object' || Array.isArray(info)) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${request.reference.id} not found.` });
-            const record = info as unknown as IAssetInfo;
-            const importerName = record.importer ?? '';
-            const importer = ImporterManager.getInstance().getImporter(importerName);
-            if (!importer) throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: `No registered importer supports '${importerName}'.` });
-            if (!await importer.setProperty(record, request.path, request.value)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Importer '${importerName}' rejected property '${request.path}'.` });
+            mutationStarted = true;
+            if (!await importer.setProperty(record, request.path, request.value)) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Importer '${before.importer}' rejected property '${request.path}'.` });
+            }
             await Editor.Message.request('asset-db', 'reimport-asset', record.uuid);
-            return { changed: true, result: await this.assetImportSettingsGet({ reference: { id: record.uuid, type: record.type } }) };
-        } catch (error) {
+            const result = await this.assetImportSettingsGet({ reference: { id: record.uuid, type: record.type } });
+            const readBack = importSettingAtPath(result.settings, request.path);
+            if (readBack === undefined || JSON.stringify(readBack) !== JSON.stringify(request.value)) {
+                throw new ToolError({
+                    code: 'READBACK_MISMATCH',
+                    status: 502,
+                    message: `Importer property '${request.path}' did not match the requested value after reimport.`,
+                    details: { requested: request.value, readBack },
+                });
+            }
+            return { changed: true, path: request.path, previous, readBack, result };
+        } catch (error: unknown) {
+            if (mutationStarted) {
+                try {
+                    if (!await importer.setProperty(record, request.path, previous)) throw new Error('Importer rejected rollback value.');
+                    await Editor.Message.request('asset-db', 'reimport-asset', record.uuid);
+                } catch (rollbackError: unknown) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: `assetImportSettingsSet failed and could not restore '${request.path}'.`,
+                        details: {
+                            cause: boundedImportText(error instanceof Error ? error.message : String(error), 512),
+                            rollbackCause: boundedImportText(rollbackError instanceof Error ? rollbackError.message : String(rollbackError), 512),
+                        },
+                        recovery: 'Inspect the asset importer settings and restore the previous value manually.',
+                    });
+                }
+            }
             if (error instanceof ToolError) throw error;
             throw assetImportSettingsSetError(error);
         }
     }
 
-    @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with importer and dependency metadata.', {
+    @utcpTool('assetCompressionConfigure', 'Assign a platform-aware Creator texture-compression preset, reimport, and return source/import-output evidence.', {
         type: 'object',
+        additionalProperties: false,
+        properties: {
+            reference: InstanceReferenceSchema,
+            presetId: { type: 'string', minLength: 1, maxLength: 128, pattern: '^[A-Za-z0-9_-]+$' },
+            platform: { type: 'string', enum: ['miniGame', 'web', 'ios', 'android', 'pc'] },
+        },
+        required: ['reference', 'presetId', 'platform'],
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            changed: { type: 'boolean' },
+            reference: InstanceReferenceSchema,
+            presetId: { type: 'string' },
+            previousPresetId: { type: 'string', nullable: true },
+            platform: { type: 'string' },
+            formats: {
+                type: 'array',
+                maxItems: 32,
+                items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: { format: { type: 'string' }, quality: { type: ['string', 'number'] } },
+                    required: ['format', 'quality'],
+                },
+            },
+            sourceSha256: { type: 'string', pattern: '^[a-f0-9]{64}$' },
+            generatedOutputs: {
+                type: 'array',
+                maxItems: 32,
+                items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        extension: { type: 'string' },
+                        path: { type: 'string' },
+                        bytes: { type: 'integer', minimum: 0 },
+                        sha256: { type: 'string', pattern: '^[a-f0-9]{64}$' },
+                    },
+                    required: ['extension', 'path', 'bytes', 'sha256'],
+                },
+            },
+            buildArtifactVerified: { type: 'boolean', const: false },
+        },
+        required: ['changed', 'reference', 'presetId', 'previousPresetId', 'platform', 'formats', 'sourceSha256', 'generatedOutputs', 'buildArtifactVerified'],
+    }, 'POST', ['asset', 'texture', 'compression', 'platform', 'preset', 'reimport'])
+    async assetCompressionConfigure(args: { reference: IInstanceReference, presetId: string, platform: TextureCompressionPlatform }): Promise<{
+        changed: boolean,
+        reference: IInstanceReference,
+        presetId: string,
+        previousPresetId: string | null,
+        platform: TextureCompressionPlatform,
+        formats: TextureCompressionFormat[],
+        sourceSha256: string,
+        generatedOutputs: TextureCompressionOutputEvidence[],
+        buildArtifactVerified: false,
+    }> {
+        const request = validateCompressionArgs(args);
+        const record = await Editor.Message.request('asset-db', 'query-asset-info', request.reference.id) as IAssetInfo | null;
+        if (!record) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${request.reference.id} not found.` });
+        if (record.importer !== 'image') {
+            throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: `assetCompressionConfigure supports Creator image imports, not '${record.importer}'.` });
+        }
+        const defaults = await Editor.Profile.getProject('builder', 'textureCompressConfig', 'default') as any;
+        const project = await Editor.Profile.getProject('builder', 'textureCompressConfig', 'project').catch(() => null) as any;
+        const presets = { ...(defaults?.defaultConfig ?? {}), ...(project?.defaultConfig ?? {}) };
+        const preset = presets[request.presetId];
+        if (!preset || typeof preset !== 'object') {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Compression preset '${request.presetId}' does not exist in the effective Creator project settings.` });
+        }
+        const formats = compressionFormats(preset.options?.[request.platform]);
+        if (formats.length === 0) {
+            throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: `Compression preset '${request.presetId}' has no formats for platform '${request.platform}'.` });
+        }
+        const meta = await Editor.Message.request('asset-db', 'query-asset-meta', record.uuid) as IAssetMeta | null;
+        if (!meta?.userData) throw new ToolError({ code: 'ASSET_QUERY_FAILED', status: 502, message: 'Creator returned no image importer metadata.' });
+        const previousValue = meta.userData.presetId;
+        const previousPresetId = typeof previousValue === 'string' ? previousValue : null;
+        const changed = previousPresetId !== request.presetId;
+        if (changed) {
+            meta.userData.presetId = request.presetId;
+            try {
+                const saved = await Editor.Message.request('asset-db', 'save-asset-meta', record.uuid, JSON.stringify(meta));
+                if (!saved) throw new Error('Creator refused the compression metadata update.');
+                await Editor.Message.request('asset-db', 'reimport-asset', record.uuid);
+                const readBackMeta = await Editor.Message.request('asset-db', 'query-asset-meta', record.uuid) as IAssetMeta | null;
+                if (readBackMeta?.userData?.presetId !== request.presetId) throw new Error('Compression preset read-back did not match.');
+            } catch (error: unknown) {
+                if (previousPresetId === null) delete meta.userData.presetId;
+                else meta.userData.presetId = previousPresetId;
+                try {
+                    await Editor.Message.request('asset-db', 'save-asset-meta', record.uuid, JSON.stringify(meta));
+                    await Editor.Message.request('asset-db', 'reimport-asset', record.uuid);
+                } catch (rollbackError: unknown) {
+                    throw new ToolError({
+                        code: 'ROLLBACK_FAILED',
+                        status: 500,
+                        message: 'Compression configuration failed and the original preset could not be restored.',
+                        details: { cause: String(error), rollbackCause: String(rollbackError) },
+                    });
+                }
+                throw new ToolError({ code: 'MUTATION_FAILED', status: 502, message: 'Compression configuration failed and was rolled back.', details: { cause: String(error) } });
+            }
+        }
+        const refreshed = await Editor.Message.request('asset-db', 'query-asset-info', record.uuid) as IAssetInfo | null;
+        if (!refreshed?.file || !await fs.pathExists(refreshed.file)) {
+            throw new ToolError({ code: 'READBACK_FAILED', status: 502, message: 'Configured image source is unavailable for evidence hashing.' });
+        }
+        return {
+            changed,
+            reference: { id: refreshed.uuid, type: refreshed.type },
+            presetId: request.presetId,
+            previousPresetId,
+            platform: request.platform,
+            formats,
+            sourceSha256: await sha256File(refreshed.file),
+            generatedOutputs: await compressionOutputEvidence(refreshed.library),
+            buildArtifactVerified: false,
+        };
+    }
+
+    @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with dependencies, source hashes, and explicit exclusions.', {
+        type: 'object',
+        additionalProperties: false,
         properties: {
             assetPath: { type: 'string', minLength: 1, maxLength: MAX_MANIFEST_ASSET_PATH_LENGTH },
             maxAssets: { type: 'integer', minimum: 1, maximum: 512, default: 128 },
+            maxFileBytes: { type: 'integer', minimum: 1, maximum: 52428800, default: 10485760 },
         },
     }, {
         type: 'object',
+        additionalProperties: false,
         properties: {
             assets: {
                 type: 'array',
                 items: {
                     type: 'object',
+                    additionalProperties: false,
                     properties: {
                         uuid: { type: 'string' },
                         url: { type: 'string' },
@@ -865,38 +1384,96 @@ export class AssetTools {
                         name: { type: 'string' },
                         isSubAsset: { type: 'boolean' },
                         dependencies: { type: 'array', items: { type: 'string' }, maxItems: MAX_MANIFEST_DEPENDENCIES },
+                        dependenciesTruncated: { type: 'boolean' },
+                        bytes: { type: 'integer', minimum: 0 },
+                        sha256: { type: 'string', pattern: '^[a-f0-9]{64}$' },
                     },
-                    required: ['uuid', 'url', 'type', 'importer', 'name', 'isSubAsset'],
+                    required: ['uuid', 'url', 'type', 'importer', 'name', 'isSubAsset', 'dependencies', 'dependenciesTruncated', 'bytes', 'sha256'],
+                },
+            },
+            exclusions: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        uuid: { type: 'string' },
+                        url: { type: 'string' },
+                        reason: { type: 'string', enum: ['source-file-unavailable', 'source-file-too-large', 'hash-failed'] },
+                        bytes: { type: 'integer', minimum: 0 },
+                        maxFileBytes: { type: 'integer', minimum: 1 },
+                    },
+                    required: ['uuid', 'url', 'reason'],
                 },
             },
             truncated: { type: 'boolean' },
             count: { type: 'integer' },
+            total: { type: 'integer' },
         },
-        required: ['assets', 'truncated', 'count'],
-    }, 'GET', ['asset', 'manifest', 'export', 'dependencies'])
-    async assetManifestExport(args: { assetPath?: string, maxAssets?: number }): Promise<{ assets: Array<Record<string, unknown>>, truncated: boolean, count: number }> {
+        required: ['assets', 'exclusions', 'truncated', 'count', 'total'],
+    }, 'GET', ['asset', 'manifest', 'export', 'dependencies', 'hash', 'sha256'])
+    async assetManifestExport(args: { assetPath?: string, maxAssets?: number, maxFileBytes?: number }): Promise<{
+        assets: Array<Record<string, unknown>>,
+        exclusions: Array<Record<string, unknown>>,
+        truncated: boolean,
+        count: number,
+        total: number,
+    }> {
         const maxAssets = validateManifestMaxAssets(args?.maxAssets);
+        const maxFileBytes = validateManifestMaxFileBytes(args?.maxFileBytes);
         const rootPath = normalizeManifestAssetPath(args?.assetPath);
-        const pattern = `${rootPath}/**`;
         let rows: unknown[];
         try {
-            rows = await queryAssetsCompat({ pattern });
+            rows = await queryAssetsCompat({ pattern: `${rootPath}/**` });
         } catch (error: unknown) {
             throw assetManifestError(error);
         }
         const files = rows
             .filter(isManifestRow)
             .filter((row) => !row.isDirectory)
-            .sort((a, b) => {
-                const leftUrl = String(a.url);
-                const rightUrl = String(b.url);
-                if (leftUrl !== rightUrl) return leftUrl < rightUrl ? -1 : 1;
-                const leftUuid = String(a.uuid);
-                const rightUuid = String(b.uuid);
-                return leftUuid === rightUuid ? 0 : leftUuid < rightUuid ? -1 : 1;
-            });
-        const assets = files.slice(0, maxAssets).map(assetManifestItem);
-        return { assets, truncated: files.length > assets.length, count: assets.length };
+            .sort((a, b) => String(a.url).localeCompare(String(b.url)) || String(a.uuid).localeCompare(String(b.uuid)));
+        const assets: Array<Record<string, unknown>> = [];
+        const exclusions: Array<Record<string, unknown>> = [];
+        for (const row of files.slice(0, maxAssets)) {
+            const uuid = typeof row.uuid === 'string' ? row.uuid : '';
+            const url = typeof row.url === 'string' ? row.url : '';
+            const info = typeof row.file === 'string'
+                ? row
+                : await Editor.Message.request('asset-db', 'query-asset-info', uuid || url).catch(() => null) as unknown;
+            const sourcePath = isManifestRow(info) && typeof info.file === 'string' ? info.file : '';
+            if (!sourcePath) {
+                exclusions.push({ uuid, url, reason: 'source-file-unavailable' });
+                continue;
+            }
+            const stat = await fs.stat(sourcePath).catch(() => null);
+            if (!stat?.isFile()) {
+                exclusions.push({ uuid, url, reason: 'source-file-unavailable' });
+                continue;
+            }
+            if (stat.size > maxFileBytes) {
+                exclusions.push({ uuid, url, reason: 'source-file-too-large', bytes: stat.size, maxFileBytes });
+                continue;
+            }
+            try {
+                const dependencyRows = await Editor.Message.request('asset-db', 'query-assets', { pattern: uuid || url }).catch(() => []);
+                const rawDependencies = manifestDependencies(row) ?? manifestDependencies(Array.isArray(dependencyRows) ? dependencyRows[0] : undefined) ?? [];
+                assets.push({
+                    uuid,
+                    url,
+                    type: typeof row.type === 'string' ? row.type : '',
+                    importer: typeof row.importer === 'string' ? row.importer : isManifestRow(info) && typeof info.importer === 'string' ? info.importer : '',
+                    name: typeof row.name === 'string' ? row.name : '',
+                    isSubAsset: Boolean(row.isSubAsset),
+                    dependencies: rawDependencies,
+                    dependenciesTruncated: Array.isArray(row.depends) && row.depends.length > rawDependencies.length,
+                    bytes: stat.size,
+                    sha256: await sha256File(sourcePath),
+                });
+            } catch {
+                exclusions.push({ uuid, url, reason: 'hash-failed' });
+            }
+        }
+        return { assets, exclusions, truncated: files.length > maxAssets, count: assets.length, total: files.length };
     }
     @utcpTool('assetCatalogManifest', 'Build a bounded deterministic asset catalog with source hashes and explicit exclusions.', {
         type: 'object',
@@ -934,142 +1511,256 @@ export class AssetTools {
         return { assets, exclusions, truncated: files.length > maxAssets, count: assets.length };
     }
 
-    @utcpTool('assetUsageAnalyze', 'Probe bounded asset usage through node references in the currently open scene only; results are not project-wide usage proof.', {
+    @utcpTool('assetUsageAnalyze', 'Analyze project-wide serialized asset reachability from explicit or discovered scene/prefab roots using graph-v4 evidence.', {
         type: 'object',
+        additionalProperties: false,
         properties: {
             assetPath: { type: 'string', minLength: 1, maxLength: MAX_MANIFEST_ASSET_PATH_LENGTH },
             maxAssets: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
+            maxGraphAssets: { type: 'integer', minimum: 1, maximum: 5000, default: 5000 },
+            rootReferences: { type: 'array', minItems: 1, maxItems: 128, items: InstanceReferenceSchema },
         },
     }, {
         type: 'object',
+        additionalProperties: false,
         properties: {
-            candidates: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    properties: {
-                        uuid: { type: 'string' },
-                        url: { type: 'string' },
-                        type: { type: 'string' },
-                        confidence: { type: 'string', enum: ['scene-unreferenced'] },
-                        referenceCount: { type: 'integer', minimum: 0 },
-                        references: { type: 'array', items: InstanceReferenceSchema, maxItems: MAX_USAGE_REFERENCES },
-                    },
-                    required: ['uuid', 'url', 'confidence', 'referenceCount', 'references'],
-                },
-                maxItems: 128,
-            },
+            graphVersion: { type: 'string', const: 'v4' },
+            complete: { type: 'boolean' },
+            roots: { type: 'array', maxItems: 5000, items: InstanceReferenceSchema },
+            graphAssets: { type: 'integer' },
+            graphEdges: { type: 'integer' },
+            graphTruncated: { type: 'boolean' },
+            exclusions: { type: 'array', maxItems: 5000, items: { type: 'object' } },
+            candidates: { type: 'array', maxItems: 128, items: { type: 'object' } },
             checkedAssets: { type: 'integer' },
-            referenceEvidence: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    properties: {
-                        uuid: { type: 'string' },
-                        url: { type: 'string' },
-                        type: { type: 'string' },
-                        status: { type: 'string', enum: ['referenced', 'unreferenced', 'unknown'] },
-                        referenceCount: { type: 'integer', minimum: 0 },
-                        references: { type: 'array', items: InstanceReferenceSchema, maxItems: MAX_USAGE_REFERENCES },
-                        truncated: { type: 'boolean' },
-                        error: { type: 'string' },
-                    },
-                    required: ['uuid', 'url', 'status', 'references', 'truncated'],
-                },
-                maxItems: 128,
-            },
-            referenceQueryCaveat: { type: 'string' },
+            referenceEvidence: { type: 'array', maxItems: 128, items: { type: 'object' } },
             dynamicLoadCaveat: { type: 'string' },
         },
-        required: ['candidates', 'checkedAssets', 'referenceEvidence', 'referenceQueryCaveat', 'dynamicLoadCaveat'],
-    }, 'GET', ['asset', 'usage', 'analyze', 'references'])
-    async assetUsageAnalyze(args: { assetPath?: string, maxAssets?: number } = {}): Promise<{
+        required: ['graphVersion', 'complete', 'roots', 'graphAssets', 'graphEdges', 'graphTruncated', 'exclusions', 'candidates', 'checkedAssets', 'referenceEvidence', 'dynamicLoadCaveat'],
+    }, 'GET', ['asset', 'usage', 'analyze', 'references', 'project', 'graph', 'roots'])
+    async assetUsageAnalyze(args: { assetPath?: string, maxAssets?: number, maxGraphAssets?: number, rootReferences?: IInstanceReference[] } = {}): Promise<{
+        graphVersion: 'v4',
+        complete: boolean,
+        roots: IInstanceReference[],
+        graphAssets: number,
+        graphEdges: number,
+        graphTruncated: boolean,
+        exclusions: Array<Record<string, unknown>>,
         candidates: Array<Record<string, unknown>>,
         checkedAssets: number,
         referenceEvidence: Array<Record<string, unknown>>,
-        referenceQueryCaveat: string,
-        dynamicLoadCaveat: string
+        dynamicLoadCaveat: string,
     }> {
-        const maxAssets = validateUsageMaxAssets(args?.maxAssets);
-        const rootPath = normalizeBoundedAssetPath(args?.assetPath, 'assetUsageAnalyze');
-        let rows: unknown[];
+        const maxAssets = validateUsageMaxAssets(args.maxAssets);
+        const maxGraphAssets = validateUsageMaxGraphAssets(args.maxGraphAssets);
+        const targetPath = normalizeBoundedAssetPath(args.assetPath, 'assetUsageAnalyze');
+        let queried: unknown[];
         try {
-            rows = await queryAssetsCompat({ pattern: `${rootPath}/**` });
+            queried = await queryAssetsCompat({ pattern: 'db://assets/**' });
         } catch (error: unknown) {
             throw assetUsageError(error);
         }
-        const files = rows
+        const allRows = queried
             .filter(isManifestRow)
-            .filter((row) => !row.isDirectory && typeof row.uuid === 'string' && row.uuid.length > 0 && typeof row.url === 'string')
+            .filter((row) => !row.isDirectory && typeof row.uuid === 'string' && typeof row.url === 'string')
             .map((row) => row as Record<string, unknown> & { uuid: string, url: string })
-            .sort((left, right) => {
-                if (left.url !== right.url) return left.url < right.url ? -1 : 1;
-                return left.uuid === right.uuid ? 0 : left.uuid < right.uuid ? -1 : 1;
-            })
-            .slice(0, maxAssets);
-        const candidates: Array<Record<string, unknown>> = [];
-        const referenceEvidence: Array<Record<string, unknown>> = [];
-        for (const row of files) {
-            let referenceIds: string[] | null;
-            let queryError: unknown;
-            try {
-                const rawReferences: unknown = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', row.uuid);
-                if (!Array.isArray(rawReferences)) throw new Error('Creator returned a non-array scene reference result.');
-                referenceIds = [];
-                for (const reference of rawReferences) {
-                    const id = typeof reference === 'string'
-                        ? reference
-                        : reference && typeof reference === 'object'
-                            ? (Reflect.get(reference, 'uuid') ?? Reflect.get(reference, 'id'))
-                            : undefined;
-                    if (typeof id !== 'string' || !id) throw new Error('Creator returned an invalid scene reference.');
-                    referenceIds.push(id);
+            .sort((left, right) => left.url.localeCompare(right.url) || left.uuid.localeCompare(right.uuid));
+        const requestedRoots = args.rootReferences?.map((reference) => assetUuidBase(validateImportReference({ reference }).id.toLowerCase()));
+        const graphRows = allRows.slice(0, maxGraphAssets);
+        if (requestedRoots) {
+            for (const rootId of requestedRoots) {
+                const rootRow = allRows.find((row) => assetUuidBase(row.uuid.toLowerCase()) === rootId);
+                if (rootRow && !graphRows.some((row) => assetUuidBase(row.uuid.toLowerCase()) === rootId)) graphRows.push(rootRow);
+            }
+        }
+        const graphTruncated = allRows.length > maxGraphAssets;
+        const known = new Map(graphRows.map((row) => [assetUuidBase(row.uuid.toLowerCase()), row]));
+        const edges = new Map<string, Set<string>>();
+        const incoming = new Map<string, Set<string>>();
+        const exclusions: Array<Record<string, unknown>> = [];
+
+        for (const row of graphRows) {
+            const sourceId = assetUuidBase(row.uuid.toLowerCase());
+            const dependencies = new Set((manifestDependencies(row) ?? []).map((value) => assetUuidBase(value.toLowerCase())).filter((value) => known.has(value)));
+            const extension = extname(row.url).toLowerCase();
+            if (SERIALIZED_ASSET_EXTENSIONS.has(extension)) {
+                const info = typeof row.file === 'string'
+                    ? row
+                    : await Editor.Message.request('asset-db', 'query-asset-info', row.uuid).catch(() => null) as unknown;
+                const filePath = isManifestRow(info) && typeof info.file === 'string' ? info.file : '';
+                if (!filePath) {
+                    exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
+                } else {
+                    const stat = await fs.stat(filePath).catch(() => null);
+                    if (!stat?.isFile()) exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
+                    else if (stat.size > SERIALIZED_GRAPH_FILE_BYTES) exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-too-large', bytes: stat.size });
+                    else {
+                        try {
+                            for (const dependency of serializedAssetReferences(await fs.readFile(filePath, 'utf8'))) {
+                                if (known.has(dependency) && dependency !== sourceId) dependencies.add(dependency);
+                            }
+                        } catch (error: unknown) {
+                            exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-read-failed', error: boundedImportText(error instanceof Error ? error.message : String(error), 256) });
+                        }
+                    }
                 }
-                referenceIds = [...new Set(referenceIds)].sort();
-            } catch (error: unknown) {
-                referenceIds = null;
-                queryError = error;
             }
-            if (referenceIds === null) {
-                referenceEvidence.push({
-                    uuid: row.uuid,
-                    url: row.url,
-                    ...(typeof row.type === 'string' ? { type: row.type } : {}),
-                    status: 'unknown',
-                    references: [],
-                    truncated: false,
-                    error: (queryError instanceof Error ? queryError.message : String(queryError)).slice(0, 256),
-                });
-                continue;
+            edges.set(sourceId, dependencies);
+            for (const dependency of dependencies) {
+                const sources = incoming.get(dependency) ?? new Set<string>();
+                sources.add(sourceId);
+                incoming.set(dependency, sources);
             }
-            const references = referenceIds.slice(0, MAX_USAGE_REFERENCES).map((id) => ({ id, type: 'cc.Node' }));
-            const evidence = {
+        }
+
+        const rootIds = requestedRoots ?? graphRows
+            .filter(isAssetGraphRoot)
+            .map((row) => assetUuidBase(row.uuid.toLowerCase()));
+        const missingRoots = rootIds.filter((id) => !known.has(id));
+        if (missingRoots.length > 0) {
+            throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset usage roots not found: ${missingRoots.join(', ')}` });
+        }
+        const reachable = new Set<string>();
+        const queue = [...new Set(rootIds)].sort();
+        while (queue.length) {
+            const id = queue.shift()!;
+            if (reachable.has(id)) continue;
+            reachable.add(id);
+            for (const dependency of edges.get(id) ?? []) if (!reachable.has(dependency)) queue.push(dependency);
+        }
+        const targets = graphRows
+            .filter((row) => row.url === targetPath || row.url.startsWith(`${targetPath}/`))
+            .slice(0, maxAssets);
+        const referenceEvidence = targets.map((row) => {
+            const id = assetUuidBase(row.uuid.toLowerCase());
+            const sourceIds = [...(incoming.get(id) ?? [])].sort();
+            const references = sourceIds.slice(0, MAX_USAGE_REFERENCES).map((sourceId) => {
+                const source = known.get(sourceId)!;
+                return { id: source.uuid, type: typeof source.type === 'string' ? source.type : 'cc.Asset' };
+            });
+            return {
                 uuid: row.uuid,
                 url: row.url,
                 ...(typeof row.type === 'string' ? { type: row.type } : {}),
-                status: referenceIds.length === 0 ? 'unreferenced' : 'referenced',
-                referenceCount: referenceIds.length,
+                status: reachable.has(id) ? 'root-reachable' : 'project-unreachable',
+                root: rootIds.includes(id),
+                referenceCount: sourceIds.length,
                 references,
-                truncated: referenceIds.length > references.length,
+                truncated: sourceIds.length > references.length,
             };
-            referenceEvidence.push(evidence);
-            if (referenceIds.length === 0) {
-                candidates.push({
-                    uuid: row.uuid,
-                    url: row.url,
-                    ...(typeof row.type === 'string' ? { type: row.type } : {}),
-                    confidence: 'scene-unreferenced',
-                    referenceCount: evidence.referenceCount,
-                    references: evidence.references,
-                });
-            }
-        }
+        });
+        const candidates = referenceEvidence
+            .filter((evidence) => evidence.status === 'project-unreachable')
+            .map((evidence) => ({ ...evidence, confidence: 'serialized-project-unreachable' }));
+        const graphEdges = [...edges.values()].reduce((sum, dependencies) => sum + dependencies.size, 0);
+        const complete = !graphTruncated && exclusions.length === 0;
         return {
+            graphVersion: 'v4',
+            complete,
+            roots: [...new Set(rootIds)].sort().map((id) => {
+                const row = known.get(id)!;
+                return { id: row.uuid, type: typeof row.type === 'string' ? row.type : 'cc.Asset' };
+            }),
+            graphAssets: graphRows.length,
+            graphEdges,
+            graphTruncated,
+            exclusions,
             candidates,
-            checkedAssets: files.length,
+            checkedAssets: targets.length,
             referenceEvidence,
-            referenceQueryCaveat: 'A scene reference query error or malformed response produces unknown status and is never classified as unreferenced.',
-            dynamicLoadCaveat: 'This open-scene probe does not inspect closed scenes, prefabs, serialized asset-to-asset references, runtime addressables, resources.load, or string-based dynamic loads.',
+            dynamicLoadCaveat: 'Static graph-v4 covers serialized UUID references from project scene, prefab, and supported text asset roots; dynamic runtime addressables, resources.load, and computed string paths remain outside static proof.',
+        };
+    }
+
+    @utcpTool('assetMissingReferenceAudit', 'Audit all project scene files for bounded serialized UUID references that do not resolve to known assets.', {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            assetPath: { type: 'string', minLength: 1, maxLength: MAX_MANIFEST_ASSET_PATH_LENGTH },
+            maxScenes: { type: 'integer', minimum: 1, maximum: 128, default: 128 },
+            maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 },
+        },
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            complete: { type: 'boolean' },
+            scannedScenes: { type: 'integer', minimum: 0, maximum: 128 },
+            missingReferences: { type: 'array', maxItems: 2000, items: { type: 'object' } },
+            exclusions: { type: 'array', maxItems: 128, items: { type: 'object' } },
+            truncated: { type: 'boolean' },
+            dynamicLoadCaveat: { type: 'string' },
+        },
+        required: ['complete', 'scannedScenes', 'missingReferences', 'exclusions', 'truncated', 'dynamicLoadCaveat'],
+    }, 'GET', ['asset', 'missing', 'reference', 'audit', 'scene'])
+    async assetMissingReferenceAudit(args: { assetPath?: string, maxScenes?: number, maxReferences?: number } = {}): Promise<{
+        complete: boolean,
+        scannedScenes: number,
+        missingReferences: Array<Record<string, unknown>>,
+        exclusions: Array<Record<string, unknown>>,
+        truncated: boolean,
+        dynamicLoadCaveat: string,
+    }> {
+        const maxScenes = args.maxScenes ?? 128;
+        const maxReferences = args.maxReferences ?? 2000;
+        if (!Number.isInteger(maxScenes) || maxScenes < 1 || maxScenes > 128 || !Number.isInteger(maxReferences) || maxReferences < 1 || maxReferences > 2000) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetMissingReferenceAudit bounds are invalid.' });
+        }
+        const targetPath = normalizeBoundedAssetPath(args.assetPath, 'assetMissingReferenceAudit');
+        let queried: unknown[];
+        try {
+            queried = await queryAssetsCompat({ pattern: 'db://assets/**' });
+        } catch (error: unknown) {
+            throw new ToolError({ code: 'ASSET_QUERY_FAILED', status: 502, message: 'assetMissingReferenceAudit could not query the Creator asset database.', details: { cause: boundedImportText(error instanceof Error ? error.message : String(error), 512) } });
+        }
+        const rows = queried
+            .filter(isManifestRow)
+            .filter((row) => !row.isDirectory && typeof row.uuid === 'string' && typeof row.url === 'string')
+            .map((row) => row as Record<string, unknown> & { uuid: string, url: string })
+            .sort((left, right) => left.url.localeCompare(right.url) || left.uuid.localeCompare(right.uuid));
+        const known = new Set(rows.map((row) => assetUuidBase(row.uuid.toLowerCase())));
+        const scenes = rows.filter((row) => {
+            const inTarget = row.url === targetPath || row.url.startsWith(`${targetPath}/`);
+            return inTarget && extname(row.url).toLowerCase() === '.scene';
+        });
+        const exclusions: Array<Record<string, unknown>> = [];
+        const missingReferences: Array<Record<string, unknown>> = [];
+        for (const row of scenes.slice(0, maxScenes)) {
+            const info = typeof row.file === 'string' ? row : await Editor.Message.request('asset-db', 'query-asset-info', row.uuid).catch(() => null) as unknown;
+            const filePath = isManifestRow(info) && typeof info.file === 'string' ? info.file : '';
+            if (!filePath) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
+                continue;
+            }
+            const stat = await fs.stat(filePath).catch(() => null);
+            if (!stat?.isFile()) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
+                continue;
+            }
+            if (stat.size > SERIALIZED_GRAPH_FILE_BYTES) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-too-large', bytes: stat.size });
+                continue;
+            }
+            try {
+                const content = await fs.readFile(filePath, 'utf8');
+                for (const occurrence of serializedAssetReferenceOccurrences(content)) {
+                    if (known.has(occurrence.id)) continue;
+                    if (missingReferences.length >= maxReferences) break;
+                    missingReferences.push({ source: { uuid: row.uuid, url: row.url }, referenceId: occurrence.id, line: occurrence.line });
+                }
+            } catch (error: unknown) {
+                exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-read-failed', error: boundedImportText(error instanceof Error ? error.message : String(error), 256) });
+            }
+            if (missingReferences.length >= maxReferences) break;
+        }
+        const truncated = scenes.length > maxScenes || missingReferences.length >= maxReferences;
+        return {
+            complete: !truncated && exclusions.length === 0,
+            scannedScenes: Math.min(scenes.length, maxScenes),
+            missingReferences,
+            exclusions,
+            truncated,
+            dynamicLoadCaveat: 'Static audit covers serialized UUID references in scene files; runtime resource loads, addressables, and computed paths require separate runtime evidence.',
         };
     }
 

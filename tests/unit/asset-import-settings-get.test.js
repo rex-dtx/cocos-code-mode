@@ -7,6 +7,7 @@ const { requireDist } = require('../helpers/require-dist');
 const { AssetTools } = requireDist('utcp/tools/asset-tools.js');
 const { ToolRegistry } = requireDist('utcp/decorators.js');
 const { InstanceReferenceSchema } = requireDist('utcp/schemas.js');
+const { ImporterManager } = requireDist('utcp/utils/asset-importers/importer-manager.js');
 
 function invoke(request, args) {
   const previous = global.Editor;
@@ -19,6 +20,17 @@ function invoke(request, args) {
 
 describe('assetImportSettingsGet', () => {
   it('returns normalized generic settings and explicit source metadata', async () => {
+    ImporterManager.getInstance().registerImporter({
+      name: 'typed-test',
+      className: 'TypedTestImporter',
+      async getProperties(asset) {
+        return {
+          loadAsModule: { value: asset.importerSettings.loadAsModule, type: 'Boolean', displayName: 'Load as module' },
+          nested: { value: asset.importerSettings.nested, type: 'Object', readonly: true },
+        };
+      },
+      async setProperty() { return false; },
+    });
     const calls = [];
     const result = await invoke(async (service, message, id) => {
       calls.push([service, message, id]);
@@ -29,7 +41,7 @@ describe('assetImportSettingsGet', () => {
         url: 'db://assets/scripts/main.ts',
         type: 'cc.TSAsset',
         name: 'main.ts',
-        importer: 'typescript',
+        importer: 'typed-test',
         isDirectory: 0,
         importerSettings: {
           loadAsModule: true,
@@ -43,7 +55,16 @@ describe('assetImportSettingsGet', () => {
     assert.deepEqual(calls, [['asset-db', 'query-asset-info', 'requested-id']]);
     assert.deepEqual(result, {
       reference: { id: 'asset-uuid', type: 'cc.TSAsset' },
-      importer: 'typescript',
+      importer: 'typed-test',
+      schema: {
+        importer: 'typed-test',
+        className: 'TypedTestImporter',
+        properties: [
+          { path: 'loadAsModule', type: 'Boolean', readonly: false, visible: true, displayName: 'Load as module' },
+          { path: 'nested', type: 'Object', readonly: true, visible: true },
+        ],
+        mutablePaths: ['loadAsModule'],
+      },
       settings: {
         loadAsModule: true,
         nested: { sourceMap: false, targets: ['editor', 'preview'] },
@@ -101,6 +122,14 @@ describe('assetImportSettingsGet', () => {
   });
 
   it('bounds settings recursively and excludes unsupported or cyclic metadata', async () => {
+    ImporterManager.getInstance().registerImporter({
+      name: 'bounded-test',
+      className: 'BoundedTestImporter',
+      async getProperties(asset) {
+        return Object.fromEntries(Object.entries(asset.importerSettings).map(([key, value]) => [key, { value, type: 'Object' }]));
+      },
+      async setProperty() { return false; },
+    });
     const wide = Object.fromEntries(Array.from({ length: 100 }, (_, index) => [`key${String(index).padStart(3, '0')}`, index]));
     const array = Array.from({ length: 100 }, (_, index) => index);
     const deep = {};
@@ -117,7 +146,7 @@ describe('assetImportSettingsGet', () => {
       url: 'u'.repeat(2048),
       type: 'cc.Asset',
       name: 'n'.repeat(500),
-      importer: 'generic',
+      importer: 'bounded-test',
       importerSettings: {
         long: 'x'.repeat(3000),
         wide,
@@ -146,13 +175,15 @@ describe('assetImportSettingsGet', () => {
     assert.equal(Object.hasOwn(result.source, 'unexpected'), false);
   });
 
-  it('declares the shared reference schema and bounded generic output shape', () => {
+  it('declares the shared reference schema and bounded typed output shape', () => {
     const metadata = ToolRegistry.getTools().find(({ tool }) => tool.name === 'assetImportSettingsGet');
     assert.ok(metadata);
     assert.equal(metadata.tool.inputs.properties.reference, InstanceReferenceSchema);
     assert.equal(metadata.tool.outputs.properties.reference, InstanceReferenceSchema);
     assert.equal(metadata.tool.outputs.properties.settings.maxProperties, 64);
+    assert.equal(metadata.tool.outputs.properties.schema.additionalProperties, false);
+    assert.equal(metadata.tool.outputs.properties.schema.properties.properties.maxItems, 64);
     assert.equal(metadata.tool.outputs.properties.source.additionalProperties, false);
-    assert.deepEqual(metadata.tool.outputs.properties.source.required, ['uuid', 'url', 'type', 'name', 'isDirectory']);
+    assert.deepEqual(metadata.tool.outputs.required, ['reference', 'importer', 'schema', 'settings', 'source']);
   });
 });

@@ -20,6 +20,27 @@ interface AssetImportSettingsSource {
     name: string;
     isDirectory: boolean;
 }
+interface AssetImportSettingDescriptor {
+    path: string;
+    type: string;
+    readonly: boolean;
+    visible: boolean;
+    displayName?: string;
+    enumValues?: AssetImportSettingValue[];
+}
+interface AssetImportSettingsSchema {
+    importer: string;
+    className: string;
+    properties: AssetImportSettingDescriptor[];
+    mutablePaths: string[];
+}
+interface AssetImportSettingsResult {
+    reference: InstanceReference;
+    importer: string;
+    schema: AssetImportSettingsSchema;
+    settings: { [key: string]: AssetImportSettingValue };
+    source: AssetImportSettingsSource;
+}
 interface IAssetTree {
     filesystemPath?: string;
     reference: InstanceReference;
@@ -116,18 +137,44 @@ declare namespace cc_bridge_3x {
         limit?: number
     }): { assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean };
 
-    /** Read bounded normalized generic importer settings and explicit source identity for one asset. */
-    function assetImportSettingsGet(args: { reference: InstanceReference }): {
+    /** Read bounded importer-specific settings, typed property descriptors, and explicit source identity for one asset. */
+    function assetImportSettingsGet(args: { reference: InstanceReference }): AssetImportSettingsResult;
+
+    /** Preflight and set one typed mutable importer property, reimport, and verify read-back. */
+    function assetImportSettingsSet(args: {
         reference: InstanceReference,
-        importer: string,
-        settings: { [key: string]: AssetImportSettingValue },
-        source: AssetImportSettingsSource
+        path: string,
+        value: AssetImportSettingValue
+    }): {
+        changed: boolean,
+        path: string,
+        previous: AssetImportSettingValue,
+        readBack: AssetImportSettingValue,
+        result: AssetImportSettingsResult
     };
 
-    /** Export a deterministic, read-only asset manifest; dependency metadata is present only when Creator exposes it. */
+    /** Assign a platform-aware Creator texture-compression preset and return deterministic reimport evidence. */
+    function assetCompressionConfigure(args: {
+        reference: InstanceReference,
+        presetId: string,
+        platform: "miniGame" | "web" | "ios" | "android" | "pc"
+    }): {
+        changed: boolean,
+        reference: InstanceReference,
+        presetId: string,
+        previousPresetId: string | null,
+        platform: "miniGame" | "web" | "ios" | "android" | "pc",
+        formats: { format: string, quality: string | number }[],
+        sourceSha256: string,
+        generatedOutputs: { extension: string, path: string, bytes: number, sha256: string }[],
+        buildArtifactVerified: boolean
+    };
+
+    /** Export a bounded deterministic asset manifest with dependencies, source hashes, and explicit exclusions. */
     function assetManifestExport(args: {
         assetPath?: string,
-        maxAssets?: number
+        maxAssets?: number,
+        maxFileBytes?: number
     }): {
         assets: {
             uuid: string,
@@ -136,22 +183,42 @@ declare namespace cc_bridge_3x {
             importer: string,
             name: string,
             isSubAsset: boolean,
-            dependencies?: string[]
+            dependencies: string[],
+            dependenciesTruncated: boolean,
+            bytes: number,
+            sha256: string
+        }[],
+        exclusions: {
+            uuid: string,
+            url: string,
+            reason: "source-file-unavailable" | "source-file-too-large" | "hash-failed",
+            bytes?: number,
+            maxFileBytes?: number
         }[],
         truncated: boolean,
-        count: number
+        count: number,
+        total: number
     };
 
-    /** Probe bounded asset usage against the currently open scene only; excludes closed scenes, prefabs, serialized asset-to-asset references, and dynamic loads. */
+    /** Analyze project-wide serialized asset reachability from scene/prefab roots with bounded graph evidence. */
     function assetUsageAnalyze(args: {
         assetPath?: string,
-        maxAssets?: number
+        maxAssets?: number,
+        maxGraphAssets?: number,
+        rootReferences?: InstanceReference[]
     }): {
+        graphVersion: "v4",
+        complete: boolean,
+        roots: { id: string, url: string, type?: string }[],
+        graphAssets: number,
+        graphEdges: number,
+        graphTruncated: boolean,
+        exclusions: { uuid: string, url: string, reason: string }[],
         candidates: {
             uuid: string,
             url: string,
             type?: string,
-            confidence: "scene-unreferenced",
+            confidence: "serialized-project-unreachable",
             referenceCount: number,
             references: InstanceReference[]
         }[],
@@ -160,13 +227,11 @@ declare namespace cc_bridge_3x {
             uuid: string,
             url: string,
             type?: string,
-            status: "referenced" | "unreferenced" | "unknown",
-            referenceCount?: number,
-            references: InstanceReference[],
-            truncated: boolean,
-            error?: string
+            status: "root-reachable" | "project-unreachable",
+            root: boolean,
+            referenceCount: number,
+            references: InstanceReference[]
         }[],
-        referenceQueryCaveat: string,
         dynamicLoadCaveat: string
     };
 
@@ -200,6 +265,71 @@ declare namespace cc_bridge_3x {
         meta?: any,
         options?: { overwrite?: boolean, rename?: boolean }
     }): { reference: InstanceReference };
+
+    /** Import a bounded batch and return an outcome for every item. */
+    function assetBatchImport(args: {
+        items: {
+            sourceFilesystemPath: string,
+            targetAssetPath: string,
+            imageType?: "raw" | "texture" | "normal-map" | "sprite-frame" | "texture-cube",
+            options?: { overwrite?: boolean, rename?: boolean }
+        }[]
+    }): {
+        outcomes: { index: number, ok: boolean, reference?: InstanceReference, error?: { code: string, status: number, message: string } }[],
+        succeeded: number,
+        failed: number,
+        partial: boolean
+    };
+
+    /** Apply a bounded batch of asset operations with per-item recovery evidence. */
+    function assetBatchOperate(args: {
+        items: {
+            operation: "move" | "copy" | "delete" | "open" | "refresh" | "reimport" | "save_meta",
+            reference: InstanceReference,
+            targetAssetPath?: string,
+            meta?: any,
+            options?: { overwrite?: boolean, rename?: boolean }
+        }[]
+    }): {
+        outcomes: { index: number, ok: boolean, reference?: InstanceReference, error?: { code: string, status: number, message: string } }[],
+        succeeded: number,
+        failed: number,
+        partial: boolean
+    };
+
+    /** Audit all bounded project scenes for serialized UUID references missing from the asset database. */
+    function assetMissingReferenceAudit(args?: {
+        assetPath?: string,
+        maxScenes?: number,
+        maxReferences?: number
+    }): {
+        complete: boolean,
+        scannedScenes: number,
+        missingReferences: { source: { uuid: string, url: string }, referenceId: string, line: number }[],
+        exclusions: { uuid: string, url: string, reason: string, bytes?: number, error?: string }[],
+        truncated: boolean,
+        dynamicLoadCaveat: string
+    };
+
+    function referenceImageManage(args: { operation: "inspect" | "set" | "clear", reference?: InstanceReference, imagePath?: string }): { operation: string, supported: boolean, persisted: boolean, imagePath?: string | null, reference?: InstanceReference | null, result?: unknown };
+    function prefabOverrideDiff(args: { reference: InstanceReference, baselineReference: InstanceReference }): { equal: boolean, changes: { path: string, identity: string, before: unknown, after: unknown }[], source: unknown, baseline: unknown };
+    function prefabReferenceAudit(args: { reference: InstanceReference, maxReferences?: number }): { valid: boolean, nestedPrefabs: unknown[], missingReferences: unknown[], source: unknown };
+    function sceneReferenceValidate(args: { reference: InstanceReference, maxReferences?: number }): { valid: boolean, references: string[], missingReferences: string[], source: unknown };
+    function prefabInstantiate(args: { reference: InstanceReference, parentReference?: InstanceReference, name?: string }): { reference: InstanceReference, source: { id: string, url: string }, persisted: boolean, readBack?: unknown };
+    function prefabApplyOverrides(args: { reference: InstanceReference }): { reference: InstanceReference, operation: "apply", persisted: boolean, readBack: unknown, sourceReadBack: { id: string, url: string, beforeSha256: string, afterSha256: string } };
+    /** Creator 3.7.3 supports full restore only; non-empty paths rejects with UNSUPPORTED_SELECTIVE_REVERT. */
+    function prefabRevertOverrides(args: { reference: InstanceReference, paths?: string[] }): { reference: InstanceReference, operation: "revert", persisted: boolean, readBack: unknown, sourceReadBack: { id: string, url: string, beforeSha256: string, afterSha256: string } };
+    function tilemapInspect(args: { reference: InstanceReference, maxLayers?: number }): { reference: InstanceReference, format: "tmx", map: Record<string, unknown>, tilesets: Record<string, unknown>[], layers: Array<{ id: string, name: string, width: number, height: number, visible: boolean, opacity: number, offsetX: number, offsetY: number, tileCount: number }>, objectGroups: Array<{ id: string, name: string, objects: Array<{ id: string, name: string, type: string, x: number, y: number, width: number, height: number }> }>, count: number };
+    function tilemapLayerEdit(args: { reference: InstanceReference, path: `layers.${string}.${string}`, value: unknown }): { reference: InstanceReference, path: string, changed: boolean, previous: unknown, readBack: unknown, persisted: boolean, source: { url: string, beforeSha256: string, afterSha256: string } };
+    function tilemapObjectEdit(args: { reference: InstanceReference, path: `objects.${string}.${string}`, value: unknown }): { reference: InstanceReference, path: string, changed: boolean, previous: unknown, readBack: unknown, persisted: boolean, source: { url: string, beforeSha256: string, afterSha256: string } };
+    function tilemapValidate(args: { reference: InstanceReference }): { reference: InstanceReference, valid: boolean, missingReferences: { id: string }[], checkedNodes: number, source: { url: string, sha256: string, references: string[] } };
+    function spriteAtlasConfigure(args: { reference: InstanceReference, presetId: "default" | "MaxRects" | "Basic", maxWidth?: number, maxHeight?: number }): { reference: InstanceReference, presetId: string, changed: boolean, operations: unknown[], generatedOutputs: { path: string, bytes: number, sha256: string }[], sourceSha256: string, settings: Record<string, unknown>, persisted: boolean };
+    function uiAccessibilityAudit(args: { root?: InstanceReference, rootPath?: string, maxNodes?: number, maxIssues?: number }): { complete?: boolean, valid?: boolean, truncated?: boolean, checkedNodes?: number, root?: { uuid: string, path: string, name: string }, nodes?: unknown[], issues?: unknown[], truncation?: unknown[], error?: { code: string, message: string, evidence: Record<string, unknown> } };
+    function uiResponsivePreview(args: { resolutions: { width: number, height: number }[], reference?: InstanceReference }): { supported: boolean, comparisons: Array<{ resolution: { width: number, height: number }, scale: { x: number, y: number }, projectedRects: unknown[], evidence: string }>, stable: boolean, caveat: string };
+    /** Rejects with UNSUPPORTED_PREVIEW_IPC on Creator 3.7.3 because preview:set-resolution is not exposed. */
+    function previewResolutionSet(args: { width: number, height: number }): { width: number, height: number, persisted: boolean, supported: boolean, readBack?: unknown };
+    function editorUndoTransactionProbe(): { supported: boolean, boundaries: string[], clean: boolean };
+    function broadcastObserve(args: { topic: "cc-bridge-3x:probe" | "scene:change" | "asset-db:change" }): { topic: string, supported: boolean, observed: boolean, lifecycle: string[], event: unknown, eventBytes: number, truncated: boolean, retainedListener: false };
 
     /** Get list of globally available component types. */
     function nodeGetAvailableComponentTypes(args: {

@@ -60,6 +60,7 @@ async function ensureSceneComponents(uuid: string, components: string[]): Promis
     }
 }
 
+
 export class UiTools {
 
     @utcpTool(
@@ -603,14 +604,45 @@ export class UiTools {
     async uiLayoutApply(args: { reference: IInstanceReference, position?: { x?: number, y?: number, z?: number }, size?: { width: number, height: number }, anchor?: { x: number, y: number }, active?: boolean }): Promise<{ success: true, layout: UiLayoutNode | null }> {
         const node = await this.queryNodeDump(args.reference.id);
         if (!node) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: `UI node ${args.reference.id} not found` });
-        if (args.position) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: 'position', dump: { value: { x: args.position.x ?? 0, y: args.position.y ?? 0, z: args.position.z ?? 0 }, type: 'cc.Vec3' } });
         const componentPath = await this.componentPath(args.reference.id, 'cc.UITransform');
-        if (args.size) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `${componentPath}._contentSize`, dump: { value: args.size, type: 'cc.Size' } });
-        if (args.anchor) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `${componentPath}._anchorPoint`, dump: { value: args.anchor, type: 'cc.Vec2' } });
-        if (args.active !== undefined) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: 'active', dump: { value: args.active, type: 'Boolean' } });
-        await Editor.Message.request('scene', 'snapshot');
-        const layout = (await this.inspectLayout(args.reference.id, 1)).nodes[0] ?? null;
-        return { success: true, layout };
+        const changes: Array<{ path: string, dump: any, original: any }> = [];
+        if (args.position) changes.push({ path: 'position', dump: { value: { x: args.position.x ?? 0, y: args.position.y ?? 0, z: args.position.z ?? 0 }, type: 'cc.Vec3' }, original: node.position });
+        if (args.size) changes.push({ path: `${componentPath}._contentSize`, dump: { value: args.size, type: 'cc.Size' }, original: { value: node.__comps__?.find((component: any) => component.type === 'cc.UITransform')?.value?.contentSize, type: 'cc.Size' } });
+        if (args.anchor) changes.push({ path: `${componentPath}._anchorPoint`, dump: { value: args.anchor, type: 'cc.Vec2' }, original: { value: node.__comps__?.find((component: any) => component.type === 'cc.UITransform')?.value?.anchorPoint, type: 'cc.Vec2' } });
+        if (args.active !== undefined) changes.push({ path: 'active', dump: { value: args.active, type: 'Boolean' }, original: node.active });
+        if (changes.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutApply requires at least one layout change' });
+        if (changes.some((change) => !change.original || typeof change.original !== 'object' || !Object.prototype.hasOwnProperty.call(change.original, 'value'))) {
+            throw new ToolError({ code: 'PRECONDITION_FAILED', status: 422, message: 'uiLayoutApply cannot capture a complete rollback snapshot for the requested fields' });
+        }
+        const applied: typeof changes = [];
+        try {
+            for (const change of changes) {
+                const result = await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: change.path, dump: change.dump });
+                if (result === false) throw new Error(`Creator refused ${change.path}`);
+                applied.push(change);
+            }
+            const layout = (await this.inspectLayout(args.reference.id, 1)).nodes[0] ?? null;
+            if (!layout) throw new Error('layout read-back unavailable');
+            await Editor.Message.request('scene', 'snapshot');
+            return { success: true, layout };
+        } catch (error) {
+            try {
+                for (const change of [...applied].reverse()) {
+                    const rollback = await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: change.path, dump: change.original });
+                    if (rollback === false) throw new Error(`Creator refused rollback of ${change.path}`);
+                }
+                await Editor.Message.request('scene', 'snapshot-abort');
+            } catch (rollbackError) {
+                throw new ToolError({
+                    code: 'ROLLBACK_FAILED',
+                    status: 500,
+                    message: `uiLayoutApply failed and node ${args.reference.id} could not be restored`,
+                    details: { cause: error instanceof Error ? error.message : String(error), rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) },
+                    recovery: `Inspect node ${args.reference.id} and restore its layout before retrying.`,
+                });
+            }
+            throw new ToolError({ code: 'MUTATION_FAILED', status: 500, message: `uiLayoutApply failed for node ${args.reference.id}`, details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'The applied fields were rolled back; inspect the node before retrying.' });
+        }
     }
 
 
@@ -861,7 +893,10 @@ export class UiTools {
         await Editor.Message.request('scene', 'create-component', { uuid: content.reference.id, component: 'cc.Layout' });
         await Editor.Message.request('scene', 'snapshot');
         const rootDump = await this.queryNodeDump(root.reference.id);
-        if (!rootDump || !(await this.findNamedChild(rootDump, 'Viewport')) || !((await this.queryNodeDump(viewport.reference.id))?.children ?? []).some((c) => (c.uuid || c.value?.uuid) === content.reference.id)) {
+        const viewportDump = await this.queryNodeDump(viewport.reference.id);
+        const viewportUuid = await this.findNamedChild(rootDump, 'Viewport');
+        const contentUuid = viewportDump?.children?.map((child) => this.childUuid(child)).find((uuid) => uuid === content.reference.id);
+        if (!rootDump || !viewportUuid || viewportUuid !== viewport.reference.id || contentUuid !== content.reference.id) {
             throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: 'uiCreateScrollView hierarchy verification failed' });
         }
         return { reference: root.reference, viewport: viewport.reference, content: content.reference };
@@ -1074,25 +1109,28 @@ export class UiTools {
         }
         return { nodes, truncated };
     }
- 
-
     private async queryNodeDump(uuid: string): Promise<SceneNodeDump | null> {
         return await Editor.Message.request('scene', 'query-node', uuid) as unknown as SceneNodeDump | null;
     }
-
     private async componentPath(uuid: string, componentType: string): Promise<string> {
-        const node = await this.queryNodeDump(uuid);
-        const index = node?.__comps__?.findIndex((component) => component.type === componentType) ?? -1;
-        if (index < 0) {
-            throw new Error(`Component ${componentType} not found on node ${uuid}`);
+        for (let attempt = 0; attempt < 5; attempt++) {
+            const node = await this.queryNodeDump(uuid);
+            const index = node?.__comps__?.findIndex((component) => component.type === componentType) ?? -1;
+            if (index >= 0) return `__comps__.${index}`;
+            if (attempt < 4) {
+                await new Promise<void>((resolve) => setTimeout(resolve, 40));
+            }
         }
-        return `__comps__.${index}`;
+        throw new Error(`Component ${componentType} not found on node ${uuid}`);
     }
-
     private async findNamedChild(node: SceneNodeDump | null, name: string): Promise<string | null> {
         for (const child of node?.children ?? []) {
-            const uuid = child.uuid || child.value?.uuid;
-            if (!uuid) continue;
+            let uuid: string;
+            try {
+                uuid = this.childUuid(child);
+            } catch {
+                continue;
+            }
             const childDump = await this.queryNodeDump(uuid);
             const childName = typeof childDump?.name === 'string' ? childDump.name : childDump?.name?.value;
             if (childName === name) return uuid;

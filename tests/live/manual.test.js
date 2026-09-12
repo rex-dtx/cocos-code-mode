@@ -14,12 +14,16 @@ describe('live: manual & server — migrated from scripts/smoke-utcp.js', () => 
     return false;
   }
 
-  it('GET /utcp has 117 tools and strict keys', async (t) => {
+  it('GET /utcp matches the source inventory and has strict keys', async (t) => {
     if (skipIfDown(t)) return;
     const r = await getJson('/utcp');
     assert.equal(r.ok, true, `GET /utcp -> ${r.status}`);
     assert.deepEqual(Object.keys(r.body).sort(), ['manual_version', 'tools', 'utcp_version']);
-    assert.equal(r.body.tools.length, 117, `tools.length expected 117 got ${r.body.tools.length}`);
+    const { execFileSync } = require('node:child_process');
+    const root = path.resolve(__dirname, '../..');
+    const inventory = JSON.parse(execFileSync(process.execPath, ['scripts/audit-tool-portfolio.js'], { cwd: root, encoding: 'utf8' }));
+    assert.equal(r.body.tools.length, inventory.registeredToolCount);
+    assert.equal(new Set(r.body.tools.map((tool) => tool.name)).size, r.body.tools.length);
   });
 
   it('config has ccb3x template, no duplicate ccb* URL', async (t) => {
