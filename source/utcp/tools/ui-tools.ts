@@ -9,6 +9,7 @@ import { isCandidateRequest } from '../../ui-layout-validate';
 import type { UiLayoutValidateRequest, UiLayoutValidateResult } from '../../ui-layout-validate';
 import type { UiAccessibilityAuditRequest, UiAccessibilityAuditResult } from '../../ui-accessibility-audit';
 import { calculateLayoutAlignment, LayoutAlignAxis, LayoutAlignEdge, LayoutAlignmentUpdate, LayoutAlignOperation } from '../../ui-layout-align';
+import { isUiLayoutGeometry } from '../../ui-layout-inspect';
 
 // UI prefab paths — Cocos Creator 3.x internal UI prefabs
 const UI_PREFABS: Record<string, string> = {
@@ -535,7 +536,7 @@ export class UiTools {
                 reference: {
                     type: 'object',
                     additionalProperties: false,
-                    properties: { id: { type: 'string', minLength: 1 }, type: { type: 'string', const: 'cc.Node' } },
+                    properties: { id: { type: 'string', minLength: 1, maxLength: 256, pattern: '\\S' }, type: { type: 'string', const: 'cc.Node' } },
                     required: ['id'],
                 },
                 maxNodes: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
@@ -547,6 +548,7 @@ export class UiTools {
             properties: {
                 nodes: {
                     type: 'array',
+                    maxItems: 128,
                     items: {
                         type: 'object',
                         additionalProperties: false,
@@ -554,15 +556,15 @@ export class UiTools {
                             reference: {
                                 type: 'object',
                                 additionalProperties: false,
-                                properties: { id: { type: 'string' }, type: { type: 'string', const: 'cc.Node' } },
+                                properties: { id: { type: 'string', minLength: 1, maxLength: 256, pattern: '\\S' }, type: { type: 'string', const: 'cc.Node' } },
                                 required: ['id', 'type'],
                             },
                             name: { type: 'string' },
                             active: { type: 'boolean' },
                             position: { type: 'object', additionalProperties: false, properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'] },
-                            size: { type: ['object', 'null'] },
-                            anchor: { type: ['object', 'null'] },
-                            worldRect: { type: ['object', 'null'] },
+                            size: { type: ['object', 'null'], additionalProperties: false, properties: { width: { type: 'number' }, height: { type: 'number' } }, required: ['width', 'height'] },
+                            anchor: { type: ['object', 'null'], additionalProperties: false, properties: { x: { type: 'number' }, y: { type: 'number' } }, required: ['x', 'y'] },
+                            worldRect: { type: ['object', 'null'], additionalProperties: false, properties: { x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number', minimum: 0 }, height: { type: 'number', minimum: 0 } }, required: ['x', 'y', 'width', 'height'] },
                             components: { type: 'array', items: { type: 'string' } },
                         },
                         required: ['reference', 'name', 'active', 'position', 'size', 'anchor', 'worldRect', 'components'],
@@ -782,7 +784,7 @@ export class UiTools {
         const issues: string[] = [];
         for (const item of inspected.nodes) {
             if (!item.size) issues.push(`${item.reference.id}: missing cc.UITransform`);
-            if (item.worldRect && (item.worldRect.width < 0 || item.worldRect.height < 0)) issues.push(`${item.reference.id}: negative layout size`);
+            if (item.size && (item.size.width < 0 || item.size.height < 0)) issues.push(`${item.reference.id}: negative layout size`);
         }
         return { valid: issues.length === 0 && !inspected.truncated, issues, checkedNodes: inspected.nodes.length };
     }
@@ -858,9 +860,9 @@ export class UiTools {
             }
             const typedReference = reference as Record<string, unknown>;
             if (Object.keys(typedReference).some((key) => key !== 'id' && key !== 'type')
-                || typeof typedReference.id !== 'string' || typedReference.id.trim().length === 0
-                || typedReference.type !== 'cc.Node') {
-                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect reference must contain only a non-empty id and type cc.Node.' });
+                || typeof typedReference.id !== 'string' || typedReference.id.trim().length === 0 || typedReference.id.length > 256
+                || (typedReference.type !== undefined && typedReference.type !== 'cc.Node')) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'uiLayoutInspect reference must contain a non-empty id of at most 256 characters and optional type cc.Node.' });
             }
             rootUuid = typedReference.id;
         }
@@ -894,7 +896,7 @@ export class UiTools {
 
     private normalizeLayoutDump(id: string, dump: unknown, strict = true): SceneNodeDump {
         if (!strict) return dump as SceneNodeDump;
-        if (!this.isRecord(dump) || typeof dump.uuid !== 'string' || dump.uuid.trim().length === 0 || dump.uuid !== id) {
+        if (!this.isRecord(dump) || this.unwrapValue(dump.uuid) !== id) {
             throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: `uiLayoutInspect received a malformed node payload for ${id}.` });
         }
         if (dump.children !== undefined && !Array.isArray(dump.children)) {
@@ -907,6 +909,7 @@ export class UiTools {
     }
 
     private async inspectLayout(rootUuid: string | undefined, maxNodes = 64, strict = false): Promise<{ nodes: UiLayoutNode[], truncated: boolean }> {
+        this.validateUiLayoutInspectArgs({ reference: rootUuid === undefined ? undefined : { id: rootUuid }, maxNodes });
         let tree: unknown;
         try {
             tree = rootUuid
@@ -925,14 +928,14 @@ export class UiTools {
         if (tree === null || tree === undefined) {
             throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'Scene subtree not found' });
         }
-        if (strict && (!this.isRecord(tree) || typeof tree.uuid !== 'string' || tree.uuid.trim().length === 0 || (tree.children !== undefined && !Array.isArray(tree.children)))) {
+        if (!this.isRecord(tree) || typeof tree.uuid !== 'string' || tree.uuid.trim().length === 0 || (rootUuid !== undefined && tree.uuid !== rootUuid) || (tree.children !== undefined && !Array.isArray(tree.children))) {
             throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: 'uiLayoutInspect received a malformed scene hierarchy from Creator.' });
         }
 
         const nodes: UiLayoutNode[] = [];
         const visited = new Set<string>();
         let truncated = false;
-        const visit = async (id: string, parentWorld = { x: 0, y: 0 }, orderedChildren?: unknown[]): Promise<void> => {
+        const visit = async (id: string, orderedChildren?: unknown[]): Promise<void> => {
             if (visited.has(id)) return;
             if (nodes.length >= maxNodes) {
                 truncated = true;
@@ -961,31 +964,17 @@ export class UiTools {
             const x = this.finiteNumber(pos.x, 0);
             const y = this.finiteNumber(pos.y, 0);
             const z = this.finiteNumber(pos.z, 0);
-            const transform = dump.__comps__?.find((component) => this.isRecord(component) && component.type === 'cc.UITransform') as { type?: string, value?: Record<string, unknown> } | undefined;
-            const value = transform ? this.unwrapValue(transform.value) : null;
-            const transformValue = this.isRecord(value) ? value : null;
-            const sizeValue = transformValue ? this.unwrapValue(transformValue.contentSize) ?? this.unwrapValue(transformValue._contentSize) : null;
-            const anchorValue = transformValue ? this.unwrapValue(transformValue.anchorPoint) ?? this.unwrapValue(transformValue._anchorPoint) : null;
-            const sizeRecord = this.isRecord(sizeValue) ? sizeValue : null;
-            const anchorRecord = this.isRecord(anchorValue) ? anchorValue : null;
-            const width = this.finiteNumber(sizeRecord?.width, Number.NaN);
-            const height = this.finiteNumber(sizeRecord?.height, Number.NaN);
-            const anchorX = this.finiteNumber(anchorRecord?.x, Number.NaN);
-            const anchorY = this.finiteNumber(anchorRecord?.y, Number.NaN);
             const nameValue = typeof dump.name === 'string' ? dump.name : this.isRecord(dump.name) && typeof dump.name.value === 'string' ? dump.name.value : strict ? '' : id;
             const activeValue = this.unwrapValue(dump.active);
             const active = typeof activeValue === 'boolean' ? activeValue : true;
-            const world = { x: parentWorld.x + x, y: parentWorld.y + y };
-            const hasSize = Number.isFinite(width) && Number.isFinite(height);
-            const hasAnchor = Number.isFinite(anchorX) && Number.isFinite(anchorY);
             nodes.push({
                 reference: { id, type: 'cc.Node' },
                 name: nameValue,
                 active,
                 position: { x, y, z },
-                size: hasSize ? { width, height } : null,
-                anchor: hasAnchor ? { x: anchorX, y: anchorY } : null,
-                worldRect: hasSize ? { x: world.x - width * (hasAnchor ? anchorX : 0.5), y: world.y - height * (hasAnchor ? anchorY : 0.5), width, height } : null,
+                size: null,
+                anchor: null,
+                worldRect: null,
                 components: (dump.__comps__ ?? []).filter((component): component is { type?: string } => this.isRecord(component)).map((component) => component.type).filter((type): type is string => typeof type === 'string'),
             });
 
@@ -1001,11 +990,35 @@ export class UiTools {
                     throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: `uiLayoutInspect received malformed hierarchy children for node ${childId}.` });
                 }
                 const childChildren = this.isRecord(child) && Array.isArray(child.children) ? child.children : undefined;
-                await visit(childId, world, childChildren);
+                await visit(childId, childChildren);
             }
         };
 
-        await visit(tree.uuid, { x: 0, y: 0 }, tree.children);
+        const sceneTree = tree as { uuid: string, children?: unknown[] };
+        await visit(sceneTree.uuid, sceneTree.children);
+        let geometry: unknown;
+        try {
+            geometry = await Editor.Message.request('scene', 'execute-scene-script', {
+                name: 'cc-bridge-3x', method: 'uiLayoutInspectGeometry', args: [{ nodeIds: nodes.map((node) => node.reference.id) }],
+            });
+        } catch (error: unknown) {
+            throw new ToolError({ code: 'UI_LAYOUT_QUERY_FAILED', status: 502, message: 'Could not read live UI geometry.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        if (this.isRecord(geometry) && this.isRecord(geometry.error) && typeof geometry.error.code === 'string' && typeof geometry.error.message === 'string') {
+            throw new ToolError({ code: geometry.error.code, status: geometry.error.code === 'NOT_FOUND' ? 404 : 502, message: geometry.error.message });
+        }
+        if (!this.isRecord(geometry) || !Array.isArray(geometry.nodes) || geometry.nodes.length !== nodes.length) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: 'Creator returned an incomplete live geometry inventory.' });
+        }
+        for (let index = 0; index < nodes.length; index++) {
+            const live = geometry.nodes[index];
+            if (!isUiLayoutGeometry(live, nodes[index].reference.id)) {
+                throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502, message: 'Creator returned malformed or mismatched live geometry.' });
+            }
+            nodes[index].size = live.size === null ? null : { width: live.size.width, height: live.size.height };
+            nodes[index].anchor = live.anchor === null ? null : { x: live.anchor.x, y: live.anchor.y };
+            nodes[index].worldRect = live.worldRect === null ? null : { x: live.worldRect.x, y: live.worldRect.y, width: live.worldRect.width, height: live.worldRect.height };
+        }
         return { nodes, truncated };
     }
  

@@ -96,7 +96,7 @@ describe('physics3dCreateJoint', () => {
     const contract = source.slice(start, end);
     assert.match(contract, /additionalProperties: false/);
     assert.match(contract, /enum: \['builtin', 'cannon', 'physx'\]/);
-    assert.match(contract, /enum: \['fixed', 'hinge', 'pointToPoint'\]/);
+    assert.match(contract, /enum: \['fixed', 'hinge', 'pointToPoint', 'distance'\]/);
     assert.doesNotMatch(contract, /executeJavascript|execute-scene-script|Editor\.Panel/);
   });
 });

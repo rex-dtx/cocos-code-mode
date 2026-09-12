@@ -93,23 +93,89 @@ export function normalizeBuildDiagnostic(value: unknown): BuildDiagnostic | null
     };
 }
 
-export function normalizeBuildDiagnostics(raw: unknown): { available: boolean, entries: BuildDiagnostic[] } {
-    const values = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(/\r?\n/).filter((line) => line.trim()) : [];
-    return { available: Array.isArray(raw) || typeof raw === 'string', entries: values.map(normalizeBuildDiagnostic).filter((entry): entry is BuildDiagnostic => !!entry) };
+function* normalizeBuildDiagnostics(raw: unknown): Generator<BuildDiagnostic> {
+    if (Array.isArray(raw)) {
+        for (const value of raw) {
+            const entry = normalizeBuildDiagnostic(value);
+            if (entry) yield entry;
+        }
+    } else if (typeof raw === 'string') {
+        const lines = /[^\n]+/g;
+        let match: RegExpExecArray | null;
+        while ((match = lines.exec(raw)) !== null) {
+            const entry = normalizeBuildDiagnostic(match[0]);
+            if (entry) yield entry;
+        }
+    }
 }
 
-function boundedDiagnostics(entries: BuildDiagnostic[], maxEntries: number, maxBytes: number): { entries: BuildDiagnostic[], truncated: boolean } {
-    const bounded: BuildDiagnostic[] = [];
-    let bytes = 2;
-    for (const entry of entries) {
-        if (bounded.length >= maxEntries) return { entries: bounded, truncated: true };
-        const entryBytes = Buffer.byteLength(JSON.stringify(entry), 'utf8');
-        const nextBytes = bytes + (bounded.length ? 1 : 0) + entryBytes;
-        if (nextBytes > maxBytes) return { entries: bounded, truncated: true };
-        bounded.push(entry);
-        bytes = nextBytes;
+function boundedBuildLog(task: IBuildTaskSummary, raw: unknown, maxEntries: number, maxBytes: number): BuildLogInspectResult {
+    const result: BuildLogInspectResult = {
+        available: Array.isArray(raw) || typeof raw === 'string',
+        terminal: BUILD_TERMINAL_STATES[task.state.toLowerCase()] === true,
+        state: task.state,
+        progress: task.progress,
+        task: { id: task.id, progress: task.progress, state: task.state },
+        entries: [],
+        count: 0,
+        truncated: false,
+    };
+    let bytes = Buffer.byteLength(JSON.stringify(result), 'utf8');
+    // true is one byte shorter than false; only omitted data may set truncated.
+    if (bytes - 1 > maxBytes) throw new ToolError({
+        code: 'BUILD_LOG_RESPONSE_TOO_LARGE',
+        status: 422,
+        message: 'The required build task identity and state exceed maxBytes.',
+        details: { maxBytes },
+        recovery: 'Increase maxBytes within its supported range.',
+    });
+    const markTruncated = () => {
+        if (!result.truncated) {
+            result.truncated = true;
+            bytes--;
+        }
+    };
+    const optionalKeys = ['message', 'time', 'stage', 'dirty', 'name', 'platform', 'buildPath'] as const;
+    for (const key of optionalKeys) {
+        const value = task[key];
+        if (value === undefined) continue;
+        if (typeof value !== (key === 'dirty' ? 'boolean' : 'string')) {
+            markTruncated();
+            continue;
+        }
+        // Replace the fragment's braces with the comma joining the existing task.
+        const extraBytes = Buffer.byteLength(JSON.stringify({ [key]: value }), 'utf8') - 1;
+        if (bytes + extraBytes > maxBytes) {
+            markTruncated();
+            continue;
+        }
+        Object.assign(result.task, { [key]: value });
+        bytes += extraBytes;
     }
-    return { entries: bounded, truncated: false };
+    for (const entry of normalizeBuildDiagnostics(raw)) {
+        if (result.count >= maxEntries) {
+            markTruncated();
+            break;
+        }
+        const nextCount = result.count + 1;
+        const extraBytes = Buffer.byteLength(JSON.stringify(entry), 'utf8')
+            + (result.count ? 1 : 0) + String(nextCount).length - String(result.count).length;
+        if (bytes + extraBytes > maxBytes) {
+            markTruncated();
+            break;
+        }
+        result.entries.push(entry);
+        result.count = nextCount;
+        bytes += extraBytes;
+    }
+    if (bytes > maxBytes) throw new ToolError({
+        code: 'BUILD_LOG_RESPONSE_TOO_LARGE',
+        status: 422,
+        message: 'The required build task identity and state exceed maxBytes.',
+        details: { maxBytes },
+        recovery: 'Increase maxBytes within its supported range.',
+    });
+    return result;
 }
 
 const BUILD_LOG_DEFAULT_ENTRIES = 64;
@@ -266,7 +332,7 @@ export class BuildTools {
         properties: {
             taskId: { type: ['string', 'integer'] },
             maxEntries: { type: 'integer', minimum: 1, maximum: BUILD_LOG_MAX_ENTRIES, default: BUILD_LOG_DEFAULT_ENTRIES },
-            maxBytes: { type: 'integer', minimum: 256, maximum: BUILD_LOG_MAX_BYTES, default: BUILD_LOG_DEFAULT_BYTES },
+            maxBytes: { type: 'integer', minimum: 256, maximum: BUILD_LOG_MAX_BYTES, default: BUILD_LOG_DEFAULT_BYTES, description: 'Maximum UTF-8 bytes of the entire serialized successful response, including task metadata. Oversized optional fields and diagnostics are omitted with truncated=true; required identity/state that cannot fit causes a typed error.' },
         },
         required: ['taskId'],
     }, {
@@ -287,6 +353,17 @@ export class BuildTools {
     async buildLogInspect(args: { taskId: string | number, maxEntries?: number, maxBytes?: number }): Promise<BuildLogInspectResult> {
         const taskId = String(args.taskId ?? '');
         if (!taskId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'buildLogInspect requires taskId', recovery: 'Provide a Creator builder task id.' });
+        const maxEntries = args.maxEntries === undefined ? BUILD_LOG_DEFAULT_ENTRIES : args.maxEntries;
+        const maxBytes = args.maxBytes === undefined ? BUILD_LOG_DEFAULT_BYTES : args.maxBytes;
+        if (!Number.isInteger(maxEntries) || maxEntries < 1 || maxEntries > BUILD_LOG_MAX_ENTRIES ||
+            !Number.isInteger(maxBytes) || maxBytes < 256 || maxBytes > BUILD_LOG_MAX_BYTES) {
+            throw new ToolError({
+                code: 'INVALID_ARGUMENT',
+                status: 400,
+                message: 'maxEntries and maxBytes must be integers within their supported ranges.',
+                recovery: `Use maxEntries from 1 to ${BUILD_LOG_MAX_ENTRIES} and maxBytes from 256 to ${BUILD_LOG_MAX_BYTES}.`,
+            });
+        }
         let item: unknown;
         try {
             item = await Editor.Message.request('builder', 'query-task', taskId);
@@ -308,19 +385,6 @@ export class BuildTools {
         }
         const rawCandidates = [taskData.logs, taskData.log, taskData.output, taskData.diagnostics, taskData.detailMessage];
         const raw = rawCandidates.find((candidate) => Array.isArray(candidate) || typeof candidate === 'string');
-        const normalized = normalizeBuildDiagnostics(raw);
-        const maxEntries = Math.min(Math.max(args.maxEntries ?? BUILD_LOG_DEFAULT_ENTRIES, 1), BUILD_LOG_MAX_ENTRIES);
-        const maxBytes = Math.min(Math.max(args.maxBytes ?? BUILD_LOG_DEFAULT_BYTES, 256), BUILD_LOG_MAX_BYTES);
-        const bounded = boundedDiagnostics(normalized.entries, maxEntries, maxBytes);
-        return {
-            available: normalized.available,
-            terminal: BUILD_TERMINAL_STATES[task.state.toLowerCase()] === true,
-            state: task.state,
-            progress: task.progress,
-            task,
-            entries: bounded.entries,
-            count: bounded.entries.length,
-            truncated: bounded.truncated,
-        };
+        return boundedBuildLog(task, raw, maxEntries, maxBytes);
     }
 }

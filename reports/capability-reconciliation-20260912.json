@@ -1,0 +1,1429 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-12T08:46:26.857Z",
+  "status": "local-repairs-live-verified-release-gates-open",
+  "target": {
+    "creator": "3.7.3",
+    "os": "windows-x64",
+    "profile": "full",
+    "projectPath": "G:/_ws/cc-fws/cc30-new-all-in-one"
+  },
+  "compiledBuild": {
+    "commit": "52bede2",
+    "branch": "feat/ccb3x-api-capability-expansion",
+    "dirty": true,
+    "builtAt": "2026-09-12T08:43:19.561Z"
+  },
+  "compiledHashes": {
+    "dist/scene.js": "7b2a57ab675476275b364a631f4e300ca972d4150b0d6757e272b7b8fe17ba9c",
+    "dist/ui-layout-inspect.js": "7305d39f5b97a59a7393f7161f462ebb774b82d3dce3506fbebbf7b779a8a106",
+    "dist/utcp/tools/ui-tools.js": "ec6f8d30913ab38656c801e94ad9d7ac3b2f32ac10b4c4a579996cbf617ef85a",
+    "dist/utcp/tools/build-tools.js": "ece15acf780c02d11b617e678d303977f5ed21b549d3c02e2869a52f76e597a8",
+    "dist/utcp/utcp-server.js": "724e3405a746b452313924bd0236c1a9873d6268f70c53e93dd99111c92e705d"
+  },
+  "verification": {
+    "build": "passed",
+    "focused": {
+      "passed": 33,
+      "failed": 0
+    },
+    "unitSuite": {
+      "passed": 283,
+      "failed": 0,
+      "skipped": 0,
+      "tapArtifact": "artifact://75"
+    },
+    "currentArtifactLive": {
+      "uiGeometry": {
+        "test": "tests/live/ui-layout-inspect.test.js",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "assertions": [
+          "negative parent scale and 90-degree rotation produce expected own-node AABB",
+          "selected subtree includes ancestor transforms",
+          "oversized descendant excluded from own bounds",
+          "required null fields and empty component array survive HTTP",
+          "invalid traversal limit rejected",
+          "read-only query preserves current dirty flag and scene identity",
+          "created fixture root removed in finally"
+        ]
+      },
+      "buildLog": {
+        "positive": {
+          "status": 200,
+          "bytes": 251,
+          "body": {
+            "available": false,
+            "terminal": true,
+            "state": "success",
+            "progress": 1,
+            "task": {
+              "id": "1789015174581",
+              "progress": 1,
+              "state": "success",
+              "message": "9-10-2026 11:41:37 build success in 123077 ms!",
+              "time": "9-10-2026 11:39"
+            },
+            "entries": [],
+            "count": 0,
+            "truncated": true
+          }
+        },
+        "negative": {
+          "status": 400,
+          "bytes": 126,
+          "body": {
+            "error": "Invalid tool input.",
+            "validationErrors": [
+              {
+                "path": "maxBytes",
+                "keyword": "minimum",
+                "message": "Must be at least 256."
+              }
+            ]
+          }
+        },
+        "limitation": "Existing successful task exposes no diagnostics: validates truthful unavailable result and whole-response bound, not available-log normalization live."
+      }
+    },
+    "visualGeometry": "No screenshot; numeric engine-world geometry and actual HTTP contract verified",
+    "qualifiedToolCount": null,
+    "newQualificationCredit": 0
+  },
+  "inventory": {
+    "sourceRegistrations": 136,
+    "lastObservedLiveRegistrations": 136,
+    "lastObservedManualHash": "35d7b653bb0046f1eb6dc32d262c73ae947030997cd3e63d36c32ec9d0c7bbbf",
+    "lastObservedManualBuild": {
+      "version": "2.0.0",
+      "commit": "52bede2",
+      "branch": "feat/ccb3x-api-capability-expansion",
+      "dirty": true,
+      "builtAt": "2026-09-12T08:43:19.561Z"
+    },
+    "minimumQualifiedRequired": 157,
+    "minimumRegistrationShortfall": 21,
+    "approvedCandidateCount": 17,
+    "requiredApprovedCandidateCount": 82,
+    "readyForBulkImplementation": false,
+    "rows": [
+      {
+        "name": "animationEdit",
+        "sourceFile": "source/utcp/tools/animation-tools.ts",
+        "sourceHash": "aa3edfb71206ce7b4f1e78fafd780c0598b810881835f28c56219ec3a1510443",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "7d8b343523e0273534bdc7e333f060490141131994ca9c0ff72d8a2225570d80",
+        "outputsDiscoverySchemaHash": "62d2eced8db5cd784c9102a2cf55820325173aff15ea127c4fd209a994e79701",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "animationQuery",
+        "sourceFile": "source/utcp/tools/animation-tools.ts",
+        "sourceHash": "aa3edfb71206ce7b4f1e78fafd780c0598b810881835f28c56219ec3a1510443",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6d915111b6b7a488592cba9523ec354c5cce83d814246cc4b2e2116dc8eb7383",
+        "outputsDiscoverySchemaHash": "6f0512f65ba6988fc7e8502bd5b656b32039f3eed824229265c3e585a813ab77",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetBatchQuery",
+        "sourceFile": "source/utcp/tools/batch-read-tools.ts",
+        "sourceHash": "235828c31b53da4f66a45d434d1e825e175812d731e7983740908cd31759761f",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "d161aa5c895e2271c8f08d0efbd2bbb02ff583c6f45def2be94a54bab884d351",
+        "outputsDiscoverySchemaHash": "3767aa7cdef9d0ea3c4ba9fd689b6d462abf2ba867d165551b23f01f35e3863e",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetCatalogManifest",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e44ed7c743b842fb606ac8b3ffb9e225a672b4e555bb94efcb968449524e855a",
+        "outputsDiscoverySchemaHash": "48c6a5896b6fd968c89f4f2170c9185bd33ae4b311a55941fd1afa8102f20606",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetCreate",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "c364c5dc5d2b59e07579007a2136d656e53a67797725a45bc6a5c9aed95b4b2d",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetDbQuery",
+        "sourceFile": "source/utcp/tools/material-tools.ts",
+        "sourceHash": "e216c8a5885da02cfd4980893713600a1545cffea7d06eece3ace5db8b969571",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "1e9bd5e8199d2ff96d1f21e0783e572800f133db1d1546b03a3ebb06e5a372f1",
+        "outputsDiscoverySchemaHash": "4ba8d58e2a265445a349013e4b50e586b768b8f8d0eef07a52dd97d8058500b9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetFindReferences",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8713e586765c6d04a9b6070fc0d3e623a4c177d9ed0f0fe542bc82d39f03c926",
+        "outputsDiscoverySchemaHash": "8b8d7ef0bd05bd1204fd4d92fa6f90d24396a954fbf03b0777ac50af953d38ca",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetGetAtPath",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "dad5ea89a090e53889ff1ba313a029c2cb00b305d90822273c935e21e79f929b",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetGetAvailableUrl",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "dad5ea89a090e53889ff1ba313a029c2cb00b305d90822273c935e21e79f929b",
+        "outputsDiscoverySchemaHash": "652e0ae375941bcc358973c0b9a72d9f57fba3368c4f4a47f0464b015bcd5425",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetGetTree",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "d31d8c6d38fc65eb5fb02ccb3c5d4f2770ff0013059b21081c18497705caf7b7",
+        "outputsDiscoverySchemaHash": "f898e3af9290cfeac17c565887f064e1694cd0b7aeeb33103df533009fe751f5",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetImport",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "14e4a51200b4515bd97f1837f5033c98b39b5f2706fb8f427f54aa28b64393be",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetImporterAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "60c0c9cd11ed977f86f134a2955ca5bedde48069f0498f8bc6c8c1876823570c",
+        "outputsDiscoverySchemaHash": "939aeb856158aef4cf80bc82cbdd475216726e2aefe9639eed8e0ef68f6168ab",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetImportSettingsGet",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "ddeaa321d232740165bc4132e5aa94272cece9c47ad4bbdd368b94ba9548063d",
+        "outputsDiscoverySchemaHash": "263b800f4a2ad1bef1256c13a6848edc348ee5ac5fbdefb54f943a3a2dca1e93",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetManifestExport",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6e89fe993e6934cd8ca8114c7066936631178b371a960be2a7ae821f8b9f7d1f",
+        "outputsDiscoverySchemaHash": "beb2b9e2408ea6f2f1ddf315330303609faec7044f7d902afc221b15e77e27a9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetOperate",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6d0efb66d52ee69fa50ea9e9cb26f13821273675037aee6d34dad1d448108cb6",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetQuery",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e100a05689e01da074810983dbd85967a23b8885fa34b9f5239471009c7bd909",
+        "outputsDiscoverySchemaHash": "214981d7f9d1dc8d732bdbe8c6ef9a8830bf01b4d0cdadefa51ebc6b434cb6e2",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetReadContent",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e220a311cc6f3721f927722537bfb42c44c9aa950685ea34064cec6edfeb7522",
+        "outputsDiscoverySchemaHash": "8c43ba22854999872cd764b7b02229e9a6b6238f1beb15a2cfff526866df05d3",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetResolvePath",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "9bbbd6692a4091fd89db06c86530a635f06180f7bdd5cdbd7c5a54581e9055e0",
+        "outputsDiscoverySchemaHash": "63b34b88b2dfb7354f69e0b87d27be9da2e7274f9a453ab1a01adf1081058c56",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetSaveContent",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "3ad38dfbbdcf5f9748965e2df18f5d832a1146b8493decc1488cff5630905de8",
+        "outputsDiscoverySchemaHash": "69ac068152a1c14ed28c9011502f3a2a6721e1827fa6787a35f3c34a6cfcf2af",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "assetUsageAnalyze",
+        "sourceFile": "source/utcp/tools/asset-tools.ts",
+        "sourceHash": "273c2d46e4931b5ee78d07067f1b398335f7500337247c6929ba81fc1d50a876",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "57190ac9f9b8fa1d8b5bd654475958e19a0604a407063795dc9d49ba3070db74",
+        "outputsDiscoverySchemaHash": "823133110672676dc76ebcb116b0de271b4042f986e8409921ace47ef3ebc142",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "audioAssetCompatibilityAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6ac87f0c941e10bbabb514818788f8c51f94c5c56818f6d446b5e0278c1d6e33",
+        "outputsDiscoverySchemaHash": "5614b32d3e9f052c4461d43fd0ea959f24b65e33422b45e2a205729aefde272a",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "audioAssetValidate",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "60c0c9cd11ed977f86f134a2955ca5bedde48069f0498f8bc6c8c1876823570c",
+        "outputsDiscoverySchemaHash": "cc1bc8712d538c0a0991c7d9dba1839f919a61bb32fc23f67cd65bd51cbc15bf",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "audioSourceAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "10600d080656660bc770227133668427f39d08b5e5a87daf350a7572fc139157",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "audioSourceConfigure",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "3a5cdc1e0382f0ad1caf74b5694d0feadd85e3e99b0367bb8c74ce2323eb35fe",
+        "outputsDiscoverySchemaHash": "6328920ad8019d6ed677637515949fa50ecbc30055439fb8b58d44394820b95a",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "audioSourceInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "93e8f304c5f6737e5bb8b44396b884b271299fa61e48cc82e738b117fe1706e8",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "bindButtonClickEvent",
+        "sourceFile": "source/utcp/tools/event-tools.ts",
+        "sourceHash": "4ec12c23718f1d0c75451919d154a1b9335602f1cbc731bc3ab000e216f32df8",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "77358d747f1c9011a30d4a86068bb0fff8fbef2d59b0c7f28eb1eb1f4a1768bb",
+        "outputsDiscoverySchemaHash": "856d11604cb93f12c7156e1ec001ef2f4a91ecb143f164d329c1052483a30374",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "buildArtifactInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "1204d4fd503c76190265a906421695c1be03c53b31a7abc06b1ea924e2ea002d",
+        "outputsDiscoverySchemaHash": "7dc3c7f7e3d5c9d6551955fea6c5249b931de65bf5c25f6c10b9899e03028adc",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "buildLogInspect",
+        "sourceFile": "source/utcp/tools/build-tools.ts",
+        "sourceHash": "ba994b7a33c31852feae64c226d7710d133901c5403f52c5fce7f64a878cea28",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6d9cb046074f9d8a3fd3964dfe0fe948dd72a61267a6d30b4edb90bc985ee826",
+        "outputsDiscoverySchemaHash": "94a76b9e491138eeca9bfec736baab577b219e50b73cf53fe17ab5bac200b461",
+        "currentArtifactQualification": "focused-live-smoke-passed-not-full-qualified"
+      },
+      {
+        "name": "buildManage",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6b03c3811043f71277f22be33d3a184ba48a3d61c6180ef1e1e5929d7497b808",
+        "outputsDiscoverySchemaHash": "b823f47212edb712f7c3b04cd99e661f6e1b0aa26aef8a6effbd5c8a1b0b586d",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "buildOutputAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "176826aba344fd1a327abfd19794c13315f350e3ff2de163f80283e1af2cdb3b",
+        "outputsDiscoverySchemaHash": "3eb08210aa824e165e3587e695ae23318909f7db2383997de4a62053193151de",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "buildPresetAudit",
+        "sourceFile": "source/utcp/tools/build-tools.ts",
+        "sourceHash": "ba994b7a33c31852feae64c226d7710d133901c5403f52c5fce7f64a878cea28",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "7f60f457f382a76a254e012095d852fde9f53a726470b0fc1d5be10b199e81e0",
+        "outputsDiscoverySchemaHash": "1acaa5ea14f148f8ea0c2dd8beccfc3af5ba6f4d067319fda59df68ff104f664",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "buildPresetValidate",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "0e7a72b1a11327fddad3960c3522767cd00b8eb7211e0192cd12469bf91b6437",
+        "outputsDiscoverySchemaHash": "116b10d5b4ff5c5e1a7e2acbc105dada4119bf91ae5de597b462b5b4adf1679d",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "buildTaskWait",
+        "sourceFile": "source/utcp/tools/build-tools.ts",
+        "sourceHash": "ba994b7a33c31852feae64c226d7710d133901c5403f52c5fce7f64a878cea28",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "c579aacef8d9929b03829abc31b559e4b8540c6219a0eabee9b6f4ee4d70294c",
+        "outputsDiscoverySchemaHash": "1c26c7187b097b0865995f34abcdfcf92465b77964ac5a3f76dc036dd0a06f54",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "callComponentMethod",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "dd32dd0eeb537aade97a0565bd9161193c7ac90139c4d3ce8e09134fadaff548",
+        "outputsDiscoverySchemaHash": "bba67f0eac7e69132c0c7bafef8b4affbe0b7ea21a14a93e48a2ed5ecbefe8f1",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "captureEditorScreenshot",
+        "sourceFile": "source/utcp/tools/screenshot-tools.ts",
+        "sourceHash": "97cc72e71e530c85e4e8994e7788ee53af1b39e0e2e5326576376d80d90d06e6",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6bcd85268a029fe84a2729f5bab9b0223d1e0c9cec52280a856d773a97eb4d7e",
+        "outputsDiscoverySchemaHash": "8f454c4c2f17489552b05c0f3bbf8746ca07a8da7042bad5dd5bdf38df123b70",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "captureSceneScreenshot",
+        "sourceFile": "source/utcp/tools/screenshot-tools.ts",
+        "sourceHash": "97cc72e71e530c85e4e8994e7788ee53af1b39e0e2e5326576376d80d90d06e6",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "9c81d5941ca04e8aef0f9d08715bed676d179d18818fa3a594f06868c0622409",
+        "outputsDiscoverySchemaHash": "8f454c4c2f17489552b05c0f3bbf8746ca07a8da7042bad5dd5bdf38df123b70",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "createButton",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "31aaec2a46b2879c2abb997706063dd77e59dd0c5c545193f681e363429615f7",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "createLabel",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "3a8966c15699fdbc9b5e8d195ddc3f0a5a3c5bcf6e51eb1f8af11d9e5a202b55",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "createSprite",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "5b31ce0ecf280966896b73bf664e6a26d8cb964656c7e2f22c0af29a3e8c07d5",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "createUiNode",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "fd35d0d25e879421e59f9c1caecc4c9dae5727cd370f76b0fb3c2b5b3e321480",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "duplicatePrefab",
+        "sourceFile": "source/utcp/tools/prefab-json-tools.ts",
+        "sourceHash": "3b448a9569f1c5201a372b73f7b3f73524177463a98178a0ae30e8e45628d8c8",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f2a7eb15d11cbdef07524735b3867ab2ba436aa86fe9ef4a88041a8e8f0da084",
+        "outputsDiscoverySchemaHash": "2a60833b98534b84200b6eebf8b81e62a1895e81a3e7ac8a399568c4f8ff5a9f",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorAsk",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "b5775906125e0f608a4e6b1cba590aec1a4e9eb30425f79bd845b302bad06b58",
+        "outputsDiscoverySchemaHash": "1446daf69fe04f3f4ffa544789400c33233972e75bca19833b21cf4d482d203d",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorEnvInfo",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "fe81c1b369addfffc7178c0f1d94d75aa8ca9fdbc8b72dc80c0893ab924a4b47",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorGetLogs",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "030a9582a6db36bd882560020e600db82143ef8f3d5a34946cd89ad7f3a7d2e1",
+        "outputsDiscoverySchemaHash": "6935fbb8e8f9c5ae6afee7245aef9130626effbe552c3b93bfcbf66fc8fdce75",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorHistory",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6ce309b6a8a8ad9fa1b04bdcb40c3b646fe3a248fedeb7c5110e3f139574346e",
+        "outputsDiscoverySchemaHash": "e840235aa76ebda04d32f6234d03d420ec374cc08d67cf1a9b0a1fd821de5fa6",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorLog",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f06bfc5dda0c9e3e896d4a7214acae44a6af11d30193817a1269b966a06ddc99",
+        "outputsDiscoverySchemaHash": "af6b3274bfa468b673962cc6dcc9309f77b64bd3fe7c84a441eb6be579fec9da",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorPrompt",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "922fc1548126a84f1003734fdae58db6fffd702da60eecbfa38fb2f4df4636bc",
+        "outputsDiscoverySchemaHash": "315e95e5e00be086847383580b790e3301ddfac6c8565136072cd95e35d2d5c2",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorQuery",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e601a3a2937efcbcb34560f9ae9337febf9578ccc4196f84189b5f41698f5e13",
+        "outputsDiscoverySchemaHash": "c7e9d85f0c0751d0c41f8046a80d612bdcd2b85569d6d1158e1f711d4e1cb5b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorSelect",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "036b6fd5cd8635b229bafa480d1026a17230d59fb445d9e57cb4dafa0f4831d1",
+        "outputsDiscoverySchemaHash": "d670c83d4ad4ea1b6c4b11d32f525da51f09696b2b66177272570a7c459aa92e",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editorViewport",
+        "sourceFile": "source/utcp/tools/editor-tools.ts",
+        "sourceHash": "da60324d2a77730ca37a1ef5f3cbf45dcb9879808c727e4c74431ce31053e180",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f5d75a9a79e7fe118fd19d1da183cd78d7041f15c6a1df082ef75e58f5a5bec4",
+        "outputsDiscoverySchemaHash": "539f69472756447e9c4eda05a47d45bdc44ad1c7eeebbd33e92aff1af3811f6e",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "editPrefabJson",
+        "sourceFile": "source/utcp/tools/prefab-json-tools.ts",
+        "sourceHash": "3b448a9569f1c5201a372b73f7b3f73524177463a98178a0ae30e8e45628d8c8",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "d0e28370a4b5359580eaba6cf021eb14c213c1d5ae9ef90529457314daabeafc",
+        "outputsDiscoverySchemaHash": "ae1bec67c28c5dacff71c974643d46f9a4522c426290133ab6c19c4b4d592f47",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "executeJavascript",
+        "sourceFile": "source/utcp/execute/execute-tool.ts",
+        "sourceHash": "c87e8284564ac67c5b31c60e983d39f3f3640561fbd919ecf6add04ae2dc9db5",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "d7f70420284fbc411061468d354810116ab0df7d2e5a06ffbaf723a13315f07e",
+        "outputsDiscoverySchemaHash": "bba67f0eac7e69132c0c7bafef8b4affbe0b7ea21a14a93e48a2ed5ecbefe8f1",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "findNodes",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "aceca1413be0195947b93c8209cb17c740ba55ba4cd0c2e171ad36256592c588",
+        "outputsDiscoverySchemaHash": "fd498326f091dfa43edbf446f3351af9e37c92602fb4a8dc16b982846c8221f3",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "findNodesByAsset",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "b1ef20edeeead1b3f2d4367cfb20f939cb16e3e6edba2e6536264ed27338672b",
+        "outputsDiscoverySchemaHash": "bfa42c0290a8c0ab8e8510bb63adce216c15506e257a89acec8eb960524d1492",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "findNodesWithMissingAssets",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "5a7e6aa79af509aa35d5c5ca91f5cd0091a4627fcea3f1e58e47681981e28e02",
+        "outputsDiscoverySchemaHash": "bfa42c0290a8c0ab8e8510bb63adce216c15506e257a89acec8eb960524d1492",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "getEditorPreference",
+        "sourceFile": "source/utcp/tools/preference-tools.ts",
+        "sourceHash": "80bb16882c5e28bcded9253526d4993431d17268b19f47769d83bbe8ff6e1aef",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "4f2ff0ab8209c8b623ee6c34356b16b1b51fcd9485dc437a9ebd99420e73e45b",
+        "outputsDiscoverySchemaHash": "f05d13148584c8e1f5a73123cfee6599dab39e49faae41f354dd48f2e63a2eb2",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "getPerformanceSnapshot",
+        "sourceFile": "source/utcp/tools/validation-tools.ts",
+        "sourceHash": "2d975c92bbfcf5ed4ed165af361ac63ea89f022f50a04079150d8c6a78fd6530",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "f10c0dbde5fb77dd2a324bd990976996823046c323f9b93253bf0db4d43a5b91",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "getScriptDiagnosticContext",
+        "sourceFile": "source/utcp/tools/diagnostics-tools.ts",
+        "sourceHash": "48c6c8c56b6e9210b753774ef3c666dfee81e39d39338f4ad8f08d31d1207e56",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "46ba8d0205bc9f115453eb8ba6e4ad2216b4d523c799f0b864e785ed8de96e9d",
+        "outputsDiscoverySchemaHash": "9b8e877082f95bd3f0b7dd4e6c8189648675c3d27fff7055369a9267b97fdc52",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "inspectorGet",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "b409e153d2029096c64ed991741032e36dc20e3430a6f27a8f7b2a625d8e5588",
+        "outputsDiscoverySchemaHash": "681ad38f6e74b49778947fc300acb794e7c1ec9c2c5b3486a0f5796d1ba28f2a",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "inspectorGetDefinition",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "2fbb9be4e9132ada0e20eb9574e583bac90139ce2a4cc4202894c699cccd808c",
+        "outputsDiscoverySchemaHash": "b4617b0018b54aa27e881e66865ee88449a8f494c2533273ac7d3808057b64c5",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "inspectorSet",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "605cef78a2fa72f3e573e377cb34315797b84b21b942f6ac3f458d29bd3fe78b",
+        "outputsDiscoverySchemaHash": "e840235aa76ebda04d32f6234d03d420ec374cc08d67cf1a9b0a1fd821de5fa6",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "listComponentClasses",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6212e143dff52186026df8ff7c5e7d32637543e7837ee98736aa86f3b65d0db1",
+        "outputsDiscoverySchemaHash": "98183bd4d73add799cfbd0b34a936cab9e45ffffc1bc4ba36c916bba1ec2b2fa",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "listComponentMethods",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "60c0c9cd11ed977f86f134a2955ca5bedde48069f0498f8bc6c8c1876823570c",
+        "outputsDiscoverySchemaHash": "ff08fd29b000051b935e450756c70a3a63bd0d77fcd2641edd03bc1354db0055",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "listEditorWindows",
+        "sourceFile": "source/utcp/tools/screenshot-tools.ts",
+        "sourceHash": "97cc72e71e530c85e4e8994e7788ee53af1b39e0e2e5326576376d80d90d06e6",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "56f04dfa11431d63f9531e90e9f9d363d51af7b432a58d5e1a63dd072dd7c529",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "localizationInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "8fce51e2e86c92804c768a6fbf17fcc79cae6a4deb0c4cb952351619fc972506",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "localizationValidate",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f51b493021ed852b681b2efa7f80354889fb57982518cd6013a2470b09e49f23",
+        "outputsDiscoverySchemaHash": "bb107b639a5395ee09ef2ba620e6f1f9482d89a51f640f11ac08379b10078c68",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "materialQuery",
+        "sourceFile": "source/utcp/tools/material-tools.ts",
+        "sourceHash": "e216c8a5885da02cfd4980893713600a1545cffea7d06eece3ace5db8b969571",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "4a0ba06cc44cb3007f379c5fc1156918c56eb63888acefb532a835749159d298",
+        "outputsDiscoverySchemaHash": "a2c197c88df29e4d552d55c16008f0440e4de7b6be481aa359787676801c307b",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeBatchSet",
+        "sourceFile": "source/utcp/tools/batch-tools.ts",
+        "sourceHash": "f9bee86de6a45169371bba29513bbc49b90494d13a5d88262f9f749c3aa569f2",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e4d2aa274e4fdb60d60d84ab30272460e5793bb30ee17a12df5f0d63e2808bbd",
+        "outputsDiscoverySchemaHash": "e840235aa76ebda04d32f6234d03d420ec374cc08d67cf1a9b0a1fd821de5fa6",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeClipboard",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "fe12b4f0b6b347c919d0f12c06ca3ae48db0fd7c143632702f87eca14828e790",
+        "outputsDiscoverySchemaHash": "abcc8f7969ae85dc6f4cfc7ae9dffda8f4ff274d79321cf8f8e07a0e566c58a0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeComponentManage",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "10ae491f29051fd512d3cd5a9a56f8cef1be3d6dd55e41942ee77e15946e52d1",
+        "outputsDiscoverySchemaHash": "2b0fcfe8c07968e9f4758faa70006d15facc6dfb39b629fb9df3d86c0fff9fd8",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeComponentsGet",
+        "sourceFile": "source/utcp/tools/component-tools.ts",
+        "sourceHash": "94f549916c57e5e0b7eb839ddbf08dec78f402e1aa8fa235d4c92963345180a0",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "bc8e6bde036e57b7c62aef2ab870d0100df7639b1de774ac40405416bb7c6cf4",
+        "outputsDiscoverySchemaHash": "0fb2fc77b5b073b894b500aeb540253d4c2f7fffb4f38f667e0e59841f442629",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeCreate",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6c405767ea6d19a8ee2cf772fae3cc953ba6303c55df63f39c8db172ec38447a",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeCreatePrimitive",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "1720d92353254ae255eff15774694de1b1be4db2908bd156c048b80427833095",
+        "outputsDiscoverySchemaHash": "f61d2080b27b67262c6aba11efb87baa75b2b444e076d79124b98c0dde7f46b0",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeGetAtPath",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "aade3b62b0ed77751d59a7e282f227d20d5c70291fecc347f6697b4d32820f6d",
+        "outputsDiscoverySchemaHash": "0fb2fc77b5b073b894b500aeb540253d4c2f7fffb4f38f667e0e59841f442629",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeGetAvailableComponentTypes",
+        "sourceFile": "source/utcp/tools/component-tools.ts",
+        "sourceHash": "94f549916c57e5e0b7eb839ddbf08dec78f402e1aa8fa235d4c92963345180a0",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "01260b0ebbef8031deab17c190702509ffc7fc390cd37e79ef32b816514c8987",
+        "outputsDiscoverySchemaHash": "a3b7acad6b3807225b3658d1dc291b3a0ce297c0ca1e31b31b91fdffc23eace9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeGetPath",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "a578054073946835c0b406f00d452d37520799fe33d79c7dc9908faceab2392a",
+        "outputsDiscoverySchemaHash": "c41016279670a1f76a0452b01ae8ee1178870a6876ba02356f88753faa989c65",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeGetTree",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "227e85a4a306946637dee0cf0bc2b9cbdcc414d071e0528281b0439a0805d82c",
+        "outputsDiscoverySchemaHash": "d2d97976af1de31715c60b2577752be38cfe96792aeaa5d4c3d09b768bca4a36",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeOperate",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "916bdefb051a744a0a6171cd32b1ca96873887497e34576c8958fc24726daa66",
+        "outputsDiscoverySchemaHash": "4b62418cc06600ab2faa27a228815b4d33fe43ee8c301213e932a571ccc51275",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "nodeReset",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e5dc94346a2ac4792b7b8d7a7da9e89f993bd3e33a49b0edd258a814a6912084",
+        "outputsDiscoverySchemaHash": "e840235aa76ebda04d32f6234d03d420ec374cc08d67cf1a9b0a1fd821de5fa6",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "particleInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "6fd22715f29a99542c9ad3aef5a4631d99040b83118ddad59bc15b47e5c42ccb",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "particleValidate",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "a90b62fa9b5f2ee37f51ebcb8dfd2a950dd3b378e0544a150370863fb7126676",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics2dCompatibilityAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "cddcff43fd4371f37f65891d1c6272c9962f914e9d0e576a0298d5378447b027",
+        "outputsDiscoverySchemaHash": "b46501ada1ac26db034bb0b995e5db8f43698fbe311d4fdb18926a42164e9811",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics2dCreateBody",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "9289de0e1e8aa5d914490145b50eb60799be5dc070c169f65a1f5d92c2d170d4",
+        "outputsDiscoverySchemaHash": "52ac8c3607c294c24cfcb1ee515b92e37bce832ac1b32aeb27c8571dfbbed699",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics2dCreateJoint",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "b8d1ef4040ed19f00d9bcf0b515aad9d9c1f8467824892f1e4140393406854e7",
+        "outputsDiscoverySchemaHash": "26e01b545b522a93c140002f5229e3490372429b4760265922ce2b9e78764ca9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics2dInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "be69ac30730c6a46ee7ae3178e3e13c65774fe67fac36476ffe58d6490c9f284",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics2dTopologyAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "a3d65f278dc4daf2e7f866b44a77449c2e8a89f80c253f335234758dd5bed3e1",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics2dValidate",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "a90b62fa9b5f2ee37f51ebcb8dfd2a950dd3b378e0544a150370863fb7126676",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics3dCreateBody",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f4ae14767bcada48648c6a12b2de28bbabfeba324007537ec39968183992f9d2",
+        "outputsDiscoverySchemaHash": "91d30c6579cff0b4826eb30243c1e22169155eab53815379cabbb78557ed5e9c",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics3dCreateJoint",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "7c886d631b1c3419fcafe72965b21f90db0f42f08a0cabb8f8f4e06db20860cb",
+        "outputsDiscoverySchemaHash": "b6ca0290e8d21ea28f34809e1d54b95366aa69b93090acf394a27610d68a9bac",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics3dInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "be69ac30730c6a46ee7ae3178e3e13c65774fe67fac36476ffe58d6490c9f284",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics3dTopologyAudit",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "a3d65f278dc4daf2e7f866b44a77449c2e8a89f80c253f335234758dd5bed3e1",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "physics3dValidate",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "a90b62fa9b5f2ee37f51ebcb8dfd2a950dd3b378e0544a150370863fb7126676",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "previewManage",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "2d9736e08994cfa24c50fb76401f93ce2b03eae2c2684b558fe04c8b2e1853ee",
+        "outputsDiscoverySchemaHash": "464a948f8818d3d37314b9a291c3e0fdf77d6e8e53219baf15f392e94465a745",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "programManage",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "7365af7a50e6836d630ca9e5af4a16c81ed334279957db1ff5a29b21e9c2f67e",
+        "outputsDiscoverySchemaHash": "58acd506f319eae8f69660514071e0377263034dc7bf8746aed068d7780ef760",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectFileExists",
+        "sourceFile": "source/utcp/tools/file-tools.ts",
+        "sourceHash": "62901a0ed39c6a7bfa7fe971bfbd6b8acd19a97bfdc5bbae826658c94022130d",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "5e6e8cc46d0640b25cb26766a458a553200e5c8e0d82830baac2f424a6a8b2a4",
+        "outputsDiscoverySchemaHash": "38f199298348df64678689370cbb9e30ffebcfe9ad566aefdf828972d617c3e9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectListDirectory",
+        "sourceFile": "source/utcp/tools/file-tools.ts",
+        "sourceHash": "62901a0ed39c6a7bfa7fe971bfbd6b8acd19a97bfdc5bbae826658c94022130d",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e2949940090762c0e81643b6520361fd93662982af26445868792a6bd01e6831",
+        "outputsDiscoverySchemaHash": "c41e9bc904929dc05d54183362dc0341bfc0848470eb49e334f667e9dae714fe",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectManage",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "22ed43140f05fff42993791bef07e5f47428c87c6b85594bd6ccc74b3402f9e2",
+        "outputsDiscoverySchemaHash": "fa823d8c9a298d33d615e1aeed773a93465cf87fb5ed5825779b46ca072b8767",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectReadFile",
+        "sourceFile": "source/utcp/tools/file-tools.ts",
+        "sourceHash": "62901a0ed39c6a7bfa7fe971bfbd6b8acd19a97bfdc5bbae826658c94022130d",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "22e393aa08c48288960d6f1c95551f81357d79147f074680386620ba712066e8",
+        "outputsDiscoverySchemaHash": "9afe795092ddbd14eb1173f5159532f996ae05e773a4222db319f0442e35a24e",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectReplaceInFile",
+        "sourceFile": "source/utcp/tools/file-tools.ts",
+        "sourceHash": "62901a0ed39c6a7bfa7fe971bfbd6b8acd19a97bfdc5bbae826658c94022130d",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "60c569539c5c6843eba1ea214aa39d56a8549181d5132da54048b4367fde7045",
+        "outputsDiscoverySchemaHash": "2f3f59f88829ce9428ccd527d18a89ec24a134b3eca6050a067a59412851411b",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectSearchFiles",
+        "sourceFile": "source/utcp/tools/file-tools.ts",
+        "sourceHash": "62901a0ed39c6a7bfa7fe971bfbd6b8acd19a97bfdc5bbae826658c94022130d",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "a4157e5aa23db77db6d9150dc2c6f20b65457e3fdacc35c481daffa1317d242f",
+        "outputsDiscoverySchemaHash": "3b0e33eda42a36dcb42698f8b272f052634cd54ca22bf7bc4b1e7e2b907a0d49",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "projectWriteFile",
+        "sourceFile": "source/utcp/tools/file-tools.ts",
+        "sourceHash": "62901a0ed39c6a7bfa7fe971bfbd6b8acd19a97bfdc5bbae826658c94022130d",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "89572e4e665d9ce6f61be07ee48b38ba67267f7b40eba4b88f3028d9661468e0",
+        "outputsDiscoverySchemaHash": "fec2fba5ef09ae39e664a9db8e58a46c4819c46b4e2ad25f166ac817d004a5f9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "propertyArrayElement",
+        "sourceFile": "source/utcp/tools/property-array-tools.ts",
+        "sourceHash": "c78c520d9d5e3cf8d18dd33dcb75bcea9ac42c39575b63c7ef075e7577606794",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "7554df5997bb26722f14204edba8ee158ba4ac6370a7d8784333036ac23bff17",
+        "outputsDiscoverySchemaHash": "e840235aa76ebda04d32f6234d03d420ec374cc08d67cf1a9b0a1fd821de5fa6",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "readPrefabJson",
+        "sourceFile": "source/utcp/tools/prefab-json-tools.ts",
+        "sourceHash": "3b448a9569f1c5201a372b73f7b3f73524177463a98178a0ae30e8e45628d8c8",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "88a5b1b585ffcc4d60f1512c8e9a1ee32c66eca45422a06d72de0f8e0f077bd1",
+        "outputsDiscoverySchemaHash": "ee72a91068f597708c4fb678c30938cc04323ba169aee0bd7d08ccc1beefda01",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "readProjectInstruction",
+        "sourceFile": "source/utcp/tools/instruction-tools.ts",
+        "sourceHash": "ab642b6fbc48b436f30dfb017f5f54cecb13049247ab779b3decfaafc7469ae1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "b4b40563a224cff9fe456c5384ca980fa29223a03d46a44f7bfecc932beef4fe",
+        "outputsDiscoverySchemaHash": "26217f8fd84daed1c0d6271f92a433cb73b6dd1d45e0261fd03b1a469d83463c",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runScriptDiagnostics",
+        "sourceFile": "source/utcp/tools/diagnostics-tools.ts",
+        "sourceHash": "48c6c8c56b6e9210b753774ef3c666dfee81e39d39338f4ad8f08d31d1207e56",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "813c11ef4b0b52d2a0c81d5e031c746ac70d5edd3efb40c9b33fcd9d9815bee4",
+        "outputsDiscoverySchemaHash": "9b8e877082f95bd3f0b7dd4e6c8189648675c3d27fff7055369a9267b97fdc52",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runtimeGetState",
+        "sourceFile": "source/utcp/tools/runtime-tools.ts",
+        "sourceHash": "e8097e21e214ddb9d1f7c8760136c8330e9d6cee49f45cd5e32c679e9cadc3b1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "d806c62f82c380fb79c9a2a9e3c600ba51fd80628d6add3a7cd3b9506f966aad",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runtimePause",
+        "sourceFile": "source/utcp/tools/runtime-tools.ts",
+        "sourceHash": "e8097e21e214ddb9d1f7c8760136c8330e9d6cee49f45cd5e32c679e9cadc3b1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "fd178799670b18bcdeb7ce8c90badd20470e44cfa6078dfda8db167c3345147f",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runtimePreviewControl",
+        "sourceFile": "source/utcp/tools/runtime-tools.ts",
+        "sourceHash": "e8097e21e214ddb9d1f7c8760136c8330e9d6cee49f45cd5e32c679e9cadc3b1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "5657cf622dee6de113f9d7be10d2fab2cd44d910911198535464a63077b6e15b",
+        "outputsDiscoverySchemaHash": "b92476ab5068fe18e5a0bc2cccecad4e24a503a082b64f0ac81e53aba2b3e41a",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runtimeResume",
+        "sourceFile": "source/utcp/tools/runtime-tools.ts",
+        "sourceHash": "e8097e21e214ddb9d1f7c8760136c8330e9d6cee49f45cd5e32c679e9cadc3b1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "fd178799670b18bcdeb7ce8c90badd20470e44cfa6078dfda8db167c3345147f",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runtimeSessionLifecycle",
+        "sourceFile": "source/utcp/tools/runtime-session-tools.ts",
+        "sourceHash": "a05d6d7880ec498e21582976cf693aa8bb3791436e48a508bc5efea81ae8e566",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8ec37e2ab3a91972fbdd8c9b82ae0d9b46bb5f11773c39704c8bcf2666781275",
+        "outputsDiscoverySchemaHash": "12a71816fabc9c14aa5a427db99f6da2354bb766a424ea2ca8d2b2174d47f676",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "runtimeSetTimeScale",
+        "sourceFile": "source/utcp/tools/runtime-tools.ts",
+        "sourceHash": "e8097e21e214ddb9d1f7c8760136c8330e9d6cee49f45cd5e32c679e9cadc3b1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6a77c1c006d42c584e5ed56c189eba39847a9398bb065b1bffa53b2b78576908",
+        "outputsDiscoverySchemaHash": "f36f37cfd17903fbb8c42b10f8aa312a135b7264109737f077286decea0ad7bc",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneBatchGet",
+        "sourceFile": "source/utcp/tools/batch-read-tools.ts",
+        "sourceHash": "235828c31b53da4f66a45d434d1e825e175812d731e7983740908cd31759761f",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f6b69ce5bdc78b44151d307ad9eae3537c43a29f6332260a00522f75bdb9198d",
+        "outputsDiscoverySchemaHash": "3767aa7cdef9d0ea3c4ba9fd689b6d462abf2ba867d165551b23f01f35e3863e",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneGetInfo",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+        "outputsDiscoverySchemaHash": "846fd9b5dbe8cd4833c77206341814bc5c3734ebd1feb5104ac8be31ec85c5a3",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneHierarchyValidate",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "1703e7d8cd03ffaad5fec03206fa0bc086613d2fde51d239cdf77c7dcab658b5",
+        "outputsDiscoverySchemaHash": "b8540a3fda9ad36f07863040f466249cb80f924c6fad80c30cd69200a81e6401",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneManage",
+        "sourceFile": "source/utcp/tools/consolidated-tools.ts",
+        "sourceHash": "5b2390b4057016f70ab702f57dbe759376ce90adcf81e86215e6523e44dc7007",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "29b5db04a3554eb1ccbbf113605346a66f451fd73893ee61de8a40f098841804",
+        "outputsDiscoverySchemaHash": "13cd466898a0a9532a38ec69f4a06e413365bd6513cb2e92fb8f0c363c18fc81",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneScriptHealthScan",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "9552059cbdd9b0964ae5231f4407382e4bf52fb979f09df6db591621cb5ea804",
+        "outputsDiscoverySchemaHash": "a23b53a36ab15c4bcff3b992c772e4c7400ac8753c4679259f5c2cb7ec4f8d8d",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneScriptRepair",
+        "sourceFile": "source/utcp/tools/scene-tools.ts",
+        "sourceHash": "7c68cce3eeae0ab7d8d638ef09a6d7fcb64be65b470b12445d8df47177252755",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6c2d4b34d4294e22d059f740a074c13774279cd81823e7015d04db88ef017f47",
+        "outputsDiscoverySchemaHash": "5e5079a0b9706a6e44872a9c2633c3fc65cc7c09e705e754a7e9d200c1224afe",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "sceneSnapshot",
+        "sourceFile": "source/utcp/tools/scene-snapshot-tools.ts",
+        "sourceHash": "135a78c8cae8b9c2102dd78200b37304c0314f7d207686b60b96ece15bbb0689",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "0c47b7ac82be7419b92f723a0cda9a897a1afde48e75e1559f70ba9b6770fa5b",
+        "outputsDiscoverySchemaHash": "9c50ff1f0dbcfdde0532643a28433747900eaadf2127a04a2d57fd97e06a0e5a",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "setEditorPreference",
+        "sourceFile": "source/utcp/tools/preference-tools.ts",
+        "sourceHash": "80bb16882c5e28bcded9253526d4993431d17268b19f47769d83bbe8ff6e1aef",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "105e5298a321e78c02393c6eb6b9453b1ab28df81638067bebe66b2dd6d63571",
+        "outputsDiscoverySchemaHash": "5d9e346d28c0f0ab7e3db9295453080472fe1c1db5fe361e2f582d24e8ce5190",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "simulateButtonClick",
+        "sourceFile": "source/utcp/tools/event-tools.ts",
+        "sourceHash": "4ec12c23718f1d0c75451919d154a1b9335602f1cbc731bc3ab000e216f32df8",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "60c0c9cd11ed977f86f134a2955ca5bedde48069f0498f8bc6c8c1876823570c",
+        "outputsDiscoverySchemaHash": "e748ac44ff35f59e2ddd9c88b9f9f5838b6e5279a9210954e9f58225202b9a7b",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "simulateKeyCombo",
+        "sourceFile": "source/utcp/tools/input-tools.ts",
+        "sourceHash": "589d9d67047ab7ed19f8b73dce531079b6c3d9e7b100b5b13a5490a4906ae9f5",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "4b22d07087992ea6d3ca7b19acb7e9588a1ee1546c662bd90e90f0fdd70beb66",
+        "outputsDiscoverySchemaHash": "39c3a071df20c64eaaf90fa67973b62e40c8090eb0eb59abc762943011b11bd3",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "simulateKeyPress",
+        "sourceFile": "source/utcp/tools/input-tools.ts",
+        "sourceHash": "589d9d67047ab7ed19f8b73dce531079b6c3d9e7b100b5b13a5490a4906ae9f5",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "141fffa50d30b2b960efad2619ab65fc99fbaa6595f5494d019c0cf3fdb92cde",
+        "outputsDiscoverySchemaHash": "0d64d6705c333577acfb0ce7f77e02b785208aedaa9f9492bdbc49bffcf3df54",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "simulateMouseClick",
+        "sourceFile": "source/utcp/tools/input-tools.ts",
+        "sourceHash": "589d9d67047ab7ed19f8b73dce531079b6c3d9e7b100b5b13a5490a4906ae9f5",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "4077803fa00391be1f7f5ea51144a4599ce98c4f4286c6d36a275ea401acd8aa",
+        "outputsDiscoverySchemaHash": "fd178799670b18bcdeb7ce8c90badd20470e44cfa6078dfda8db167c3345147f",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "simulateMouseDrag",
+        "sourceFile": "source/utcp/tools/input-tools.ts",
+        "sourceHash": "589d9d67047ab7ed19f8b73dce531079b6c3d9e7b100b5b13a5490a4906ae9f5",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "cad72a4f17636ef3fe96229e2fa2ccb630a8d8283dbabfe8a78abcbf15d5c5d6",
+        "outputsDiscoverySchemaHash": "fd178799670b18bcdeb7ce8c90badd20470e44cfa6078dfda8db167c3345147f",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "terrainInspect",
+        "sourceFile": "source/utcp/tools/expansion-tools.ts",
+        "sourceHash": "cf7a2d46107a0c19eaa80922e867ea51ef3838985be8a2d9e519efd7a1681f8b",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "715d76bcf5ebea0cabda4b9d99e05302f24a96ee237ddd5df56210005bc80a42",
+        "outputsDiscoverySchemaHash": "c52d6cf60aea05e68180ff6801ff125b29d1862258d09a288df238d180d7c643",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiAccessibilityAudit",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "2736281e22f2ac714b5c8a9748e923becccfee3a60c8d67297625c3112d4c5d1",
+        "outputsDiscoverySchemaHash": "0ca88bc9dacfce041f2650ee3256165d99cc702b434f0f8ea082df684e10f2d9",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiCreateInputForm",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "f72e626d58f7558d844a78a79e1f907f865d8ee813a72024d432595a1539a620",
+        "outputsDiscoverySchemaHash": "94f9cb2d02380f53fecd1905ca2d3694a29fe234e142b1a1826685b46f82f3f5",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiCreateScrollView",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e2880397eda69f978078bba0451185e66c458a7cfe36911cf21db60865003ae0",
+        "outputsDiscoverySchemaHash": "40debd110b64c37053a2b3da851a78bc0d573023ec3c30139595910f69ef3087",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiLayoutAlign",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "6d6e5b35756e95c9d5f963455e629e5fa673e76a5433cd51de1fd26f7349d1c8",
+        "outputsDiscoverySchemaHash": "fa7bb0a8407df63cb3280798dd137e4729108e61b1837a7fd07f6922b8bf0e20",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiLayoutApply",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "a7734d5b333b5e9ec548165fe0375912ad06d13e695bb38d6aade39ed07e1d78",
+        "outputsDiscoverySchemaHash": "70eea862b9712764c4e2bf4f16be8db972f6d65000f3bb20e118e51ce629df56",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiLayoutInspect",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "9ab367e0c7d055b6b263663608df22933c610b96ce10c405761d37ecf6d81a16",
+        "outputsDiscoverySchemaHash": "37419a91199102276d1787bde39c227bf0ba32e2e8c194f8c57725220f57a19a",
+        "currentArtifactQualification": "focused-live-smoke-passed-not-full-qualified"
+      },
+      {
+        "name": "uiLayoutReport",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "0eefa0a96682b14fd7482a628dffbb688d5052ba0944ef54c540edfb47f85562",
+        "outputsDiscoverySchemaHash": "7c65f3cff69ee2640fad354886152442910a3eabe300425856555603b53ede03",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiLayoutValidate",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "d4129df51840bfeebbf7001572d9c798e3517420db9d90b96a1875d165817c41",
+        "outputsDiscoverySchemaHash": "60e73785d087466d75387a86557d9f03f6e4aa6d9f64057f77b1e74527b969ce",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "uiSafeAreaInspect",
+        "sourceFile": "source/utcp/tools/ui-tools.ts",
+        "sourceHash": "9a87e2375835265f804a62d1a1b66b3ce9b72472102218ccd8d02f4985a09343",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "e3e9dcb0715808bb7d89e312f2c5b5d6f86677b3231ec9f3201be8ef5535e06e",
+        "outputsDiscoverySchemaHash": "f0c5767d4ce4864fee6f37545113bde30dd67f2d07592c82a9c4bd5a6222b99f",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "validateScene",
+        "sourceFile": "source/utcp/tools/validation-tools.ts",
+        "sourceHash": "2d975c92bbfcf5ed4ed165af361ac63ea89f022f50a04079150d8c6a78fd6530",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "5f5952aff47fa2610ac1f68e85673bd5e4963b4f6c30020677c1a0797774df3b",
+        "outputsDiscoverySchemaHash": "4508e63a69f3275bab8aed4a44f9438baa9b2908e9f8bb09a70a417531c030b2",
+        "currentArtifactQualification": "unverified"
+      },
+      {
+        "name": "writeProjectInstruction",
+        "sourceFile": "source/utcp/tools/instruction-tools.ts",
+        "sourceHash": "ab642b6fbc48b436f30dfb017f5f54cecb13049247ab779b3decfaafc7469ae1",
+        "lastObservedLiveRegistered": true,
+        "inputsSchemaHash": "4d64adb3fe645b2bb4a3cc3a2da7a1c9090bd01a8ffbb15ac4f429561bc75ae8",
+        "outputsDiscoverySchemaHash": "c8a7a61e4898e31dc8c8a036f647523455bbe618c9b72fad11b81f0ed8faa18f",
+        "currentArtifactQualification": "unverified"
+      }
+    ]
+  },
+  "ipcEvidence": {
+    "corpus": "cc_docs",
+    "sourceCommit": "4ca7d33627cb67ce456e0143195430b4ff466ec8",
+    "references": [
+      "v3.7/editor/extension/scene-script.md#Calling the Engine API",
+      "v3.7/editor/extension/messages.md#View the List of Messages"
+    ],
+    "documentedContract": "scene/execute-scene-script {name,method,args}; only pure JSON crosses IPC",
+    "liveRegistry": [
+      {
+        "package": "scene",
+        "message": "query-node",
+        "public": true
+      },
+      {
+        "package": "scene",
+        "message": "query-node-tree",
+        "public": true
+      },
+      {
+        "package": "scene",
+        "message": "execute-scene-script",
+        "public": true
+      },
+      {
+        "package": "builder",
+        "message": "query-tasks-info",
+        "public": false
+      },
+      {
+        "package": "builder",
+        "message": "query-task",
+        "public": false
+      },
+      {
+        "package": "preview",
+        "message": "query-preview-url",
+        "public": false
+      }
+    ],
+    "readOnlyProbes": [
+      {
+        "message": "scene/query-node-tree",
+        "passed": true,
+        "resultShape": "object with uuid,children"
+      },
+      {
+        "message": "builder/query-tasks-info",
+        "passed": true,
+        "resultShape": "object with queue,free"
+      },
+      {
+        "message": "preview/query-preview-url",
+        "passed": true,
+        "resultShape": "URL string"
+      },
+      {
+        "message": "scene engine access",
+        "passed": true,
+        "resultShape": "globalThis.cc and require(cc).director available; scene.worldMatrix present"
+      }
+    ],
+    "limitations": "Missing corpus search matches do not prove IPC unsupported; registry presence does not prove all behavior or public stability."
+  },
+  "remainingGates": {
+    "count": "not met",
+    "parity": "not verified; full union row-level evidence remains required",
+    "coverage": "unknown; no score inferred from registration count",
+    "release": "not verified; no immutable install/restart/rollback witness"
+  },
+  "resolvedReloadIncident": {
+    "action": "Restore Creator extension/server; then load rebuilt main and scene modules, refresh manual, and execute positive/negative geometry and build task witnesses.",
+    "observed": "Editor.Package.disable/enable returned; project.log shows disable at 15:21:42 and UTCP Server stopped at 15:21:46, no corresponding enable. Ports49650/49651/49652 unreachable; Creator process remains running.",
+    "recovery": "CC Bridge 3x > Restart Server if menu is available, otherwise enable extension in Extension Manager or restart Creator with user-controlled save."
+  },
+  "reloadRecovery": {
+    "method": "await Package.disable; evict only extension dist require-cache keys; await Package.enable from deferred callback",
+    "verifiedBuild": {
+      "version": "2.0.0",
+      "commit": "52bede2",
+      "branch": "feat/ccb3x-api-capability-expansion",
+      "dirty": true,
+      "builtAt": "2026-09-12T08:43:19.561Z"
+    },
+    "registeredManualToolCount": 136,
+    "operatorRestartRequired": false
+  },
+  "remainingPrerequisites": [
+    "Current candidate approval margin remains 17/82, so bulk implementation is not approved by the plan gate.",
+    "Release requires frozen immutable artifact and exclusive canonical fixture ownership; current worktree changed concurrently during verification and current game scene is dirty.",
+    "Full competitor row-level union and Creator frozen workflow denominator still require bound behavioral evidence; no numerical coverage claim."
+  ]
+}
