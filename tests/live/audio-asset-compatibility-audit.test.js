@@ -45,6 +45,6 @@ describe('live: audioAssetCompatibilityAudit candidate witness', () => {
       target: 'web-mobile',
     });
     assert.equal(invalid.status, 400, JSON.stringify(invalid.body));
-    assert.equal(invalid.body.code, 'INVALID_ARGUMENT');
+    assert.ok(invalid.body.validationErrors.some((error) => error.path === 'assets[0].type' && error.keyword === 'const'));
   });
 });

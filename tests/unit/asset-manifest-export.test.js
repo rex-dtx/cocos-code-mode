@@ -3,6 +3,9 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const { requireDist } = require('../helpers/require-dist');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
 const { AssetTools } = requireDist('utcp/tools/asset-tools.js');
 const { assetQueryMemo } = requireDist('utcp/utils/memo-cache.js');
@@ -27,31 +30,37 @@ async function invoke(request, args) {
 }
 
 describe('assetManifestExport', () => {
-  it('normalizes the path, sorts assets deterministically, and enforces the asset bound', async () => {
+  it('normalizes the path, sorts assets deterministically, hashes sources, and enforces the asset bound', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-manifest-'));
+    const rows = ['z', 'a', 'm'].map((uuid) => {
+      const file = path.join(root, `${uuid}.txt`);
+      fs.writeFileSync(file, uuid);
+      return { uuid, url: `db://assets/sprites/${uuid}.png`, type: 'cc.Texture2D', importer: 'image', name: uuid.toUpperCase(), isDirectory: false, file };
+    });
     const calls = [];
-    const result = await invoke(async (service, message, options) => {
-      calls.push({ service, message, options });
-      assert.equal(service, 'asset-db');
-      assert.equal(message, 'query-assets');
-      return [
-        { uuid: 'dir', url: 'db://assets/sprites', isDirectory: true },
-        { uuid: 'z', url: 'db://assets/sprites/z.png', type: 'cc.Texture2D', name: 'Z', isDirectory: false },
-        { uuid: 'a', url: 'db://assets/sprites/a.png', type: 'cc.Texture2D', name: 'A', isDirectory: false },
-        { uuid: 'm', url: 'db://assets/sprites/m.png', type: 'cc.Texture2D', name: 'M', isDirectory: false },
-      ];
-    }, { assetPath: ' assets\\sprites/ ', maxAssets: 2 });
+    try {
+      const result = await invoke(async (service, message, options) => {
+        calls.push({ service, message, options });
+        assert.equal(service, 'asset-db');
+        assert.equal(message, 'query-assets');
+        if (options.pattern === 'db://assets/sprites/**') {
+          return [{ uuid: 'dir', url: 'db://assets/sprites', isDirectory: true }, ...rows];
+        }
+        return [];
+      }, { assetPath: ' assets\\sprites/ ', maxAssets: 2 });
 
-    assert.deepEqual(calls, [{
-      service: 'asset-db',
-      message: 'query-assets',
-      options: { pattern: 'db://assets/sprites/**' },
-    }]);
-    assert.deepEqual(result.assets.map((asset) => asset.url), [
-      'db://assets/sprites/a.png',
-      'db://assets/sprites/m.png',
-    ]);
-    assert.equal(result.count, 2);
-    assert.equal(result.truncated, true);
+      assert.equal(calls[0].options.pattern, 'db://assets/sprites/**');
+      assert.deepEqual(result.assets.map((asset) => asset.url), [
+        'db://assets/sprites/a.png',
+        'db://assets/sprites/m.png',
+      ]);
+      assert.ok(result.assets.every((asset) => asset.sha256.length === 64 && asset.bytes === 1));
+      assert.equal(result.count, 2);
+      assert.equal(result.total, 3);
+      assert.equal(result.truncated, true);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it('rejects malformed bounds and unsafe asset paths with typed 400 errors before querying', async () => {
@@ -82,16 +91,29 @@ describe('assetManifestExport', () => {
     );
   });
 
-  it('includes only bounded Creator dependency metadata and never fabricates it', async () => {
+  it('includes bounded dependencies and explicit source exclusions', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-manifest-deps-'));
+    const source = path.join(root, 'with-deps.json');
+    fs.writeFileSync(source, '{}');
     const dependencies = Array.from({ length: 140 }, (_, index) => `dep-${String(140 - index).padStart(3, '0')}`);
     dependencies.push('dep-001', 42, null);
-    const result = await invoke(async () => [
-      { uuid: 'with-deps', url: 'db://assets/with-deps.json', type: 'cc.JsonAsset', name: 'WithDeps', isDirectory: false, depends: dependencies },
-      { uuid: 'without-deps', url: 'db://assets/without-deps.json', type: 'cc.JsonAsset', name: 'WithoutDeps', isDirectory: false },
-    ], { maxAssets: 2 });
+    try {
+      const result = await invoke(async (_service, message, arg) => {
+        if (message === 'query-assets' && arg.pattern === 'db://assets/**') return [
+          { uuid: 'with-deps', url: 'db://assets/with-deps.json', type: 'cc.JsonAsset', importer: 'json', name: 'WithDeps', isDirectory: false, file: source, depends: dependencies },
+          { uuid: 'without-source', url: 'db://assets/without.json', type: 'cc.JsonAsset', importer: 'json', name: 'Without', isDirectory: false },
+        ];
+        if (message === 'query-assets') return [];
+        if (message === 'query-asset-info') return null;
+        throw new Error(`Unexpected ${message}`);
+      }, { maxAssets: 2 });
 
-    assert.equal(result.assets[0].dependencies.length, 128);
-    assert.deepEqual(result.assets[0].dependencies, [...result.assets[0].dependencies].sort());
-    assert.equal(Object.prototype.hasOwnProperty.call(result.assets[1], 'dependencies'), false);
+      assert.equal(result.assets[0].dependencies.length, 128);
+      assert.equal(result.assets[0].dependenciesTruncated, true);
+      assert.deepEqual(result.assets[0].dependencies, [...result.assets[0].dependencies].sort());
+      assert.deepEqual(result.exclusions, [{ uuid: 'without-source', url: 'db://assets/without.json', reason: 'source-file-unavailable' }]);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 });

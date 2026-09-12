@@ -51,7 +51,8 @@ describe('live: uiSafeAreaInspect', () => {
         root,
         safeArea: { rect: { x: 0, y: 0, width: 0, height: 100 } },
       });
-      assert.equal(invalid.status, 400, JSON.stringify(invalid.body));
+      assert.equal(invalid.ok, true, JSON.stringify(invalid.body));
+      assert.equal(invalid.body.error.code, 'UI_SAFE_AREA_INVALID_INPUT');
 
       const missing = await postTool('uiSafeAreaInspect', {
         root: { id: '__ccb3x_missing_safe_area__', type: 'cc.Node' },

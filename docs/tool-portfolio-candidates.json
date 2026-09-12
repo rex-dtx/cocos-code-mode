@@ -30,7 +30,7 @@
       "candidates": [
         {
           "name": "uiAccessibilityAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed constraint tree and computed world rectangles, not a generic property dump.",
           "route": "scene query plus layout normalization",
           "prerequisites": [
@@ -47,7 +47,7 @@
         },
         {
           "name": "uiFocusNavigation",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Atomic bounded layout constraint application with preflight, one snapshot and read-back.",
           "route": "shared inspector mutation service",
           "prerequisites": [
@@ -66,7 +66,7 @@
         },
         {
           "name": "uiSafeAreaInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Detect clipping, overlap, missing anchors and inconsistent safe-area constraints.",
           "route": "scene geometry validator",
           "prerequisites": [
@@ -158,7 +158,7 @@
         },
         {
           "name": "prefabOverrideDiff",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Structural live-instance versus prefab-source override diff with stable identities.",
           "route": "scene plus asset comparison",
           "prerequisites": [
@@ -177,7 +177,7 @@
         },
         {
           "name": "prefabReferenceAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Detect broken or ambiguous nested prefab and override references after reload.",
           "route": "scene and asset graph validator",
           "prerequisites": [
@@ -329,7 +329,7 @@
         },
         {
           "name": "assetImportSettingsSet",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed importer mutation with preflight, reimport and output read-back.",
           "route": "importer registry",
           "prerequisites": [
@@ -348,7 +348,7 @@
         },
         {
           "name": "assetCompressionConfigure",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Platform-aware compression validation plus generated-output evidence.",
           "route": "importer registry and build artifact check",
           "prerequisites": [
@@ -645,7 +645,7 @@
         },
         {
           "name": "audioSourceConfigure",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed bounded source configuration with clip compatibility read-back.",
           "route": "audio adapter plus inspector service",
           "prerequisites": [
@@ -698,7 +698,7 @@
         },
         {
           "name": "audioAssetCompatibilityAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Validate format, decode/load mode, duration and target compatibility.",
           "route": "asset importer and platform validator",
           "prerequisites": [
@@ -889,7 +889,7 @@
         },
         {
           "name": "physics3dCreateJoint",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed constraint creation with backend-specific validation.",
           "route": "compound scene workflow",
           "prerequisites": [
@@ -1415,7 +1415,7 @@
       "candidates": [
         {
           "name": "buildPresetAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Validate target-specific required/unsupported build options before dispatch.",
           "route": "build schema adapter",
           "prerequisites": [

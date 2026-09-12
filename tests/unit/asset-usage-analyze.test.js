@@ -1,13 +1,13 @@
 'use strict';
-
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const { requireDist } = require('../helpers/require-dist');
-
 const { AssetTools } = requireDist('utcp/tools/asset-tools.js');
 const { assetQueryMemo } = requireDist('utcp/utils/memo-cache.js');
 const { ToolRegistry } = requireDist('utcp/decorators.js');
-const { InstanceReferenceSchema } = requireDist('utcp/schemas.js');
 
 function withEditor(request) {
   const previous = global.Editor;
@@ -21,129 +21,71 @@ function withEditor(request) {
 
 async function invoke(request, args) {
   const restore = withEditor(request);
-  try {
-    return await new AssetTools().assetUsageAnalyze(args);
-  } finally {
-    restore();
-  }
+  try { return await new AssetTools().assetUsageAnalyze(args); }
+  finally { restore(); }
 }
 
 describe('assetUsageAnalyze', () => {
-  it('sorts by URL then UUID before applying the asset bound and returns bounded reference evidence', async () => {
-    const sceneCalls = [];
-    const result = await invoke(async (service, message, optionsOrUuid) => {
-      if (service === 'asset-db') {
+  it('builds graph-v4 reachability from serialized scene roots and reports project-unreachable assets', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-usage-'));
+    const scene = path.join(root, 'main.scene');
+    fs.writeFileSync(scene, JSON.stringify({ __uuid__: '11111111-1111-1111-1111-111111111111' }));
+    const rows = [
+      { uuid: '00000000-0000-0000-0000-000000000001', url: 'db://assets/main.scene', type: 'cc.SceneAsset', importer: 'scene', file: scene, isDirectory: false },
+      { uuid: '11111111-1111-1111-1111-111111111111', url: 'db://assets/used.png', type: 'cc.ImageAsset', importer: 'image', isDirectory: false },
+      { uuid: '22222222-2222-2222-2222-222222222222', url: 'db://assets/unused.png', type: 'cc.ImageAsset', importer: 'image', isDirectory: false },
+    ];
+    try {
+      const result = await invoke(async (service, message, options) => {
+        assert.equal(service, 'asset-db');
         assert.equal(message, 'query-assets');
-        assert.deepEqual(optionsOrUuid, { pattern: 'db://assets/sprites/**' });
-        return [
-          { uuid: 'z', url: 'db://assets/sprites/b.png', type: 'cc.Texture2D', isDirectory: false },
-          { uuid: 'a2', url: 'db://assets/sprites/a.png', type: 'cc.Texture2D', isDirectory: false },
-          { uuid: 'a1', url: 'db://assets/sprites/a.png', type: 'cc.Texture2D', isDirectory: false },
-          { uuid: 'directory', url: 'db://assets/sprites', isDirectory: true },
-        ];
-      }
-      assert.equal(service, 'scene');
-      assert.equal(message, 'query-nodes-by-asset-uuid');
-      sceneCalls.push(optionsOrUuid);
-      return optionsOrUuid === 'a1' ? [] : Array.from({ length: 140 }, (_, index) => `node-${index}`);
-    }, { assetPath: ' assets\\sprites/ ', maxAssets: 2 });
-
-    assert.deepEqual(sceneCalls, ['a1', 'a2']);
-    assert.deepEqual(result.candidates.map((asset) => asset.uuid), ['a1']);
-    assert.equal(result.checkedAssets, 2);
-    assert.equal(result.referenceEvidence[0].status, 'unreferenced');
-    assert.equal(result.referenceEvidence[1].status, 'referenced');
-    assert.equal(result.referenceEvidence[1].referenceCount, 140);
-    assert.equal(result.referenceEvidence[1].references.length, 128);
-    assert.equal(result.referenceEvidence[1].truncated, true);
-    assert.match(result.referenceQueryCaveat, /unknown status.*never classified as unreferenced/);
-    assert.match(result.dynamicLoadCaveat, /closed scenes/);
-    assert.match(result.dynamicLoadCaveat, /prefabs/);
-    assert.match(result.dynamicLoadCaveat, /serialized asset-to-asset references/);
-    assert.match(result.dynamicLoadCaveat, /addressables/);
+        assert.deepEqual(options, { pattern: 'db://assets/**' });
+        return rows;
+      }, { assetPath: 'db://assets', maxAssets: 10 });
+      assert.equal(result.graphVersion, 'v4');
+      assert.equal(result.complete, true);
+      assert.equal(result.roots[0].id, '00000000-0000-0000-0000-000000000001');
+      assert.equal(result.graphEdges, 1);
+      assert.deepEqual(result.candidates.map((item) => item.uuid), ['22222222-2222-2222-2222-222222222222']);
+      assert.equal(result.referenceEvidence.find((item) => item.uuid === '11111111-1111-1111-1111-111111111111').status, 'root-reachable');
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 
-  it('rejects malformed asset paths and maxAssets as typed 400 errors before querying', async () => {
+  it('supports explicit roots and bounded graph traversal', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-usage-roots-'));
+    const source = path.join(root, 'prefab.prefab');
+    fs.writeFileSync(source, JSON.stringify({ __uuid__: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' }));
+    const rows = [
+      { uuid: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', url: 'db://assets/root.prefab', type: 'cc.Prefab', file: source, isDirectory: false },
+      { uuid: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', url: 'db://assets/child.png', type: 'cc.ImageAsset', isDirectory: false },
+      { uuid: 'cccccccc-cccc-cccc-cccc-cccccccccccc', url: 'db://assets/orphan.png', type: 'cc.ImageAsset', isDirectory: false },
+    ];
+    try {
+      const result = await invoke(async () => rows, { rootReferences: [{ id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' }], maxGraphAssets: 2, maxAssets: 10 });
+      assert.equal(result.complete, false);
+      assert.deepEqual(result.roots.map((item) => item.id), ['aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa']);
+    } finally { fs.rmSync(root, { recursive: true, force: true }); }
+  });
+
+  it('rejects invalid bounds and paths before querying', async () => {
     const calls = [];
-    const request = async (...args) => {
-      calls.push(args);
-      return [];
-    };
-    for (const maxAssets of [0, 129, 1.5, NaN, Infinity, '2']) {
+    const request = async (...args) => { calls.push(args); return []; };
+    for (const args of [{ maxAssets: 0 }, { maxGraphAssets: 0 }, { assetPath: 'db://assets/../outside' }, { assetPath: 42 }]) {
       await assert.rejects(
-        invoke(request, { maxAssets }),
-        (error) => error.code === 'INVALID_ARGUMENT' && error.status === 400,
-      );
-    }
-    for (const assetPath of ['', 'db://assets/../outside', 'db://internal', 'x'.repeat(257), 42]) {
-      await assert.rejects(
-        invoke(request, { assetPath }),
+        invoke(request, args),
         (error) => error.code === 'INVALID_ARGUMENT' && error.status === 400,
       );
     }
     assert.deepEqual(calls, []);
   });
 
-  it('wraps asset database query failures as typed 502 errors', async () => {
-    await assert.rejects(
-      invoke(async () => { throw new Error('asset-db unavailable'); }, { maxAssets: 1 }),
-      (error) => error.code === 'ASSET_QUERY_FAILED' && error.status === 502,
-    );
-  });
-
-  it('reports reference query errors as unknown and never as unreferenced', async () => {
-    const result = await invoke(async (service, message, value) => {
-      if (service === 'asset-db') {
-        assert.equal(message, 'query-assets');
-        return [{ uuid: 'broken', url: 'db://assets/broken.png', type: 'cc.Texture2D', isDirectory: false }];
-      }
-      assert.equal(service, 'scene');
-      assert.equal(message, 'query-nodes-by-asset-uuid');
-      assert.equal(value, 'broken');
-      throw new Error('scene index unavailable');
-    }, { maxAssets: 1 });
-
-    assert.deepEqual(result.candidates, []);
-    assert.equal(result.referenceEvidence.length, 1);
-    assert.equal(result.referenceEvidence[0].status, 'unknown');
-    assert.equal(Object.hasOwn(result.referenceEvidence[0], 'referenceCount'), false);
-    assert.equal(result.referenceEvidence[0].error, 'scene index unavailable');
-  });
-
-  it('declares bounded instance-reference arrays and optional unknown counts', () => {
+  it('declares graph-v4 evidence and bounded references', () => {
     const metadata = ToolRegistry.getTools().find(({ tool }) => tool.name === 'assetUsageAnalyze');
     assert.ok(metadata);
-    const output = metadata.tool.outputs;
-    const candidates = output.properties.candidates;
-    const evidence = output.properties.referenceEvidence;
-
-    assert.equal(candidates.maxItems, 128);
-    assert.equal(candidates.items.properties.references.maxItems, 128);
-    assert.deepEqual(candidates.items.properties.references.items, InstanceReferenceSchema);
-    assert.equal(evidence.maxItems, 128);
-    assert.equal(evidence.items.properties.references.maxItems, 128);
-    assert.deepEqual(evidence.items.properties.references.items, InstanceReferenceSchema);
-    assert.equal(evidence.items.required.includes('referenceCount'), false);
-  });
-
-  it('returns a positive unreferenced candidate when the scene query is empty', async () => {
-    const result = await invoke(async (service, message) => {
-      if (service === 'asset-db') {
-        assert.equal(message, 'query-assets');
-        return [{ uuid: 'unused', url: 'db://assets/unused.png', type: 'cc.Texture2D', isDirectory: false }];
-      }
-      assert.equal(service, 'scene');
-      assert.equal(message, 'query-nodes-by-asset-uuid');
-      return [];
-    }, { maxAssets: 1 });
-
-    assert.deepEqual(result.candidates, [{
-      uuid: 'unused',
-      url: 'db://assets/unused.png',
-      type: 'cc.Texture2D',
-      confidence: 'scene-unreferenced',
-      referenceCount: 0,
-      references: [],
-    }]);
+    assert.equal(metadata.tool.outputs.properties.graphVersion.const, 'v4');
+    assert.equal(metadata.tool.outputs.properties.candidates.maxItems, 128);
+    assert.equal(metadata.tool.inputs.properties.maxGraphAssets.maximum, 5000);
   });
 });

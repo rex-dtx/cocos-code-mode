@@ -36,12 +36,12 @@ describe('live: audioSourceConfigure candidate witness', () => {
         },
       });
       assert.equal(configured.status, 200, JSON.stringify(configured.body));
-      assert.equal(configured.body.result.verified, true);
-      assert.equal(configured.body.result.properties.volume, 0.6);
-      assert.equal(configured.body.result.properties.loop, true);
-      assert.equal(configured.body.result.properties.playOnAwake, false);
-      assert.deepEqual(configured.body.result.properties.clip, { id: 'a0e999f9-01fa-45df-a8e5-6f996e15735a', type: 'cc.AudioClip' });
-      assert.deepEqual(configured.body.result.changed, ['volume', 'loop', 'playOnAwake', 'clip']);
+      assert.equal(configured.body.verified, true);
+      assert.equal(configured.body.properties.volume, 0.6);
+      assert.equal(configured.body.properties.loop, true);
+      assert.equal(configured.body.properties.playOnAwake, false);
+      assert.deepEqual(configured.body.properties.clip, { id: 'a0e999f9-01fa-45df-a8e5-6f996e15735a', type: 'cc.AudioClip' });
+      assert.deepEqual(configured.body.changed, ['volume', 'loop', 'playOnAwake', 'clip']);
 
       const inspected = await getJson(`/tools/audioSourceInspect?reference%5Bid%5D=${encodeURIComponent(id)}`);
       assert.equal(inspected.status, 200, JSON.stringify(inspected.body));
@@ -54,7 +54,7 @@ describe('live: audioSourceConfigure candidate witness', () => {
         properties: { volume: 1.5 },
       });
       assert.equal(invalid.status, 400, JSON.stringify(invalid.body));
-      assert.equal(invalid.body.code, 'INVALID_ARGUMENT');
+      assert.ok(invalid.body.validationErrors.some((error) => error.path === 'properties.volume' && error.keyword === 'maximum'));
 
       const missing = await postTool('audioSourceConfigure', {
         reference: { id: '__missing_audio_configure_candidate__', type: 'cc.Node' },

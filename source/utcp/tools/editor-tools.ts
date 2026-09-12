@@ -381,7 +381,10 @@ export class EditorTools {
             case 'sorted_plugins': {
                 try {
                     return { result: await Editor.Message.request('programming', 'query-sorted-plugins' as any) };
-                } catch (e: any) {
+                } catch (e: unknown) {
+                    // The message is absent in Creator 3.7.3. Some Creator
+                    // builds wrap the registry error, so preserve the typed
+                    // capability outcome for this version-specific category.
                     if (isMessageNotExposed(e, 'programming', 'query-sorted-plugins')) {
                         throw new ToolError({
                             code: 'UNSUPPORTED_EDITOR_API',

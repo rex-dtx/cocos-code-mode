@@ -436,14 +436,19 @@ export const methods = {
         const game = cc?.game;
         const scheduler = cc?.director?.getScheduler?.();
         const director = cc?.director;
-        if (!game || typeof game.isPlaying !== 'boolean' || !scheduler || typeof scheduler.getTimeScale !== 'function' || typeof scheduler.getTimeScale() !== 'number' || !director || typeof director.totalFrames !== 'number') {
+        const timeScale = scheduler?.getTimeScale?.();
+        const frameCount = typeof director?.totalFrames === 'number' ? director.totalFrames : director?.getTotalFrames?.();
+        const paused = typeof game?.paused === 'boolean' ? game.paused : Boolean(game?.isPaused?.());
+        if (!game || typeof paused !== 'boolean' || typeof timeScale !== 'number' || !Number.isFinite(timeScale) || typeof frameCount !== 'number' || !Number.isFinite(frameCount)) {
             throw new Error('Runtime preview state is unavailable');
         }
         return {
-            running: game.isPlaying,
-            paused: game.paused,
-            timeScale: scheduler.getTimeScale(),
-            frameCount: director.totalFrames,
+            // Creator 3.7 omits game.isPlaying from the editor scene context;
+            // absence therefore means preview readiness is unverified.
+            running: typeof game.isPlaying === 'boolean' ? game.isPlaying : false,
+            paused,
+            timeScale,
+            frameCount,
         };
     },
     async inspectLocalization(): Promise<{ supported: boolean, currentLanguage: string | null, languages: string[], directions: Record<string, string>, error?: string }> {

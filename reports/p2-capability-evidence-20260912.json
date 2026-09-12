@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-12",
+  "status": "implementation-checkpoint-not-release-qualification",
+  "artifact": {
+    "creatorVersion": "3.7.3",
+    "os": "windows-x64",
+    "backend": "Cocos Creator editor extension HTTP bridge",
+    "commit": "3c24c78",
+    "branch": "feat/ccb3x-api-capability-expansion",
+    "dirty": true,
+    "builtAt": "2026-09-12T16:31:02.421Z",
+    "endpoint": "http://localhost:49650"
+  },
+  "objectiveGates": {
+    "build": "pass",
+    "unitTests": {
+      "status": "pass",
+      "tests": 308,
+      "failures": 0
+    },
+    "portfolioAudit": {
+      "status": "pass",
+      "registeredToolCount": 166,
+      "baselineCount": 86,
+      "expansionToolCount": 80,
+      "approvedCount": 23,
+      "readyForBulkImplementation": false
+    },
+    "finalLiveSmoke": {
+      "buildInfoMatched": true,
+      "broadcastObserve": {
+        "topic": "cc-bridge-3x:probe",
+        "supported": true,
+        "observed": true,
+        "lifecycle": ["registered", "observed", "disposed"],
+        "eventBytes": 23,
+        "truncated": false,
+        "retainedListener": false
+      },
+      "previewResolutionSet": {
+        "status": "rejected",
+        "code": "UNSUPPORTED_PREVIEW_IPC",
+        "cause": "Message does not exist: preview - set-resolution"
+      }
+    }
+  },
+  "liveEvidence": [
+    {
+      "candidate": "tilemapInspect",
+      "fixture": "db://assets/__ccb3x_tilemap_fixture.tmx",
+      "result": "typed TMX map, one layer, one object group and one object read after import"
+    },
+    {
+      "candidate": "tilemapLayerEdit",
+      "result": "opacity 1 -> 0.5 persisted through source save and reimport",
+      "beforeSha256": "4b641c6cd97acd31c22c85b29fbcb26a1f70c417a351c6edcade531177770768",
+      "afterSha256": "3784858c312ebff86e4f4cf8004693075a25cc2645b281817938ef7b03baea46"
+    },
+    {
+      "candidate": "tilemapObjectEdit",
+      "result": "object x 16 -> 24 persisted through source save and reimport",
+      "beforeSha256": "3784858c312ebff86e4f4cf8004693075a25cc2645b281817938ef7b03baea46",
+      "afterSha256": "59ca8949807478cbdccacc612f553b46a1a910b734fad31f83ec0e631b129edc"
+    },
+    {
+      "candidate": "tilemapValidate",
+      "result": "two imported layer/object nodes checked; no UUID references missing",
+      "sourceSha256": "59ca8949807478cbdccacc612f553b46a1a910b734fad31f83ec0e631b129edc"
+    },
+    {
+      "candidate": "spriteAtlasConfigure",
+      "fixture": "db://assets/cc-release-slot/cc30-oxygen-9662/data/prefabs/Table/Symbols/symbols.pac",
+      "result": "typed auto-atlas settings read back and generated library JSON hashed",
+      "generatedOutputSha256": "b01b3e76ec53b0e110bc9fffc034002e01be0d32e40d39f92d8ce42464347106"
+    },
+    {
+      "candidate": "uiAccessibilityAudit",
+      "fixture": "db://assets/cc-release-slot/cc30-oxygen-9662/g9662.scene#/Canvas",
+      "result": "bounded active-node inventory with inferred roles, labels and explicit truncation"
+    },
+    {
+      "candidate": "uiResponsivePreview",
+      "supportState": "replacement-scope-only",
+      "result": "deterministic world-rect projections at 800x600 and 1600x1200",
+      "caveat": "Not a rendered preview comparison; Creator 3.7.3 exposes no preview resolution setter."
+    },
+    {
+      "candidate": "editorUndoTransactionProbe",
+      "result": "snapshot then snapshot-abort succeeded and left no pending transaction"
+    },
+    {
+      "candidate": "broadcastObserve",
+      "result": "allowlisted bridge-owned probe was registered, observed and disposed"
+    }
+  ],
+  "implementedButNotQualified": [
+    {
+      "candidate": "assetCompressionConfigure",
+      "reason": "Generated importer-output hashes are proven, but no successful Creator build task/artifact was available."
+    },
+    {
+      "candidate": "referenceImageManage",
+      "reason": "Project-profile set/inspect/clear persistence is proven; native scene reference-image transform IPC is unavailable."
+    },
+    {
+      "candidate": "prefabApplyOverrides",
+      "reason": "The success contract and source-hash readback pass unit evidence, but Creator returned false for writable live fixture apply."
+    },
+    {
+      "candidate": "tilemapValidate",
+      "reason": "Imported UUID-reference checks are proven; tileset-link, gid-range and dimension validation remain outside this implementation."
+    },
+    {
+      "candidate": "spriteAtlasConfigure",
+      "reason": "Generated atlas JSON is proven; the available fixture contains no sprite frames, so frame-output qualification is absent."
+    }
+  ],
+  "rejectedOnCreator373": [
+    {
+      "candidate": "prefabRevertOverrides",
+      "code": "UNSUPPORTED_SELECTIVE_REVERT",
+      "reason": "restore-prefab exposes full-instance restore only; selective property paths are not available."
+    },
+    {
+      "candidate": "previewResolutionSet",
+      "code": "UNSUPPORTED_PREVIEW_IPC",
+      "reason": "Message does not exist: preview - set-resolution"
+    }
+  ],
+  "cleanup": {
+    "temporarySourceRemoved": true,
+    "importedTilemapFixtureDeleted": true,
+    "writablePrefabFixtureDeleted": true
+  },
+  "releaseQualification": {
+    "countIncrement": 0,
+    "reason": "This checkpoint does not mutate candidate portfolio approval/qualification states or claim the 157-tool release gate."
+  }
+}

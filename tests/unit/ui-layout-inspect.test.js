@@ -212,4 +212,24 @@ describe('uiLayoutInspect', () => {
     a.__comps__ = [];
     assert.deepEqual(await tools.uiLayoutValidate({ reference: { id: 'a' } }), { valid: false, issues: ['a: missing cc.UITransform'], checkedNodes: 1 });
   });
+
+  it('rolls back partial uiLayoutApply writes and aborts the pending snapshot', async () => {
+    const node = dump('root', 'Root', [], 4);
+    const dumps = new Map([['root', node]]);
+    const requests = [];
+    installEditor({ uuid: 'root', children: [] }, dumps);
+    const originalRequest = global.Editor.Message.request;
+    global.Editor.Message.request = async (module, message, payload) => {
+      requests.push({ message, payload });
+      if (message === 'set-property' && payload.path.endsWith('._contentSize')) throw new Error('refused');
+      return originalRequest(module, message, payload);
+    };
+    await assert.rejects(
+      new UiTools().uiLayoutApply({ reference: { id: 'root' }, position: { x: 20 }, size: { width: 30, height: 10 } }),
+      (error) => error.code === 'MUTATION_FAILED' && error.status === 500,
+    );
+    assert.deepEqual(node.position.value, { x: 4, y: 0, z: 0 });
+    assert.ok(requests.some(({ message }) => message === 'snapshot-abort'));
+    assert.ok(!requests.some(({ message }) => message === 'snapshot'));
+  });
 });

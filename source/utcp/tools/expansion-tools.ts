@@ -927,10 +927,10 @@ export class ExpansionTools {
             if (!source || componentType(source) !== 'cc.AudioSource') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `AudioSource component ${args.reference.id} was not found on parent node ${nodeUuid}.` });
         }
 
-        const nodeUuid = node.uuid;
+        const nodeUuid = propertyValue(node.uuid);
         const sourceUuid = componentUuid(source);
         const sourceIndex = (node.__comps__ ?? []).indexOf(source);
-        if (!nodeUuid || typeof sourceUuid !== 'string' || !sourceUuid || sourceIndex < 0) {
+        if (typeof nodeUuid !== 'string' || !nodeUuid || typeof sourceUuid !== 'string' || !sourceUuid || sourceIndex < 0) {
             throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: 'The target AudioSource does not expose stable serialized node and component UUIDs.' });
         }
 

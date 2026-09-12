@@ -12,7 +12,7 @@ function createSceneMock(options = {}) {
   let snapshotCount = 0;
   let refused = false;
   const node = {
-    uuid: 'audio-node',
+    uuid: { value: 'audio-node' },
     name: 'AudioFixture',
     __comps__: [{
       type: 'cc.AudioSource',
@@ -35,6 +35,7 @@ function createSceneMock(options = {}) {
     }
     if (message === 'query-asset-info') return payload === 'new-clip' ? { type: 'cc.AudioClip' } : null;
     if (message === 'set-property') {
+      assert.equal(payload.uuid, 'audio-node', 'writes must use the unwrapped node UUID');
       const match = /^__comps__\.0\.(volume|loop|playOnAwake|clip)$/.exec(payload.path);
       assert.ok(match, `unexpected path ${payload.path}`);
       if (options.refuseKey === match[1] && !refused) {
