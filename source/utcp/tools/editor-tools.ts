@@ -530,26 +530,37 @@ export class EditorTools {
 
     @utcpTool(
         'editorGetLogs',
-        'Get last N editor log entries',
+        'Get last N editor log entries, optionally filtered by plain-text pattern and bounded by UTF-8 response bytes',
         {
             type: 'object',
             properties: {
-                count: { type: 'number', minimum: 1, maximum: 1000, description: 'Number of log entries to retrieve', default: 10 },
+                count: { type: 'integer', minimum: 1, maximum: 1000, description: 'Number of log entries to retrieve', default: 10 },
                 showStack: { type: 'boolean', description: 'Return full stack trace for each log entry', default: false },
-                order: { type: 'string', enum: ['newest-to-oldest', 'oldest-to-newest'], description: 'Order of logs', default: 'newest-to-oldest' }
+                order: { type: 'string', enum: ['newest-to-oldest', 'oldest-to-newest'], description: 'Order of logs', default: 'newest-to-oldest' },
+                pattern: { type: 'string', maxLength: 256, description: 'Optional plain-text substring to match against log entries' },
+                maxBytes: { type: 'integer', minimum: 256, maximum: 65536, description: 'Maximum UTF-8 bytes of the serialized response', default: 65536 },
             }
         },
         { type: 'object', properties: { logLines: { type: 'array', items: { type: 'string' } }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['logLines', 'total', 'truncated'] }, "GET",  ['editor', 'logs', 'debug', 'info']
     )
-    async editorGetLogs(args: { count?: number, showStack?: boolean, order?: 'newest-to-oldest' | 'oldest-to-newest' } = {}): Promise<{ logLines: string[], total: number, truncated: boolean }> {
+    async editorGetLogs(args: { count?: number, showStack?: boolean, order?: 'newest-to-oldest' | 'oldest-to-newest', pattern?: string, maxBytes?: number } = {}): Promise<{ logLines: string[], total: number, truncated: boolean }> {
         const projectPath = Editor.Project.path;
         const logPath = path.join(projectPath, 'temp', 'logs', 'project.log');
         const count = Math.min(Math.max(args.count ?? 10, 1), 1000);
         const showStack = args.showStack ?? false;
         const order = args.order ?? 'newest-to-oldest';
+        const pattern = args.pattern;
+        const maxBytes = args.maxBytes ?? 65536;
+
+        if (pattern !== undefined && (typeof pattern !== 'string' || pattern.length > 256)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorGetLogs pattern must be plain text of at most 256 characters.' });
+        }
+        if (!Number.isInteger(maxBytes) || maxBytes < 256 || maxBytes > 65536) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorGetLogs maxBytes must be an integer from 256 to 65536.' });
+        }
 
         if (!fs.existsSync(logPath)) {
-            throw new Error(`Log file not found at ${logPath}`);
+            throw new ToolError({ code: 'LOG_UNAVAILABLE', status: 503, message: `Log file not found at ${logPath}`, recovery: 'Open a project with an available temp/logs/project.log file.' });
         }
 
         const entries: string[] = [];
@@ -598,6 +609,10 @@ export class EditorTools {
                         }
 
                         const cleaned = entry.replace(timestampRegex, '');
+                        if (pattern !== undefined && !cleaned.includes(pattern)) {
+                            accumulatedBody = '';
+                            continue;
+                        }
                         if (cleaned === lastContent) {
                             lastCount++;
                             if (total <= count) {
@@ -627,16 +642,18 @@ export class EditorTools {
         // Non-empty file that yields zero entries is a parse/format drift, not "no logs".
         let outerFileSize: number = -1;
         try { outerFileSize = fs.statSync(logPath).size; } catch { outerFileSize = -1; }
-        if (outerFileSize > 0 && total === 0) {
+        if (outerFileSize > 0 && total === 0 && pattern === undefined) {
             const head = fs.readFileSync(logPath, 'utf-8').slice(0, 220).replace(/\r?\n/g, '\\n');
-            throw new Error(`Log file at ${logPath} has ${outerFileSize} bytes but parsed 0 entries (head: ${JSON.stringify(head)}). Expected timestamp-prefixed lines like "M-D-YYYY hh:mm:ss - log/error:"`);
+            throw new ToolError({ code: 'LOG_PARSE_DRIFT', status: 422, message: `Log file at ${logPath} has ${outerFileSize} bytes but parsed 0 entries (head: ${JSON.stringify(head)}). Expected timestamp-prefixed lines like "M-D-YYYY hh:mm:ss - log/error:"`, recovery: 'Inspect the project log format before retrying.' });
         }
         // We pushed entries in reverse order (newest first).
-        if (order === 'oldest-to-newest') {
-             return { logLines: entries.reverse(), total, truncated: total > count };
+        const ordered = order === 'oldest-to-newest' ? entries.reverse() : entries;
+        let truncated = total > count;
+        while (Buffer.byteLength(JSON.stringify({ logLines: ordered, total, truncated }), 'utf8') > maxBytes && ordered.length > 0) {
+            ordered.pop();
+            truncated = true;
         }
-
-        return { logLines: entries, total, truncated: total > count };
+        return { logLines: ordered, total, truncated };
     }
 
     // via previewManage — kept for delegation
