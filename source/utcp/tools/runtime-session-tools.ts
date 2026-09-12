@@ -179,4 +179,63 @@ export class RuntimeSessionTools {
         }
         return { running: true, paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
     }
+    @utcpTool(
+        'runtimeStateObserve',
+        'Observe verified state for an attached game-view runtime session.',
+        {
+            type: 'object',
+            properties: { sessionId: { type: 'string', minLength: 1, maxLength: 64 } },
+            required: ['sessionId'],
+        },
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                sessionId: { type: 'string' },
+                state: {
+                    type: 'object',
+                    properties: {
+                        running: { type: 'boolean' },
+                        paused: { type: 'boolean' },
+                        timeScale: { type: 'number' },
+                        frameCount: { type: 'integer', minimum: 0 },
+                    },
+                    required: ['running', 'paused', 'timeScale', 'frameCount'],
+                },
+            },
+            required: ['success', 'sessionId', 'state'],
+        },
+        'POST',
+        ['runtime', 'state', 'observe', 'session'],
+    )
+    async runtimeStateObserve(args: { sessionId: string }): Promise<{ success: true, sessionId: string, state: RuntimeState }> {
+        const session = store.inspect(args.sessionId);
+        if (session.status === 'stopped') {
+            throw new ToolError({
+                code: 'RUNTIME_SESSION_STOPPED',
+                status: 409,
+                message: `Runtime session is stopped: ${session.sessionId}`,
+                recovery: 'Attach a new game-view session before observing state.',
+            });
+        }
+        if (session.targetKind !== 'game-view') {
+            throw new ToolError({
+                code: 'UNSUPPORTED_RUNTIME_TRANSPORT',
+                status: 422,
+                message: `Runtime target ${session.targetKind} has no verified transport.`,
+            });
+        }
+        try {
+            return { success: true, sessionId: session.sessionId, state: await this.readState() };
+        } catch (error) {
+            throw new ToolError({
+                code: 'RUNTIME_NOT_READY',
+                status: 409,
+                message: 'Creator preview did not expose a valid runtime state.',
+                recovery: 'Start the game-view preview and retry observation.',
+                details: { cause: error instanceof Error ? error.message : String(error) },
+            });
+        }
+    }
+
 }

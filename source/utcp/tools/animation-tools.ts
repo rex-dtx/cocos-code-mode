@@ -1,19 +1,53 @@
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference, ISuccessIndicator } from '../schemas';
+import { ToolError } from '../tool-error';
 
 // Animation editing lives in the `scene` module (not only the animator panel).
 // Messages are runtime-only (absent from typed message.d.ts); signatures mirror
 // AnimationSceneFacade in @types/cce/3d/facade/animation-scene-facade.d.ts.
 
 function requireRef(ref: IInstanceReference | undefined, what: string): string {
-    if (!ref || !ref.id) {
-        throw new Error(`${what} is required`);
+    if (!ref || typeof ref !== 'object' || typeof ref.id !== 'string' || ref.id.trim().length === 0 || ref.id.length > 256) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${what} must be a non-empty reference id of at most 256 characters.` });
     }
     return ref.id;
 }
 
-// Clip dumps carry every curve and keyframe - easily tens of thousands of tokens.
-// Default to a slim view; full curves only on explicit request.
+const MAX_CLIPS = 200;
+const AnimationClipSchema = {
+    type: 'object',
+    additionalProperties: true,
+    properties: {
+        uuid: { type: 'string', maxLength: 256 },
+        id: { type: 'string', maxLength: 256 },
+        name: { type: 'string', maxLength: 256 },
+        duration: { type: 'number' }
+    }
+};
+
+// Clip-info is already a bounded summary route in Creator; retain only records
+// and cap the returned list at the caller-selected limit.
+type AnimationClipRecord = Record<string, unknown>;
+
+function validateClipLimit(value: unknown): number {
+    if (value === undefined) return 50;
+    if (!Number.isInteger(value) || !Number.isFinite(value) || Number(value) < 1 || Number(value) > MAX_CLIPS) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `maxClips must be an integer from 1 to ${MAX_CLIPS}.` });
+    }
+    return Number(value);
+}
+
+function clipList(info: unknown): AnimationClipRecord[] {
+    if (Array.isArray(info)) {
+        return info.filter((clip): clip is AnimationClipRecord => !!clip && typeof clip === 'object' && !Array.isArray(clip));
+    }
+    if (info && typeof info === 'object' && 'clips' in info && Array.isArray(info.clips)) {
+        return info.clips.filter((clip): clip is AnimationClipRecord => !!clip && typeof clip === 'object' && !Array.isArray(clip));
+    }
+    return [];
+}
+
+
 function slimClipDump(dump: any): any {
     if (!dump || typeof dump !== 'object') {
         return dump;
@@ -29,18 +63,65 @@ function slimClipDump(dump: any): any {
         isLock: dump.isLock,
         isSkeleton: dump.isSkeleton,
         useBakedAnimation: dump.useBakedAnimation,
-        events: dump.events,
+        events: Array.isArray(dump.events) ? dump.events.slice(0, 200) : [],
         curveCount: curves.length,
-        tracks: curves.map((c: any) => ({
+        tracks: curves.slice(0, 200).map((c: any) => ({
             nodePath: c?.nodePath,
             key: c?.key,
             displayName: c?.displayName,
             keyframeCount: Array.isArray(c?.keyframes) ? c.keyframes.length : 0
-        }))
+        })),
+        truncated: curves.length > 200
     };
 }
 
 export class AnimationTools {
+    @utcpTool(
+        'skeletalAnimationInspect',
+        'Inspect animation clips exposed by a scene animation root.',
+        {
+            type: 'object',
+            properties: { nodeReference: InstanceReferenceSchema, maxClips: { type: 'number', minimum: 1, maximum: 200, default: 50 } },
+            required: ['nodeReference']
+        },
+        { type: 'object', properties: { reference: InstanceReferenceSchema, clips: { type: 'array' }, totalClips: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['reference', 'clips', 'totalClips', 'truncated'] },
+        'GET', ['skeletal', 'animation', 'inspect', 'clips']
+    )
+    async skeletalAnimationInspect(args: { nodeReference?: IInstanceReference, maxClips?: number }): Promise<{ reference: IInstanceReference, clips: AnimationClipRecord[], totalClips: number, truncated: boolean }> {
+        const nodeId = requireRef(args?.nodeReference, 'nodeReference');
+        const maxClips = args?.maxClips === undefined ? 50 : args.maxClips;
+        if (!Number.isInteger(maxClips) || maxClips < 1 || maxClips > 200) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxClips must be an integer from 1 to 200.' });
+        }
+        const info = await Editor.Message.request('scene', 'query-animation-clips-info', nodeId);
+        const clips: AnimationClipRecord[] = Array.isArray(info)
+            ? info.filter((clip): clip is AnimationClipRecord => !!clip && typeof clip === 'object' && !Array.isArray(clip))
+            : info && typeof info === 'object' && 'clips' in info && Array.isArray(info.clips)
+                ? info.clips.filter((clip: unknown): clip is AnimationClipRecord => !!clip && typeof clip === 'object' && !Array.isArray(clip))
+                : [];
+        return { reference: { id: nodeId, type: args.nodeReference?.type ?? 'cc.Node' }, clips: clips.slice(0, maxClips), totalClips: clips.length, truncated: clips.length > maxClips };
+    }
+
+    @utcpTool(
+        'skeletalAnimationValidate',
+        'Validate that a scene animation root exposes a well-formed clip list.',
+        {
+            type: 'object',
+            properties: { nodeReference: InstanceReferenceSchema, maxClips: { type: 'number', minimum: 1, maximum: 200, default: 50 } },
+            required: ['nodeReference']
+        },
+        { type: 'object', properties: { valid: { type: 'boolean' }, issues: { type: 'array' }, clipCount: { type: 'number' } }, required: ['valid', 'issues', 'clipCount'] },
+        'POST', ['skeletal', 'animation', 'validate', 'clips']
+    )
+    async skeletalAnimationValidate(args: { nodeReference?: IInstanceReference, maxClips?: number }): Promise<{ valid: boolean, issues: string[], clipCount: number }> {
+        const inspected = await this.skeletalAnimationInspect(args);
+        const issues: string[] = [];
+        inspected.clips.forEach((clip, index) => {
+            if (!clip || typeof clip !== 'object') issues.push(`clip[${index}] is not an object`);
+            else if (typeof clip.uuid !== 'string' && typeof clip.id !== 'string' && typeof clip.name !== 'string') issues.push(`clip[${index}] has no stable identity`);
+        });
+        return { valid: issues.length === 0, issues, clipCount: inspected.totalClips };
+    }
 
     @utcpTool(
         'animationQuery',

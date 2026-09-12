@@ -14,7 +14,9 @@ function withProjectLog(t, content) {
   const logDir = path.join(project, 'temp', 'logs');
   fs.mkdirSync(logDir, { recursive: true });
   if (content !== undefined) fs.writeFileSync(path.join(logDir, 'project.log'), content);
+  const previousEditor = global.Editor;
   global.Editor = { Project: { path: project } };
+  t.after(() => { global.Editor = previousEditor; });
   t.after(() => fs.rmSync(project, { recursive: true, force: true }));
   return project;
 }
@@ -70,6 +72,7 @@ describe('editorGetLogs bounded search', () => {
     withProjectLog(t, 'not a Creator log');
     await assert.rejects(() => new EditorTools().editorGetLogs(), (error) => error.code === 'LOG_PARSE_DRIFT' && error.status === 422);
   });
+
 });
 
 describe('editorLog', () => {

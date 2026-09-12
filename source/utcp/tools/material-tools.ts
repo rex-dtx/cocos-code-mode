@@ -72,36 +72,60 @@ export class MaterialTools {
 
             case 'effect':
                 if (!args.effectName) {
-                    throw new Error('materialQuery "effect" requires effectName');
+                    throw new ToolError({
+                        code: 'INVALID_ARGUMENT',
+                        status: 400,
+                        message: 'materialQuery "effect" requires effectName.',
+                    });
                 }
                 return { result: await Editor.Message.request('scene', 'query-effect' as any, args.effectName) };
 
             case 'material':
                 if (!args.reference?.id) {
-                    throw new Error('materialQuery "material" requires reference');
+                    throw new ToolError({
+                        code: 'INVALID_ARGUMENT',
+                        status: 400,
+                        message: 'materialQuery "material" requires reference.',
+                    });
                 }
                 return { result: await Editor.Message.request('scene', 'query-material' as any, args.reference.id) };
 
             case 'serialized_material':
                 if (!args.reference?.id) {
-                    throw new Error('materialQuery "serialized_material" requires reference');
+                    throw new ToolError({
+                        code: 'INVALID_ARGUMENT',
+                        status: 400,
+                        message: 'materialQuery "serialized_material" requires reference.',
+                    });
                 }
                 return { result: await Editor.Message.request('scene', 'query-serialized-material' as any, args.reference.id) };
 
             case 'render_pipeline':
                 if (!args.reference?.id) {
-                    throw new Error('materialQuery "render_pipeline" requires reference');
+                    throw new ToolError({
+                        code: 'INVALID_ARGUMENT',
+                        status: 400,
+                        message: 'materialQuery "render_pipeline" requires reference.',
+                    });
                 }
                 return { result: await Editor.Message.request('scene', 'query-render-pipeline' as any, args.reference.id) };
 
             case 'physics_material':
                 if (!args.reference?.id) {
-                    throw new Error('materialQuery "physics_material" requires reference');
+                    throw new ToolError({
+                        code: 'INVALID_ARGUMENT',
+                        status: 400,
+                        message: 'materialQuery "physics_material" requires reference.',
+                    });
                 }
                 return { result: await Editor.Message.request('scene', 'query-physics-material' as any, args.reference.id) };
 
             default:
-                throw new Error(`Unknown materialQuery operation: ${args.operation}`);
+                throw new ToolError({
+                    code: 'INVALID_ARGUMENT',
+                    status: 400,
+                    message: `Unknown materialQuery operation: ${args.operation}`,
+                });
         }
     }
 

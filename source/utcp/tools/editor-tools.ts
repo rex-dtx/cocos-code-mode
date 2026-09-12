@@ -546,7 +546,7 @@ export class EditorTools {
     async editorGetLogs(args: { count?: number, showStack?: boolean, order?: 'newest-to-oldest' | 'oldest-to-newest', pattern?: string, maxBytes?: number } = {}): Promise<{ logLines: string[], total: number, truncated: boolean }> {
         const projectPath = Editor.Project.path;
         const logPath = path.join(projectPath, 'temp', 'logs', 'project.log');
-        const count = Math.min(Math.max(args.count ?? 10, 1), 1000);
+        const count = args.count ?? 10;
         const showStack = args.showStack ?? false;
         const order = args.order ?? 'newest-to-oldest';
         const pattern = args.pattern;
@@ -558,23 +558,27 @@ export class EditorTools {
         if (!Number.isInteger(maxBytes) || maxBytes < 256 || maxBytes > 65536) {
             throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorGetLogs maxBytes must be an integer from 256 to 65536.' });
         }
-
-        if (!fs.existsSync(logPath)) {
-            throw new ToolError({ code: 'LOG_UNAVAILABLE', status: 503, message: `Log file not found at ${logPath}`, recovery: 'Open a project with an available temp/logs/project.log file.' });
+        if (!Number.isInteger(count) || count < 1 || count > 1000 || typeof showStack !== 'boolean' || !['newest-to-oldest', 'oldest-to-newest'].includes(order)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorGetLogs requires integer count 1-1000, boolean showStack, and a supported order.' });
         }
 
         const entries: string[] = [];
         let total = 0;
-        const fd = fs.openSync(logPath, 'r');
+        let parsed = 0;
+        let fileSize = 0;
+        let fd: number | undefined;
         
         try {
+            fd = fs.openSync(logPath, 'r');
             const stats = fs.fstatSync(fd);
-            const fileSize = stats.size;
+            if (!stats.isFile()) throw new Error('Project log is not a regular file.');
+            fileSize = stats.size;
             const bufferSize = 10 * 1024; // 10KB chunks
             const buffer = Buffer.alloc(bufferSize);
             
             let position = fileSize;
             let leftover = '';
+            let byteCarry: Buffer = Buffer.alloc(0);
             let accumulatedBody = ''; // Text belonging to the current (bottom-most) entry being parsed
             
             const regex = /^(\d{1,2}-\d{1,2}-\d{4}\s\d{2}:\d{2}:\d{2}\s-\s(?:log|warn|error|info):\s)/;
@@ -587,10 +591,17 @@ export class EditorTools {
                 const readSize = Math.min(bufferSize, position);
                 const readPos = position - readSize;
 
-                fs.readSync(fd, buffer, 0, readSize, readPos);
+                const bytesRead = fs.readSync(fd, buffer, 0, readSize, readPos);
+                if (bytesRead !== readSize) throw new Error('Project log changed while reading; retry the query.');
                 position -= readSize;
 
-                const chunk = buffer.toString('utf-8', 0, readSize);
+                // A reverse chunk may start inside a UTF-8 code point. Carry only
+                // its continuation bytes into the preceding chunk before decoding.
+                const bytes = byteCarry.length ? Buffer.concat([buffer.subarray(0, readSize), byteCarry]) : buffer.subarray(0, readSize);
+                let start = 0;
+                if (position > 0) while (start < bytes.length && (bytes[start] & 0xc0) === 0x80) start++;
+                byteCarry = Buffer.from(bytes.subarray(0, start));
+                const chunk = bytes.toString('utf-8', start);
                 const combined = chunk + leftover;
                 const lines = combined.split(/\r?\n/);
 
@@ -603,6 +614,7 @@ export class EditorTools {
                 for (let i = lines.length - 1; i >= 0; i--) {
                     const line = lines[i];
                     if (regex.test(line)) {
+                        parsed++;
                         let entry = line;
                         if (showStack && accumulatedBody.length > 0) {
                             entry += '\n' + accumulatedBody;
@@ -611,6 +623,8 @@ export class EditorTools {
                         const cleaned = entry.replace(timestampRegex, '');
                         if (pattern !== undefined && !cleaned.includes(pattern)) {
                             accumulatedBody = '';
+                            lastContent = null;
+                            lastCount = 0;
                             continue;
                         }
                         if (cleaned === lastContent) {
@@ -636,15 +650,14 @@ export class EditorTools {
                 }
             }
             
+        } catch (error) {
+            throw new ToolError({ code: 'LOG_UNAVAILABLE', status: 503, message: 'Cannot read the project log.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Check temp/logs/project.log availability and permissions, then retry.' });
         } finally {
-            fs.closeSync(fd);
+            if (fd !== undefined) fs.closeSync(fd);
         }
-        // Non-empty file that yields zero entries is a parse/format drift, not "no logs".
-        let outerFileSize: number = -1;
-        try { outerFileSize = fs.statSync(logPath).size; } catch { outerFileSize = -1; }
-        if (outerFileSize > 0 && total === 0 && pattern === undefined) {
-            const head = fs.readFileSync(logPath, 'utf-8').slice(0, 220).replace(/\r?\n/g, '\\n');
-            throw new ToolError({ code: 'LOG_PARSE_DRIFT', status: 422, message: `Log file at ${logPath} has ${outerFileSize} bytes but parsed 0 entries (head: ${JSON.stringify(head)}). Expected timestamp-prefixed lines like "M-D-YYYY hh:mm:ss - log/error:"`, recovery: 'Inspect the project log format before retrying.' });
+        // Parsing health is independent of whether the requested filter matches.
+        if (fileSize > 0 && parsed === 0) {
+            throw new ToolError({ code: 'LOG_PARSE_DRIFT', status: 422, message: 'Nonempty project log contains no recognized timestamp-prefixed entries.', recovery: 'Inspect the project log format before retrying.' });
         }
         // We pushed entries in reverse order (newest first).
         const ordered = order === 'oldest-to-newest' ? entries.reverse() : entries;

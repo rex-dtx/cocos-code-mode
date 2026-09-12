@@ -6,12 +6,13 @@ import os from 'os';
 import { basename, extname } from 'path';
 import fs from 'fs-extra';
 import packageJSON from '../../../package.json';
-import { AssetInfo, AssetOperationOption } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
+import { AssetInfo, AssetOperationOption, IAssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { AssetTreeItemSchema, IAssetTreeItem } from '../schemas';
 import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES, VERBOSE_FILE_BYTES } from '../utils/verbose';
 import { assetQueryMemo, invalidateAfterWrite } from '../utils/memo-cache';
 import { createHash } from 'crypto';
+import { ImporterManager } from '../utils/asset-importers';
 
 // helpers (shared by previewManage + kept methods)
 async function queryAssetsCompat(options: { pattern?: string, [k: string]: any }): Promise<any[]> {
@@ -312,6 +313,27 @@ function assetImportSettingsQueryError(error: unknown): ToolError {
         details: { cause: boundedImportText(error instanceof Error ? error.message : String(error), 512) },
         recovery: 'Retry after the Creator asset database is ready.',
     });
+}
+const MAX_IMPORT_SET_PATH_LENGTH = 128;
+const MAX_IMPORT_SET_VALUE_BYTES = 16384;
+
+function validateImportSet(args: unknown): { reference: IInstanceReference, path: string, value: AssetImportMetadataValue } {
+    const reference = validateImportReference(args);
+    const pathValue = Reflect.get(args as object, 'path');
+    if (typeof pathValue !== 'string' || !pathValue || pathValue.length > MAX_IMPORT_SET_PATH_LENGTH
+        || pathValue !== pathValue.trim() || !/^[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*$/.test(pathValue)) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `assetImportSettingsSet path must be dot-separated identifiers of at most ${MAX_IMPORT_SET_PATH_LENGTH} characters.` });
+    }
+    const value = Reflect.get(args as object, 'value');
+    const normalized = normalizeImportMetadataValue(value, 0, { remainingEntries: MAX_IMPORT_METADATA_ENTRIES, ancestors: new WeakSet<object>() });
+    if (normalized === OMIT_IMPORT_METADATA || JSON.stringify(normalized).length > MAX_IMPORT_SET_VALUE_BYTES) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `assetImportSettingsSet value must be bounded JSON-compatible data under ${MAX_IMPORT_SET_VALUE_BYTES} bytes.` });
+    }
+    return { reference, path: pathValue, value: normalized };
+}
+
+function assetImportSettingsSetError(error: unknown): ToolError {
+    return new ToolError({ code: 'ASSET_IMPORT_FAILED', status: 502, message: 'assetImportSettingsSet could not update and reimport the asset.', details: { cause: boundedImportText(error instanceof Error ? error.message : String(error), 512) }, recovery: 'Verify the asset importer and property path, then retry.' });
 }
 
 
@@ -769,6 +791,7 @@ export class AssetTools {
         const typeValue = Reflect.get(info, 'type');
         if (!isValidImportIdentity(uuidValue, MAX_IMPORT_REFERENCE_ID_LENGTH)
             || !isValidImportIdentity(urlValue, MAX_IMPORT_SOURCE_URL_LENGTH)
+
             || !isValidImportIdentity(typeValue, MAX_IMPORT_REFERENCE_TYPE_LENGTH)) {
             throw assetImportSettingsQueryError(new Error('Creator returned an asset record without a valid uuid, url, and type.'));
         }
@@ -789,6 +812,36 @@ export class AssetTools {
                 isDirectory: Reflect.get(info, 'isDirectory') === true,
             },
         };
+    }
+    @utcpTool('assetImportSettingsSet', 'Set one typed importer property, reimport the asset, and read back the resulting settings.', {
+        type: 'object', additionalProperties: false,
+        properties: {
+            reference: InstanceReferenceSchema,
+            path: { type: 'string', minLength: 1, maxLength: MAX_IMPORT_SET_PATH_LENGTH, pattern: '^[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*$' },
+            value: { description: 'Finite JSON-compatible importer value bounded by importer metadata limits.' },
+        },
+        required: ['reference', 'path', 'value'],
+    }, {
+        type: 'object', additionalProperties: false,
+        properties: { changed: { type: 'boolean' }, result: { type: 'object' } },
+        required: ['changed', 'result'],
+    }, 'POST', ['asset', 'import', 'settings', 'configure', 'reimport'])
+    async assetImportSettingsSet(args: { reference: IInstanceReference, path: string, value: unknown }): Promise<{ changed: boolean, result: AssetImportSettingsResult }> {
+        const request = validateImportSet(args);
+        try {
+            const info = await Editor.Message.request('asset-db', 'query-asset-info', request.reference.id);
+            if (!info || typeof info !== 'object' || Array.isArray(info)) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${request.reference.id} not found.` });
+            const record = info as unknown as IAssetInfo;
+            const importerName = record.importer ?? '';
+            const importer = ImporterManager.getInstance().getImporter(importerName);
+            if (!importer) throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: `No registered importer supports '${importerName}'.` });
+            if (!await importer.setProperty(record, request.path, request.value)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Importer '${importerName}' rejected property '${request.path}'.` });
+            await Editor.Message.request('asset-db', 'reimport-asset', record.uuid);
+            return { changed: true, result: await this.assetImportSettingsGet({ reference: { id: record.uuid, type: record.type } }) };
+        } catch (error) {
+            if (error instanceof ToolError) throw error;
+            throw assetImportSettingsSetError(error);
+        }
     }
 
     @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with importer and dependency metadata.', {
