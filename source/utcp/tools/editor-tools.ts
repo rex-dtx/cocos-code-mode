@@ -427,6 +427,69 @@ export class EditorTools {
     }
 
     @utcpTool(
+        'editorLog',
+        'Write to the Creator editor console and project log. debug uses console.log with a [debug] prefix; optional data is appended as JSON.',
+        {
+            type: 'object',
+            properties: {
+                level: { type: 'string', enum: ['debug', 'info', 'warn', 'error'] },
+                message: { type: 'string', minLength: 1, maxLength: 4096 },
+                data: { description: 'Optional JSON-serializable payload (maximum 64 KiB when serialized)' }
+            },
+            required: ['level', 'message'],
+            additionalProperties: false
+        },
+        {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                level: { type: 'string', enum: ['debug', 'info', 'warn', 'error'] },
+                message: { type: 'string' }
+            },
+            required: ['success', 'level', 'message']
+        }, "POST", ['editor', 'log', 'console', 'debug', 'info', 'warn', 'error']
+    )
+    editorLog(args: { level: 'debug' | 'info' | 'warn' | 'error', message: string, data?: unknown }): { success: true, level: 'debug' | 'info' | 'warn' | 'error', message: string } {
+        const level = args?.level;
+        if (!['debug', 'info', 'warn', 'error'].includes(level)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorLog level must be one of debug, info, warn, or error.' });
+        }
+
+        if (typeof args?.message !== 'string') {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorLog message is required and must be a string.' });
+        }
+        const message = args.message.trim();
+        if (message.length === 0 || message.length > 4096) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorLog message must be 1-4096 characters after trimming.' });
+        }
+
+        let serialized: string | undefined;
+        if (args.data !== undefined) {
+            try {
+                serialized = JSON.stringify(args.data);
+            } catch (error) {
+                throw new ToolError({
+                    code: 'INVALID_ARGUMENT',
+                    status: 400,
+                    message: 'editorLog data must be JSON-serializable.',
+                    details: { cause: error instanceof Error ? error.message : String(error) },
+                });
+            }
+            if (serialized === undefined || Buffer.byteLength(serialized, 'utf8') > 64 * 1024) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorLog data must serialize to at most 65536 bytes.' });
+            }
+        }
+
+        const text = `${level === 'debug' ? '[debug] ' : ''}${message}${serialized === undefined ? '' : ` ${serialized}`}`;
+        if (level === 'debug') {
+            console.log(text);
+        } else {
+            console[level](text);
+        }
+        return { success: true, level, message };
+    }
+
+    @utcpTool(
         'editorGetLogs',
         'Get last N editor log entries',
         {
