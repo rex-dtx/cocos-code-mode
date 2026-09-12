@@ -79,6 +79,22 @@ CC Bridge controls Cocos Creator 3.x through tools for scenes, nodes, components
 
 ## Common workflows
 
+### Send an agent log to the editor
+
+Use `editorLog` instead of `executeJavascript` to write a message to the Creator console:
+
+```typescript
+return await ccb3x.editorLog({
+  level: 'info',
+  message: '[Agent] Finished checking the scene',
+  data: { checkedNodes: 12, valid: true },
+});
+```
+
+`level` is required: `debug`, `info`, `warn`, or `error`. `message` is required, trimmed, non-blank, and limited to 4096 characters. Optional `data` is appended as JSON and limited to 65536 UTF-8 bytes when serialized. The response contains `{ success: true, level, message }`. Invalid inputs return HTTP 400.
+
+`debug` uses `console.log` with a `[debug]` prefix so the existing project-log reader can recognize it. Read entries back with `editorGetLogs`; use `showStack: true` when the message contains multiple lines. The tool follows normal profile exposure (full by default); enable it explicitly for a core/custom profile. After rebuilding, reload the extension and re-register the manual to discover the new API.
+
 ### Inspect and modify a scene
 
 1. `nodeGetTree` to locate a node and retain its reference.

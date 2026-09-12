@@ -353,6 +353,13 @@ declare namespace cc_bridge_3x {
         operations?: { funcName: string, args: any[] }[]
     }): { success: boolean, error?: string, result?: any };
 
+    /** Write to the editor console/project log. Message: 1-4096 characters, trimmed and non-blank. Data: JSON, at most 64 KiB serialized. debug uses console.log with a [debug] prefix. */
+    function editorLog(args: {
+        level: "debug" | "info" | "warn" | "error",
+        message: string,
+        data?: unknown
+    }): { success: true, level: "debug" | "info" | "warn" | "error", message: string };
+
     /** Get last N editor log entries. */
     function editorGetLogs(args: {
         count: number,
@@ -410,9 +417,13 @@ declare namespace cc_bridge_3x {
         error: { code: string, message: string, evidence: Record<string, any> }
     };
 
-    /** Inspect a bounded, read-only UI subtree and return normalized layout values in Creator tree order. */
+    /** Read-only all-node inventory in Creator tree order (maxNodes 1..128, default 64).
+     * Local position/active are preserved. worldRect is the world-axis-aligned bound of the
+     * node's own anchored UITransform corners, including all ancestor transforms, not descendants.
+     * Nodes without UITransform have null size/anchor/worldRect; unavailable live geometry fails explicitly.
+     */
     function uiLayoutInspect(args: {
-        reference?: InstanceReference & { type: "cc.Node" },
+        reference?: InstanceReference & { type?: "cc.Node" },
         maxNodes?: number
     }): {
         nodes: Array<{
@@ -636,7 +647,12 @@ declare namespace cc_bridge_3x {
         truncated: boolean
     };
 
-    /** Candidate: inspect one Creator builder task through query-task only. Returns terminal state/progress and normalized, bounded diagnostics when the public task payload exposes logs; unavailable logs are reported with available=false and no fabricated entries. */
+    /** Candidate: inspect one Creator builder task through query-task only. Unavailable logs use available=false, never fabricated entries.
+     * Integer maxEntries 1..256; integer maxBytes 256..2097152 caps the entire successful UTF-8 JSON response.
+     * Oversized optional data is omitted with truncated=true; task identity/state are never sliced.
+     * An unfit mandatory envelope fails with BUILD_LOG_RESPONSE_TOO_LARGE (422).
+     * Invalid limits fail with INVALID_ARGUMENT (400) before IPC.
+     */
     function buildLogInspect(args: {
         taskId: string | number,
         maxEntries?: number,

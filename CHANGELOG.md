@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `editorLog` for agent messages in the Creator editor console/project log, with `debug/info/warn/error`, optional JSON data, and bounded input validation. `debug` maps to `console.log` with a `[debug]` prefix.
+
 ## 2.2.0 — 2026-09-05 — Cocos Graph v4 + Typed Recovery Errors + 3x Baseline Consolidation
 
 Hợp nhất toàn bộ các nhánh `feat/ccb3x-consolidated`, `feat/ccb3x-fail-loud-smoke`, và `feat/ccb3x-scene-graph-index` vào `cc-3x7` (commit `53589bb`). 159 unit tests pass, 31 graph tests pass.
