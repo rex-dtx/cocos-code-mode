@@ -141,6 +141,36 @@ Limits: both tools require a non-blank title (≤256 characters) and message (�
 
 Prompts render labels and options as text, never HTML. Request IDs reject stale/double responses; timers and active requests are cleared on every completion. The panel clears values on completion/deadline and remains open with status for reuse. Do not request passwords or secrets: submitted values travel through the normal tool response/debug logging pipeline. Only act on explicit submission/selection; cancellation and timeout are not approval.
 
+### Quiet notifications and cooperative tasks
+
+`editorNotify({ level: 'info', title, message })` immediately returns a notification ID and timestamp, writes a bounded editor-log entry, and quietly broadcasts updated Agent Inbox state. Levels are `info` (default), `warning`, and `error`. Title must be non-blank and at most 256 characters; message non-blank and at most 4096. Neither notifications nor progress opens or focuses a panel, uses a native dialog, or controls mouse/keyboard.
+
+```typescript
+const task = await ccb3x.editorProgress({
+  operation: 'start', title: 'Inspect assets', message: 'Reading metadata',
+  progress: 0, timeoutMs: 60000,
+});
+// Perform bounded work steps, polling between them:
+const state = await ccb3x.editorTaskList({ taskId: task.taskId });
+if (state.tasks[0]?.cancelRequested) {
+  // First stop the actual work safely; only then acknowledge:
+  return await ccb3x.editorProgress({
+    operation: 'finish', taskId: task.taskId, status: 'cancelled',
+  });
+}
+await ccb3x.editorProgress({ operation: 'update', taskId: task.taskId, progress: 50 });
+// After the actual work completes:
+return await ccb3x.editorProgress({ operation: 'finish', taskId: task.taskId, status: 'completed' });
+```
+
+Tasks are tracking records, not a background execution engine. `start` returns `taskId`, `status: 'running'`, `cancelRequested: false`, epoch-millisecond `createdAt`/`updatedAt`/`expiresAt`, nullable `finishedAt`, and nullable progress. `update` accepts progress 0–100 and/or message ≤4096 characters (an empty update is a heartbeat). Each update renews the initial inactivity timeout: 1–300000ms, default 60000ms. `finish` requires `completed`, `failed`, or `cancelled`; completed sets progress to 100. Terminal records cannot be updated or finished again (409).
+
+`editorTaskCancel({ taskId })` only sets a cooperative cancellation flag. It returns `{ task, requested: true, interrupted: false }` while running, including repeat requests; for terminal tasks `requested` is false. It never claims that work was interrupted, never renews the inactivity timeout, and never marks the task cancelled. The worker checks `cancelRequested`, stops safely, then explicitly finishes cancelled. `timedOut` means the tracking heartbeat went stale, **not** that underlying work stopped.
+
+`editorTaskList({ status?, taskId?, limit? })` returns newest-created first, with `total` matching the filters and `truncated` indicating the list limit (default 50, maximum 100). At most 100 task records and 50 newest notifications are retained. Terminal tasks and notifications expire after five minutes; oldest terminal tasks may be evicted sooner to admit new work. Starting at capacity with all tasks running returns 409. Unknown/expired task IDs return 404 for update/finish/cancel, or an empty filtered list. Malformed inputs and operation-inappropriate fields return typed 400 `INVALID_ARGUMENT`. Restart/unload clears in-memory records.
+
+`editorState({ timeoutMs? })` reads only project path, current scene identity, scene readiness/dirty state, task counts, and pending inbox metadata—never a scene tree or entered form values. Its read deadline defaults to 1000ms (1–5000ms allowed). Unavailable, rejected, malformed, or timed-out queries produce null fields and named `unavailable` entries rather than guessed idle/success. `busy.scene` means the scene is not ready; it is not a global Creator busy lock. `busy.tasks`/`busy.inbox` reflect this extension's running tasks/pending nonmodal request; native dialogs and other extensions' work are not tracked.
+
 ### Inspect and modify a scene
 
 1. `nodeGetTree` to locate a node and retain its reference.

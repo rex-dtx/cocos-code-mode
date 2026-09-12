@@ -366,6 +366,59 @@ declare namespace cc_bridge_3x {
         data?: unknown
     }): { success: true, level: "debug" | "info" | "warn" | "error", message: string };
 
+    type EditorTaskStatus = "running" | "completed" | "failed" | "cancelled" | "timedOut";
+    interface EditorTask {
+        taskId: string;
+        title: string;
+        message: string;
+        progress: number | null;
+        status: EditorTaskStatus;
+        cancelRequested: boolean;
+        createdAt: number;
+        updatedAt: number;
+        expiresAt: number;
+        finishedAt: number | null;
+    }
+    interface EditorNotification {
+        id: string;
+        level: "info" | "warning" | "error";
+        title: string;
+        message: string;
+        createdAt: number;
+    }
+    /** Bounded read-only snapshot. */
+    function editorState(args?: { timeoutMs?: number }): {
+        capturedAt: number, projectPath: string | null, engineVersion: string | null,
+        scene: { ready: boolean | null, dirty: boolean | null, current: { uuid: string | null, url: string | null, name: string | null } | null },
+        busy: { scene: boolean | null, assetImport: boolean | null, build: boolean | null, tasks: boolean, inbox: boolean },
+        tasks: { running: number, cancellationRequested: number, retained: number },
+        inbox: { pending: boolean, requestId: string | null, kind: "form" | "question" | null, expiresAt: number | null },
+        unavailable: string[]
+    };
+    /** Start cooperative work, heartbeat/update, or finish explicitly. Inactivity timeout 1-300000ms (default 60000); updates renew it, cancellation requests do not. Progress 0-100. Expiry is timedOut, not interruption. Finish completed sets progress 100. Terminal states immutable; unknown IDs 404, transitions/capacity 409. Max 100 tasks, terminal retention 5min with oldest-terminal eviction at capacity. */
+    function editorProgress(args:
+        | { operation: "start", title: string, message?: string, progress?: number, timeoutMs?: number }
+        | { operation: "update", taskId: string, message?: string, progress?: number }
+        | { operation: "finish", taskId: string, status: "completed" | "failed" | "cancelled", message?: string }
+    ): EditorTask;
+
+    /** Newest-first bounded list, default 50/max 100. Poll cancelRequested between work steps. */
+    function editorTaskList(args?: { status?: EditorTaskStatus, taskId?: string, limit?: number }): { tasks: EditorTask[], total: number, truncated: boolean };
+
+    /** Flag only, never interrupts work. requested:true while running (including repeated requests); false when already terminal. Worker must stop safely then finish cancelled. */
+    function editorTaskCancel(args: { taskId: string }): { task: EditorTask, requested: boolean, interrupted: false };
+
+    /** Bounded read-only snapshot. Default deadline 1000ms, maximum 5000ms; null + unavailable means unsupported, failed, malformed or timed-out API. busy.scene means not ready, not a global busy lock. No scene tree, prompt values or native-dialog state. */
+    function editorState(args?: { timeoutMs?: number }): {
+        capturedAt: number,
+        projectPath: string | null,
+        scene: { ready: boolean | null, dirty: boolean | null, current: { uuid: string | null, url: string | null, name: string | null } | null },
+        busy: { scene: boolean | null, tasks: boolean, inbox: boolean },
+        tasks: { running: number, cancellationRequested: number, retained: number },
+        inbox: { pending: boolean, requestId: string | null, kind: "form" | "question" | null, expiresAt: number | null },
+        unavailable: string[]
+    };
+
     /** Nonmodal Agent Inbox question by default, without opening/focusing the panel. User opens CC Bridge 3x > Agent Inbox. Native dialogs require explicit presentation:"native"; openPanel:true permits panel activation. Default buttons OK/Cancel, cancelId last button. Deadline 1-300000ms, default 60000. Native timeout does not dismiss the native window. */
     function editorAsk(args: {
         title: string,

@@ -1,8 +1,9 @@
 import packageJSON from '../../../package.json';
 import type { EditorInteractionRequest } from '../../utcp/editor-interaction-contracts';
+import { ControlView } from './control-view';
 
 interface PromptPanel {
-    $: Record<'title' | 'message' | 'form' | 'fields' | 'submit' | 'cancel' | 'status', HTMLElement>;
+    $: Record<'title' | 'message' | 'form' | 'fields' | 'submit' | 'cancel' | 'status' | 'tasks' | 'notifications' | 'controlStatus', HTMLElement>;
 }
 let current: EditorInteractionRequest | undefined;
 let expiryTimer: NodeJS.Timeout | undefined;
@@ -10,6 +11,8 @@ let generation = 0;
 const controls = new Map<string, HTMLInputElement | HTMLSelectElement>();
 let onChanged: (() => void) | undefined;
 let onFinished: ((requestId: string, status: string) => void) | undefined;
+let onControlChanged: (() => void) | undefined;
+let controlView: ControlView | undefined;
 // These listener APIs exist in Creator 3.7.3 but are absent from creator-types.
 const messages = Editor.Message as typeof Editor.Message & {
     addBroadcastListener(event: string, listener: Function): void;
@@ -121,14 +124,19 @@ async function showPrompt(panel: PromptPanel): Promise<void> {
 module.exports = Editor.Panel.define({
     template: `<section><h2 id="title">Agent Inbox</h2><p id="message"></p>
         <form id="form" hidden><div id="fields"></div><footer><button id="submit" type="submit">Submit</button>
-        <button id="cancel" type="button">Cancel</button></footer></form><p id="status" role="status">Waiting for an agent request.</p></section>`,
+        <button id="cancel" type="button">Cancel</button></footer></form><p id="status" role="status">Waiting for an agent request.</p>
+        <section class="activity"><h3>Agent tasks</h3><ul id="tasks"></ul>
+        <h3>Notifications</h3><ul id="notifications"></ul><p id="control-status" role="status"></p></section></section>`,
     style: `section { padding: 16px; overflow: auto; height: 100%; box-sizing: border-box; }
+        section.activity { padding: 0; height: auto; } .activity ul { padding: 0; list-style: none; }
+        .activity li { padding: 8px 0; border-bottom: 1px solid #555; overflow-wrap: anywhere; white-space: pre-wrap; }
+        .activity progress { display: block; width: 100%; margin: 8px 0; }
         h2, p, span { white-space: pre-wrap; overflow-wrap: anywhere; }
         label { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
         input, select, button { font: inherit; } input[type=checkbox] { align-self: flex-start; }
         input[type=text], select { width: 100%; box-sizing: border-box; }
         footer { display: flex; gap: 8px; margin-top: 16px; }`,
-    $: { title: '#title', message: '#message', form: '#form', fields: '#fields', submit: '#submit', cancel: '#cancel', status: '#status' },
+    $: { title: '#title', message: '#message', form: '#form', fields: '#fields', submit: '#submit', cancel: '#cancel', status: '#status', tasks: '#tasks', notifications: '#notifications', controlStatus: '#control-status' },
     ready() {
         const panel = this as unknown as PromptPanel;
         onChanged = () => { void showPrompt(panel); };
@@ -138,6 +146,10 @@ module.exports = Editor.Panel.define({
         };
         messages.addBroadcastListener(`${packageJSON.name}:editor-prompt-changed`, onChanged);
         messages.addBroadcastListener(`${packageJSON.name}:editor-prompt-finished`, onFinished);
+        controlView = new ControlView(panel.$.tasks, panel.$.notifications, panel.$.controlStatus);
+        onControlChanged = () => { void controlView?.refresh(); };
+        messages.addBroadcastListener(`${packageJSON.name}:editor-control-changed`, onControlChanged);
+        void controlView.refresh();
         panel.$.form.onsubmit = event => { event.preventDefault(); void respond(panel, 'submit'); };
         panel.$.cancel.onclick = () => { void respond(panel, 'cancel'); };
         panel.$.form.onkeydown = event => {
@@ -146,9 +158,14 @@ module.exports = Editor.Panel.define({
     },
     update() {
         void showPrompt(this as unknown as PromptPanel);
+        void controlView?.refresh();
     },
     close() {
         ++generation;
+        if (onControlChanged) messages.removeBroadcastListener(`${packageJSON.name}:editor-control-changed`, onControlChanged);
+        onControlChanged = undefined;
+        controlView?.dispose();
+        controlView = undefined;
         if (onChanged) messages.removeBroadcastListener(`${packageJSON.name}:editor-prompt-changed`, onChanged);
         if (onFinished) messages.removeBroadcastListener(`${packageJSON.name}:editor-prompt-finished`, onFinished);
         onChanged = undefined;

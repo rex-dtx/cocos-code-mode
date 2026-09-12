@@ -116,6 +116,12 @@
       }
     ],
     "messages": {
+      "editor-control-get": {
+        "methods": ["getEditorControl"]
+      },
+      "editor-task-cancel": {
+        "methods": ["cancelEditorTask"]
+      },
       "editor-prompt-get": {
         "methods": ["getEditorPrompt"]
       },

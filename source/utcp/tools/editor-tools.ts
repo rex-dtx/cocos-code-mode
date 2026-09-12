@@ -8,6 +8,9 @@ import { ToolError } from '../tool-error';
 import { askEditor } from '../editor-ask';
 import { promptEditor } from '../editor-prompt';
 import { EditorAskArgs, EditorAskResult, EditorPromptArgs, EditorPromptResult, EditorAskInputSchema, EditorAskOutputSchema, EditorPromptInputSchema, EditorPromptOutputSchema } from '../editor-interaction-contracts';
+import { notifyEditor, progressEditor, listEditorTasks, cancelEditorTask } from '../editor-control-plane';
+import { getEditorState } from '../editor-state';
+import { EditorNotifyArgs, EditorProgressArgs, EditorTaskListArgs, EditorStateArgs, EditorNotifyInputSchema, EditorNotifyOutputSchema, EditorProgressInputSchema, EditorTaskSchema, EditorTaskListInputSchema, EditorTaskListOutputSchema, EditorTaskCancelInputSchema, EditorTaskCancelOutputSchema, EditorStateInputSchema, EditorStateOutputSchema } from '../editor-control-contracts';
 
 export class EditorTools {
 
@@ -28,6 +31,21 @@ export class EditorTools {
     editorPrompt(args: EditorPromptArgs): Promise<EditorPromptResult> {
         return promptEditor(args);
     }
+
+    @utcpTool('editorNotify', 'Post a bounded info/warning/error notification quietly to Agent Inbox state and the editor log. Never opens or focuses a panel. Retained up to 5min, newest 50 notices.', EditorNotifyInputSchema, EditorNotifyOutputSchema, 'POST', ['editor', 'notification'])
+    editorNotify(args: EditorNotifyArgs) { return notifyEditor(args); }
+
+    @utcpTool('editorProgress', 'Track cooperative long work without blocking Creator. Start returns taskId; update renews its inactivity deadline (default 60s, max 5min). Finish explicitly declares completed/failed/cancelled. Progress 0-100. Expiry marks timedOut, not interruption. Poll cancelRequested and acknowledge cancellation only after work stops. Never opens/focuses panels. At most 100 retained tasks, terminal retention 5min.', EditorProgressInputSchema, EditorTaskSchema, 'POST', ['editor', 'task', 'progress'])
+    editorProgress(args: EditorProgressArgs) { return progressEditor(args); }
+
+    @utcpTool('editorTaskList', 'List retained tasks newest-first, optionally filtered by taskId/status. Default limit 50, max 100. Poll cancelRequested cooperatively; terminal status cannot be changed.', EditorTaskListInputSchema, EditorTaskListOutputSchema, 'GET', ['editor', 'task', 'state'])
+    editorTaskList(args: EditorTaskListArgs = {}) { return listEditorTasks(args); }
+
+    @utcpTool('editorTaskCancel', 'Request cooperative cancellation of a running task. Sets cancelRequested only: interrupted is always false. requested:false means already terminal. Does not interrupt code or mark cancelled; the worker must stop safely then finish with status cancelled.', EditorTaskCancelInputSchema, EditorTaskCancelOutputSchema, 'POST', ['editor', 'task', 'cancel'])
+    editorTaskCancel(args: { taskId: string }) { return cancelEditorTask(args); }
+
+    @utcpTool('editorState', 'Read bounded project path, current scene identity/readiness/dirty state, task counts and pending inbox metadata. No scene tree or prompt values. Deadline default 1s, max 5s; unavailable fields are null and listed. busy.scene means scene not ready, not a global editor lock. Read-only and never focuses panels.', EditorStateInputSchema, EditorStateOutputSchema, 'GET', ['editor', 'state', 'task', 'inbox'])
+    editorState(args: EditorStateArgs = {}) { return getEditorState(args); }
 
     @utcpTool(
         'editorEnvInfo',
