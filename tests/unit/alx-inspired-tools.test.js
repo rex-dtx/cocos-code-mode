@@ -110,6 +110,14 @@ describe('ALX-inspired CCB capabilities', () => {
       calls.push({ message, payload });
       if (message === 'query-node') return nodeDump(payload);
       if (message === 'query-node-tree') return { uuid: payload, name: payload, children: [] };
+      if (message === 'execute-scene-script' && payload.method === 'uiLayoutInspectGeometry') {
+        return { nodes: payload.args[0].nodeIds.map((id) => ({
+          id,
+          size: { width: widths.get(id), height: 10 },
+          anchor: { x: 0.5, y: 0.5 },
+          worldRect: { x: positions.get(id) - widths.get(id) / 2, y: -5, width: widths.get(id), height: 10 },
+        })) };
+      }
       if (message === 'set-property') {
         positions.set(payload.uuid, payload.dump.value.x);
         return true;

@@ -590,7 +590,7 @@ export class ExpansionTools {
             additionalProperties: false,
             properties: {
                 backend: { type: 'string', enum: ['builtin', 'cannon', 'physx'], description: 'Target Creator 3D physics backend.' },
-                joint: { type: 'string', enum: ['fixed', 'hinge', 'pointToPoint'], default: 'fixed', description: 'Bounded Creator 3D constraint type.' },
+                joint: { type: 'string', enum: ['fixed', 'hinge', 'pointToPoint', 'distance'], default: 'fixed', description: 'Bounded Creator 3D constraint type; distance is explicitly unsupported.' },
                 bodyReference: InstanceReferenceSchema,
                 connectedBodyReference: InstanceReferenceSchema,
             },
@@ -613,7 +613,7 @@ export class ExpansionTools {
     )
     async physics3dCreateJoint(args: {
         backend: 'builtin' | 'cannon' | 'physx',
-        joint?: 'fixed' | 'hinge' | 'pointToPoint',
+        joint?: 'fixed' | 'hinge' | 'pointToPoint' | 'distance',
         bodyReference: IInstanceReference,
         connectedBodyReference: IInstanceReference,
     }): Promise<{
@@ -644,11 +644,11 @@ export class ExpansionTools {
             throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'A 3D joint requires two distinct rigid-body nodes' });
         }
 
-        const jointTypeByName = {
+        const jointTypeByName: Record<string, 'cc.FixedConstraint' | 'cc.HingeConstraint' | 'cc.PointToPointConstraint'> = {
             fixed: 'cc.FixedConstraint',
             hinge: 'cc.HingeConstraint',
             pointToPoint: 'cc.PointToPointConstraint',
-        } as const;
+        };
         const jointType = jointTypeByName[args.joint ?? 'fixed'];
         if (!jointType) {
             throw new ToolError({

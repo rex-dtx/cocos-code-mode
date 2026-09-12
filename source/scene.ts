@@ -2,6 +2,7 @@ import { buildUiAccessibilityAudit, UiAccessibilityAuditRequest } from './ui-acc
 import { buildUiLayoutReport, LayoutReportRequest } from './ui-layout-report';
 import { buildUiSafeAreaInspect, UiSafeAreaInspectRequest } from './ui-safe-area-inspect';
 import { buildUiLayoutValidate, UiLayoutValidateRequest } from './ui-layout-validate';
+import { buildUiLayoutInspectGeometry, UiLayoutGeometryRequest, UiLayoutGeometryResult } from './ui-layout-inspect';
 
 export function load() { }
 export function unload() { }
@@ -326,6 +327,15 @@ export const methods = {
             for (const child of node?.children || []) stack.push(child);
         }
         return null;
+    },
+
+    async uiLayoutInspectGeometry(request: UiLayoutGeometryRequest): Promise<UiLayoutGeometryResult> {
+        const cc = (globalThis as { cc?: { director?: { getScene?: () => unknown } } }).cc;
+        const scene = cc?.director?.getScene?.();
+        if (!scene || typeof scene !== 'object') {
+            return { error: { code: 'UI_LAYOUT_SCENE_UNAVAILABLE', message: 'Live scene graph is unavailable.' } };
+        }
+        return buildUiLayoutInspectGeometry(scene, request);
     },
 
     async uiLayoutReport(request: LayoutReportRequest): Promise<unknown> {

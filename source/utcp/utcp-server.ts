@@ -455,7 +455,7 @@ export class UtcpServerManager {
                     debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
 
                     // Preserve schema-required empty arrays/objects while trimming optional payload noise.
-                    const trimmed = trimResponse(result, toolDef.outputs);
+                    const trimmed = trimResponse(result, toolMeta.tool.outputs);
 
                     // Wrap in envelope if enabled
                     if (envelopeEnabled) {

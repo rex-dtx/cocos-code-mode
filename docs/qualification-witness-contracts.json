@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "updated": "2026-09-08",
   "qualificationTarget": {
-    "creator": "3.8.7",
+    "creator": "3.7.3",
     "os": "windows-x64",
     "profile": "full",
     "artifactClass": "local-operator",

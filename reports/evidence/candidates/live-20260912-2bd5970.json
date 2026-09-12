@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-12T09:35:02.113Z",
+  "target": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "profile": "full",
+    "project": "cc30-new-all-in-one",
+    "build": {
+      "commit": "2bd5970",
+      "branch": "feat/ccb3x-api-capability-expansion",
+      "dirty": true,
+      "builtAt": "2026-09-12T09:33:34.799Z"
+    }
+  },
+  "suite": "tests/live/candidate-expansion-qualification.test.js",
+  "result": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0
+  },
+  "witnesses": [
+    "assetCatalogManifest",
+    "assetImporterAudit",
+    "sceneHierarchyValidate",
+    "particleInspect",
+    "particleValidate",
+    "terrainInspect",
+    "physics2dTopologyAudit",
+    "physics2dCompatibilityAudit",
+    "physics3dTopologyAudit",
+    "physics3dValidate",
+    "audioSourceAudit",
+    "physics2dCreateBody",
+    "physics3dCreateBody",
+    "physics3dCreateJoint",
+    "physics2dCreateJoint",
+    "runtimeSessionLifecycle",
+    "buildOutputAudit",
+    "sceneScriptHealthScan"
+  ],
+  "limitations": [
+    "This suite result is not automatically promoted to qualified count without candidate-specific fixture/artifact evidence rows and frozen approval ledger reconciliation.",
+    "runtime lifecycle includes expected unsupported transport outcome; no positive runtime lifecycle qualification."
+  ],
+  "sourceManualToolCount": 136
+}
