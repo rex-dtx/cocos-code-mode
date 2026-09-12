@@ -5,8 +5,29 @@ import * as path from 'path';
 import { Base64ImageSchema, IBase64Image, ISuccessIndicator, SuccessIndicatorSchema, InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { isMessageNotExposed } from '../utils/editor-message-error';
 import { ToolError } from '../tool-error';
+import { askEditor } from '../editor-ask';
+import { promptEditor } from '../editor-prompt';
+import { EditorAskArgs, EditorAskResult, EditorPromptArgs, EditorPromptResult, EditorAskInputSchema, EditorAskOutputSchema, EditorPromptInputSchema, EditorPromptOutputSchema } from '../editor-interaction-contracts';
 
 export class EditorTools {
+
+    @utcpTool(
+        'editorAsk',
+        'Ask via nonmodal Agent Inbox choice buttons by default; never opens/focuses a panel unless openPanel:true. User can open CC Bridge 3x > Agent Inbox. Await a choice or deadline (default 60s, max 5min). presentation:native explicitly opts into a modal Creator dialog; its timeout cannot dismiss the window. Default buttons OK/Cancel; cancelId defaults to the last button.',
+        EditorAskInputSchema, EditorAskOutputSchema, 'POST', ['editor', 'dialog', 'question', 'confirmation']
+    )
+    editorAsk(args: EditorAskArgs): Promise<EditorAskResult> {
+        return askEditor(args);
+    }
+
+    @utcpTool(
+        'editorPrompt',
+        'Request bounded text/select/confirm input in nonmodal Agent Inbox. Default does not open/focus anything: logs pending and quietly updates an existing inbox. User opens CC Bridge 3x > Agent Inbox, or openPanel:true explicitly permits activation. Await submit/cancel/deadline (60s default, 5min max). One inbox request at a time (409 otherwise). Required confirm means checked. Do not request secrets.',
+        EditorPromptInputSchema, EditorPromptOutputSchema, 'POST', ['editor', 'prompt', 'form', 'input', 'confirmation']
+    )
+    editorPrompt(args: EditorPromptArgs): Promise<EditorPromptResult> {
+        return promptEditor(args);
+    }
 
     @utcpTool(
         'editorEnvInfo',
