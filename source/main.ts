@@ -51,6 +51,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
         try {
             await previousServer.stop();
             const nextServer = new UtcpServerManager();
+            nextServer.setDebugEnabled(previousServer.getDebugEnabled());
             const actualPort = await nextServer.start(newPort);
             utcpServer = nextServer;
             await getConfigManager().updatePort(actualPort);
@@ -61,18 +62,25 @@ export const methods: { [key: string]: (...any: any) => any } = {
         }
     },
 
-
-    toggleDebug() {
-        if (!utcpServer) return;
-        const enabled = utcpServer.toggleDebug();
-        const status = enabled ? 'ON' : 'OFF';
-        console.log(`[${packageJSON.name}] Debug logging ${status}`);
-        // Also toggle scene-process console capture (log/warn/error from editor
-        // scripts). Fails silently when no scene is open — MCP logging still works.
-        const method = enabled ? 'startCatchAll' : 'stopCatchAll';
+    async getDebugLogging() {
+        const enabled = Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
+        return { enabled };
+    },
+    async setDebugLogging(enabled: boolean) {
+        if (typeof enabled !== 'boolean') throw new Error('setDebugLogging requires boolean enabled');
+        await Editor.Profile.setConfig(packageJSON.name, 'debugLogging', enabled);
+        const applied = utcpServer?.setDebugEnabled(enabled) ?? enabled;
+        const method = applied ? 'startCatchAll' : 'stopCatchAll';
         Editor.Message.request('scene', 'execute-scene-script',
             { name: packageJSON.name, method, args: [] })
             .catch((err: any) => console.warn(`[${packageJSON.name}] Scene console capture not toggled: ${err?.message || err}`));
+        console.info(`[${packageJSON.name}] Verbose interaction logging ${applied ? 'ON' : 'OFF'}`);
+        return { enabled: applied };
+    },
+
+    async toggleDebug() {
+        const current = utcpServer?.getDebugEnabled() ?? Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
+        return (methods as any).setDebugLogging(!current);
     },
 
     // The folder may not exist until debug logging is first enabled.
@@ -140,6 +148,8 @@ export async function load() {
     await configManager.initialize();
 
     // Load and apply tool profile config
+    const persistedDebugLogging = await Editor.Profile.getConfig(packageJSON.name, 'debugLogging');
+    const debugLogging = persistedDebugLogging === true;
     const profileConfig = await configManager.getToolProfileConfig();
     setServerProfile(profileConfig.profile as any, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
 
@@ -152,6 +162,7 @@ export async function load() {
         port = 0;
         wasConfiguredPort = false;
     }
+    utcpServer.setDebugEnabled(debugLogging);
 
     try {
         const actualPort = await utcpServer.start(port);

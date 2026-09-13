@@ -273,8 +273,11 @@ if (debugEnabled) {
 }
 
 function interactionLog(entry: Record<string, unknown>): void {
+    const phase = entry.phase;
+    if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
     const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
-    console.info(`[CCB interaction] ${payload}`);
+    const writer = phase === 'error' ? console.error : phase === 'warning' ? console.warn : console.info;
+    writer(`[CCB interaction] ${payload}`);
     debugLog({ type: 'interaction', ...entry });
 }
 
@@ -578,15 +581,22 @@ export class UtcpServerManager {
         console.log("UTCP Server stopped");
     }
 
-    // ponytail: runtime toggle for debug logging — no restart needed
-    toggleDebug(): boolean {
-        debugEnabled = !debugEnabled;
-        if (debugEnabled) {
+    getDebugEnabled(): boolean {
+        return debugEnabled;
+    }
+
+    setDebugEnabled(enabled: boolean): boolean {
+        debugEnabled = enabled;
+        if (enabled) {
             try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-            console.log(`[UTCP] Debug mode ON → ${debugLogFile}`);
-        } else {
-            console.log('[UTCP] Debug mode OFF');
         }
         return debugEnabled;
     }
+
+    toggleDebug(): boolean {
+        const enabled = this.setDebugEnabled(!debugEnabled);
+        console[enabled ? 'info' : 'warn'](`[UTCP] Verbose interaction logging ${enabled ? 'ON' : 'OFF'}`);
+        return enabled;
+    }
+
 }

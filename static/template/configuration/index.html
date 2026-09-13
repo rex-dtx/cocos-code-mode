@@ -9,6 +9,15 @@
         </ui-prop>
     </ui-section>
 
+    <!-- Debug Logging Section -->
+    <ui-section class="config" header="Debug Logging" expand>
+        <ui-prop>
+            <ui-label slot="label" class="label">Verbose tool interaction logs</ui-label>
+            <ui-checkbox slot="content" id="debug-logging-toggle"></ui-checkbox>
+        </ui-prop>
+        <div id="debug-logging-status" class="desc">OFF — warnings and errors only</div>
+    </ui-section>
+
     <!-- UTCP Config Section -->
     <ui-section class="config" header="UTCP Configuration" expand>
         <ui-prop>
