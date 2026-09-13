@@ -445,7 +445,7 @@
         },
         {
           "name": "animationGraphInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed layers, states, transitions, variables and masks from native serialized data.",
           "route": "versioned graph reader",
           "prerequisites": [
@@ -479,7 +479,7 @@
         },
         {
           "name": "animationGraphValidate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Validate unreachable states, missing clips, invalid variables and transition conditions.",
           "route": "graph semantic validator",
           "prerequisites": [
