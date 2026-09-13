@@ -156,6 +156,16 @@
           "restartServer"
         ]
       },
+      "get-debug-logging": {
+        "methods": [
+          "getDebugLogging"
+        ]
+      },
+      "set-debug-logging": {
+        "methods": [
+          "setDebugLogging"
+        ]
+      },
       "toggle-debug": {
         "methods": [
           "toggleDebug"
