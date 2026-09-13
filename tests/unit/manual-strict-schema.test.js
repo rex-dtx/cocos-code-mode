@@ -81,7 +81,8 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.match(serverSrc, /phase: 'start'/);
     assert.match(serverSrc, /phase: 'complete'/);
     assert.match(serverSrc, /phase: 'error'/);
-    assert.match(serverSrc, /const writer = phase === 'error' \? console\.error : phase === 'warning' \? console\.warn : console\.info/);
+    assert.match(serverSrc, /REQUEST ->/);
+    assert.match(serverSrc, /RESPONSE <-/);
   });
 
   it('persists and restores the per-project verbose logging state', () => {
