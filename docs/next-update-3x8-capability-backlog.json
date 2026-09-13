@@ -1,0 +1,100 @@
+{
+  "document": "Creator 3.8+ capability backlog",
+  "purpose": "Keep capabilities proven unsupported on Creator 3.7.3 separate from capabilities that merely lack qualification evidence.",
+  "sourceCreatorVersion": "3.7.3",
+  "targetMinimumCreatorVersion": "3.8.0",
+  "policy": {
+    "unsupportedOn373": "Do not implement or qualify in the 3.7.x delivery. Preserve typed fail-closed behavior and revisit on Creator 3.8+.",
+    "unverifiedOn373": "Not evidence of version incompatibility. May continue on 3.7.3 when the required fixture or transport becomes available.",
+    "requirePositiveAndNegativeLiveEvidence": true,
+    "requireBuildArtifactBinding": true,
+    "noFilesystemFallbackForEditorOwnedState": true
+  },
+  "unsupportedOnCreator373": [
+    {
+      "tool": "projectManage",
+      "operation": "set",
+      "api": "project/set-config",
+      "evidence": "Creator 3.7.3 returned: Message does not exist: project - set-config",
+      "currentBehavior": "HTTP 422 UNSUPPORTED_EDITOR_API; no mutation",
+      "nextUpdate": "Probe and enable the Creator 3.8 IPC signature (project, dotPath, value), then verify read-back and restoration."
+    },
+    {
+      "tool": "physics2dConfigure",
+      "api": "project/set-config",
+      "evidence": "Live Creator 3.7.3 witness returned HTTP 422 UNSUPPORTED_EDITOR_API",
+      "currentBehavior": "No mutation",
+      "nextUpdate": "Revalidate through the Creator 3.8 project settings writer; qualify collision matrix and backend settings with read-back."
+    },
+    {
+      "tool": "physics3dConfigure",
+      "api": "project/set-config",
+      "evidence": "Live Creator 3.7.3 witness returned HTTP 422 UNSUPPORTED_EDITOR_API",
+      "currentBehavior": "No mutation",
+      "nextUpdate": "Revalidate through the Creator 3.8 project settings writer; qualify gravity and backend settings with read-back."
+    },
+    {
+      "tool": "previewResolutionSet",
+      "api": "preview/set-resolution",
+      "evidence": "Creator 3.7.3 returned: Message does not exist: preview - set-resolution",
+      "currentBehavior": "HTTP 422 UNSUPPORTED_PREVIEW_IPC",
+      "nextUpdate": "Probe the Creator 3.8 preview resolution API and require applied-value read-back."
+    }
+  ],
+  "unverifiedOrFixtureBlockedOnCreator373": [
+    {
+      "tool": "particlePlayback",
+      "blocker": "No verified runtime game-view session transport; unknown session returns SESSION_NOT_FOUND",
+      "currentBehavior": "Fail-closed; no editor-scene playback claim",
+      "resumeCondition": "A verified named runtime session plus disposable particle fixture is available."
+    },
+    {
+      "tool": "localizationInspect",
+      "blocker": "Current project/package reports localization unsupported",
+      "currentBehavior": "Unsupported result; no file scraping fallback",
+      "resumeCondition": "A project with the localization package and language resources is available."
+    },
+    {
+      "tool": "localizationValidate",
+      "blocker": "No supported localization resource/package fixture",
+      "currentBehavior": "Unsupported result or typed transport error",
+      "resumeCondition": "A real localization key/resource fixture and language context are available."
+    },
+    {
+      "tool": "animationGraphCreate",
+      "blocker": "No positive native animation graph fixture is bound",
+      "currentBehavior": "Implemented-unverified",
+      "resumeCondition": "A disposable graph asset can be created, imported, read back, and rolled back."
+    },
+    {
+      "tool": "animationRetargetValidate",
+      "blocker": "No source/target model pair exposes bounded imported skeleton joint metadata",
+      "currentBehavior": "HTTP 422 UNSUPPORTED_METADATA when metadata is absent",
+      "resumeCondition": "A model pair with imported skeleton metadata is available."
+    },
+    {
+      "tool": "skeletalAnimationConfigure",
+      "blocker": "No positive serialized SkeletalAnimation component fixture",
+      "currentBehavior": "Bounded playOnLoad/useBakedAnimation implementation-unverified",
+      "resumeCondition": "A disposable scene fixture exposes the serialized fields with save/reopen read-back."
+    },
+    {
+      "tool": "materialEdit",
+      "blocker": "No safe disposable material fixture with rendered visual postcondition",
+      "currentBehavior": "Importer/read-back route implemented-unverified",
+      "resumeCondition": "A disposable material can be edited, rendered, verified visually, and cleaned up."
+    },
+    {
+      "tool": "runtimeSessionLifecycle",
+      "blocker": "Game-view/browser-preview runtime transport has no positive witness",
+      "currentBehavior": "Fail-closed unsupported transport",
+      "resumeCondition": "Preview start/stop/attach/read-state lifecycle is observable."
+    },
+    {
+      "tool": "buildTargetLaunch",
+      "blocker": "No positive build-target launch evidence",
+      "currentBehavior": "Probe-required",
+      "resumeCondition": "A disposable build target exposes terminal identity/state and cleanup."
+    }
+  ]
+}

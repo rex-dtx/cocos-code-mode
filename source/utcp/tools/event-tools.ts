@@ -3,22 +3,7 @@
 // runtime node graph + EventHandler are live.
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
-import { ToolError } from '../tool-error';
-
 const EVENT_PACKAGE = 'cc-bridge-3x';
-
-async function ensureRuntimeNode(id: string): Promise<void> {
-    const exists = await Editor.Message.request('scene', 'query-node', id);
-    if (exists === null || exists === undefined) {
-        throw new ToolError({
-            code: 'NOT_FOUND',
-            status: 404,
-            message: `Node ${id} not found in editor scene`,
-            details: { id },
-            recovery: 'Pass a current scene node reference.',
-        });
-    }
-}
 
 export class EventTools {
 
@@ -45,7 +30,6 @@ export class EventTools {
     )
     async simulateButtonClick(args: { reference: IInstanceReference }): Promise<{ handlersFired: number, method: string }> {
         if (!args.reference?.id) throw new Error('simulateButtonClick requires reference.id (node uuid with cc.Button)');
-        await ensureRuntimeNode(args.reference.id);
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: EVENT_PACKAGE, method: 'simulateButtonClick', args: [args.reference.id],
         }) as { handlersFired: number, method: string } | null;
@@ -82,7 +66,6 @@ export class EventTools {
         if (!args.reference?.id) throw new Error('bindButtonClickEvent requires reference.id');
         if (!args.componentType?.trim()) throw new Error('componentType must be non-empty');
         if (!args.handlerName?.trim())   throw new Error('handlerName must be non-empty');
-        await ensureRuntimeNode(args.reference.id);
         const result = await Editor.Message.request('scene', 'execute-scene-script', {
             name: EVENT_PACKAGE, method: 'bindButtonClickEvent',
             args: [args.reference.id, args.componentType, args.handlerName, args.customEventData || ''],

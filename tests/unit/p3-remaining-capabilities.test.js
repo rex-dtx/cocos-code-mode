@@ -1,0 +1,137 @@
+'use strict';
+const { describe, it, afterEach } = require('node:test');
+const assert = require('node:assert/strict');
+const { requireDist, readSource } = require('../helpers/require-dist');
+
+const { PortfolioValidationTools } = requireDist('utcp/tools/portfolio-validation-tools.js');
+
+let previousEditor;
+afterEach(() => {
+  global.Editor = previousEditor;
+  previousEditor = undefined;
+});
+
+function install(request) {
+  previousEditor = global.Editor;
+  global.Editor = { Message: { request } };
+}
+
+function asset(id, metadata = {}) {
+  return { uuid: id, type: 'cc.FBX', url: `db://assets/${id}.fbx`, meta: { userData: metadata } };
+}
+
+describe('remaining P3 capability contracts', () => {
+  it('registers all three exact public routes', () => {
+    const source = readSource('utcp/tools/portfolio-validation-tools.ts');
+    for (const name of ['animationGraphCreate', 'animationRetargetValidate', 'skeletalAnimationConfigure']) {
+      assert.match(source, new RegExp(`utcpTool\\('${name}'`));
+    }
+  });
+
+  it('creates an animation graph only after asset-db identity read-back', async () => {
+    const calls = [];
+    install(async (service, message, ...args) => {
+      calls.push({ service, message, args });
+      if (message === 'generate-available-url') return 'db://assets/graphs/walk.animgraph';
+      if (message === 'copy-asset') return { uuid: 'graph-uuid', type: 'cc.AnimationGraph', url: args[1] };
+      if (message === 'query-asset-info') return { uuid: 'graph-uuid', type: 'cc.AnimationGraph', url: 'db://assets/graphs/walk.animgraph' };
+      throw new Error(`unexpected ${service}:${message}`);
+    });
+
+    const result = await new PortfolioValidationTools().animationGraphCreate({ assetPath: 'db://assets/graphs/walk' });
+    assert.deepEqual(result, {
+      reference: { id: 'graph-uuid', type: 'cc.AnimationGraph' },
+      assetPath: 'db://assets/graphs/walk.animgraph',
+      verified: true,
+    });
+    assert.deepEqual(calls.map((call) => call.message), ['generate-available-url', 'copy-asset', 'query-asset-info']);
+    assert.equal(calls[1].args[0], 'db://internal/default_file_content/animation-graph/default.animgraph');
+  });
+
+  it('rejects unsafe graph paths and refuses success without identity', async () => {
+    const calls = [];
+    install(async (...args) => { calls.push(args); return null; });
+    const tools = new PortfolioValidationTools();
+    await assert.rejects(() => tools.animationGraphCreate({ assetPath: 'db://assets/../outside' }), (error) => error.code === 'INVALID_ARGUMENT' && error.status === 400);
+    assert.deepEqual(calls, []);
+
+    install(async (_service, message) => {
+      if (message === 'generate-available-url') return 'db://assets/graphs/empty.animgraph';
+      if (message === 'copy-asset') return { type: 'cc.AnimationGraph' };
+      throw new Error('unexpected request');
+    });
+    await assert.rejects(() => tools.animationGraphCreate({ assetPath: 'db://assets/graphs/empty' }), (error) => error.code === 'CREATE_FAILED' && error.status === 502);
+  });
+
+  it('compares bounded skeleton metadata without claiming automatic retargeting', async () => {
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      if (id === 'source') return asset('source', { joints: ['root', 'hip'], clips: ['idle'] });
+      if (id === 'target') return asset('target', { joints: ['root', 'hip'], clips: ['idle'] });
+      return asset(id, { joints: ['root'], clips: ['idle'], skeletonId: 'target-skeleton' });
+    });
+
+    const result = await new PortfolioValidationTools().animationRetargetValidate({
+      sourceReference: { id: 'source', type: 'cc.FBX' },
+      targetReference: { id: 'target', type: 'cc.FBX' },
+    });
+    assert.equal(result.valid, true);
+    assert.equal(result.automaticRetargeting, false);
+    assert.deepEqual(result.source.joints, ['root', 'hip']);
+    assert.deepEqual(result.target.joints, ['root', 'hip']);
+
+    const mismatch = await new PortfolioValidationTools().animationRetargetValidate({
+      sourceReference: { id: 'source' },
+      targetReference: { id: 'other' },
+    });
+    assert.equal(mismatch.valid, false);
+    assert.equal(mismatch.issues[0].code, 'TARGET_JOINTS_MISSING');
+  });
+
+  it('fails closed when retarget metadata is unavailable', async () => {
+    install(async () => asset('model', {}));
+    await assert.rejects(
+      () => new PortfolioValidationTools().animationRetargetValidate({ sourceReference: { id: 'model' }, targetReference: { id: 'model' } }),
+      (error) => error.code === 'UNSUPPORTED_METADATA' && error.status === 422,
+    );
+  });
+
+  it('configures only serialized skeletal fields and verifies read-back', async () => {
+    const calls = [];
+    const node = {
+      uuid: 'skeletal-node',
+      __comps__: [{ type: 'cc.SkeletalAnimation', value: { uuid: { value: 'skeletal-component' }, playOnLoad: { value: false, type: 'Boolean' } } }],
+    };
+    install(async (service, message, payload) => {
+      calls.push({ service, message, payload });
+      if (message === 'query-node') return node;
+      if (message === 'set-property') {
+        node.__comps__[0].value.playOnLoad = payload.dump;
+        return true;
+      }
+      if (message === 'snapshot') return true;
+      throw new Error(`unexpected ${service}:${message}`);
+    });
+
+    const result = await new PortfolioValidationTools().skeletalAnimationConfigure({
+      reference: { id: 'skeletal-node', type: 'cc.Node' },
+      properties: { playOnLoad: true },
+    });
+    assert.deepEqual(result.reference, { id: 'skeletal-node', type: 'cc.Node' });
+    assert.deepEqual(result.componentReference, { id: 'skeletal-component', type: 'cc.SkeletalAnimation' });
+    assert.deepEqual(result.properties, { playOnLoad: true });
+    assert.deepEqual(result.changed, ['playOnLoad']);
+    assert.equal(result.verified, true);
+    assert.deepEqual(calls.map((call) => call.message), ['query-node', 'set-property', 'snapshot', 'query-node']);
+  });
+
+  it('rejects unsupported skeletal fields before scene mutation', async () => {
+    const calls = [];
+    install(async (...args) => { calls.push(args); throw new Error('scene IPC must not run'); });
+    await assert.rejects(
+      () => new PortfolioValidationTools().skeletalAnimationConfigure({ reference: { id: 'node' }, properties: { skin: 'hero' } }),
+      (error) => error.code === 'UNSUPPORTED_PROPERTY' && error.status === 422,
+    );
+    assert.deepEqual(calls, []);
+  });
+});

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "candidate": "shaderValidate",
+  "creatorVersion": "3.7.3",
+  "artifactCommit": "6463c65",
+  "artifactDirty": true,
+  "endpoint": "http://127.0.0.1:49650",
+  "executionContext": "asset-db",
+  "contract": "Validate a named built-in effect and return typed diagnostics for a missing effect",
+  "positiveTestID": "candidate.shaderValidate.positive.v1",
+  "negativeTestID": "candidate.shaderValidate.negative.v1",
+  "command": "UTCP_BASE=http://localhost:49650 node --test tests/live/validation-graph-qualification.test.js --test-name-pattern=\"shader validation\"",
+  "result": "passed",
+  "positive": { "effectName": "builtin-standard", "valid": true, "diagnostics": [] },
+  "negative": { "effectName": "__missing_effect__", "valid": false, "diagnosticCode": "EFFECT_NOT_FOUND" },
+  "scope": "Named effect validation only; this does not qualify material editing or shader compilation."
+}

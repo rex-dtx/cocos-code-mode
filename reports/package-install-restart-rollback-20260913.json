@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-13T16:11:46+07:00",
+  "artifact": "cc-bridge-3x-v200-260913-161146.zip",
+  "build": {
+    "commit": "6463c65",
+    "branch": "feat/ccb3x-api-capability-expansion",
+    "dirty": true
+  },
+  "install": {
+    "method": "tar extraction into disposable temporary directory",
+    "packageJsonPresent": true,
+    "mainEntry": "./dist/main.js",
+    "mainEntryPresent": true,
+    "archivedVersion": "2.0.0-dev.6463c65-dirty",
+    "buildInfoCommitMatches": true,
+    "temporaryDirectoryRemoved": true
+  },
+  "restart": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "buildInfoObserved": true,
+    "manualToolCount": 192,
+    "manualSchemaTest": "tests/live/manual.test.js",
+    "manualSchemaResult": "8/8 pass"
+  },
+  "rollback": {
+    "status": "qualified-disposable-cycle",
+    "method": "linkProjectExtension replacement in an isolated temporary Cocos project, followed by explicit junction removal and backup restoration",
+    "backupCreated": true,
+    "backupContentsPreserved": true,
+    "replacementJunctionResolvedToSource": true,
+    "backupRestoredToDestination": true,
+    "temporaryProjectRemoved": true,
+    "limitation": "The live production project was not destructively replaced; runtime restart proof is separately bound above."
+  },
+  "qualification": "package extraction, Creator restart/manual, and isolated replacement rollback verified"
+}

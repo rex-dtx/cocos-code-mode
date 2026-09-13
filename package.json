@@ -16,6 +16,7 @@
     "test:live": "node --test tests/live/*.test.js",
     "test:all": "node --test tests/unit/*.test.js tests/live/*.test.js",
     "audit:portfolio": "node scripts/audit-tool-portfolio.js",
+    "audit:live": "node scripts/audit-live-qualification.js",
     "audit:portfolio:ready": "node scripts/audit-tool-portfolio.js --require-ready"
   },
   "description": "i18n:cc-bridge-3x.description",
@@ -194,7 +195,7 @@
     }
   },
   "creator": {
-    "version": "3.8.7"
+    "version": "3.7.3"
   },
   "uuid": "cc7a19e1-e3e4-4bad-ae81-f9498fa781fc"
 }
