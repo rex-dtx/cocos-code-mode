@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { requireDist } = require('../helpers/require-dist');
 
 const { ToolError, toToolErrorResponse } = requireDist('utcp/tool-error.js');
-const { shouldLogToolError, expectedTestWitnessId } = requireDist('utcp/utcp-server.js');
+const { shouldLogToolError, expectedTestWitnessId, creatorInteractionLog } = requireDist('utcp/utcp-server.js');
 
 
 describe('typed UTCP tool errors', () => {
@@ -55,6 +55,23 @@ describe('typed UTCP tool errors', () => {
       'x-ccb-expected-error': 'true',
       'x-ccb-test-id': 'contains spaces',
     }), undefined);
+  });
+  it('mirrors lifecycle and API errors into the Creator console without throwing', () => {
+    const prior = global.Editor;
+    const calls = [];
+    global.Editor = {
+      info: (message) => calls.push(['info', message]),
+      warn: (message) => calls.push(['warn', message]),
+      error: (message) => calls.push(['error', message]),
+    };
+    try {
+      creatorInteractionLog({ phase: 'error', tool: 'spineSocketConfigure', status: 502, code: 'SPINE_SOCKET_CONFIGURE_FAILED' });
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0][0], 'error');
+      assert.match(calls[0][1], /\[cx3\]\[api\] ERROR 502 tool=spineSocketConfigure/);
+    } finally {
+      global.Editor = prior;
+    }
   });
 
   it('classifies unsupported editor APIs with a recovery action', () => {
