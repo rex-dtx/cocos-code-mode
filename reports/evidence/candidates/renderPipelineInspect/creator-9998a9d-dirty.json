@@ -1,0 +1,13 @@
+{
+  "candidate": "renderPipelineInspect",
+  "testId": "candidate.renderPipelineInspect.positive.v1",
+  "negativeTestId": "candidate.renderPipelineInspect.negative.v1",
+  "creator": "3.7.3",
+  "endpoint": "http://localhost:49650",
+  "build": { "commit": "9998a9d", "dirty": true, "builtAt": "2026-09-13T06:12:31.746Z" },
+  "fixture": { "reference": "1263d74c-8167-4928-91a6-4e2672411f47@8d883", "type": "cc.Material" },
+  "positive": { "status": 200, "referenceReadBack": true, "pipelineReadBack": true, "bytesReported": true, "truncated": false },
+  "negative": { "reference": "__missing_material__", "status": 404, "code": "TARGET_NOT_FOUND", "zeroMutation": true },
+  "limitations": ["Native payload is bounded read-back; normalized pass/camera/layer compatibility is not claimed."],
+  "qualification": "scoped-qualified-for-bounded-native-readback"
+}
