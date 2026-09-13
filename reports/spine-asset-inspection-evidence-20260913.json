@@ -1,0 +1,69 @@
+{
+  "feature": "deep-spine-asset-inspection",
+  "creatorVersion": "3.7.3",
+  "build": "6463c65-dirty",
+  "tools": ["spineAssetInspect", "spineAssetValidate", "spineSceneInspect", "animationCatalogInspect", "animationCompatibilityAudit", "animationBatchControl", "animationUsageAnalyze", "animationRuntimeControl", "spineRuntimeControl", "spineEditorConfigure"],
+  "latestVerification": {
+    "build": "passed",
+    "focusedSpineSubtests": 14,
+    "fullUnitTests": 351,
+    "portfolioAudit": "passed",
+    "productionLiveQualification": "passed; current production Skeleton API smoke verified runtime time scale/track clearing and semantic editor property configuration with read-back.",
+    "runtimeCompatibilityFix": "Creator 3.7.3 Skeleton uses _skeleton/getState and SpineSocket uses path/target; scene inspection now supports those live fields.",
+    "spineRuntimeExpansion": "Spine runtime animations are included in usage analysis; catalog and compatibility inspection, skin/attachment/queue/track/mix/time-scale runtime control, batch playback, and semantic editor configuration are available with bounded contracts.",
+    "binarySpineFallback": "spineAssetInspect recognizes .skel sources and uses bounded Creator importer metadata or asset-db query-asset-data when the binary cannot be parsed as JSON; it fails closed with SOURCE_UNSUPPORTED when metadata is unavailable. Both metadata paths have regression coverage.",
+    "outputContract": "spineAssetInspect output schema now declares source format/bytes, animation and event totals/truncation flags, socket support, and all returned metadata fields.",
+    "endpointIsolationGuard": "audit-live-qualification supports UTCP_EXPECT_SCENE_UUID and rejects healthy bridge endpoints whose current scene UUID does not match the requested project; unit regression coverage passes wrong-scene rejection and matching-scene acceptance.",
+    "fixtureLocated": "9664_character fixture located under db://assets/cc-release-slot/cc30-fortune-goat-9664/data/9664-Animation/9664_Spine/9664_character; serialized asset is a binary .skel with atlas and three texture dependencies. Scene target: g9664L.scene UUID 80dddede-15e3-4d8e-8f37-0f1263a0867c, node MascotPlaceholder9664 UUID 71FkO7m89EKKi8UzKl8txI, Skeleton component UUID 07evNNUgJE94nxgFSqiaO6, SkeletonData UUID c0d0c055-fc34-4bca-8bc2-ed93d5536060.",
+    "package": "npm pack --dry-run passed: cc-bridge-3x-2.0.0.tgz"
+  },
+  "contract": {
+    "assetInput": "Spine asset reference with bounded maxAnimations, maxEvents, maxSlots, maxTracks",
+    "assetOutput": [
+      "skeleton version/hash metadata",
+      "animation names and duration",
+      "animation event occurrences",
+      "timeline category counts and bounded track summaries",
+      "event definitions",
+      "bones and parent relationships",
+      "slots and default attachments",
+      "skins and bounded attachment relationships including region transform and mesh counts",
+      "source-declared sockets",
+      "asset-db sub-asset linkage",
+      "raw multi-page atlas page and region metadata",
+      "cross-link validation for bones, slots, skins, sockets, constraints, animation events, and atlas regions",
+      "typed validation issues with code, path, message, checked counters, and truncation"
+    ],
+    "sceneOutput": [
+      "runtime animation names and durations",
+      "default/current animation and time scale",
+      "runtime bone parent relationships",
+      "runtime slot-to-bone and active attachment relationships",
+      "declared component socket names and paths"
+    ],
+    "limits": { "sourceBytes": 8388608, "animations": 200, "events": 500, "slots": 1000, "tracksPerAnimation": 1000, "sceneFindings": 1000, "sceneDetailsPerCategory": 1000, "sceneVisitedNodes": 100000 },
+    "failClosed": ["missing asset", "non-Spine importer", "missing source", "oversized source", "invalid JSON", "malformed scene response"]
+  },
+  "unitVerification": { "result": "passed", "fullUnitTests": 351, "failures": 0, "focusedSpineTests": 14 },
+  "portfolioAudit": { "result": "passed", "registeredToolCount": 200, "expansionToolCount": 114 },
+  "liveVerification": {
+    "result": "production-live-qualified",
+    "fixture": "Imported production Spine asset at db://assets/cc-release-slot/cc30-fortune-goat-9664/data/9664-Animation/9664_Spine/9664_character; scene target g9664L.scene UUID 80dddede-15e3-4d8e-8f37-0f1263a0867c, node MascotPlaceholder9664 UUID 71FkO7m89EKKi8UzKl8txI.",
+    "finding": "After reversible backup and regeneration of the production library/temp caches, Creator 3.7.3 reached project package activation and exposed CC Bridge on port 49650. The production extension install matches the worktree build exactly (commit 6463c65, builtAt 2026-09-13T14:55:07.561Z).",
+    "productionLiveVerification": "sceneManage opened scene UUID 80dddede-15e3-4d8e-8f37-0f1263a0867c; sceneGetInfo confirmed the same currentScene UUID; spineSceneInspect returned node 71FkO7m89EKKi8UzKl8txI named MascotPlaceholder9664 with component Skeleton, 26 animations, hasSkeletonData=true, total=1, truncated=false, and no sockets.",
+    "binaryLiveVerification": "The exact SkeletonData UUID c0d0c055-fc34-4bca-8bc2-ed93d5536060 resolved in production and spineAssetInspect correctly returned HTTP 422 SOURCE_UNSUPPORTED because Creator exposed no importer metadata for the binary .skel source; its recovery directs callers to spineSceneInspect, which returned the live runtime evidence.",
+    "cacheRecovery": "Renamed production library to library.backup-20260913-224314 and temp to temp.backup-20260913-224314 before Creator regeneration; original caches remain available for rollback.",
+    "startupIsolationFinding": "A shadow with production cache junctions reproduced the pre-bridge stall after built-in utils enable; the same extension set with fresh caches reached bridge startup, isolating the original blocker to stale/corrupt target library/temp state.",
+    "fix": "spineAssetInspect accepts spine and spine-data importers plus bounded query-asset-data/query-asset-meta fallback for binary .skel sources; spineSceneInspect reads Creator 3.7.3 _skeleton/getState/SpineSocket path-target fields; strict asset and scene response contracts pass the complete offline suite.",
+    "reloadAttempt": "Production Creator was relaunched after reversible cache backup; port 49650 became ready in 22 seconds. The target scene was opened and inspected successfully.",
+    "socketToolRegistration": "After rebuilding and restarting the production bridge, the live UTCP manual exposed spineSocketConfigure alongside spineSceneInspect, spineRuntimeControl, and spineEditorConfigure. Live mutation succeeded on Skeleton component 80wo9O0ltKELV7yHnTAs5k using bone path root and target node a7GTKvqSBEX73oFHLB8PHK; read-back returned one socket with the same path and target UUID.",
+    "remainingBlocker": "None for the requested production live qualification.",
+    "requiredNextStep": "Retain the backup caches until the regenerated production project has completed normal asset verification; remove them only after rollback is no longer needed."
+  },
+  "scope": {
+    "assetMetadata": "implemented and unit verified",
+    "sceneSocketBindings": "implemented as bounded live Skeleton component inspection and unit contract verified",
+    "atlasTextParsing": "implemented for linked .atlas sub-assets with bounded page/region parsing and fixture coverage",
+    "texturePixelInspection": "not claimed; texture pixels and runtime world transforms require a live Creator fixture"
+  }
+}

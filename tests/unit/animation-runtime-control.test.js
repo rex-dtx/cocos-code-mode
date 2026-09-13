@@ -30,7 +30,11 @@ class Animation {
 
 class Skeleton {
   static AnimationCacheMode = { REALTIME: 0, SHARED_CACHE: 1, PRIVATE_CACHE: 2 };
-  constructor() { this._cacheMode = 0; this.paused = false; }
+  constructor() {
+    this._cacheMode = 0;
+    this.paused = false;
+    this.skeletonData = { getRuntimeData: () => ({ animations: [{ name: 'idle', duration: 3 }, { name: 'run', duration: 1 }] }) };
+  }
   isAnimationCached() { return this._cacheMode !== 0; }
   setAnimationCacheMode(mode) { this._cacheMode = mode; }
   invalidAnimationCache() { this.invalidated = true; }
@@ -81,6 +85,69 @@ describe('animation scene runtime control', () => {
       await methods.animationRuntimeControl({ nodeUuid: 'root', operation: 'play', clipName: 'run', loop: true });
       assert.equal(skeleton.invalidated, true);
       assert.deepEqual(skeleton.played, { track: 0, name: 'run', loop: true });
+    });
+  });
+  it('supports bounded SkeletalAnimation playback controls and rejects AnimationState fields', async () => {
+    class SkeletalAnimation {
+      constructor() {
+        this.clips = [{ uuid: 'skeletal-idle', name: 'idle', duration: 1 }];
+        this.playOnLoad = false;
+      }
+      play(name) { this.played = name; }
+      pause() { this.paused = true; }
+      resume() { this.paused = false; }
+      stop() { this.stopped = true; }
+    }
+    const skeletal = new SkeletalAnimation();
+    const root = { uuid: 'root', name: 'Root', components: [skeletal], children: [] };
+    await withScene(root, async () => {
+      await methods.animationRuntimeControl({ nodeUuid: 'root', operation: 'play', clipName: 'idle' });
+      await methods.animationRuntimeControl({ nodeUuid: 'root', operation: 'pause' });
+      await methods.animationRuntimeControl({ nodeUuid: 'root', operation: 'resume' });
+      await methods.animationRuntimeControl({ nodeUuid: 'root', operation: 'stop' });
+      assert.equal(skeletal.played, 'idle');
+      assert.equal(skeletal.paused, false);
+      assert.equal(skeletal.stopped, true);
+      await assert.rejects(
+        () => methods.animationRuntimeControl({ nodeUuid: 'root', operation: 'set_state', clipName: 'idle', speed: 2 }),
+        /AnimationState field control is unavailable on SkeletalAnimation/,
+      );
+    });
+  });
+  it('reports Spine runtime animations in usage and catalog inspection', async () => {
+    const skeleton = new Skeleton();
+    const root = { uuid: 'root', name: 'Root', components: [skeleton], children: [] };
+    await withScene(root, async () => {
+      const usage = await methods.animationUsageAnalyze({ nodeUuid: 'root', maxNodes: 10 });
+      assert.equal(usage.findings[0].clipCount, 2);
+      assert.deepEqual(usage.findings[0].clips.map((clip) => clip.name), ['idle', 'run']);
+      const catalog = await methods.animationCatalogInspect({ nodeUuid: 'root', maxItems: 10 });
+      assert.equal(catalog.total, 1);
+      assert.deepEqual(catalog.findings[0].animations.map((animation) => animation.name), ['idle', 'run']);
+      const compatibility = await methods.animationCompatibilityAudit({ nodeUuid: 'root' });
+      assert.equal(compatibility.supports.playback, true);
+      assert.equal(compatibility.supports.cacheMode, true);
+    });
+  });
+
+  it('controls Spine skins, queued tracks, and time scale', async () => {
+    const skeleton = new Skeleton();
+    const animationState = {
+      tracks: [],
+      addAnimation(track, name, loop, delay) { this.queued = { track, name, loop, delay }; },
+      clearTrack(track) { this.cleared = track; },
+    };
+    skeleton.getState = () => animationState;
+    skeleton.setSkin = (name) => { skeleton.skin = { name }; };
+    skeleton.timeScale = 1;
+    const root = { uuid: 'root', name: 'Root', components: [skeleton], children: [] };
+    await withScene(root, async () => {
+      await methods.spineRuntimeControl({ nodeUuid: 'root', operation: 'set_skin', skinName: 'default' });
+      await methods.spineRuntimeControl({ nodeUuid: 'root', operation: 'queue_animation', clipName: 'run', loop: true, delay: 0.25 });
+      const result = await methods.spineRuntimeControl({ nodeUuid: 'root', operation: 'set_time_scale', timeScale: 0.5 });
+      assert.deepEqual(animationState.queued, { track: 0, name: 'run', loop: true, delay: 0.25 });
+      assert.equal(skeleton.timeScale, 0.5);
+      assert.equal(result.operation, 'set_time_scale');
     });
   });
 });
