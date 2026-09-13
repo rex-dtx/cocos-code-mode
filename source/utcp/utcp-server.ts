@@ -261,7 +261,7 @@ export function findMissingRequiredInputs(schema: JsonSchema, args: Record<strin
         .map((error) => error.path);
 }
 
-// ponytail: debug log to file, not console — avoid polluting editor output.
+// Interaction events are always mirrored to Creator's console; debug mode additionally persists them to JSONL.
 // Mutable so the menu toggle (toggleDebug) can flip it at runtime, not just via env var.
 let debugEnabled = process.env.UTCP_DEBUG === '1' || process.env.UTCP_DEBUG === 'true';
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
@@ -272,10 +272,15 @@ if (debugEnabled) {
     console.log(`[UTCP] Debug mode ON → ${debugLogFile}`);
 }
 
+function interactionLog(entry: Record<string, unknown>): void {
+    const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
+    console.info(`[CCB interaction] ${payload}`);
+    debugLog({ type: 'interaction', ...entry });
+}
+
 function debugLog(entry: Record<string, any>): void {
     if (!debugEnabled) return;
     try {
-        // lazy mkdir: toggling on via menu means dir may not exist yet
         try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
         const line = JSON.stringify({ ts: new Date().toISOString(), ...entry });
         appendFileSync(debugLogFile, line + '\n');
@@ -404,6 +409,7 @@ export class UtcpServerManager {
             // Register specific endpoint
             const handler = async (req: Request, res: Response) => {
                 const t0 = Date.now();
+                interactionLog({ phase: 'start', tool: toolDef.name, method: req.method, path: req.path, inputKeys: Object.keys(req.body ?? {}).sort() });
                 try {
                     // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
@@ -449,6 +455,7 @@ export class UtcpServerManager {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
                         debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: ms });
+                        interactionLog({ phase: 'complete', tool: toolDef.name, status: 200, durationMs: ms, result: 'null' });
                         res.json(null);
                         return;
                     }
@@ -456,6 +463,7 @@ export class UtcpServerManager {
                     const ms = Date.now() - ((req as any)._t0 ?? t0);
                     res.setHeader('X-Duration-Ms', String(ms));
                     debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
+                    interactionLog({ phase: 'complete', tool: toolDef.name, status: 200, durationMs: ms, resultKeys: isPlainJsonObject(result) ? Object.keys(result).sort() : [] });
 
                     // Preserve schema-required empty arrays/objects while trimming optional payload noise.
                     const trimmed = trimResponse(result, toolMeta.tool.outputs);
@@ -478,6 +486,7 @@ export class UtcpServerManager {
                     }
                     res.setHeader('X-Duration-Ms', String(ms2));
                     debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, testId, durationMs: ms2 });
+                    interactionLog({ phase: 'error', tool: toolDef.name, status: response.status, durationMs: ms2, code: response.body.code ?? 'UNKNOWN', testId });
                     res.status(response.status).json(response.body);
                 }
             };

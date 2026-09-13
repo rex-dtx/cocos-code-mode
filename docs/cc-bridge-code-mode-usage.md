@@ -95,6 +95,8 @@ return await ccb3x.editorLog({
 
 `debug` uses `console.log` with a `[debug]` prefix so the existing project-log reader can recognize it. Read entries back with `editorGetLogs`; use `showStack: true` when the message contains multiple lines. Use the optional case-sensitive `pattern` for bounded search and `maxBytes` (256-65536) to cap UTF-8 response size; a valid no-match query returns an empty result, while missing or unparseable logs fail explicitly. The tool follows normal profile exposure (full by default); enable it explicitly for a core/custom profile. After rebuilding, reload the extension and re-register the manual to discover the new API.
 
+Every HTTP tool interaction is also mirrored automatically to the Cocos Creator console as a concise `[CCB interaction]` JSON event. Each call emits `start`, then `complete` or `error`, including tool name, HTTP method, status, duration, input keys, and result keys only; request values are not logged. This is enabled for agent/test visibility even when debug-file logging is disabled. When debug mode is enabled, the same lifecycle events are additionally persisted in `~/.utcp-debug/*.jsonl` and remain available through the existing debug-log viewer.
+
 ### Ask the user or collect structured input
 
 Both tools appear in the full `/utcp` manual after rebuilding/reloading the extension and re-registering it. Enable them explicitly when using a core/custom profile.

@@ -75,6 +75,15 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.equal(labels.some((l) => /reload/i.test(l)), false, 'menu must not contain Reload Extension');
   });
 
+  it('logs every editor tool interaction with a concise lifecycle event', () => {
+    const serverSrc = readSource('utcp/utcp-server.ts');
+    assert.match(serverSrc, /function interactionLog\(/);
+    assert.match(serverSrc, /phase: 'start'/);
+    assert.match(serverSrc, /phase: 'complete'/);
+    assert.match(serverSrc, /phase: 'error'/);
+    assert.match(serverSrc, /console\.info\(`\[CCB interaction\]/);
+  });
+
   it('ccb3x bootstrap has strict dedup (no duplicate template/URL)', () => {
     const src = fs.readFileSync(path.resolve(__dirname, '..', '..', 'scripts', 'cc-bridge-bootstrap.js'), 'utf8');
     assert.match(src, /byUrl\.get\(base\)/, 'bootstrap must dedup by URL');
