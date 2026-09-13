@@ -27,9 +27,36 @@ function discoverBase() {
 async function getJson(urlPath, init) {
   const b = discoverBase();
   const url = b + urlPath;
+  const method = init?.method || 'GET';
+  if (urlPath !== '/tools/editorLog') {
+    try {
+      await fetch(b + '/tools/editorLog', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          level: 'debug',
+          message: `TEST ${method} ${urlPath}`,
+          data: { phase: 'request' },
+        }),
+      });
+    } catch {}
+  }
   const r = await fetch(url, init);
   const text = await r.text();
   let body; try { body = JSON.parse(text); } catch { body = text; }
+  if (urlPath !== '/tools/editorLog') {
+    try {
+      await fetch(b + '/tools/editorLog', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          level: r.ok ? 'debug' : 'warn',
+          message: `TEST ${r.status} ${method} ${urlPath}`,
+          data: { phase: 'response' },
+        }),
+      });
+    } catch {}
+  }
   return { ok: r.ok, status: r.status, body, text, base: b };
 }
 async function getExpectedErrorJson(urlPath, testId, init = {}) {
