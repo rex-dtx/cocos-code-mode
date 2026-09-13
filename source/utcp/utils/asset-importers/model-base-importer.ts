@@ -55,9 +55,9 @@ export abstract class ModelBaseImporter extends BaseAssetImporter {
         }
 
         const properties = this.parseUserData(userData);
-        console.log('ModelBaseImporter properties:', properties);
+        console.log('[cx3][model-importer] properties:', properties);
         this.addSpecificUserData(userData, properties);
-        console.log('ModelBaseImporter properties after specific:', properties);
+        console.log('[cx3][model-importer] properties after specific:', properties);
         return properties;
     }
 

@@ -38,7 +38,7 @@ export abstract class BaseAssetImporter implements IAssetImporter {
     abstract getProperties(assetInfo: IAssetInfo): Promise<{ [key: string]: IPropertyValueType }>;
 
     async setProperty(assetInfo: IAssetInfo, path: string, value: any): Promise<boolean> {
-        console.warn(`[BaseAssetImporter] setProperty not implemented for ${this.name}`);
+        console.warn(`[cx3][asset-importer] setProperty not implemented for ${this.name}`);
         return false;
     }
 }

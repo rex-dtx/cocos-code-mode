@@ -9,7 +9,7 @@ import packageJSON from '../../package.json';
 export class UtcpConfigManager {
     private static instance: UtcpConfigManager;
     private static readonly CANON = 'ccp3x';
-    private static readonly LEGACY_OLD = new Set(['cc-bridge-3x', 'cc-bridge-2x', 'cc-bridge', 'ccb3x', 'ccb2x', 'ccb-3x', 'ccb_3x', 'cc3x7', 'cc2x4']);
+    private static readonly LEGACY_OLD = new Set(['cocos-pilot-3x', 'cocos-pilot-2x', 'cocos-pilot', 'ccp3x', 'ccp2x', 'ccb-3x', 'ccp_3x', 'cc3x7', 'cc2x4']);
     private configPath: string = '';
     private constructor() {}
 
@@ -74,7 +74,7 @@ export class UtcpConfigManager {
         const filtered = list.filter((t) => {
             const name = typeof t['name'] === 'string' ? (t['name'] as string) : '';
             if (UtcpConfigManager.LEGACY_OLD.has(name)) return false;
-            if (name.startsWith('ccb') || name.startsWith('cc-bridge') || name === 'cc3x7' || name === 'cc2x4') return false;
+            if (name.startsWith('ccb') || name.startsWith('cocos-pilot') || name === 'cc3x7' || name === 'cc2x4') return false;
             if (name === 'ccp3x' || name === 'ccp2x' || name.startsWith('ccp3x_') || name.startsWith('ccp2x_')) return VALID.test(name);
             if (name.startsWith('ccp') || name.startsWith('cocos-pilot')) return VALID.test(name);
             return true;

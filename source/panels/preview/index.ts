@@ -93,7 +93,7 @@ module.exports = Editor.Panel.define({
                 return dataURL.replace(/^data:image\/\w+;base64,/, '');
     
             } catch (error: any) {
-                console.error(`[Preview] Error:`, error);
+                console.error('[cx3][preview] Error:', error);
                 throw new Error(`Generaton failed: ${error.message}`);
             }
         },

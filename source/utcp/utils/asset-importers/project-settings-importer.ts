@@ -21,7 +21,7 @@ export class ProjectSettingsImporter implements IAssetImporter {
             // Build manual properties
             return this.buildProperties(projectConfig);
         } catch (e) {
-            console.warn('[ProjectSettingsImporter] Failed to query project settings:', e);
+            console.warn('[cx3][project-settings] Failed to query project settings:', e);
             return {};
         }
     }
@@ -59,7 +59,7 @@ export class ProjectSettingsImporter implements IAssetImporter {
             await Editor.Message.request('project', 'set-config', 'project', path, value);
             return true;
         } catch (e) {
-            console.warn('[ProjectSettingsImporter] Failed to set project settings:', e);
+            console.warn('[cx3][project-settings] Failed to set project settings:', e);
             return false;
         }
     }
@@ -128,7 +128,7 @@ export class ProjectSettingsImporter implements IAssetImporter {
              }
              
              if (nextGroupIndex > 31) {
-                 console.warn('Max collision groups reached (32).');
+                 console.warn('[cx3][project-settings] Max collision groups reached (32).');
                  return false;
              }
 

@@ -321,14 +321,14 @@ export class UiTools {
         try {
             const value = await Editor.Message.request('scene', 'query-dirty');
             if (typeof value === 'boolean') dirtyBefore = value;
-        } catch (error) { console.warn('[uiLayoutReport] failed to read dirty-before state', error); }
+        } catch (error) { console.warn('[cx3][uiLayoutReport] failed to read dirty-before state', error); }
 
         const raw = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'uiLayoutReport', args: [args] }) as unknown;
         let dirtyAfter: boolean | undefined;
         try {
             const value = await Editor.Message.request('scene', 'query-dirty');
             if (typeof value === 'boolean') dirtyAfter = value;
-        } catch (error) { console.warn('[uiLayoutReport] failed to read dirty-after state', error); }
+        } catch (error) { console.warn('[cx3][uiLayoutReport] failed to read dirty-after state', error); }
 
         if (raw && typeof raw === 'object' && 'overlay' in raw) {
             const result = raw as LayoutReport;
