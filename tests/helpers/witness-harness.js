@@ -9,18 +9,41 @@ const { getJson, getExpectedErrorJson, healthCheck } = require('./utcp-client');
  * identity and limitations for callers that persist it.
  */
 async function liveWitness(testId, run, limitations = []) {
+  const emit = async (level, message, data = {}) => {
+    try {
+      await getJson('/tools/editorLog', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ level, message, data }),
+      });
+    } catch {
+      // Editor logging is observability-only; never mask witness results.
+    }
+    console.log(`[live-test] ${message}`);
+  };
+  await emit('info', `START ${testId}`, { phase: 'health-check' });
   const health = await healthCheck();
-  if (!health.ok) return { skipped: true, testId, reason: health.reason, limitations };
+  if (!health.ok) {
+    await emit('warn', `SKIP ${testId}: ${health.reason}`, { phase: 'health-check' });
+    return { skipped: true, testId, reason: health.reason, limitations };
+  }
   const build = await getJson('/build-info');
   assert.equal(build.status, 200, JSON.stringify(build.body));
-  const result = await run({ getJson, getExpectedErrorJson, health });
-  return {
-    skipped: false,
-    testId,
-    build: build.body,
-    result,
-    limitations: [...limitations, 'Witness evidence does not promote or qualify a portfolio candidate.'],
-  };
+  await emit('info', `RUN ${testId}`, { phase: 'witness', build: build.body?.build ?? null });
+  try {
+    const result = await run({ getJson, getExpectedErrorJson, health });
+    await emit('info', `PASS ${testId}`, { phase: 'witness' });
+    return {
+      skipped: false,
+      testId,
+      build: build.body,
+      result,
+      limitations: [...limitations, 'Witness evidence does not promote or qualify a portfolio candidate.'],
+    };
+  } catch (error) {
+    await emit('error', `FAIL ${testId}`, { phase: 'witness', error: error instanceof Error ? error.message : String(error) });
+    throw error;
+  }
 }
 
 function assertPositive(response, message = 'positive witness') {

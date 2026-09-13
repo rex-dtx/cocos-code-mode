@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-13T03:55:05.608865+00:00",
+  "generatedAt": "2026-09-13T04:11:08.142457+00:00",
   "scope": {
     "competitors": [
       "ALX 163-tool catalog",
@@ -34,7 +34,7 @@
     "docs/alx-capability-comparison.md": "7a3075e5163c429156b48ee62430becbe0d62304a4993257ca5eba0bc531e109",
     "docs/independent-ccb-strategy.md": "b14ed38e9c76ef1f35279dd2fe50389906d3c5ad9d9f24e195c317671eb472e3",
     "docs/parity-v2-v3.md": "289577513a2d1b1124ff93accb948dcbc63a98df21e7d1075e8147862c218705",
-    "docs/tool-portfolio-candidates.json": "97fa531957f60cee2e7559929c403cac0f2bd84dd05f7d9ae52aa1be890038b5"
+    "docs/tool-portfolio-candidates.json": "2b50746bd3618c02bed3735ba8bb3e73143a99e2f78b81a6a87a714a63144bfa"
   },
   "denominator": {
     "sourceCatalogTools": {

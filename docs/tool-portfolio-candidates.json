@@ -119,7 +119,7 @@
         },
         {
           "name": "uiFormValidationBind",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Create labeled input hierarchy, focus order and validation binding with functional read-back.",
           "route": "compound scene workflow",
           "prerequisites": [

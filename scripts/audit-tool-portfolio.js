@@ -104,6 +104,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'animationRuntimeControl',
   'assetSceneUsageAudit',
   'uiVirtualListCreate',
+  'uiFormValidationBind',
   'assetBundleValidate',
   'physics2dQuery',
   'physics3dQuery',

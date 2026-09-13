@@ -12,6 +12,10 @@ function requireRef(ref: IInstanceReference | undefined, what: string): string {
     }
     return ref.id;
 }
+function logAnimation(message: string): void {
+    console.log(`[cc-bridge-3x][animation] ${message}`);
+}
+
 
 const MAX_CLIPS = 200;
 const AnimationClipSchema = {
@@ -76,15 +80,16 @@ function slimClipDump(dump: any): any {
 }
 
 type AnimationOperation = { funcName: string, args: unknown[] };
-
 async function applyAnimationOperation(funcName: string, args: unknown[]): Promise<ISuccessIndicator & { result?: unknown }> {
     const response: any = await Editor.Message.request('scene', 'animation-operation', [{ funcName, args }], { recordUndo: true });
     if (response && response.state === 'failure') {
+        logAnimation(`authoring ${funcName} failed`);
         return { success: false, error: response.reason || 'animation operation failed', result: response.result ?? null };
     }
     if (!response || response.state !== 'success') {
         throw new Error(`animation-operation returned an unexpected payload: ${JSON.stringify(response ?? null)}`);
     }
+    logAnimation(`authoring ${funcName} succeeded`);
     return { success: true, result: 'result' in response ? response.result : null };
 }
 
@@ -583,6 +588,7 @@ export class AnimationTools {
         if (!result || !Array.isArray(result.findings) || typeof result.componentCount !== 'number') {
             throw new ToolError({ code: 'ANIMATION_ANALYSIS_FAILED', status: 502, message: 'Creator returned malformed animation usage analysis.' });
         }
+        logAnimation(`usage analysis completed node=${String(result.nodeUuid ?? args.nodeReference?.id ?? 'scene')} components=${result.componentCount}`);
         return { ...result, nodeReference: { id: String(result.nodeUuid ?? args.nodeReference?.id ?? ''), type: 'cc.Node' } };
     }
 
@@ -670,6 +676,7 @@ export class AnimationTools {
             args: [{ ...args, nodeUuid, nodeReference: undefined }],
         }) as Record<string, unknown> | null;
         if (!result || typeof result !== 'object') throw new ToolError({ code: 'ANIMATION_CONTROL_FAILED', status: 502, message: 'Creator returned no animation control read-back.' });
+        logAnimation(`runtime ${args.operation} completed node=${nodeUuid}${args.clipName ? ` clip=${args.clipName}` : ''}`);
         return { ...result, nodeReference: { id: nodeUuid, type: 'cc.Node' }, operation: args.operation };
     }
 }
