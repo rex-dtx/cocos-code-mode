@@ -429,6 +429,9 @@ export class UtcpServerManager {
                 try {
                     // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
+                        const ms = Date.now() - ((req as any)._t0 ?? t0);
+                        res.setHeader('X-Duration-Ms', String(ms));
+                        interactionLog({ phase: 'error', tool: toolDef.name, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED' });
                         res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         return;
                     }
@@ -447,6 +450,9 @@ export class UtcpServerManager {
                             .filter((error) => error.keyword === 'required' && !error.path.includes('.') && !error.path.includes('['))
                             .map((error) => error.path);
                         const plural = missingInputs.length === 1 ? '' : 's';
+                        const ms = Date.now() - ((req as any)._t0 ?? t0);
+                        res.setHeader('X-Duration-Ms', String(ms));
+                        interactionLog({ phase: 'error', tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT' });
                         res.status(400).json({
                             error: missingInputs.length > 0
                                 ? `Missing required input${plural}: ${missingInputs.join(', ')}`
