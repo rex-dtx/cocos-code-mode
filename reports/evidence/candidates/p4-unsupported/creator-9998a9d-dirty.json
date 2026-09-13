@@ -1,0 +1,11 @@
+{
+  "creator": "3.7.3",
+  "build": { "commit": "9998a9d", "dirty": true, "builtAt": "2026-09-13T06:12:31.746Z" },
+  "candidates": [
+    { "name": "physics2dConfigure", "status": 422, "code": "UNSUPPORTED_EDITOR_API", "api": "project/set-config", "requestedPath": "collisionMatrix", "mutated": false },
+    { "name": "physics3dConfigure", "status": 422, "code": "UNSUPPORTED_EDITOR_API", "api": "project/set-config", "requestedPath": "gravity", "mutated": false },
+    { "name": "particlePlayback", "status": 404, "code": "SESSION_NOT_FOUND", "sessionId": "missing", "mutated": false }
+  ],
+  "qualification": "negative-only-no-credit",
+  "limitations": ["Creator 3.7.3 does not expose project/set-config.", "No verified runtime session is available for particle playback."]
+}
