@@ -4,10 +4,7 @@ import { join } from 'path';
 import { getConfigManager } from '../../utcp/config-manager';
 
 module.exports = Editor.Panel.define({
-    listeners: {
-        show() { console.log('show'); },
-        hide() { console.log('hide'); },
-    },
+    listeners: {},
     template: readFileSync(join(__dirname, '../../../static/template/configuration/index.html'), 'utf-8'),
     style: readFileSync(join(__dirname, '../../../static/style/configuration/index.css'), 'utf-8'),
     $: {
@@ -60,14 +57,14 @@ module.exports = Editor.Panel.define({
                 await configManager.setConfigPath(newPath);
                 this.updateMcpCodeBlock();
                 this.fetchBridgeList(); // Reload templates from new path
-                console.log('Saved UTCP Config Path:', newPath);
+                console.log('[cx3] Saved UTCP Config Path:', newPath);
             }
         },
 
         async updatePort() {
             const portVal = (this.$.portInput as any).value;
             const port = parseInt(portVal);
-            console.log(`Updating port to: ${port}`);
+            console.log(`[cx3] Updating port to: ${port}`);
             // Send message to main process to restart server
             Editor.Message.send(packageJSON.name, 'restart-server', port);
         },
@@ -97,7 +94,7 @@ module.exports = Editor.Panel.define({
         fetchBridgeList() {
             const container = this.$.bridgeList as HTMLElement;
             if (!container) {
-                console.warn('Bridge Config Container not found');
+                console.warn('[cx3] Bridge Config Container not found');
                 return;
             }
 

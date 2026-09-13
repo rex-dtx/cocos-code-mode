@@ -14,7 +14,7 @@ let timer: NodeJS.Timeout | undefined;
 function broadcast(): void {
     // Sending to a panel can implicitly open it. Broadcast has no activation side effects.
     try { Editor.Message.broadcast(`${packageJSON.name}:editor-control-changed`); }
-    catch (error) { console.warn('[cc-bridge-3x] Control state broadcast failed:', error); }
+    catch (error) { console.warn('[cx3] Control state broadcast failed:', error); }
 }
 function schedule(): void {
     clearTimeout(timer);
@@ -58,7 +58,7 @@ export function notifyEditor(input: EditorNotifyArgs): EditorNotification {
     const notification: EditorNotification = { id: randomBytes(16).toString('hex'), title, message, level, createdAt: Date.now() };
     if (notifications.length === MAX_NOTIFICATIONS) notifications.shift();
     notifications.push(notification);
-    console[level === 'warning' ? 'warn' : level](`[cc-bridge-3x] ${title}: ${message}`);
+    console[level === 'warning' ? 'warn' : level](`[cx3] ${title}: ${message}`);
     changed();
     return { ...notification };
 }

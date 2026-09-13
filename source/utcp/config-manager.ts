@@ -28,7 +28,7 @@ export class UtcpConfigManager {
         } else {
             this.configPath = join(homedir(), '.utcp_config.json');
         }
-        console.log(`[UtcpConfigManager] Initialized with config path: ${this.configPath}`);
+        console.log(`[cx3][config] Initialized with config path: ${this.configPath}`);
     }
 
     getConfigPath(): string {
@@ -41,7 +41,7 @@ export class UtcpConfigManager {
     async setConfigPath(path: string): Promise<void> {
         this.configPath = path;
         await Editor.Profile.setConfig(packageJSON.name, 'utcpConfigPath', path);
-        console.log(`[UtcpConfigManager] Config path updated to: ${path}`);
+        console.log(`[cx3][config] Config path updated to: ${path}`);
     }
 
     readConfig(): any {
@@ -55,11 +55,11 @@ export class UtcpConfigManager {
                 // a duplicate URL / double tool registration again.
                 if (this.purgeLegacyIfNeeded(parsed)) {
                     this.writeConfig(parsed);
-                    console.log('[UtcpConfigManager] Purged legacy cc-bridge templates (cutover to ccb3x/ccb2x only)');
+                    console.log('[cx3][config] Purged legacy cc-bridge templates (cutover to ccb3x/ccb2x only)');
                 }
                 return parsed;
             } catch (e) {
-                console.error('[UtcpConfigManager] Failed to parse UTCP config:', e);
+                console.error('[cx3][config] Failed to parse UTCP config:', e);
                 return { manual_call_templates: [] };
             }
         }
@@ -86,14 +86,14 @@ export class UtcpConfigManager {
     writeConfig(config: any): void {
         const path = this.getConfigPath();
         if (!path) {
-            console.error('[UtcpConfigManager] Config path is not set');
+            console.error('[cx3][config] Config path is not set');
             return;
         }
         try {
             writeFileSync(path, JSON.stringify(config, null, 2));
-            console.log(`[UtcpConfigManager] Saved UTCP config to ${path}`);
+            console.log(`[cx3][config] Saved UTCP config to ${path}`);
         } catch (e) {
-            console.error('[UtcpConfigManager] Failed to write UTCP config:', e);
+            console.error('[cx3][config] Failed to write UTCP config:', e);
         }
     }
 
@@ -124,7 +124,7 @@ export class UtcpConfigManager {
      */
     async ensureCocosEditorTemplate(port: number): Promise<boolean> {
         if (!port || port <= 0) {
-            console.warn('[UtcpConfigManager] Invalid port provided:', port);
+            console.warn('[cx3][config] Invalid port provided:', port);
             return false;
         }
 
@@ -164,7 +164,7 @@ export class UtcpConfigManager {
         const changed = JSON.stringify(config.manual_call_templates) !== before;
         if (changed) {
             this.writeConfig(config);
-            console.log(`[UtcpConfigManager] ${CANON} -> ${port} (latest); other editors kept as ${CANON}_<port>`);
+            console.log(`[cx3][config] ${CANON} -> ${port} (latest); other editors kept as ${CANON}_<port>`);
         }
         return changed;
     }
@@ -228,7 +228,7 @@ export class UtcpConfigManager {
         await Editor.Profile.setConfig(packageJSON.name, 'enabledTools', config.enabled);
         await Editor.Profile.setConfig(packageJSON.name, 'disabledTools', config.disabled);
         await Editor.Profile.setConfig(packageJSON.name, 'responseEnvelope', config.envelope);
-        console.log(`[UtcpConfigManager] Tool profile config saved: profile=${config.profile}, envelope=${config.envelope}`);
+        console.log(`[cx3][config] Tool profile config saved: profile=${config.profile}, envelope=${config.envelope}`);
     }
 }
 

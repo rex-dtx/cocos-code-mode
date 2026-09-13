@@ -269,7 +269,7 @@ let debugLogFile = join(DEBUG_LOG_DIR, `utcp-${new Date().toISOString().replace(
 
 if (debugEnabled) {
     try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-    console.log(`[UTCP] Debug mode ON → ${debugLogFile}`);
+    console.log(`[cx3] Debug mode ON → ${debugLogFile}`);
 }
 
 function interactionLog(entry: Record<string, unknown>): void {
@@ -277,7 +277,7 @@ function interactionLog(entry: Record<string, unknown>): void {
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
     const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
     const writer = phase === 'error' ? console.error : phase === 'warning' ? console.warn : console.info;
-    writer(`[CCB interaction] ${payload}`);
+    writer(`[cx3] ${payload}`);
     debugLog({ type: 'interaction', ...entry });
 }
 
@@ -305,7 +305,7 @@ export function setServerProfile(profile: ToolProfile, enabled: string[] = [], d
     enabledTools = new Set(enabled);
     disabledTools = new Set(disabled);
     envelopeEnabled = envelope;
-    console.log(`[UTCP] Profile set to '${profile}', envelope=${envelope}, enabled=${enabled.length}, disabled=${disabled.length}`);
+    console.log(`[cx3] Profile set to '${profile}', envelope=${envelope}, enabled=${enabled.length}, disabled=${disabled.length}`);
 }
 
 export class UtcpServerManager {
@@ -483,9 +483,9 @@ export class UtcpServerManager {
                     const response = toToolErrorResponse(err);
                     const testId = expectedTestWitnessId(req.headers);
                     if (testId && err instanceof ToolError && err.status < 500) {
-                        console.info(`[TEST ${testId}] Expected ${err.code} from ${toolDef.name}`);
+                        console.info(`[cx3][test:${testId}] Expected ${err.code} from ${toolDef.name}`);
                     } else if (shouldLogToolError(err)) {
-                        console.error(`Error in tool ${toolDef.name}:`, err);
+                        console.error(`[cx3] Error in tool ${toolDef.name}:`, err);
                     }
                     res.setHeader('X-Duration-Ms', String(ms2));
                     debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, testId, durationMs: ms2 });
@@ -578,7 +578,7 @@ export class UtcpServerManager {
                 else resolve();
             });
         });
-        console.log("UTCP Server stopped");
+        console.log('[cx3] UTCP Server stopped');
     }
 
     getDebugEnabled(): boolean {
@@ -595,7 +595,7 @@ export class UtcpServerManager {
 
     toggleDebug(): boolean {
         const enabled = this.setDebugEnabled(!debugEnabled);
-        console[enabled ? 'info' : 'warn'](`[UTCP] Verbose interaction logging ${enabled ? 'ON' : 'OFF'}`);
+        console[enabled ? 'info' : 'warn'](`[cx3] Verbose interaction logging ${enabled ? 'ON' : 'OFF'}`);
         return enabled;
     }
 

@@ -13,7 +13,7 @@ function requireRef(ref: IInstanceReference | undefined, what: string): string {
     return ref.id;
 }
 function logAnimation(message: string): void {
-    console.log(`[cc-bridge-3x][animation] ${message}`);
+    console.log(`[cx3][animation] ${message}`);
 }
 
 
