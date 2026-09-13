@@ -112,6 +112,11 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'animationGraphInspect',
   'animationGraphValidate',
   'modelImportConfigure',
+  'renderPipelineInspect',
+  'physics2dConfigure',
+  'physics3dConfigure',
+  'particlePlayback',
+  'materialEdit',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

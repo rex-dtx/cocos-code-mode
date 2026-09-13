@@ -1,0 +1,10 @@
+{
+  "candidate": "buildLogInspect",
+  "creator": "3.7.3",
+  "build": { "commit": "9998a9d", "dirty": true, "builtAt": "2026-09-13T06:12:31.746Z" },
+  "fixture": { "taskId": "1789015174581", "state": "success", "platform": "web-mobile", "buildPath": "project://build" },
+  "positive": { "status": 200, "terminal": true, "available": false, "entries": [], "count": 0, "truncated": false },
+  "negative": { "taskId": "__missing_build_task__", "status": 404, "code": "TARGET_NOT_FOUND" },
+  "limitations": ["Creator exposed no diagnostics/log entries for this task; identity/state normalization is live-proven, diagnostic normalization remains unit-proven."],
+  "qualification": "scoped-qualified-read-only-task-state"
+}

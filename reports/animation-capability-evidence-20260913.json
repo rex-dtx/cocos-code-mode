@@ -59,6 +59,20 @@
     ],
     "reason": "qualification uses a loaded production scene; authoring/playback mutations were not persisted destructively"
   },
+  "ledgerOwnership": {
+    "status": "implemented-unverified",
+    "countEligible": false,
+    "apis": [
+      "animationClipConfigure",
+      "animationTrackEdit",
+      "animationKeyframeEdit",
+      "animationEventEdit",
+      "animationAuxCurveEdit",
+      "animationUsageAnalyze",
+      "animationRuntimeControl"
+    ],
+    "evidenceRule": "animationUsageAnalyze and bounded runtime cache-mode read-back are evidence only for the observed Spine fixture; authoring and generic Animation playback remain unqualified."
+  },
   "usageGuidance": {
     "inspect": "Use animationUsageAnalyze first to inventory Animation, SkeletalAnimation, Spine Skeleton, and DragonBones ArmatureDisplay components.",
     "setup": "Use animationRuntimeControl set_default, set_play_on_load, set_state, and set_cache_mode as separate verified operations; inspect read-back after each mutation.",
