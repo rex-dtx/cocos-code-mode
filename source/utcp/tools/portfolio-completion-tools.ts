@@ -57,4 +57,27 @@ export class PortfolioCompletionTools {
         await Editor.Message.request('scene', 'snapshot');
         return { ...list, itemReferences, itemCount: args.itemCount, instantiatedItems: materialized, virtualized: args.itemCount > materialized };
     }
+
+    @utcpTool('uiFormValidationBind', 'Create a bounded input form and return explicit validation metadata.', {
+        type: 'object', additionalProperties: false,
+        properties: {
+            label: { type: 'string', minLength: 1, maxLength: 128 },
+            placeholder: { type: 'string', maxLength: 256 },
+            required: { type: 'boolean' },
+            minLength: { type: 'integer', minimum: 0, maximum: 256 },
+            name: { type: 'string', minLength: 1, maxLength: 128 },
+            parentReference: InstanceReferenceSchema,
+        },
+        required: ['label'],
+    }, {
+        type: 'object', properties: { form: { type: 'object' }, rules: { type: 'object' }, focusOrder: { type: 'array' } },
+        required: ['form', 'rules', 'focusOrder'],
+    }, 'POST', ['ui', 'form', 'validation', 'bind'])
+    async uiFormValidationBind(args: { label: string, placeholder?: string, required?: boolean, minLength?: number, name?: string, parentReference?: IInstanceReference }): Promise<Record<string, unknown>> {
+        const required = args.required ?? true;
+        const minLength = args.minLength ?? 0;
+        if (minLength > 0 && !required) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'minLength requires required=true.' });
+        const form = await new UiTools().uiCreateInputForm({ label: args.label, placeholder: args.placeholder, name: args.name, parentReference: args.parentReference });
+        return { form, rules: { required, minLength, inputReference: form.input }, focusOrder: form.focusOrder };
+    }
 }
