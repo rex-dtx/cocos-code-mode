@@ -81,7 +81,18 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.match(serverSrc, /phase: 'start'/);
     assert.match(serverSrc, /phase: 'complete'/);
     assert.match(serverSrc, /phase: 'error'/);
-    assert.match(serverSrc, /console\.info\(`\[CCB interaction\]/);
+    assert.match(serverSrc, /const writer = phase === 'error' \? console\.error : phase === 'warning' \? console\.warn : console\.info/);
+  });
+
+  it('persists and restores the per-project verbose logging state', () => {
+    const mainSrc = readSource('main.ts');
+    const serverSrc = readSource('utcp/utcp-server.ts');
+    assert.match(mainSrc, /getDebugLogging/);
+    assert.match(mainSrc, /setDebugLogging\(enabled: boolean\)/);
+    assert.match(mainSrc, /Editor\.Profile\.setConfig\(packageJSON\.name, 'debugLogging', enabled\)/);
+    assert.match(mainSrc, /Editor\.Profile\.getConfig\(packageJSON\.name, 'debugLogging'\)/);
+    assert.match(serverSrc, /setDebugEnabled\(enabled: boolean\)/);
+    assert.match(serverSrc, /if \(!debugEnabled && phase !== 'warning' && phase !== 'error'\) return/);
   });
 
   it('ccb3x bootstrap has strict dedup (no duplicate template/URL)', () => {

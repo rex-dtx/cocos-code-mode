@@ -14,6 +14,8 @@ module.exports = Editor.Panel.define({
         app: '.panel',
         portInput: '#port-input',
         savePortBtn: '#save-port-btn',
+        debugToggle: '#debug-logging-toggle',
+        debugStatus: '#debug-logging-status',
 
         // MCP Integration
         mcpConfigCode: '#mcp-config-code',
@@ -44,6 +46,11 @@ module.exports = Editor.Panel.define({
 
             this.updateMcpCodeBlock();
             this.fetchBridgeList();
+            const debugState = await Editor.Message.request(packageJSON.name, 'get-debug-logging');
+            const debugToggle = this.$.debugToggle as HTMLInputElement;
+            const debugStatus = this.$.debugStatus as HTMLElement;
+            if (debugToggle && debugState && typeof debugState.enabled === 'boolean') debugToggle.checked = debugState.enabled;
+            if (debugStatus && debugState) debugStatus.textContent = debugState.enabled ? 'ON — verbose tool lifecycle logs' : 'OFF — warnings and errors only';
         },
 
         async saveSettings() {
@@ -182,11 +189,18 @@ module.exports = Editor.Panel.define({
                 this.fetchBridgeList();
             }
         },
+        async setDebugLogging(enabled: boolean) {
+            const state = await Editor.Message.request(packageJSON.name, 'set-debug-logging', enabled);
+            const debugStatus = this.$.debugStatus as HTMLElement;
+            if (debugStatus && state) debugStatus.textContent = state.enabled ? 'ON — verbose tool lifecycle logs' : 'OFF — warnings and errors only';
+        },
     },
     ready() {
         this.loadSettings();
 
         // Listeners
+        const debugToggle = this.$.debugToggle as HTMLElement & { checked?: boolean };
+        if (debugToggle) debugToggle.addEventListener('change', () => this.setDebugLogging(debugToggle.checked === true));
         const savePort = this.$.savePortBtn as HTMLElement;
         if (savePort) savePort.addEventListener('click', () => this.updatePort());
 
