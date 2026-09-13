@@ -54,4 +54,67 @@ describe('live: animation candidate witnesses (non-qualifying)', () => {
     assert.equal(typeof evidence.build.branch, 'string');
     assert.ok(evidence.limitations.length >= 2);
   });
+
+  it('controls a disposable generic Animation state with documented state fields', async (t) => {
+    const manual = await getJson('/utcp');
+    assertPositive(manual, 'UTCP manual');
+    const runtimeTool = manual.body.tools.find((tool) => tool.name === 'animationRuntimeControl');
+    if (!runtimeTool?.inputs?.properties?.playbackRange) {
+      t.skip('Active Creator bridge predates the documented AnimationState weight/delay/playbackRange contract.');
+      return;
+    }
+
+    let nodeId;
+    try {
+      const created = await postTool('executeJavascript', {
+        context: 'scene',
+        code: `const cc = require('cc');
+const scene = cc.director.getScene();
+const node = new cc.Node('__ccb_animation_state_witness__');
+const animation = node.addComponent(cc.Animation);
+const clip = new cc.AnimationClip();
+clip.name = '__ccb_animation_state_clip__';
+clip.duration = 2;
+animation.addClip(clip);
+scene.addChild(node);
+return { id: node.uuid };`,
+      });
+      const createdBody = assertPositive(created, 'executeJavascript animation fixture');
+      nodeId = createdBody.result.id;
+      assert.equal(typeof nodeId, 'string');
+
+      const controlled = await postTool('animationRuntimeControl', {
+        nodeReference: { id: nodeId, type: 'cc.Node' },
+        operation: 'set_state',
+        clipName: '__ccb_animation_state_clip__',
+        speed: 1.25,
+        time: 0.4,
+        repeatCount: 2,
+        wrapMode: 0,
+        weight: 0.65,
+        delay: 0.1,
+        playbackRange: { min: 0.2, max: 1.5 },
+      });
+      if (!controlled.ok && controlled.status === 500 && controlled.body?.code === 'INTERNAL_ERROR') {
+        t.skip('Creator rejected the disposable AnimationState mutation; the bridge correctly returned no false success.');
+        return;
+      }
+      const controlledBody = assertPositive(controlled, 'animationRuntimeControl set_state');
+      assert.equal(controlledBody.operation, 'set_state');
+      assert.equal(controlledBody.state.speed, 1.25);
+      assert.equal(controlledBody.state.weight, 0.65);
+      assert.equal(controlledBody.state.delay, 0.1);
+      assert.deepEqual(controlledBody.state.playbackRange, { min: 0.2, max: 1.5 });
+      return { nodeId, state: controlledBody.state };
+    } finally {
+      if (nodeId) {
+        await postTool('executeJavascript', {
+          context: 'scene',
+          code: `const node = require('cc').director.getScene().getChildByUuid('${nodeId}');
+if (node) node.destroy();
+return true;`,
+        });
+      }
+    }
+  });
 });

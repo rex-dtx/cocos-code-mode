@@ -494,6 +494,18 @@ async function compressionOutputEvidence(library: unknown): Promise<TextureCompr
     }
     return output;
 }
+async function waitForCompressionLibrary(uuid: string, initial: IAssetInfo): Promise<IAssetInfo> {
+    let current = initial;
+    for (let attempt = 0; attempt < 50; attempt++) {
+        if ((await compressionOutputEvidence(current.library)).length > 0) return current;
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const refreshed = await Editor.Message.request('asset-db', 'query-asset-info', uuid) as IAssetInfo | null;
+        if (refreshed) current = refreshed;
+    }
+    return current;
+}
+
+
 
 
 
@@ -1343,18 +1355,19 @@ export class AssetTools {
             }
         }
         const refreshed = await Editor.Message.request('asset-db', 'query-asset-info', record.uuid) as IAssetInfo | null;
-        if (!refreshed?.file || !await fs.pathExists(refreshed.file)) {
+        const evidenced = refreshed ? await waitForCompressionLibrary(record.uuid, refreshed) : refreshed;
+        if (!evidenced?.file || !await fs.pathExists(evidenced.file)) {
             throw new ToolError({ code: 'READBACK_FAILED', status: 502, message: 'Configured image source is unavailable for evidence hashing.' });
         }
         return {
             changed,
-            reference: { id: refreshed.uuid, type: refreshed.type },
+            reference: { id: evidenced.uuid, type: evidenced.type },
             presetId: request.presetId,
             previousPresetId,
             platform: request.platform,
             formats,
-            sourceSha256: await sha256File(refreshed.file),
-            generatedOutputs: await compressionOutputEvidence(refreshed.library),
+            sourceSha256: await sha256File(evidenced.file),
+            generatedOutputs: await compressionOutputEvidence(evidenced.library),
             buildArtifactVerified: false,
         };
     }

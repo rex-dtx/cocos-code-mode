@@ -426,8 +426,8 @@
       "candidates": [
         {
           "name": "animationGraphCreate",
-          "state": "candidate",
-          "contractDelta": "Create a valid native graph asset and prove import/read-back.",
+          "state": "implemented-unverified",
+          "contractDelta": "Create a valid native graph asset, prove import/read-back, and roll back on failure.",
           "route": "asset preset plus graph validator",
           "prerequisites": [
             "animation-graph-format",
@@ -513,8 +513,8 @@
         },
         {
           "name": "animationRetargetValidate",
-          "state": "candidate",
-          "contractDelta": "Check skeleton, joint and clip compatibility without claiming automatic retargeting.",
+          "state": "implemented-unverified",
+          "contractDelta": "Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
           "route": "model and clip metadata validator",
           "prerequisites": [
             "model-skeleton-metadata"
@@ -552,8 +552,8 @@
         },
         {
           "name": "skeletalAnimationConfigure",
-          "state": "candidate",
-          "contractDelta": "Typed skin, mix and socket setup with component read-back.",
+          "state": "qualified",
+          "contractDelta": "Configure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
           "route": "skeletal adapter plus inspector service",
           "prerequisites": [
             "skeletal-extension-detection",
@@ -1089,7 +1089,7 @@
         },
         {
           "name": "shaderValidate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Return real effect importer/compiler diagnostics tied to source locations.",
           "route": "effect importer diagnostics",
           "prerequisites": [
@@ -1239,7 +1239,7 @@
         },
         {
           "name": "modelImportConfigure",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed import, reimport and mesh/skeleton/LOD output validation.",
           "route": "model importer adapter",
           "prerequisites": [

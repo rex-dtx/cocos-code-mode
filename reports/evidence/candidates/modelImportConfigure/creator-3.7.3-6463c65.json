@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "candidate": "modelImportConfigure",
+  "creatorVersion": "3.7.3",
+  "artifactCommit": "6463c65",
+  "artifactDirty": true,
+  "endpoint": "http://127.0.0.1:49650",
+  "executionContext": "asset-db",
+  "contract": "Configure one bounded mutable FBX importer setting with reimport, read-back, and cleanup",
+  "positiveTestID": "candidate.modelImportConfigure.positive.v1",
+  "negativeTestID": "candidate.modelImportConfigure.negative.v1",
+  "positive": {
+    "command": "UTCP_BASE=http://localhost:49650 node --test --test-name-pattern=\"mutable FBX\" tests/live/candidate-expansion-qualification.test.js",
+    "result": "passed",
+    "observed": [
+      "internal FBX fixture copied into a writable project asset",
+      "addVertexColor changed and read back",
+      "original addVertexColor value restored and read back",
+      "copied fixture deleted"
+    ]
+  },
+  "negative": {
+    "missingReference": {
+      "status": 404,
+      "code": "TARGET_NOT_FOUND",
+      "mutation": false
+    }
+  },
+  "scope": "Only FBX addVertexColor is qualified; other model importers and settings are excluded."
+}

@@ -1,19 +1,31 @@
 {
   "artifact": "current dirty worktree",
   "creator": "3.7.3",
-  "build": { "commit": "d971a85-dirty", "build": "passed", "package": "cc-bridge-3x-v200-260913-134225.zip", "packageBytes": 35342732 },
-  "registration": { "baseline": 86, "registered": 188, "expansions": 102, "minimumRegistration": 157, "registrationMargin": 31 },
-  "portfolio": { "primaryCandidates": 80, "reserveCandidates": 20, "replacements": 6, "qualifiedOrApproved": 53, "requiredApprovals": 82, "approvalGap": 29, "readyForBulkImplementation": false },
+  "build": { "commit": "6463c65-dirty", "build": "passed", "package": "cc-bridge-3x-v200-260913-144256.zip", "packageBytes": 35358837 },
+  "registration": { "baseline": 86, "registered": 191, "expansions": 105, "minimumRegistration": 157, "registrationMargin": 34 },
+  "portfolio": { "primaryCandidates": 80, "reserveCandidates": 20, "replacements": 6, "qualifiedOrApproved": 56, "requiredApprovals": 82, "approvalGap": 26, "readyForBulkImplementation": false },
   "verification": {
-    "unitTests": { "passed": 325, "failed": 0, "skipped": 0 },
+    "unitTests": { "passed": 332, "failed": 0, "skipped": 0 },
     "build": "passed",
     "package": "passed",
     "portfolioAudit": "passed",
     "diffCheck": "passed",
-    "liveCreator": { "renderPipelineInspect": "passed positive and typed negative on prior build 9998a9d-dirty", "animationWitness": "skipped: no SkeletalAnimation fixture", "runtimeWitness": "passed fail-closed session checks", "materialEdit": "implemented and unit-contract verified; no destructive live fixture mutation claimed" }
+    "liveCreator": {
+      "endpoint": "http://localhost:49650",
+      "buildInfo": "6463c65-dirty",
+      "candidateWitnesses": { "passed": 220, "skipped": 14, "failed": 3 },
+      "renderPipelineInspect": "passed positive and typed missing-target negative",
+      "buildLogInspect": "passed terminal task identity/state read-back with truthful unavailable diagnostics",
+      "animationWitness": "passed fail-closed; no SkeletalAnimation fixture and disposable AnimationState rejected by Creator",
+      "runtimeWitness": "passed fail-closed session checks",
+      "p4NegativeWitnesses": "physics2dConfigure and physics3dConfigure returned UNSUPPORTED_EDITOR_API 422; particlePlayback returned SESSION_NOT_FOUND 404",
+      "materialEditNegativeWitness": "missing material returned UNSUPPORTED_OPERATION 422"
+    }
   },
   "parity": { "rawUnionRows": 259, "accountedRows": 259, "coveredEquivalentRows": 228, "coveredEquivalentPercent": 88.03, "note": "Contract coverage is not equivalent to full live qualification." },
   "scopedQualified": ["renderPipelineInspect"],
-  "implementedUnverified": ["physics2dConfigure", "physics3dConfigure", "particlePlayback", "materialEdit"],
-  "blockedOrDeferred": ["particleConfigure", "seven unledgered animation APIs require candidate/evidence ownership", "materialEdit rendered visual postcondition requires a safe fixture", "candidate-level prerequisite contracts remain planned-only", "live Creator endpoint unavailable for current dirty artifact"]
+  "unsupportedOnCreator373": ["projectManage:set", "physics2dConfigure", "physics3dConfigure", "previewResolutionSet"],
+  "implementedUnverified": ["particlePlayback", "materialEdit", "animationGraphCreate", "animationRetargetValidate", "skeletalAnimationConfigure"],
+  "fixtureOrTransportBlocked": ["particleConfigure", "seven animation APIs lack authoring/generic playback fixture evidence", "materialEdit rendered visual postcondition requires a safe fixture", "graph/model/skeletal positive fixtures and generic AnimationState mutation lack positive evidence", "candidate-level prerequisite contracts remain planned-only"],
+  "nextUpdateBacklog": "docs/next-update-3x8-capability-backlog.json"
 }

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "candidate": "skeletalAnimationConfigure",
+  "creatorVersion": "3.7.3",
+  "artifactCommit": "6463c65",
+  "artifactDirty": true,
+  "endpoint": "http://127.0.0.1:65363",
+  "executionContext": "scene-editor",
+  "contract": "Configure bounded serialized SkeletalAnimation playOnLoad/useBakedAnimation fields with component read-back and rollback",
+  "positiveTestID": "candidate.skeletalAnimationConfigure.positive.v1",
+  "negativeTestID": "candidate.skeletalAnimationConfigure.negative.v1",
+  "positive": {
+    "command": "UTCP_BASE=http://localhost:65363 node --test --test-name-pattern=\"round-trips SkeletalAnimation serialized fields\" tests/live/candidate-expansion-qualification.test.js",
+    "result": "passed",
+    "observed": [
+      "temporary node and cc.SkeletalAnimation component created",
+      "playOnLoad changed false-to-true with verified component read-back",
+      "playOnLoad restored to false",
+      "temporary node deleted"
+    ]
+  },
+  "negative": {
+    "unsupportedProperty": {
+      "input": { "speed": true },
+      "status": 422,
+      "code": "UNSUPPORTED_PROPERTY",
+      "mutation": false,
+      "readBack": { "playOnLoad": true }
+    }
+  },
+  "scope": "Only serialized playOnLoad and useBakedAnimation fields are supported; skin, mix, socket, clip assignment, and playback are excluded."
+}

@@ -152,4 +152,3 @@ describe('live: read-only candidate qualification witnesses', () => {
     }
   });
 });
-

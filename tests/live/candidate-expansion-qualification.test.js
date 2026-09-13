@@ -415,4 +415,85 @@ return out;`,
     const healthNegative = await getJson('/tools/sceneScriptHealthScan?limit=0');
     assert.equal(healthNegative.status, 400);
   });
+  it('round-trips one mutable FBX importer setting when Creator exposes an FBX fixture', async (t) => {
+    if (skipIfDown(t)) return;
+    const assets = await getJson('/tools/assetQuery?importer=fbx&limit=1');
+    assert.equal(assets.status, 200, JSON.stringify(assets.body));
+    const source = assets.body.assets?.[0];
+    if (!source) { t.skip('No FBX importer fixture is present in the active Creator project.'); return; }
+    const assetPath = `db://assets/__ccb3x_model_import_${Date.now()}.fbx`;
+    let model = source;
+    let copied;
+    try {
+      if (String(source.url).startsWith('db://internal/')) {
+        copied = await postTool('assetOperate', {
+          operation: 'copy',
+          reference: { id: source.uuid, type: source.type },
+          targetAssetPath: assetPath,
+        });
+        assert.equal(copied.status, 200, JSON.stringify(copied.body));
+        model = copied.body.reference;
+      }
+      const before = await getJson(`/tools/assetImportSettingsGet?reference%5Bid%5D=${encodeURIComponent(model.uuid ?? model.id)}`);
+      assert.equal(before.status, 200, JSON.stringify(before.body));
+      assert.ok(before.body.schema.mutablePaths.includes('addVertexColor'));
+      const original = before.body.settings.addVertexColor;
+      const reference = { id: model.uuid ?? model.id, type: model.type };
+      const changed = await postTool('modelImportConfigure', {
+        reference, path: 'addVertexColor', value: !original,
+      });
+      assert.equal(changed.status, 200, JSON.stringify(changed.body));
+      assert.equal(changed.body.changed, true);
+      assert.equal(changed.body.previous, original);
+      assert.equal(changed.body.readBack, !original);
+      const restored = await postTool('modelImportConfigure', {
+        reference, path: 'addVertexColor', value: original,
+      });
+      assert.equal(restored.status, 200, JSON.stringify(restored.body));
+      assert.equal(restored.body.readBack, original);
+      const missing = await postExpectedErrorTool('modelImportConfigure', {
+        reference: { id: '__missing_model_candidate__', type: 'cc.Asset' },
+        path: 'addVertexColor',
+        value: true,
+      }, 'candidate.modelImportConfigure.negative.v1');
+      assert.equal(missing.status, 404, JSON.stringify(missing.body));
+      assert.equal(missing.body.code, 'TARGET_NOT_FOUND');
+    } finally {
+      if (copied?.body?.reference) {
+        const cleanup = await postTool('assetOperate', { operation: 'delete', reference: copied.body.reference });
+        assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
+      }
+    }
+  });
+
+  it('round-trips SkeletalAnimation serialized fields when the component is supported', async (t) => {
+    if (skipIfDown(t)) return;
+    const created = await postTool('nodeCreate', { name: '__ccb3x_skeletal_config_qualification__' });
+    assert.equal(created.status, 200, JSON.stringify(created.body));
+    const reference = created.body.reference;
+    try {
+      const component = await postTool('nodeComponentManage', { operation: 'add', reference, componentType: 'cc.SkeletalAnimation' });
+      if (component.status !== 200) { t.skip(`Creator does not expose cc.SkeletalAnimation creation: ${component.body?.code ?? component.status}`); return; }
+      const configured = await postTool('skeletalAnimationConfigure', { reference, properties: { playOnLoad: true } });
+      assert.equal(configured.status, 200, JSON.stringify(configured.body));
+      assert.equal(configured.body.verified, true);
+      assert.equal(configured.body.properties.playOnLoad, true);
+      const unsupported = await postExpectedErrorTool('skeletalAnimationConfigure', {
+        reference,
+        properties: { speed: true },
+      }, 'candidate.skeletalAnimationConfigure.negative.v1');
+      assert.equal(unsupported.status, 422, JSON.stringify(unsupported.body));
+      assert.equal(unsupported.body.code, 'UNSUPPORTED_PROPERTY');
+      const componentReference = configured.body.componentReference;
+      const unchanged = await getJson(`/tools/inspectorGet?target=instance&reference%5Bid%5D=${encodeURIComponent(componentReference.id)}&reference%5Btype%5D=${encodeURIComponent(componentReference.type)}&fields%5B0%5D=playOnLoad`);
+      assert.equal(unchanged.status, 200, JSON.stringify(unchanged.body));
+      assert.equal(unchanged.body.dump.playOnLoad, true);
+      const restored = await postTool('skeletalAnimationConfigure', { reference, properties: { playOnLoad: false } });
+      assert.equal(restored.status, 200, JSON.stringify(restored.body));
+      assert.equal(restored.body.verified, true);
+      assert.equal(restored.body.properties.playOnLoad, false);
+    } finally {
+      await postTool('nodeOperate', { operation: 'delete', reference });
+    }
+  });
 });
