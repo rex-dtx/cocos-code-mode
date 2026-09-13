@@ -11,10 +11,12 @@ describe('live: render and runtime candidate witnesses', () => {
     const material = await getJson('/tools/renderPipelineInspect?reference%5Bid%5D=1263d74c-8167-4928-91a6-4e2672411f47%408d883');
     assert.equal(material.status, 200, JSON.stringify(material.body));
     assert.equal(material.body.reference.id, '1263d74c-8167-4928-91a6-4e2672411f47@8d883');
-    assert.ok(material.body.result);
+    assert.ok(material.body.pipeline);
+    assert.equal(typeof material.body.bytes, 'number');
+    assert.equal(material.body.truncated, false);
     const missing = await getJson('/tools/renderPipelineInspect?reference%5Bid%5D=__missing_material__');
-    assert.equal(missing.status, 200);
-    assert.equal(missing.body.result, undefined);
+    assert.equal(missing.status, 404);
+    assert.equal(missing.body.code, 'TARGET_NOT_FOUND');
   });
   it('lists runtime sessions and fails closed for unverified preview transport', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
