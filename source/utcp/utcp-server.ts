@@ -273,8 +273,34 @@ if (debugEnabled) {
     console.log(`[cx3][lifecycle] Debug mode ON → ${debugLogFile}`);
 }
 
+export function creatorInteractionLog(entry: Record<string, unknown>): void {
+    const phase = entry.phase;
+    const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
+    const tool = typeof entry.tool === 'string' ? ` tool=${entry.tool}` : '';
+    const method = typeof entry.method === 'string' ? entry.method : '';
+    const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
+    const status = typeof entry.status === 'number' ? ` ${entry.status}` : '';
+    const duration = typeof entry.durationMs === 'number' ? ` duration=${entry.durationMs}ms` : '';
+    const summary = phase === 'start'
+        ? `REQUEST -> ${method}${path}${tool}`
+        : phase === 'complete'
+            ? `RESPONSE <-${status}${tool}${duration}`
+            : phase === 'error'
+                ? `ERROR${status}${tool}${duration}`
+                : String(phase || 'EVENT').toUpperCase();
+    const text = `[cx3][api] ${summary} | ${payload}`;
+    const editor = (globalThis as any).Editor;
+    const level = phase === 'error' ? 'error' : phase === 'warning' ? 'warn' : 'info';
+    try {
+        if (editor && typeof editor[level] === 'function') editor[level](text);
+    } catch {
+        // Creator logging must never change the HTTP result or tool lifecycle.
+    }
+}
+
 function interactionLog(entry: Record<string, unknown>): void {
     const phase = entry.phase;
+    creatorInteractionLog(entry);
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
     const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
     const writer = phase === 'error' ? console.error : phase === 'warning' ? console.warn : console.info;
@@ -387,9 +413,17 @@ export class UtcpServerManager {
                 this.port = currentPort;
                 this.registerTools(currentPort, tools, toolInstances, utcpTools);
 
+                const message = `[cx3][lifecycle] CONNECTED <- http://localhost:${currentPort}/utcp`;
+                console.info(message);
+                const editor = (globalThis as any).Editor;
+                try { if (editor && typeof editor.info === 'function') editor.info(message); } catch {}
                 resolve(currentPort);
             });
             this.server.on('error', (err: any) => {
+                const message = `[cx3][lifecycle] CONNECTION_ERROR <- ${err?.message ?? String(err)}`;
+                console.error(message);
+                const editor = (globalThis as any).Editor;
+                try { if (editor && typeof editor.error === 'function') editor.error(message); } catch {}
                 reject(err);
             });
         });
@@ -597,7 +631,10 @@ export class UtcpServerManager {
                 else resolve();
             });
         });
-        console.log('[cx3][lifecycle] UTCP Server stopped');
+        const message = '[cx3][lifecycle] DISCONNECTED <- UTCP Server stopped';
+        console.log(message);
+        const editor = (globalThis as any).Editor;
+        try { if (editor && typeof editor.info === 'function') editor.info(message); } catch {}
     }
 
     getDebugEnabled(): boolean {
@@ -614,7 +651,10 @@ export class UtcpServerManager {
 
     toggleDebug(): boolean {
         const enabled = this.setDebugEnabled(!debugEnabled);
-        console[enabled ? 'info' : 'warn'](`[cx3][lifecycle] Verbose interaction logging ${enabled ? 'ON' : 'OFF'}`);
+        const message = `[cx3][lifecycle] Verbose interaction logging ${enabled ? 'ON' : 'OFF'}`;
+        console[enabled ? 'info' : 'warn'](message);
+        const editor = (globalThis as any).Editor;
+        try { if (editor && typeof editor[enabled ? 'info' : 'warn'] === 'function') editor[enabled ? 'info' : 'warn'](message); } catch {}
         return enabled;
     }
 
