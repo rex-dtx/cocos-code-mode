@@ -62,7 +62,7 @@ export const methods = {
         if (_catchAllActive) return true;
         let fs: any;
         try { fs = require('fs'); } catch {
-            console.warn('[cx3] startCatchAll: fs unavailable in scene context');
+            console.warn('[cx3][scene] startCatchAll: fs unavailable in scene context');
             return false;
         }
         const path = require('path');
@@ -207,7 +207,7 @@ export const methods = {
                     }
                 }
             } catch (e) {
-                console.warn('[cx3][captureScreenshot] Failed to modify camera:', e);
+                console.warn('[cx3][scene] captureScreenshot: Failed to modify camera:', e);
             }
 
             if (cc.director && cc.director.root) {
@@ -222,7 +222,7 @@ export const methods = {
                 if (cce && cce.Engine) {
                     cce.Engine.repaintInEditMode();
                 }
-            } catch (e) { console.warn('[cx3] Failed to repaintInEditMode:', e); }
+            } catch (e) { console.warn('[cx3][scene] Failed to repaintInEditMode:', e); }
 
             cc.director.once(cc.Director.EVENT_AFTER_RENDER, () => {
                 try {
@@ -567,7 +567,7 @@ export const methods = {
                 ev.emit([button]);
                 handlersFired++;
             } catch (e: any) {
-                console.warn(`[cx3][simulateButtonClick] handler failed: ${e?.message || e}`);
+                console.warn(`[cx3][scene] simulateButtonClick handler failed: ${e?.message || e}`);
             }
         }
         return { handlersFired, method: 'clickEvents' };

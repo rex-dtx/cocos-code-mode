@@ -58,7 +58,7 @@ export function promptEditorQuestion(args: EditorAskArgs & { buttons: string[]; 
 function notify(event: string, ...args: string[]): void {
     // Broadcast only: routing a message to a closed panel can implicitly open it.
     try { Editor.Message.broadcast(`${packageJSON.name}:${event}`, ...args); }
-    catch (error) { console.warn('[cx3] Agent Inbox notification failed:', error); }
+    catch (error) { console.warn('[cx3][prompt] Agent Inbox notification failed:', error); }
 }
 
 function startPrompt(request: EditorInteractionRequest): Promise<EditorPromptResult> {
@@ -80,7 +80,7 @@ function startPrompt(request: EditorInteractionRequest): Promise<EditorPromptRes
         };
         const timer = setTimeout(() => active.finish('timedOut'), Math.max(0, request.expiresAt - Date.now()));
         pending = active;
-        console.info(`[cx3] Agent request ${request.requestId} pending. Open CC Bridge 3x > Agent Inbox to respond before ${new Date(request.expiresAt).toISOString()}.`);
+        console.info(`[cx3][prompt] Agent request ${request.requestId} pending. Open CC Bridge 3x > Agent Inbox to respond before ${new Date(request.expiresAt).toISOString()}.`);
         notify('editor-prompt-changed');
         if (request.openPanel !== true) return;
         // Opening may activate Creator's panel: only permitted by explicit opt-in.

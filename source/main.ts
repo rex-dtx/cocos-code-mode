@@ -40,7 +40,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
         cancelEditorAsk();
         cancelEditorPrompt();
         if (!utcpServer) {
-            console.warn('[cx3] UTCP Server is not running.');
+            console.warn('[cx3][api] UTCP Server is not running.');
             return;
         }
         if (typeof newPort !== 'number' || !newPort) {
@@ -55,10 +55,10 @@ export const methods: { [key: string]: (...any: any) => any } = {
             const actualPort = await nextServer.start(newPort);
             utcpServer = nextServer;
             await getConfigManager().updatePort(actualPort);
-            console.log(`[cx3] UTCP Server restarted on port ${actualPort}`);
+            console.log(`[cx3][api] UTCP Server restarted on port ${actualPort}`);
         } catch (err) {
             utcpServer = null;
-            console.error('[cx3] Failed to restart UTCP Server:', err);
+            console.error('[cx3][api] Failed to restart UTCP Server:', err);
         }
     },
 
@@ -73,8 +73,8 @@ export const methods: { [key: string]: (...any: any) => any } = {
         const method = applied ? 'startCatchAll' : 'stopCatchAll';
         Editor.Message.request('scene', 'execute-scene-script',
             { name: packageJSON.name, method, args: [] })
-            .catch((err: any) => console.warn(`[cx3] Scene console capture not toggled: ${err?.message || err}`));
-        console.info(`[cx3] Verbose interaction logging ${applied ? 'ON' : 'OFF'}`);
+            .catch((err: any) => console.warn(`[cx3][scene] Scene console capture not toggled: ${err?.message || err}`));
+        console.info(`[cx3][lifecycle] Verbose interaction logging ${applied ? 'ON' : 'OFF'}`);
         return { enabled: applied };
     },
 
@@ -88,7 +88,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
         try {
             mkdirSync(DEBUG_LOG_DIR, { recursive: true });
         } catch (err: unknown) {
-            console.error('[cx3] Failed to create debug folder:', err instanceof Error ? err.message : String(err));
+            console.error('[cx3][lifecycle] Failed to create debug folder:', err instanceof Error ? err.message : String(err));
             return;
         }
         // ponytail: cross-platform open — works on Windows/macOS/Linux
@@ -98,7 +98,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
                 ? `open "${DEBUG_LOG_DIR}"`
                 : `xdg-open "${DEBUG_LOG_DIR}"`;
         exec(cmd, (err) => {
-            if (err) console.error('[cx3] Failed to open debug folder:', err.message);
+            if (err) console.error('[cx3][lifecycle] Failed to open debug folder:', err.message);
         });
     },
 
@@ -106,11 +106,11 @@ export const methods: { [key: string]: (...any: any) => any } = {
         try {
             const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
             files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
-            console.log(`[cx3] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
+            console.log(`[cx3][lifecycle] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
         } catch (err: any) {
             // ENOENT means the folder never existed — nothing to clear.
             if (err?.code !== 'ENOENT') {
-                console.error('[cx3] Failed to clear debug logs:', err?.message || err);
+                console.error('[cx3][lifecycle] Failed to clear debug logs:', err?.message || err);
             }
         }
     },
@@ -140,8 +140,8 @@ export const methods: { [key: string]: (...any: any) => any } = {
 };
 
 export async function load() {
-    console.log('[cx3] Loaded');
-    console.log(`[cx3] build ${formatBuildInfo()}`);
+    console.log('[cx3][lifecycle] Loaded');
+    console.log(`[cx3][lifecycle] build ${formatBuildInfo()}`);
 
     // Initialize config manager
     const configManager = getConfigManager();
@@ -169,12 +169,12 @@ export async function load() {
         const url = `http://localhost:${actualPort}/utcp`;
         await configManager.updatePort(actualPort);
         console.log(
-            `[cx3] Ready: UTCP server listening at ${url}\n` +
-            `[cx3] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-            '[cx3] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.'
+            `[cx3][lifecycle] Ready: UTCP server listening at ${url}\n` +
+            `[cx3][config] Code Mode config updated: ${configManager.getConfigPath()}\n` +
+            '[cx3][lifecycle] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.'
         );
     } catch (err) {
-        console.error('[cx3] Failed to start UTCP Server:', err);
+        console.error('[cx3][api] Failed to start UTCP Server:', err);
     }
 
     if (!wasConfiguredPort) {
@@ -187,7 +187,7 @@ export function unload() {
     cancelEditorPrompt();
     disposeEditorControl();
     if (utcpServer) {
-        console.log('[cx3] Stopping UTCP Server...');
+        console.log('[cx3][lifecycle] Stopping UTCP Server...');
         const port = (utcpServer as any).port ?? 0;
         utcpServer.stop();
         utcpServer = null;

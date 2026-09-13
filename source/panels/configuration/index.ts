@@ -57,14 +57,14 @@ module.exports = Editor.Panel.define({
                 await configManager.setConfigPath(newPath);
                 this.updateMcpCodeBlock();
                 this.fetchBridgeList(); // Reload templates from new path
-                console.log('[cx3] Saved UTCP Config Path:', newPath);
+                console.log('[cx3][config] Saved UTCP Config Path:', newPath);
             }
         },
 
         async updatePort() {
             const portVal = (this.$.portInput as any).value;
             const port = parseInt(portVal);
-            console.log(`[cx3] Updating port to: ${port}`);
+            console.log(`[cx3][config] Updating port to: ${port}`);
             // Send message to main process to restart server
             Editor.Message.send(packageJSON.name, 'restart-server', port);
         },
@@ -94,7 +94,7 @@ module.exports = Editor.Panel.define({
         fetchBridgeList() {
             const container = this.$.bridgeList as HTMLElement;
             if (!container) {
-                console.warn('[cx3] Bridge Config Container not found');
+                console.warn('[cx3][config] Bridge Config Container not found');
                 return;
             }
 

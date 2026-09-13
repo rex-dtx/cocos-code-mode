@@ -65,7 +65,7 @@ export class ToolsUtils {
                     try {
                         props = await importer.getProperties(assetInfo);
                     } catch (error) {
-                        console.warn(`[cx3] Failed to inspect ${assetInfo.importer} metadata for asset ${targetId}; returning identity properties.`, error);
+                        console.warn(`[cx3][asset] Failed to inspect ${assetInfo.importer} metadata for asset ${targetId}; returning identity properties.`, error);
                     }
                 }
                 if (!props) {
@@ -86,7 +86,7 @@ export class ToolsUtils {
                 };
             }
         } catch (error) {
-            console.warn(`[cx3] Failed to query asset ${targetId}:`, error);
+            console.warn(`[cx3][asset] Failed to query asset ${targetId}:`, error);
         }
 
         return null; 
@@ -111,7 +111,7 @@ export class ToolsUtils {
                  };
             }
         } catch (e) {
-            console.warn('[cx3] Failed to inspect CurrentSceneGlobals:', e);
+            console.warn('[cx3][scene] Failed to inspect CurrentSceneGlobals:', e);
         }
         return null;
     }
