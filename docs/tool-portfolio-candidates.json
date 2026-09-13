@@ -1068,8 +1068,8 @@
       "candidates": [
         {
           "name": "materialEdit",
-          "state": "candidate",
-          "contractDelta": "Typed pass/property mutation followed by import and rendered postcondition.",
+          "state": "implemented-unverified",
+          "contractDelta": "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
           "route": "material adapter plus importer",
           "prerequisites": [
             "material-schema",
@@ -1107,7 +1107,7 @@
         {
           "name": "renderPipelineInspect",
           "state": "qualified",
-          "contractDelta": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query.",
+          "contractDelta": "Bounded native pipeline read-back through scene/query-render-pipeline; normalized compatibility diagnostics remain out of scope.",
           "route": "render adapter",
           "prerequisites": [
             "render-pipeline-schema"

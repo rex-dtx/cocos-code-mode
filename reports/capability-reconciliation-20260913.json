@@ -1,0 +1,19 @@
+{
+  "artifact": "current dirty worktree",
+  "creator": "3.7.3",
+  "build": { "commit": "d971a85-dirty", "build": "passed", "package": "cc-bridge-3x-v200-260913-134225.zip", "packageBytes": 35342732 },
+  "registration": { "baseline": 86, "registered": 188, "expansions": 102, "minimumRegistration": 157, "registrationMargin": 31 },
+  "portfolio": { "primaryCandidates": 80, "reserveCandidates": 20, "replacements": 6, "qualifiedOrApproved": 53, "requiredApprovals": 82, "approvalGap": 29, "readyForBulkImplementation": false },
+  "verification": {
+    "unitTests": { "passed": 325, "failed": 0, "skipped": 0 },
+    "build": "passed",
+    "package": "passed",
+    "portfolioAudit": "passed",
+    "diffCheck": "passed",
+    "liveCreator": { "renderPipelineInspect": "passed positive and typed negative on prior build 9998a9d-dirty", "animationWitness": "skipped: no SkeletalAnimation fixture", "runtimeWitness": "passed fail-closed session checks", "materialEdit": "implemented and unit-contract verified; no destructive live fixture mutation claimed" }
+  },
+  "parity": { "rawUnionRows": 259, "accountedRows": 259, "coveredEquivalentRows": 228, "coveredEquivalentPercent": 88.03, "note": "Contract coverage is not equivalent to full live qualification." },
+  "scopedQualified": ["renderPipelineInspect"],
+  "implementedUnverified": ["physics2dConfigure", "physics3dConfigure", "particlePlayback", "materialEdit"],
+  "blockedOrDeferred": ["particleConfigure", "seven unledgered animation APIs require candidate/evidence ownership", "materialEdit rendered visual postcondition requires a safe fixture", "candidate-level prerequisite contracts remain planned-only", "live Creator endpoint unavailable for current dirty artifact"]
+}
