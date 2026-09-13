@@ -278,7 +278,19 @@ function interactionLog(entry: Record<string, unknown>): void {
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
     const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
     const writer = phase === 'error' ? console.error : phase === 'warning' ? console.warn : console.info;
-    writer(`[cx3][api] ${payload}`);
+    const tool = typeof entry.tool === 'string' ? ` tool=${entry.tool}` : '';
+    const method = typeof entry.method === 'string' ? entry.method : '';
+    const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
+    const status = typeof entry.status === 'number' ? ` ${entry.status}` : '';
+    const duration = typeof entry.durationMs === 'number' ? ` duration=${entry.durationMs}ms` : '';
+    const summary = phase === 'start'
+        ? `REQUEST -> ${method}${path}${tool}`
+        : phase === 'complete'
+            ? `RESPONSE <-${status}${tool}${duration}`
+            : phase === 'error'
+                ? `ERROR${status}${tool}${duration}`
+                : String(phase || 'EVENT').toUpperCase();
+    writer(`[cx3][api] ${summary} | ${payload}`);
     debugLog({ type: 'interaction', ...entry });
 }
 
@@ -370,7 +382,7 @@ export class UtcpServerManager {
                 if (addr && typeof addr === 'object') {
                     currentPort = addr.port;
                 }
-
+                console.info(`[cx3][api] LISTENING <- http://localhost:${currentPort}/utcp`);
                 // Now register tools with the correct port
                 this.port = currentPort;
                 this.registerTools(currentPort, tools, toolInstances, utcpTools);
