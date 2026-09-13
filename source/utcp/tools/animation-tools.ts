@@ -75,6 +75,62 @@ function slimClipDump(dump: any): any {
     };
 }
 
+type AnimationOperation = { funcName: string, args: unknown[] };
+
+async function applyAnimationOperation(funcName: string, args: unknown[]): Promise<ISuccessIndicator & { result?: unknown }> {
+    const response: any = await Editor.Message.request('scene', 'animation-operation', [{ funcName, args }], { recordUndo: true });
+    if (response && response.state === 'failure') {
+        return { success: false, error: response.reason || 'animation operation failed', result: response.result ?? null };
+    }
+    if (!response || response.state !== 'success') {
+        throw new Error(`animation-operation returned an unexpected payload: ${JSON.stringify(response ?? null)}`);
+    }
+    return { success: true, result: 'result' in response ? response.result : null };
+}
+
+function requireText(value: unknown, name: string, maxLength = 512): string {
+    if (typeof value !== 'string' || value.trim().length === 0 || value.length > maxLength) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${name} must be a non-empty string of at most ${maxLength} characters.` });
+    }
+    return value;
+}
+
+async function applyToClip(clipReference: IInstanceReference | undefined, funcName: string, args: unknown[]): Promise<ISuccessIndicator & { result?: unknown }> {
+    const clipId = requireRef(clipReference, 'clipReference');
+    const selected = await Editor.Message.request('scene', 'change-edit-clip', clipId);
+    if (!selected) {
+        throw new ToolError({ code: 'ANIMATION_CLIP_SELECTION_FAILED', status: 409, message: `Creator could not select animation clip ${clipId} for editing.` });
+    }
+    return applyAnimationOperation(funcName, args);
+}
+
+function requireFrame(value: unknown, name = 'frame'): number {
+    if (!Number.isInteger(value) || !Number.isFinite(value) || Number(value) < 0 || Number(value) > 1_000_000) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${name} must be an integer from 0 to 1000000.` });
+    }
+    return Number(value);
+}
+
+function requireFrames(value: unknown, name = 'frames'): number[] {
+    if (!Array.isArray(value) || value.length === 0 || value.length > 200) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${name} must contain 1 to 200 frame indices.` });
+    }
+    return value.map((frame, index) => requireFrame(frame, `${name}[${index}]`));
+}
+
+function requireOperations(value: unknown): AnimationOperation[] {
+    if (!Array.isArray(value) || value.length === 0 || value.length > 100) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operations must contain 1 to 100 animation operations.' });
+    }
+    return value.map((operation, index) => {
+        if (!operation || typeof operation !== 'object' || Array.isArray(operation)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `operations[${index}] must be an object.` });
+        }
+        const candidate = operation as Record<string, unknown>;
+        return { funcName: requireText(candidate.funcName, `operations[${index}].funcName`, 128), args: Array.isArray(candidate.args) ? candidate.args : (() => { throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `operations[${index}].args must be an array.` }); })() };
+    });
+}
+
 export class AnimationTools {
     @utcpTool(
         'skeletalAnimationInspect',
@@ -314,5 +370,306 @@ export class AnimationTools {
             default:
                 throw new Error(`Unknown animation edit operation: ${args.operation}`);
         }
+    }
+    @utcpTool(
+        'animationClipConfigure',
+        'Configure native animation clip sample rate, speed, or wrap mode through verified animation operations.',
+        {
+            type: 'object',
+            properties: {
+                clipReference: InstanceReferenceSchema,
+                operation: { type: 'string', enum: ['sample', 'speed', 'wrap_mode'] },
+                value: { type: 'number' }
+            },
+            required: ['clipReference', 'operation', 'value']
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, result: {} }, required: ['success'] },
+        'POST', ['animation', 'clip', 'configure', 'sample', 'speed', 'wrap']
+    )
+    async animationClipConfigure(args: { clipReference?: IInstanceReference, operation?: string, value?: number }): Promise<ISuccessIndicator & { result?: unknown }> {
+        requireRef(args?.clipReference, 'clipReference');
+        if (!['sample', 'speed', 'wrap_mode'].includes(args?.operation ?? '')) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be sample, speed, or wrap_mode.' });
+        }
+        if (typeof args?.value !== 'number' || !Number.isFinite(args.value)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'value must be a finite number.' });
+        }
+        if (args.operation === 'sample' && (args.value < 1 || args.value > 240)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'sample must be between 1 and 240.' });
+        }
+        if (args.operation === 'speed' && (args.value < 0 || args.value > 100)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'speed must be between 0 and 100.' });
+        }
+        const funcName = args.operation === 'wrap_mode' ? 'changeWrapMode' : args.operation === 'sample' ? 'changeSample' : 'changeSpeed';
+        return applyToClip(args.clipReference, funcName, [args.value]);
+    }
+
+    @utcpTool(
+        'animationTrackEdit',
+        'Create, remove, move, or copy native animation property tracks with bounded typed arguments.',
+        {
+            type: 'object',
+            properties: {
+                clipReference: InstanceReferenceSchema,
+                operation: { type: 'string', enum: ['create', 'remove', 'move_node', 'copy_to'] },
+                nodePath: { type: 'string' },
+                propKey: { type: 'string' },
+                destinationNodePath: { type: 'string' },
+                destinationPropKey: { type: 'string' }
+            },
+            required: ['clipReference', 'operation', 'nodePath', 'propKey']
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, result: {} }, required: ['success'] },
+        'POST', ['animation', 'track', 'curve', 'edit']
+    )
+    async animationTrackEdit(args: { clipReference?: IInstanceReference, operation?: string, nodePath?: string, propKey?: string, destinationNodePath?: string, destinationPropKey?: string }): Promise<ISuccessIndicator & { result?: unknown }> {
+        const operation = args?.operation;
+        const nodePath = requireText(args?.nodePath, 'nodePath');
+        const propKey = requireText(args?.propKey, 'propKey');
+        if (operation === 'create') return applyToClip(args.clipReference, 'createProp', [nodePath, propKey]);
+        if (operation === 'remove') return applyToClip(args.clipReference, 'removeProp', [nodePath, propKey]);
+        const destinationNodePath = requireText(args?.destinationNodePath, 'destinationNodePath');
+        const destinationPropKey = requireText(args?.destinationPropKey, 'destinationPropKey');
+        if (operation === 'move_node') return applyToClip(args.clipReference, 'changeNodeDataPath', [nodePath, destinationNodePath]);
+        if (operation === 'copy_to') return applyToClip(args.clipReference, 'copyPropTo', [nodePath, propKey, destinationNodePath, destinationPropKey]);
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be create, remove, move_node, or copy_to.' });
+    }
+
+    @utcpTool(
+        'animationKeyframeEdit',
+        'Create, move, remove, copy, space, clear, or retime native animation keyframes.',
+        {
+            type: 'object',
+            properties: {
+                clipReference: InstanceReferenceSchema,
+                operation: { type: 'string', enum: ['create', 'move', 'remove', 'update', 'copy_to', 'spacing', 'clear', 'modify_curve'] },
+                nodePath: { type: 'string' },
+                propKey: { type: 'string' },
+                frame: { type: 'integer', minimum: 0, maximum: 1000000 },
+                frames: { type: 'array', minItems: 1, maxItems: 200, items: { type: 'integer', minimum: 0, maximum: 1000000 } },
+                offsets: { oneOf: [{ type: 'integer' }, { type: 'array', minItems: 1, maxItems: 200, items: { type: 'integer' } }] },
+                destinationFrame: { type: 'integer', minimum: 0, maximum: 1000000 },
+                spacingFrames: { type: 'integer', minimum: 0, maximum: 1000000 },
+                customData: {}
+            },
+            required: ['clipReference', 'operation', 'nodePath', 'propKey']
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, result: {} }, required: ['success'] },
+        'POST', ['animation', 'keyframe', 'curve', 'edit']
+    )
+    async animationKeyframeEdit(args: { clipReference?: IInstanceReference, operation?: string, nodePath?: string, propKey?: string, frame?: number, frames?: number[], offsets?: number | number[], destinationFrame?: number, spacingFrames?: number, customData?: unknown, curveData?: unknown }): Promise<ISuccessIndicator & { result?: unknown }> {
+        const operation = args?.operation;
+        const nodePath = requireText(args?.nodePath, 'nodePath');
+        const propKey = requireText(args?.propKey, 'propKey');
+        if (operation === 'create') return applyToClip(args.clipReference, 'createKey', [nodePath, propKey, requireFrame(args?.frame), args?.customData ?? null]);
+        if (operation === 'move') return applyToClip(args.clipReference, 'moveKeys', [nodePath, propKey, requireFrames(args?.frames), args?.offsets ?? 0]);
+        if (operation === 'remove') return applyToClip(args.clipReference, 'removeKey', [nodePath, propKey, requireFrames(args?.frames)]);
+        if (operation === 'update') return applyToClip(args.clipReference, 'updateKey', [nodePath, propKey, requireFrames(args?.frames)]);
+        if (operation === 'copy_to') return applyToClip(args.clipReference, 'copyKeysTo', [nodePath, propKey, requireFrames(args?.frames), requireFrame(args?.destinationFrame, 'destinationFrame')]);
+        if (operation === 'spacing') return applyToClip(args.clipReference, 'spacingKeys', [nodePath, propKey, requireFrames(args?.frames), requireFrame(args?.spacingFrames, 'spacingFrames')]);
+        if (operation === 'clear') return applyToClip(args.clipReference, 'clearKeys', [nodePath, propKey]);
+        if (operation === 'modify_curve') return applyToClip(args.clipReference, 'modifyCurveOfKey', [nodePath, propKey, requireFrame(args?.frame), args?.curveData ?? args?.customData ?? null]);
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be create, move, remove, update, copy_to, spacing, clear, or modify_curve.' });
+    }
+
+    @utcpTool(
+        'animationEventEdit',
+        'Add, update, move, copy, or delete ordered animation event keyframes.',
+        {
+            type: 'object',
+            properties: {
+                clipReference: InstanceReferenceSchema,
+                operation: { type: 'string', enum: ['add', 'update', 'move', 'copy_to', 'delete'] },
+                frame: { type: 'integer', minimum: 0, maximum: 1000000 },
+                frames: { type: 'array', minItems: 1, maxItems: 200, items: { type: 'integer', minimum: 0, maximum: 1000000 } },
+                destinationFrame: { type: 'integer', minimum: 0, maximum: 1000000 },
+                offset: { type: 'integer', minimum: -1000000, maximum: 1000000 },
+                functionName: { type: 'string', minLength: 1, maxLength: 256 },
+                parameters: { type: 'array', maxItems: 32, items: { type: 'string', maxLength: 1024 } },
+                events: { type: 'array', maxItems: 200, items: { type: 'object' } }
+            },
+            required: ['clipReference', 'operation']
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, result: {} }, required: ['success'] },
+        'POST', ['animation', 'event', 'keyframe', 'edit']
+    )
+    async animationEventEdit(args: { clipReference?: IInstanceReference, operation?: string, frame?: number, frames?: number[], destinationFrame?: number, offset?: number, functionName?: string, parameters?: string[], events?: unknown[] }): Promise<ISuccessIndicator & { result?: unknown }> {
+        const operation = args?.operation;
+        if (operation === 'add') return applyToClip(args.clipReference, 'addEvent', [requireFrame(args?.frame), requireText(args?.functionName, 'functionName', 256), args?.parameters ?? []]);
+        if (operation === 'delete') return applyToClip(args.clipReference, 'deleteEvent', [requireFrames(args?.frames)]);
+        if (operation === 'update') return applyToClip(args.clipReference, 'updateEvent', [requireFrames(args?.frames), Array.isArray(args?.events) ? args.events : (() => { throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'events must be an array.' }); })()]);
+        if (operation === 'move') {
+            if (!Number.isInteger(args?.offset) || !Number.isFinite(args.offset)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'offset must be an integer.' });
+            return applyToClip(args.clipReference, 'moveEvents', [requireFrames(args?.frames), args.offset]);
+        }
+        if (operation === 'copy_to') return applyToClip(args.clipReference, 'copyEventsTo', [requireFrames(args?.frames), requireFrame(args?.destinationFrame, 'destinationFrame')]);
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be add, update, move, copy_to, or delete.' });
+    }
+    @utcpTool(
+        'animationAuxCurveEdit',
+        'Manage bounded auxiliary animation curves and keys through native editor operations.',
+        {
+            type: 'object',
+            properties: {
+                clipReference: InstanceReferenceSchema,
+                name: { type: 'string', minLength: 1, maxLength: 256 },
+                operation: { type: 'string', enum: ['add', 'rename', 'remove', 'create_key', 'remove_key', 'move_keys', 'copy_key', 'modify_curve'] },
+                newName: { type: 'string', maxLength: 256 },
+                frame: { type: 'integer', minimum: 0, maximum: 1000000 },
+                frames: { type: 'array', minItems: 1, maxItems: 200, items: { type: 'integer', minimum: 0, maximum: 1000000 } },
+                offset: { oneOf: [{ type: 'integer' }, { type: 'array', minItems: 1, maxItems: 200, items: { type: 'integer' } }] },
+                customData: {},
+                curveData: {},
+                source: {},
+                destination: {}
+            },
+            required: ['clipReference', 'operation', 'name']
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, result: {} }, required: ['success'] },
+        'POST', ['animation', 'auxiliary', 'curve', 'keyframe', 'edit']
+    )
+    async animationAuxCurveEdit(args: { clipReference?: IInstanceReference, operation?: string, name?: string, newName?: string, frame?: number, frames?: number[], offset?: number | number[], customData?: unknown, curveData?: unknown, source?: unknown, destination?: unknown }): Promise<ISuccessIndicator & { result?: unknown }> {
+        const operation = args?.operation;
+        const name = requireText(args?.name, 'name', 256);
+        if (operation === 'add') return applyToClip(args.clipReference, 'addAuxiliaryCurve', [name]);
+        if (operation === 'rename') return applyToClip(args.clipReference, 'renameAuxiliaryCurve', [name, requireText(args?.newName, 'newName', 256)]);
+        if (operation === 'remove') return applyToClip(args.clipReference, 'removeAuxiliaryCurve', [name]);
+        if (operation === 'create_key') return applyToClip(args.clipReference, 'createAuxKey', [name, requireFrame(args?.frame), args?.customData]);
+        if (operation === 'remove_key') return applyToClip(args.clipReference, 'removeAuxKey', [name, requireFrame(args?.frame)]);
+        if (operation === 'move_keys') return applyToClip(args.clipReference, 'moveAuxKeys', [name, requireFrames(args?.frames), args?.offset ?? 0]);
+        if (operation === 'copy_key') {
+            if (!args?.source || !args?.destination || typeof args.source !== 'object' || typeof args.destination !== 'object') {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'copy_key requires source and destination objects.' });
+            }
+            return applyToClip(args.clipReference, 'copyAuxKey', [args.source, args.destination]);
+        }
+        if (operation === 'modify_curve') return applyToClip(args.clipReference, 'modifyAuxCurveOfKey', [name, requireFrame(args?.frame), args?.curveData ?? args?.customData ?? null]);
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be add, rename, remove, create_key, remove_key, move_keys, copy_key, or modify_curve.' });
+    }
+
+    @utcpTool(
+        'animationUsageAnalyze',
+        'Inspect scene animation usage, active states, defaults, cache modes, and actionable setup recommendations.',
+        {
+            type: 'object',
+            properties: {
+                nodeReference: InstanceReferenceSchema,
+                maxNodes: { type: 'integer', minimum: 1, maximum: 200, default: 100 }
+            }
+        },
+        {
+            type: 'object',
+            properties: {
+                nodeReference: InstanceReferenceSchema,
+                visitedNodes: { type: 'integer' },
+                truncated: { type: 'boolean' },
+                componentCount: { type: 'integer' },
+                findings: { type: 'array' }
+            },
+            required: ['nodeReference', 'visitedNodes', 'truncated', 'componentCount', 'findings']
+        },
+        'GET', ['animation', 'analyze', 'usage', 'setup', 'cache', 'recommend']
+    )
+    async animationUsageAnalyze(args: { nodeReference?: IInstanceReference, maxNodes?: number } = {}): Promise<Record<string, unknown>> {
+        if (args.maxNodes !== undefined && (!Number.isInteger(args.maxNodes) || args.maxNodes < 1 || args.maxNodes > 200)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxNodes must be an integer from 1 to 200.' });
+        }
+        if (args.nodeReference) requireRef(args.nodeReference, 'nodeReference');
+        const result = await Editor.Message.request('scene', 'execute-scene-script', {
+            name: 'cc-bridge-3x',
+            method: 'animationUsageAnalyze',
+            args: [{ nodeUuid: args.nodeReference?.id, maxNodes: args.maxNodes ?? 100 }],
+        }) as Record<string, unknown> | null;
+        if (!result || !Array.isArray(result.findings) || typeof result.componentCount !== 'number') {
+            throw new ToolError({ code: 'ANIMATION_ANALYSIS_FAILED', status: 502, message: 'Creator returned malformed animation usage analysis.' });
+        }
+        return { ...result, nodeReference: { id: String(result.nodeUuid ?? args.nodeReference?.id ?? ''), type: 'cc.Node' } };
+    }
+
+    @utcpTool(
+        'animationRuntimeControl',
+        'Fully control Animation playback/state and Spine or DragonBones cache mode with live read-back.',
+        {
+            type: 'object',
+            properties: {
+                nodeReference: InstanceReferenceSchema,
+                operation: { type: 'string', enum: ['inspect', 'play', 'cross_fade', 'pause', 'resume', 'stop', 'set_default', 'set_play_on_load', 'set_state', 'set_cache_mode', 'invalidate_cache'] },
+                clipName: { type: 'string', maxLength: 256 },
+                duration: { type: 'number', minimum: 0, maximum: 60 },
+                playOnLoad: { type: 'boolean' },
+                loop: { type: 'boolean' },
+                speed: { type: 'number', minimum: 0, maximum: 100 },
+                time: { type: 'number', minimum: 0, maximum: 86400 },
+                repeatCount: { type: 'number', minimum: 0, maximum: 1000000 },
+                wrapMode: { type: 'integer', minimum: 0, maximum: 100 },
+                cacheMode: { type: 'string', enum: ['REALTIME', 'SHARED_CACHE', 'PRIVATE_CACHE'] }
+            },
+            required: ['nodeReference', 'operation']
+        },
+        {
+            type: 'object',
+            properties: {
+                nodeReference: InstanceReferenceSchema,
+                operation: { type: 'string' },
+                animation: {},
+                spine: {},
+                dragonBones: {}
+            },
+            required: ['nodeReference', 'operation']
+        },
+        'POST', ['animation', 'runtime', 'playback', 'state', 'cache', 'spine', 'dragonbones']
+    )
+    async animationRuntimeControl(args: {
+        nodeReference?: IInstanceReference,
+        operation?: string,
+        clipName?: string,
+        duration?: number,
+        playOnLoad?: boolean,
+        loop?: boolean,
+        speed?: number,
+        time?: number,
+        repeatCount?: number,
+        wrapMode?: number,
+        cacheMode?: string,
+    }): Promise<Record<string, unknown>> {
+        const nodeUuid = requireRef(args?.nodeReference, 'nodeReference');
+        const operations = ['inspect', 'play', 'cross_fade', 'pause', 'resume', 'stop', 'set_default', 'set_play_on_load', 'set_state', 'set_cache_mode', 'invalidate_cache'];
+        if (!operations.includes(args?.operation ?? '')) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `operation must be one of ${operations.join(', ')}.` });
+        if (args.clipName !== undefined) requireText(args.clipName, 'clipName', 256);
+        const ranges: Array<[keyof typeof args, number, number]> = [['duration', 0, 60], ['speed', 0, 100], ['time', 0, 86400], ['repeatCount', 0, 1_000_000]];
+        for (const [key, min, max] of ranges) {
+            const value = args[key];
+            if (value !== undefined && (typeof value !== 'number' || !Number.isFinite(value) || value < min || value > max)) {
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `${String(key)} must be a finite number from ${min} to ${max}.` });
+            }
+        }
+        if (args.wrapMode !== undefined && (!Number.isInteger(args.wrapMode) || args.wrapMode < 0 || args.wrapMode > 100)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'wrapMode must be an integer from 0 to 100.' });
+        }
+        if (args.cacheMode !== undefined && !['REALTIME', 'SHARED_CACHE', 'PRIVATE_CACHE'].includes(args.cacheMode)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'cacheMode must be REALTIME, SHARED_CACHE, or PRIVATE_CACHE.' });
+        }
+        if (args.operation === 'cross_fade' && !args.clipName) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'cross_fade requires clipName.' });
+        }
+        if (args.operation === 'set_default' && !args.clipName) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'set_default requires clipName.' });
+        }
+        if (args.operation === 'set_play_on_load' && typeof args.playOnLoad !== 'boolean') {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'set_play_on_load requires playOnLoad.' });
+        }
+        if (args.operation === 'set_state' && (!args.clipName || [args.speed, args.time, args.repeatCount, args.wrapMode].every((value) => value === undefined))) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'set_state requires clipName and at least one state field.' });
+        }
+        if (args.operation === 'set_cache_mode' && !args.cacheMode) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'set_cache_mode requires cacheMode.' });
+        }
+        const result = await Editor.Message.request('scene', 'execute-scene-script', {
+            name: 'cc-bridge-3x',
+            method: 'animationRuntimeControl',
+            args: [{ ...args, nodeUuid, nodeReference: undefined }],
+        }) as Record<string, unknown> | null;
+        if (!result || typeof result !== 'object') throw new ToolError({ code: 'ANIMATION_CONTROL_FAILED', status: 502, message: 'Creator returned no animation control read-back.' });
+        return { ...result, nodeReference: { id: nodeUuid, type: 'cc.Node' }, operation: args.operation };
     }
 }

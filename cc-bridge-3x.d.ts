@@ -489,12 +489,118 @@ declare namespace cc_bridge_3x {
         operations?: { funcName: string, args: any[] }[]
     }): { success: boolean, error?: string, result?: any };
 
+    /** Configure native clip sample rate, speed, or wrap mode. */
+    function animationClipConfigure(args: {
+        clipReference: InstanceReference,
+        operation: "sample" | "speed" | "wrap_mode",
+        value: number
+    }): { success: boolean, error?: string, result?: any };
+
+    /** Create, remove, move, or copy native animation property tracks. */
+    function animationTrackEdit(args: {
+        clipReference: InstanceReference,
+        operation: "create" | "remove" | "move_node" | "copy_to",
+        nodePath: string,
+        propKey: string,
+        destinationNodePath?: string,
+        destinationPropKey?: string
+    }): { success: boolean, error?: string, result?: any };
+
+    /** Create, move, remove, copy, space, clear, or retime native animation keyframes. */
+    function animationKeyframeEdit(args: {
+        clipReference: InstanceReference,
+        operation: "create" | "move" | "remove" | "update" | "copy_to" | "spacing" | "clear" | "modify_curve",
+        nodePath: string,
+        propKey: string,
+        frame?: number,
+        frames?: number[],
+        offsets?: number | number[],
+        destinationFrame?: number,
+        spacingFrames?: number,
+        customData?: unknown,
+        curveData?: unknown
+    }): { success: boolean, error?: string, result?: any };
+
+    /** Add, update, move, copy, or delete ordered animation event keyframes. */
+    function animationEventEdit(args: {
+        clipReference: InstanceReference,
+        operation: "add" | "update" | "move" | "copy_to" | "delete",
+        frame?: number,
+        frames?: number[],
+        destinationFrame?: number,
+        offset?: number,
+        functionName?: string,
+        parameters?: string[],
+        events?: unknown[]
+    }): { success: boolean, error?: string, result?: any };
+
+    /** Manage auxiliary animation curves and keys. */
+    function animationAuxCurveEdit(args: {
+        clipReference: InstanceReference,
+        operation: "add" | "rename" | "remove" | "create_key" | "remove_key" | "move_keys" | "copy_key" | "modify_curve",
+        name: string,
+        newName?: string,
+        frame?: number,
+        frames?: number[],
+        offset?: number | number[],
+        customData?: unknown,
+        curveData?: unknown,
+        source?: unknown,
+        destination?: unknown
+    }): { success: boolean, error?: string, result?: any };
+
     /** Write to the editor console/project log. Message: 1-4096 characters, trimmed and non-blank. Data: JSON, at most 64 KiB serialized. debug uses console.log with a [debug] prefix. */
     function editorLog(args: {
         level: "debug" | "info" | "warn" | "error",
         message: string,
         data?: unknown
     }): { success: true, level: "debug" | "info" | "warn" | "error", message: string };
+
+    /** Analyze scene animation usage, current states, defaults, cache modes, and setup recommendations. */
+    function animationUsageAnalyze(args?: {
+        nodeReference?: InstanceReference,
+        maxNodes?: number
+    }): {
+        nodeReference: InstanceReference,
+        visitedNodes: number,
+        truncated: boolean,
+        componentCount: number,
+        findings: Array<{
+            nodeUuid: string | null,
+            nodeName: string | null,
+            component: string,
+            clipCount: number,
+            clips: Array<{ uuid: string | null, name: string | null, duration: number | null, sample?: number | null }>,
+            defaultClip: string | null,
+            playOnLoad: boolean | null,
+            stateCount: number,
+            states: Array<{ name: string, playing: boolean, paused: boolean, time: number | null, speed: number | null }>,
+            cacheMode: number | string | null,
+            cached: boolean | null,
+            recommendations: string[]
+        }>
+    };
+
+    /** Control live Animation/SkeletalAnimation playback and Spine/DragonBones cache configuration with read-back. */
+    function animationRuntimeControl(args: {
+        nodeReference: InstanceReference,
+        operation: "inspect" | "play" | "cross_fade" | "pause" | "resume" | "stop" | "set_default" | "set_play_on_load" | "set_state" | "set_cache_mode" | "invalidate_cache",
+        clipName?: string,
+        duration?: number,
+        playOnLoad?: boolean,
+        loop?: boolean,
+        speed?: number,
+        time?: number,
+        repeatCount?: number,
+        wrapMode?: number,
+        cacheMode?: "REALTIME" | "SHARED_CACHE" | "PRIVATE_CACHE"
+    }): {
+        nodeReference: InstanceReference,
+        operation: string,
+        animation?: unknown,
+        spine?: unknown,
+        dragonBones?: unknown
+    };
 
     type EditorTaskStatus = "running" | "completed" | "failed" | "cancelled" | "timedOut";
     interface EditorTask {

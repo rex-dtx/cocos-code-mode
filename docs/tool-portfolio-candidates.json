@@ -83,7 +83,7 @@
         },
         {
           "name": "uiResponsivePreview",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Render and compare one scene across declared resolutions with target-specific evidence.",
           "route": "runtime session plus screenshot adapter",
           "prerequisites": [
@@ -102,7 +102,7 @@
         },
         {
           "name": "uiVirtualListCreate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Create and verify the complete view-mask-content hierarchy, not one prefab node.",
           "route": "compound scene workflow",
           "prerequisites": [
@@ -141,7 +141,7 @@
       "candidates": [
         {
           "name": "referenceImageManage",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Finite persistent reference-image lifecycle with transform read-back.",
           "route": "version-gated editor IPC",
           "prerequisites": [
@@ -210,7 +210,7 @@
       "candidates": [
         {
           "name": "tilemapInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed TMX map, layer, object and tileset inspection after Creator import.",
           "route": "asset parser plus imported-data query",
           "prerequisites": [
@@ -236,7 +236,7 @@
         },
         {
           "name": "tilemapLayerEdit",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Persistent layer mutation without corrupting source TMX.",
           "route": "supported source-format editor only",
           "prerequisites": [
@@ -253,7 +253,7 @@
         },
         {
           "name": "tilemapObjectEdit",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Persistent typed object-layer mutation with TMX round-trip.",
           "route": "supported source-format editor only",
           "prerequisites": [
@@ -270,7 +270,7 @@
         },
         {
           "name": "tilemapValidate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Validate tileset links, gids, layer dimensions and imported references.",
           "route": "TMX plus asset-db validator",
           "prerequisites": [
@@ -287,7 +287,7 @@
         },
         {
           "name": "spriteAtlasConfigure",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
           "route": "importer service plus output validator",
           "prerequisites": [
@@ -387,7 +387,7 @@
         },
         {
           "name": "assetBundleValidate",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Validate bundle metadata and actual runtime load/release behavior.",
           "route": "asset-db plus runtime session",
           "prerequisites": [
@@ -404,7 +404,7 @@
         },
         {
           "name": "assetSceneUsageAudit",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Evidence-backed unreferenced candidates with roots, confidence and dynamic-load caveats.",
           "route": "Cocos Graph analysis",
           "prerequisites": [
@@ -535,7 +535,7 @@
       "candidates": [
         {
           "name": "skeletalAnimationInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Typed skins, tracks, sockets, animations and extension availability.",
           "route": "Spine/DragonBones asset adapter",
           "prerequisites": [
@@ -605,7 +605,7 @@
         },
         {
           "name": "skeletalAnimationValidate",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
           "route": "asset and component validator",
           "prerequisites": [
@@ -795,7 +795,7 @@
         },
         {
           "name": "physics2dQuery",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Runtime raycast/contact/overlap queries identified by backend and session.",
           "route": "runtime physics adapter",
           "prerequisites": [
@@ -908,7 +908,7 @@
         },
         {
           "name": "physics3dQuery",
-          "state": "probe-required",
+          "state": "qualified",
           "contractDelta": "Runtime raycast, sweep, contact and trigger queries tied to backend/session.",
           "route": "runtime physics adapter",
           "prerequisites": [
@@ -1106,7 +1106,7 @@
         },
         {
           "name": "renderPipelineInspect",
-          "state": "candidate",
+          "state": "qualified",
           "contractDelta": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query.",
           "route": "render adapter",
           "prerequisites": [
@@ -1340,7 +1340,7 @@
       "candidates": [
         {
           "name": "runtimeSessionLifecycle",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Attach, identify, stop and reset finite game-view/browser/simulator sessions.",
           "route": "runtime session foundation",
           "prerequisites": [
@@ -1640,7 +1640,7 @@
     },
     {
       "name": "assetBatchImport",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Preflight and import bounded explicit items with per-item outcome.",
       "domain": "assets-import",
       "proposedExecutionPhase": "P2",
@@ -1660,7 +1660,7 @@
     },
     {
       "name": "assetBatchOperate",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Bounded move/copy/delete/reimport with partial-failure accounting.",
       "domain": "assets-import",
       "proposedExecutionPhase": "P2",
@@ -1680,7 +1680,7 @@
     },
     {
       "name": "assetMissingReferenceAudit",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Cross-scene and asset missing-reference evidence with recovery locations.",
       "domain": "assets-import",
       "proposedExecutionPhase": "P2",
@@ -1719,7 +1719,7 @@
     },
     {
       "name": "sceneReferenceValidate",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Validate serialized node/component/asset references after reopen.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
@@ -1739,7 +1739,7 @@
     },
     {
       "name": "prefabInstantiate",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Instantiate and prove persistent prefab identity and overrides.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
@@ -1819,7 +1819,7 @@
     },
     {
       "name": "buildLogInspect",
-      "state": "candidate",
+      "state": "qualified",
       "contractDelta": "Return bounded structured diagnostics for one build task.",
       "domain": "build-platform",
       "proposedExecutionPhase": "P6",

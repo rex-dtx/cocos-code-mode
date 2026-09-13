@@ -1,0 +1,34 @@
+import fs from 'fs-extra';
+import { utcpTool } from '../decorators';
+import { ToolError } from '../tool-error';
+import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
+import { AssetTools } from './asset-tools';
+import { ExpansionTools } from './expansion-tools';
+
+const info = async (reference: IInstanceReference): Promise<any> => {
+    const value = await Editor.Message.request('asset-db', 'query-asset-info', reference.id);
+    if (!value || typeof value !== 'object') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${reference.id} was not found.` });
+    return value;
+};
+
+export class PortfolioValidationTools {
+    @utcpTool('assetBundleValidate', 'Validate bounded bundle metadata for one imported asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, expectedBundle: { type: 'string', minLength: 1, maxLength: 128 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, reference: { type: 'object' }, bundle: {}, issues: { type: 'array' }, runtimeCaveat: { type: 'string' } }, required: ['valid', 'reference', 'bundle', 'issues', 'runtimeCaveat'] }, 'GET', ['asset', 'bundle', 'validate'])
+    async assetBundleValidate(args: { reference: IInstanceReference, expectedBundle?: string }) {
+        const asset = await info(args.reference); const meta = asset.meta as any; const data = meta?.userData as any;
+        const bundle = typeof data?.bundleName === 'string' ? data.bundleName : typeof data?.bundle === 'string' ? data.bundle : null;
+        const issues = args.expectedBundle !== undefined && bundle !== args.expectedBundle ? [{ code: 'BUNDLE_MISMATCH', expected: args.expectedBundle, actual: bundle }] : [];
+        return { valid: issues.length === 0, reference: { id: String(asset.uuid ?? args.reference.id), type: String(asset.type ?? 'cc.Asset') }, bundle, issues, runtimeCaveat: 'Metadata validation only; runtime loading is not claimed.' };
+    }
+    @utcpTool('physics2dQuery', 'Query bounded 2D physics topology.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema } }, { type: 'object' }, 'GET', ['physics', '2d', 'query'])
+    async physics2dQuery(args: { reference?: IInstanceReference } = {}) { return new ExpansionTools().physics2dTopologyAudit(args); }
+    @utcpTool('physics3dQuery', 'Query bounded 3D physics topology.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema } }, { type: 'object' }, 'GET', ['physics', '3d', 'query'])
+    async physics3dQuery(args: { reference?: IInstanceReference } = {}) { return new ExpansionTools().physics3dTopologyAudit(args); }
+    @utcpTool('shaderValidate', 'Validate one named Creator effect.', { type: 'object', additionalProperties: false, properties: { effectName: { type: 'string', minLength: 1, maxLength: 256 } }, required: ['effectName'] }, { type: 'object' }, 'GET', ['shader', 'effect', 'validate'])
+    async shaderValidate(args: { effectName: string }) { const result: any = await Editor.Message.request('scene', 'query-effect' as never, args.effectName); const valid = Array.isArray(result) ? result.length > 0 : result != null && result !== false; return { valid, effectName: args.effectName, diagnostics: valid ? [] : [{ code: 'EFFECT_NOT_FOUND', effectName: args.effectName }], result: result ?? null }; }
+    @utcpTool('animationGraphInspect', 'Inspect a bounded JSON animation graph.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object' }, 'GET', ['animation', 'graph', 'inspect'])
+    async animationGraphInspect(args: { reference: IInstanceReference }) { const asset = await info(args.reference); if (typeof asset.file !== 'string') throw new ToolError({ code: 'SOURCE_UNAVAILABLE', status: 422, message: 'Asset source is unavailable.' }); const value: any = JSON.parse(await fs.readFile(asset.file, 'utf8')); const nodes = Array.isArray(value.nodes) ? value.nodes.slice(0, 256) : []; const transitions = Array.isArray(value.transitions) ? value.transitions.slice(0, 512) : []; return { reference: { id: String(asset.uuid ?? args.reference.id), type: String(asset.type ?? 'cc.JsonAsset') }, nodes, transitions, nodeCount: nodes.length, transitionCount: transitions.length }; }
+    @utcpTool('animationGraphValidate', 'Validate animation graph identities and endpoints.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object' }, 'GET', ['animation', 'graph', 'validate'])
+    async animationGraphValidate(args: { reference: IInstanceReference }) { const graph: any = await this.animationGraphInspect(args); const ids = new Set<string>(); const issues: any[] = []; for (const [index, node] of graph.nodes.entries()) { if (!node || typeof node.id !== 'string' || !node.id) issues.push({ code: 'INVALID_NODE_ID', index }); else if (ids.has(node.id)) issues.push({ code: 'DUPLICATE_NODE_ID', id: node.id }); else ids.add(node.id); } for (const [index, edge] of graph.transitions.entries()) if (!edge || !ids.has(edge.from) || !ids.has(edge.to)) issues.push({ code: 'INVALID_TRANSITION', index }); return { valid: issues.length === 0, issues, nodeCount: graph.nodeCount, transitionCount: graph.transitionCount }; }
+    @utcpTool('modelImportConfigure', 'Configure one typed model importer property.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, path: { type: 'string' }, value: {} }, required: ['reference', 'path', 'value'] }, { type: 'object' }, 'POST', ['model', 'import', 'configure'])
+    async modelImportConfigure(args: any) { const asset = await info(args.reference); if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' }); return new AssetTools().assetImportSettingsSet(args); }
+}

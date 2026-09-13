@@ -34,6 +34,8 @@ import './tools/preference-tools';
 import './tools/input-tools';
 import './tools/advanced-capability-tools';
 import './tools/expansion-tools';
+import './tools/portfolio-completion-tools';
+import './tools/portfolio-validation-tools';
 import { registerAllImporters } from './utils/asset-importers';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { trimResponse } from './utils/response-trimmer';
