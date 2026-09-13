@@ -3,30 +3,32 @@
   "build": {
     "command": "npm run build",
     "result": "passed",
-    "buildInfo": "b482361-dirty",
+    "buildInfo": "6463c65-dirty",
     "creatorVersion": "3.7.3"
   },
   "unitVerification": {
     "command": "npm run test:unit",
     "result": "passed",
-    "tests": 317,
+    "tests": 332,
     "failures": 0,
     "animationSuites": [
       "tests/unit/animation-tools.test.js",
-      "tests/unit/animation-runtime-control.test.js"
+      "tests/unit/animation-runtime-control.test.js",
+      "tests/unit/p3-remaining-capabilities.test.js"
     ]
   },
   "portfolioAudit": {
     "command": "npm run audit:portfolio",
     "result": "passed",
     "baselineCount": 86,
-    "registeredToolCount": 182,
-    "animationExpansionTools": 7,
+    "registeredToolCount": 191,
+    "animationExpansionTools": 10,
     "readyForBulkImplementation": false
   },
   "creatorLiveVerification": {
     "endpoint": "http://localhost:49650",
-    "result": "partial",
+    "loadedBuildInfo": "6463c65-dirty",
+    "result": "partial-live",
     "observations": [
       {
         "operation": "animationUsageAnalyze",
@@ -51,13 +53,27 @@
         "result": "passed",
         "requested": "REALTIME",
         "observed": "REALTIME"
+      },
+      {
+        "operation": "animationRuntimeControl:set_state weight/delay/playbackRange",
+        "result": "unsupported-on-disposable-fixture",
+        "fixture": "disposable generic Animation node",
+        "reason": "fresh 6463c65-dirty endpoint exposed the schema but Creator returned INTERNAL_ERROR; the bridge reported no false success"
       }
     ],
     "notExecuted": [
       "live clip authoring mutation",
-      "live generic Animation playback mutation"
+      "live generic Animation playback mutation against build 6463c65-dirty",
+      "animationGraphCreate positive fixture",
+      "animationRetargetValidate positive model-pair fixture",
+      "skeletalAnimationConfigure positive SkeletalAnimation fixture"
     ],
-    "reason": "qualification uses a loaded production scene; authoring/playback mutations were not persisted destructively"
+    "runtimeControlUpdate": {
+      "implementation": "SkeletalAnimation playback controls now guard play, pause, resume, stop method availability and reject unsupported AnimationState field mutation explicitly.",
+      "unit": "passed focused runtime, animation tools, and P3 suites: 17/17",
+      "live": "animation-atlas qualification passed 2/2; animation witness passed with 2 truthful skips (no SkeletalAnimation fixture and Creator rejected disposable AnimationState mutation)"
+    },
+    "reason": "Skeletal inspect/validate and bounded playback routes are implemented; positive configure and AnimationState field evidence still require a compatible live fixture."
   },
   "ledgerOwnership": {
     "status": "implemented-unverified",
@@ -69,10 +85,18 @@
       "animationEventEdit",
       "animationAuxCurveEdit",
       "animationUsageAnalyze",
-      "animationRuntimeControl"
+      "animationRuntimeControl",
+      "animationGraphCreate",
+      "animationRetargetValidate",
+      "skeletalAnimationConfigure"
     ],
-    "evidenceRule": "animationUsageAnalyze and bounded runtime cache-mode read-back are evidence only for the observed Spine fixture; authoring and generic Animation playback remain unqualified."
+    "evidenceRule": "static implementation and regression tests do not confer live qualification; only observed live contracts receive evidence credit."
   },
+  "documentationBasis": [
+    "https://docs.cocos.com/creator/3.7/manual/en/animation/animation-component.html",
+    "https://docs.cocos.com/creator/3.7/manual/en/animation/skeletal-animation.html",
+    "https://docs.cocos.com/creator/3.7/api/en/class/AnimationState"
+  ],
   "usageGuidance": {
     "inspect": "Use animationUsageAnalyze first to inventory Animation, SkeletalAnimation, Spine Skeleton, and DragonBones ArmatureDisplay components.",
     "setup": "Use animationRuntimeControl set_default, set_play_on_load, set_state, and set_cache_mode as separate verified operations; inspect read-back after each mutation.",

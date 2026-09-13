@@ -55,7 +55,7 @@ export class SetPropertyTool {
         for (let i = 0; i < propertyPaths.length; i++) {
             await this.setProperty(info, propertyPaths[i], values[i]);
         }
-
+        await Editor.Message.request('scene', 'snapshot');
         return { success: true };
     }
 
@@ -151,7 +151,6 @@ export class SetPropertyTool {
         }) as boolean;
         if (ok === false) throw new Error(`set-property refused for ${uuid} at ${path} (type ${prop.type})`);
 
-        await Editor.Message.request('scene', 'snapshot');
     }
 
     private findPropertyInDump(root: { [key: string]: IPropertyValueType } | AssetInfo | null, path: string): IProperty | null {

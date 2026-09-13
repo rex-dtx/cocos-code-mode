@@ -321,10 +321,15 @@ export const methods = {
         const scene = cc?.director?.getScene?.();
         if (!scene) return null;
         const stack: any[] = [scene];
+        const visitedNodes = new Set<any>();
         while (stack.length) {
             const node = stack.pop();
-            if (node?.uuid === nodeUuid) return node;
-            for (const child of node?.children || []) stack.push(child);
+            if (!node || visitedNodes.has(node)) continue;
+            visitedNodes.add(node);
+            if (node.uuid === nodeUuid) return node;
+            for (const child of node.children || []) {
+                if (child && !visitedNodes.has(child)) stack.push(child);
+            }
         }
         return null;
     },
@@ -351,10 +356,30 @@ export const methods = {
                     uuid: clip?.uuid ?? null, name: clip?.name ?? null, duration: typeof clip?.duration === 'number' ? clip.duration : null,
                     sample: typeof clip?.sample === 'number' ? clip.sample : null,
                 })) : [];
+                const skeletonData = component?.skeletonData;
+                const runtimeData = typeof skeletonData?.getRuntimeData === 'function' ? skeletonData.getRuntimeData() : skeletonData?.runtimeData;
+                const spineAnimations = isSpine && runtimeData?.animations && typeof runtimeData.animations === 'object'
+                    ? Object.values(runtimeData.animations).slice(0, 50).map((animation: any) => ({
+                        name: animation?.name ?? null,
+                        duration: typeof animation?.duration === 'number' ? animation.duration : null,
+                    }))
+                    : [];
+                const catalog = clips.length > 0 ? clips : spineAnimations;
                 const states = component._nameToState && typeof component._nameToState === 'object'
                     ? Object.keys(component._nameToState).slice(0, 50).map((name) => {
                         const state = component._nameToState[name];
-                        return { name, playing: !!state?.isPlaying, paused: !!state?.isPaused, time: typeof state?.time === 'number' ? state.time : null, speed: typeof state?.speed === 'number' ? state.speed : null };
+                        return {
+                            name,
+                            playing: !!state?.isPlaying,
+                            paused: !!state?.isPaused,
+                            time: typeof state?.time === 'number' ? state.time : null,
+                            speed: typeof state?.speed === 'number' ? state.speed : null,
+                            weight: typeof state?.weight === 'number' ? state.weight : null,
+                            delay: typeof state?.delay === 'number' ? state.delay : null,
+                            playbackRange: state?.playbackRange && typeof state.playbackRange.min === 'number' && typeof state.playbackRange.max === 'number'
+                                ? { min: state.playbackRange.min, max: state.playbackRange.max }
+                                : null
+                        };
                     })
                     : [];
                 const cacheMode = component.cacheMode ?? component.defaultCacheMode ?? component._cacheMode ?? null;
@@ -362,16 +387,16 @@ export const methods = {
                     nodeUuid: node?.uuid ?? null,
                     nodeName: node?.name ?? null,
                     component: className,
-                    clipCount: clips.length,
-                    clips,
-                    defaultClip: component.defaultClip?.uuid ?? component.defaultClip?.name ?? null,
+                    clipCount: catalog.length,
+                    clips: catalog,
+                    defaultClip: component.defaultClip?.uuid ?? component.defaultClip?.name ?? component.defaultAnimation ?? null,
                     playOnLoad: typeof component.playOnLoad === 'boolean' ? component.playOnLoad : null,
                     stateCount: states.length,
                     states,
                     cacheMode,
                     cached: typeof component.isAnimationCached === 'function' ? !!component.isAnimationCached() : null,
                     recommendations: [
-                        clips.length > 0 && !component.defaultClip ? 'Set a default clip or explicitly call play(name).' : null,
+                        catalog.length > 0 && !component.defaultClip && !component.defaultAnimation ? 'Set a default clip or explicitly call play(name).' : null,
                         (isSpine || isDragonBones) && typeof component.isAnimationCached === 'function' && !component.isAnimationCached() ? 'Consider SHARED_CACHE or PRIVATE_CACHE for repeated deterministic playback; verify memory and dynamic-track tradeoffs.' : null,
                     ].filter(Boolean),
                 });
@@ -379,6 +404,81 @@ export const methods = {
             for (const child of node?.children || []) stack.push(child);
         }
         return { nodeUuid: request.nodeUuid ?? root?.uuid ?? null, visitedNodes: visited, truncated: stack.length > 0, componentCount: findings.length, findings };
+    },
+
+    async spineSceneInspect(request: { nodeUuid?: string, maxItems?: number } = {}): Promise<Record<string, unknown>> {
+        const root = request.nodeUuid ? await methods.findRuntimeNodeUuid(request.nodeUuid) : (globalThis as any).cc?.director?.getScene?.();
+        if (!root) throw new Error('Spine scene inspection target was not found');
+        const maxItems = Number.isInteger(request.maxItems) ? Math.max(1, Math.min(request.maxItems!, 1000)) : 200;
+        const stack: any[] = [root];
+        const visitedNodes = new Set<any>();
+        const maxVisitedNodes = Math.min(100000, Math.max(maxItems, maxItems * 100));
+        const findings: Record<string, unknown>[] = [];
+        let truncated = false;
+        const detailRemaining: Record<string, number> = { animations: maxItems, bones: maxItems, slots: maxItems, tracks: maxItems, sockets: maxItems };
+        const takeDetails = <T>(category: string, values: unknown, map: (value: any, index: number) => T): T[] => {
+            if (!Array.isArray(values)) return [];
+            const count = Math.min(values.length, detailRemaining[category]);
+            if (values.length > count) truncated = true;
+            detailRemaining[category] -= count;
+            return values.slice(0, count).map(map);
+        };
+        while (stack.length && findings.length < maxItems && visitedNodes.size < maxVisitedNodes) {
+            const node = stack.pop();
+            if (!node || visitedNodes.has(node)) continue;
+            visitedNodes.add(node);
+            const components = Array.isArray(node?.components) ? node.components : [];
+            for (const component of components) {
+                const className = String(component?.constructor?.name ?? '');
+                if (className !== 'Skeleton' && className !== 'sp.Skeleton') continue;
+                if (findings.length >= maxItems) {
+                    truncated = true;
+                    break;
+                }
+                const skeleton = component?._skeleton ?? component?.skeleton;
+                const runtimeData = typeof component?.skeletonData?.getRuntimeData === 'function' ? component.skeletonData.getRuntimeData() : component?.skeletonData?.runtimeData;
+                const animations = takeDetails('animations', runtimeData?.animations, (animation) => ({ name: animation?.name ?? null, duration: typeof animation?.duration === 'number' && Number.isFinite(animation.duration) ? animation.duration : null }));
+                const bones = takeDetails('bones', skeleton?.bones, (bone) => ({ name: bone?.data?.name ?? bone?.name ?? null, parent: bone?.parent?.data?.name ?? bone?.parent?.name ?? null, x: typeof bone?.worldX === 'number' && Number.isFinite(bone.worldX) ? bone.worldX : null, y: typeof bone?.worldY === 'number' && Number.isFinite(bone.worldY) ? bone.worldY : null }));
+                const slots = takeDetails('slots', skeleton?.slots, (slot) => ({ name: slot?.data?.name ?? slot?.name ?? null, bone: slot?.bone?.data?.name ?? slot?.bone?.name ?? null, attachment: slot?.attachment?.name ?? null, attachmentType: slot?.attachment?.constructor?.name ?? null }));
+                const animationState = typeof component?.getState === 'function'
+                    ? component.getState()
+                    : typeof component?.getAnimationState === 'function'
+                        ? component.getAnimationState()
+                        : component?.animationState;
+                const tracks = takeDetails('tracks', animationState?.tracks, (track, trackIndex) => ({
+                    index: trackIndex,
+                    animation: track?.animation?.name ?? null,
+                    loop: typeof track?.loop === 'boolean' ? track.loop : null,
+                    trackTime: typeof track?.trackTime === 'number' && Number.isFinite(track.trackTime) ? track.trackTime : null,
+                    delay: typeof track?.delay === 'number' && Number.isFinite(track.delay) ? track.delay : null,
+                    alpha: typeof track?.alpha === 'number' && Number.isFinite(track.alpha) ? track.alpha : null,
+                }));
+                const sockets = takeDetails('sockets', component?.sockets, (socket) => ({
+                    name: socket?.name ?? socket?.path ?? null,
+                    path: socket?.path ?? null,
+                    bone: socket?.target?.data?.name ?? socket?.target?.name ?? null,
+                }));
+                findings.push({
+                    node: { id: node?.uuid ?? null, name: node?.name ?? null },
+                    component: className,
+                    defaultAnimation: component?.defaultAnimation ?? null,
+                    animation: component?.animation ?? null,
+                    timeScale: typeof component?.timeScale === 'number' && Number.isFinite(component.timeScale) ? component.timeScale : null,
+                    animations,
+                    loop: typeof component?.loop === 'boolean' ? component.loop : null,
+                    tracks,
+                    bones,
+                    slots,
+                    sockets,
+                    hasSkeletonData: !!component?.skeletonData,
+                });
+            }
+            for (const child of node?.children || []) {
+                if (child && !visitedNodes.has(child)) stack.push(child);
+            }
+        }
+        if (visitedNodes.size >= maxVisitedNodes) truncated = true;
+        return { nodeUuid: request.nodeUuid ?? root?.uuid ?? null, findings, total: findings.length, truncated: truncated || (findings.length >= maxItems && stack.length > 0) };
     },
 
     async animationRuntimeControl(request: {
@@ -392,12 +492,17 @@ export const methods = {
         time?: number,
         repeatCount?: number,
         wrapMode?: number,
+        weight?: number,
+        delay?: number,
+        playbackRange?: { min: number, max: number },
         cacheMode?: 'REALTIME' | 'SHARED_CACHE' | 'PRIVATE_CACHE',
     }): Promise<Record<string, unknown>> {
         const node = await methods.findRuntimeNodeUuid(request.nodeUuid);
         if (!node) throw new Error(`Runtime animation node ${request.nodeUuid} not found`);
         const components = Array.isArray(node.components) ? node.components : [];
         const animation = components.find((component: any) => ['Animation', 'cc.Animation', 'SkeletalAnimation', 'cc.SkeletalAnimation'].includes(String(component?.constructor?.name ?? '')));
+        const animationClass = String(animation?.constructor?.name ?? '');
+        const isSkeletalAnimation = animationClass === 'SkeletalAnimation' || animationClass === 'cc.SkeletalAnimation';
         const spine = components.find((component: any) => ['Skeleton', 'sp.Skeleton'].includes(String(component?.constructor?.name ?? '')));
         const dragonBones = components.find((component: any) => ['ArmatureDisplay', 'dragonBones.ArmatureDisplay'].includes(String(component?.constructor?.name ?? '')));
         const describe = (component: any): Record<string, unknown> => {
@@ -413,6 +518,11 @@ export const methods = {
                         time: typeof state.time === 'number' ? state.time : null,
                         repeatCount: typeof state.repeatCount === 'number' ? state.repeatCount : null,
                         wrapMode: typeof state.wrapMode === 'number' ? state.wrapMode : null,
+                        weight: typeof state.weight === 'number' ? state.weight : null,
+                        delay: typeof state.delay === 'number' ? state.delay : null,
+                        playbackRange: state.playbackRange && typeof state.playbackRange.min === 'number' && typeof state.playbackRange.max === 'number'
+                            ? { min: state.playbackRange.min, max: state.playbackRange.max }
+                            : null,
                     } : null;
                 }).filter(Boolean)
                 : [];
@@ -429,14 +539,26 @@ export const methods = {
         if (request.operation === 'inspect') return { nodeUuid: request.nodeUuid, animation: animation ? describe(animation) : null, spine: spine ? describe(spine) : null, dragonBones: dragonBones ? describe(dragonBones) : null };
         if (animation) {
             const name = request.clipName;
-            if (request.operation === 'play') animation.play(name);
-            else if (request.operation === 'cross_fade') {
+            if (request.operation === 'set_state' && isSkeletalAnimation) {
+                throw new Error('AnimationState field control is unavailable on SkeletalAnimation; use play, pause, resume, or stop.');
+            }
+            if (request.operation === 'play') {
+                if (typeof animation.play !== 'function') throw new Error('Skeletal playback API is unavailable');
+                animation.play(name);
+            } else if (request.operation === 'cross_fade') {
                 if (!name) throw new Error('cross_fade requires clipName');
+                if (typeof animation.crossFade !== 'function') throw new Error('Animation cross-fade API is unavailable');
                 animation.crossFade(name, request.duration ?? 0.3);
-            } else if (request.operation === 'pause') animation.pause();
-            else if (request.operation === 'resume') animation.resume();
-            else if (request.operation === 'stop') animation.stop();
-            else if (request.operation === 'set_default') {
+            } else if (request.operation === 'pause') {
+                if (typeof animation.pause !== 'function') throw new Error('Animation pause API is unavailable');
+                animation.pause();
+            } else if (request.operation === 'resume') {
+                if (typeof animation.resume !== 'function') throw new Error('Animation resume API is unavailable');
+                animation.resume();
+            } else if (request.operation === 'stop') {
+                if (typeof animation.stop !== 'function') throw new Error('Animation stop API is unavailable');
+                animation.stop();
+            } else if (request.operation === 'set_default') {
                 if (!name) throw new Error('set_default requires clipName');
                 const clip = (animation.clips || []).find((candidate: any) => candidate?.name === name || candidate?.uuid === name);
                 if (!clip) throw new Error(`Animation clip '${name}' was not found`);
@@ -452,6 +574,17 @@ export const methods = {
                 if (request.time !== undefined) state.time = request.time;
                 if (request.repeatCount !== undefined) state.repeatCount = request.repeatCount;
                 if (request.wrapMode !== undefined) state.wrapMode = request.wrapMode;
+                if (request.weight !== undefined) state.weight = request.weight;
+                if (request.delay !== undefined) state.delay = request.delay;
+                if (request.playbackRange !== undefined) state.playbackRange = request.playbackRange;
+                const same = (actual: unknown, expected: number): boolean => typeof actual === 'number' && Math.abs(actual - expected) <= 1e-6;
+                if (request.speed !== undefined && !same(state.speed, request.speed)) throw new Error(`Animation state '${name}' speed read-back mismatch`);
+                if (request.time !== undefined && !same(state.time, request.time)) throw new Error(`Animation state '${name}' time read-back mismatch`);
+                if (request.repeatCount !== undefined && !same(state.repeatCount, request.repeatCount)) throw new Error(`Animation state '${name}' repeatCount read-back mismatch`);
+                if (request.wrapMode !== undefined && state.wrapMode !== request.wrapMode) throw new Error(`Animation state '${name}' wrapMode read-back mismatch`);
+                if (request.weight !== undefined && !same(state.weight, request.weight)) throw new Error(`Animation state '${name}' weight read-back mismatch`);
+                if (request.delay !== undefined && !same(state.delay, request.delay)) throw new Error(`Animation state '${name}' delay read-back mismatch`);
+                if (request.playbackRange !== undefined && (!state.playbackRange || !same(state.playbackRange.min, request.playbackRange.min) || !same(state.playbackRange.max, request.playbackRange.max))) throw new Error(`Animation state '${name}' playbackRange read-back mismatch`);
             } else if (request.operation !== 'set_cache_mode' && request.operation !== 'invalidate_cache') {
                 throw new Error(`Unsupported animation operation '${request.operation}'`);
             }
@@ -503,6 +636,180 @@ export const methods = {
             }
         }
         return { nodeUuid: request.nodeUuid, operation: request.operation, animation: animation ? describe(animation) : null, spine: spine ? describe(spine) : null, dragonBones: dragonBones ? describe(dragonBones) : null };
+    },
+
+    async spineRuntimeControl(request: {
+        nodeUuid: string,
+        operation: 'inspect' | 'set_skin' | 'set_attachment' | 'queue_animation' | 'clear_track' | 'clear_tracks' | 'set_time_scale' | 'set_mix',
+        skinName?: string,
+        slotName?: string,
+        attachmentName?: string | null,
+        clipName?: string,
+        trackIndex?: number,
+        loop?: boolean,
+        delay?: number,
+        timeScale?: number,
+        fromAnimation?: string,
+        toAnimation?: string,
+        duration?: number,
+    }): Promise<Record<string, unknown>> {
+        const node = await methods.findRuntimeNodeUuid(request.nodeUuid);
+        if (!node) throw new Error(`Runtime Spine node ${request.nodeUuid} not found`);
+        const components = Array.isArray(node.components) ? node.components : [];
+        const spine: any = components.find((component: any) => ['Skeleton', 'sp.Skeleton'].includes(String(component?.constructor?.name ?? '')));
+        if (!spine) throw new Error('No Spine Skeleton component found');
+        const state = typeof spine.getState === 'function' ? spine.getState() : spine.animationState;
+        const describe = () => ({
+            component: spine.constructor?.name ?? null,
+            skin: spine._skeleton?.skin?.data?.name ?? spine._skeleton?.skin?.name ?? null,
+            animation: spine.animation ?? null,
+            timeScale: typeof spine.timeScale === 'number' ? spine.timeScale : null,
+            tracks: Array.isArray(state?.tracks) ? state.tracks.slice(0, 100).map((track: any, index: number) => ({
+                index,
+                animation: track?.animation?.name ?? null,
+                loop: typeof track?.loop === 'boolean' ? track.loop : null,
+                trackTime: typeof track?.trackTime === 'number' ? track.trackTime : null,
+                delay: typeof track?.delay === 'number' ? track.delay : null,
+                alpha: typeof track?.alpha === 'number' ? track.alpha : null,
+            })) : [],
+        });
+        if (request.operation === 'inspect') return { nodeUuid: request.nodeUuid, spine: describe() };
+        const trackIndex = request.trackIndex ?? 0;
+        if (!Number.isInteger(trackIndex) || trackIndex < 0 || trackIndex > 31) throw new Error('trackIndex must be an integer from 0 to 31');
+        if (request.operation === 'set_skin') {
+            if (!request.skinName) throw new Error('set_skin requires skinName');
+            if (typeof spine.setSkin !== 'function') throw new Error('Spine setSkin API is unavailable');
+            spine.setSkin(request.skinName);
+            if (typeof spine._skeleton?.setSlotsToSetupPose === 'function') spine._skeleton.setSlotsToSetupPose();
+        } else if (request.operation === 'set_attachment') {
+            if (!request.slotName) throw new Error('set_attachment requires slotName');
+            if (typeof spine.setAttachment !== 'function') throw new Error('Spine setAttachment API is unavailable');
+            spine.setAttachment(request.slotName, request.attachmentName ?? null);
+        } else if (request.operation === 'queue_animation') {
+            if (!request.clipName) throw new Error('queue_animation requires clipName');
+            if (typeof state?.addAnimation !== 'function') throw new Error('Spine addAnimation API is unavailable');
+            state.addAnimation(trackIndex, request.clipName, request.loop ?? false, request.delay ?? 0);
+        } else if (request.operation === 'clear_track') {
+            if (typeof state?.clearTrack !== 'function') throw new Error('Spine clearTrack API is unavailable');
+            state.clearTrack(trackIndex);
+        } else if (request.operation === 'clear_tracks') {
+            if (typeof state?.clearTracks !== 'function') throw new Error('Spine clearTracks API is unavailable');
+            state.clearTracks();
+        } else if (request.operation === 'set_time_scale') {
+            if (typeof request.timeScale !== 'number' || !Number.isFinite(request.timeScale) || request.timeScale < 0 || request.timeScale > 100) throw new Error('timeScale must be a finite number from 0 to 100');
+            spine.timeScale = request.timeScale;
+        } else if (request.operation === 'set_mix') {
+            if (!request.fromAnimation || !request.toAnimation || typeof request.duration !== 'number' || !Number.isFinite(request.duration) || request.duration < 0 || request.duration > 60) throw new Error('set_mix requires fromAnimation, toAnimation, and duration from 0 to 60');
+            if (typeof spine.setMix !== 'function') throw new Error('Spine setMix API is unavailable');
+            spine.setMix(request.fromAnimation, request.toAnimation, request.duration);
+        } else {
+            throw new Error(`Unsupported Spine runtime operation '${request.operation}'`);
+        }
+        return { nodeUuid: request.nodeUuid, operation: request.operation, spine: describe() };
+    },
+    async spineSocketConfigure(request: {
+        nodeUuid: string,
+        sockets: Array<{ path: string, targetUuid: string }>,
+    }): Promise<Record<string, unknown>> {
+        const node = await methods.findRuntimeNodeUuid(request.nodeUuid);
+        if (!node) throw new Error(`Runtime Spine node ${request.nodeUuid} not found`);
+        const components = Array.isArray(node.components) ? node.components : [];
+        const spine: any = components.find((component: any) => ['Skeleton', 'sp.Skeleton'].includes(String(component?.constructor?.name ?? '')));
+        if (!spine) throw new Error('No Spine Skeleton component found');
+        const sockets = [];
+        for (const entry of request.sockets) {
+            if (!entry || typeof entry.path !== 'string' || !entry.path.trim()) throw new Error('Each Spine socket requires a non-empty path');
+            const target = await methods.findRuntimeNodeUuid(entry.targetUuid);
+            if (!target) throw new Error(`Spine socket target node ${entry.targetUuid} not found`);
+            sockets.push({ path: entry.path, target });
+        }
+        spine.sockets = sockets;
+        await (globalThis as any).Editor.Message.request('scene', 'snapshot');
+        return {
+            nodeUuid: request.nodeUuid,
+            socketCount: sockets.length,
+            sockets: sockets.map((socket: any) => ({
+                path: socket?.path ?? null,
+                targetUuid: socket?.target?.uuid ?? null,
+            })),
+        };
+    },
+
+
+    async animationCatalogInspect(request: { nodeUuid?: string, maxItems?: number } = {}): Promise<Record<string, unknown>> {
+        const root = request.nodeUuid ? await methods.findRuntimeNodeUuid(request.nodeUuid) : (globalThis as any).cc?.director?.getScene?.();
+        if (!root) throw new Error('Animation catalog target was not found');
+        const maxItems = Number.isInteger(request.maxItems) ? Math.max(1, Math.min(request.maxItems!, 1000)) : 200;
+        const findings: Record<string, unknown>[] = [];
+        const stack: any[] = [root];
+        while (stack.length && findings.length < maxItems) {
+            const node = stack.pop();
+            for (const component of Array.isArray(node?.components) ? node.components : []) {
+                const className = String(component?.constructor?.name ?? '');
+                const isAnimation = ['Animation', 'cc.Animation', 'SkeletalAnimation', 'cc.SkeletalAnimation'].includes(className);
+                const isSpine = ['Skeleton', 'sp.Skeleton'].includes(className);
+                const isDragonBones = ['ArmatureDisplay', 'dragonBones.ArmatureDisplay'].includes(className);
+                if (!isAnimation && !isSpine && !isDragonBones) continue;
+                const clips = Array.isArray(component?.clips) ? component.clips.filter(Boolean).map((clip: any) => ({
+                    name: clip?.name ?? null,
+                    uuid: clip?.uuid ?? null,
+                    duration: typeof clip?.duration === 'number' && Number.isFinite(clip.duration) ? clip.duration : null,
+                    source: 'clip',
+                })) : [];
+                const runtimeData = typeof component?.skeletonData?.getRuntimeData === 'function'
+                    ? component.skeletonData.getRuntimeData()
+                    : component?.skeletonData?.runtimeData;
+                const spineAnimations = isSpine && runtimeData?.animations && typeof runtimeData.animations === 'object'
+                    ? Object.values(runtimeData.animations).map((animation: any) => ({
+                        name: animation?.name ?? null,
+                        uuid: null,
+                        duration: typeof animation?.duration === 'number' && Number.isFinite(animation.duration) ? animation.duration : null,
+                        source: 'spine-runtime',
+                    }))
+                    : [];
+                const animations = (clips.length > 0 ? clips : spineAnimations).slice(0, maxItems);
+                findings.push({
+                    node: { id: node?.uuid ?? null, name: node?.name ?? null },
+                    component: className,
+                    animations,
+                    totalAnimations: clips.length > 0 ? clips.length : spineAnimations.length,
+                    truncated: (clips.length > 0 ? clips.length : spineAnimations.length) > animations.length,
+                });
+                if (findings.length >= maxItems) break;
+            }
+            for (const child of node?.children || []) stack.push(child);
+        }
+        return { nodeUuid: request.nodeUuid ?? root?.uuid ?? null, findings, total: findings.length, truncated: stack.length > 0 || findings.length >= maxItems };
+    },
+
+    async animationCompatibilityAudit(request: { nodeUuid: string }): Promise<Record<string, unknown>> {
+        const node = await methods.findRuntimeNodeUuid(request.nodeUuid);
+        if (!node) throw new Error(`Runtime animation node ${request.nodeUuid} not found`);
+        const components = Array.isArray(node.components) ? node.components : [];
+        const animation = components.find((component: any) => ['Animation', 'cc.Animation', 'SkeletalAnimation', 'cc.SkeletalAnimation'].includes(String(component?.constructor?.name ?? '')));
+        const spine = components.find((component: any) => ['Skeleton', 'sp.Skeleton'].includes(String(component?.constructor?.name ?? '')));
+        const dragonBones = components.find((component: any) => ['ArmatureDisplay', 'dragonBones.ArmatureDisplay'].includes(String(component?.constructor?.name ?? '')));
+        const target: any = animation || spine || dragonBones;
+        if (!target) throw new Error('No Animation, SkeletalAnimation, Spine, or DragonBones component found');
+        const isSpine = !!spine && target === spine;
+        const supports = {
+            inspect: true,
+            playback: typeof target.play === 'function' || typeof target.setAnimation === 'function' || typeof target.playAnimation === 'function',
+            crossFade: typeof target.crossFade === 'function',
+            tracks: isSpine && !!(target.getState || target.getAnimationState || target.animationState),
+            seek: !!target.getState,
+            cacheMode: typeof target.setAnimationCacheMode === 'function',
+            cacheInvalidation: typeof target.invalidAnimationCache === 'function',
+        };
+        const unsupportedOperations = Object.entries(supports).filter(([, supported]) => !supported).map(([name]) => name);
+        return {
+            nodeUuid: request.nodeUuid,
+            component: target.constructor?.name ?? null,
+            supports,
+            supportedCacheModes: supports.cacheMode ? ['REALTIME', 'SHARED_CACHE', 'PRIVATE_CACHE'] : [],
+            unsupportedOperations,
+            recommendations: unsupportedOperations.length > 0 ? ['Use animationRuntimeControl inspect before issuing unsupported operations.'] : [],
+        };
     },
 
     async uiLayoutInspectGeometry(request: UiLayoutGeometryRequest): Promise<UiLayoutGeometryResult> {
@@ -598,8 +905,8 @@ export const methods = {
         }
 
         const handler = new cc.Component.EventHandler();
-        handler.target = target;
-        handler.component = componentType;
+        handler.target = node;
+        handler.component = componentType.replace(/^cc\./, '');
         handler.handler = handlerName;
         handler.customEventData = customEventData || '';
         button.clickEvents = button.clickEvents || [];
