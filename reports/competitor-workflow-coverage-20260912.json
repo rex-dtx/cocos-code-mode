@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-12T16:38:30.160876+00:00",
+  "generatedAt": "2026-09-13T03:55:05.608865+00:00",
   "scope": {
     "competitors": [
       "ALX 163-tool catalog",
@@ -34,7 +34,7 @@
     "docs/alx-capability-comparison.md": "7a3075e5163c429156b48ee62430becbe0d62304a4993257ca5eba0bc531e109",
     "docs/independent-ccb-strategy.md": "b14ed38e9c76ef1f35279dd2fe50389906d3c5ad9d9f24e195c317671eb472e3",
     "docs/parity-v2-v3.md": "289577513a2d1b1124ff93accb948dcbc63a98df21e7d1075e8147862c218705",
-    "docs/tool-portfolio-candidates.json": "4240d57bd6e4188aee329be131505b8072dee1a6bf72937146a5152ecc92cb40"
+    "docs/tool-portfolio-candidates.json": "97fa531957f60cee2e7559929c403cac0f2bd84dd05f7d9ae52aa1be890038b5"
   },
   "denominator": {
     "sourceCatalogTools": {
@@ -782,7 +782,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "prefabInstantiate": "candidate"
+        "prefabInstantiate": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -2632,7 +2632,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2650,7 +2650,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2668,7 +2668,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2686,7 +2686,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2704,7 +2704,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2722,7 +2722,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2740,7 +2740,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2758,7 +2758,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2776,7 +2776,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2794,7 +2794,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2812,7 +2812,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2830,7 +2830,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "referenceImageManage": "probe-required"
+        "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
@@ -2922,7 +2922,7 @@
         "source\\utcp\\tools\\asset-tools.ts"
       ],
       "candidateStates": {
-        "assetBatchImport": "candidate"
+        "assetBatchImport": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -2940,7 +2940,7 @@
         "source\\utcp\\tools\\asset-tools.ts"
       ],
       "candidateStates": {
-        "assetBatchOperate": "candidate"
+        "assetBatchOperate": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -2958,7 +2958,7 @@
         "source\\utcp\\tools\\asset-tools.ts"
       ],
       "candidateStates": {
-        "assetMissingReferenceAudit": "candidate"
+        "assetMissingReferenceAudit": "qualified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."

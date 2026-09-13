@@ -1,0 +1,69 @@
+{
+  "feature": "animation-capability-expansion",
+  "build": {
+    "command": "npm run build",
+    "result": "passed",
+    "buildInfo": "b482361-dirty",
+    "creatorVersion": "3.7.3"
+  },
+  "unitVerification": {
+    "command": "npm run test:unit",
+    "result": "passed",
+    "tests": 317,
+    "failures": 0,
+    "animationSuites": [
+      "tests/unit/animation-tools.test.js",
+      "tests/unit/animation-runtime-control.test.js"
+    ]
+  },
+  "portfolioAudit": {
+    "command": "npm run audit:portfolio",
+    "result": "passed",
+    "baselineCount": 86,
+    "registeredToolCount": 182,
+    "animationExpansionTools": 7,
+    "readyForBulkImplementation": false
+  },
+  "creatorLiveVerification": {
+    "endpoint": "http://localhost:49650",
+    "result": "partial",
+    "observations": [
+      {
+        "operation": "animationUsageAnalyze",
+        "result": "passed",
+        "fixture": "loaded scene",
+        "visitedNodes": 100,
+        "truncated": true,
+        "components": 2,
+        "component": "Skeleton",
+        "recommendation": "cache mode REALTIME on both discovered Spine fixtures"
+      },
+      {
+        "operation": "animationRuntimeControl:set_cache_mode",
+        "result": "unsupported-on-fixture",
+        "fixture": "JackpotNotificationSpine Skeleton",
+        "requested": "SHARED_CACHE",
+        "observed": "REALTIME",
+        "behavior": "typed internal failure on cache-mode read-back mismatch; no false success"
+      },
+      {
+        "operation": "animationRuntimeControl:set_cache_mode restore",
+        "result": "passed",
+        "requested": "REALTIME",
+        "observed": "REALTIME"
+      }
+    ],
+    "notExecuted": [
+      "live clip authoring mutation",
+      "live generic Animation playback mutation"
+    ],
+    "reason": "qualification uses a loaded production scene; authoring/playback mutations were not persisted destructively"
+  },
+  "usageGuidance": {
+    "inspect": "Use animationUsageAnalyze first to inventory Animation, SkeletalAnimation, Spine Skeleton, and DragonBones ArmatureDisplay components.",
+    "setup": "Use animationRuntimeControl set_default, set_play_on_load, set_state, and set_cache_mode as separate verified operations; inspect read-back after each mutation.",
+    "authoring": "Use animationClipConfigure, animationTrackEdit, animationKeyframeEdit, animationEventEdit, and animationAuxCurveEdit with an explicit clipReference; the bridge selects the edit clip before dispatch.",
+    "cache": "Treat REALTIME/SHARED_CACHE/PRIVATE_CACHE as runtime-specific. The bridge rejects a cache request when Creator read-back does not match instead of reporting success.",
+    "bounds": "All animation traversal, clips, states, tracks, keys, events, and auxiliary curves are bounded by explicit schema limits."
+  }
+}
