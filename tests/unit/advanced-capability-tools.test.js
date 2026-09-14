@@ -127,4 +127,11 @@ describe('advanced capability tools', () => {
       else global.Editor = previous;
     }
   });
+  it('publishes expansion integration guidance in agent-visible descriptions', () => {
+    const metadata = ToolRegistry.getTools().find(({ tool }) => tool.name === 'prefabOverrideDiff');
+    assert.ok(metadata);
+    assert.match(metadata.tool.description, /Integration guidance — Use when:/);
+    assert.match(metadata.tool.description, /Preconditions:/);
+    assert.match(metadata.tool.description, /verify the returned postcondition/);
+  });
 });
