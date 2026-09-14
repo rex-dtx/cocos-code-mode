@@ -59,6 +59,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'runtimeWaitForState',
   'runtimeScenarioAssert',
   'previewSessionInspect',
+  'runtimeScenarioRun',
   'assetManifestExport',
   'assetUsageAnalyze',
   'physics2dInspect',
