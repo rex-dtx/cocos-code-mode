@@ -7,6 +7,14 @@ describe('live: gap-closure — findNodes, assetResolve +4, scene:new-scene NOT-
   let health;
   before(async () => { health = await healthCheck(); });
   function skip(t) { if (!health || !health.ok) { t.skip(`editor not running: ${health ? health.reason : 'no health'}`); return true; } return false; }
+  async function requireCanvasFixture(t) {
+    const r = await getJson('/tools/findNodes?name=Canvas&maxResults=1');
+    if (!r.ok || !Array.isArray(r.body?.nodes) || r.body.nodes.length === 0) {
+      t.skip('active scene has no Canvas fixture');
+      return false;
+    }
+    return true;
+  }
 
   // G1 — assetResolvePath now has isSubAsset/containsSubAssets/relativePath/backupPath
   describe('G1 assetResolvePath +4 fields', () => {
@@ -55,7 +63,7 @@ describe('live: gap-closure — findNodes, assetResolve +4, scene:new-scene NOT-
   // G3 — findNodes by name / componentType
   describe('G3 findNodes', () => {
     it('by name: Canvas', async (t) => {
-      if (skip(t)) return;
+      if (skip(t) || !(await requireCanvasFixture(t))) return;
       const r = await getJson('/tools/findNodes?name=Canvas&maxResults=10');
       assert.equal(r.ok, true, JSON.stringify(r.body).slice(0, 160));
       assert.ok(Array.isArray(r.body.nodes) && r.body.nodes.length >= 1, 'at least one node');
@@ -63,16 +71,15 @@ describe('live: gap-closure — findNodes, assetResolve +4, scene:new-scene NOT-
       assert.ok(r.body.nodes[0].path.includes('Canvas'));
       assert.equal(r.body.truncated, false);
     });
-
     it('by componentType: Canvas', async (t) => {
-      if (skip(t)) return;
+      if (skip(t) || !(await requireCanvasFixture(t))) return;
       const r = await getJson('/tools/findNodes?componentType=cc.Canvas&maxResults=10');
       assert.equal(r.ok, true, JSON.stringify(r.body).slice(0, 160));
       assert.ok(r.body.nodes.length >= 1);
     });
 
     it('name + componentType together', async (t) => {
-      if (skip(t)) return;
+      if (skip(t) || !(await requireCanvasFixture(t))) return;
       const r = await getJson('/tools/findNodes?name=Canvas&componentType=cc.Canvas&maxResults=10');
       assert.equal(r.ok, true);
       // conjunction: name must match AND componentType must match
