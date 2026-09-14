@@ -129,6 +129,8 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'spineAssetInspect',
   'spineAssetValidate',
   'spineSceneInspect',
+  'editorPanelCapture',
+  'projectSettingsValidate',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

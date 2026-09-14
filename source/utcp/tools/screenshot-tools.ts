@@ -156,6 +156,58 @@ export class ScreenshotTools {
     }
 
     @utcpTool(
+        'editorPanelCapture',
+        'Capture one named editor panel using explicit bounded coordinates and validate the PNG result.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                panelTitle: { type: 'string', minLength: 1, maxLength: 128 },
+                bounds: {
+                    type: 'object',
+                    properties: {
+                        x: { type: 'integer', minimum: 0 },
+                        y: { type: 'integer', minimum: 0 },
+                        width: { type: 'integer', minimum: 1, maximum: 4096 },
+                        height: { type: 'integer', minimum: 1, maximum: 4096 },
+                    },
+                    required: ['x', 'y', 'width', 'height'],
+                },
+            },
+            required: ['panelTitle', 'bounds'],
+        },
+        {
+            type: 'object',
+            properties: {
+                panelTitle: { type: 'string' },
+                bounds: { type: 'object' },
+                type: { type: 'string' },
+                data: { type: 'string' },
+                mimeType: { type: 'string' },
+            },
+            required: ['panelTitle', 'bounds', 'type', 'data', 'mimeType'],
+        },
+        'POST',
+        ['screenshot', 'capture', 'editor', 'panel', 'image', 'visual'],
+    )
+    async editorPanelCapture(args: { panelTitle: string, bounds: { x: number, y: number, width: number, height: number } }): Promise<{ panelTitle: string, bounds: typeof args.bounds, type: string, data: string, mimeType: string }> {
+        if (!args.panelTitle.trim()) throw new Error('editorPanelCapture requires panelTitle');
+        const { x, y, width, height } = args.bounds;
+        if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width < 1 || height < 1 || width > MAX_SCREENSHOT_DIMENSION || height > MAX_SCREENSHOT_DIMENSION) {
+            throw new Error('editorPanelCapture bounds must be non-negative integer coordinates and bounded positive dimensions');
+        }
+        let BrowserWindow: any;
+        try { BrowserWindow = require('electron').BrowserWindow; } catch (e: any) { throw new Error(`Electron BrowserWindow not available: ${e.message}`); }
+        const targetWindow = BrowserWindow?.getAllWindows().find((window: any) => window.getTitle().includes(args.panelTitle));
+        if (!targetWindow) throw new Error(`Editor panel window not found: ${args.panelTitle}`);
+        const image = await targetWindow.capturePage({ x, y, width, height });
+        if (image.isEmpty()) throw new Error('Editor panel capture produced an empty image');
+        const data = image.toPNG().toString('base64');
+        if (!data.startsWith('iVBORw0KGgo')) throw new Error('Editor panel capture produced invalid PNG data');
+        return { panelTitle: args.panelTitle, bounds: args.bounds, type: 'image', data, mimeType: 'image/png' };
+    }
+
+    @utcpTool(
         'listEditorWindows',
         'List available Electron windows for screenshot or input targeting.',
         { type: 'object', properties: {} },
