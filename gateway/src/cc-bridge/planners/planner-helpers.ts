@@ -103,6 +103,13 @@ export function planCommands(
   if (!operation) throw new CcbError("CCB_CONTRACT_MISMATCH", "Planner has no finite branch for the requested operation.");
   assertObservation(context, operation.observation.contractId, operation.observation.consentVersion, operation.observation.fields);
 
+  // Optional arguments are absent on the wire, never explicit undefined.
+  for (const command of commands) {
+    for (const key of Object.keys(command.args)) {
+      if (Reflect.get(command.args, key) === undefined) Reflect.deleteProperty(command.args, key);
+    }
+  }
+
   const snapshot = operation.effect === "project-write" ? "once-after-success" : "none";
   const ipcCount = commands.reduce((total, command) => total + primitiveCommandSemantics(command).ipcCount, snapshot === "none" ? 0 : 1);
   const inputBytes = referencedRequestBytes(commands, context.request);
