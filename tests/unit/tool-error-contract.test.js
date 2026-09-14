@@ -67,7 +67,7 @@ describe('typed UTCP tool errors', () => {
         code: 'INTERNAL_ERROR',
         message: 'asset already exists\nUse the existing asset.',
       }),
-      '[cx3][api][12345678] ERROR 500 tool=assetCreate duration=3ms INTERNAL_ERROR: asset already exists Use the existing asset.',
+      '[cx3][api][12345678] FAILED assetCreate 500 · 3ms INTERNAL_ERROR\nMessage:\n  asset already exists Use the existing asset.',
     );
   });
 
@@ -81,7 +81,7 @@ describe('typed UTCP tool errors', () => {
     };
     try {
       creatorInteractionLog({ phase: 'complete', requestId: 'abcdef0123456789', tool: 'editorState', status: 200, durationMs: 4 });
-      assert.deepEqual(calls, [['info', '[cx3][api][abcdef01] RESPONSE <- 200 tool=editorState duration=4ms']]);
+      assert.deepEqual(calls, [['info', '[cx3][api][abcdef01] SUCCESS editorState 200 · 4ms']]);
       assert.equal(calls[0][1].includes('|'), false);
       assert.equal(calls[0][1].includes('"requestId"'), false);
     } finally {

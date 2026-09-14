@@ -276,33 +276,41 @@ if (debugEnabled) {
 }
 
 
+function formatStructuredText(label: string, value: unknown): string {
+    if (value === undefined) return '';
+    let serialized: string;
+    try {
+        serialized = JSON.stringify(value, null, 2) ?? String(value);
+    } catch {
+        serialized = '[unserializable]';
+    }
+    const lines = serialized.split('\n').slice(0, 80);
+    const suffix = serialized.split('\n').length > lines.length ? '\n  … [truncated]' : '';
+    return `\n${label}:\n${lines.map((line) => `  ${line}`).join('\n')}${suffix}`;
+}
+
 export function formatInteractionSummary(entry: Record<string, unknown>): string {
     const phase = entry.phase;
     const token = typeof entry.requestId === 'string' && entry.requestId.length > 0
         ? `[${entry.requestId.slice(0, 8)}]`
         : '';
     const prefix = `[cx3][api]${token}`;
-    const tool = typeof entry.tool === 'string' ? ` tool=${entry.tool}` : '';
+    const tool = typeof entry.tool === 'string' ? ` ${entry.tool}` : '';
     const status = typeof entry.status === 'number' ? ` ${entry.status}` : '';
-    const duration = typeof entry.durationMs === 'number' ? ` duration=${entry.durationMs}ms` : '';
+    const duration = typeof entry.durationMs === 'number' ? ` · ${entry.durationMs}ms` : '';
 
     if (phase === 'start') {
         const method = typeof entry.method === 'string' ? entry.method : '';
         const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
-        return `${prefix} REQUEST -> ${method}${path}${tool}`;
+        return `${prefix} REQUEST${tool} — ${method}${path}${formatStructuredText('Params', entry.args)}`;
     }
     if (phase === 'complete') {
-        const resultKeys = Array.isArray(entry.resultKeys) && entry.resultKeys.length > 0
-            ? ` keys=${entry.resultKeys.join(',')}`
-            : '';
-        return `${prefix} RESPONSE <-${status}${tool}${duration}${resultKeys}`;
+        return `${prefix} SUCCESS${tool}${status}${duration}${formatStructuredText('Result', entry.result)}`;
     }
     if (phase === 'error') {
         const code = typeof entry.code === 'string' ? ` ${entry.code}` : '';
-        const message = typeof entry.message === 'string'
-            ? `: ${entry.message.replace(/\s+/g, ' ').trim()}`
-            : '';
-        return `${prefix} ERROR${status}${tool}${duration}${code}${message}`;
+        const message = typeof entry.message === 'string' ? `\nMessage:\n  ${entry.message.replace(/\s+/g, ' ').trim()}` : '';
+        return `${prefix} FAILED${tool}${status}${duration}${code}${message}${formatStructuredText('Details', entry.details)}${formatStructuredText('Recovery', entry.recovery)}`;
     }
     return `${prefix} ${String(phase || 'EVENT').toUpperCase()}${tool}`;
 }
@@ -468,7 +476,7 @@ export class UtcpServerManager {
                 const t0 = Date.now();
                 const requestId = randomBytes(16).toString('hex');
                 res.setHeader('X-Request-Id', requestId);
-                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, inputKeys: Object.keys(req.body ?? {}).sort() });
+                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, args: { ...(req.query as Record<string, unknown>), ...(isPlainJsonObject(req.body) ? req.body : {}) } });
                 try {
                     // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
@@ -520,14 +528,14 @@ export class UtcpServerManager {
 
                     if (result === undefined || result === null) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
-                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: 'null' });
+                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: null });
                         debugLog({ type: 'response', requestId, tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
                         return;
                     }
 
                     const ms = Date.now() - ((req as any)._t0 ?? t0);
-                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, resultKeys: isPlainJsonObject(result) ? Object.keys(result).sort() : [] });
+                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result });
                     debugLog({ type: 'response', requestId, tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
 
                     // Preserve schema-required empty arrays/objects while trimming optional payload noise.

@@ -28,32 +28,25 @@ async function getJson(urlPath, init) {
   const b = discoverBase();
   const url = b + urlPath;
   const method = init?.method || 'GET';
-  if (urlPath !== '/tools/editorLog') {
+  const trace = process.env.UTCP_TEST_TRACE === '1';
+  if (trace && urlPath !== '/tools/editorLog') {
     try {
       await fetch(b + '/tools/editorLog', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          level: 'debug',
-          message: `TEST ${method} ${urlPath}`,
-          data: { phase: 'request' },
-        }),
+        body: JSON.stringify({ level: 'debug', message: `TEST ${method} ${urlPath}` }),
       });
     } catch {}
   }
   const r = await fetch(url, init);
   const text = await r.text();
   let body; try { body = JSON.parse(text); } catch { body = text; }
-  if (urlPath !== '/tools/editorLog') {
+  if (trace && urlPath !== '/tools/editorLog') {
     try {
       await fetch(b + '/tools/editorLog', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          level: r.ok ? 'debug' : 'warn',
-          message: `TEST ${r.status} ${method} ${urlPath}`,
-          data: { phase: 'response' },
-        }),
+        body: JSON.stringify({ level: r.ok ? 'debug' : 'warn', message: `TEST ${r.status} ${method} ${urlPath}` }),
       });
     } catch {}
   }
