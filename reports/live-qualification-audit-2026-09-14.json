@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "recordedAt": "2026-09-14T03:12:57.627Z",
+  "recordedAt": "2026-09-14T05:22:14.805Z",
   "mode": "quiet",
   "target": {
     "baseUrl": "http://localhost:49650",
@@ -42,10 +42,10 @@
     "exitCode": 0,
     "summary": {
       "tests": 240,
-      "pass": 235,
+      "pass": 217,
       "fail": 0,
-      "skipped": 5,
-      "durationMs": 44160
+      "skipped": 23,
+      "durationMs": 53016
     },
     "files": [
       {
@@ -92,7 +92,7 @@
           "pass": 14,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 2954
+          "durationMs": 4846
         },
         "attempts": 1
       },
@@ -110,7 +110,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 513
+          "durationMs": 489
         },
         "attempts": 1
       },
@@ -127,7 +127,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 280
+          "durationMs": 296
         },
         "attempts": 1
       },
@@ -146,7 +146,7 @@
           "pass": 0,
           "fail": 0,
           "skipped": 2,
-          "durationMs": 263
+          "durationMs": 461
         },
         "attempts": 1
       },
@@ -165,7 +165,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 512
+          "durationMs": 563
         },
         "attempts": 1
       },
@@ -181,7 +181,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 228
+          "durationMs": 280
         },
         "attempts": 1
       },
@@ -198,7 +198,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 243
+          "durationMs": 431
         },
         "attempts": 1
       },
@@ -214,7 +214,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 197
+          "durationMs": 256
         },
         "attempts": 1
       },
@@ -229,7 +229,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 189
+          "durationMs": 236
         },
         "attempts": 1
       },
@@ -272,7 +272,7 @@
           "pass": 11,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1873
+          "durationMs": 3464
         },
         "attempts": 1
       },
@@ -289,7 +289,7 @@
           "pass": 0,
           "fail": 0,
           "skipped": 1,
-          "durationMs": 193
+          "durationMs": 209
         },
         "attempts": 1
       },
@@ -298,13 +298,13 @@
         "tools": [
           "executeJavascript"
         ],
-        "status": "passed",
+        "status": "partial-or-skipped",
         "summary": {
           "tests": 50,
-          "pass": 50,
+          "pass": 38,
           "fail": 0,
-          "skipped": 0,
-          "durationMs": 1255
+          "skipped": 12,
+          "durationMs": 2064
         },
         "attempts": 1
       },
@@ -319,7 +319,7 @@
           "pass": 77,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1997
+          "durationMs": 2228
         },
         "attempts": 1
       },
@@ -331,13 +331,13 @@
           "executeJavascript",
           "findNodes"
         ],
-        "status": "passed",
+        "status": "partial-or-skipped",
         "summary": {
           "tests": 10,
-          "pass": 10,
+          "pass": 7,
           "fail": 0,
-          "skipped": 0,
-          "durationMs": 297
+          "skipped": 3,
+          "durationMs": 445
         },
         "attempts": 1
       },
@@ -357,7 +357,7 @@
           "pass": 8,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 572
+          "durationMs": 644
         },
         "attempts": 1
       },
@@ -374,7 +374,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 587
+          "durationMs": 758
         },
         "attempts": 1
       },
@@ -398,7 +398,7 @@
           "pass": 6,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1269
+          "durationMs": 1631
         },
         "attempts": 1
       },
@@ -474,10 +474,10 @@
         "status": "partial-or-skipped",
         "summary": {
           "tests": 38,
-          "pass": 37,
+          "pass": 35,
           "fail": 0,
-          "skipped": 1,
-          "durationMs": 27617
+          "skipped": 3,
+          "durationMs": 29504
         },
         "attempts": 1
       },
@@ -492,7 +492,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 219
+          "durationMs": 265
         },
         "attempts": 1
       },
@@ -508,7 +508,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 203
+          "durationMs": 260
         },
         "attempts": 1
       },
@@ -518,13 +518,13 @@
           "nodeGetAtPath",
           "uiResponsivePreview"
         ],
-        "status": "passed",
+        "status": "partial-or-skipped",
         "summary": {
           "tests": 1,
-          "pass": 1,
+          "pass": 0,
           "fail": 0,
-          "skipped": 0,
-          "durationMs": 189
+          "skipped": 1,
+          "durationMs": 191
         },
         "attempts": 1
       },
@@ -544,7 +544,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 397
+          "durationMs": 471
         },
         "attempts": 1
       },
@@ -559,7 +559,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 260
+          "durationMs": 311
         },
         "attempts": 1
       },
@@ -578,7 +578,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 290
+          "durationMs": 554
         },
         "attempts": 1
       },
@@ -597,7 +597,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 680
+          "durationMs": 850
         },
         "attempts": 1
       },
@@ -615,7 +615,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 398
+          "durationMs": 729
         },
         "attempts": 1
       },
@@ -637,7 +637,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 1,
-          "durationMs": 485
+          "durationMs": 580
         },
         "attempts": 1
       }
@@ -1775,7 +1775,7 @@
     },
     {
       "name": "uiResponsivePreview",
-      "liveSuiteStatus": "passed",
+      "liveSuiteStatus": "partial-or-skipped",
       "testFiles": [
         "tests/live/responsive-preview-qualification.test.js"
       ]
