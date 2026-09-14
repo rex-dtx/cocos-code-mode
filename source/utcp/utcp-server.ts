@@ -51,6 +51,7 @@ import { homedir } from 'os';
 import { isToolExposed, ToolProfile } from './tool-profiles';
 import { createResultEnvelope } from './response-envelope';
 import { ToolError, toToolErrorResponse } from './tool-error';
+import { renderInteraction, snapshotInteraction } from './interaction-log';
 
 export interface SchemaValidationError {
     path: string;
@@ -276,43 +277,12 @@ if (debugEnabled) {
 }
 
 
-function formatStructuredText(label: string, value: unknown): string {
-    if (value === undefined) return '';
-    let serialized: string;
-    try {
-        serialized = JSON.stringify(value, null, 2) ?? String(value);
-    } catch {
-        serialized = '[unserializable]';
-    }
-    const lines = serialized.split('\n').slice(0, 80);
-    const suffix = serialized.split('\n').length > lines.length ? '\n  … [truncated]' : '';
-    return `\n${label}:\n${lines.map((line) => `  ${line}`).join('\n')}${suffix}`;
-}
 
 export function formatInteractionSummary(entry: Record<string, unknown>): string {
-    const phase = entry.phase;
-    const token = typeof entry.requestId === 'string' && entry.requestId.length > 0
-        ? `[${entry.requestId.slice(0, 8)}]`
-        : '';
-    const prefix = `[cx3][api]${token}`;
-    const tool = typeof entry.tool === 'string' ? ` ${entry.tool}` : '';
-    const status = typeof entry.status === 'number' ? ` ${entry.status}` : '';
-    const duration = typeof entry.durationMs === 'number' ? ` · ${entry.durationMs}ms` : '';
-
-    if (phase === 'start') {
-        const method = typeof entry.method === 'string' ? entry.method : '';
-        const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
-        return `${prefix} REQUEST${tool} — ${method}${path}${formatStructuredText('Params', entry.args)}`;
-    }
-    if (phase === 'complete') {
-        return `${prefix} SUCCESS${tool}${status}${duration}${formatStructuredText('Result', entry.result)}`;
-    }
-    if (phase === 'error') {
-        const code = typeof entry.code === 'string' ? ` ${entry.code}` : '';
-        const message = typeof entry.message === 'string' ? `\nMessage:\n  ${entry.message.replace(/\s+/g, ' ').trim()}` : '';
-        return `${prefix} FAILED${tool}${status}${duration}${code}${message}${formatStructuredText('Details', entry.details)}${formatStructuredText('Recovery', entry.recovery)}`;
-    }
-    return `${prefix} ${String(phase || 'EVENT').toUpperCase()}${tool}`;
+    const safe = snapshotInteraction(entry);
+    const rendered = renderInteraction(safe);
+    return rendered.text + (rendered.truncated ? '\n[truncated: display budget; additional detail may also be bounded]' : '')
+        + (typeof entry.detailFile === 'string' ? `\nDetails file: ${entry.detailFile}` : '');
 }
 
 export function creatorInteractionLog(entry: Record<string, unknown>): void {
@@ -331,15 +301,23 @@ export function creatorInteractionLog(entry: Record<string, unknown>): void {
 function interactionLog(entry: Record<string, unknown>): void {
     const phase = entry.phase;
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
-    creatorInteractionLog(entry);
-    debugLog({ type: 'interaction', ...entry });
+    const safe = snapshotInteraction({ ...entry, ts: new Date().toISOString() });
+    try {
+        mkdirSync(DEBUG_LOG_DIR, { recursive: true });
+        appendFileSync(debugLogFile, JSON.stringify({ type: 'interaction', ...safe }) + '\n');
+        safe.detailFile = debugLogFile;
+    } catch {
+        safe.recovery = `${safe.recovery ?? ''}\nLog detail file unavailable; check filesystem permissions.`;
+    }
+    creatorInteractionLog(safe);
 }
+
 function debugLog(entry: Record<string, unknown>): void {
     if (!debugEnabled) return;
     try {
         try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-        const line = JSON.stringify({ ts: new Date().toISOString(), ...entry });
-        appendFileSync(debugLogFile, line + '\n');
+        const safe = snapshotInteraction({ ts: new Date().toISOString(), ...entry });
+        appendFileSync(debugLogFile, JSON.stringify(safe) + '\n');
     } catch {}
 }
 
@@ -476,23 +454,22 @@ export class UtcpServerManager {
                 const t0 = Date.now();
                 const requestId = randomBytes(16).toString('hex');
                 res.setHeader('X-Request-Id', requestId);
-                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, args: { ...(req.query as Record<string, unknown>), ...(isPlainJsonObject(req.body) ? req.body : {}) } });
+                const body: unknown = req.body;
+                const args: Record<string, unknown> = {
+                    ...req.query,
+                    ...(isPlainJsonObject(body) ? body : {}),
+                };
+                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, args });
                 try {
                     // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED', message: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, args, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED', message: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         return;
                     }
 
-                    const body = req.body as unknown;
-                    const bodyArgs = isPlainJsonObject(body) ? body as Record<string, unknown> : {};
-                    const args: Record<string, unknown> = {
-                        ...(req.query as unknown as Record<string, unknown>),
-                        ...bodyArgs,
-                    };
                     const validationErrors = body === undefined || isPlainJsonObject(body)
                         ? validateSchemaArguments(toolDef.inputs, args)
                         : validateSchemaArguments(toolDef.inputs, body);
@@ -506,7 +483,7 @@ export class UtcpServerManager {
                         const errorMessage = missingInputs.length > 0
                             ? `Missing required input${plural}: ${missingInputs.join(', ')}`
                             : 'Invalid tool input.';
-                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT', message: errorMessage });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT', message: errorMessage, args });
                         res.status(400).json({
                             error: errorMessage,
                             ...(missingInputs.length > 0 ? { missingInputs } : {}),
@@ -534,27 +511,20 @@ export class UtcpServerManager {
                         return;
                     }
 
-                    const ms = Date.now() - ((req as any)._t0 ?? t0);
-                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result });
-                    debugLog({ type: 'response', requestId, tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
-
-                    // Preserve schema-required empty arrays/objects while trimming optional payload noise.
+                    // Log the payload actually sent, only after transformation and serialization succeed.
                     const trimmed = trimResponse(result, toolMeta.tool.outputs);
-
-                    // Wrap in envelope if enabled
-                    if (envelopeEnabled) {
-                        res.json(createResultEnvelope(toolDef.name, args, trimmed ?? null));
-                    } else {
-                        res.json(trimmed ?? null);
-                    }
+                    const payload = envelopeEnabled
+                        ? createResultEnvelope(toolDef.name, args, trimmed ?? null)
+                        : trimmed ?? null;
+                    res.json(payload);
+                    const ms = Date.now() - t0;
+                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: payload });
+                    debugLog({ type: 'response', requestId, tool: toolDef.name, result: payload, durationMs: ms });
 
                 } catch (err: any) {
                     const ms2 = Date.now() - ((req as any)._t0 ?? t0);
                     const response = toToolErrorResponse(err);
                     const testId = expectedTestWitnessId(req.headers);
-                    if (testId && err instanceof ToolError && err.status < 500) {
-                        console.info(`[cx3][api][test:${testId}] Expected ${err.code} from ${toolDef.name}`);
-                    }
                     const errorMessage = response.body.error;
                     const diagnosticMessage = shouldLogToolError(err) && err instanceof Error
                         ? err.message
@@ -570,6 +540,9 @@ export class UtcpServerManager {
                         details: response.body.details,
                         recovery: response.body.recovery,
                         testId,
+                        args,
+                        stack: err instanceof Error ? err.stack : undefined,
+                        expectedTest: Boolean(testId && err instanceof ToolError && err.status < 500),
                     });
                     debugLog({
                         type: 'error',
