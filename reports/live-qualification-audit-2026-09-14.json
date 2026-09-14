@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "recordedAt": "2026-09-14T06:50:24.042Z",
+  "recordedAt": "2026-09-14T07:13:05.459Z",
   "mode": "quiet",
   "target": {
     "baseUrl": "http://localhost:49650",
@@ -13,16 +13,16 @@
     "states": {
       "qualified": 55,
       "replace": 6,
-      "implemented-unverified": 3,
+      "implemented-unverified": 5,
       "probe-required": 19,
-      "candidate": 17
+      "candidate": 15
     }
   },
   "staticPortfolioAudit": {
     "ok": true,
     "baselineCount": 86,
-    "registeredToolCount": 200,
-    "expansionToolCount": 114,
+    "registeredToolCount": 202,
+    "expansionToolCount": 116,
     "primaryCandidateCount": 80,
     "reserveCandidateCount": 20,
     "replaceCount": 6,
@@ -31,7 +31,7 @@
     "minimumNet": 71,
     "approvalMargin": 11,
     "requiredApprovalCount": 82,
-    "approvedCount": 58,
+    "approvedCount": 60,
     "readyForBulkImplementation": false,
     "dependencyMetadataComplete": true,
     "witnessContractCount": 46,
@@ -42,10 +42,10 @@
     "exitCode": 0,
     "summary": {
       "tests": 240,
-      "pass": 217,
+      "pass": 235,
       "fail": 0,
-      "skipped": 23,
-      "durationMs": 84251
+      "skipped": 5,
+      "durationMs": 50827
     },
     "files": [
       {
@@ -92,9 +92,9 @@
           "pass": 14,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 7261
+          "durationMs": 4213
         },
-        "attempts": 2
+        "attempts": 1
       },
       {
         "file": "tests/live/alx-inspired-editor-qualification.test.js",
@@ -110,7 +110,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 563
+          "durationMs": 588
         },
         "attempts": 1
       },
@@ -127,7 +127,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 449
+          "durationMs": 277
         },
         "attempts": 1
       },
@@ -165,7 +165,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 716
+          "durationMs": 532
         },
         "attempts": 1
       },
@@ -181,7 +181,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 301
+          "durationMs": 273
         },
         "attempts": 1
       },
@@ -198,7 +198,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 524
+          "durationMs": 460
         },
         "attempts": 1
       },
@@ -214,7 +214,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 256
+          "durationMs": 218
         },
         "attempts": 1
       },
@@ -229,7 +229,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 273
+          "durationMs": 200
         },
         "attempts": 1
       },
@@ -272,7 +272,7 @@
           "pass": 11,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 5527
+          "durationMs": 3032
         },
         "attempts": 1
       },
@@ -289,7 +289,7 @@
           "pass": 0,
           "fail": 0,
           "skipped": 1,
-          "durationMs": 312
+          "durationMs": 198
         },
         "attempts": 1
       },
@@ -298,13 +298,13 @@
         "tools": [
           "executeJavascript"
         ],
-        "status": "partial-or-skipped",
+        "status": "passed",
         "summary": {
           "tests": 50,
-          "pass": 38,
+          "pass": 50,
           "fail": 0,
-          "skipped": 12,
-          "durationMs": 2856
+          "skipped": 0,
+          "durationMs": 1737
         },
         "attempts": 1
       },
@@ -319,7 +319,7 @@
           "pass": 77,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 3771
+          "durationMs": 2102
         },
         "attempts": 1
       },
@@ -331,13 +331,13 @@
           "executeJavascript",
           "findNodes"
         ],
-        "status": "partial-or-skipped",
+        "status": "passed",
         "summary": {
           "tests": 10,
-          "pass": 7,
+          "pass": 10,
           "fail": 0,
-          "skipped": 3,
-          "durationMs": 770
+          "skipped": 0,
+          "durationMs": 449
         },
         "attempts": 1
       },
@@ -357,7 +357,7 @@
           "pass": 8,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1159
+          "durationMs": 709
         },
         "attempts": 1
       },
@@ -374,7 +374,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1249
+          "durationMs": 725
         },
         "attempts": 1
       },
@@ -398,7 +398,7 @@
           "pass": 6,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 2580
+          "durationMs": 1644
         },
         "attempts": 1
       },
@@ -474,10 +474,10 @@
         "status": "partial-or-skipped",
         "summary": {
           "tests": 38,
-          "pass": 35,
+          "pass": 37,
           "fail": 0,
-          "skipped": 3,
-          "durationMs": 47382
+          "skipped": 1,
+          "durationMs": 28966
         },
         "attempts": 1
       },
@@ -492,7 +492,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 483
+          "durationMs": 253
         },
         "attempts": 1
       },
@@ -508,7 +508,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 383
+          "durationMs": 251
         },
         "attempts": 1
       },
@@ -518,13 +518,13 @@
           "nodeGetAtPath",
           "uiResponsivePreview"
         ],
-        "status": "partial-or-skipped",
+        "status": "passed",
         "summary": {
           "tests": 1,
-          "pass": 0,
+          "pass": 1,
           "fail": 0,
-          "skipped": 1,
-          "durationMs": 325
+          "skipped": 0,
+          "durationMs": 244
         },
         "attempts": 1
       },
@@ -544,7 +544,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 794
+          "durationMs": 468
         },
         "attempts": 1
       },
@@ -559,7 +559,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 569
+          "durationMs": 284
         },
         "attempts": 1
       },
@@ -578,7 +578,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1138
+          "durationMs": 529
         },
         "attempts": 1
       },
@@ -597,7 +597,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1771
+          "durationMs": 798
         },
         "attempts": 1
       },
@@ -615,7 +615,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1468
+          "durationMs": 611
         },
         "attempts": 1
       },
@@ -637,7 +637,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 1,
-          "durationMs": 999
+          "durationMs": 694
         },
         "attempts": 1
       }
@@ -1775,7 +1775,7 @@
     },
     {
       "name": "uiResponsivePreview",
-      "liveSuiteStatus": "partial-or-skipped",
+      "liveSuiteStatus": "passed",
       "testFiles": [
         "tests/live/responsive-preview-qualification.test.js"
       ]
