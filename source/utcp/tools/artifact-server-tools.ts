@@ -5,6 +5,11 @@ import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
 
 const servers = new Map<string, http.Server>();
+export function closeArtifactServers(): void {
+    for (const server of servers.values()) server.close();
+    servers.clear();
+}
+
 
 function resolveArtifact(requested: string): string {
     const projectRoot = path.resolve((Editor.Project as any).path);
@@ -70,8 +75,19 @@ export class ArtifactServerTools {
         servers.set(serverId, server);
         const address = server.address();
         const port = typeof address === 'object' && address ? address.port : 0;
-        if (!port) throw new ToolError({ code: 'SERVE_FAILED', status: 502, message: 'Artifact server did not expose a local port.' });
-        const verified = await fetch(`http://127.0.0.1:${port}/`).then((response) => response.ok);
+        if (!port) { server.close(); servers.delete(serverId); throw new ToolError({ code: 'SERVE_FAILED', status: 502, message: 'Artifact server did not expose a local port.' }); }
+        let verified = false;
+        try {
+            verified = await new Promise<boolean>((resolve) => {
+                const request = http.get(`http://127.0.0.1:${port}/`, (response) => {
+                    response.resume();
+                    resolve((response.statusCode ?? 500) >= 200 && (response.statusCode ?? 500) < 300);
+                });
+                request.once('error', () => resolve(false));
+            });
+        } catch {
+            verified = false;
+        }
         if (!verified) { await new Promise<void>((resolve) => server.close(() => resolve())); servers.delete(serverId); throw new ToolError({ code: 'SERVE_FAILED', status: 502, message: 'Artifact index verification failed.' }); }
         return { operation: 'start', serverId, url: `http://127.0.0.1:${port}/`, lifecycle: ['started', 'verified'], verified: true };
     }

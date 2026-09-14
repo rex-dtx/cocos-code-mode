@@ -1,5 +1,6 @@
 import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
+import { closeArtifactServers } from './utcp/tools/artifact-server-tools';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo, getBuildInfo } from './build-info';
 import { exec } from 'child_process';
@@ -186,6 +187,7 @@ export function unload() {
     cancelEditorAsk();
     cancelEditorPrompt();
     disposeEditorControl();
+    closeArtifactServers();
     if (utcpServer) {
         console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
         const port = (utcpServer as any).port ?? 0;
