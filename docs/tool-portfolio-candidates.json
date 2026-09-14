@@ -1530,7 +1530,7 @@
     },
     {
       "name": "previewSessionInspect",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Read target kind, URL, mode, readiness and stale-session state.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",

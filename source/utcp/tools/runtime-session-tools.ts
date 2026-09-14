@@ -278,6 +278,41 @@ export class RuntimeSessionTools {
         return { success: true, sessionId: session.sessionId, state, elapsedMs: Date.now() - started };
     }
     @utcpTool(
+        'previewSessionInspect',
+        'Inspect one attached preview session and verify its current preview URL.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: { sessionId: { type: 'string', minLength: 1, maxLength: 64 } },
+            required: ['sessionId'],
+        },
+        {
+            type: 'object',
+            properties: { success: { type: 'boolean' }, sessionId: { type: 'string' }, targetKind: { type: 'string' }, url: { type: 'string' }, ready: { type: 'boolean' }, stale: { type: 'boolean' } },
+            required: ['success', 'sessionId', 'targetKind', 'url', 'ready', 'stale'],
+        },
+        'POST',
+        ['preview', 'session', 'inspect', 'runtime'],
+    )
+    async previewSessionInspect(args: { sessionId: string }): Promise<{ success: true, sessionId: string, targetKind: string, url: string, ready: boolean, stale: boolean }> {
+        let session: RuntimeSession;
+        try {
+            session = store.inspect(args.sessionId);
+        } catch (error) {
+            if (error instanceof RuntimeSessionError) throw new ToolError({ code: error.code, status: error.code === 'SESSION_NOT_FOUND' ? 404 : 400, message: error.message });
+            throw error;
+        }
+        if (session.status === 'stopped') return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url: '', ready: false, stale: true };
+        let url: unknown;
+        try {
+            url = await Editor.Message.request('preview', 'query-preview-url');
+        } catch (error) {
+            throw new ToolError({ code: 'UNSUPPORTED_EDITOR_API', status: 422, message: 'Creator does not expose preview/query-preview-url.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Use a Creator version with preview URL query support.' });
+        }
+        if (typeof url !== 'string' || url.length === 0) return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url: '', ready: false, stale: false };
+        return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url, ready: true, stale: false };
+    }
+    @utcpTool(
         'runtimeScenarioAssert',
         'Assert bounded runtime state for an attached game-view session.',
         {
