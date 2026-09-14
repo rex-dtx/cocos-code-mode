@@ -257,7 +257,13 @@ export class RuntimeSessionTools {
         ['runtime', 'state', 'wait', 'condition'],
     )
     async runtimeWaitForState(args: { sessionId: string, paused?: boolean, minFrameCount?: number, timeoutMs?: number }): Promise<{ success: true, sessionId: string, state: RuntimeState, elapsedMs: number }> {
-        const session = store.inspect(args.sessionId);
+        let session: RuntimeSession;
+        try {
+            session = store.inspect(args.sessionId);
+        } catch (error) {
+            if (error instanceof RuntimeSessionError) throw new ToolError({ code: error.code, status: error.code === 'SESSION_NOT_FOUND' ? 404 : 400, message: error.message });
+            throw error;
+        }
         if (session.status === 'stopped') throw new ToolError({ code: 'RUNTIME_SESSION_STOPPED', status: 409, message: `Runtime session is stopped: ${session.sessionId}`, recovery: 'Attach a new game-view session before waiting for state.' });
         if (session.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: `Runtime target ${session.targetKind} has no verified transport.` });
         if (args.paused === undefined && args.minFrameCount === undefined) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeWaitForState requires paused or minFrameCount.' });
