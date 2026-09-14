@@ -55,3 +55,21 @@ test('qualification status accepts file-backed member and admin credentials', ()
   assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, true);
   assert.equal(report.checks.find((check) => check.gate === 'admin-authentication').configured, true);
 });
+
+test('qualification status does not treat missing credential files as configured', () => {
+  const result = spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'scripts', 'qualify-protected.js'), '--status'], {
+    cwd: path.resolve(__dirname, '..', '..'),
+    env: {
+      ...process.env,
+      CCB_MEMBER_CREDENTIAL: '',
+      CCB_MEMBER_CREDENTIAL_FILE: path.join(path.dirname(__filename), 'missing-member.jwt'),
+      CCB_ADMIN_CREDENTIAL: '',
+      CCB_ADMIN_CREDENTIAL_FILE: path.join(path.dirname(__filename), 'missing-admin.jwt'),
+    },
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, false);
+  assert.equal(report.checks.find((check) => check.gate === 'admin-authentication').configured, false);
+});

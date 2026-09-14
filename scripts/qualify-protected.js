@@ -22,6 +22,30 @@ function run(command, args) {
   const result = spawnSync(process.execPath, [path.join(root, 'scripts', command)], { cwd: root, stdio: 'inherit', env: process.env });
   if (result.status !== 0) fail(`${command} failed with exit ${result.status}`);
 }
+
+function configuredCredential(valueName, fileName) {
+  const inline = process.env[valueName];
+  const file = process.env[fileName];
+  if (inline && file) return false;
+  if (inline) return true;
+  if (!file || !path.isAbsolute(file)) return false;
+  try {
+    const stat = fs.statSync(file);
+    return stat.isFile() && stat.size >= 1 && stat.size <= 16 * 1024;
+  } catch {
+    return false;
+  }
+}
+
+function configured(check) {
+  if (check.credential) {
+    const [valueName, fileName] = check.variables;
+    return configuredCredential(valueName, fileName);
+  }
+  return check.any
+    ? check.variables.some((name) => Boolean(process.env[name]))
+    : check.variables.every((name) => Boolean(process.env[name]));
+}
 function checkConfiguration() {
   const missing = required
     .filter((input) => input.any ? !input.variables.some((name) => process.env[name]) : !input.variables.every((name) => process.env[name]))
@@ -35,17 +59,14 @@ function statusReport() {
   const checks = [
     { gate: "release-origin", variables: ["CCB_RELEASE_ORIGIN"] },
     { gate: "signed-release-inputs", variables: ["CCB_RELEASE_ROOT_METADATA_PATH", "CCB_RELEASE_ZIP", "CCB_RELEASE_ROOT_PATH", "CCB_RELEASE_ROOT_SHA256"] },
-    { gate: "member-authentication", variables: ["CCB_MEMBER_CREDENTIAL", "CCB_MEMBER_CREDENTIAL_FILE"], any: true },
+    { gate: "member-authentication", variables: ["CCB_MEMBER_CREDENTIAL", "CCB_MEMBER_CREDENTIAL_FILE"], credential: true },
     { gate: "project-binding", variables: ["CCB_PROJECT_ID"] },
     { gate: "device-identity", variables: ["CCB_DEVICE_IDENTITY_PATH"], optional: true },
     { gate: "execution-verification", variables: ["CCB_EXECUTION_KEY_ID", "CCB_EXECUTION_PUBLIC_KEY"] },
-    { gate: "admin-authentication", variables: ["CCB_ADMIN_CREDENTIAL", "CCB_ADMIN_CREDENTIAL_FILE"], any: true },
+    { gate: "admin-authentication", variables: ["CCB_ADMIN_CREDENTIAL", "CCB_ADMIN_CREDENTIAL_FILE"], credential: true },
     { gate: "scoped-grant", variables: ["CCB_GRANT_DEVICE_ID", "CCB_GRANT_PROJECT_ID", "CCB_GRANT_OPERATION_CLASS"] },
   ].map((check) => {
-    const configured = check.any
-      ? check.variables.some((name) => Boolean(process.env[name]))
-      : check.variables.every((name) => Boolean(process.env[name]));
-    return { gate: check.gate, configured, optional: Boolean(check.optional), variables: check.variables };
+    return { gate: check.gate, configured: configured(check), optional: Boolean(check.optional), variables: check.variables };
   });
   const requiredChecks = checks.filter((check) => !check.optional);
   const next = requiredChecks.find((check) => !check.configured);
