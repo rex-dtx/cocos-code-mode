@@ -1393,7 +1393,7 @@
         },
         {
           "name": "runtimeScenarioAssert",
-          "state": "candidate",
+          "state": "implemented-unverified",
           "contractDelta": "Independent state/image/event assertions rather than request echo.",
           "route": "runtime observation adapter",
           "prerequisites": [
