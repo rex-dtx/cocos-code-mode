@@ -103,10 +103,16 @@ async function healthCheck() {
   }
 }
 
+async function getCanvasReference() {
+  const result = await getJson('/tools/findNodes?componentType=cc.Canvas&maxResults=1');
+  if (!result.ok) return null;
+  return result.body?.nodes?.[0]?.reference ?? null;
+}
+
 function resVal(body) {
   if (body == null) return null;
   if (typeof body === 'object' && 'result' in body) return body.result;
   return null;
 }
 
-module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, healthCheck, resVal };
+module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, healthCheck, getCanvasReference, resVal };

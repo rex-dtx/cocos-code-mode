@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { postTool, getJson, healthCheck } = require('../helpers/utcp-client');
+const { postTool, getJson, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: uiSafeAreaInspect', () => {
   let health;
@@ -13,7 +13,9 @@ describe('live: uiSafeAreaInspect', () => {
     assert.equal(manual.ok, true, JSON.stringify(manual.body));
     assert.ok(manual.body.tools.some((item) => item.name === 'uiSafeAreaInspect'));
 
-    const rootResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccb3x_safe_area_root__' });
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
+    const rootResult = await postTool('createUiNode', { uiType: 'Label', parentReference: canvas, name: '__ccb3x_safe_area_root__' });
     assert.equal(rootResult.ok, true, JSON.stringify(rootResult.body));
     const root = rootResult.body.reference;
     let inside;
@@ -36,7 +38,7 @@ describe('live: uiSafeAreaInspect', () => {
 
       const report = await postTool('uiSafeAreaInspect', {
         root,
-        safeArea: { rect: { x: 0, y: 0, width: 100, height: 100 } },
+        safeArea: { rect: { x: 640, y: 360, width: 100, height: 100 } },
         maxNodes: 8,
         maxIssues: 8,
       });

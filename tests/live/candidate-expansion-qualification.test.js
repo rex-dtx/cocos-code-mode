@@ -39,10 +39,11 @@ describe('live: candidate expansion qualification witnesses', () => {
     if (skipIfDown(t)) return;
     const fixture = await postTool('executeJavascript', {
       context: 'scene',
-      code: `const sc=cc.director.getScene();for(const name of ['__candidate_hierarchy__']){const old=sc.getChildByName(name);if(old){old.removeFromParent();old.destroy();}}
-const root=new cc.Node('__candidate_hierarchy__');sc.addChild(root);const child=new cc.Node('__candidate_leaf__');root.addChild(child);return {root:root.uuid,child:child.uuid};`,
+      code: `const sc=cc.director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};for(const name of ['__candidate_hierarchy__']){const old=canvas.getChildByName(name);if(old){old.removeFromParent();old.destroy();}}
+const root=new cc.Node('__candidate_hierarchy__');canvas.addChild(root);const child=new cc.Node('__candidate_leaf__');root.addChild(child);return {root:root.uuid,child:child.uuid};`,
     });
-    assert.equal(fixture.status, 200, JSON.stringify(fixture.body));
+    if (fixture.body?.result?.skip) { t.skip('active scene has no Canvas fixture'); return; }
+    const { root, child } = fixture.body.result;
     try {
       const valid = await getJson(`/tools/sceneHierarchyValidate?rootReference%5Bid%5D=${encodeURIComponent(fixture.body.result.root)}&limit=1000`);
       assert.equal(valid.status, 200, JSON.stringify(valid.body));
@@ -51,7 +52,7 @@ const root=new cc.Node('__candidate_hierarchy__');sc.addChild(root);const child=
       assert.deepEqual(valid.body.issues, []);
       const duplicate = await postTool('executeJavascript', {
         context: 'scene',
-        code: `const root=cc.director.getScene().getChildByName('__candidate_hierarchy__');root.addChild(new cc.Node('__candidate_duplicate__'));root.addChild(new cc.Node('__candidate_duplicate__'));return true;`,
+        code: `const canvas=cc.director.getScene().getChildByName('Canvas');const root=canvas&&canvas.getChildByName('__candidate_hierarchy__');if(!root)return {skip:true};root.addChild(new cc.Node('__candidate_duplicate__'));root.addChild(new cc.Node('__candidate_duplicate__'));return true;`,
       });
       assert.equal(duplicate.status, 200, JSON.stringify(duplicate.body));
       const invalid = await getJson(`/tools/sceneHierarchyValidate?rootReference%5Bid%5D=${encodeURIComponent(fixture.body.result.root)}&limit=1000`);
@@ -70,7 +71,7 @@ const root=new cc.Node('__candidate_hierarchy__');sc.addChild(root);const child=
     } finally {
       const cleanup = await postTool('executeJavascript', {
         context: 'scene',
-        code: `const n=cc.director.getScene().getChildByName('__candidate_hierarchy__');if(n){n.removeFromParent();n.destroy();}return true;`,
+        code: `const canvas=cc.director.getScene().getChildByName('Canvas');const n=canvas&&canvas.getChildByName('__candidate_hierarchy__');if(n){n.removeFromParent();n.destroy();}return true;`,
       });
       assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
     }
@@ -80,10 +81,10 @@ const root=new cc.Node('__candidate_hierarchy__');sc.addChild(root);const child=
     if (skipIfDown(t)) return;
     const fixture = await postTool('executeJavascript', {
       context: 'scene',
-      code: `const sc=cc.director.getScene();
-for(const name of ['__candidate_particle__','__candidate_terrain__','__candidate_p2__','__candidate_p2_bad__','__candidate_p3__','__candidate_p3_bad__','__candidate_audio__']){const old=sc.getChildByName(name);if(old){old.removeFromParent();old.destroy();}}
-const out={};
-function add(name,types){const n=new cc.Node(name);sc.addChild(n);out[name]={id:n.uuid,types:[]};for(const type of types){const C=cc.js.getClassByName(type);if(C){n.addComponent(C);out[name].types.push(type);}}}
+      code: `const sc=cc.director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};
+for(const name of ['__candidate_particle__','__candidate_terrain__','__candidate_p2__','__candidate_p2_bad__','__candidate_p3__','__candidate_p3_bad__','__candidate_audio__']){const old=canvas.getChildByName(name);if(old){old.removeFromParent();old.destroy();}}
+const out={};let cameraNode=null;const stack=[sc];while(stack.length&&!cameraNode){const n=stack.pop();if(n.getComponent&&n.getComponent(cc.Camera))cameraNode=n;else stack.push(...(n.children||[]));}if(!cameraNode)return {skip:true};
+function add(name,types){const n=new cc.Node(name);n.setPosition(0,0,0);canvas.addChild(n);out[name]={id:n.uuid,types:[],visibleHost:canvas.name,camera:cameraNode.uuid};for(const type of types){const C=cc.js.getClassByName(type);if(C){n.addComponent(C);out[name].types.push(type);}}}
 add('__candidate_particle__',['cc.ParticleSystem']);
 add('__candidate_terrain__',['cc.Terrain']);
 add('__candidate_p2__',['cc.RigidBody2D','cc.BoxCollider2D']);

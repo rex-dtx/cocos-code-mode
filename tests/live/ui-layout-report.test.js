@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { postTool, getJson, healthCheck } = require('../helpers/utcp-client');
+const { postTool, getJson, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: uiLayoutReport', () => {
   let health;
@@ -15,7 +15,9 @@ describe('live: uiLayoutReport', () => {
     assert.ok(tool, 'uiLayoutReport must be discoverable');
     assert.equal(Object.prototype.hasOwnProperty.call(tool, 'annotations'), false);
 
-    const rootResult = await postTool('createUiNode', { uiType: 'Widget', name: '__ccb3x_layout_report_root__' });
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
+    const rootResult = await postTool('createUiNode', { uiType: 'Widget', parentReference: canvas, name: '__ccb3x_layout_report_root__' });
     assert.equal(rootResult.ok, true, JSON.stringify(rootResult.body));
     const root = rootResult.body.reference;
     let child;
