@@ -298,6 +298,54 @@ export class PortfolioValidationTools {
         }
     }
 
+    @utcpTool(
+        'terrainCreate',
+        'Create a bounded Terrain asset and attach a cc.Terrain component with serialized read-back.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                assetPath: { type: 'string', pattern: '^db://assets/[A-Za-z0-9._/-]+$' },
+                name: { type: 'string', minLength: 1, maxLength: 128 },
+                parentReference: InstanceReferenceSchema,
+            },
+            required: ['assetPath', 'name'],
+        },
+        {
+            type: 'object',
+            properties: {
+                asset: { type: 'object' },
+                node: { type: 'object' },
+                component: { type: 'object' },
+                verified: { type: 'boolean', const: true },
+            },
+            required: ['asset', 'node', 'component', 'verified'],
+        },
+        'POST',
+        ['terrain', 'create', 'scene', 'asset', 'compound'],
+    )
+    async terrainCreate(args: { assetPath: string, name: string, parentReference?: IInstanceReference }): Promise<Record<string, unknown>> {
+        if (!ASSET_PATH_PATTERN.test(args.assetPath)) invalid('assetPath must be a project-local db://assets path');
+        if (!args.name.trim()) invalid('name must not be empty');
+        const asset = await new AssetTools().assetCreate({ assetPath: args.assetPath, preset: 'terrain' });
+        const parent = args.parentReference?.id ?? (await Editor.Message.request('scene', 'query-node-tree') as any)?.uuid;
+        if (typeof parent !== 'string' || !parent) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'Scene root is unavailable for terrain creation.' });
+        const created = await Editor.Message.request('scene', 'create-node', { name: args.name, parent });
+        const nodeId = Array.isArray(created) ? created[0] : created;
+        if (typeof nodeId !== 'string' || !nodeId) throw new ToolError({ code: 'CREATE_FAILED', status: 502, message: 'Creator did not return a terrain node identity.' });
+        try {
+            await Editor.Message.request('scene', 'create-component', { uuid: nodeId, component: 'cc.Terrain' });
+            await Editor.Message.request('scene', 'snapshot');
+            const node = await Editor.Message.request('scene', 'query-node', nodeId) as any;
+            const component = (node?.__comps__ ?? []).find((item: any) => String(item.type ?? item.value?.__type__?.value ?? item.value?.__type__ ?? item.cid) === 'cc.Terrain');
+            if (!component) throw new Error('cc.Terrain read-back was missing after creation');
+            return { asset, node: { id: nodeId, type: 'cc.Node' }, component: { id: component.value?.uuid?.value ?? component.uuid, type: 'cc.Terrain' }, verified: true };
+        } catch (error) {
+            await Editor.Message.request('scene', 'remove-node', { uuid: nodeId }).catch(() => undefined);
+            throw new ToolError({ code: 'CREATE_FAILED', status: 502, message: `Terrain creation failed for ${args.name}.`, details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Use a Creator version exposing cc.Terrain scene creation and serialized read-back.' });
+        }
+    }
+
     @utcpTool('modelImportConfigure', 'Configure one typed model importer property.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, path: { type: 'string' }, value: {} }, required: ['reference', 'path', 'value'] }, { type: 'object' }, 'POST', ['model', 'import', 'configure'])
     async modelImportConfigure(args: any) { const asset = await info(args.reference); if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' }); return new AssetTools().assetImportSettingsSet(args); }
 }

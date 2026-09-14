@@ -131,6 +131,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'spineSceneInspect',
   'editorPanelCapture',
   'projectSettingsValidate',
+  'terrainCreate',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

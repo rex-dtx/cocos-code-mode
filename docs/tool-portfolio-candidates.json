@@ -1201,7 +1201,7 @@
         },
         {
           "name": "terrainCreate",
-          "state": "candidate",
+          "state": "implemented-unverified",
           "contractDelta": "Create and attach a valid terrain asset/component with reopen proof.",
           "route": "asset preset plus compound scene workflow",
           "prerequisites": [
