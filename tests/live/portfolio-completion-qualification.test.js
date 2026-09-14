@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { getJson, postTool, healthCheck } = require('../helpers/utcp-client');
+const { getJson, postTool, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: bounded portfolio completion routes', () => {
   let health;
@@ -26,25 +26,43 @@ describe('live: bounded portfolio completion routes', () => {
   });
 
 
-  it('materializes only the visible window of a bounded virtual list', async (t) => {
+  it('materializes only the visible window under Canvas', async (t) => {
     if (skipIfDown(t)) return;
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     const name = '__candidate_virtual_list__';
+    let listReference;
     try {
-      const list = await postTool('uiVirtualListCreate', { name, itemCount: 5, visibleItems: 2 });
+      const list = await postTool('uiVirtualListCreate', {
+        name,
+        itemCount: 5,
+        visibleItems: 2,
+        parentReference: canvas,
+      });
       assert.equal(list.status, 200, JSON.stringify(list.body));
+      listReference = list.body.reference;
       assert.equal(list.body.itemCount, 5);
       assert.equal(list.body.instantiatedItems, 2);
       assert.equal(list.body.itemReferences.length, 2);
       assert.equal(list.body.virtualized, true);
-      const invalid = await postTool('uiVirtualListCreate', { name: '__invalid_virtual_list__', itemCount: 1, visibleItems: 0 });
+
+      const found = await getJson(`/tools/findNodes?name=${encodeURIComponent(name)}&maxResults=1`);
+      assert.equal(found.ok, true, JSON.stringify(found.body));
+      assert.equal(found.body.nodes[0].reference.id, listReference.id);
+      assert.match(found.body.nodes[0].path, /\/Canvas\/__candidate_virtual_list__$/);
+
+      const invalid = await postTool('uiVirtualListCreate', {
+        name: '__invalid_virtual_list__',
+        itemCount: 1,
+        visibleItems: 0,
+        parentReference: canvas,
+      });
       assert.equal(invalid.status, 400);
     } finally {
-      const cleanup = await postTool('executeJavascript', {
-        context: 'scene', code: `for(const name of ['${name}','__invalid_virtual_list__']){const n=cc.director.getScene().getChildByName(name);if(n){n.removeFromParent();n.destroy();}}return true;`,
-      });
-      assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
-      const snapshot = await postTool('executeJavascript', { context: 'editor', code: `await Editor.Message.request('scene','snapshot');return true;` });
-      assert.equal(snapshot.status, 200, JSON.stringify(snapshot.body));
+      if (listReference) {
+        const deleted = await postTool('nodeOperate', { operation: 'delete', reference: listReference });
+        assert.equal(deleted.ok, true, JSON.stringify(deleted.body));
+      }
     }
   });
 });

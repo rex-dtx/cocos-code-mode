@@ -23,32 +23,37 @@ function discoverBase() {
   } catch {}
   throw new Error('Cannot discover UTCP port: is cc-bridge-3x running? Set UTCP_BASE or pass --utcp-port=49650.');
 }
+async function emitCreatorTrace(baseUrl, level, message, data) {
+  const response = await fetch(baseUrl + '/tools/editorLog', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ level, message, data }),
+  });
+  if (!response.ok) {
+    throw new Error(`Creator trace failed: POST /tools/editorLog -> ${response.status}`);
+  }
+}
+
 
 async function getJson(urlPath, init) {
   const b = discoverBase();
   const url = b + urlPath;
   const method = init?.method || 'GET';
-  const trace = process.env.UTCP_TEST_TRACE === '1';
+  const trace = process.env.UTCP_TEST_TRACE !== '0';
+  const startedAt = Date.now();
   if (trace && urlPath !== '/tools/editorLog') {
-    try {
-      await fetch(b + '/tools/editorLog', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ level: 'debug', message: `TEST ${method} ${urlPath}` }),
-      });
-    } catch {}
+    await emitCreatorTrace(b, 'info', `LIVE TEST CALL ${method} ${urlPath}`);
   }
   const r = await fetch(url, init);
   const text = await r.text();
   let body; try { body = JSON.parse(text); } catch { body = text; }
   if (trace && urlPath !== '/tools/editorLog') {
-    try {
-      await fetch(b + '/tools/editorLog', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ level: r.ok ? 'debug' : 'warn', message: `TEST ${r.status} ${method} ${urlPath}` }),
-      });
-    } catch {}
+    await emitCreatorTrace(
+      b,
+      r.ok ? 'info' : 'warn',
+      `LIVE TEST RESULT ${r.status} ${method} ${urlPath}`,
+      { durationMs: Date.now() - startedAt },
+    );
   }
   return { ok: r.ok, status: r.status, body, text, base: b };
 }
