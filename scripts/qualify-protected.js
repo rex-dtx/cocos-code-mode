@@ -13,7 +13,7 @@ for (const [name, file] of Object.entries(defaultCredentialFiles)) {
   if (!process.env[name] && fs.existsSync(file)) process.env[name] = file;
 }
 const required = [
-  { variables: ['CCB_MEMBER_CREDENTIAL', 'CCB_MEMBER_CREDENTIAL_FILE'], label: 'member EdDSA JWT', any: true },
+  { variables: ['CCB_MEMBER_CREDENTIAL', 'CCB_MEMBER_CREDENTIAL_FILE'], label: 'member EdDSA JWT', any: true, credential: true },
 ];
 
 function fail(message) { throw new Error(message); }
@@ -42,13 +42,14 @@ function configured(check) {
 }
 function checkConfiguration() {
   const missing = required
-    .filter((input) => input.any ? !input.variables.some((name) => process.env[name]) : !input.variables.every((name) => process.env[name]))
+    .filter((input) => !configured(input))
     .map((input) => `${input.variables.join(' or ')} (${input.label})`);
   if (missing.length) fail(`missing required protected qualification inputs:\n- ${missing.join('\n- ')}`);
   if (!process.env.CCB_PROJECT_ID) console.warn('CCB_PROJECT_ID not set; enrollment can proceed, protected execution cannot.');
   if (!process.env.CCB_ADMIN_CREDENTIAL && !process.env.CCB_ADMIN_CREDENTIAL_FILE) console.warn('Admin credential not set; admin operations will be skipped.');
   if (process.env.CCB_RELEASE_ORIGIN && !/^https:\/\//.test(process.env.CCB_RELEASE_ORIGIN)) fail('CCB_RELEASE_ORIGIN must use HTTPS when configured');
 }
+
 function statusReport() {
   const checks = [
     { gate: "release-origin", variables: ["CCB_RELEASE_ORIGIN"] },
