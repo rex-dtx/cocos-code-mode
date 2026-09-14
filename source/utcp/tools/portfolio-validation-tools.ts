@@ -327,7 +327,18 @@ export class PortfolioValidationTools {
     async terrainCreate(args: { assetPath: string, name: string, parentReference?: IInstanceReference }): Promise<Record<string, unknown>> {
         if (!ASSET_PATH_PATTERN.test(args.assetPath)) invalid('assetPath must be a project-local db://assets path');
         if (!args.name.trim()) invalid('name must not be empty');
-        const asset = await new AssetTools().assetCreate({ assetPath: args.assetPath, preset: 'terrain' });
+        let asset: { reference: IInstanceReference };
+        try {
+            asset = await new AssetTools().assetCreate({ assetPath: args.assetPath, preset: 'terrain' });
+        } catch (error) {
+            throw new ToolError({
+                code: 'UNSUPPORTED_EDITOR_API',
+                status: 422,
+                message: 'Creator 3.7.3 does not expose a usable native Terrain asset preset.',
+                details: { cause: error instanceof Error ? error.message : String(error), preset: 'terrain' },
+                recovery: 'Provide a Creator version with a native terrain preset or import a supported terrain asset first.',
+            });
+        }
         const parent = args.parentReference?.id ?? (await Editor.Message.request('scene', 'query-node-tree') as any)?.uuid;
         if (typeof parent !== 'string' || !parent) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'Scene root is unavailable for terrain creation.' });
         const created = await Editor.Message.request('scene', 'create-node', { name: args.name, parent });
