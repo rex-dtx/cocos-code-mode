@@ -40,4 +40,13 @@ describe('runtime contract handlers', () => {
     assert.match(sessions, /UNSUPPORTED_RUNTIME_TRANSPORT/);
     assert.match(sessions, /await this\.readState\(\)/);
   });
+
+  it('exposes finite typed runtime scenario execution without dynamic dispatch', () => {
+    const sessions = readSource('utcp/tools/runtime-session-tools.ts');
+
+    assert.match(sessions, /'runtimeScenarioRun'/);
+    assert.match(sessions, /maxItems: 16/);
+    assert.match(sessions, /enum: \['wait', 'assert'\]/);
+    assert.doesNotMatch(sessions, /executeJavascript/);
+  });
 });
