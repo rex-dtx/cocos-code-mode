@@ -1602,7 +1602,7 @@
     },
     {
       "name": "runtimeWaitForState",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Bounded condition wait without raw event subscription.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
