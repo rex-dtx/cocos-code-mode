@@ -57,6 +57,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'animationBatchControl',
   'runtimeStateObserve',
   'runtimeWaitForState',
+  'runtimeScenarioAssert',
   'assetManifestExport',
   'assetUsageAnalyze',
   'physics2dInspect',

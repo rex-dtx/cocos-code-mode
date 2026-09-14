@@ -277,4 +277,42 @@ export class RuntimeSessionTools {
         }
         return { success: true, sessionId: session.sessionId, state, elapsedMs: Date.now() - started };
     }
+    @utcpTool(
+        'runtimeScenarioAssert',
+        'Assert bounded runtime state for an attached game-view session.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                sessionId: { type: 'string', minLength: 1, maxLength: 64 },
+                paused: { type: 'boolean' },
+                minFrameCount: { type: 'integer', minimum: 0, maximum: 1000000000 },
+            },
+            required: ['sessionId'],
+        },
+        {
+            type: 'object',
+            properties: { success: { type: 'boolean' }, sessionId: { type: 'string' }, passed: { type: 'boolean' }, state: { type: 'object' }, issues: { type: 'array' } },
+            required: ['success', 'sessionId', 'passed', 'state', 'issues'],
+        },
+        'POST',
+        ['runtime', 'scenario', 'assert', 'state'],
+    )
+    async runtimeScenarioAssert(args: { sessionId: string, paused?: boolean, minFrameCount?: number }): Promise<{ success: true, sessionId: string, passed: boolean, state: RuntimeState, issues: string[] }> {
+        let session: RuntimeSession;
+        try {
+            session = store.inspect(args.sessionId);
+        } catch (error) {
+            if (error instanceof RuntimeSessionError) throw new ToolError({ code: error.code, status: error.code === 'SESSION_NOT_FOUND' ? 404 : 400, message: error.message });
+            throw error;
+        }
+        if (session.status === 'stopped') throw new ToolError({ code: 'RUNTIME_SESSION_STOPPED', status: 409, message: `Runtime session is stopped: ${session.sessionId}`, recovery: 'Attach a new game-view session before asserting runtime state.' });
+        if (session.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: `Runtime target ${session.targetKind} has no verified transport.` });
+        if (args.paused === undefined && args.minFrameCount === undefined) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeScenarioAssert requires paused or minFrameCount.' });
+        const state = await this.readState();
+        const issues: string[] = [];
+        if (args.paused !== undefined && state.paused !== args.paused) issues.push(`paused expected ${args.paused} but was ${state.paused}`);
+        if (args.minFrameCount !== undefined && state.frameCount < args.minFrameCount) issues.push(`frameCount expected at least ${args.minFrameCount} but was ${state.frameCount}`);
+        return { success: true, sessionId: session.sessionId, passed: issues.length === 0, state, issues };
+    }
 }
