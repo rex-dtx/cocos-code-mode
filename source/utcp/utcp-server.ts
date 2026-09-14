@@ -547,6 +547,10 @@ export class UtcpServerManager {
                     if (testId && err instanceof ToolError && err.status < 500) {
                         console.info(`[cx3][api][test:${testId}] Expected ${err.code} from ${toolDef.name}`);
                     }
+                    const errorMessage = response.body.error;
+                    const diagnosticMessage = shouldLogToolError(err) && err instanceof Error
+                        ? err.message
+                        : errorMessage;
                     interactionLog({
                         phase: 'error',
                         requestId,
@@ -554,7 +558,7 @@ export class UtcpServerManager {
                         status: response.status,
                         durationMs: ms2,
                         code: response.body.code ?? 'UNKNOWN',
-                        message: response.body.error,
+                        message: diagnosticMessage,
                         details: response.body.details,
                         recovery: response.body.recovery,
                         testId,
@@ -563,10 +567,11 @@ export class UtcpServerManager {
                         type: 'error',
                         requestId,
                         tool: toolDef.name,
-                        error: response.body.error,
+                        error: errorMessage,
                         code: response.body.code,
                         details: response.body.details,
                         recovery: response.body.recovery,
+                        cause: diagnosticMessage !== errorMessage ? diagnosticMessage : undefined,
                         stack: err instanceof Error ? err.stack : undefined,
                         testId,
                         durationMs: ms2,
@@ -574,6 +579,7 @@ export class UtcpServerManager {
                     res.status(response.status).json(response.body);
                 }
             };
+
 
             switch (toolDef.tool_call_template.http_method) {
                 case 'POST':
