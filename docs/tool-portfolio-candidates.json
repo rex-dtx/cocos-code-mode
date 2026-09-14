@@ -1359,7 +1359,7 @@
         },
         {
           "name": "runtimeStateObserve",
-          "state": "candidate",
+          "state": "implemented-unverified",
           "contractDelta": "Bounded allow-listed observations tied to session identity and target kind.",
           "route": "runtime session foundation",
           "prerequisites": [
