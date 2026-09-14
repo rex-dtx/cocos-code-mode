@@ -1,6 +1,7 @@
 import { HttpCallTemplate } from '@utcp/http';
 import { JsonSchema, Tool } from '@utcp/sdk';
 import { inferAnnotations, registerToolProfile } from './tool-profiles';
+import { expansionIntegrationGuidance } from './integration-guidance';
 
 export interface ToolMetadata {
     method: Function;
@@ -19,8 +20,11 @@ export class ToolRegistry {
         return Array.from(this.tools.values());
     }
 }
-
 export function utcpTool(name: string, description: string, inputs: JsonSchema, outputs: JsonSchema, httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', tags: string[] = [], options: { profile?: 'core' | 'full' } = {}) {
+    const integrationDescription = expansionIntegrationGuidance[name];
+    const agentDescription = integrationDescription
+        ? `${description} Integration guidance — ${integrationDescription}`
+        : description;
     return function (target: any, propertyKey: string, descriptor?: PropertyDescriptor) {
         if (!descriptor) return;
 
@@ -29,7 +33,7 @@ export function utcpTool(name: string, description: string, inputs: JsonSchema, 
             target,
             tool: {
                 name,
-                description,
+                description: agentDescription,
                 inputs,
                 outputs,
                 tags,
