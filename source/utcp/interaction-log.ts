@@ -1,0 +1,119 @@
+type Entry = Record<string, unknown>;
+const REDACTED = '[REDACTED]';
+const SENSITIVE = /^(?:.*(?:password|passwd|passphrase|secret|token|credential|authorization|cookie|privatekey|apikey)|pwd|auth|sessionid)$/i;
+const MAX_DETAIL_NODES = 20000;
+const MAX_DETAIL_CHARS = 2 * 1024 * 1024;
+
+/** A detached, redacted snapshot: never mutate tool arguments or invoke getters/toJSON. */
+export function snapshotInteraction(entry: Entry): Entry {
+    let nodes = 0;
+    let chars = 0;
+    let limited = false;
+    const ancestors = new Set<object>();
+    const omit = (reason: string): string => { limited = true; return `[truncated: ${reason}]`; };
+    const visit = (value: unknown, depth: number): unknown => {
+        if (++nodes > MAX_DETAIL_NODES || chars >= MAX_DETAIL_CHARS) return omit('detail budget');
+        if (typeof value === 'string') {
+            const available = Math.min(262144, MAX_DETAIL_CHARS - chars);
+            chars += Math.min(value.length, available);
+            return value.length > available ? value.slice(0, available) + omit('long string') : value;
+        }
+        if (value === null || typeof value === 'boolean' || typeof value === 'number') return value;
+        if (typeof value !== 'object') return String(value);
+        if (Buffer.isBuffer(value) || ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+            return omit(`binary payload, ${value.byteLength} bytes`);
+        }
+        if (ancestors.has(value)) return omit('circular reference');
+        if (depth >= 32) return omit('detail depth');
+        ancestors.add(value);
+        const result: Entry | unknown[] = Array.isArray(value) ? [] : Object.create(null);
+        try {
+            for (const key in value) {
+                if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
+                if (nodes >= MAX_DETAIL_NODES || chars >= MAX_DETAIL_CHARS) {
+                    if (Array.isArray(result)) result.push(omit('remaining items'));
+                    else result['[truncated]'] = omit('remaining fields');
+                    break;
+                }
+                chars += key.length;
+                // Huge keys cannot be copied without defeating the total detail bound.
+                if (key.length > 4096) { (result as Entry)['[truncated key]'] = omit('long field name'); break; }
+                const descriptor = Object.getOwnPropertyDescriptor(value, key);
+                const item = SENSITIVE.test(key.replace(/[^a-z0-9]/gi, ''))
+                    ? REDACTED
+                    : descriptor && 'value' in descriptor ? visit(descriptor.value, depth + 1) : omit('accessor');
+                Object.defineProperty(result, key, { value: item, enumerable: true, configurable: true, writable: true });
+            }
+        } catch {
+            (result as Entry)['[unavailable]'] = omit('unreadable value');
+        }
+        ancestors.delete(value);
+        return result;
+    };
+    const snapshot = visit(entry, 0) as Entry;
+    if (limited) snapshot.detailTruncated = true;
+    return snapshot;
+}
+
+/** Plain text display has independent, stricter limits than its JSONL snapshot. */
+export function renderInteraction(entry: Entry): { text: string; truncated: boolean } {
+    const lines: string[] = [];
+    let chars = 0;
+    let nodes = 0;
+    let truncated = entry.detailTruncated === true;
+    const add = (line: string): boolean => {
+        if (lines.length >= 112 || chars + line.length + 1 > 14000) { truncated = true; return false; }
+        lines.push(line);
+        chars += line.length + 1;
+        return true;
+    };
+    const text = (value: unknown, max = 256): string => {
+        const string = String(value ?? '').replace(/[\r\n\t\u0000-\u001f\u007f]/g, ' ');
+        if (string.length > max) { truncated = true; return string.slice(0, max) + ' [truncated]'; }
+        return string;
+    };
+    const field = (label: string, value: unknown, depth = 0): void => {
+        if (value === undefined) return;
+        if (++nodes > 512 || lines.length >= 112 || chars >= 14000) { truncated = true; return; }
+        const indent = '  '.repeat(depth);
+        const key = text(label);
+        if (value !== null && typeof value === 'object') {
+            if (depth >= 8) { truncated = true; add(`${indent}${key}: [truncated: display depth]`); return; }
+            const keys = Object.keys(value);
+            if (!keys.length) { add(`${indent}${key}: ${Array.isArray(value) ? '(empty array)' : '(empty object)'}`); return; }
+            if (!add(`${indent}${key}:`)) return;
+            for (const child of keys) {
+                if (nodes >= 512 || lines.length >= 112 || chars >= 14000) { truncated = true; break; }
+                field(Array.isArray(value) ? `[${child}]` : child, (value as Entry)[child], depth + 1);
+            }
+        } else if (typeof value === 'string') {
+            let string = value;
+            if (string.length > 2000) { string = string.slice(0, 2000) + ' [truncated: long string]'; truncated = true; }
+            if (/\r|\n/.test(string)) {
+                if (!add(`${indent}${key}: |`)) return;
+                for (const line of string.split(/\r\n|\r|\n/)) {
+                    if (!add(`${indent}  ${line.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, ' ')}`)) break;
+                }
+            } else add(`${indent}${key}: ${string === '' ? '""' : string.replace(/[\u0000-\u001f\u007f]/g, ' ')}`);
+        } else add(`${indent}${key}: ${String(value)}`);
+    };
+    const token = typeof entry.requestId === 'string' ? `[${text(entry.requestId.slice(0, 8))}]` : '';
+    const phase = entry.phase === 'start' ? 'REQUEST' : entry.phase === 'complete' ? 'SUCCESS' : entry.phase === 'error' ? 'FAILED' : 'WARNING';
+    const test = entry.testId ? ` [test:${text(entry.testId)}]${entry.expectedTest ? ' expected' : ''}` : '';
+    add(`[cx3][api]${token} ${phase} ${text(entry.tool)}${entry.status === undefined ? '' : ` ${text(entry.status)}`}${entry.durationMs === undefined ? '' : ` · ${text(entry.durationMs)}ms`}${test}`);
+    field('Timestamp', entry.ts);
+    if (entry.phase === 'start') {
+        field('Method', entry.method);
+        field('Path', entry.path);
+        field('Params', entry.args);
+    } else if (entry.phase === 'complete') field('Result', entry.result);
+    else {
+        field('Code', entry.code);
+        field('Message', entry.message);
+        field('Params', entry.args);
+        field('Details', entry.details);
+        field('Recovery', entry.recovery);
+        field('Stack', entry.stack);
+    }
+    return { text: lines.join('\n'), truncated };
+}

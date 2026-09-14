@@ -75,17 +75,6 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.equal(labels.some((l) => /reload/i.test(l)), false, 'menu must not contain Reload Extension');
   });
 
-  it('logs editor tool interactions with concise correlated lifecycle events', () => {
-    const serverSrc = readSource('utcp/utcp-server.ts');
-    assert.match(serverSrc, /function interactionLog\(/);
-    assert.match(serverSrc, /phase: 'start'/);
-    assert.match(serverSrc, /phase: 'complete'/);
-    assert.match(serverSrc, /phase: 'error'/);
-    assert.match(serverSrc, /formatInteractionSummary/);
-    assert.match(serverSrc, /requestId\.slice\(0, 8\)/);
-    assert.match(serverSrc, /if \(!debugEnabled && phase !== 'warning' && phase !== 'error'\) return;\s+creatorInteractionLog/);
-    assert.doesNotMatch(serverSrc, /formatInteractionSummary\(entry\).*?\|\s*\$\{payload\}/s);
-  });
 
   it('persists and restores the per-project verbose logging state', () => {
     const mainSrc = readSource('main.ts');

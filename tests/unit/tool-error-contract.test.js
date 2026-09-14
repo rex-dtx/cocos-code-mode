@@ -56,19 +56,24 @@ describe('typed UTCP tool errors', () => {
       'x-ccb-test-id': 'contains spaces',
     }), undefined);
   });
-  it('emits a compact correlated error summary with actionable context', () => {
-    assert.equal(
-      formatInteractionSummary({
-        phase: 'error',
-        requestId: '1234567890abcdef',
-        tool: 'assetCreate',
-        status: 500,
-        durationMs: 3,
-        code: 'INTERNAL_ERROR',
-        message: 'asset already exists\nUse the existing asset.',
-      }),
-      '[cx3][api][12345678] FAILED assetCreate 500 · 3ms INTERNAL_ERROR\nMessage:\n  asset already exists Use the existing asset.',
-    );
+  it('preserves diagnostic lines and redacts nested secrets without changing params', () => {
+    const args = { count: 0, enabled: false, password: 'secret-value', nested: { api_key: 'private-key', text: 'first\nsecond' } };
+    const output = formatInteractionSummary({ phase: 'error', tool: 'probe', args, message: 'failure\ncause', code: 'INTERNAL_ERROR' });
+    assert.ok(output.includes('count: 0'));
+    assert.ok(output.includes('enabled: false'));
+    assert.ok(output.includes('first\n'));
+    assert.ok(output.includes('second'));
+    assert.ok(output.includes('cause'));
+    assert.ok(output.includes('[REDACTED]'));
+    assert.ok(!output.includes('secret-value'));
+    assert.ok(!output.includes('private-key'));
+    assert.equal(args.password, 'secret-value');
+  });
+
+  it('bounds single-line payloads and reports truncation', () => {
+    const output = formatInteractionSummary({ phase: 'complete', result: { data: 'a'.repeat(1000000) } });
+    assert.ok(output.length < 16000);
+    assert.ok(output.includes('truncated'));
   });
 
   it('emits lifecycle summaries once through the Creator console without raw JSON', () => {
