@@ -234,4 +234,41 @@ export class RuntimeSessionTools {
         }
     }
 
+    @utcpTool(
+        'runtimeWaitForState',
+        'Wait boundedly for an attached game-view runtime state to match declared conditions.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                sessionId: { type: 'string', minLength: 1, maxLength: 64 },
+                paused: { type: 'boolean' },
+                minFrameCount: { type: 'integer', minimum: 0, maximum: 1000000000 },
+                timeoutMs: { type: 'integer', minimum: 100, maximum: 10000 },
+            },
+            required: ['sessionId'],
+        },
+        {
+            type: 'object',
+            properties: { success: { type: 'boolean' }, sessionId: { type: 'string' }, state: { type: 'object' }, elapsedMs: { type: 'integer', minimum: 0 } },
+            required: ['success', 'sessionId', 'state', 'elapsedMs'],
+        },
+        'POST',
+        ['runtime', 'state', 'wait', 'condition'],
+    )
+    async runtimeWaitForState(args: { sessionId: string, paused?: boolean, minFrameCount?: number, timeoutMs?: number }): Promise<{ success: true, sessionId: string, state: RuntimeState, elapsedMs: number }> {
+        const session = store.inspect(args.sessionId);
+        if (session.status === 'stopped') throw new ToolError({ code: 'RUNTIME_SESSION_STOPPED', status: 409, message: `Runtime session is stopped: ${session.sessionId}`, recovery: 'Attach a new game-view session before waiting for state.' });
+        if (session.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: `Runtime target ${session.targetKind} has no verified transport.` });
+        if (args.paused === undefined && args.minFrameCount === undefined) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeWaitForState requires paused or minFrameCount.' });
+        const timeoutMs = args.timeoutMs ?? 10000;
+        const started = Date.now();
+        let state = await this.readState();
+        while ((args.paused !== undefined && state.paused !== args.paused) || (args.minFrameCount !== undefined && state.frameCount < args.minFrameCount)) {
+            if (Date.now() - started >= timeoutMs) throw new ToolError({ code: 'RUNTIME_STATE_TIMEOUT', status: 409, message: 'Runtime state did not match the requested condition before timeout.', recovery: 'Start a verified game-view preview or increase timeoutMs within the bound.', details: { state, elapsedMs: Date.now() - started } });
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            state = await this.readState();
+        }
+        return { success: true, sessionId: session.sessionId, state, elapsedMs: Date.now() - started };
+    }
 }

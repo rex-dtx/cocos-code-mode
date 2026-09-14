@@ -822,7 +822,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "prefabApplyOverrides": "candidate"
+        "prefabApplyOverrides": "implemented-unverified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -840,7 +840,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "prefabRevertOverrides": "candidate"
+        "prefabRevertOverrides": "implemented-unverified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -912,7 +912,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "prefabRevertOverrides": "candidate"
+        "prefabRevertOverrides": "implemented-unverified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -2006,7 +2006,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "prefabRevertOverrides": "candidate"
+        "prefabRevertOverrides": "implemented-unverified"
       },
       "liveWitnessFiles": [],
       "rationale": "A bounded CCB contract represents the same agent-facing workflow."
@@ -4253,7 +4253,7 @@
         "source\\utcp\\tools\\advanced-capability-tools.ts"
       ],
       "candidateStates": {
-        "prefabApplyOverrides": "candidate"
+        "prefabApplyOverrides": "implemented-unverified"
       },
       "liveWitnessFiles": [],
       "rationale": "The v2 workflow has a current CCB3 contract."
