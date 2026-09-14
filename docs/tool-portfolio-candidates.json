@@ -1566,7 +1566,7 @@
     },
     {
       "name": "editorPanelCapture",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Capture one named editor panel with exact bounds and image validation.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1857,7 +1857,7 @@
     },
     {
       "name": "projectSettingsValidate",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Validate cross-setting compatibility for the declared Creator/target profile.",
       "domain": "build-platform",
       "proposedExecutionPhase": "P6",

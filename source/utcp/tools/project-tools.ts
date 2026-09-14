@@ -1,6 +1,6 @@
 import { ToolError } from '../tool-error';
 import { isMessageNotExposed } from '../utils/editor-message-error';
-
+import { utcpTool } from '../decorators';
 /**
  * Canonical IPC signature for the 3.8 project config write.
  * Verified shape: Editor.Message.request('project','set-config','project', dotPath, value)
@@ -81,5 +81,49 @@ export class ProjectTools {
             throw e;
         }
         return { success: true };
+    }
+    @utcpTool(
+        'projectSettingsValidate',
+        'Validate project settings against a declared Creator target profile without mutating settings.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                target: { type: 'string', enum: ['web-desktop', 'web-mobile', 'native-desktop', 'native-mobile'] },
+                requiredPaths: { type: 'array', maxItems: 64, items: { type: 'string', minLength: 1, maxLength: 256 } },
+            },
+            required: ['target'],
+        },
+        {
+            type: 'object',
+            properties: {
+                valid: { type: 'boolean' },
+                target: { type: 'string' },
+                issues: { type: 'array' },
+                checkedPaths: { type: 'integer' },
+            },
+            required: ['valid', 'target', 'issues', 'checkedPaths'],
+        },
+        'GET',
+        ['project', 'settings', 'validate', 'build', 'target'],
+    )
+    async projectSettingsValidate(args: { target: string, requiredPaths?: string[] }): Promise<{
+        valid: boolean, target: string, issues: Array<{ path: string, code: string, message: string }>, checkedPaths: number
+    }> {
+        const settings = await this.projectGetConfig({});
+        const issues: Array<{ path: string, code: string, message: string }> = [];
+        const requiredPaths = args.requiredPaths ?? [];
+        const getPath = (root: unknown, path: string): unknown => path.split('.').reduce((value, key) => (
+            value !== null && typeof value === 'object' ? (value as Record<string, unknown>)[key] : undefined
+        ), root);
+        for (const path of requiredPaths) {
+            if (getPath(settings.config, path) === undefined) {
+                issues.push({ path, code: 'MISSING_SETTING', message: `Required setting '${path}' is not present.` });
+            }
+        }
+        if (args.target.startsWith('web-') && getPath(settings.config, 'builder.server') === true) {
+            issues.push({ path: 'builder.server', code: 'INCOMPATIBLE_SETTING', message: 'Web targets cannot use the native server builder flag.' });
+        }
+        return { valid: issues.length === 0, target: args.target, issues, checkedPaths: requiredPaths.length };
     }
 }
