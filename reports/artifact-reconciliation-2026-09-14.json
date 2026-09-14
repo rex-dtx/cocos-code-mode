@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-09-14T05:24:34.404Z",
+  "recordedAt": "2026-09-14T07:12:00.000Z",
   "target": {
     "creator": "3.7.3",
     "platform": "windows-x64",
@@ -7,29 +7,29 @@
   },
   "build": {
     "version": "2.0.0",
-    "commit": "c8dd61b",
+    "commit": "ac76884",
     "branch": "feat/ccb3x-api-capability-expansion",
-    "dirty": false,
-    "builtAt": "2026-09-14T05:24:34.404Z"
+    "dirty": true,
+    "builtAt": "2026-09-14T07:08:46.365Z"
   },
   "manual": {
-    "toolCount": 200,
-    "sha256": "26e9599c171c5e4d6002af5cc8de73fb5e22154274d4e4312450e2a5338ade10"
+    "toolCount": 202,
+    "sha256": "53ac8ec04705ef846dabff0ae141e4c51449510372f39d4280e5e249396a06a4"
   },
   "package": {
-    "file": "cc-bridge-3x-v200-260914-122434.zip",
-    "sha256": "fd246dd57719552ada8d314f8a2a5c832239ec6f179ddd888dbeb791fe7bef0c"
+    "file": "cc-bridge-3x-v200-260914-141447.zip",
+    "sha256": "146782e619852d8b4596c8e33161cad9a9ff45d4c99d7ef204c92650a053c054"
   },
   "qualification": {
-    "registered": 200,
-    "approvedOrImplemented": 58,
+    "registered": 202,
+    "approvedOrImplemented": 60,
     "qualified": null,
     "note": "This record freezes artifact identity only. Qualified count remains open until every count-eligible row has exact artifact-bound positive and relevant-negative evidence."
   },
   "liveAudit": {
-    "pass": 217,
+    "pass": 235,
     "fail": 0,
-    "skipped": 23,
+    "skipped": 5,
     "command": "npm run audit:live",
     "baseUrl": "http://localhost:49650"
   }
