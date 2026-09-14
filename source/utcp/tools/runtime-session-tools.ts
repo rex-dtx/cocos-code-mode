@@ -313,6 +313,49 @@ export class RuntimeSessionTools {
         return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url, ready: true, stale: false };
     }
     @utcpTool(
+        'runtimeScenarioRun',
+        'Run a finite allow-listed runtime scenario using typed state steps only.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                sessionId: { type: 'string', minLength: 1, maxLength: 64 },
+                steps: {
+                    type: 'array', minItems: 1, maxItems: 16,
+                    items: {
+                        type: 'object', additionalProperties: false,
+                        properties: {
+                            operation: { type: 'string', enum: ['wait', 'assert'] },
+                            paused: { type: 'boolean' },
+                            minFrameCount: { type: 'integer', minimum: 0, maximum: 1000000000 },
+                            timeoutMs: { type: 'integer', minimum: 100, maximum: 10000 },
+                        },
+                        required: ['operation'],
+                    },
+                },
+            },
+            required: ['sessionId', 'steps'],
+        },
+        {
+            type: 'object',
+            properties: { success: { type: 'boolean' }, sessionId: { type: 'string' }, outcomes: { type: 'array' } },
+            required: ['success', 'sessionId', 'outcomes'],
+        },
+        'POST',
+        ['runtime', 'scenario', 'run', 'steps'],
+    )
+    async runtimeScenarioRun(args: { sessionId: string, steps: Array<{ operation: 'wait' | 'assert', paused?: boolean, minFrameCount?: number, timeoutMs?: number }> }): Promise<{ success: true, sessionId: string, outcomes: Array<Record<string, unknown>> }> {
+        if (!Array.isArray(args.steps) || args.steps.length === 0 || args.steps.length > 16) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeScenarioRun requires 1-16 typed steps.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (let index = 0; index < args.steps.length; index++) {
+            const step = args.steps[index];
+            if (step.operation === 'wait') outcomes.push({ index, operation: step.operation, result: await this.runtimeWaitForState({ sessionId: args.sessionId, paused: step.paused, minFrameCount: step.minFrameCount, timeoutMs: step.timeoutMs }) });
+            else if (step.operation === 'assert') outcomes.push({ index, operation: step.operation, result: await this.runtimeScenarioAssert({ sessionId: args.sessionId, paused: step.paused, minFrameCount: step.minFrameCount }) });
+            else throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Unsupported runtime scenario operation at step ${index}.` });
+        }
+        return { success: true, sessionId: args.sessionId, outcomes };
+    }
+    @utcpTool(
         'runtimeScenarioAssert',
         'Assert bounded runtime state for an attached game-view session.',
         {

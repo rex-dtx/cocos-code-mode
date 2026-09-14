@@ -1376,7 +1376,7 @@
         },
         {
           "name": "runtimeScenarioRun",
-          "state": "candidate",
+          "state": "implemented-unverified",
           "contractDelta": "Execute finite named steps only; no code string or general method dispatch.",
           "route": "scenario compiler to typed primitives",
           "prerequisites": [
