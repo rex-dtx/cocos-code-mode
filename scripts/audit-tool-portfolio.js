@@ -132,6 +132,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'editorPanelCapture',
   'projectSettingsValidate',
   'terrainCreate',
+  'buildArtifactServe',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

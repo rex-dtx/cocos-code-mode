@@ -1837,7 +1837,7 @@
     },
     {
       "name": "buildArtifactServe",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Serve one completed web artifact and return verified URL/lifecycle.",
       "domain": "build-platform",
       "proposedExecutionPhase": "P6",
