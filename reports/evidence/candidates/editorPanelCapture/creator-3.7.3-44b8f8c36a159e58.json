@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "candidate": "editorPanelCapture",
+  "creator": "3.7.3",
+  "platform": "windows-x64",
+  "build": {
+    "commit": "94a6454",
+    "dirty": true,
+    "builtAt": "2026-09-14T07:28:30.004Z"
+  },
+  "manual": {
+    "toolCount": 203,
+    "sha256": "44ce74b1391fe2e03372652f36c8c1e6fd10988e8ad95c3a14ea4ae4d5d3568e"
+  },
+  "artifactSha256": null,
+  "positive": {
+    "testId": "candidate.editorPanelCapture.positive.v1",
+    "panelTitle": "scene-002.scene",
+    "bounds": { "x": 0, "y": 0, "width": 64, "height": 64 },
+    "status": 200,
+    "mimeType": "image/png",
+    "base64Bytes": 3124,
+    "validatedPngSignature": true
+  },
+  "negative": {
+    "testId": "candidate.editorPanelCapture.negative.v1",
+    "case": "missing panel title",
+    "expected": "request fails rather than returning a fabricated image"
+  },
+  "limitations": [
+    "Evidence binds the loaded development build, not the clean package install.",
+    "The panel title is an editor window title; Creator 3.7.3 does not expose a stable panel DOM bounds API to the extension.",
+    "Evidence is not count-eligible until the clean package is installed and this witness is rerun against that artifact."
+  ]
+}
