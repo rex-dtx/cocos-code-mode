@@ -87,6 +87,24 @@ function testFiles() {
     .sort((a, b) => (a === 'ui-fallback.test.js' ? -1 : b === 'ui-fallback.test.js' ? 1 : a.localeCompare(b)))
     .map((name) => path.join(liveDir, name));
 }
+function transportAudit(files) {
+  const violations = [];
+  for (const file of files) {
+    const source = fs.readFileSync(file, 'utf8');
+    const relative = path.relative(root, file).replaceAll(path.sep, '/');
+    if (!source.includes("require('../helpers/utcp-client')")) {
+      violations.push(`${relative}: must use the shared CC Bridge client`);
+    }
+    if (!/\b(?:getJson|postTool|healthCheck|liveWitness)\s*\(/.test(source)) {
+      violations.push(`${relative}: has no observable CC Bridge call`);
+    }
+    if (/\bfetch\s*\(|\bhttps?\.request\s*\(|\baxios\b/.test(source)) {
+      violations.push(`${relative}: bypasses the shared CC Bridge client`);
+    }
+  }
+  return { ok: violations.length === 0, checkedFiles: files.length, violations };
+}
+
 
 function referencedTools(file) {
   const source = fs.readFileSync(file, 'utf8');
@@ -133,10 +151,12 @@ function statusForRun(run) {
 
 async function main() {
   const base = await selectBase();
+  process.env.UTCP_TEST_TRACE = '1';
   const files = testFiles();
   log(`starting ${files.length} live test files${base ? ` against ${base}` : ''}`);
   const portfolio = portfolioSnapshot();
   const staticAuditResult = staticAudit();
+  const transportAuditResult = transportAudit(files);
   const runs = [];
   for (const file of files) {
     const relative = path.relative(root, file).replaceAll(path.sep, '/');
@@ -177,6 +197,7 @@ async function main() {
     target: { baseUrl: process.env.UTCP_BASE || null, port: process.env.UTCP_PORT || null },
     portfolio: { primary: portfolio.primary, reserve: portfolio.reserve, total: portfolio.total, states: portfolio.states },
     staticPortfolioAudit: staticAuditResult,
+    liveTransportAudit: transportAuditResult,
     liveSuite: { command: `node --test --test-reporter=tap ${files.map((file) => path.relative(root, file).replaceAll(path.sep, '/')).join(' ')}`, exitCode: runs.some((run) => run.code !== 0) ? 1 : 0, summary, files: fileResults },
     tools,
     limitations: [
@@ -190,8 +211,10 @@ async function main() {
   console.log(`live qualification audit: ${outputPath}`);
   if (staticAuditResult.ok === false) console.error(`portfolio audit: FAILED — ${staticAuditResult.error}`);
   else console.log(`portfolio: ${staticAuditResult.registeredToolCount} registered, ${staticAuditResult.approvedCount} approved/implemented, ready=${staticAuditResult.readyForBulkImplementation}`);
+  if (!transportAuditResult.ok) console.error(`live transport audit: FAILED — ${transportAuditResult.violations.join('; ')}`);
+  else console.log(`live transport audit: ${transportAuditResult.checkedFiles} files use traced CC Bridge calls`);
   console.log(`live suite: ${summary.pass} pass, ${summary.fail} fail, ${summary.skipped} skipped`);
-  if (staticAuditResult.ok === false || runs.some((run) => run.code !== 0)) process.exitCode = 1;
+  if (staticAuditResult.ok === false || !transportAuditResult.ok || runs.some((run) => run.code !== 0)) process.exitCode = 1;
 }
 
 if (require.main === module) {

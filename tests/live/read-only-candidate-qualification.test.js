@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { getJson, getExpectedErrorJson, postTool, healthCheck } = require('../helpers/utcp-client');
+const { getJson, getExpectedErrorJson, postTool, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: read-only candidate qualification witnesses', () => {
   let health;
@@ -35,9 +35,11 @@ describe('live: read-only candidate qualification witnesses', () => {
 
   it('audits active UI labels and computes deterministic focus links', async (t) => {
     if (skipIfDown(t)) return;
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     const fixture = await postTool('executeJavascript', {
       context: 'scene',
-      code: `const scene=cc.director.getScene();const UITransform=cc.js.getClassByName('cc.UITransform');const old=scene.getChildByName('__candidate_focus_root__');if(old){old.removeFromParent();old.destroy();}const root=new cc.Node('__candidate_focus_root__');scene.addChild(root);root.addComponent(UITransform).setContentSize(400,200);const ids=[];for(const [name,x] of [['First',-100],['Second',100]]){const n=new cc.Node(name);root.addChild(n);n.setPosition(x,0,0);n.addComponent(UITransform).setContentSize(80,40);ids.push(n.uuid);}return {root:root.uuid,ids};`,
+      code: `const scene=cc.director.getScene();const canvas=scene.getChildByName('Canvas');const UITransform=cc.js.getClassByName('cc.UITransform');const old=canvas.getChildByName('__candidate_focus_root__');if(old){old.removeFromParent();old.destroy();}const root=new cc.Node('__candidate_focus_root__');canvas.addChild(root);root.addComponent(UITransform).setContentSize(400,200);const ids=[];for(const [name,x] of [['First',-100],['Second',100]]){const n=new cc.Node(name);root.addChild(n);n.setPosition(x,0,0);n.addComponent(UITransform).setContentSize(80,40);ids.push(n.uuid);}return {root:root.uuid,ids};`,
     });
     assert.equal(fixture.status, 200, JSON.stringify(fixture.body));
     const { root, ids } = fixture.body.result;
@@ -56,7 +58,7 @@ describe('live: read-only candidate qualification witnesses', () => {
     } finally {
       const cleanup = await postTool('executeJavascript', {
         context: 'scene',
-        code: `const n=cc.director.getScene().getChildByName('__candidate_focus_root__');if(n){n.removeFromParent();n.destroy();}return true;`,
+        code: `const canvas=cc.director.getScene().getChildByName('Canvas');const n=canvas&&canvas.getChildByName('__candidate_focus_root__');if(n){n.removeFromParent();n.destroy();}return true;`,
       });
       assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
     }

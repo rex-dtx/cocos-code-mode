@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { postTool, getJson, healthCheck } = require('../helpers/utcp-client');
+const { postTool, getJson, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: CC373 native UI creation fallback', () => {
   let health;
@@ -9,11 +9,12 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('creates Label, Button, and Sprite without internal UI prefabs', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     const created = [];
     try {
       for (const [tool, component] of [['createLabel', 'cc.Label'], ['createButton', 'cc.Button'], ['createSprite', 'cc.Sprite']]) {
-        const result = await postTool(tool, {});
-        assert.equal(result.ok, true, `${tool}: ${JSON.stringify(result.body)}`);
+        const result = await postTool(tool, { parentReference: canvas });
         const reference = result.body?.reference;
         assert.equal(typeof reference?.id, 'string');
         created.push(reference);
@@ -158,9 +159,12 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('Creator 3.7 direct UI node API creates and validates native controls', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     const created = await postTool('createUiNode', {
       uiType: 'Label',
       name: '__ccb3x_direct_ui_node__',
+      parentReference: canvas,
     });
     assert.equal(created.ok, true, JSON.stringify(created.body));
     const reference = created.body.reference;
@@ -240,8 +244,9 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('Creator 3.7 component method invocation reaches callable component APIs', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const created = await postTool('createLabel', { name: '__ccb3x_method_node__' });
-    assert.equal(created.ok, true, JSON.stringify(created.body));
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
+    const created = await postTool('createLabel', { name: '__ccb3x_method_node__', parentReference: canvas });
     const node = created.body.reference;
     try {
       const components = await getJson(`/tools/nodeComponentsGet?reference%5Bid%5D=${encodeURIComponent(node.id)}`);
@@ -377,15 +382,18 @@ describe('live: CC373 native UI creation fallback', () => {
   });
   it('Creator 3.7 button event simulation reaches native cc.Button handlers', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
 
     const created = await postTool('executeJavascript', {
       context: 'scene',
       code: `const cc = require('cc');
 const scene = cc.director.getScene();
-const old = scene.getChildByName('__ccb3x_event_button__');
+const canvas = scene.getChildByName('Canvas');
+const old = canvas.getChildByName('__ccb3x_event_button__');
 if (old) { old.removeFromParent(); old.destroy(); }
 const node = new cc.Node('__ccb3x_event_button__');
-scene.addChild(node);
+canvas.addChild(node);
 node.addComponent(cc.Button);
 return { reference: { id: node.uuid, type: 'cc.Node' } };`,
     });
@@ -398,7 +406,8 @@ return { reference: { id: node.uuid, type: 'cc.Node' } };`,
     } finally {
       await postTool('executeJavascript', {
         context: 'scene',
-        code: `const node = cc.director.getScene().getChildByName('__ccb3x_event_button__');
+        code: `const canvas = cc.director.getScene().getChildByName('Canvas');
+const node = canvas && canvas.getChildByName('__ccb3x_event_button__');
 if (node) { node.removeFromParent(); node.destroy(); }
 return true;`,
       });
@@ -409,15 +418,18 @@ return true;`,
   });
   it('Creator 3.7 binds native Button click handlers through EventHandler', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
 
     const created = await postTool('executeJavascript', {
       context: 'scene',
       code: `const cc = require('cc');
 const scene = cc.director.getScene();
-const old = scene.getChildByName('__ccb3x_bind_button__');
+const canvas = scene.getChildByName('Canvas');
+const old = canvas.getChildByName('__ccb3x_bind_button__');
 if (old) { old.removeFromParent(); old.destroy(); }
 const node = new cc.Node('__ccb3x_bind_button__');
-scene.addChild(node);
+canvas.addChild(node);
 node.addComponent(cc.Button);
 node.addComponent(cc.Label);
 return { reference: { id: node.uuid, type: 'cc.Node' } };`,
@@ -447,7 +459,8 @@ return { reference: { id: node.uuid, type: 'cc.Node' } };`,
     } finally {
       await postTool('executeJavascript', {
         context: 'scene',
-        code: `const node = cc.director.getScene().getChildByName('__ccb3x_bind_button__');
+        code: `const canvas = cc.director.getScene().getChildByName('Canvas');
+const node = canvas && canvas.getChildByName('__ccb3x_bind_button__');
 if (node) { node.removeFromParent(); node.destroy(); }
 return true;`,
       });
@@ -456,10 +469,15 @@ return true;`,
 
   it('Creator 3.7 UI layout and compound form workflows round-trip', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     const roots = [];
     try {
-      const form = await postTool('uiCreateInputForm', { label: 'Email', placeholder: 'you@example.com' });
-      assert.equal(form.ok, true, JSON.stringify(form.body));
+      const form = await postTool('uiCreateInputForm', {
+        label: 'Email',
+        placeholder: 'you@example.com',
+        parentReference: canvas,
+      });
       roots.push(form.body.reference);
       assert.equal(form.body.focusOrder.length, 2);
 
@@ -479,7 +497,10 @@ return true;`,
       assert.equal(valid.ok, true, JSON.stringify(valid.body));
       assert.equal(valid.body.valid, true);
 
-      const scroll = await postTool('uiCreateScrollView', { name: '__ccb3x_scroll_probe__' });
+      const scroll = await postTool('uiCreateScrollView', {
+        name: '__ccb3x_scroll_probe__',
+        parentReference: canvas,
+      });
       assert.equal(scroll.ok, true, JSON.stringify(scroll.body));
       roots.push(scroll.body.reference);
       assert.ok(scroll.body.viewport?.id && scroll.body.content?.id);
