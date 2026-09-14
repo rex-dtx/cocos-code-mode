@@ -336,6 +336,57 @@ describe('Spine scene inspection', () => {
       global.Editor = previousEditor;
     }
   });
+  it('writes serialized Spine socket state after taking a pre-change snapshot', async () => {
+    const previousCc = global.cc;
+    const previousEditor = global.Editor;
+    const order = [];
+    const spine = {
+      uuid: 'spine',
+      constructor: { name: 'Skeleton' },
+      sockets: [],
+    };
+    const target = { uuid: 'target', name: 'Target', components: [], children: [] };
+    const root = { uuid: 'root', name: 'Root', components: [spine], children: [target] };
+    global.cc = { director: { getScene: () => root } };
+    const elementTypeData = {
+      value: {
+        path: { name: 'path', value: '', type: 'String' },
+        target: { name: 'target', value: { uuid: '' }, type: 'cc.Node', extends: ['cc.Object'] },
+      },
+      type: 'SpineSocket',
+    };
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      assert.equal(service, 'scene');
+      if (message === 'query-node') return { __comps__: [{ value: { uuid: { value: 'spine' } } }] };
+      if (message === 'query-component') return { value: { sockets: { type: 'SpineSocket', elementTypeData } } };
+      if (message === 'snapshot') {
+        order.push('snapshot');
+        return true;
+      }
+      if (message === 'set-property') {
+        order.push('set-property');
+        assert.equal(payload.path, '__comps__.0.sockets');
+        assert.equal(payload.dump.value[0].value.path.value, 'root');
+        assert.deepEqual(payload.dump.value[0].value.target.value, { uuid: 'target' });
+        spine.sockets = [{ path: 'root', target }];
+        return true;
+      }
+      throw new Error(`unexpected scene message ${message}`);
+    } } };
+    try {
+      const { methods } = requireDist('scene.js');
+      const result = await methods.spineSocketConfigure({
+        nodeUuid: 'root',
+        sockets: [{ path: 'root', targetUuid: 'target' }],
+      });
+      assert.deepEqual(order, ['snapshot', 'set-property']);
+      assert.equal(result.socketCount, 1);
+      assert.deepEqual(spine.sockets, [{ path: 'root', target }]);
+    } finally {
+      global.cc = previousCc;
+      global.Editor = previousEditor;
+    }
+  });
   it('is cycle-safe and does not mark ordinary remaining nodes as truncated', async () => {
     const previousCc = global.cc;
     const target = { uuid: 'target', name: 'Target', components: [], children: [] };

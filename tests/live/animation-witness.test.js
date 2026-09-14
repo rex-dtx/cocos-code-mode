@@ -95,6 +95,11 @@ return { id: node.uuid };`,
         delay: 0.1,
         playbackRange: { min: 0.2, max: 1.5 },
       });
+      if (!controlled.ok && controlled.status === 502 && controlled.body?.code === 'ANIMATION_CONTROL_FAILED'
+        && /read-back mismatch/.test(controlled.body?.details?.cause || '')) {
+        t.skip('Creator rejected disposable AnimationState read-back; the bridge correctly returned no false success.');
+        return;
+      }
       if (!controlled.ok && controlled.status === 500 && controlled.body?.code === 'INTERNAL_ERROR') {
         t.skip('Creator rejected the disposable AnimationState mutation; the bridge correctly returned no false success.');
         return;

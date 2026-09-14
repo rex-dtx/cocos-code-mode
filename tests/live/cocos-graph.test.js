@@ -20,6 +20,8 @@ describe('live: cocos-graph overlay', () => {
     const asset = await getJson(`/tools/assetResolvePath?reference%5Bid%5D=${encodeURIComponent(sceneUuid)}`);
     const sourceFile = asset.body?.relativePath?.replace(/\\/g, '/');
     if (!asset.ok || !sourceFile?.endsWith('.scene')) { t.skip('open scene has no resolvable disk path'); return; }
+    const sourceParts = sourceFile.split('/');
+    if (sourceParts.length < 3 || sourceParts[0] !== 'assets') { t.skip('open scene is not inside a named assets bundle'); return; }
     const tree = await getJson('/tools/nodeGetTree?verbose=true&maxDepth=99&maxNodes=10000');
     if (!tree.ok || !Array.isArray(tree.body?.children)) { t.skip('live scene tree unavailable'); return; }
 
