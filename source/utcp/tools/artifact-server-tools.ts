@@ -19,7 +19,13 @@ function resolveArtifact(requested: string): string {
     if (!fs.existsSync(root) || !fs.statSync(root).isDirectory() || !fs.existsSync(path.join(root, 'index.html'))) {
         throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'Completed web artifact with index.html was not found.' });
     }
-    return root;
+    const realRoot = fs.realpathSync(root);
+    const realProjectRoot = fs.realpathSync(projectRoot);
+    const realRelative = path.relative(realProjectRoot, realRoot);
+    if (realRelative.startsWith('..') || path.isAbsolute(realRelative)) {
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'artifactPath must resolve inside the project.' });
+    }
+    return realRoot;
 }
 
 export class ArtifactServerTools {
@@ -51,8 +57,10 @@ export class ArtifactServerTools {
             let relative: string;
             try { relative = decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname).replace(/^\/+/, '') || 'index.html'; }
             catch { response.writeHead(400); response.end(); return; }
-            const file = path.resolve(root, relative);
-            if (path.relative(root, file).startsWith('..')) { response.writeHead(403); response.end(); return; }
+            let file: string;
+            try { file = fs.realpathSync(path.resolve(root, relative)); }
+            catch { response.writeHead(404); response.end(); return; }
+            if (path.relative(root, file).startsWith('..') || path.isAbsolute(path.relative(root, file))) { response.writeHead(403); response.end(); return; }
             fs.stat(file, (error, stat) => {
                 if (error || !stat.isFile()) { response.writeHead(404); response.end(); return; }
                 fs.createReadStream(file).pipe(response);
