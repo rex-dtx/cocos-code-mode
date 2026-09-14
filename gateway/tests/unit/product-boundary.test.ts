@@ -34,6 +34,12 @@ describe('Gateway product boundary audit', () => {
     ]));
   });
 
+
+  it('rejects product-owned packages in the lockfile', () => {
+    const root = fixture();
+    writeFileSync(join(root, 'yarn.lock'), '"mcpdocs@^1.0.0":\n  version "1.0.0"\n');
+    expect(auditProductBoundary(root)).toContain('yarn.lock contains a product-owned mcpdocs package');
+  });
   it('rejects relative imports that escape the Gateway root', () => {
     expect(auditProductBoundary(fixture('1.0.0', "export { value } from '../../outside';\n")))
       .toEqual([expect.stringContaining('escapes the Gateway root: ../../outside')]);

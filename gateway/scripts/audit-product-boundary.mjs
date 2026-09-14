@@ -43,6 +43,9 @@ export function auditProductBoundary(root = defaultRoot) {
     for (const match of lock.matchAll(/^\s*(?:resolved\s+)?["']?((?:file|link|portal|workspace):[^\s"']+)/gm)) {
       issues.push(`yarn.lock contains local dependency ${match[1]}`);
     }
+    if (/(?:^|\n)\s*["']?(?:@mcpdocs\/|mcpdocs(?:@|\/))/.test(lock)) {
+      issues.push('yarn.lock contains a product-owned mcpdocs package');
+    }
   }
 
   for (const sourceRoot of sourceRoots) {
