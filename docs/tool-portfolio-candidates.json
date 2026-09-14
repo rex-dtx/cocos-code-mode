@@ -1759,7 +1759,7 @@
     },
     {
       "name": "prefabApplyOverrides",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Apply a typed override set and verify source/instance result.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
@@ -1779,7 +1779,7 @@
     },
     {
       "name": "prefabRevertOverrides",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Revert selected overrides and verify restored values.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
