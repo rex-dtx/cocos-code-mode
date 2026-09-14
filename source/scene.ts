@@ -716,15 +716,38 @@ export const methods = {
         const components = Array.isArray(node.components) ? node.components : [];
         const spine: any = components.find((component: any) => ['Skeleton', 'sp.Skeleton'].includes(String(component?.constructor?.name ?? '')));
         if (!spine) throw new Error('No Spine Skeleton component found');
-        const sockets = [];
+        const sockets: any[] = [];
         for (const entry of request.sockets) {
             if (!entry || typeof entry.path !== 'string' || !entry.path.trim()) throw new Error('Each Spine socket requires a non-empty path');
             const target = await methods.findRuntimeNodeUuid(entry.targetUuid);
             if (!target) throw new Error(`Spine socket target node ${entry.targetUuid} not found`);
             sockets.push({ path: entry.path, target });
         }
-        spine.sockets = sockets;
+
+        // Use Creator's serialized component-property path rather than assigning the
+        // runtime accessor directly. This preserves scene serialization and history.
+        const nodeDump = await (globalThis as any).Editor.Message.request('scene', 'query-node', request.nodeUuid);
+        const componentIndex = nodeDump?.__comps__?.findIndex((component: any) =>
+            component?.value?.uuid?.value === spine.uuid);
+        if (!Number.isInteger(componentIndex) || componentIndex < 0) throw new Error('Spine component is missing from the serialized scene node');
+        const componentDump = await (globalThis as any).Editor.Message.request('scene', 'query-component', spine.uuid);
+        const socketProperty = componentDump?.value?.sockets;
+        const elementTemplate = socketProperty?.elementTypeData;
+        if (!socketProperty || !elementTemplate) throw new Error('Creator returned no serialized Spine socket schema');
+        const serializedSockets = sockets.map((socket) => {
+            const element = JSON.parse(JSON.stringify(elementTemplate));
+            element.value.path.value = socket.path;
+            element.value.target.value = { uuid: socket.target.uuid };
+            return element;
+        });
+
         await (globalThis as any).Editor.Message.request('scene', 'snapshot');
+        const applied = await (globalThis as any).Editor.Message.request('scene', 'set-property', {
+            uuid: request.nodeUuid,
+            path: `__comps__.${componentIndex}.sockets`,
+            dump: { value: serializedSockets, type: socketProperty.type },
+        });
+        if (applied === false) throw new Error('Creator refused serialized Spine socket assignment');
         return {
             nodeUuid: request.nodeUuid,
             socketCount: sockets.length,

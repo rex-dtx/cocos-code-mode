@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { ToolRegistry } from './decorators';
@@ -456,16 +457,17 @@ export class UtcpServerManager {
 
             utcpTools.push(toolDef);
 
-            // Register specific endpoint
             const handler = async (req: Request, res: Response) => {
                 const t0 = Date.now();
-                interactionLog({ phase: 'start', tool: toolDef.name, method: req.method, path: req.path, inputKeys: Object.keys(req.body ?? {}).sort() });
+                const requestId = randomBytes(16).toString('hex');
+                res.setHeader('X-Request-Id', requestId);
+                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, inputKeys: Object.keys(req.body ?? {}).sort() });
                 try {
                     // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        interactionLog({ phase: 'error', tool: toolDef.name, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED' });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED' });
                         res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         return;
                     }
@@ -486,7 +488,7 @@ export class UtcpServerManager {
                         const plural = missingInputs.length === 1 ? '' : 's';
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        interactionLog({ phase: 'error', tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT' });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT' });
                         res.status(400).json({
                             error: missingInputs.length > 0
                                 ? `Missing required input${plural}: ${missingInputs.join(', ')}`
@@ -498,6 +500,7 @@ export class UtcpServerManager {
                     }
 
                     debugLog({
+                        requestId,
                         type: 'request',
                         tool: toolDef.name,
                         method: req.method,
@@ -509,17 +512,15 @@ export class UtcpServerManager {
 
                     if (result === undefined || result === null) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
-                        res.setHeader('X-Duration-Ms', String(ms));
-                        debugLog({ type: 'response', tool: toolDef.name, result: null, size: 0, durationMs: ms });
-                        interactionLog({ phase: 'complete', tool: toolDef.name, status: 200, durationMs: ms, result: 'null' });
+                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: 'null' });
+                        debugLog({ type: 'response', requestId, tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
                         return;
                     }
 
                     const ms = Date.now() - ((req as any)._t0 ?? t0);
-                    res.setHeader('X-Duration-Ms', String(ms));
-                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
-                    interactionLog({ phase: 'complete', tool: toolDef.name, status: 200, durationMs: ms, resultKeys: isPlainJsonObject(result) ? Object.keys(result).sort() : [] });
+                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, resultKeys: isPlainJsonObject(result) ? Object.keys(result).sort() : [] });
+                    debugLog({ type: 'response', requestId, tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
 
                     // Preserve schema-required empty arrays/objects while trimming optional payload noise.
                     const trimmed = trimResponse(result, toolMeta.tool.outputs);
@@ -540,9 +541,8 @@ export class UtcpServerManager {
                     } else if (shouldLogToolError(err)) {
                         console.error(`[cx3][api] Error in tool ${toolDef.name}:`, err);
                     }
-                    res.setHeader('X-Duration-Ms', String(ms2));
-                    debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, testId, durationMs: ms2 });
-                    interactionLog({ phase: 'error', tool: toolDef.name, status: response.status, durationMs: ms2, code: response.body.code ?? 'UNKNOWN', testId });
+                    interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: response.status, durationMs: ms2, code: response.body.code ?? 'UNKNOWN', testId });
+                    debugLog({ type: 'error', requestId, tool: toolDef.name, error: response.body.error, testId, durationMs: ms2 });
                     res.status(response.status).json(response.body);
                 }
             };
