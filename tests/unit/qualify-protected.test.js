@@ -2,6 +2,8 @@
 
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const { test } = require('node:test');
 
@@ -39,21 +41,30 @@ test('qualification status reports missing gates without exposing secret values'
 });
 
 test('qualification status accepts file-backed member and admin credentials', () => {
-  const result = spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'scripts', 'qualify-protected.js'), '--status'], {
-    cwd: path.resolve(__dirname, '..', '..'),
-    env: {
-      ...process.env,
-      CCB_MEMBER_CREDENTIAL: '',
-      CCB_MEMBER_CREDENTIAL_FILE: path.resolve(__filename),
-      CCB_ADMIN_CREDENTIAL: '',
-      CCB_ADMIN_CREDENTIAL_FILE: path.resolve(__filename),
-    },
-    encoding: 'utf8',
-  });
-  assert.equal(result.status, 0, result.stderr);
-  const report = JSON.parse(result.stdout);
-  assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, true);
-  assert.equal(report.checks.find((check) => check.gate === 'admin-authentication').configured, true);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-qualification-'));
+  const memberFile = path.join(directory, 'member.jwt');
+  const adminFile = path.join(directory, 'admin.jwt');
+  fs.writeFileSync(memberFile, 'member.token\n', { mode: 0o600 });
+  fs.writeFileSync(adminFile, 'admin.token\n', { mode: 0o600 });
+  try {
+    const result = spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'scripts', 'qualify-protected.js'), '--status'], {
+      cwd: path.resolve(__dirname, '..', '..'),
+      env: {
+        ...process.env,
+        CCB_MEMBER_CREDENTIAL: '',
+        CCB_MEMBER_CREDENTIAL_FILE: memberFile,
+        CCB_ADMIN_CREDENTIAL: '',
+        CCB_ADMIN_CREDENTIAL_FILE: adminFile,
+      },
+      encoding: 'utf8',
+    });
+    assert.equal(result.status, 0, result.stderr);
+    const report = JSON.parse(result.stdout);
+    assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, true);
+    assert.equal(report.checks.find((check) => check.gate === 'admin-authentication').configured, true);
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('qualification status does not treat missing credential files as configured', () => {
@@ -65,6 +76,24 @@ test('qualification status does not treat missing credential files as configured
       CCB_MEMBER_CREDENTIAL_FILE: path.join(path.dirname(__filename), 'missing-member.jwt'),
       CCB_ADMIN_CREDENTIAL: '',
       CCB_ADMIN_CREDENTIAL_FILE: path.join(path.dirname(__filename), 'missing-admin.jwt'),
+    },
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.checks.find((check) => check.gate === 'member-authentication').configured, false);
+  assert.equal(report.checks.find((check) => check.gate === 'admin-authentication').configured, false);
+});
+
+test('qualification status rejects malformed inline credentials', () => {
+  const result = spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'scripts', 'qualify-protected.js'), '--status'], {
+    cwd: path.resolve(__dirname, '..', '..'),
+    env: {
+      ...process.env,
+      CCB_MEMBER_CREDENTIAL: 'not a token',
+      CCB_MEMBER_CREDENTIAL_FILE: '',
+      CCB_ADMIN_CREDENTIAL: 'admin\ncredential',
+      CCB_ADMIN_CREDENTIAL_FILE: '',
     },
     encoding: 'utf8',
   });

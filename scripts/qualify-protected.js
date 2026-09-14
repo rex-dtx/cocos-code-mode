@@ -3,7 +3,7 @@ const { spawnSync } = require('node:child_process');
 const os = require('node:os');
 const path = require('node:path');
 const fs = require('node:fs');
-const root = path.join(__dirname, '..');
+const { readCredential } = require('./credential-input');
 const credentialDir = path.join(os.homedir(), '.cc-bridge', 'credentials');
 const defaultCredentialFiles = {
   CCB_MEMBER_CREDENTIAL_FILE: path.join(credentialDir, 'member.jwt'),
@@ -24,14 +24,8 @@ function run(command, args) {
 }
 
 function configuredCredential(valueName, fileName) {
-  const inline = process.env[valueName];
-  const file = process.env[fileName];
-  if (inline && file) return false;
-  if (inline) return true;
-  if (!file || !path.isAbsolute(file)) return false;
   try {
-    const stat = fs.statSync(file);
-    return stat.isFile() && stat.size >= 1 && stat.size <= 16 * 1024;
+    return readCredential(valueName, fileName, process.env) !== undefined;
   } catch {
     return false;
   }
