@@ -151,7 +151,7 @@ describe('editorPrompt', () => {
   it('times out even when panel opening never resolves and frees the active request', async t => {
     const api = editor(t);
     api.Panel.open = () => new Promise(() => {});
-    const pending = new EditorTools().editorPrompt({ ...form, openPanel: true, timeoutMs: 1 });
+    const pending = new EditorTools().editorPrompt({ ...form, openPanel: true, timeoutMs: 50 });
     const requestId = getEditorPrompt().requestId;
     assert.deepEqual(await pending, { requestId, submitted: false, cancelled: false, timedOut: true, values: {} });
     assert.equal(getEditorPrompt(), null);
