@@ -17,7 +17,7 @@ describe('live: audioSourceConfigure candidate witness', () => {
     if (skipIfDown(t)) return;
     const fixture = await postTool('executeJavascript', {
       context: 'scene',
-      code: `const sc=cc.director.getScene();const old=sc.getChildByName('__audio_configure_candidate__');if(old){old.removeFromParent();old.destroy();}const n=new cc.Node('__audio_configure_candidate__');sc.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');if(!A){n.removeFromParent();n.destroy();return {unsupported:true};}const a=n.addComponent(A);return {id:n.uuid,component:a.uuid||null,unsupported:false};`,
+      code: `const sc=cc.director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {unsupported:true};const old=canvas.getChildByName('__audio_configure_candidate__');if(old){old.removeFromParent();old.destroy();}const n=new cc.Node('__audio_configure_candidate__');canvas.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');if(!A){n.removeFromParent();n.destroy();return {unsupported:true};}const a=n.addComponent(A);return {id:n.uuid,component:a.uuid||null,unsupported:false};`,
     });
     assert.equal(fixture.status, 200, JSON.stringify(fixture.body));
     if (fixture.body.result.unsupported) {

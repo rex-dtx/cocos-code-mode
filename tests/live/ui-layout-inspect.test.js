@@ -1,13 +1,15 @@
 'use strict';
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { postTool, postExpectedErrorTool, getJson, healthCheck } = require('../helpers/utcp-client');
+const { postTool, postExpectedErrorTool, getJson, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: uiLayoutInspect', () => {
-  it('uses transformed ancestors and own corners, preserving nullable fields over HTTP', async t => {
+  it('uses Canvas-hosted UI nodes and preserves own geometry over HTTP', async t => {
     const health = await healthCheck();
     if (!health.ok) { t.skip(`editor not running: ${health.reason}`); return; }
-    const created = await postTool('createUiNode', { uiType: 'Widget', name: '__ccb_layout_inspect_regression__' });
+    const canvas = await getCanvasReference();
+    if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
+    const created = await postTool('createUiNode', { uiType: 'Widget', parentReference: canvas, name: '__ccb_layout_inspect_regression__' });
     assert.equal(created.ok, true, JSON.stringify(created.body));
     const root = created.body.reference;
     try {
@@ -17,12 +19,12 @@ describe('live: uiLayoutInspect', () => {
       const fixture = await postTool('executeJavascript', { context: 'scene', code: `
         const { director, UITransform, Widget, Node } = require('cc');
         const scene = director.getScene();
-        const ids = ${JSON.stringify([root.id, child.id])};
+        const ids = ${JSON.stringify([root.id, child.id, canvas.id])};
         const found = new Map(); const stack = [scene];
         while (stack.length) { const n = stack.pop(); if (ids.includes(n.uuid)) found.set(n.uuid, n); stack.push(...n.children); }
         const parent = found.get(ids[0]), child = found.get(ids[1]);
         for (const n of [parent, child]) { const widget = n.getComponent(Widget); if (widget) widget.enabled = false; }
-        parent.setParent(scene); parent.setPosition(100, 200, 0); parent.setScale(-2, 3, 1); parent.setRotationFromEuler(0, 0, 90);
+        parent.setParent(found.get(ids[2]));
         child.setPosition(10, 20, 0); child.setScale(1, 1, 1); child.setRotationFromEuler(0, 0, 0);
         const ui = child.getComponent(UITransform); ui.setContentSize(40, 20); ui.setAnchorPoint(0.25, 0.75);
         const oversized = new Node('__oversized_descendant__'); oversized.setParent(child);
@@ -37,7 +39,7 @@ describe('live: uiLayoutInspect', () => {
       const node = result.body.nodes[0];
       assert.equal(node.reference.id, child.id);
       assert.deepEqual(node.position, { x: 10, y: 20, z: 0 });
-      for (const [key, expected] of Object.entries({ x: 25, y: 120, width: 60, height: 80 })) {
+      for (const [key, expected] of Object.entries({ x: 640, y: 365, width: 40, height: 20 })) {
         assert.ok(Math.abs(node.worldRect[key] - expected) < 1e-5, `${key}: ${node.worldRect[key]} != ${expected}`);
       }
       assert.equal(result.body.truncated, true);

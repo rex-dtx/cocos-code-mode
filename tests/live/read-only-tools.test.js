@@ -791,7 +791,7 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(physics3d.status, 200, JSON.stringify(physics3d.body));
     const audioFixture = await postTool('executeJavascript', {
       context: 'scene',
-      code: "const sc=cc.director.getScene();const old=sc.getChildByName('__audio_inspect_fixture__');if(old){old.removeFromParent();old.destroy();}const n=new cc.Node('__audio_inspect_fixture__');sc.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');const a=n.addComponent(A);a.volume=0.25;a.loop=true;a.playOnAwake=false;return n.uuid;",
+      code: "const sc=cc.director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};const old=canvas.getChildByName('__audio_inspect_fixture__');if(old){old.removeFromParent();old.destroy();}const n=new cc.Node('__audio_inspect_fixture__');canvas.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');const a=n.addComponent(A);a.volume=0.25;a.loop=true;a.playOnAwake=false;return n.uuid;",
     });
     assert.equal(audioFixture.status, 200, JSON.stringify(audioFixture.body));
     const audioId = audioFixture.body.result;
