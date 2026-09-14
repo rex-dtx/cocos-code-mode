@@ -36,3 +36,8 @@ plans/
 gateway/artifacts/local-delivery/
 .cocos-graph/
 plans
+.codegraph
+
+# Local qualification inputs and assembled release artifacts
+/qualification-inputs/
+/qualification-release-*/
