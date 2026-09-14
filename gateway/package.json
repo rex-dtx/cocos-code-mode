@@ -9,6 +9,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "audit:boundary": "node scripts/audit-product-boundary.mjs",
     "loopback": "tsx scripts/cc-bridge-loopback.ts",
     "start": "tsx src/server.ts",
     "docker:up": "docker compose up -d --build",
