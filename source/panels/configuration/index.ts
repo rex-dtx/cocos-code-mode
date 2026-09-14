@@ -15,8 +15,8 @@ module.exports = Editor.Panel.define({
         portInput: '#port-input',
         savePortBtn: '#save-port-btn',
         bootLogOutput: '#boot-log-output',
+        copyBootLogBtn: '#copy-boot-log-btn',
         refreshBootLogBtn: '#refresh-boot-log-btn',
-
         // MCP Integration
         mcpConfigCode: '#mcp-config-code',
         
@@ -50,14 +50,25 @@ module.exports = Editor.Panel.define({
         },
 
         async refreshBootLog() {
-            const output = this.$.bootLogOutput as HTMLElement;
+            const output = this.$.bootLogOutput as HTMLTextAreaElement;
             if (!output) return;
             try {
                 const result = await Editor.Message.request(packageJSON.name, 'get-boot-log', 200) as { path: string, lines: string[] };
-                output.textContent = `${result.lines.join('\n')}\n\nLog file: ${result.path}`;
+                output.value = `${result.lines.join('\n')}\n\nLog file: ${result.path}`;
                 output.scrollTop = output.scrollHeight;
             } catch (error) {
-                output.textContent = `Unable to load boot log: ${error instanceof Error ? error.message : String(error)}`;
+                output.value = `Unable to load boot log: ${error instanceof Error ? error.message : String(error)}`;
+            }
+        },
+
+        async copyBootLog() {
+            const output = this.$.bootLogOutput as HTMLTextAreaElement;
+            if (!output) return;
+            output.select();
+            try {
+                await navigator.clipboard.writeText(output.value);
+            } catch {
+                document.execCommand('copy');
             }
         },
 
@@ -202,18 +213,18 @@ module.exports = Editor.Panel.define({
     ready() {
         this.loadSettings();
 
-        // Listeners
         const savePort = this.$.savePortBtn as HTMLElement;
         if (savePort) savePort.addEventListener('click', () => this.updatePort());
-
+        const copyBootLogBtn = this.$.copyBootLogBtn as HTMLElement;
+        if (copyBootLogBtn) copyBootLogBtn.addEventListener('click', () => this.copyBootLog());
+        const refreshBootLogBtn = this.$.refreshBootLogBtn as HTMLElement;
+        if (refreshBootLogBtn) refreshBootLogBtn.addEventListener('click', () => this.refreshBootLog());
         const savePath = this.$.utcpConfigPathSaveBtn as HTMLElement;
         if (savePath) savePath.addEventListener('click', () => this.saveSettings());
 
         const addBtn = this.$.addBridgeBtn as HTMLElement;
         if (addBtn) addBtn.addEventListener('click', () => this.addBridgeTemplate());
 
-        const refreshBootLogBtn = this.$.refreshBootLogBtn as HTMLElement;
-        if (refreshBootLogBtn) refreshBootLogBtn.addEventListener('click', () => this.refreshBootLog());
         const list = this.$.bridgeList as HTMLElement;
         if (list) {
             list.addEventListener('click', (e: any) => {

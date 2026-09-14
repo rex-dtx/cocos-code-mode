@@ -13,9 +13,12 @@
     <ui-section class="config" header="Runtime Logs" expand>
         <div class="log-toolbar">
             <span class="desc">Startup, connection, and failure diagnostics.</span>
-            <ui-button id="refresh-boot-log-btn" class="blue">Refresh</ui-button>
+            <div class="log-actions">
+                <ui-button id="copy-boot-log-btn">Copy</ui-button>
+                <ui-button id="refresh-boot-log-btn" class="blue">Refresh</ui-button>
+            </div>
         </div>
-        <pre id="boot-log-output" class="boot-log-output">Loading logs...</pre>
+        <textarea id="boot-log-output" class="boot-log-output" readonly spellcheck="false">Loading logs...</textarea>
     </ui-section>
 
     <!-- UTCP Config Section -->

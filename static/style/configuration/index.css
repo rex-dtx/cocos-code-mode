@@ -110,8 +110,17 @@ ui-prop ui-button {
     gap: 10px;
 }
 
+.log-actions {
+    display: flex;
+    gap: 6px;
+}
+
 .boot-log-output {
-    max-height: 280px;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 280px;
+    resize: vertical;
     overflow: auto;
     margin: 8px 0 0;
     padding: 10px;
