@@ -264,7 +264,7 @@ export function findMissingRequiredInputs(schema: JsonSchema, args: Record<strin
         .map((error) => error.path);
 }
 
-// Interaction events are always mirrored to Creator's console; debug mode additionally persists them to JSONL.
+// Console output is intentionally concise; JSONL keeps the complete structured event.
 // Mutable so the menu toggle (toggleDebug) can flip it at runtime, not just via env var.
 let debugEnabled = process.env.UTCP_DEBUG === '1' || process.env.UTCP_DEBUG === 'true';
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
@@ -275,26 +275,46 @@ if (debugEnabled) {
     console.log(`[cx3][lifecycle] Debug mode ON → ${debugLogFile}`);
 }
 
-export function creatorInteractionLog(entry: Record<string, unknown>): void {
+
+export function formatInteractionSummary(entry: Record<string, unknown>): string {
     const phase = entry.phase;
-    const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
+    const token = typeof entry.requestId === 'string' && entry.requestId.length > 0
+        ? `[${entry.requestId.slice(0, 8)}]`
+        : '';
+    const prefix = `[cx3][api]${token}`;
     const tool = typeof entry.tool === 'string' ? ` tool=${entry.tool}` : '';
-    const method = typeof entry.method === 'string' ? entry.method : '';
-    const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
     const status = typeof entry.status === 'number' ? ` ${entry.status}` : '';
     const duration = typeof entry.durationMs === 'number' ? ` duration=${entry.durationMs}ms` : '';
-    const summary = phase === 'start'
-        ? `REQUEST -> ${method}${path}${tool}`
-        : phase === 'complete'
-            ? `RESPONSE <-${status}${tool}${duration}`
-            : phase === 'error'
-                ? `ERROR${status}${tool}${duration}`
-                : String(phase || 'EVENT').toUpperCase();
-    const text = `[cx3][api] ${summary} | ${payload}`;
-    const editor = (globalThis as any).Editor;
+
+    if (phase === 'start') {
+        const method = typeof entry.method === 'string' ? entry.method : '';
+        const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
+        return `${prefix} REQUEST -> ${method}${path}${tool}`;
+    }
+    if (phase === 'complete') {
+        const resultKeys = Array.isArray(entry.resultKeys) && entry.resultKeys.length > 0
+            ? ` keys=${entry.resultKeys.join(',')}`
+            : '';
+        return `${prefix} RESPONSE <-${status}${tool}${duration}${resultKeys}`;
+    }
+    if (phase === 'error') {
+        const code = typeof entry.code === 'string' ? ` ${entry.code}` : '';
+        const message = typeof entry.message === 'string'
+            ? `: ${entry.message.replace(/\s+/g, ' ').trim()}`
+            : '';
+        return `${prefix} ERROR${status}${tool}${duration}${code}${message}`;
+    }
+    return `${prefix} ${String(phase || 'EVENT').toUpperCase()}${tool}`;
+}
+
+export function creatorInteractionLog(entry: Record<string, unknown>): void {
+    const phase = entry.phase;
+    const editor = (globalThis as {
+        Editor?: Partial<Record<'info' | 'warn' | 'error', (message: string) => void>>
+    }).Editor;
     const level = phase === 'error' ? 'error' : phase === 'warning' ? 'warn' : 'info';
     try {
-        if (editor && typeof editor[level] === 'function') editor[level](text);
+        if (editor && typeof editor[level] === 'function') editor[level](formatInteractionSummary(entry));
     } catch {
         // Creator logging must never change the HTTP result or tool lifecycle.
     }
@@ -302,27 +322,11 @@ export function creatorInteractionLog(entry: Record<string, unknown>): void {
 
 function interactionLog(entry: Record<string, unknown>): void {
     const phase = entry.phase;
-    creatorInteractionLog(entry);
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
-    const payload = JSON.stringify({ ts: new Date().toISOString(), ...entry });
-    const writer = phase === 'error' ? console.error : phase === 'warning' ? console.warn : console.info;
-    const tool = typeof entry.tool === 'string' ? ` tool=${entry.tool}` : '';
-    const method = typeof entry.method === 'string' ? entry.method : '';
-    const path = typeof entry.path === 'string' ? ` ${entry.path}` : '';
-    const status = typeof entry.status === 'number' ? ` ${entry.status}` : '';
-    const duration = typeof entry.durationMs === 'number' ? ` duration=${entry.durationMs}ms` : '';
-    const summary = phase === 'start'
-        ? `REQUEST -> ${method}${path}${tool}`
-        : phase === 'complete'
-            ? `RESPONSE <-${status}${tool}${duration}`
-            : phase === 'error'
-                ? `ERROR${status}${tool}${duration}`
-                : String(phase || 'EVENT').toUpperCase();
-    writer(`[cx3][api] ${summary} | ${payload}`);
+    creatorInteractionLog(entry);
     debugLog({ type: 'interaction', ...entry });
 }
-
-function debugLog(entry: Record<string, any>): void {
+function debugLog(entry: Record<string, unknown>): void {
     if (!debugEnabled) return;
     try {
         try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
@@ -330,6 +334,8 @@ function debugLog(entry: Record<string, any>): void {
         appendFileSync(debugLogFile, line + '\n');
     } catch {}
 }
+
+
 
 // Profile config — mutable at runtime via panel.
 let activeProfile: ToolProfile = 'full'; // default: expose everything (backward compat)
@@ -468,7 +474,7 @@ export class UtcpServerManager {
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED' });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED', message: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         return;
                     }
@@ -489,11 +495,12 @@ export class UtcpServerManager {
                         const plural = missingInputs.length === 1 ? '' : 's';
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT' });
+                        const errorMessage = missingInputs.length > 0
+                            ? `Missing required input${plural}: ${missingInputs.join(', ')}`
+                            : 'Invalid tool input.';
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT', message: errorMessage });
                         res.status(400).json({
-                            error: missingInputs.length > 0
-                                ? `Missing required input${plural}: ${missingInputs.join(', ')}`
-                                : 'Invalid tool input.',
+                            error: errorMessage,
                             ...(missingInputs.length > 0 ? { missingInputs } : {}),
                             validationErrors,
                         });
@@ -539,11 +546,31 @@ export class UtcpServerManager {
                     const testId = expectedTestWitnessId(req.headers);
                     if (testId && err instanceof ToolError && err.status < 500) {
                         console.info(`[cx3][api][test:${testId}] Expected ${err.code} from ${toolDef.name}`);
-                    } else if (shouldLogToolError(err)) {
-                        console.error(`[cx3][api] Error in tool ${toolDef.name}:`, err);
                     }
-                    interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: response.status, durationMs: ms2, code: response.body.code ?? 'UNKNOWN', testId });
-                    debugLog({ type: 'error', requestId, tool: toolDef.name, error: response.body.error, testId, durationMs: ms2 });
+                    interactionLog({
+                        phase: 'error',
+                        requestId,
+                        tool: toolDef.name,
+                        status: response.status,
+                        durationMs: ms2,
+                        code: response.body.code ?? 'UNKNOWN',
+                        message: response.body.error,
+                        details: response.body.details,
+                        recovery: response.body.recovery,
+                        testId,
+                    });
+                    debugLog({
+                        type: 'error',
+                        requestId,
+                        tool: toolDef.name,
+                        error: response.body.error,
+                        code: response.body.code,
+                        details: response.body.details,
+                        recovery: response.body.recovery,
+                        stack: err instanceof Error ? err.stack : undefined,
+                        testId,
+                        durationMs: ms2,
+                    });
                     res.status(response.status).json(response.body);
                 }
             };
