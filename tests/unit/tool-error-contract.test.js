@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { requireDist } = require('../helpers/require-dist');
 
 const { ToolError, toToolErrorResponse } = requireDist('utcp/tool-error.js');
-const { shouldLogToolError, expectedTestWitnessId, creatorInteractionLog } = requireDist('utcp/utcp-server.js');
+const { shouldLogToolError, expectedTestWitnessId, creatorInteractionLog, formatInteractionSummary } = requireDist('utcp/utcp-server.js');
 
 
 describe('typed UTCP tool errors', () => {
@@ -56,7 +56,22 @@ describe('typed UTCP tool errors', () => {
       'x-ccb-test-id': 'contains spaces',
     }), undefined);
   });
-  it('mirrors lifecycle and API errors into the Creator console without throwing', () => {
+  it('emits a compact correlated error summary with actionable context', () => {
+    assert.equal(
+      formatInteractionSummary({
+        phase: 'error',
+        requestId: '1234567890abcdef',
+        tool: 'assetCreate',
+        status: 500,
+        durationMs: 3,
+        code: 'INTERNAL_ERROR',
+        message: 'asset already exists\nUse the existing asset.',
+      }),
+      '[cx3][api][12345678] ERROR 500 tool=assetCreate duration=3ms INTERNAL_ERROR: asset already exists Use the existing asset.',
+    );
+  });
+
+  it('emits lifecycle summaries once through the Creator console without raw JSON', () => {
     const prior = global.Editor;
     const calls = [];
     global.Editor = {
@@ -65,10 +80,10 @@ describe('typed UTCP tool errors', () => {
       error: (message) => calls.push(['error', message]),
     };
     try {
-      creatorInteractionLog({ phase: 'error', tool: 'spineSocketConfigure', status: 502, code: 'SPINE_SOCKET_CONFIGURE_FAILED' });
-      assert.equal(calls.length, 1);
-      assert.equal(calls[0][0], 'error');
-      assert.match(calls[0][1], /\[cx3\]\[api\] ERROR 502 tool=spineSocketConfigure/);
+      creatorInteractionLog({ phase: 'complete', requestId: 'abcdef0123456789', tool: 'editorState', status: 200, durationMs: 4 });
+      assert.deepEqual(calls, [['info', '[cx3][api][abcdef01] RESPONSE <- 200 tool=editorState duration=4ms']]);
+      assert.equal(calls[0][1].includes('|'), false);
+      assert.equal(calls[0][1].includes('"requestId"'), false);
     } finally {
       global.Editor = prior;
     }
