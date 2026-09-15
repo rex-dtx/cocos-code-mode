@@ -11,6 +11,7 @@
     "package": "npm run build && node ./scripts/package.js",
     "link:project": "node ./scripts/link-project-extension.js",
     "link:plans": "python ../../../_devtools/cfg-n-scripts/notes/08_System/mount_project_plans.py --here",
+    "test:unit": "node --test --test-concurrency=1 tests/unit/*.test.js",
     "test": "npm run test:unit",
     "test:live": "node --test --test-concurrency=1 tests/live/*.test.js tests/live/ui/*.test.js",
     "test:all": "node --test --test-concurrency=1 tests/unit/*.test.js tests/live/*.test.js tests/live/ui/*.test.js",
