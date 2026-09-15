@@ -79,9 +79,9 @@ async function getJson(urlPath, init) {
   const functionName = urlPath.split('?')[0].replace(/^\/tools\//, '').replace(/^\//, '');
   const traceParams = formatTraceParams(urlPath, init);
   const trace = process.env.UTCP_TEST_TRACE !== '0';
-  const traceId = require('crypto').randomBytes(4).toString('hex');
+  const traceId = require('crypto').randomBytes(4).toString('hex').slice(0, 5);
   if (trace && urlPath !== '/tools/editorLog') {
-    await emitCreatorTrace(b, 'info', `[LT][${traceId}] ${new Date().toISOString()} ${functionName} REQ | params=${traceParams}`);
+    await emitCreatorTrace(b, 'info', `[LT][${traceId}] ${functionName} REQ | params=${traceParams}`);
   }
   const startedAt = performance.now();
   let r;
@@ -93,7 +93,7 @@ async function getJson(urlPath, init) {
     if (trace && urlPath !== '/tools/editorLog') {
       // Do not print fetch messages: they can contain transport URLs/credentials.
       const kind = init?.signal?.aborted ? 'ABORTED' : r ? 'RESPONSE_READ_FAILED' : 'CONNECTION_FAILED';
-      const message = `[LT][${traceId}] ${new Date().toISOString()} ${functionName} ${kind} | elapsed=${(performance.now() - startedAt).toFixed(1)}ms | params=${traceParams}`;
+      const message = `[LT][${traceId}] ${functionName} ${kind} | elapsed=${(performance.now() - startedAt).toFixed(1)}ms | params=${traceParams}`;
       await emitCreatorTrace(b, 'error', message);
     }
     throw error;
@@ -107,7 +107,7 @@ async function getJson(urlPath, init) {
     const serverDuration = r.headers.get('x-duration-ms');
     const correlation = serverId && /^[a-zA-Z0-9_-]{1,128}$/.test(serverId) ? ` | serverId=${serverId}` : '';
     const timing = serverDuration && /^\d+(?:\.\d+)?$/.test(serverDuration) ? ` | server=${serverDuration}ms` : '';
-    await emitCreatorTrace(b, r.ok ? 'info' : 'warn', `[LT][${traceId}] ${new Date().toISOString()} ${functionName} ${r.ok ? 'OK' : 'ERR'} ${r.status}${correlation} | result=${summarizeTraceResult(body)} | elapsed=${durationMs}ms${timing} | bytes=${Buffer.byteLength(text, 'utf8')}${parsed ? '' : ' | NON_JSON'}`);
+    await emitCreatorTrace(b, r.ok ? 'info' : 'warn', `[LT][${traceId}] ${functionName} ${r.ok ? 'OK' : 'ERR'} ${r.status}${correlation} | result=${summarizeTraceResult(body)} | elapsed=${durationMs}ms${timing} | bytes=${Buffer.byteLength(text, 'utf8')}${parsed ? '' : ' | NON_JSON'}`);
   }
   return { ok: r.ok, status: r.status, body, text, base: b };
 }
