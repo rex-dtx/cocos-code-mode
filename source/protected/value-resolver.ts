@@ -118,20 +118,20 @@ export function resolveCommand(command: PrimitiveCommand, request: ProtectedRequ
   return { ...command, args: resolveValue(command.args, { request, publicConstants, handles, command }, ["args"]) } as PrimitiveCommand;
 }
 
-function visitReferences(value: unknown, found: Map<string, unknown>, request: ProtectedRequest, publicConstants: IJson): void {
+function visitReferences(value: unknown, found: unknown[], request: ProtectedRequest, publicConstants: IJson): void {
   if (!value || typeof value !== "object") return;
   if (!Array.isArray(value) && "source" in value) {
     if (value.source === "request" && "jsonPointer" in value && typeof value.jsonPointer === "string") {
-      found.set(`request:${value.jsonPointer}`, resolvePointer(request, value.jsonPointer));
+      found.push(resolvePointer(request, value.jsonPointer));
       return;
     }
     if (value.source === "observation" && "jsonPointer" in value && typeof value.jsonPointer === "string") {
       if (!request.observation) throw new CcbError("CCB_VALUE_PROVENANCE_INVALID", "Observation value was referenced without an observation.");
-      found.set(`observation:${value.jsonPointer}`, resolvePointer(request.observation, value.jsonPointer));
+      resolvePointer(request.observation, value.jsonPointer);
       return;
     }
     if (value.source === "public-contract-constant" && "id" in value && typeof value.id === "string") {
-      found.set(`constant:${value.id}`, resolveConstant(publicConstants, value.id));
+      resolveConstant(publicConstants, value.id);
       return;
     }
     if (value.source === "handle") return;
@@ -141,15 +141,13 @@ function visitReferences(value: unknown, found: Map<string, unknown>, request: P
 }
 
 export function preflightReferencedInputBytes(envelope: ExecutionEnvelope, request: ProtectedRequest, publicConstants: IJson): number {
-  const referenced = new Map<string, unknown>();
+  const referenced: unknown[] = [];
   for (const command of envelope.commands) visitReferences(command.args, referenced, request, publicConstants);
-  const canonical: Record<string, IJson> = {};
-  for (const key of [...referenced.keys()].sort()) {
-    const value = referenced.get(key);
+  let bytes = 0;
+  for (const value of referenced) {
     assertIJson(value);
-    Object.defineProperty(canonical, key, { value, enumerable: true, configurable: true, writable: true });
+    bytes += canonicalizeToBytes(value).byteLength;
   }
-  const bytes = canonicalizeToBytes(canonical).byteLength;
   if (bytes > envelope.limits.inputBytes) {
     throw new CcbError("CCB_LIMIT_EXCEEDED", "Canonical referenced input exceeds the signed envelope limit.", { actualBytes: bytes, maxBytes: envelope.limits.inputBytes });
   }
