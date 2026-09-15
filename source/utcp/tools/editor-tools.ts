@@ -5,6 +5,7 @@ import * as path from 'path';
 import { Base64ImageSchema, IBase64Image, ISuccessIndicator, SuccessIndicatorSchema, InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { isMessageNotExposed } from '../utils/editor-message-error';
 import { ToolError } from '../tool-error';
+import { debugEnabled } from '../logging-policy';
 import { askEditor } from '../editor-ask';
 import { promptEditor } from '../editor-prompt';
 import { EditorAskArgs, EditorAskResult, EditorPromptArgs, EditorPromptResult, EditorAskInputSchema, EditorAskOutputSchema, EditorPromptInputSchema, EditorPromptOutputSchema } from '../editor-interaction-contracts';
@@ -470,7 +471,7 @@ export class EditorTools {
 
     @utcpTool(
         'editorLog',
-        'Write to the Creator editor console and project log. debug uses console.log with a [debug] prefix; optional data is appended as JSON.',
+        'Write to the Creator editor console and project log. Respects Debug Logging: OFF suppresses debug/info, ON shows all levels; warn/error always remain visible. Filtered calls still succeed. debug uses console.log with a [debug] prefix; optional data is appended as JSON.',
         {
             type: 'object',
             properties: {
@@ -520,6 +521,10 @@ export class EditorTools {
             if (serialized === undefined || Buffer.byteLength(serialized, 'utf8') > 64 * 1024) {
                 throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorLog data must serialize to at most 65536 bytes.' });
             }
+        }
+
+        if (!debugEnabled && (level === 'debug' || level === 'info')) {
+            return { success: true, level, message };
         }
 
         const text = `${level === 'debug' ? '[debug] ' : ''}${message}${serialized === undefined ? '' : ` ${serialized}`}`;
