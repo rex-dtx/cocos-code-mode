@@ -5,7 +5,7 @@ import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { AssetTools } from './asset-tools';
 import { ExpansionTools } from './expansion-tools';
 
-const GRAPH_PRESET = 'db://internal/default_file_content/animation-graph/default.animgraph';
+const GRAPH_PRESET = 'db://internal/default_file_content/animgraph';
 const ASSET_PATH_PATTERN = /^db:\/\/assets\/[A-Za-z0-9._/-]+$/;
 const SKELETAL_FIELDS = ['playOnLoad', 'useBakedAnimation'] as const;
 type SkeletalField = typeof SKELETAL_FIELDS[number];
