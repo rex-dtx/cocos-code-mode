@@ -87,7 +87,7 @@ async function getJson(urlPath, init) {
   let r;
   let text;
   try {
-    r = await fetch(url, init);
+    r = await fetch(url, { ...init, signal: init?.signal || AbortSignal.timeout(Math.min(120000, Math.max(1000, Number(process.env.CCB_REQUEST_TIMEOUT_MS || 30000) || 30000))) });
     text = await r.text();
   } catch (error) {
     if (trace && urlPath !== '/tools/editorLog') {
