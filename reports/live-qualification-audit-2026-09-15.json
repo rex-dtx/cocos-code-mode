@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "recordedAt": "2026-09-15T09:16:11.058Z",
+  "recordedAt": "2026-09-15T10:03:40.444Z",
   "mode": "quiet",
   "target": {
     "baseUrl": "http://localhost:49650",
@@ -47,10 +47,10 @@
     "exitCode": 0,
     "summary": {
       "tests": 276,
-      "pass": 272,
+      "pass": 273,
       "fail": 0,
-      "skipped": 4,
-      "durationMs": 175853
+      "skipped": 3,
+      "durationMs": 167944
     },
     "files": [
       {
@@ -97,7 +97,7 @@
           "pass": 14,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 7133
+          "durationMs": 7115
         },
         "attempts": 1
       },
@@ -115,7 +115,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 560
+          "durationMs": 1877
         },
         "attempts": 1
       },
@@ -132,7 +132,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 383
+          "durationMs": 390
         },
         "attempts": 1
       },
@@ -153,7 +153,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 1,
-          "durationMs": 5812
+          "durationMs": 4540
         },
         "attempts": 1
       },
@@ -169,10 +169,10 @@
         "status": "partial-or-skipped",
         "summary": {
           "tests": 2,
-          "pass": 0,
+          "pass": 1,
           "fail": 0,
-          "skipped": 2,
-          "durationMs": 450
+          "skipped": 1,
+          "durationMs": 1055
         },
         "attempts": 1
       },
@@ -191,7 +191,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 689
+          "durationMs": 624
         },
         "attempts": 1
       },
@@ -207,7 +207,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 385
+          "durationMs": 283
         },
         "attempts": 1
       },
@@ -224,7 +224,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1407
+          "durationMs": 1255
         },
         "attempts": 1
       },
@@ -240,7 +240,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 257
+          "durationMs": 280
         },
         "attempts": 1
       },
@@ -255,7 +255,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 363
+          "durationMs": 223
         },
         "attempts": 1
       },
@@ -298,7 +298,7 @@
           "pass": 11,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 9121
+          "durationMs": 7460
         },
         "attempts": 1
       },
@@ -315,7 +315,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 606
+          "durationMs": 634
         },
         "attempts": 1
       },
@@ -336,7 +336,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 2885
+          "durationMs": 2816
         },
         "attempts": 1
       },
@@ -355,7 +355,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 6852
+          "durationMs": 6210
         },
         "attempts": 1
       },
@@ -370,7 +370,7 @@
           "pass": 54,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 3994
+          "durationMs": 4223
         },
         "attempts": 1
       },
@@ -385,7 +385,7 @@
           "pass": 77,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 4352
+          "durationMs": 3651
         },
         "attempts": 1
       },
@@ -403,7 +403,7 @@
           "pass": 10,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 538
+          "durationMs": 645
         },
         "attempts": 1
       },
@@ -423,7 +423,7 @@
           "pass": 8,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 640
+          "durationMs": 655
         },
         "attempts": 1
       },
@@ -441,7 +441,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1352
+          "durationMs": 976
         },
         "attempts": 1
       },
@@ -465,7 +465,7 @@
           "pass": 6,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 2102
+          "durationMs": 1813
         },
         "attempts": 1
       },
@@ -544,7 +544,7 @@
           "pass": 38,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 43715
+          "durationMs": 36799
         },
         "attempts": 1
       },
@@ -559,7 +559,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 564
+          "durationMs": 327
         },
         "attempts": 1
       },
@@ -575,7 +575,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 523
+          "durationMs": 265
         },
         "attempts": 1
       },
@@ -591,7 +591,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 291
+          "durationMs": 259
         },
         "attempts": 1
       },
@@ -614,7 +614,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 6180
+          "durationMs": 4135
         },
         "attempts": 1
       },
@@ -635,7 +635,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 4219
+          "durationMs": 2866
         },
         "attempts": 1
       },
@@ -655,7 +655,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 916
+          "durationMs": 528
         },
         "attempts": 1
       },
@@ -672,7 +672,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 958
+          "durationMs": 530
         },
         "attempts": 1
       },
@@ -691,7 +691,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 802
+          "durationMs": 2655
         },
         "attempts": 1
       },
@@ -710,7 +710,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 2261
+          "durationMs": 1308
         },
         "attempts": 1
       },
@@ -728,7 +728,7 @@
           "pass": 1,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 1442
+          "durationMs": 4070
         },
         "attempts": 1
       },
@@ -749,7 +749,7 @@
           "pass": 15,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 46871
+          "durationMs": 44366
         },
         "attempts": 1
       },
@@ -780,7 +780,7 @@
           "pass": 10,
           "fail": 0,
           "skipped": 0,
-          "durationMs": 16058
+          "durationMs": 21927
         },
         "attempts": 1
       },
@@ -802,7 +802,7 @@
           "pass": 2,
           "fail": 0,
           "skipped": 1,
-          "durationMs": 1172
+          "durationMs": 1184
         },
         "attempts": 1
       }
