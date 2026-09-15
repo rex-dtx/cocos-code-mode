@@ -1,6 +1,7 @@
 import { BaseAssetImporter } from './base-importer';
 import { IAssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { IProperty, IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
+import { debugEnabled } from '../../logging-policy';
 
 export abstract class ModelBaseImporter extends BaseAssetImporter {
     
@@ -55,9 +56,10 @@ export abstract class ModelBaseImporter extends BaseAssetImporter {
         }
 
         const properties = this.parseUserData(userData);
-        console.log('[cx3][asset] model-importer properties:', properties);
         this.addSpecificUserData(userData, properties);
-        console.log('[cx3][asset] model-importer properties after specific:', properties);
+        if (debugEnabled) {
+            console.log(`[cx3][asset] model-importer ${JSON.stringify(assetInfo.url || assetInfo.uuid)} | properties=${Object.keys(properties).length}`);
+        }
         return properties;
     }
 
