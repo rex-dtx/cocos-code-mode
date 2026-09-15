@@ -2,12 +2,13 @@
 
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { selectBase } = require('../../scripts/audit-live-qualification');
+const { configureTraceDefault, selectBase } = require('../../scripts/audit-live-qualification');
 
 const originalFetch = global.fetch;
 const originalBase = process.env.UTCP_BASE;
 const originalExpectedScene = process.env.UTCP_EXPECT_SCENE_UUID;
 const originalExpectedCommit = process.env.UTCP_EXPECT_COMMIT;
+const originalTrace = process.env.UTCP_TEST_TRACE;
 
 test.afterEach(() => {
   global.fetch = originalFetch;
@@ -17,6 +18,20 @@ test.afterEach(() => {
   else process.env.UTCP_EXPECT_SCENE_UUID = originalExpectedScene;
   if (originalExpectedCommit === undefined) delete process.env.UTCP_EXPECT_COMMIT;
   else process.env.UTCP_EXPECT_COMMIT = originalExpectedCommit;
+  if (originalTrace === undefined) delete process.env.UTCP_TEST_TRACE;
+  else process.env.UTCP_TEST_TRACE = originalTrace;
+});
+
+test('preserves an explicit quiet trace setting', () => {
+  process.env.UTCP_TEST_TRACE = '0';
+  configureTraceDefault();
+  assert.equal(process.env.UTCP_TEST_TRACE, '0');
+});
+
+test('enables trace output by default', () => {
+  delete process.env.UTCP_TEST_TRACE;
+  configureTraceDefault();
+  assert.equal(process.env.UTCP_TEST_TRACE, '1');
 });
 
 test('rejects a healthy bridge serving the wrong artifact commit', async () => {
