@@ -87,7 +87,9 @@ export async function dispatchProtectedTool(
     assertIJson(tool.publicConstants);
     const publicConstants: IJson = tool.publicConstants as IJson;
     const build = async () => {
-      const observation = await collectObservation(operation.observation, inputs, ctx.observationRuntime);
+      const observation = operation.observation.contractId === "none-v1"
+        ? undefined
+        : await collectObservation(operation.observation, inputs, ctx.observationRuntime);
       return buildProtectedRequest({
         deviceKeyId: ctx.identity.deviceKeyId,
         deviceId: ctx.identity.deviceId,
@@ -97,7 +99,7 @@ export async function dispatchProtectedTool(
         tool: toolBinding,
         relay: ctx.relay,
         inputs,
-        observation,
+        ...(observation ? { observation } : {}),
         idempotencyKey: dispatch.idempotencyKey,
         privateKey: ctx.identityStore.privateKey(ctx.identity),
       });
