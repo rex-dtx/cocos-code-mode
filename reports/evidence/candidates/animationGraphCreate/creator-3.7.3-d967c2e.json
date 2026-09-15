@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "animationGraphCreate",
+  "creator": "3.7.3",
+  "buildCommit": "d967c2e",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/validation-graph-qualification.test.js#GRAPH-V03",
+    "iterations": 5,
+    "result": "created native .animgraph, verified stable UUID, inspected read-back on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/validation-graph-qualification.test.js#GRAPH-V03",
+    "iterations": 5,
+    "result": "path traversal rejected with HTTP 400 on every iteration"
+  },
+  "persistence": "asset-db imported identity and subsequent animationGraphInspect read-back",
+  "cleanup": "created asset deleted through assetOperate in finally block on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/_helpers/cc-3x-test",
+    "artifactDirty": false
+  },
+  "qualified": true
+}
