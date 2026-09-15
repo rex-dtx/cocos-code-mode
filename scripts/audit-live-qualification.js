@@ -16,6 +16,7 @@ function log(message) {
 
 function configuredBases() {
   if (process.env.UTCP_BASE) return [process.env.UTCP_BASE.replace(/\/$/, '')];
+  if (process.env.UTCP_PORT) return [`http://localhost:${process.env.UTCP_PORT}`];
   try {
     const home = process.env.HOME || process.env.USERPROFILE || require('node:os').homedir();
     const configPath = process.env.UTCP_CONFIG_FILE || path.join(home, '.utcp_config.json');
@@ -82,17 +83,27 @@ function staticAudit() {
 }
 
 function testFiles() {
-  return fs.readdirSync(liveDir)
-    .filter((name) => name.endsWith('.test.js'))
-    .sort((a, b) => (a === 'ui-fallback.test.js' ? -1 : b === 'ui-fallback.test.js' ? 1 : a.localeCompare(b)))
-    .map((name) => path.join(liveDir, name));
+  const files = [];
+  const visit = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const entryPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) visit(entryPath);
+      else if (entry.isFile() && entry.name.endsWith('.test.js')) files.push(entryPath);
+    }
+  };
+  visit(liveDir);
+  return files.sort((a, b) => {
+    const aName = path.basename(a);
+    const bName = path.basename(b);
+    return (aName === 'ui-fallback.test.js' ? -1 : bName === 'ui-fallback.test.js' ? 1 : a.localeCompare(b));
+  });
 }
 function transportAudit(files) {
   const violations = [];
   for (const file of files) {
     const source = fs.readFileSync(file, 'utf8');
     const relative = path.relative(root, file).replaceAll(path.sep, '/');
-    if (!source.includes("require('../helpers/utcp-client')")) {
+    if (!/require\(['"](?:\.\.\/|\.\/)+helpers\/utcp-client['"]\)/.test(source)) {
       violations.push(`${relative}: must use the shared CC Bridge client`);
     }
     if (!/\b(?:getJson|postTool|healthCheck|liveWitness)\s*\(/.test(source)) {

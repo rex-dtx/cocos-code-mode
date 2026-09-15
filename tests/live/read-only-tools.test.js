@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { getJson, postTool, healthCheck } = require('../helpers/utcp-client');
+const { getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, repeatTestcase, healthCheck, resVal } = require('../helpers/utcp-client');
 
 describe('live: read-only endpoint qualification', () => {
   let health;
@@ -423,6 +423,7 @@ describe('live: read-only endpoint qualification', () => {
   });
   it('Creator 3.7 runtime pause and resume change the live preview paused flag', async (t) => {
     if (skipIfDown(t)) return;
+    await repeatTestcase('RUNTIME-F01', async () => {
     const start = await postTool('executeJavascript', {
       context: 'editor',
       code: "Editor.Message.send('scene','editor-preview-set-play',true); return true;",
@@ -463,22 +464,22 @@ describe('live: read-only endpoint qualification', () => {
         code: "Editor.Message.send('scene','editor-preview-set-play',false); return true;",
       });
     }
+    });
   });
   it('Creator 3.7 preview control returns lifecycle outcomes and state', async (t) => {
-    if (skipIfDown(t)) return;
-    const state = await postTool('runtimePreviewControl', { operation: 'state' });
-    assert.equal(state.status, 200);
-    assert.deepEqual(state.body.operation, 'state');
-    assert.equal(state.body.success, true);
-    assert.equal(typeof state.body.state?.paused, 'boolean');
-    assert.equal(typeof state.body.state?.timeScale, 'number');
-
-    const stopped = await postTool('runtimePreviewControl', { operation: 'stop' });
-    assert.equal(stopped.status, 200);
-    assert.deepEqual(stopped.body, { success: true, operation: 'stop' });
-
-    const invalid = await postTool('runtimePreviewControl', { operation: 'invalid' });
-    assert.equal(invalid.status, 400);
+    await repeatTestcase('RUNTIME-F02', async () => {
+      const state = await postTool('runtimePreviewControl', { operation: 'state' });
+      assert.equal(state.status, 200);
+      assert.deepEqual(state.body.operation, 'state');
+      assert.equal(state.body.success, true);
+      assert.equal(typeof state.body.state?.paused, 'boolean');
+      assert.equal(typeof state.body.state?.timeScale, 'number');
+      const stopped = await postTool('runtimePreviewControl', { operation: 'stop' });
+      assert.equal(stopped.status, 200);
+      assert.deepEqual(stopped.body, { success: true, operation: 'stop' });
+      const invalid = await postTool('runtimePreviewControl', { operation: 'invalid' });
+      assert.equal(invalid.status, 400);
+    });
   });
   it('Creator 3.7 TypeScript diagnostics APIs execute the project compiler and return typed errors with context', async (t) => {
     if (skipIfDown(t)) return;
