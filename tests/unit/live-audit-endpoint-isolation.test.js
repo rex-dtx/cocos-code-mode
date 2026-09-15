@@ -7,6 +7,7 @@ const { selectBase } = require('../../scripts/audit-live-qualification');
 const originalFetch = global.fetch;
 const originalBase = process.env.UTCP_BASE;
 const originalExpectedScene = process.env.UTCP_EXPECT_SCENE_UUID;
+const originalExpectedCommit = process.env.UTCP_EXPECT_COMMIT;
 
 test.afterEach(() => {
   global.fetch = originalFetch;
@@ -14,6 +15,19 @@ test.afterEach(() => {
   else process.env.UTCP_BASE = originalBase;
   if (originalExpectedScene === undefined) delete process.env.UTCP_EXPECT_SCENE_UUID;
   else process.env.UTCP_EXPECT_SCENE_UUID = originalExpectedScene;
+  if (originalExpectedCommit === undefined) delete process.env.UTCP_EXPECT_COMMIT;
+  else process.env.UTCP_EXPECT_COMMIT = originalExpectedCommit;
+});
+
+test('rejects a healthy bridge serving the wrong artifact commit', async () => {
+  process.env.UTCP_BASE = 'http://stale-project.test';
+  process.env.UTCP_EXPECT_COMMIT = 'target-commit';
+  global.fetch = async (url) => {
+    if (url.endsWith('/utcp')) return new Response('{}', { status: 200 });
+    return new Response(JSON.stringify({ commit: 'stale-commit' }), { status: 200 });
+  };
+
+  assert.equal(await selectBase(), null);
 });
 
 test('rejects a healthy bridge serving the wrong scene', async () => {
