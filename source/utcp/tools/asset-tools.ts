@@ -856,8 +856,52 @@ export class AssetTools {
     @utcpTool('assetGetAvailableUrl','Return a non-colliding db:// url for the given path (appends suffix if exists). Use before assetCreate.',{type:'object',properties:{assetPath:{type:'string'}},required:['assetPath']},{type:'object',properties:{url:{type:'string'}},required:['url']},"GET",['asset','available','url','collision','unique','name'])
     async assetGetAvailableUrl(args:{assetPath:string}):Promise<{url:string}>{ if(!args.assetPath) throw new Error('assetGetAvailableUrl requires assetPath'); const url=await Editor.Message.request('asset-db','generate-available-url',normalizePath(args.assetPath)); if(!url) throw new Error(`Failed to generate available url for ${args.assetPath}`); return {url}; }
 
-    @utcpTool('assetCreate','Create empty asset or folder at db:// path.',{type:'object',properties:{assetPath:{type:'string'},preset:{type:'string',enum:['folder','material','effect','scene','prefab','typescript','animation-clip','render-texture','physics-material','animation-graph','animation-graph-variant','animation-mask','auto-atlas','effect-header','label-atlas','terrain']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}},nullable:true}},required:['assetPath','preset']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','create','new','preset','folder','typescript'])
-    async assetCreate(args:{assetPath:string;preset:string;options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ let targetPath=normalizePath(args.assetPath); const type=args.preset; const presetMap:Record<string,string>={ 'material':'db://internal/default_file_content/material/default.mtl','effect':'db://internal/default_file_content/effect/default.effect','scene':'db://internal/default_file_content/scene/default.scene','prefab':'db://internal/default_file_content/prefab/default.prefab','animation-clip':'db://internal/default_file_content/animation-clip/default.anim','render-texture':'db://internal/default_file_content/render-texture/default.rt','physics-material':'db://internal/default_file_content/physics-material/default.pmtl','animation-graph':'db://internal/default_file_content/animation-graph/default.animgraph','animation-graph-variant':'db://internal/default_file_content/animation-graph-variant/default.animgraphvari','animation-mask':'db://internal/default_file_content/animation-mask/default.animask','auto-atlas':'db://internal/default_file_content/auto-atlas/default.pac','effect-header':'db://internal/default_file_content/effect-header/chunk','label-atlas':'db://internal/default_file_content/label-atlas/default.labelatlas','terrain':'db://internal/default_file_content/terrain/default.terrain'}; const assetOptions:AssetOperationOption={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; let result2: any = null; if(type==='folder'||type==='typescript'){ let content:string|null=null; if(type==='typescript'){ const ce=extname(targetPath); if(ce!=='.ts'){ targetPath=ce?targetPath.slice(0,-ce.length):targetPath; targetPath+='.ts'; } const cn=basename(targetPath.slice('db://'.length),'.ts'); content=this.generateTypescriptClassTemplate(cn);} result2=await Editor.Message.request('asset-db','create-asset',targetPath,content,assetOptions); if(!result2) throw new Error(`Failed to create folder at ${targetPath}`); invalidateAfterWrite(); return {reference:{id:result2.uuid,type:type}}; } const source=presetMap[type]; if(!source) throw new Error(`Unknown asset preset type: ${type}`); if(extname(targetPath)===''&&type!=='folder') targetPath+=type=='chunk'?'.chunk':extname(presetMap[type]); const assetInfo=await Editor.Message.request('asset-db','copy-asset',source,targetPath,assetOptions); if(!assetInfo) throw new Error(`Failed to create asset at ${targetPath}`); invalidateAfterWrite(); return {reference:{id:assetInfo.uuid,type:assetInfo.type}}; }
+    @utcpTool('assetCreate','Create an asset or folder at a db:// path from a Creator 3.7 preset.',{type:'object',properties:{assetPath:{type:'string'},preset:{type:'string',enum:['folder','material','effect','scene','prefab','typescript','animation-clip','render-texture','physics-material','animation-graph','animation-graph-variant','animation-mask','auto-atlas','effect-header','terrain']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}},nullable:true}},required:['assetPath','preset']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','create','new','preset','folder','typescript'])
+    async assetCreate(args:{assetPath:string;preset:string;options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}> {
+        let targetPath = normalizePath(args.assetPath);
+        const type = args.preset;
+        const presetMap: Record<string, { source: string, extension: string }> = {
+            material: { source: 'db://internal/default_file_content/mtl', extension: '.mtl' },
+            effect: { source: 'db://internal/default_file_content/effect', extension: '.effect' },
+            scene: { source: 'db://internal/default_file_content/scene', extension: '.scene' },
+            prefab: { source: 'db://internal/default_file_content/prefab', extension: '.prefab' },
+            'animation-clip': { source: 'db://internal/default_file_content/anim', extension: '.anim' },
+            'render-texture': { source: 'db://internal/default_file_content/rt', extension: '.rt' },
+            'physics-material': { source: 'db://internal/default_file_content/pmtl', extension: '.pmtl' },
+            'animation-graph': { source: 'db://internal/default_file_content/animgraph', extension: '.animgraph' },
+            'animation-graph-variant': { source: 'db://internal/default_file_content/animgraphvari', extension: '.animgraphvari' },
+            'animation-mask': { source: 'db://internal/default_file_content/animask', extension: '.animask' },
+            'auto-atlas': { source: 'db://internal/default_file_content/pac', extension: '.pac' },
+            'effect-header': { source: 'db://internal/default_file_content/chunk', extension: '.chunk' },
+            terrain: { source: 'db://internal/default_file_content/terrain', extension: '.terrain' },
+        };
+        const assetOptions: AssetOperationOption = {
+            overwrite: args.options?.overwrite ?? false,
+            rename: args.options?.rename ?? false,
+        };
+        if (type === 'folder' || type === 'typescript') {
+            let content: string | null = null;
+            if (type === 'typescript') {
+                const currentExtension = extname(targetPath);
+                if (currentExtension !== '.ts') {
+                    targetPath = currentExtension ? targetPath.slice(0, -currentExtension.length) : targetPath;
+                    targetPath += '.ts';
+                }
+                content = this.generateTypescriptClassTemplate(basename(targetPath.slice('db://'.length), '.ts'));
+            }
+            const created = await Editor.Message.request('asset-db', 'create-asset', targetPath, content, assetOptions);
+            if (!created) throw new Error(`Failed to create ${type} at ${targetPath}`);
+            invalidateAfterWrite();
+            return { reference: { id: created.uuid, type } };
+        }
+        const preset = presetMap[type];
+        if (!preset) throw new Error(`Unknown asset preset type: ${type}`);
+        if (extname(targetPath) === '') targetPath += preset.extension;
+        const assetInfo = await Editor.Message.request('asset-db', 'copy-asset', preset.source, targetPath, assetOptions);
+        if (!assetInfo) throw new Error(`Failed to create asset at ${targetPath}`);
+        invalidateAfterWrite();
+        return { reference: { id: assetInfo.uuid, type: assetInfo.type } };
+    }
 
     @utcpTool('assetImport','Import external file as asset.',{type:'object',properties:{sourceFilesystemPath:{type:'string'},targetAssetPath:{type:'string'},imageType:{type:'string',enum:['raw','texture','normal-map','sprite-frame','texture-cube']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}}}},required:['sourceFilesystemPath','targetAssetPath']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','import','file','external','image'])
     async assetImport(args:{sourceFilesystemPath:string,targetAssetPath:string,imageType?:string,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ let targetPath=normalizePath(args.targetAssetPath); const assetOptions:AssetOperationOption={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; if(args.sourceFilesystemPath.startsWith('~')) args.sourceFilesystemPath=path.join(os.homedir(),args.sourceFilesystemPath.slice(1)); args.sourceFilesystemPath=path.resolve(args.sourceFilesystemPath); args.sourceFilesystemPath=await fs.realpath(args.sourceFilesystemPath); let existingAssetInfo:AssetInfo|null=null; if(`${(Editor.Project as any).path}${targetPath.slice('db:/'.length)}`===args.sourceFilesystemPath){ await Editor.Message.request('asset-db','refresh-asset',targetPath); existingAssetInfo=await Editor.Message.request('asset-db','query-asset-info',targetPath);} const assetInfo=existingAssetInfo?existingAssetInfo:await Editor.Message.request('asset-db','import-asset',args.sourceFilesystemPath,targetPath,assetOptions); if(!assetInfo) throw new Error(`Failed to import asset to ${targetPath}`); if(assetInfo.extends&&assetInfo.importer==='image'&&args.imageType){ const meta=await Editor.Message.request('asset-db','query-asset-meta',assetInfo.uuid); if(meta&&meta.userData){ let t=args.imageType; if(t==='normal-map') t='normal map'; if(t==='texture-cube') t='texture cube'; meta.userData.type=t; await Editor.Message.request('asset-db','save-asset-meta',assetInfo.uuid,JSON.stringify(meta)); }} invalidateAfterWrite(); return {reference:{id:assetInfo.uuid,type:assetInfo.type}}; }

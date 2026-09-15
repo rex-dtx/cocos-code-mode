@@ -38,6 +38,26 @@ describe('asset batch and missing-reference tools', () => {
     assert.deepEqual(result.outcomes.map((item) => item.ok), [true, false, true]);
   });
 
+  it('creates Creator 3.7 preset assets from flat internal templates with native extensions', async () => {
+    const calls = [];
+    const restore = withEditor(async (service, message, ...args) => {
+      calls.push({ service, message, args });
+      if (message === 'copy-asset') return { uuid: 'scene-uuid', type: 'cc.SceneAsset' };
+      throw new Error(`unexpected request ${service} ${message}`);
+    });
+    try {
+      const result = await new AssetTools().assetCreate({ assetPath: 'db://assets/qualification', preset: 'scene' });
+      assert.deepEqual(result, { reference: { id: 'scene-uuid', type: 'cc.SceneAsset' } });
+      assert.deepEqual(calls, [{
+        service: 'asset-db',
+        message: 'copy-asset',
+        args: ['db://internal/default_file_content/scene', 'db://assets/qualification.scene', { overwrite: false, rename: false }],
+      }]);
+    } finally {
+      restore();
+    }
+  });
+
   it('returns every batch-operation outcome and validates bounds', async () => {
     const tools = new AssetTools();
     tools.assetOperate = async (item) => {
