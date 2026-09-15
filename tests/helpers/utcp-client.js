@@ -24,39 +24,94 @@ function discoverBase() {
   throw new Error('Cannot discover UTCP port: is cocos-pilot-3x running? Set UTCP_BASE or pass --utcp-port=49650.');
 }
 async function emitCreatorTrace(baseUrl, level, message, data) {
-  const response = await fetch(baseUrl + '/tools/editorLog', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ level, message, data }),
-  });
-  if (!response.ok) {
-    throw new Error(`Creator trace failed: POST /tools/editorLog -> ${response.status}`);
+  try {
+    const response = await fetch(baseUrl + '/tools/editorLog', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ level, message, data }),
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!response.ok) throw new Error(`status=${response.status}`);
+  } catch {
+    // Preserve the diagnostic locally without changing the tool's outcome.
+    console.warn(`[LT] TRACE_UNAVAILABLE | ${message}`);
   }
 }
 
+
+function formatTraceParams(urlPath, init) {
+  const values = Object.create(null);
+  const query = urlPath.split('?')[1];
+  if (query) for (const [key, value] of new URLSearchParams(query)) values[key] = value;
+  if (init?.body !== undefined) {
+    try {
+      const body = typeof init.body === 'string' ? JSON.parse(init.body) : init.body;
+      if (body && typeof body === 'object' && !Array.isArray(body)) Object.assign(values, body);
+    } catch {}
+  }
+  return summarizeTraceResult(values);
+}
+
+function summarizeTraceResult(body) {
+  const seen = new WeakSet();
+  let count = 0;
+  let truncated = false;
+  const serialized = JSON.stringify(body, (key, value) => {
+    if (/password|secret|token|authorization|cookie|api.?key|credential/i.test(key)) return '[REDACTED]';
+    if (++count > 100) { truncated = true; return '[truncated]'; }
+    if (typeof value === 'string' && value.length > 180) {
+      truncated = true;
+      return value.slice(0, 180) + '[truncated]';
+    }
+    if (value && typeof value === 'object') {
+      if (seen.has(value)) return '[circular]';
+      seen.add(value);
+    }
+    return value;
+  }) ?? 'undefined';
+  const text = serialized.length > 1600 ? serialized.slice(0, 1600) : serialized;
+  return text + (truncated || serialized.length > 1600 ? ' [truncated]' : '');
+}
 
 async function getJson(urlPath, init) {
   const b = discoverBase();
   const url = b + urlPath;
-  const method = init?.method || 'GET';
+  const functionName = urlPath.split('?')[0].replace(/^\/tools\//, '').replace(/^\//, '');
+  const traceParams = formatTraceParams(urlPath, init);
   const trace = process.env.UTCP_TEST_TRACE !== '0';
-  const startedAt = Date.now();
+  const traceId = require('crypto').randomBytes(4).toString('hex');
   if (trace && urlPath !== '/tools/editorLog') {
-    await emitCreatorTrace(b, 'info', `LIVE TEST CALL ${method} ${urlPath}`);
+    await emitCreatorTrace(b, 'info', `[LT][${traceId}] ${new Date().toISOString()} ${functionName} REQ | params=${traceParams}`);
   }
-  const r = await fetch(url, init);
-  const text = await r.text();
-  let body; try { body = JSON.parse(text); } catch { body = text; }
+  const startedAt = performance.now();
+  let r;
+  let text;
+  try {
+    r = await fetch(url, init);
+    text = await r.text();
+  } catch (error) {
+    if (trace && urlPath !== '/tools/editorLog') {
+      // Do not print fetch messages: they can contain transport URLs/credentials.
+      const kind = init?.signal?.aborted ? 'ABORTED' : r ? 'RESPONSE_READ_FAILED' : 'CONNECTION_FAILED';
+      const message = `[LT][${traceId}] ${new Date().toISOString()} ${functionName} ${kind} | elapsed=${(performance.now() - startedAt).toFixed(1)}ms | params=${traceParams}`;
+      await emitCreatorTrace(b, 'error', message);
+    }
+    throw error;
+  }
+  const durationMs = (performance.now() - startedAt).toFixed(1);
+  let body;
+  let parsed = true;
+  try { body = JSON.parse(text); } catch { body = text; parsed = false; }
   if (trace && urlPath !== '/tools/editorLog') {
-    await emitCreatorTrace(
-      b,
-      r.ok ? 'info' : 'warn',
-      `LIVE TEST RESULT ${r.status} ${method} ${urlPath}`,
-      { durationMs: Date.now() - startedAt },
-    );
+    const serverId = r.headers.get('x-request-id');
+    const serverDuration = r.headers.get('x-duration-ms');
+    const correlation = serverId && /^[a-zA-Z0-9_-]{1,128}$/.test(serverId) ? ` | serverId=${serverId}` : '';
+    const timing = serverDuration && /^\d+(?:\.\d+)?$/.test(serverDuration) ? ` | server=${serverDuration}ms` : '';
+    await emitCreatorTrace(b, r.ok ? 'info' : 'warn', `[LT][${traceId}] ${new Date().toISOString()} ${functionName} ${r.ok ? 'OK' : 'ERR'} ${r.status}${correlation} | result=${summarizeTraceResult(body)} | elapsed=${durationMs}ms${timing} | bytes=${Buffer.byteLength(text, 'utf8')}${parsed ? '' : ' | NON_JSON'}`);
   }
   return { ok: r.ok, status: r.status, body, text, base: b };
 }
+
 async function getExpectedErrorJson(urlPath, testId, init = {}) {
   return getJson(urlPath, {
     ...init,
