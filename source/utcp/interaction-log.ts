@@ -103,8 +103,6 @@ export function renderInteraction(entry: Entry): { text: string; truncated: bool
     add(`[cx3][api]${token} ${phase} ${text(entry.tool)}${entry.status === undefined ? '' : ` ${text(entry.status)}`}${entry.durationMs === undefined ? '' : ` · ${text(entry.durationMs)}ms`}${test}`);
     field('Timestamp', entry.ts);
     if (entry.phase === 'start') {
-        field('Method', entry.method);
-        field('Path', entry.path);
         field('Params', entry.args);
     } else if (entry.phase === 'complete') field('Result', entry.result);
     else {
