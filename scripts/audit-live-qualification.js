@@ -33,10 +33,23 @@ function configuredBases() {
 async function selectBase() {
   const bases = configuredBases();
   const expectedSceneUuid = process.env.UTCP_EXPECT_SCENE_UUID || '';
+  const expectedCommit = process.env.UTCP_EXPECT_COMMIT || '';
   for (const base of bases) {
     try {
       const response = await fetch(`${base}/utcp`);
       if (!response.ok) continue;
+      if (expectedCommit) {
+        const buildResponse = await fetch(`${base}/build-info`);
+        if (!buildResponse.ok) {
+          log(`endpoint rejected: ${base} build-info -> ${buildResponse.status}`);
+          continue;
+        }
+        const buildInfo = await buildResponse.json();
+        if (buildInfo?.commit !== expectedCommit) {
+          log(`endpoint rejected: ${base} build ${buildInfo?.commit || 'missing'} != ${expectedCommit}`);
+          continue;
+        }
+      }
       if (expectedSceneUuid) {
         const sceneResponse = await fetch(`${base}/tools/sceneGetInfo`);
         if (!sceneResponse.ok) {
@@ -56,7 +69,7 @@ async function selectBase() {
       log(`endpoint unavailable: ${base}`);
     }
   }
-  return expectedSceneUuid ? null : process.env.UTCP_BASE || null;
+  return expectedSceneUuid || expectedCommit ? null : process.env.UTCP_BASE || null;
 }
 
 function portfolioSnapshot() {
