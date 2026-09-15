@@ -426,7 +426,7 @@
       "candidates": [
         {
           "name": "animationGraphCreate",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Create a valid native graph asset, prove import/read-back, and roll back on failure.",
           "route": "asset preset plus graph validator",
           "prerequisites": [
@@ -441,6 +441,7 @@
           "negativeTestID": "candidate.animationGraphCreate.negative.v1",
           "fixtureID": "fixture.candidate.animationGraphCreate.v1",
           "evidenceArtifact": "reports/evidence/candidates/animationGraphCreate/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/validation-graph-qualification.test.js#GRAPH-V03",
           "proposedExecutionPhase": "P3"
         },
         {
