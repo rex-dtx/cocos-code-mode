@@ -123,17 +123,62 @@ async function getExpectedErrorJson(urlPath, testId, init = {}) {
   });
 }
 
+const actionDelayMs = Math.min(5000, Math.max(0, Number(process.env.CCB_ACTION_DELAY_MS || 15) || 0));
+
+async function delayAfterAction() {
+  if (actionDelayMs > 0) await new Promise((resolve) => setTimeout(resolve, actionDelayMs));
+}
+
+async function logTestIteration(testId, iteration, total, status, reason) {
+  const suffix = reason ? ` | ${String(reason).slice(0, 240)}` : '';
+  try {
+    const result = await getJson('/tools/editorLog', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        level: status === 'FAIL' ? 'error' : status === 'PASS' ? 'info' : 'warn',
+        message: `[TC ${testId}] ${iteration}/${total} ${status}${suffix}`,
+        data: { testId, iteration, total, status, reason: reason ? String(reason) : undefined },
+      }),
+    });
+    if (!result.ok) console.warn(`[TC ${testId}] ${iteration}/${total} editorLog unavailable (${result.status})`);
+    return result;
+  } catch (error) {
+    console.warn(`[TC ${testId}] ${iteration}/${total} editorLog unavailable (${error?.message || error})`);
+    return null;
+  }
+}
+const defaultTestIterations = Math.min(100, Math.max(5, Number(process.env.CCB_TEST_ITERATIONS || 5) || 5));
+
+async function repeatTestcase(testId, fn, total = defaultTestIterations) {
+  for (let iteration = 1; iteration <= total; iteration++) {
+    await logTestIteration(testId, iteration, total, 'START');
+    try {
+      const outcome = await fn({ iteration, total });
+      if (outcome?.status === 'SKIP') {
+        await logTestIteration(testId, iteration, total, 'SKIP', outcome.reason);
+      } else {
+        await logTestIteration(testId, iteration, total, 'PASS');
+      }
+    } catch (error) {
+      await logTestIteration(testId, iteration, total, 'FAIL', error?.message || error);
+      throw error;
+    }
+  }
+}
 
 async function postTool(toolPath, body) {
-  return getJson(`/tools/${toolPath}`, {
+  const result = await getJson(`/tools/${toolPath}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
+  await delayAfterAction();
+  return result;
 }
 
 async function postExpectedErrorTool(toolPath, body, testId) {
-  return getJson(`/tools/${toolPath}`, {
+  const result = await getJson(`/tools/${toolPath}`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -142,6 +187,8 @@ async function postExpectedErrorTool(toolPath, body, testId) {
     },
     body: JSON.stringify(body),
   });
+  await delayAfterAction();
+  return result;
 }
 
 async function healthCheck() {
@@ -168,4 +215,4 @@ function resVal(body) {
   return null;
 }
 
-module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, healthCheck, getCanvasReference, resVal };
+module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, logTestIteration, repeatTestcase, healthCheck, getCanvasReference, resVal };

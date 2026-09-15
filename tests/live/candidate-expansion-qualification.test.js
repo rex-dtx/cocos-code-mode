@@ -1,7 +1,7 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, healthCheck } = require('../helpers/utcp-client');
+const { getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, repeatTestcase, healthCheck } = require('../helpers/utcp-client');
 
 describe('live: candidate expansion qualification witnesses', () => {
   let health;
@@ -79,8 +79,9 @@ const root=new cc.Node('__candidate_hierarchy__');canvas.addChild(root);const ch
 
   it('qualifies particle, terrain, and physics topology audits with real scene fixtures', async (t) => {
     if (skipIfDown(t)) return;
-    const fixture = await postTool('executeJavascript', {
-      context: 'scene',
+    await repeatTestcase('PHYS-PART-C01', async () => {
+      const fixture = await postTool('executeJavascript', {
+        context: 'scene',
       code: `const sc=cc.director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};
 for(const name of ['__candidate_particle__','__candidate_terrain__','__candidate_p2__','__candidate_p2_bad__','__candidate_p3__','__candidate_p3_bad__','__candidate_audio__']){const old=canvas.getChildByName(name);if(old){old.removeFromParent();old.destroy();}}
 const out={};let cameraNode=null;const stack=[sc];while(stack.length&&!cameraNode){const n=stack.pop();if(n.getComponent&&n.getComponent(cc.Camera))cameraNode=n;else stack.push(...(n.children||[]));}if(!cameraNode)return {skip:true};
@@ -164,6 +165,7 @@ return out;`,
       });
       assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
     }
+    });
   });
 
   it('qualifies compound Box2D body creation with rollback-safe preflight', async (t) => {
