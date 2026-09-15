@@ -1,4 +1,5 @@
 import { randomBytes } from 'crypto';
+import { debugEnabled, setDebugLogging } from './logging-policy';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { ToolRegistry } from './decorators';
@@ -266,8 +267,6 @@ export function findMissingRequiredInputs(schema: JsonSchema, args: Record<strin
 }
 
 // Console output is intentionally concise; JSONL keeps the complete structured event.
-// Mutable so the menu toggle (toggleDebug) can flip it at runtime, not just via env var.
-let debugEnabled = process.env.UTCP_DEBUG === '1' || process.env.UTCP_DEBUG === 'true';
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 let debugLogFile = join(DEBUG_LOG_DIR, `utcp-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
 
@@ -657,7 +656,7 @@ export class UtcpServerManager {
     }
 
     setDebugEnabled(enabled: boolean): boolean {
-        debugEnabled = enabled;
+        setDebugLogging(enabled);
         if (enabled) {
             try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
         }

@@ -1,9 +1,10 @@
 'use strict';
-const { describe, it } = require('node:test');
+const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { requireDist } = require('../helpers/require-dist');
 const { EditorTools } = requireDist('utcp/tools/editor-tools.js');
 const { ToolError } = requireDist('utcp/tool-error.js');
+const loggingPolicy = requireDist('utcp/logging-policy.js');
 
 const fs = require('node:fs');
 const os = require('node:os');
@@ -76,6 +77,30 @@ describe('editorGetLogs bounded search', () => {
 });
 
 describe('editorLog', () => {
+  let previousDebugEnabled;
+  beforeEach(() => {
+    previousDebugEnabled = loggingPolicy.debugEnabled;
+    loggingPolicy.setDebugLogging(true);
+  });
+  afterEach(() => loggingPolicy.setDebugLogging(previousDebugEnabled));
+
+  it('applies OFF → ON → OFF immediately while retaining warnings and errors', (t) => {
+    const entries = captureConsole(t);
+    const tool = new EditorTools();
+    for (const enabled of [false, true, false]) {
+      loggingPolicy.setDebugLogging(enabled);
+      entries.length = 0;
+      for (const level of ['debug', 'info', 'warn', 'error']) {
+        const result = tool.editorLog({ level, message: `probe-${level}` });
+        assert.equal(result.success, true);
+      }
+      assert.deepEqual(entries.map(entry => entry.level),
+        enabled ? ['log', 'info', 'warn', 'error'] : ['warn', 'error']);
+    }
+    assert.throws(() => tool.editorLog({ level: 'info', message: ' ' }), invalid);
+    assert.throws(() => tool.editorLog({ level: 'debug', message: 'bad payload', data: 1n }), invalid);
+  });
+
   it('keeps debug visible to the project-log reader and preserves JSON payload text', (t) => {
     const entries = captureConsole(t);
     new EditorTools().editorLog({ level: 'debug', message: '  Agent %s  ', data: { text: 'Tiếng Việt\nnext', ready: false } });
