@@ -123,7 +123,7 @@ async function getExpectedErrorJson(urlPath, testId, init = {}) {
   });
 }
 
-const actionDelayMs = Math.min(5000, Math.max(0, Number(process.env.CCB_ACTION_DELAY_MS || 15) || 0));
+const actionDelayMs = Math.min(5000, Math.max(0, Number(process.env.CCB_ACTION_DELAY_MS || 5) || 0));
 
 async function delayAfterAction() {
   if (actionDelayMs > 0) await new Promise((resolve) => setTimeout(resolve, actionDelayMs));
