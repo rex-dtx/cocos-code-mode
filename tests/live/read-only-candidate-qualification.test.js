@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { getJson, getExpectedErrorJson, postTool, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
+const { getJson, getExpectedErrorJson, postTool, repeatTestcase, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 describe('live: read-only candidate qualification witnesses', () => {
   let health;
@@ -152,5 +152,28 @@ describe('live: read-only candidate qualification witnesses', () => {
       });
       assert.equal(snapshot.status, 200, JSON.stringify(snapshot.body));
     }
+  });
+
+  it('validates target project settings without mutation', async (t) => {
+    if (skipIfDown(t)) return;
+    await repeatTestcase('PROJECT-SETTINGS-V01', async () => {
+      const valid = await getJson('/tools/projectSettingsValidate?target=web-desktop');
+      assert.equal(valid.status, 200, JSON.stringify(valid.body));
+      assert.equal(valid.body.valid, true);
+      assert.equal(valid.body.target, 'web-desktop');
+      assert.equal(valid.body.checkedPaths, 0);
+      assert.deepEqual(valid.body.issues, []);
+
+      const missingPath = '__ccb3x_missing_setting__';
+      const invalid = await getJson(`/tools/projectSettingsValidate?target=web-desktop&requiredPaths%5B0%5D=${missingPath}`);
+      assert.equal(invalid.status, 200, JSON.stringify(invalid.body));
+      assert.equal(invalid.body.valid, false);
+      assert.equal(invalid.body.checkedPaths, 1);
+      assert.deepEqual(invalid.body.issues, [{
+        path: missingPath,
+        code: 'MISSING_SETTING',
+        message: `Required setting '${missingPath}' is not present.`,
+      }]);
+    });
   });
 });

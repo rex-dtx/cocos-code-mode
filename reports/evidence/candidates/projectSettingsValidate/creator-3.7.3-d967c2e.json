@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "projectSettingsValidate",
+  "creator": "3.7.3",
+  "buildCommit": "d967c2e",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/read-only-candidate-qualification.test.js#PROJECT-SETTINGS-V01",
+    "iterations": 5,
+    "result": "web-desktop target with no required paths returned valid=true, checkedPaths=0, and no issues on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/read-only-candidate-qualification.test.js#PROJECT-SETTINGS-V01",
+    "iterations": 5,
+    "result": "missing required setting returned valid=false with deterministic MISSING_SETTING issue on every iteration"
+  },
+  "persistence": "read-only validator; no settings mutation",
+  "cleanup": "read-only workflow created no fixture state",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/_helpers/cc-3x-test",
+    "artifactDirty": false
+  },
+  "qualified": true
+}
