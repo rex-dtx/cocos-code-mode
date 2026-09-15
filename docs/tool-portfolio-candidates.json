@@ -1858,11 +1858,11 @@
     },
     {
       "name": "projectSettingsValidate",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Validate cross-setting compatibility for the declared Creator/target profile.",
       "domain": "build-platform",
       "proposedExecutionPhase": "P6",
-      "route": "versioned project and target settings validator",
+      "route": "project config read-only validator",
       "prerequisites": [
         "project-settings-read",
         "build-schema"
@@ -1874,7 +1874,8 @@
       "positiveTestID": "candidate.projectSettingsValidate.positive.v1",
       "negativeTestID": "candidate.projectSettingsValidate.negative.v1",
       "fixtureID": "fixture.candidate.projectSettingsValidate.v1",
-      "evidenceArtifact": "reports/evidence/candidates/projectSettingsValidate/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/projectSettingsValidate/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/read-only-candidate-qualification.test.js#PROJECT-SETTINGS-V01"
     }
   ]
 }
