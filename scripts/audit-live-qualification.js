@@ -14,6 +14,10 @@ function log(message) {
   if (verbose) console.log(`[live-audit] ${message}`);
 }
 
+function configureTraceDefault() {
+  if (process.env.UTCP_TEST_TRACE === undefined) process.env.UTCP_TEST_TRACE = '1';
+}
+
 function configuredBases() {
   if (process.env.UTCP_BASE) return [process.env.UTCP_BASE.replace(/\/$/, '')];
   if (process.env.UTCP_PORT) return [`http://localhost:${process.env.UTCP_PORT}`];
@@ -175,7 +179,7 @@ function statusForRun(run) {
 
 async function main() {
   const base = await selectBase();
-  process.env.UTCP_TEST_TRACE = '1';
+  configureTraceDefault();
   const files = testFiles();
   log(`starting ${files.length} live test files${base ? ` against ${base}` : ''}`);
   const portfolio = portfolioSnapshot();
@@ -245,4 +249,4 @@ if (require.main === module) {
   main().catch((error) => { console.error(`live qualification audit failed: ${error.message}`); process.exitCode = 1; });
 }
 
-module.exports = { configuredBases, selectBase };
+module.exports = { configuredBases, configureTraceDefault, selectBase };
