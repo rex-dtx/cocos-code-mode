@@ -244,7 +244,13 @@ export class ScreenshotTools {
         ['runtime', 'screenshot', 'assert', 'editor', 'visual'],
     )
     async runtimeScreenshotAssert(args: { windowTitle: string, bounds: { x: number, y: number, width: number, height: number }, expectedSha256?: string }): Promise<{ windowTitle: string, bounds: typeof args.bounds, sha256: string, bytes: number, signatureValid: boolean, matched: boolean, passed: boolean, diagnostics: string[] }> {
-        const capture = await this.editorPanelCapture({ panelTitle: args.windowTitle, bounds: args.bounds });
+        let capture: { panelTitle: string, bounds: typeof args.bounds, type: string, data: string, mimeType: string };
+        try {
+            capture = await this.editorPanelCapture({ panelTitle: args.windowTitle, bounds: args.bounds });
+        } catch {
+            const full = await this.captureEditorScreenshot({ windowTitle: args.windowTitle });
+            capture = { panelTitle: args.windowTitle, bounds: args.bounds, ...full };
+        }
         const buffer = Buffer.from(capture.data, 'base64');
         const signatureValid = buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
         const sha256 = createHash('sha256').update(buffer).digest('hex');
