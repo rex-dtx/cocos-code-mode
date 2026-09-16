@@ -13,7 +13,7 @@ export function queryEditorMessage(channel: string, message: string): Promise<un
         pending = new Promise((resolve, reject) => {
             // Settle subscribers even if IPC never resolves. Keep the slot occupied
             // until the real request settles, so later polls cannot pile up IPC.
-            const timer = setTimeout(() => reject(new Error('Scene query deadline exceeded.')), 5000);
+            const timer = setTimeout(() => reject(Object.assign(new Error('Scene query deadline exceeded.'), { code: 'EDITOR_IPC_TIMEOUT' })), 5000);
             timer.unref?.();
             Promise.resolve().then(() => Editor.Message.request(channel, message)).then(value => {
                 clearTimeout(timer);
