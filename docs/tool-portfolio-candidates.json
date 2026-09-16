@@ -1838,7 +1838,7 @@
     },
     {
       "name": "buildArtifactServe",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Serve one completed web artifact and return verified URL/lifecycle.",
       "domain": "build-platform",
       "proposedExecutionPhase": "P6",
@@ -1854,7 +1854,8 @@
       "positiveTestID": "candidate.buildArtifactServe.positive.v1",
       "negativeTestID": "candidate.buildArtifactServe.negative.v1",
       "fixtureID": "fixture.candidate.buildArtifactServe.v1",
-      "evidenceArtifact": "reports/evidence/candidates/buildArtifactServe/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/buildArtifactServe/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/build-artifact-serve-qualification.test.js#BUILD-ARTIFACT-SERVE-01"
     },
     {
       "name": "projectSettingsValidate",

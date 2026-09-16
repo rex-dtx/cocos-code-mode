@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildArtifactServe",
+  "creator": "3.7.3",
+  "buildCommit": "3deadef",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/build-artifact-serve-qualification.test.js#BUILD-ARTIFACT-SERVE-01",
+    "iterations": 5,
+    "result": "served a disposable project-local index.html, verified HTTP 200/content, stopped the server, and proved the URL no longer accepted connections on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/build-artifact-serve-qualification.test.js#BUILD-ARTIFACT-SERVE-01",
+    "iterations": 5,
+    "result": "project traversal returned INVALID_ARGUMENT 400 and a missing artifact returned TARGET_NOT_FOUND 404 on every iteration"
+  },
+  "persistence": "bounded runtime server lifecycle; no persistent project mutation",
+  "cleanup": "server stopped and disposable temp artifact directory removed on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T05:13:13.935Z"
+  },
+  "qualified": true
+}
