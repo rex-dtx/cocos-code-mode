@@ -17,9 +17,12 @@ describe('live: verified game-view runtime session workflows', () => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
 
     await repeatTestcase('RUNTIME-SESSION-01', async ({ iteration }) => {
-      const started = await postTool('runtimePreviewControl', { operation: 'start' });
-      assert.equal(started.status, 200, JSON.stringify(started.body));
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const state = await postTool('runtimePreviewControl', { operation: 'state' });
+      assert.equal(state.status, 200, JSON.stringify(state.body));
+      if (state.body.state?.paused) {
+        const resumed = await postTool('runtimePreviewControl', { operation: 'resume' });
+        assert.equal(resumed.status, 200, JSON.stringify(resumed.body));
+      }
 
       let sessionId;
       try {
@@ -89,8 +92,8 @@ describe('live: verified game-view runtime session workflows', () => {
           assert.equal(stale.body.ready, false);
           assert.equal(stale.body.stale, true);
         }
-        const stopped = await postTool('runtimePreviewControl', { operation: 'stop' });
-        assert.equal(stopped.status, 200, JSON.stringify(stopped.body));
+        // The preview already existed before this scenario. Leave it running;
+        // only the bounded local runtime session is stopped above.
       }
     });
   });
