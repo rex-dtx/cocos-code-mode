@@ -1594,7 +1594,7 @@
     },
     {
       "name": "runtimeInputDispatch",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Dispatch bounded keyboard/pointer actions to one session target.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
