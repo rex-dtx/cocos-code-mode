@@ -3,7 +3,7 @@ import { performance } from 'perf_hooks';
 import { getBuildInfo } from '../../build-info';
 import { utcpTool } from '../decorators';
 import { controlNumber, controlObject, controlText, invalidControl } from '../editor-control-validation';
-import { queryEditorMessage } from '../editor-state';
+import { beginEditorMessageProbe } from '../editor-state';
 
 interface HandshakeArgs { timeoutMs?: number; expectedProjectPath?: string }
 type Probe = { status: 'responsive' | 'timeout' | 'error' | 'invalid-response'; sceneReady: boolean | null; code: string | null };
@@ -30,7 +30,9 @@ export class EditorHandshakeTools {
             instanceId: { type: 'string' }, projectPath: nullableText, editorVersion: nullableText,
             projectMatches: nullableBoolean,
             build: { type: 'object', properties: { version: { type: 'string' }, commit: { type: 'string' }, branch: { type: 'string' }, dirty: { type: 'boolean' }, builtAt: { type: 'string' } }, required: ['version', 'commit', 'branch', 'dirty', 'builtAt'] },
-            probe: { type: 'object', properties: { status: { type: 'string', enum: ['responsive', 'timeout', 'error', 'invalid-response'] }, sceneReady: nullableBoolean, code: nullableText }, required: ['status', 'sceneReady', 'code'] },
+            probe: { type: 'object', properties: { status: { type: 'string', enum: ['responsive', 'timeout', 'error', 'invalid-response'] }, sceneReady: nullableBoolean, code: nullableText,
+                evidence: { type: 'object', properties: { requestId: { type: 'string' }, startedAt: { type: 'integer' }, ageMs: { type: 'integer' }, shared: { type: 'boolean' }, settled: { type: 'boolean' } }, required: ['requestId', 'startedAt', 'ageMs', 'shared', 'settled'] },
+            }, required: ['status', 'sceneReady', 'code', 'evidence'] },
             capturedAt: { type: 'integer' }, elapsedMs: { type: 'integer' },
         },
         required: ['instanceId', 'projectPath', 'editorVersion', 'projectMatches', 'build', 'probe', 'capturedAt', 'elapsedMs'],
@@ -44,7 +46,8 @@ export class EditorHandshakeTools {
         const projectPath = typeof Editor.Project?.path === 'string' ? Editor.Project.path : null;
         const editorVersion = typeof Editor.App?.version === 'string' ? Editor.App.version : null;
         let timer: NodeJS.Timeout | undefined;
-        const request = queryEditorMessage('scene', 'query-is-ready').then((ready): Probe => {
+        const ipc = beginEditorMessageProbe('scene', 'query-is-ready');
+        const request = ipc.promise.then((ready): Probe => {
             if (typeof ready !== 'boolean') return { status: 'invalid-response', sceneReady: null, code: 'INVALID_EDITOR_RESPONSE' };
             return { status: 'responsive', sceneReady: ready, code: null };
         }, (error): Probe => error?.code === 'EDITOR_IPC_TIMEOUT'
@@ -59,7 +62,7 @@ export class EditorHandshakeTools {
         return {
             instanceId: this.instanceId, projectPath, editorVersion,
             projectMatches: expected === null || projectPath === null ? null : normalizedProject(expected) === normalizedProject(projectPath),
-            build: getBuildInfo(), probe, capturedAt: Date.now(), elapsedMs: Math.round(performance.now() - started),
+            build: getBuildInfo(), probe: { ...probe, evidence: ipc.evidence() }, capturedAt: Date.now(), elapsedMs: Math.round(performance.now() - started),
         };
     }
 }
