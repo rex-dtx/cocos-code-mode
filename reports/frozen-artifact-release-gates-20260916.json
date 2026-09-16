@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-16",
+  "artifact": {
+    "file": "cc-bridge-3x-v200-260916-172316.zip",
+    "bytes": 35503113,
+    "sha256": "988bb38170c0f8605146ab57460e2fe13478923e8dc31b65246e69579dffd209",
+    "version": "2.0.0-dev.89b2ee2",
+    "build": {
+      "commit": "89b2ee2",
+      "branch": "feat/ccb3x-api-capability-expansion",
+      "dirty": false,
+      "builtAt": "2026-09-16T10:23:16.091Z"
+    }
+  },
+  "staticGates": {
+    "build": "pass",
+    "creatorCommonJsLoad": "pass",
+    "unitTests": { "passed": 386, "failed": 0, "skipped": 0 },
+    "portfolioAudit": "pass",
+    "sourceRegistrations": 213,
+    "expansionRegistrations": 127,
+    "qualifiedTools": 157
+  },
+  "packageExtraction": {
+    "status": "pass",
+    "packageJsonPresent": true,
+    "mainEntry": "./dist/main.js",
+    "mainEntryPresent": true,
+    "buildInfoMatches": true,
+    "temporaryDirectoryRemoved": true
+  },
+  "rollback": {
+    "status": "pass-disposable-cycle",
+    "method": "replace an isolated project extension directory with a source junction, preserve a timestamped backup, remove the junction, and restore the backup",
+    "backupCreated": true,
+    "junctionResolvedToSource": true,
+    "backupRestored": true,
+    "temporaryProjectRemoved": true
+  },
+  "liveManual": {
+    "endpoint": "http://localhost:51789",
+    "creator": "3.7.3",
+    "loadedBuild": "01635c7-dirty",
+    "toolCount": 213,
+    "manualSchemaTest": "tests/live/manual.test.js",
+    "manualSchemaResult": "8/8 pass",
+    "limitation": "The live Creator had not yet reloaded the frozen 89b2ee2 package; restart/install evidence for this exact ZIP remains open."
+  },
+  "remainingGates": [
+    "reload/install the frozen ZIP and confirm build-info/manual on Creator 3.7.3",
+    "run expanded/full live audit on the frozen artifact",
+    "close competitor-union parity and >=90% verified workflow coverage"
+  ]
+}
