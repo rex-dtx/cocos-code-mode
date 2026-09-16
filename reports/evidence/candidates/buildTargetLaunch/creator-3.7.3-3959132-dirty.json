@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildTargetLaunch",
+  "creator": "3.7.3",
+  "buildCommit": "3959132",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/build-target-qualification.test.js#BUILD-TARGET-01",
+    "iterations": 5,
+    "result": "launched the exact disposable project-local web artifact through the bounded web-browser target and returned a verified server identity, URL, and lifecycle on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/build-target-qualification.test.js#BUILD-TARGET-01",
+    "iterations": 5,
+    "result": "native-desktop was rejected with UNSUPPORTED_TARGET 422 on every iteration"
+  },
+  "persistence": "runtime launch lifecycle only; no persistent project mutation",
+  "cleanup": "launched target server stopped and disposable artifact directory removed on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T06:58:17.728Z"
+  },
+  "qualified": true
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildTargetSmoke",
+  "creator": "3.7.3",
+  "buildCommit": "3959132",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/build-target-qualification.test.js#BUILD-TARGET-01",
+    "iterations": 5,
+    "result": "fetched the launched target URL, observed HTTP 200, nonzero bytes, and exact expected content on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/build-target-qualification.test.js#BUILD-TARGET-01",
+    "iterations": 5,
+    "result": "content mismatch returned passed=false without false success and missing target identity returned TARGET_NOT_FOUND 404 on every iteration"
+  },
+  "persistence": "read-only observation of one active launched target",
+  "cleanup": "target server stopped and disposable artifact directory removed on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T06:58:17.728Z"
+  },
+  "qualified": true
+}
