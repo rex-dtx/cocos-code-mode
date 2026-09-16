@@ -1567,7 +1567,7 @@
     },
     {
       "name": "editorPanelCapture",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Capture one named editor panel with exact bounds and image validation.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1581,7 +1581,8 @@
       "positiveTestID": "candidate.editorPanelCapture.positive.v1",
       "negativeTestID": "candidate.editorPanelCapture.negative.v1",
       "fixtureID": "fixture.candidate.editorPanelCapture.v1",
-      "evidenceArtifact": "reports/evidence/candidates/editorPanelCapture/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/editorPanelCapture/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/editor-panel-capture-qualification.test.js#EDITOR-PANEL-CAPTURE-01"
     },
     {
       "name": "runtimeInputDispatch",

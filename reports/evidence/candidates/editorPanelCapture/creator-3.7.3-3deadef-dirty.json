@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "editorPanelCapture",
+  "creator": "3.7.3",
+  "buildCommit": "3deadef",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/editor-panel-capture-qualification.test.js#EDITOR-PANEL-CAPTURE-01",
+    "iterations": 5,
+    "result": "captured the live Cocos Creator editor window at explicit 64x64 bounds and validated image/png plus the PNG base64 signature on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/editor-panel-capture-qualification.test.js#EDITOR-PANEL-CAPTURE-01",
+    "iterations": 5,
+    "result": "a missing panel failed instead of fabricating an image, and zero-width bounds were rejected with HTTP 400 on every iteration"
+  },
+  "persistence": "read-only editor window capture; no project or scene mutation",
+  "cleanup": "no fixture state created",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T05:13:13.935Z"
+  },
+  "qualified": true
+}
