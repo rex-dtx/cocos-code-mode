@@ -55,7 +55,7 @@ const DEAD_MANUAL_EMPTY = { utcp_version: '1.0.1', manual_version: '1.0.0', tool
 
 describe('bootstrap handshake evidence', () => {
   it('distinguishes responsive not-ready, timeout, malformed response and old builds without poisoning discovery', async () => {
-    const config = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const config = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const payload = { instanceId: 'instance', probe: { status: 'responsive', sceneReady: false, code: null } };
     for (const [response, status] of [
       [payload, 'responsive'],
@@ -69,23 +69,23 @@ describe('bootstrap handshake evidence', () => {
         'http://localhost:11111/build-info': LIVE_BUILD,
         'http://localhost:11111/tools/editorHandshake?timeoutMs=1000': response,
       }) });
-      assert.equal(cache.manuals.ccb3x.handshake.status, status);
-      assert.equal(cache.manuals.ccb3x.live, true, 'manual discovery is independent of IPC readiness');
-      if (status === 'responsive') assert.equal(cache.manuals.ccb3x.handshake.result.probe.sceneReady, false);
+      assert.equal(cache.manuals.ccp3x.handshake.status, status);
+      assert.equal(cache.manuals.ccp3x.live, true, 'manual discovery is independent of IPC readiness');
+      if (status === 'responsive') assert.equal(cache.manuals.ccp3x.handshake.result.probe.sceneReady, false);
     }
     const old = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(), fetchJson: mockFetch({
       'http://localhost:11111/utcp': LIVE_MANUAL, 'http://localhost:11111/build-info': LIVE_BUILD,
     }) });
-    assert.equal(old.manuals.ccb3x.handshake.status, 'unsupported');
+    assert.equal(old.manuals.ccp3x.handshake.status, 'unsupported');
   });
 
   it('never reuses cached handshake success after failed or omitted probes', async () => {
-    const priorCache = { manuals: { ccb3x: makePriorEntry({ handshake: { status: 'responsive', result: { instanceId: 'old' } } }) } };
-    for (const entries of [[{ name: 'ccb3x', port: 11111 }], []]) {
+    const priorCache = { manuals: { ccp3x: makePriorEntry({ handshake: { status: 'responsive', result: { instanceId: 'old' } } }) } };
+    for (const entries of [[{ name: 'ccp3x', port: 11111 }], []]) {
       const cache = await buildCache({ utcpConfig: utcpConfigFor(entries), priorCache, now: new Date(), fetchJson: async () => null });
-      assert.notEqual(cache.manuals.ccb3x.handshake.status, 'responsive');
-      assert.equal(cache.manuals.ccb3x.handshake.result, null);
-      assert.equal(cache.manuals.ccb3x.toolCount, 42);
+      assert.notEqual(cache.manuals.ccp3x.handshake.status, 'responsive');
+      assert.equal(cache.manuals.ccp3x.handshake.result, null);
+      assert.equal(cache.manuals.ccp3x.toolCount, 42);
     }
   });
 });

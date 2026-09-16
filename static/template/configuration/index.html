@@ -3,8 +3,8 @@
     <!-- Port Section -->
     <ui-section class="config" header="Server Configuration" expand>
         <ui-prop>
-            <ui-label slot="label" class="label">Server Port</ui-label>
-            <ui-num-input slot="content" id="port-input" value="3000" step="1"></ui-num-input>
+            <ui-label slot="label" class="label">Fixed Port (0 = auto)</ui-label>
+            <ui-num-input slot="content" id="port-input" value="0" min="0" max="65535" step="1"></ui-num-input>
             <ui-button slot="content" id="save-port-btn" class="blue">Update</ui-button>
         </ui-prop>
     </ui-section>

@@ -108,9 +108,9 @@ await ccp3x.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['
 Use the read-only scan first. It walks the open scene/prefab, compares each serialized component class against the editor's currently registered component classes, and returns the exact node path, component UUID, and class ID. Repair is deliberately explicit: pass the affected node plus component reference (or expected class ID), then provide either the replacement class ID or a script asset reference. The bridge verifies the replacement is registered, removes only the selected component, adds the replacement, snapshots for undo, and reads back the created component. A missing source script cannot be recreated automatically; restore the script asset or choose an existing registered replacement.
 
 ```typescript
-const report = await ccb3x.sceneScriptHealthScan({ limit: 200 });
+const report = await ccp3x.sceneScriptHealthScan({ limit: 200 });
 const finding = report.findings[0];
-await ccb3x.sceneScriptRepair({
+await ccp3x.sceneScriptRepair({
   nodeReference: finding.nodeReference,
   componentReference: finding.componentReference,
   expectedClassId: finding.classId,

@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
 import { getBuildInfo } from '../../build-info';
@@ -17,8 +16,7 @@ function normalizedProject(value: string): string {
 }
 
 export class EditorHandshakeTools {
-    // The server constructs a fresh tool instance for each registration/start.
-    private readonly instanceId = randomBytes(16).toString('hex');
+    constructor(private readonly instanceId: string) {}
 
     @utcpTool('editorHandshake', 'Read-only connectivity handshake. Returns bridge instance/build and project identity, plus a bounded scene IPC probe. sceneReady:false still means responsive; null means unverified. Compare expectedProjectPath before mutations. Always exposed in every profile. Transport/registration failures must be handled by the client. No panels, scene changes or background heartbeat.', {
         type: 'object', additionalProperties: false,

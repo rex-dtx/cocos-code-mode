@@ -36,6 +36,7 @@ it('handshake distinguishes readiness, wrong project and hung IPC through HTTP i
     assert.deepEqual(ready.probe, { status: 'responsive', sceneReady: true, code: null });
     assert.equal(ready.projectMatches, null);
     assert.equal(ready.instanceId, wrong.instanceId);
+    assert.equal(ready.instanceId, first.instanceId);
     respond = async () => 'false';
     assert.equal((await handshake()).probe.status, 'invalid-response');
     respond = async () => { throw new Error('scene unavailable'); };
@@ -52,7 +53,9 @@ it('handshake distinguishes readiness, wrong project and hung IPC through HTTP i
     respond = async () => true;
     assert.equal((await handshake()).probe.sceneReady, true);
     const otherPort = await second.start(0);
-    assert.notEqual((await handshake({}, `http://127.0.0.1:${otherPort}`)).instanceId, ready.instanceId);
+    const other = await handshake({}, `http://127.0.0.1:${otherPort}`);
+    assert.equal(other.instanceId, second.instanceId);
+    assert.notEqual(other.instanceId, ready.instanceId);
     const invalid = await fetch(`${base}/tools/editorHandshake?expectedProjectPath=relative`);
     assert.equal(invalid.status, 400);
   } finally {
@@ -71,16 +74,16 @@ it('server restart renews hung probes and late old completion cannot evict a new
     request: () => { calls++; return new Promise(resolve => releases.push(resolve)); },
   } };
   const first = new UtcpServerManager();
-  const second = new UtcpServerManager();
   const probe = async port => (await fetch(`http://127.0.0.1:${port}/tools/editorHandshake?timeoutMs=5`)).json();
   try {
     const port = await first.start(0);
     const before = await probe(port);
     assert.equal(before.probe.status, 'timeout');
     await first.stop();
-    const nextPort = await second.start(0);
+    const nextPort = await first.start(0);
     const after = await probe(nextPort);
     assert.notEqual(after.instanceId, before.instanceId);
+    assert.equal(after.instanceId, first.instanceId);
     assert.equal(calls, 2, 'new server must issue a fresh probe');
     releases[0](true);
     await new Promise(resolve => setImmediate(resolve));
@@ -93,7 +96,6 @@ it('server restart renews hung probes and late old completion cannot evict a new
   } finally {
     releases.forEach(resolve => resolve(true));
     await first.stop();
-    await second.stop();
     global.Editor = original;
   }
 });
