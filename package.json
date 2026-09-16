@@ -99,6 +99,21 @@
       },
       {
         "path": "CC Bridge 3x",
+        "label": "Restart Server",
+        "message": "restart-server"
+      },
+      {
+        "path": "CC Bridge 3x",
+        "label": "Toggle Debug Logging",
+        "message": "toggle-debug"
+      },
+      {
+        "path": "CC Bridge 3x",
+        "label": "Open Logs",
+        "message": "open-debug-folder"
+      },
+      {
+        "path": "CC Bridge 3x",
         "label": "Settings",
         "message": "open-panel"
       }
@@ -192,6 +207,11 @@
       "save-extension-settings": {
         "methods": [
           "saveExtensionSettings"
+        ]
+      },
+      "toggle-debug": {
+        "methods": [
+          "toggleDebugLogging"
         ]
       }
     }

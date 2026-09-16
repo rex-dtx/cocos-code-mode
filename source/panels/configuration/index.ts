@@ -5,6 +5,8 @@ import { isAbsolute, join } from 'path';
 interface Settings { fixedPort: number; configPath: string }
 interface SettingsPanel { $: { app: HTMLElement } }
 const cleanup = new WeakMap<SettingsPanel, () => void>();
+// A panel close must not permit another restart while the original RPC is unresolved.
+let pendingSave: Promise<unknown> | null = null;
 const instruction = 'Select this editor\'s ccb3x_<port> namespace and project path from Status. Call that namespace\'s editorHandshake with expectedProjectPath; verify projectMatches and bind its instanceId before mutations. Stay bound to that namespace, project path and instanceId. Re-handshake after reconnect or restart; if unavailable or identity changes, stop and ask rather than switching editors.';
 
 function parseSettings(value: unknown): Settings {
@@ -72,6 +74,7 @@ module.exports = Editor.Panel.define({
             controls();
             feedback.textContent = 'Loading settings…';
             try {
+                if (pendingSave) await bounded(pendingSave, 8000);
                 const settings: unknown = await bounded(Editor.Message.request(packageJSON.name, 'extension-settings'), 8000);
                 if (closed) return;
                 show(parseSettings(settings));
@@ -85,7 +88,7 @@ module.exports = Editor.Panel.define({
         };
         on(reload, () => { void load(); });
         on(apply, async () => {
-            if (closed || pending || !loaded || uncertain) return;
+            if (closed || pending || !loaded || uncertain || pendingSave) return;
             let settings: Settings;
             try {
                 if (!port.value.trim()) throw new Error('Enter a port; use 0 for automatic selection.');
@@ -95,7 +98,10 @@ module.exports = Editor.Panel.define({
             controls();
             feedback.textContent = 'Applying settings and restarting the server…';
             try {
-                const saved: unknown = await bounded(Editor.Message.request(packageJSON.name, 'save-extension-settings', settings), 20000);
+                const request: Promise<unknown> = Promise.resolve().then(() => Editor.Message.request(packageJSON.name, 'save-extension-settings', settings));
+                pendingSave = request;
+                void request.then(() => { if (pendingSave === request) pendingSave = null; }, () => { if (pendingSave === request) pendingSave = null; });
+                const saved: unknown = await bounded(request, 20000);
                 if (closed) return;
                 show(parseSettings(saved));
                 feedback.textContent = 'Settings applied and server restarted. Check Status and re-handshake before using the editor. Restart your AI client if its registry path changed.';

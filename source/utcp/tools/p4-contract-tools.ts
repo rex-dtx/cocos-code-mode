@@ -56,7 +56,10 @@ export class P4ContractTools {
         if (!['play', 'stop', 'clear'].includes(String(args.operation))) {
             throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be play, stop, or clear.' });
         }
-        await runtimeTools.runtimeSessionLifecycle({ operation: 'inspect', sessionId });
+        const session = await runtimeTools.runtimeSessionLifecycle({ operation: 'inspect', sessionId });
+        if (session.ready === false) {
+            throw new ToolError({ code: 'RUNTIME_SESSION_STOPPED', status: 409, message: `Runtime session is stopped: ${sessionId}`, recovery: 'Attach a new game-view session before particle playback.' });
+        }
         let result: unknown;
         try {
             result = await Editor.Message.request('scene', 'execute-scene-script', {

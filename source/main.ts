@@ -138,6 +138,13 @@ export const methods: { [key: string]: (...any: any) => any } = {
             }
         });
     },
+    toggleDebugLogging() {
+        return runLifecycle(async () => {
+            const enabled = utcpServer?.getDebugEnabled()
+                ?? Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
+            return methods.setDebugLogging(!enabled);
+        });
+    },
 
     async getDebugLogging() {
         const enabled = Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));

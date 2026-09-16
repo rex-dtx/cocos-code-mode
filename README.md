@@ -267,6 +267,8 @@ Register the class by importing it in `utcp-server.ts`. Tools are served automat
 
 ## Extension controls
 
+The menu provides direct **Restart Server**, **Toggle Debug Logging**, and **Open Logs** actions alongside Status and Settings. Restart acts immediately; Clear Logs stays inside Status with confirmation.
+
 **CC Bridge 3x → Status** shows server/handshake health and provides Restart Server, debug ON/OFF and log actions. Build and registry identifiers are under Technical details. **Settings** contains copy-ready AI client configuration; fixed port and registry path are under Advanced with one Apply & Restart action. Registry templates are managed automatically, not through a raw JSON editor.
 
 The extension publishes one `ccb3x_<actual-port>` entry per running editor in `~/.utcp_config.json`. There is no `ccb3x` latest-editor pointer: each agent explicitly selects an endpoint and binds its namespace, project path, and handshake `instanceId`. Legacy `ccb3x` discovery entries migrate to their URL port without retaining the alias. Keep one template per endpoint, with a namespace matching the URL port. Re-handshake after reconnect or restart; never silently switch editors. The `ccb2x` naming behavior is unchanged.
