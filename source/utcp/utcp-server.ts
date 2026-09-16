@@ -684,13 +684,5 @@ export class UtcpServerManager {
         return debugEnabled;
     }
 
-    toggleDebug(): boolean {
-        const enabled = this.setDebugEnabled(!debugEnabled);
-        const message = `[cx3][lifecycle] Verbose interaction logging ${enabled ? 'ON' : 'OFF'}`;
-        console[enabled ? 'info' : 'warn'](message);
-        const editor = (globalThis as any).Editor;
-        try { if (editor && typeof editor[enabled ? 'info' : 'warn'] === 'function') editor[enabled ? 'info' : 'warn'](message); } catch {}
-        return enabled;
-    }
 
 }

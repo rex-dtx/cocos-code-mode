@@ -89,7 +89,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
             || !('fixedPort' in input) || typeof input.fixedPort !== 'number' || !Number.isInteger(input.fixedPort)
             || input.fixedPort < 0 || input.fixedPort > 65535
             || !('configPath' in input) || typeof input.configPath !== 'string' || !isAbsolute(input.configPath)
-            || input.configPath.includes('\0') || input.configPath.length > 4096) {
+            || /[\0\r\n]/.test(input.configPath) || input.configPath.length > 4096) {
             throw new Error('Settings require fixedPort (0–65535) and an absolute configPath.');
         }
         const { fixedPort, configPath } = input;
