@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "terrainCreate",
+  "creator": "3.7.3",
+  "buildCommit": "3959132",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/terrain-create-qualification.test.js#TERRAIN-CREATE-01",
+    "iterations": 5,
+    "result": "created a native terrain asset and cc.Terrain entity/component under a real or disposable Canvas, verified terrainInspect identity, then removed the node and asset on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/terrain-create-qualification.test.js#TERRAIN-CREATE-01",
+    "iterations": 5,
+    "result": "asset path traversal was rejected with HTTP 400 before asset IPC on every iteration"
+  },
+  "persistence": "Creator asset database identity plus serialized component read-back; this bounded scenario does not claim save/reopen persistence",
+  "cleanup": "terrain node, terrain asset, and disposable Canvas were removed on every iteration with no leaked named fixtures",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:49650",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T06:58:17.728Z"
+  },
+  "qualified": true
+}

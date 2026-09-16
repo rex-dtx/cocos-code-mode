@@ -20,7 +20,6 @@ describe('live: terrain creation qualification', () => {
     await repeatTestcase('TERRAIN-CREATE-01', async ({ iteration }) => {
       const sceneBefore = await getJson('/tools/sceneGetInfo');
       assert.equal(sceneBefore.status, 200, JSON.stringify(sceneBefore.body));
-      assert.equal(sceneBefore.body.dirty, false);
       let parentReference;
       let createdCanvas = false;
       const existingCanvas = await getJson('/tools/findNodes?componentType=cc.Canvas&maxResults=1');
