@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "runtimeInputDispatch",
+  "creator": "3.7.3",
+  "buildCommit": "40fe1f0",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/runtime-input-dispatch.test.js#RUNTIME-INPUT-01",
+    "iterations": 5,
+    "result": "dispatched bounded Escape key and left-click actions through the active Electron target on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/runtime-input-dispatch.test.js#RUNTIME-INPUT-01",
+    "iterations": 5,
+    "result": "incomplete click input was rejected with HTTP 400 on every iteration"
+  },
+  "persistence": "ephemeral input dispatch only",
+  "cleanup": "no persistent fixture state created",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:52293",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T08:57:05.044Z"
+  },
+  "qualified": true
+}
