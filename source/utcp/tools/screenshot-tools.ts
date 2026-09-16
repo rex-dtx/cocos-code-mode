@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { utcpTool } from '../decorators';
 
 const MAX_SCREENSHOT_DIMENSION = 4096;
@@ -205,6 +206,53 @@ export class ScreenshotTools {
         const data = image.toPNG().toString('base64');
         if (!data.startsWith('iVBORw0KGgo')) throw new Error('Editor panel capture produced invalid PNG data');
         return { panelTitle: args.panelTitle, bounds: args.bounds, type: 'image', data, mimeType: 'image/png' };
+    }
+
+    @utcpTool(
+        'runtimeScreenshotAssert',
+        'Capture one bounded editor target and assert PNG identity plus optional expected SHA-256.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                windowTitle: { type: 'string', minLength: 1, maxLength: 128 },
+                bounds: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                        x: { type: 'integer', minimum: 0 },
+                        y: { type: 'integer', minimum: 0 },
+                        width: { type: 'integer', minimum: 1, maximum: MAX_SCREENSHOT_DIMENSION },
+                        height: { type: 'integer', minimum: 1, maximum: MAX_SCREENSHOT_DIMENSION },
+                    },
+                    required: ['x', 'y', 'width', 'height'],
+                },
+                expectedSha256: { type: 'string', pattern: '^[a-f0-9]{64}$' },
+            },
+            required: ['windowTitle', 'bounds'],
+        },
+        {
+            type: 'object',
+            properties: {
+                windowTitle: { type: 'string' }, bounds: { type: 'object' }, sha256: { type: 'string' },
+                bytes: { type: 'integer' }, signatureValid: { type: 'boolean' }, matched: { type: 'boolean' },
+                passed: { type: 'boolean' }, diagnostics: { type: 'array' },
+            },
+            required: ['windowTitle', 'bounds', 'sha256', 'bytes', 'signatureValid', 'matched', 'passed', 'diagnostics'],
+        },
+        'POST',
+        ['runtime', 'screenshot', 'assert', 'editor', 'visual'],
+    )
+    async runtimeScreenshotAssert(args: { windowTitle: string, bounds: { x: number, y: number, width: number, height: number }, expectedSha256?: string }): Promise<{ windowTitle: string, bounds: typeof args.bounds, sha256: string, bytes: number, signatureValid: boolean, matched: boolean, passed: boolean, diagnostics: string[] }> {
+        const capture = await this.editorPanelCapture({ panelTitle: args.windowTitle, bounds: args.bounds });
+        const buffer = Buffer.from(capture.data, 'base64');
+        const signatureValid = buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+        const sha256 = createHash('sha256').update(buffer).digest('hex');
+        const matched = args.expectedSha256 === undefined || sha256 === args.expectedSha256;
+        const diagnostics: string[] = [];
+        if (!signatureValid) diagnostics.push('PNG_SIGNATURE_INVALID');
+        if (!matched) diagnostics.push('SHA256_MISMATCH');
+        return { windowTitle: args.windowTitle, bounds: args.bounds, sha256, bytes: buffer.length, signatureValid, matched, passed: signatureValid && matched, diagnostics };
     }
 
     @utcpTool(
