@@ -1451,7 +1451,7 @@
         },
         {
           "name": "buildTargetLaunch",
-          "state": "probe-required",
+          "state": "implemented-unverified",
           "contractDelta": "Launch the exact produced artifact on a declared target, not preview fallback.",
           "route": "target-specific launcher",
           "prerequisites": [
@@ -1470,7 +1470,7 @@
         },
         {
           "name": "buildTargetSmoke",
-          "state": "probe-required",
+          "state": "implemented-unverified",
           "contractDelta": "Interact with and observe the launched artifact on its declared target.",
           "route": "runtime session plus target launcher",
           "prerequisites": [

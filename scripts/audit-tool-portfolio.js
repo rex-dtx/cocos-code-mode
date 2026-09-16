@@ -137,6 +137,8 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'projectSettingsValidate',
   'terrainCreate',
   'buildArtifactServe',
+  'buildTargetLaunch',
+  'buildTargetSmoke',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',
