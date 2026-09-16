@@ -53,15 +53,15 @@ describe('verified game-view runtime sessions', () => {
     assert.match(preview.url, /^http:\/\/127\.0\.0\.1:/);
   });
 
-  it('fails closed when runtime state is unavailable and marks stopped sessions explicitly', async () => {
-    installState({ running: false, paused: false, timeScale: 1, frameCount: 0 });
+  it('fails closed for malformed runtime state and marks stopped sessions explicitly', async () => {
+    installState({ paused: false, timeScale: 1 });
     const tools = new RuntimeSessionTools();
     await assert.rejects(
       tools.runtimeSessionLifecycle({ operation: 'attach', targetKind: 'game-view', targetId: 'missing' }),
       (error) => error.code === 'RUNTIME_NOT_READY' && error.status === 409,
     );
 
-    installState({ running: true, paused: false, timeScale: 1, frameCount: 1 });
+    installState({ paused: false, timeScale: 1, frameCount: 1 });
     const attached = await tools.runtimeSessionLifecycle({ operation: 'attach', targetKind: 'game-view', targetId: 'stoppable' });
     const sessionId = attached.session.sessionId;
     await assert.rejects(
