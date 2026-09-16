@@ -35,10 +35,10 @@ module.exports = Editor.Panel.define({
                 (this.$.utcpConfigPathInput as any).value = configManager.getConfigPath();
             }
 
-            // Load Port
+            // Show the configured preference, not this process's bound auto port.
             const port = await configManager.getCurrentPort();
             if (this.$.portInput) {
-                (this.$.portInput as any).value = port || 0;
+                (this.$.portInput as HTMLInputElement).value = String(port);
             }
 
             this.updateMcpCodeBlock();
@@ -62,11 +62,18 @@ module.exports = Editor.Panel.define({
         },
 
         async updatePort() {
-            const portVal = (this.$.portInput as any).value;
-            const port = parseInt(portVal);
-            console.log(`[cx3][config] Updating port to: ${port}`);
-            // Send message to main process to restart server
-            Editor.Message.send(packageJSON.name, 'restart-server', port);
+            const value = String((this.$.portInput as HTMLInputElement).value).trim();
+            const port = Number(value);
+            if (!value || !Number.isInteger(port) || port < 0 || port > 65535) {
+                alert('Port must be an integer between 0 and 65535 (0 = auto).');
+                return;
+            }
+            try {
+                await Editor.Message.request(packageJSON.name, 'restart-server', port);
+                await this.loadSettings();
+            } catch (error) {
+                alert('Failed to restart server: ' + (error instanceof Error ? error.message : String(error)));
+            }
         },
 
         updateMcpCodeBlock() {
@@ -141,7 +148,7 @@ module.exports = Editor.Panel.define({
             }
         },
 
-        addBridgeTemplate() {
+        async addBridgeTemplate() {
             const input = this.$.newTemplateJson as any;
             if (!input) return;
             const content = input.value.trim();
@@ -156,34 +163,36 @@ module.exports = Editor.Panel.define({
                 }
 
                 const configManager = getConfigManager();
-                const config = configManager.readConfig();
-
-                // Check duplicates
-                if (config.manual_call_templates.find((t: any) => t.name === newTpl.name)) {
-                    alert(`Template ${newTpl.name} already exists.`);
-                    return;
-                }
-
-                config.manual_call_templates.push(newTpl);
-                configManager.writeConfig(config);
+                const saved = await configManager.mutateConfig(config => {
+                    const templates = config.manual_call_templates ?? [];
+                    if (templates.some((template: { name: string }) => template.name === newTpl.name)) {
+                        throw new Error(`Template ${newTpl.name} already exists.`);
+                    }
+                    config.manual_call_templates = [...templates, newTpl];
+                });
+                if (!saved) throw new Error('Unable to save the template.');
                 input.value = '';
                 this.fetchBridgeList();
 
-            } catch (e: any) {
-                alert('Invalid JSON: ' + e.message);
+            } catch (error) {
+                alert('Unable to add template: ' + (error instanceof Error ? error.message : String(error)));
             }
         },
 
-        removeBridge(name: string) {
+        async removeBridge(name: string) {
             if (/^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(name)) return;
             if (!confirm(`Remove template ${name}?`)) return;
 
             const configManager = getConfigManager();
-            const config = configManager.readConfig();
-            if (config.manual_call_templates) {
-                config.manual_call_templates = config.manual_call_templates.filter((t: any) => t.name !== name);
-                configManager.writeConfig(config);
+            try {
+                const saved = await configManager.mutateConfig(config => {
+                    config.manual_call_templates = (config.manual_call_templates ?? [])
+                        .filter((template: { name: string }) => template.name !== name);
+                });
+                if (!saved) throw new Error('Unable to save template removal.');
                 this.fetchBridgeList();
+            } catch (error) {
+                alert('Unable to remove template: ' + (error instanceof Error ? error.message : String(error)));
             }
         },
         async setDebugLogging(enabled: boolean) {

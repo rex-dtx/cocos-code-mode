@@ -6,10 +6,14 @@ CC Bridge is the Cocos Creator 3.x extension. It serves a UTCP manual from the r
 
 ```text
 Cocos Creator → http://localhost:<port>/utcp → UTCP call template
-              → Code Mode MCP → register_manual → ccb3x.* tools
+              → Code Mode MCP → register_manual → ccb3x_<port>.* tools
 ```
 
-The extension maintains `~/.utcp_config.json` automatically. Its canonical template is `ccb3x`; when more than one editor runs, `ccb3x_<port>` identifies a specific editor. Do not register two templates for the same URL: duplicate registrations expose duplicate tools.
+The extension maintains `~/.utcp_config.json` automatically. Each editor has one stable `ccb3x_<actual-port>` template; there is no `ccb3x` latest-editor pointer. Legacy `ccb3x` discovery entries migrate to the port in their URL, not to whichever editor answers first. Do not register two templates for the same endpoint. A template name must match its URL port; ambiguous endpoints sharing a namespace are not selected.
+
+Every launch defaults to an OS-assigned free port (`listen(0)`). Previously saved `serverPort` values are not reused. Set **Configuration → Fixed Port** or the `fixedServerPort` preference explicitly to use a fixed port; 0 restores automatic allocation. An occupied fixed port fails without switching to another endpoint. The About output reports the actual listening port, while Configuration shows the configured preference.
+
+Registry writers serialize read–modify–write using `<config-path>.ccb-lock`, then replace the JSON atomically. Instance ownership is stored in the supported `variables.CCB3X_OWNER_<port>` string field, committed with its endpoint; late cleanup cannot remove a newer owner. Lock acquisition fails after 5 seconds rather than overwriting another writer. After a crash, an abandoned lock requires operator cleanup: close all registry writers, inspect its `owner.json`, then remove that lock directory. Older extension versions do not participate in this locking protocol; upgrade all concurrent Creator instances before relying on it.
 
 ## 1. Configure the MCP bridge
 
@@ -33,14 +37,14 @@ Restart the AI client after changing its MCP configuration. Open the Cocos proje
 
 ## 2. Register the Cocos manual
 
-At the beginning of an agent session, register the current Cocos template, then verify the registration before calling a tool. Use the port shown in the Configuration panel or the active `ccb3x` entry in `~/.utcp_config.json`; do not hard-code a stale port.
+At the beginning of an agent session, explicitly select the intended Creator project and its `ccb3x_<port>` endpoint from the Configuration panel or `~/.utcp_config.json`. Register that exact namespace and URL, then verify registration before calling tools. The examples below use **`ccb3x_49650` only as a selected-editor example**: replace both `49650` occurrences and every namespace reference with the actual selected port. Never switch to another editor because the selected one is unavailable.
 
 ```typescript
 await register_manual({
   manual_call_template: {
-    name: 'ccb3x',
+    name: 'ccb3x_49650',
     call_template_type: 'http',
-    url: 'http://localhost:<port>/utcp',
+    url: 'http://localhost:49650/utcp',
     http_method: 'GET',
     content_type: 'application/json',
   },
@@ -49,14 +53,14 @@ await register_manual({
 const tools = await list_tools();
 ```
 
-`list_tools()` must include the `ccb3x` manual before the agent continues. After restarting Cocos Creator, repeat this bootstrap because the port and in-memory registration may have changed.
+`list_tools()` must include the selected `ccb3x_49650` manual before continuing. After a reconnect, CCB reload, or Creator restart, register the selected endpoint again and repeat the project/instance handshake. An unchanged port does not imply an unchanged server instance.
 
 ### Verify the connection and project
 
 After registration, call the handshake through `call_tool_chain` so it exercises the same path as subsequent tools:
 
 ```typescript
-const connection = await ccb3x.editorHandshake({
+const connection = await ccb3x_49650.editorHandshake({
   timeoutMs: 1000,
   expectedProjectPath: 'G:/projects/my-game',
 });
@@ -71,7 +75,9 @@ return connection;
 
 The IPC deadline defaults to 1000ms (1–5000ms allowed); repeated probes share outstanding IPC rather than accumulating hung requests. This is a point-in-time check, not a persistent session or a guarantee that all tools will succeed. Client transport deadlines must allow additional HTTP/adapter overhead. Connection refused, registration failure, or an older build without this tool are client-side failures, not handshake responses. `/utcp` discovery alone does not prove Creator IPC readiness.
 
-The SessionStart bootstrap announces `editorHandshake` and the exact manual namespace to call. It probes the advertised handshake over HTTP and stores separate `handshake.status`, `checkedAt`, and `result` evidence in the metadata cache. `live` still describes manual discovery, not Creator IPC readiness. Failed or omitted probes discard prior handshake success; older builds are marked `unsupported`. Agents must still register the manual and call the handshake through Code Mode with the intended Creator project path (not necessarily the agent working directory).
+The SessionStart bootstrap announces `editorHandshake` and the exact per-port namespace to call. It probes unique endpoints with at most four editor probes (eight discovery HTTP requests) in parallel and an eight-second network budget within the ten-second hook. Each request has an absolute deadline, including connection and body receipt; HTTP errors are failures. It stores separate `handshake.status`, `checkedAt`, and `result` evidence in the metadata cache. `live` describes manual discovery, not Creator IPC readiness. Failed or omitted probes discard prior handshake success; older builds are marked `unsupported`. Unprobed 3.x cache entries are stale, not alternate live editors. Agents must still register the selected manual and handshake through Code Mode with the intended Creator project path (not necessarily the agent working directory).
+
+Keep an agent-local binding of **namespace + endpoint + projectPath + instanceId** from the verified Code Mode handshake. Require `projectMatches:true` and `probe.status:responsive` before mutations; scene-dependent operations may also require `sceneReady:true`. Recheck after any reconnect/restart. A new `instanceId` invalidates old object references even when the namespace and port are unchanged. A project mismatch, ambiguous selection, or unreachable bound endpoint must stop mutation rather than trigger fallback to another editor. Independent agents may bind different editors without changing each other's routing.
 
 If IPC stays stuck, do not poll in a tight loop. Restart/reload CCB to establish a new probe lifecycle, then re-register and handshake again. Starting a new CCB server clears stale probe slots; late responses from the previous lifecycle cannot evict current probes. A timeout alone never clears a slot or triggers background retries. This does not cancel an outstanding Creator IPC or guarantee recovery if Creator itself remains unresponsive.
 
@@ -81,12 +87,12 @@ Use the Code Mode MCP management tools in this order:
 
 1. `search_tools` with the task in natural language.
 2. `tool_info` for the selected tool's TypeScript interface and constraints.
-3. `call_tool_chain` to compose calls through `ccb3x.<tool>(args)`.
+3. `call_tool_chain` to compose calls through `ccb3x_49650.<tool>(args)`.
 
 Example:
 
 ```typescript
-const tree = await ccb3x.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
+const tree = await ccb3x_49650.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
 return {
   root: tree.name,
   childCount: tree.children?.length ?? 0,
@@ -98,7 +104,7 @@ Keep returned references for the next mutation. Prefer `sceneBatchGet`, `assetBa
 ## Copy-ready agent instruction
 
 ```text
-CC Bridge controls Cocos Creator 3.x through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project/build/preview, diagnostics, files, runtime input, and screenshots. At session start, register the current ccb3x UTCP manual with register_manual and verify it with list_tools before using tools. Discover first, then act: inspect current state before mutations, retain returned references, use batch operations where available, and use executeJavascript only when no dedicated tool fits.
+CC Bridge controls Cocos Creator 3.x through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project/build/preview, diagnostics, files, runtime input, and screenshots. Select exactly one ccb3x_<port> namespace and endpoint for the intended Creator project. Register it with register_manual and verify it with list_tools, then call its editorHandshake with expectedProjectPath. Bind namespace + endpoint + projectPath + instanceId; require projectMatches:true and probe.status:responsive before mutations. Re-handshake after every reconnect/restart; discard old references on instanceId changes. Never fall back to another editor or a latest alias. Discover first, inspect current state before mutations, retain matching references, use batch operations, and use executeJavascript only when no dedicated tool fits.
 ```
 
 ## Common workflows
@@ -108,7 +114,7 @@ CC Bridge controls Cocos Creator 3.x through tools for scenes, nodes, components
 Use `editorLog` instead of `executeJavascript` to write a message to the Creator console:
 
 ```typescript
-return await ccb3x.editorLog({
+return await ccb3x_49650.editorLog({
   level: 'info',
   message: '[Agent] Finished checking the scene',
   data: { checkedNodes: 12, valid: true },
@@ -132,7 +138,7 @@ Both tools appear in the full `/utcp` manual after rebuilding/reloading the exte
 `openPanel: true` is an explicit opt-in to `Editor.Panel.open`, which may activate/focus the panel; omit it to avoid interrupting mouse/keyboard work. `editorAsk` additionally supports `presentation: 'native'` as explicit opt-in to a modal native dialog that can block/focus Creator. No foregrounding, OS input automation, or control focus is performed by the default tools.
 
 ```typescript
-const answer = await ccb3x.editorAsk({
+const answer = await ccb3x_49650.editorAsk({
   title: 'Agent confirmation',
   message: 'Apply the inspected changes?',
   detail: 'Only the selected nodes will be modified.',
@@ -151,7 +157,7 @@ Only with `presentation: 'native'`: Creator **3.7.3 has no public `Editor.Dialog
 **A native timeout ends the API request, not the dialog.** It returns null button fields and `timedOut: true` (`cancelled: false`). Dismiss the remaining dialog in Creator; another native question returns `EDITOR_INTERACTION_BUSY` (409) until the original dialog settles. Late clicks cannot change the completed result.
 
 ```typescript
-return await ccb3x.editorPrompt({
+return await ccb3x_49650.editorPrompt({
   title: 'Agent input',
   message: 'Choose how the selected scene should be updated.',
   fields: [
@@ -174,21 +180,21 @@ Prompts render labels and options as text, never HTML. Request IDs reject stale/
 `editorNotify({ level: 'info', title, message })` immediately returns a notification ID and timestamp, writes a bounded editor-log entry, and quietly broadcasts updated Agent Inbox state. Levels are `info` (default), `warning`, and `error`. Title must be non-blank and at most 256 characters; message non-blank and at most 4096. Neither notifications nor progress opens or focuses a panel, uses a native dialog, or controls mouse/keyboard.
 
 ```typescript
-const task = await ccb3x.editorProgress({
+const task = await ccb3x_49650.editorProgress({
   operation: 'start', title: 'Inspect assets', message: 'Reading metadata',
   progress: 0, timeoutMs: 60000,
 });
 // Perform bounded work steps, polling between them:
-const state = await ccb3x.editorTaskList({ taskId: task.taskId });
+const state = await ccb3x_49650.editorTaskList({ taskId: task.taskId });
 if (state.tasks[0]?.cancelRequested) {
   // First stop the actual work safely; only then acknowledge:
-  return await ccb3x.editorProgress({
+  return await ccb3x_49650.editorProgress({
     operation: 'finish', taskId: task.taskId, status: 'cancelled',
   });
 }
-await ccb3x.editorProgress({ operation: 'update', taskId: task.taskId, progress: 50 });
+await ccb3x_49650.editorProgress({ operation: 'update', taskId: task.taskId, progress: 50 });
 // After the actual work completes:
-return await ccb3x.editorProgress({ operation: 'finish', taskId: task.taskId, status: 'completed' });
+return await ccb3x_49650.editorProgress({ operation: 'finish', taskId: task.taskId, status: 'completed' });
 ```
 
 Tasks are tracking records, not a background execution engine. `start` returns `taskId`, `status: 'running'`, `cancelRequested: false`, epoch-millisecond `createdAt`/`updatedAt`/`expiresAt`, nullable `finishedAt`, and nullable progress. `update` accepts progress 0–100 and/or message ≤4096 characters (an empty update is a heartbeat). Each update renews the initial inactivity timeout: 1–300000ms, default 60000ms. `finish` requires `completed`, `failed`, or `cancelled`; completed sets progress to 100. Terminal records cannot be updated or finished again (409).
@@ -223,10 +229,10 @@ Tasks are tracking records, not a background execution engine. `start` returns `
 
 A project skill that operates Cocos should treat registration as a session bootstrap, not an assumption:
 
-1. Register the current `ccb3x` manual and confirm it through `list_tools`.
+1. Select and register the intended `ccb3x_<port>` manual and confirm it through `list_tools`; handshake its project and instance before mutations.
 2. Discover the dedicated tool with `search_tools` before generating a `call_tool_chain`.
 3. Preserve references only while a later step needs to mutate the matching object.
-4. Re-register after Cocos restart, a port change, or a tool-not-found response.
+4. Re-register and re-handshake after reconnect, Cocos/CCB restart, a port change, or a tool-not-found response. Keep the selected endpoint binding; never substitute another editor.
 
 Keep the skill focused on workflow rules. The live manual remains the source of truth for tool names, TypeScript interfaces, and capabilities.
 
@@ -240,7 +246,7 @@ CCB may adopt useful editor workflows observed in external tools, but the implem
 Example:
 
 ```typescript
-const path = await ccb3x.nodeGetPath({
+const path = await ccb3x_49650.nodeGetPath({
   reference: { id: buttonUuid, type: 'cc.Node' },
   relativeTo: { id: canvasUuid, type: 'cc.Node' },
   includeRoot: false,
@@ -259,8 +265,8 @@ See:
 
 | Symptom | Action |
 | --- | --- |
-| `ccb3x` tools missing | Register the current manual, then verify with `list_tools`. |
-| Connection fails | Confirm Cocos is open and its UTCP URL/port matches the active `ccb3x` template. |
-| Duplicate tools | Remove duplicate templates pointing to the same URL; retain only canonical `ccb3x` for the latest editor. |
+| Selected `ccb3x_<port>` tools missing | Register that exact manual, then verify with `list_tools` and handshake. |
+| Connection fails | Confirm the selected Creator project is open and its UTCP URL/port matches its namespace. Do not fall back to another editor. |
+| Duplicate tools | Remove duplicate registrations for the same endpoint; retain one matching `ccb3x_<port>` namespace, not the legacy alias. |
 | Source build does not change editor behavior | A junction removes copy/import work only. Restart Cocos Creator to clear cached extension modules. |
-| Manual points to an old editor | Re-register after restart, or select the required `ccb3x_<port>` entry for a specific editor. |
+| Manual points to an old editor | Re-select the intended project endpoint explicitly, then register and handshake; discard old references when `instanceId` changes. |

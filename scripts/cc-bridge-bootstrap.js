@@ -21,19 +21,50 @@ function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } ca
 
 function fetchJson(url, timeoutMs = 2500) {
   return new Promise((resolve) => {
-    const req = http.get(url, (res) => {
-      let body = '';
-      if (res.statusCode < 200 || res.statusCode >= 300) { res.resume(); resolve(null); return; }
-      res.on('data', (c) => (body += c));
-      res.on('end', () => { try { resolve(JSON.parse(body)); } catch { resolve(null); } });
-    });
-    req.on('error', () => resolve(null));
-    req.setTimeout(timeoutMs, () => { req.destroy(); resolve(null); });
+    let req;
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      req?.destroy();
+      resolve(value);
+    };
+    // An absolute deadline also bounds connect time and trickling response bodies.
+    const timer = setTimeout(() => finish(null), timeoutMs);
+    try {
+      req = http.get(url, (res) => {
+        if (res.statusCode < 200 || res.statusCode >= 300) { finish(null); return; }
+        let body = '';
+        res.on('data', (chunk) => (body += chunk));
+        res.on('error', () => finish(null));
+        res.on('aborted', () => finish(null));
+        res.on('end', () => { try { finish(JSON.parse(body)); } catch { finish(null); } });
+      });
+      req.on('error', () => finish(null));
+    } catch { finish(null); }
   });
 }
 
-function is3x(m) { return m.name === CANON_3X || PERPORT_3X.test(m.name); }
-function is2x(m) { return m.name === CANON_2X || PERPORT_2X.test(m.name); }
+function is3x(m) { return m?.name === CANON_3X || PERPORT_3X.test(m?.name); }
+function is2x(m) { return m?.name === CANON_2X || PERPORT_2X.test(m?.name); }
+
+function endpoint3x(m) {
+  if (!is3x(m)) return null;
+  try {
+    const url = new URL(m.url);
+    if (url.protocol !== 'http:' || !/^\/utcp\/?$/.test(url.pathname)
+      || url.username || url.password || url.search || url.hash) return null;
+    const port = Number(url.port || 80);
+    const name = `ccb3x_${port}`;
+    if (port < 1 || (m.name !== CANON_3X && m.name !== name)) return null;
+    url.pathname = '/utcp';
+    const normalizedUrl = url.href;
+    // The server binds IPv4 loopback; these two spellings identify one endpoint.
+    if (url.hostname === '127.0.0.1') url.hostname = 'localhost';
+    return { name, url: normalizedUrl, identity: url.href };
+  } catch { return null; }
+}
 
 /**
  * Liveness gate. A probe is LIVE only when ALL hold:
@@ -61,14 +92,13 @@ function computeAgeMs(fetchedAt, nowMs) {
 }
 
 function cacheKeyFor(m) {
-  const three = is3x(m);
-  const perPort = (three ? PERPORT_3X : PERPORT_2X).test(m.name);
-  return perPort ? m.name : (three ? CANON_3X : CANON_2X);
+  if (is3x(m)) return endpoint3x(m)?.name || null;
+  return PERPORT_2X.test(m.name) ? m.name : CANON_2X;
 }
 
 /**
  * Pure core: merge prior disk cache with this run's probes.
- * - Per-manual independence: ccb3x and ccb2x (and per-port keys) are decided separately.
+ * - Per-endpoint independence: legacy ccb3x aliases migrate to their actual port.
  * - Live probe → write authoritative entry with fetchedAt/age_ms:0.
  * - Dead probe + prior authoritative entry → retain prior, update age_ms + stale marker, never clobber count.
  * - Dead probe + no prior → tombstone (authoritative:false), never an authoritative 0 entry.
@@ -78,44 +108,70 @@ function cacheKeyFor(m) {
 async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
   const nowMs = now.getTime();
   const nowIso = now.toISOString();
-  const priorManuals = (priorCache && priorCache.manuals) || {};
-
-  const manualsIn = (utcpConfig && Array.isArray(utcpConfig.manual_call_templates))
-    ? utcpConfig.manual_call_templates.filter((m) => is3x(m) || is2x(m))
-    : [];
-  // Dedup by URL: same editor may appear as both canonical and per-port alias.
-  const byUrl = new Map();
-  for (const m of manualsIn) {
-    const base = (m.url || '').replace(/\/utcp\/?$/, '');
-    if (!base) continue;
-    const canon = is3x(m) ? CANON_3X : CANON_2X;
-    const existing = byUrl.get(base);
-    if (!existing || (m.name === canon && existing.name !== canon)) byUrl.set(base, m);
+  const priorManuals = {};
+  const priorRanks = new Map();
+  const conflictingPrior = new Set();
+  for (const [name, entry] of Object.entries(priorCache?.manuals || {})) {
+    if (!is3x({ name })) { priorManuals[name] = entry; continue; }
+    const endpoint = endpoint3x({ name, url: entry.url });
+    if (!endpoint) continue;
+    const existing = priorManuals[endpoint.name];
+    if (existing && endpoint3x({ name: endpoint.name, url: existing.url }).identity !== endpoint.identity) {
+      conflictingPrior.add(endpoint.name);
+      continue;
+    }
+    const rank = name === endpoint.name ? 1 : 0;
+    if (!existing || rank > priorRanks.get(endpoint.name)) {
+      const { aliasOf, ...retained } = entry;
+      priorManuals[endpoint.name] = { ...retained, url: endpoint.url };
+      priorRanks.set(endpoint.name, rank);
+    }
   }
+  for (const name of conflictingPrior) delete priorManuals[name];
 
-  // Seed result with prior keys not probed this run (retained with refreshed age_ms).
-  const probedKeys = new Set();
+  const manualsIn = Array.isArray(utcpConfig?.manual_call_templates)
+    ? utcpConfig.manual_call_templates.filter((m) => is3x(m) || is2x(m)) : [];
+  const byEndpoint = new Map();
+  const endpointsByName = new Map();
+  const conflicts = new Set();
+  for (const m of manualsIn) {
+    const endpoint = is3x(m) ? endpoint3x(m) : null;
+    if (is3x(m) && !endpoint) continue;
+    const base = (endpoint?.url || m.url || '').replace(/\/utcp\/?$/, '');
+    if (!base) continue;
+    const identity = endpoint?.identity || base;
+    const name = endpoint?.name || cacheKeyFor(m);
+    if (endpoint && endpointsByName.has(name) && endpointsByName.get(name) !== identity) conflicts.add(name);
+    endpointsByName.set(name, identity);
+    const key = `${is3x(m) ? '3x' : '2x'}:${identity}`;
+    const existing = byEndpoint.get(key);
+    const preferred = endpoint ? m.name === name : m.name === CANON_2X;
+    if (!existing || preferred) byEndpoint.set(key, { name, url: endpoint?.url || m.url, base });
+  }
+  const selectedNames = new Set();
+  const selected = [...byEndpoint.values()].filter((m) => {
+    if (conflicts.has(m.name) || selectedNames.has(m.name)) return false;
+    selectedNames.add(m.name);
+    return true;
+  });
+  // Leave time for cache publication inside the 10-second SessionStart hook.
+  const deadline = Date.now() + 8000;
+  const probe = async (url) => {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) return null;
+    try { return await doFetch(url, Math.min(2500, remaining)); } catch { return null; }
+  };
   const nextManuals = {};
-
-  // Bring forward every prior key initially; probed ones will be overwritten below.
-  // We populate nextManuals lazily inside the loop for probed keys and copy the
-  // rest afterwards, so age_ms for untouched keys is still recomputed once.
-  for (const [base, m] of byUrl) {
-    const cKey = cacheKeyFor(m);
-    // If multiple URLs collapse to the same cacheKey, the liveness rule "prefer a
-    // URL that actually answers over a dead one for SAME cacheKey" is enforced by
-    // the dead→retain logic: a dead probe for this key never overwrites a live one.
-    if (probedKeys.has(cKey)) continue; // already decided this generation key (deduped by URL already; extra guard for same-key multi-URL)
-    probedKeys.add(cKey);
-
-    const manual = await doFetch(`${base}/utcp`);
+  const probeManual = async (m) => {
+    const cKey = m.name;
+    const base = m.base;
+    const [manual, buildInfo] = await Promise.all([probe(`${base}/utcp`), probe(`${base}/build-info`)]);
     const toolDefs = manual && Array.isArray(manual.tools) ? manual.tools : [];
     const tools = toolDefs.map((t) => t.name);
-    const buildInfo = await doFetch(`${base}/build-info`);
     const live = isLiveProbe(manual, buildInfo, toolDefs.length);
     let handshake = { status: 'unavailable', checkedAt: nowIso, result: null };
     if (live && tools.includes('editorHandshake')) {
-      const response = await doFetch(`${base}/tools/editorHandshake?timeoutMs=1000`);
+      const response = await probe(`${base}/tools/editorHandshake?timeoutMs=1000`);
       // Envelope mode is optional on the server. Never infer readiness from HTTP 200 alone.
       const result = response?.probe ? response : response?.ok === true && response?.tool === 'editorHandshake' ? response.data : null;
       const valid = result && typeof result.instanceId === 'string'
@@ -126,7 +182,9 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
       handshake.status = 'unsupported';
     }
 
-    const prior = priorManuals[cKey];
+    const cached = priorManuals[cKey];
+    const prior = !is3x(m) || (cached && endpoint3x({ name: cKey, url: cached.url })?.identity === endpoint3x(m)?.identity)
+      ? cached : null;
 
     if (live) {
       nextManuals[cKey] = {
@@ -141,7 +199,6 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
         live: true,
         authoritative: true,
         stale: false,
-        aliasOf: m.name !== cKey ? m.name : undefined,
       };
     } else {
       // Dead probe — never create an authoritative 0 entry.
@@ -188,11 +245,14 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
           authoritative: false,
           stale: true,
           staleReason: 'probe_failed',
-          aliasOf: m.name !== cKey ? m.name : undefined,
         };
       }
     }
-  }
+  };
+  let nextIndex = 0;
+  await Promise.all(Array.from({ length: Math.min(4, selected.length) }, async () => {
+    while (nextIndex < selected.length) await probeManual(selected[nextIndex++]);
+  }));
 
   // Retain prior keys that were not probed this run (e.g. a generation absent from
   // utcp_config this session). Their age keeps ticking and max-age still marks them.
@@ -200,6 +260,11 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
     if (nextManuals[k] !== undefined) continue;
     const ageMs = computeAgeMs(v.fetchedAt || v.updatedAt || priorCache.updatedAt, nowMs);
     const retained = { ...v, handshake: { status: 'unverified', checkedAt: null, result: null } };
+    if (is3x({ name: k })) {
+      retained.live = false;
+      retained.stale = true;
+      retained.staleReason = conflicts.has(k) ? 'ambiguous_endpoint' : 'not_probed';
+    }
     if (ageMs != null && ageMs > STALE_AFTER_MS) {
       nextManuals[k] = { ...retained, age_ms: ageMs, stale: true, staleReason: 'max_age', live: false };
     } else if (ageMs != null) {
@@ -217,16 +282,14 @@ async function main() {
   const home = os.homedir();
   const utcpPath = path.join(home, '.utcp_config.json');
   const utcp = readJson(utcpPath);
-  if (!utcp || !Array.isArray(utcp.manual_call_templates) || utcp.manual_call_templates.length === 0) {
-    return;
-  }
-  const manuals = utcp.manual_call_templates.filter((m) => is3x(m) || is2x(m));
-  if (manuals.length === 0) return;
+  const manuals = Array.isArray(utcp?.manual_call_templates)
+    ? utcp.manual_call_templates.filter((m) => is3x(m) || is2x(m)) : [];
 
   const projectRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   const claudeDir = path.join(projectRoot, '.claude');
   const cachePath = path.join(claudeDir, 'cc-bridge-cache.json');
   const priorCache = readJson(cachePath);
+  if (manuals.length === 0 && !priorCache) return;
   const now = new Date();
 
   const cache = await buildCache({ utcpConfig: utcp, priorCache, fetchJson, now });
@@ -254,13 +317,13 @@ async function main() {
     if (info.handshake?.status === 'unsupported') {
       console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake not advertised by this build; discovery is not IPC readiness. Update CCB to use handshake.`);
     } else {
-      console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake HTTP probe=${info.handshake?.status ?? 'unverified'}. After register_manual + list_tools, call ${name}.editorHandshake({timeoutMs:1000, expectedProjectPath:"<absolute Creator project path>"}) through call_tool_chain. Require projectMatches:true before mutations; sceneReady:false means connected but scene not ready. Cache/HTTP probe does not verify the Code Mode route. Do not loop on timeout; restart/reload CCB to renew probes if IPC stays stuck.`);
+      console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake HTTP probe=${info.handshake?.status ?? 'unverified'}. Select one namespace and endpoint (${info.url}), then register_manual + list_tools and call ${name}.editorHandshake({timeoutMs:1000, expectedProjectPath:"<absolute Creator project path>"}) through call_tool_chain. Bind namespace + endpoint + projectPath + instanceId. Require projectMatches:true and a responsive probe before mutations; sceneReady:false means connected but scene not ready. Re-handshake after reconnect/restart and discard old references if instanceId changes. Never fall back to another editor or a latest alias. Cache/HTTP probe does not verify the Code Mode route. Do not loop on timeout; restart/reload CCB to renew probes if IPC stays stuck.`);
     }
   }
 }
 
 // Test seam: pure helpers + core. main() path stays fs/http-coupled as before.
-module.exports = { STALE_AFTER_MS, isLiveProbe, computeAgeMs, cacheKeyFor, buildCache, is3x, is2x, CANON_3X, CANON_2X };
+module.exports = { STALE_AFTER_MS, fetchJson, isLiveProbe, computeAgeMs, cacheKeyFor, buildCache, is3x, is2x, CANON_3X, CANON_2X };
 
 if (require.main === module) {
   main().catch(() => process.exit(0));

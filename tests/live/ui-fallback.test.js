@@ -145,15 +145,17 @@ describe('live: CC373 native UI creation fallback', () => {
   });
 
 
-  it('Creator 3.7 editor preference setter preserves typed values', async (t) => {
+  it('Creator 3.7 editor preference setter rejects invalid ports without changing configuration', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const result = await postTool('setEditorPreference', { key: 'serverPort', value: 49650 });
-    assert.equal(result.ok, true);
-    assert.equal(result.body.success, true);
-    assert.equal(result.body.key, 'serverPort');
-    assert.equal(result.body.value, 49650);
+    const before = await getJson('/tools/getEditorPreference?key=fixedServerPort');
+    assert.equal(before.status, 200);
+    const invalidPort = await postTool('setEditorPreference', { key: 'fixedServerPort', value: -1 });
+    assert.ok(invalidPort.status >= 400);
+    const after = await getJson('/tools/getEditorPreference?key=fixedServerPort');
+    assert.equal(after.status, 200);
+    assert.deepEqual(after.body, before.body);
 
-    const invalid = await postTool('setEditorPreference', { value: 49650 });
+    const invalid = await postTool('setEditorPreference', { value: 0 });
     assert.equal(invalid.status, 400);
   });
 

@@ -176,15 +176,15 @@ describe('live: read-only endpoint qualification', () => {
     });
     assert.equal(invalid.status, 500);
   });
-  it('getEditorPreference reads the live server port and rejects a non-string key', async (t) => {
+  it('getEditorPreference reads the configured port and rejects a non-string key', async (t) => {
 
     if (skipIfDown(t)) return;
-    const result = await getJson('/tools/getEditorPreference?key=serverPort');
+    const result = await getJson('/tools/getEditorPreference?key=fixedServerPort');
     assert.equal(result.status, 200);
-    assert.equal(result.body.key, 'serverPort');
-    assert.equal(result.body.value, 49650);
+    assert.equal(result.body.key, 'fixedServerPort');
+    assert.ok(result.body.value === null || (Number.isInteger(result.body.value) && result.body.value >= 0 && result.body.value <= 65535));
 
-    const invalid = await getJson('/tools/getEditorPreference?key%5B%5D=serverPort');
+    const invalid = await getJson('/tools/getEditorPreference?key%5B%5D=fixedServerPort');
     assert.equal(invalid.status, 400);
     assert.ok(invalid.body.validationErrors.some((error) => error.path === 'key' && error.keyword === 'type'));
   });

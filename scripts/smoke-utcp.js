@@ -11,12 +11,10 @@ async function discoverBase() {
         const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
         const raw = readFileSync(cfgPath, 'utf8');
         const cfg = JSON.parse(raw);
-        // Prefer the bare canonical (latest) entry; fall back to any cc-bridge template.
-        const tpls = cfg.manual_call_templates || [];
-        const canon = tpls.find(t => /^(ccb3x|ccb2x)$/.test(t.name)) || tpls[0];
-        const m = String(canon?.url || '').match(/localhost:(\d+)/);
-        if (m) return `http://localhost:${m[1]}`;
-    } catch {}
+        const templates = (cfg.manual_call_templates || []).filter(t => /^ccb3x_\d+$/.test(t.name));
+        if (templates.length === 1) return new URL(templates[0].url).origin;
+        if (templates.length > 1) throw new Error('Multiple editors found; pass the intended editor port explicitly.');
+    } catch (error) { throw new Error(`Cannot select UTCP endpoint: ${error.message}`); }
     throw new Error('Cannot discover UTCP port: is cc-bridge-3x running? Pass port as arg.');
 }
 

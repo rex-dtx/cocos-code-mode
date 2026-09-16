@@ -88,17 +88,19 @@ This extension architecture follows a **discover, then act** pattern. AI agents 
 
 ### Example
 
+Examples use the explicitly selected namespace `ccb3x_49650`; replace it with your editor's actual `ccb3x_<port>` namespace after registration and a successful project/instance handshake. Never fall back to another editor when the bound endpoint is unavailable.
+
 ```typescript
 // Preferred (consolidated): discover → set in one session
-const tree = ccb3x.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
+const tree = await ccb3x_49650.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
 const ref = tree.children[0].reference;
 
 // Single-class definition instead of full dump
-const { definition } = await ccb3x.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
+const { definition } = await ccb3x_49650.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
 
 // Unified get/set — no need to pick inspector*Instance vs inspector*Settings
-const { dump } = await ccb3x.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
-await ccb3x.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
+const { dump } = await ccb3x_49650.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
+await ccb3x_49650.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
 
 // 2.0.0: legacy removed — use consolidated names above.
 ```
@@ -108,9 +110,9 @@ await ccb3x.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['
 Use the read-only scan first. It walks the open scene/prefab, compares each serialized component class against the editor's currently registered component classes, and returns the exact node path, component UUID, and class ID. Repair is deliberately explicit: pass the affected node plus component reference (or expected class ID), then provide either the replacement class ID or a script asset reference. The bridge verifies the replacement is registered, removes only the selected component, adds the replacement, snapshots for undo, and reads back the created component. A missing source script cannot be recreated automatically; restore the script asset or choose an existing registered replacement.
 
 ```typescript
-const report = await ccb3x.sceneScriptHealthScan({ limit: 200 });
+const report = await ccb3x_49650.sceneScriptHealthScan({ limit: 200 });
 const finding = report.findings[0];
-await ccb3x.sceneScriptRepair({
+await ccb3x_49650.sceneScriptRepair({
   nodeReference: finding.nodeReference,
   componentReference: finding.componentReference,
   expectedClassId: finding.classId,
@@ -273,14 +275,14 @@ You can find Call Template structures in [UTCP documentation](https://www.utcp.i
 - [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
 - [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
 
-The extension registers itself in `~/.utcp_config.json` as a `ccb3x` entry (latest pointer) plus a `ccb3x_<port>` entry per running editor, so two Cocos projects opened at once each stay reachable without colliding. The file must hold at most one template per URL — duplicates cause double tool registration. Only the new-format names (`ccb3x`, `ccb3x_<port>`, `ccb2x`, `ccb2x_<port>`) are supported; legacy names (`cc-bridge-3x`, `cc3x7`, `ccb-3x`, etc.) are purged on read.
+The extension publishes one `ccb3x_<actual-port>` entry per running editor in `~/.utcp_config.json`. There is no `ccb3x` latest-editor pointer: each agent explicitly selects an endpoint and binds its namespace, project path, and handshake `instanceId`. Legacy `ccb3x` discovery entries migrate to their URL port without retaining the alias. Keep one template per endpoint, with a namespace matching the URL port. Re-handshake after reconnect or restart; never silently switch editors. The `ccb2x` naming behavior is unchanged.
 
 ## Agent Prompt Guidance
 
 Use the copy-ready instruction and mandatory `register_manual` bootstrap in the [CC Bridge with Code Mode MCP guide](docs/cc-bridge-code-mode-usage.md). The output rules below further reduce raw tree dumps by 50-80% while retaining useful references.
 
 ```text
-When returning data from ccb3x tools (manual `ccb3x`):
+When returning data from the explicitly selected CCB 3.x manual (for example `ccb3x_49650`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

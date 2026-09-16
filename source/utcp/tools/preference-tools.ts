@@ -1,4 +1,5 @@
 import { utcpTool } from '../decorators';
+import { getConfigManager } from '../config-manager';
 // @ts-ignore
 import packageJSON from '../../../package.json';
 
@@ -8,7 +9,7 @@ import packageJSON from '../../../package.json';
 // persistence of bridge behavior (port, tool profile, envelope).
 
 const KNOWN_KEYS: Record<string, string> = {
-    serverPort: 'number — UTCP HTTP server port (0 = auto)',
+    fixedServerPort: 'number — configured UTCP HTTP port (0 or unset = auto); changes apply on restart, never the actual bound auto port',
     toolProfile: 'string — "core" | "full" | "custom"',
     enabledTools: 'string[] — extra tools exposed when profile=core/custom',
     disabledTools: 'string[] — tools hidden even in profile=full',
@@ -54,7 +55,7 @@ export class PreferenceTools {
 
     @utcpTool(
         'setEditorPreference',
-        'Write a cc-bridge-3x persistent preference (Editor.Profile). Known keys are type-validated.',
+        'Write a cc-bridge-3x persistent preference (Editor.Profile). Known keys are type-validated. fixedServerPort is an integer 0–65535; 0 selects auto allocation on the next restart.',
         {
             type: 'object',
             properties: {
@@ -85,7 +86,11 @@ export class PreferenceTools {
             if (expected === 'boolean' && typeof args.value !== 'boolean') throw new Error(`Key '${args.key}' expects a boolean`);
             if (expected === 'string[]' && !Array.isArray(args.value)) throw new Error(`Key '${args.key}' expects a string array`);
         }
-        await Editor.Profile.setConfig(packageJSON.name, args.key, args.value);
+        if (args.key === 'fixedServerPort') {
+            await getConfigManager().setConfiguredPort(args.value);
+        } else {
+            await Editor.Profile.setConfig(packageJSON.name, args.key, args.value);
+        }
         return { success: true, key: args.key, value: args.value };
     }
 }

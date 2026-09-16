@@ -10,7 +10,7 @@ import './tools/asset-tools';
 import './tools/component-tools';
 import './tools/scene-tools';
 import './tools/editor-tools';
-import './tools/editor-handshake-tools';
+import { EditorHandshakeTools } from './tools/editor-handshake-tools';
 import { resetEditorMessageProbes } from './editor-state';
 import './tools/build-tools';
 import './tools/program-tools';
@@ -347,13 +347,20 @@ export class UtcpServerManager {
     private server: any;
     // Resolved port after start(); used by unload to GC the config entry.
     public port: number = 0;
+    public instanceId: string = '';
 
     constructor() {
         this.app = express();
         registerAllImporters();
     }
 
-    async start(port: number = 3000): Promise<number> {
+    async start(port: number = 0): Promise<number> {
+        if (!Number.isInteger(port) || port < 0 || port > 65535) {
+            throw new RangeError('Port must be an integer between 0 and 65535 (0 = auto).');
+        }
+        if (this.server) throw new Error('UTCP Server is already started. Stop it before starting again.');
+        this.app = express();
+        this.instanceId = randomBytes(16).toString('hex');
         // PHAI set TRUOC moi app.use(): express bind 'query parser fn' luc lazyrouter
         // chay (o use() dau tien) va khong doc lai. Set sau -> decoder nay khong bao gio
         // chay, moi arg so/bool ve tay tool duoi dang string.
@@ -407,7 +414,12 @@ export class UtcpServerManager {
                 // Now register tools with the correct port
                 this.port = currentPort;
                 resetEditorMessageProbes();
-                this.registerTools(currentPort, tools, toolInstances, utcpTools);
+                try {
+                    this.registerTools(currentPort, tools, toolInstances, utcpTools);
+                } catch (error) {
+                    this.stop().then(() => reject(error), reject);
+                    return;
+                }
 
                 const message = `[cx3][lifecycle] CONNECTED <- http://localhost:${currentPort}/utcp`;
                 console.info(message);
@@ -416,6 +428,10 @@ export class UtcpServerManager {
                 resolve(currentPort);
             });
             this.server.on('error', (err: any) => {
+                if (!this.server?.listening) {
+                    this.server = null;
+                    this.port = 0;
+                }
                 const message = `[cx3][lifecycle] CONNECTION_ERROR <- ${err?.message ?? String(err)}`;
                 console.error(message);
                 const editor = (globalThis as any).Editor;
@@ -433,7 +449,9 @@ export class UtcpServerManager {
             const ToolClass = toolMeta.target.constructor;
             let instance = toolInstances.get(ToolClass);
             if (!instance) {
-                instance = new ToolClass();
+                instance = ToolClass === EditorHandshakeTools
+                    ? new EditorHandshakeTools(this.instanceId)
+                    : new ToolClass();
                 toolInstances.set(ToolClass, instance);
             }
 
