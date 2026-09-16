@@ -63,6 +63,16 @@ describe('remaining P3 capability contracts', () => {
     await assert.rejects(() => tools.animationGraphCreate({ assetPath: 'db://assets/graphs/empty' }), (error) => error.code === 'CREATE_FAILED' && error.status === 502);
   });
 
+  it('rejects unsafe terrain paths before asset creation', async () => {
+    const calls = [];
+    install(async (...args) => { calls.push(args); throw new Error('asset IPC must not run'); });
+    await assert.rejects(
+      () => new PortfolioValidationTools().terrainCreate({ assetPath: 'db://assets/../unsafe.terrain', name: 'UnsafeTerrain' }),
+      (error) => error.code === 'INVALID_ARGUMENT' && error.status === 400,
+    );
+    assert.deepEqual(calls, []);
+  });
+
   it('compares bounded skeleton metadata without claiming automatic retargeting', async () => {
     install(async (_service, message, id) => {
       if (message !== 'query-asset-info') throw new Error('unexpected request');
