@@ -7,7 +7,7 @@
   "editor": ">=3.7.0",
   "scripts": {
     "preinstall": "node ./scripts/preinstall.js",
-    "build": "node ./scripts/generate-build-info.js && npx tsc",
+    "build": "node ./scripts/generate-build-info.js && npx tsc && node scripts/check-creator-load.js",
     "package": "npm run build && node ./scripts/package.js",
     "link:project": "node ./scripts/link-project-extension.js",
     "link:plans": "python ../../../_devtools/cfg-n-scripts/notes/08_System/mount_project_plans.py --here",
@@ -15,6 +15,7 @@
     "test": "npm run test:unit",
     "test:live": "node --test --test-concurrency=1 tests/live/*.test.js tests/live/ui/*.test.js",
     "test:all": "node --test --test-concurrency=1 tests/unit/*.test.js tests/live/*.test.js tests/live/ui/*.test.js",
+    "check:creator-load": "node scripts/check-creator-load.js",
     "audit:portfolio": "node scripts/audit-tool-portfolio.js",
     "audit:live": "node scripts/audit-live-qualification.js",
     "audit:portfolio:ready": "node scripts/audit-tool-portfolio.js --require-ready"

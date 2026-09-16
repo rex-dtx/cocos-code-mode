@@ -12,6 +12,9 @@ const packageJson = require(packageJsonPath);
 const packageName = packageJson.name;
 const projectRoot = path.join(__dirname, '..');
 
+// Also gate direct packaging, before removing or creating any archive.
+require('child_process').execFileSync(process.execPath, [path.join(__dirname, 'check-creator-load.js')], { cwd: projectRoot, stdio: 'inherit' });
+
 // Zip name carries version + build timestamp so artifacts from different
 // sessions never silently collide: cocos-pilot-3x-<version>-YYMMDD-HHMMSS.zip.
 // Timestamp comes from dist/build-info.json (stamped at build time) so the
