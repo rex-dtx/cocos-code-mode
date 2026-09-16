@@ -1202,7 +1202,7 @@
         },
         {
           "name": "terrainCreate",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Create and attach a valid terrain asset/component with reopen proof.",
           "route": "asset preset plus compound scene workflow",
           "prerequisites": [
@@ -1219,6 +1219,7 @@
           "negativeTestID": "candidate.terrainCreate.negative.v1",
           "fixtureID": "fixture.candidate.terrainCreate.v1",
           "evidenceArtifact": "reports/evidence/candidates/terrainCreate/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/terrain-create-qualification.test.js#TERRAIN-CREATE-01",
           "proposedExecutionPhase": "P5"
         },
         {
