@@ -1,236 +1,138 @@
 import packageJSON from '../../../package.json';
 import { readFileSync } from 'fs-extra';
-import { join } from 'path';
-import { getConfigManager } from '../../utcp/config-manager';
+import { isAbsolute, join } from 'path';
+
+interface Settings { fixedPort: number; configPath: string }
+interface SettingsPanel { $: { app: HTMLElement } }
+const cleanup = new WeakMap<SettingsPanel, () => void>();
+const instruction = 'Select this editor\'s ccb3x_<port> namespace and project path from Status. Call that namespace\'s editorHandshake with expectedProjectPath; verify projectMatches and bind its instanceId before mutations. Stay bound to that namespace, project path and instanceId. Re-handshake after reconnect or restart; if unavailable or identity changes, stop and ask rather than switching editors.';
+
+function parseSettings(value: unknown): Settings {
+    if (!value || typeof value !== 'object' || !('fixedPort' in value) || !('configPath' in value)
+        || typeof value.fixedPort !== 'number' || !Number.isInteger(value.fixedPort)
+        || value.fixedPort < 0 || value.fixedPort > 65535
+        || typeof value.configPath !== 'string' || value.configPath.length > 4096
+        || !isAbsolute(value.configPath) || /[\0\r\n]/.test(value.configPath)) {
+        throw new Error('Expected an integer port from 0 to 65535 and an absolute registry file path.');
+    }
+    return { fixedPort: value.fixedPort, configPath: value.configPath };
+}
+
+class DeadlineError extends Error {}
+function bounded<T>(promise: Promise<T>, milliseconds: number): Promise<T> {
+    // Creator 3.7's runtime has no Promise.withResolvers; use its supported Promise constructor.
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new DeadlineError('Request timed out.')), milliseconds);
+        promise.then(value => { clearTimeout(timer); resolve(value); }, error => { clearTimeout(timer); reject(error); });
+    });
+}
+function detail(error: unknown): string { return error instanceof Error ? error.message : String(error); }
 
 module.exports = Editor.Panel.define({
-    listeners: {},
     template: readFileSync(join(__dirname, '../../../static/template/configuration/index.html'), 'utf-8'),
     style: readFileSync(join(__dirname, '../../../static/style/configuration/index.css'), 'utf-8'),
-    $: {
-        app: '.panel',
-        portInput: '#port-input',
-        savePortBtn: '#save-port-btn',
-        debugToggle: '#debug-logging-toggle',
-        debugStatus: '#debug-logging-status',
-
-        // MCP Integration
-        mcpConfigCode: '#mcp-config-code',
-        
-        // UTCP Config
-        utcpConfigPathInput: '#utcp-config-path',
-        utcpConfigPathSaveBtn: '#save-utcp-path-btn',
-        bridgeList: '#bridge-container',
-        addBridgeBtn: '#add-bridge-btn',
-        newTemplateJson: '#new-template-json',
-    },
-
-    methods: {
-        async loadSettings() {
-            const configManager = getConfigManager();
-            await configManager.initialize();
-
-            // Update UI with config path
-            if (this.$.utcpConfigPathInput) {
-                (this.$.utcpConfigPathInput as any).value = configManager.getConfigPath();
-            }
-
-            // Show the configured preference, not this process's bound auto port.
-            const port = await configManager.getCurrentPort();
-            if (this.$.portInput) {
-                (this.$.portInput as HTMLInputElement).value = String(port);
-            }
-
-            this.updateMcpCodeBlock();
-            this.fetchBridgeList();
-            const debugState = await Editor.Message.request(packageJSON.name, 'get-debug-logging');
-            const debugToggle = this.$.debugToggle as HTMLInputElement;
-            const debugStatus = this.$.debugStatus as HTMLElement;
-            if (debugToggle && debugState && typeof debugState.enabled === 'boolean') debugToggle.checked = debugState.enabled;
-            if (debugStatus && debugState) debugStatus.textContent = debugState.enabled ? 'ON — verbose tool lifecycle logs' : 'OFF — warnings and errors only';
-        },
-
-        async saveSettings() {
-            const newPath = (this.$.utcpConfigPathInput as any).value;
-            if (newPath) {
-                const configManager = getConfigManager();
-                await configManager.setConfigPath(newPath);
-                this.updateMcpCodeBlock();
-                this.fetchBridgeList(); // Reload templates from new path
-                console.log('[cx3][config] Saved UTCP Config Path:', newPath);
-            }
-        },
-
-        async updatePort() {
-            const value = String((this.$.portInput as HTMLInputElement).value).trim();
-            const port = Number(value);
-            if (!value || !Number.isInteger(port) || port < 0 || port > 65535) {
-                alert('Port must be an integer between 0 and 65535 (0 = auto).');
-                return;
-            }
+    $: { app: '.panel' },
+    ready(this: SettingsPanel) {
+        const root = this.$.app;
+        const port = root.querySelector<HTMLInputElement>('#port-input')!;
+        const path = root.querySelector<HTMLInputElement>('#registry-path')!;
+        const mcp = root.querySelector<HTMLTextAreaElement>('#mcp-config')!;
+        const agent = root.querySelector<HTMLTextAreaElement>('#agent-instruction')!;
+        const apply = root.querySelector<HTMLButtonElement>('#apply-settings')!;
+        const reload = root.querySelector<HTMLButtonElement>('#reload-settings')!;
+        const feedback = root.querySelector<HTMLElement>('#settings-feedback')!;
+        const copyFeedback = root.querySelector<HTMLElement>('#copy-feedback')!;
+        const listeners: Array<() => void> = [];
+        let closed = false;
+        let pending = false;
+        let loaded = false;
+        let uncertain = false;
+        agent.value = instruction;
+        const on = (element: HTMLElement, handler: () => void) => {
+            element.addEventListener('click', handler);
+            listeners.push(() => element.removeEventListener('click', handler));
+        };
+        const controls = () => {
+            port.disabled = path.disabled = pending || !loaded || uncertain;
+            apply.disabled = pending || !loaded || uncertain;
+            reload.disabled = pending;
+            root.querySelectorAll<HTMLButtonElement>('[data-source="mcp-config"]').forEach(button => { button.disabled = !loaded || pending || uncertain; });
+        };
+        const show = (settings: Settings) => {
+            port.value = String(settings.fixedPort);
+            path.value = settings.configPath;
+            mcp.value = JSON.stringify({ mcpServers: { 'cc-bridge': {
+                command: 'npx', args: ['-y', '@utcp/code-mode-mcp'], env: { UTCP_CONFIG_FILE: settings.configPath },
+            } } }, null, 2);
+            loaded = true;
+        };
+        const load = async () => {
+            if (closed || pending) return;
+            pending = true;
+            controls();
+            feedback.textContent = 'Loading settings…';
             try {
-                await Editor.Message.request(packageJSON.name, 'restart-server', port);
-                await this.loadSettings();
+                const settings: unknown = await bounded(Editor.Message.request(packageJSON.name, 'extension-settings'), 8000);
+                if (closed) return;
+                show(parseSettings(settings));
+                feedback.textContent = 'Settings loaded. Advanced changes apply only when you choose Apply & Restart.';
+                reload.hidden = true;
             } catch (error) {
-                alert('Failed to restart server: ' + (error instanceof Error ? error.message : String(error)));
+                if (!closed) feedback.textContent = `Could not load settings: ${detail(error)} Use Reload settings to try the read again.`;
+            } finally {
+                if (!closed) { pending = false; controls(); }
             }
-        },
-
-        updateMcpCodeBlock() {
-            const codeEl = this.$.mcpConfigCode as HTMLElement;
-            if (!codeEl) return;
-
-            const configManager = getConfigManager();
-            const configPath = configManager.getConfigPath();
-
-            const config = {
-                "mcpServers": {
-                    "cc-bridge": {
-                        "command": "npx",
-                        "args": ["-y", "@utcp/code-mode-mcp"],
-                        "env": {
-                            "UTCP_CONFIG_FILE": configPath
-                        }
-                    }
-                }
-            };
-
-            codeEl.textContent = JSON.stringify(config, null, 2);
-        },
-
-        fetchBridgeList() {
-            const container = this.$.bridgeList as HTMLElement;
-            if (!container) {
-                console.warn('[cx3][config] Bridge Config Container not found');
-                return;
-            }
-
-            // Clear "Loading..." or previous content
-            container.innerHTML = '';
-
-            const configManager = getConfigManager();
-            const config = configManager.readConfig();
-            const templates = config.manual_call_templates || [];
-
-            if (templates.length === 0) {
-                container.innerHTML = '<div style="padding:10px; color: #888;">No templates found.</div>';
-            } else {
-                let html = '';
-                templates.forEach((t: any) => {
-                const isCocos = /^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(t.name);
-                    const delBtn = isCocos
-                        ? `` // No delete for Cocos
-                        : `<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove Template">
-                             <ui-icon value="del"></ui-icon>
-                           </ui-button>`;
-
-                    const headerText = `${t.name} (${t.call_template_type})`;
-
-                    html += `
-                    <ui-section class="bridge-item-section" data-name="${t.name}">
-                        <div slot="header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding-right: 10px;">
-                            <ui-label>${headerText}</ui-label>
-                            ${delBtn}
-                        </div>
-                        <div class="bridge-item-content">
-                             <ui-code language="json" readonly id="code-${t.name}"></ui-code>
-                        </div>
-                    </ui-section>
-                    `;
-                });
-                container.innerHTML = html;
-
-                // Now populate the code values correctly
-                templates.forEach((t: any) => {
-                    const el = container.querySelector(`#code-${t.name}`) as any;
-                    if (el) el.textContent = JSON.stringify(t, null, 2);
-                });
-            }
-        },
-
-        async addBridgeTemplate() {
-            const input = this.$.newTemplateJson as any;
-            if (!input) return;
-            const content = input.value.trim();
-            if (!content) return;
-
+        };
+        on(reload, () => { void load(); });
+        on(apply, async () => {
+            if (closed || pending || !loaded || uncertain) return;
+            let settings: Settings;
             try {
-                let newTpl = JSON.parse(content);
-                // Validate with @utcp/sdk or simple schema
-                if (!newTpl.name || !newTpl.call_template_type) {
-                    alert('Invalid template. Must have name and call_template_type.');
+                if (!port.value.trim()) throw new Error('Enter a port; use 0 for automatic selection.');
+                settings = parseSettings({ fixedPort: Number(port.value), configPath: path.value.trim() });
+            } catch (error) { feedback.textContent = detail(error); return; }
+            pending = true;
+            controls();
+            feedback.textContent = 'Applying settings and restarting the server…';
+            try {
+                const saved: unknown = await bounded(Editor.Message.request(packageJSON.name, 'save-extension-settings', settings), 20000);
+                if (closed) return;
+                show(parseSettings(saved));
+                feedback.textContent = 'Settings applied and server restarted. Check Status and re-handshake before using the editor. Restart your AI client if its registry path changed.';
+            } catch (error) {
+                if (closed) return;
+                uncertain = true;
+                feedback.textContent = error instanceof DeadlineError
+                    ? 'Apply & Restart timed out; outcome unknown. It may still complete. Do not retry blindly. Check Status, then reopen Settings to inspect the saved values before another change.'
+                    : `Apply & Restart was not confirmed: ${detail(error)} Settings may have changed. Check Status, then reopen Settings to inspect the saved values before retrying.`;
+            } finally {
+                if (!closed) { pending = false; controls(); }
+            }
+        });
+        root.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(button => {
+            on(button, async () => {
+                const field = button.dataset.source === 'mcp-config' ? mcp : agent;
+                field.focus();
+                field.select();
+                if (button.dataset.action === 'select') {
+                    copyFeedback.textContent = 'Text selected. Use Ctrl+C (Cmd+C on macOS) to copy.';
                     return;
                 }
-
-                const configManager = getConfigManager();
-                const saved = await configManager.mutateConfig(config => {
-                    const templates = config.manual_call_templates ?? [];
-                    if (templates.some((template: { name: string }) => template.name === newTpl.name)) {
-                        throw new Error(`Template ${newTpl.name} already exists.`);
-                    }
-                    config.manual_call_templates = [...templates, newTpl];
-                });
-                if (!saved) throw new Error('Unable to save the template.');
-                input.value = '';
-                this.fetchBridgeList();
-
-            } catch (error) {
-                alert('Unable to add template: ' + (error instanceof Error ? error.message : String(error)));
-            }
-        },
-
-        async removeBridge(name: string) {
-            if (/^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(name)) return;
-            if (!confirm(`Remove template ${name}?`)) return;
-
-            const configManager = getConfigManager();
-            try {
-                const saved = await configManager.mutateConfig(config => {
-                    config.manual_call_templates = (config.manual_call_templates ?? [])
-                        .filter((template: { name: string }) => template.name !== name);
-                });
-                if (!saved) throw new Error('Unable to save template removal.');
-                this.fetchBridgeList();
-            } catch (error) {
-                alert('Unable to remove template: ' + (error instanceof Error ? error.message : String(error)));
-            }
-        },
-        async setDebugLogging(enabled: boolean) {
-            const state = await Editor.Message.request(packageJSON.name, 'set-debug-logging', enabled);
-            const debugStatus = this.$.debugStatus as HTMLElement;
-            if (debugStatus && state) debugStatus.textContent = state.enabled ? 'ON — verbose tool lifecycle logs' : 'OFF — warnings and errors only';
-        },
-    },
-    ready() {
-        this.loadSettings();
-
-        // Listeners
-        const debugToggle = this.$.debugToggle as HTMLElement & { checked?: boolean };
-        if (debugToggle) debugToggle.addEventListener('change', () => this.setDebugLogging(debugToggle.checked === true));
-        const savePort = this.$.savePortBtn as HTMLElement;
-        if (savePort) savePort.addEventListener('click', () => this.updatePort());
-
-        const savePath = this.$.utcpConfigPathSaveBtn as HTMLElement;
-        if (savePath) savePath.addEventListener('click', () => this.saveSettings());
-
-        const addBtn = this.$.addBridgeBtn as HTMLElement;
-        if (addBtn) addBtn.addEventListener('click', () => this.addBridgeTemplate());
-
-        const list = this.$.bridgeList as HTMLElement;
-        if (list) {
-            list.addEventListener('click', (e: any) => {
-                // Handle delete clicks
-                const btn = e.target.closest('.remove-btn');
-                if (btn) {
-                    // In new structure, btn is inside .bridge-item-content inside ui-section
-                    const section = btn.closest('.bridge-item-section');
-                    if (section && section.dataset.name) {
-                        this.removeBridge(section.dataset.name);
-                    }
+                button.disabled = true;
+                copyFeedback.textContent = 'Copying…';
+                try {
+                    if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('Clipboard access is unavailable.');
+                    await bounded(navigator.clipboard.writeText(field.value), 5000);
+                    if (!closed) copyFeedback.textContent = 'Copied to clipboard.';
+                } catch (error) {
+                    if (!closed) copyFeedback.textContent = `Copy not confirmed: ${detail(error)} Use Select, then Ctrl+C (Cmd+C on macOS).`;
+                } finally {
+                    if (!closed) { button.disabled = false; controls(); }
                 }
             });
-        }
+        });
+        cleanup.set(this, () => { closed = true; listeners.forEach(remove => remove()); });
+        void load();
     },
-    beforeClose() { },
-    close() { },
+    close(this: SettingsPanel) { cleanup.get(this)?.(); cleanup.delete(this); },
 });

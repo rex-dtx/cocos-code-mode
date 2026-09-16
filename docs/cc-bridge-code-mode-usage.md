@@ -11,13 +11,13 @@ Cocos Creator → http://localhost:<port>/utcp → UTCP call template
 
 The extension maintains `~/.utcp_config.json` automatically. Each editor has one stable `ccb3x_<actual-port>` template; there is no `ccb3x` latest-editor pointer. Legacy `ccb3x` discovery entries migrate to the port in their URL, not to whichever editor answers first. Do not register two templates for the same endpoint. A template name must match its URL port; ambiguous endpoints sharing a namespace are not selected.
 
-Every launch defaults to an OS-assigned free port (`listen(0)`). Previously saved `serverPort` values are not reused. Set **Configuration → Fixed Port** or the `fixedServerPort` preference explicitly to use a fixed port; 0 restores automatic allocation. An occupied fixed port fails without switching to another endpoint. The About output reports the actual listening port, while Configuration shows the configured preference.
+Every launch defaults to an OS-assigned free port (`listen(0)`). Previously saved `serverPort` values are not reused. Set **Settings → Advanced → Fixed Port** or the `fixedServerPort` preference explicitly to use a fixed port; 0 restores automatic allocation. An occupied fixed port fails without switching to another endpoint. Status reports the actual listening port; Settings shows the configured preference.
 
 Registry writers serialize read–modify–write using `<config-path>.ccb-lock`, then replace the JSON atomically. Instance ownership is stored in the supported `variables.CCB3X_OWNER_<port>` string field, committed with its endpoint; late cleanup cannot remove a newer owner. Lock acquisition fails after 5 seconds rather than overwriting another writer. After a crash, an abandoned lock requires operator cleanup: close all registry writers, inspect its `owner.json`, then remove that lock directory. Older extension versions do not participate in this locking protocol; upgrade all concurrent Creator instances before relying on it.
 
 ### Extension Status panel
 
-Open **CC Bridge 3x → Status** and click **Check Status** to refresh a read-only snapshot. The panel shows build provenance, Creator project/version, server port/namespace/instance, debug mode, registry ownership, local HTTP handshake, and scene IPC readiness. It checks once on open, then only on demand; it does not restart the server or poll in the background. HTTP success requires the handshake to match this editor instance/project. A responsive scene with `ready:false` is not a disconnected server. Local HTTP checks do not prove a remote agent's Code Mode connection; no agent-connected count is inferred.
+The extension menu contains **Status** and **Settings**. Status shows connection health first, with build/registry identifiers under Technical details. Check Status refreshes a read-only snapshot; no polling or automatic mutations. Restart Server, the explicit debug ON/OFF checkbox, Open Logs and confirmed Clear Logs are available in the panel. Restart disconnects current agents; reconnect and handshake again. Clear Logs affects the shared debug folder, including other editors. Settings provides copy-ready AI configuration; fixed port and registry path are hidden under Advanced and applied together with a restart. The extension no longer edits arbitrary shared-registry templates. Local HTTP checks verify this instance, not agent connectivity.
 
 ### Creator 3.7 module compatibility
 
@@ -43,11 +43,11 @@ Add Code Mode MCP to the AI client. `cc-bridge` is the client-facing server name
 }
 ```
 
-Restart the AI client after changing its MCP configuration. Open the Cocos project and confirm **CC Bridge 3x → About** reports a running UTCP URL before registering tools.
+Restart the AI client after changing its MCP configuration. Open the Cocos project and confirm **CC Bridge 3x → Status** reports a verified HTTP handshake before registering tools.
 
 ## 2. Register the Cocos manual
 
-At the beginning of an agent session, explicitly select the intended Creator project and its `ccb3x_<port>` endpoint from the Configuration panel or `~/.utcp_config.json`. Register that exact namespace and URL, then verify registration before calling tools. The examples below use **`ccb3x_49650` only as a selected-editor example**: replace both `49650` occurrences and every namespace reference with the actual selected port. Never switch to another editor because the selected one is unavailable.
+At the beginning of an agent session, explicitly select the intended Creator project and its `ccb3x_<port>` endpoint from Status or `~/.utcp_config.json`. Register that exact namespace and URL, then verify registration before calling tools. The examples below use **`ccb3x_49650` only as a selected-editor example**: replace the port and namespace with the actual selected editor. Never switch to another editor because the selected one is unavailable.
 
 ```typescript
 await register_manual({
@@ -135,7 +135,7 @@ return await ccb3x_49650.editorLog({
 
 `debug` uses `console.log` with a `[debug]` prefix so the existing project-log reader can recognize it. Read entries back with `editorGetLogs`; use `showStack: true` when the message contains multiple lines. Use the optional case-sensitive `pattern` for bounded search and `maxBytes` (256-65536) to cap UTF-8 response size; a valid no-match query returns an empty result, while missing or unparseable logs fail explicitly. The tool follows normal profile exposure (full by default); enable it explicitly for a core/custom profile. After rebuilding, reload the extension and re-register the manual to discover the new API.
 
-API lifecycle logs use indented plain text: `REQUEST`, `SUCCESS`, or `FAILED`, with a shared eight-character request token. Requests include merged query/body params; results describe the transmitted payload. Errors include params, message, details, recovery and stack when available. Multiline strings retain line breaks. Enable **Verbose tool interaction logs** in Configuration to see successful traffic; quiet mode retains warnings/errors. Test-client trace is off unless `UTCP_TEST_TRACE=1`.
+API lifecycle logs use indented plain text: `REQUEST`, `SUCCESS`, or `FAILED`, with a shared eight-character request token. Requests include merged query/body params; results describe the transmitted payload. Errors include params, message, details, recovery and stack when available. Multiline strings retain line breaks. Enable debug logging in Status to see successful traffic; quiet mode retains warnings/errors. Test-client trace is off unless `UTCP_TEST_TRACE=1`.
 
 Console display is bounded to 112 lines, approximately 14,000 characters, eight nesting levels and 512 visited fields. Long strings are abbreviated explicitly. A `Details file` path is displayed only after a JSONL record is successfully written; warnings/errors are persisted even in quiet mode. Snapshots are bounded to 20,000 nodes, 32 levels, approximately two million characters and 262,144 characters per string; binary payloads and truncated content are marked, not represented as complete. Sensitive field names such as password, token, authorization and API key are redacted in both outputs. Redaction is name-based, not a free-text secret detector: never put credentials into messages, code strings or URLs.
 

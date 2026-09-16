@@ -48,12 +48,28 @@ export class P4ContractTools {
         },
         required: ['sessionId', 'operation', 'nodeReference'],
     }, { type: 'object', properties: { success: { type: 'boolean' } }, required: ['success'] }, 'POST', ['particle', 'playback', 'runtime'])
-    async particlePlayback(args: { sessionId?: string, operation?: string, nodeReference?: { id?: string } }): Promise<never> {
+    async particlePlayback(args: { sessionId?: string, operation?: string, nodeReference?: { id?: string } }): Promise<{ success: true, sessionId: string, operation: string, nodeReference: { id: string }, state: Record<string, unknown> }> {
         const sessionId = requireText(args?.sessionId, 'sessionId', 64);
         if (!args?.nodeReference?.id) {
             throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeReference.id is required.' });
         }
+        if (!['play', 'stop', 'clear'].includes(String(args.operation))) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'operation must be play, stop, or clear.' });
+        }
         await runtimeTools.runtimeSessionLifecycle({ operation: 'inspect', sessionId });
-        throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: `Particle playback transport is not verified for runtime session ${sessionId}.`, recovery: 'Start a verified game-view runtime session before retrying.' });
+        let result: unknown;
+        try {
+            result = await Editor.Message.request('scene', 'execute-scene-script', {
+                name: 'cc-bridge-3x',
+                method: 'particlePlaybackControl',
+                args: [args.nodeReference.id, args.operation],
+            });
+        } catch (error) {
+            throw new ToolError({ code: 'PARTICLE_PLAYBACK_FAILED', status: 502, message: 'Particle runtime control failed.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        if (!result || typeof result !== 'object' || !('playing' in result) || typeof result.playing !== 'boolean') {
+            throw new ToolError({ code: 'INVALID_EDITOR_RESPONSE', status: 502, message: 'Particle runtime control returned invalid state.' });
+        }
+        return { success: true, sessionId, operation: String(args.operation), nodeReference: { id: args.nodeReference.id }, state: result as Record<string, unknown> };
     }
 }

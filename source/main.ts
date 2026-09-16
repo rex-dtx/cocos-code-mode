@@ -2,10 +2,10 @@ import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { closeArtifactServers } from './utcp/tools/artifact-server-tools';
 import { getConfigManager } from './utcp/config-manager';
-import { formatBuildInfo, getBuildInfo } from './build-info';
+import { formatBuildInfo } from './build-info';
 import { exec } from 'child_process';
 import { homedir } from 'os';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { cancelEditorAsk } from './utcp/editor-ask';
 import { cancelEditorPrompt, getEditorPrompt, respondEditorPrompt } from './utcp/editor-prompt';
@@ -79,15 +79,39 @@ export const methods: { [key: string]: (...any: any) => any } = {
     openPanel() {
         Editor.Panel.open(packageJSON.name + '.configuration');
     },
+    async getExtensionSettings() {
+        const config = getConfigManager();
+        return { fixedPort: await config.getCurrentPort(), configPath: config.getConfigPath() };
+    },
+    async saveExtensionSettings(input: unknown) {
+        if (!input || typeof input !== 'object' || Array.isArray(input)
+            || Object.keys(input).some(key => key !== 'fixedPort' && key !== 'configPath')
+            || !('fixedPort' in input) || typeof input.fixedPort !== 'number' || !Number.isInteger(input.fixedPort)
+            || input.fixedPort < 0 || input.fixedPort > 65535
+            || !('configPath' in input) || typeof input.configPath !== 'string' || !isAbsolute(input.configPath)
+            || input.configPath.includes('\0') || input.configPath.length > 4096) {
+            throw new Error('Settings require fixedPort (0–65535) and an absolute configPath.');
+        }
+        const { fixedPort, configPath } = input;
+        return runLifecycle(async () => {
+            const config = getConfigManager();
+            await config.setConfiguredPort(fixedPort);
+            await config.setConfigPath(configPath);
+            const previous = utcpServer;
+            const debug = previous?.getDebugEnabled() ?? false;
+            cancelEditorAsk();
+            cancelEditorPrompt();
+            utcpServer = null;
+            if (previous) await stopPublishedServer(previous);
+            await startPublishedServer(fixedPort, debug);
+            return { fixedPort, configPath };
+        });
+    },
 
     openPreviewPanel() {
         Editor.Panel.open(packageJSON.name + '.preview');
     },
 
-    async showInfo() {
-        // ponytail: alias kept for compat, menu no longer exposes it — delegates to show-build-info
-        return (methods as any).showBuildInfo();
-    },
 
     async restartServer(newPort?: number) {
         return runLifecycle(async () => {
@@ -131,27 +155,18 @@ export const methods: { [key: string]: (...any: any) => any } = {
         return { enabled: applied };
     },
 
-    async toggleDebug() {
-        const current = utcpServer?.getDebugEnabled() ?? Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
-        return (methods as any).setDebugLogging(!current);
-    },
 
     // The folder may not exist until debug logging is first enabled.
     openDebugFolder() {
-        try {
-            mkdirSync(DEBUG_LOG_DIR, { recursive: true });
-        } catch (err: unknown) {
-            console.error('[cx3][lifecycle] Failed to create debug folder:', err instanceof Error ? err.message : String(err));
-            return;
-        }
+        mkdirSync(DEBUG_LOG_DIR, { recursive: true });
         // ponytail: cross-platform open — works on Windows/macOS/Linux
         const cmd = process.platform === 'win32'
             ? `start "" "${DEBUG_LOG_DIR}"`
             : process.platform === 'darwin'
                 ? `open "${DEBUG_LOG_DIR}"`
                 : `xdg-open "${DEBUG_LOG_DIR}"`;
-        exec(cmd, (err) => {
-            if (err) console.error('[cx3][lifecycle] Failed to open debug folder:', err.message);
+        return new Promise<void>((resolve, reject) => {
+            exec(cmd, err => err ? reject(err) : resolve());
         });
     },
 
@@ -160,36 +175,11 @@ export const methods: { [key: string]: (...any: any) => any } = {
             const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
             files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
             console.log(`[cx3][lifecycle] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
-        } catch (err: any) {
-            // ENOENT means the folder never existed — nothing to clear.
-            if (err?.code !== 'ENOENT') {
-                console.error('[cx3][lifecycle] Failed to clear debug logs:', err?.message || err);
-            }
+        } catch (err: unknown) {
+            if (!(err instanceof Error) || !('code' in err) || err.code !== 'ENOENT') throw err;
         }
     },
 
-    async showBuildInfo() {
-        const b = getBuildInfo();
-        const cm = getConfigManager();
-        // ponytail: merged Server Info + About — single log has port/config/url + build info (same as 2x)
-        const port = utcpServer?.port ?? 0;
-        const configPath = cm.getConfigPath();
-        const isRunning = Boolean(port && utcpServer);
-        const statusIcon = isRunning ? '🟢' : '🔴';
-        const statusUrl = isRunning ? `http://localhost:${port}/utcp` : 'Server not running';
-        const commitStr = `${b.commit}${b.dirty ? '-dirty' : ''}`;
-        const versionTag = `v${b.version}@${commitStr}`;
-
-        const lines = [
-            `[${packageJSON.name}] ${statusIcon} ${statusUrl} (${versionTag})`,
-            `  Build info:`,
-            `    Port:     ${port || '(not running)'}`,
-            `    Config:   ${configPath}`,
-            `    Branch:   ${b.branch}`,
-            `    Built at: ${b.builtAt}`,
-        ];
-        console.log(lines.join('\n'));
-    }
 };
 
 export async function load() {

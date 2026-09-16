@@ -957,6 +957,26 @@ export const methods = {
             frameCount,
         };
     },
+    async particlePlaybackControl(nodeUuid: string, operation: 'play' | 'stop' | 'clear'): Promise<{ playing: boolean, operation: string, nodeUuid: string }> {
+        const cc = (globalThis as any)['cc'];
+        const node = await methods.findRuntimeNodeUuid(nodeUuid);
+        if (!node) throw new Error(`Particle node not found: ${nodeUuid}`);
+        const ParticleSystem = cc?.ParticleSystem ?? cc?.js?.getClassByName?.('cc.ParticleSystem');
+        const ParticleSystem2D = cc?.ParticleSystem2D ?? cc?.js?.getClassByName?.('cc.ParticleSystem2D');
+        const component = (ParticleSystem ? node.getComponent?.(ParticleSystem) : null)
+            ?? (ParticleSystem2D ? node.getComponent?.(ParticleSystem2D) : null);
+        if (!component) throw new Error(`Particle component not found on node: ${nodeUuid}`);
+        if (operation === 'play') component.play?.();
+        else if (operation === 'stop') component.stop?.();
+        else if (operation === 'clear') component.clear?.();
+        else throw new Error(`Unsupported particle operation: ${String(operation)}`);
+        const playingValue = component.isPlaying;
+        const playing = typeof playingValue === 'boolean'
+            ? playingValue
+            : typeof playingValue === 'function' ? Boolean(playingValue.call(component)) : operation === 'play';
+        return { playing, operation, nodeUuid };
+    },
+
     async inspectLocalization(): Promise<{ supported: boolean, currentLanguage: string | null, languages: string[], directions: Record<string, string>, error?: string }> {
         try {
             const mod = require('db://localization-editor/l10n');

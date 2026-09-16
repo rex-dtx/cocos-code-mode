@@ -65,14 +65,14 @@
       }
     },
     "configuration": {
-      "title": "Configuration",
+      "title": "Settings",
       "type": "dockable",
       "main": "dist/panels/configuration",
       "size": {
         "min-width": 400,
         "min-height": 300,
-        "width": 1024,
-        "height": 600
+        "width": 560,
+        "height": 680
       }
     },
     "preview": {
@@ -99,56 +99,45 @@
       },
       {
         "path": "CC Bridge 3x",
-        "label": "i18n:cc-bridge-3x.open_panel",
+        "label": "Settings",
         "message": "open-panel"
-      },
-      {
-        "path": "CC Bridge 3x",
-        "label": "Restart Server",
-        "message": "restart-server"
-      },
-      {
-        "path": "CC Bridge 3x",
-        "label": "Toggle Debug Logging",
-        "message": "toggle-debug"
-      },
-      {
-        "path": "CC Bridge 3x/Debug Logs",
-        "label": "Open Debug Folder",
-        "message": "open-debug-folder"
-      },
-      {
-        "path": "CC Bridge 3x/Debug Logs",
-        "label": "Clear Debug Logs",
-        "message": "clear-debug-logs"
-      },
-      {
-        "path": "CC Bridge 3x",
-        "label": "About",
-        "message": "show-build-info"
       }
     ],
     "messages": {
       "open-status": {
-        "methods": ["openStatus"]
+        "methods": [
+          "openStatus"
+        ]
       },
       "extension-status": {
-        "methods": ["getExtensionStatus"]
+        "methods": [
+          "getExtensionStatus"
+        ]
       },
       "editor-control-get": {
-        "methods": ["getEditorControl"]
+        "methods": [
+          "getEditorControl"
+        ]
       },
       "editor-task-cancel": {
-        "methods": ["cancelEditorTask"]
+        "methods": [
+          "cancelEditorTask"
+        ]
       },
       "editor-prompt-get": {
-        "methods": ["getEditorPrompt"]
+        "methods": [
+          "getEditorPrompt"
+        ]
       },
       "editor-prompt-response": {
-        "methods": ["respondEditorPrompt"]
+        "methods": [
+          "respondEditorPrompt"
+        ]
       },
       "open-agent-inbox": {
-        "methods": ["openAgentInbox"]
+        "methods": [
+          "openAgentInbox"
+        ]
       },
       "open-panel": {
         "methods": [
@@ -185,11 +174,6 @@
           "setDebugLogging"
         ]
       },
-      "toggle-debug": {
-        "methods": [
-          "toggleDebug"
-        ]
-      },
       "open-debug-folder": {
         "methods": [
           "openDebugFolder"
@@ -200,14 +184,14 @@
           "clearDebugLogs"
         ]
       },
-      "show-build-info": {
+      "extension-settings": {
         "methods": [
-          "showBuildInfo"
+          "getExtensionSettings"
         ]
       },
-      "show-info": {
+      "save-extension-settings": {
         "methods": [
-          "showInfo"
+          "saveExtensionSettings"
         ]
       }
     }

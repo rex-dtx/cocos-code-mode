@@ -265,15 +265,9 @@ export class MyTools {
 
 Register the class by importing it in `utcp-server.ts`. Tools are served automatically at startup. No additional registration needed.
 
-## UTCP Call Templates Configuration
+## Extension controls
 
-The extension provides a **Configuration** panel in the **CC Bridge 3x** menu. It shows the current server port, the path to the UTCP config file, and lets you manage additional UTCP call templates for the Code Mode MCP bridge.
-
-You can find Call Template structures in [UTCP documentation](https://www.utcp.io/protocols):
-- [MCP Call Template](https://utcp.io/protocols/mcp#call-template-structure)
-- [HTTP Call Template](https://utcp.io/protocols/http#call-template-structure) ([Streamable](https://utcp.io/protocols/http#call-template-structure), [SSE](https://utcp.io/protocols/http#call-template-structure))
-- [CLI Call Template](https://utcp.io/protocols/cli#call-template-structure)
-- [Text Call Template](http://utcp.io/protocols/text#call-template-structure)
+**CC Bridge 3x → Status** shows server/handshake health and provides Restart Server, debug ON/OFF and log actions. Build and registry identifiers are under Technical details. **Settings** contains copy-ready AI client configuration; fixed port and registry path are under Advanced with one Apply & Restart action. Registry templates are managed automatically, not through a raw JSON editor.
 
 The extension publishes one `ccb3x_<actual-port>` entry per running editor in `~/.utcp_config.json`. There is no `ccb3x` latest-editor pointer: each agent explicitly selects an endpoint and binds its namespace, project path, and handshake `instanceId`. Legacy `ccb3x` discovery entries migrate to their URL port without retaining the alias. Keep one template per endpoint, with a namespace matching the URL port. Re-handshake after reconnect or restart; never silently switch editors. The `ccb2x` naming behavior is unchanged.
 
