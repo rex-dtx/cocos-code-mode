@@ -71,6 +71,10 @@ return connection;
 
 The IPC deadline defaults to 1000ms (1–5000ms allowed); repeated probes share outstanding IPC rather than accumulating hung requests. This is a point-in-time check, not a persistent session or a guarantee that all tools will succeed. Client transport deadlines must allow additional HTTP/adapter overhead. Connection refused, registration failure, or an older build without this tool are client-side failures, not handshake responses. `/utcp` discovery alone does not prove Creator IPC readiness.
 
+The SessionStart bootstrap announces `editorHandshake` and the exact manual namespace to call. It probes the advertised handshake over HTTP and stores separate `handshake.status`, `checkedAt`, and `result` evidence in the metadata cache. `live` still describes manual discovery, not Creator IPC readiness. Failed or omitted probes discard prior handshake success; older builds are marked `unsupported`. Agents must still register the manual and call the handshake through Code Mode with the intended Creator project path (not necessarily the agent working directory).
+
+If IPC stays stuck, do not poll in a tight loop. Restart/reload CCB to establish a new probe lifecycle, then re-register and handshake again. Starting a new CCB server clears stale probe slots; late responses from the previous lifecycle cannot evict current probes. A timeout alone never clears a slot or triggers background retries. This does not cancel an outstanding Creator IPC or guarantee recovery if Creator itself remains unresponsive.
+
 ## 3. Discover before acting
 
 Use the Code Mode MCP management tools in this order:

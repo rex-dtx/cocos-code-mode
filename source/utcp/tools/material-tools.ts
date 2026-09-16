@@ -223,8 +223,15 @@ export class MaterialTools {
         const changed = await importer.setProperty({ ...info, uuid: materialId }, args.path, args.value);
         if (!changed) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Material property '${args.path}' was not found or was not mutable.` });
         const after = await Editor.Message.request('scene', 'query-material', materialId);
-        if (!after || JSON.stringify(after) === JSON.stringify(before)) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: `Material property '${args.path}' did not produce a verifiable read-back change.` });
-        return { reference: args.reference, path: args.path, changed: true, before, after };
+        const importerAfter = await importer.getProperties({ ...info, uuid: materialId });
+        const importerProperty: unknown = importerAfter[args.path];
+        const importerValue = importerProperty && typeof importerProperty === 'object' && 'value' in importerProperty
+            ? importerProperty.value
+            : importerProperty;
+        const nativeChanged = !!after && JSON.stringify(after) !== JSON.stringify(before);
+        const importerMatched = JSON.stringify(importerValue) === JSON.stringify(args.value);
+        if (!nativeChanged && !importerMatched) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: `Material property '${args.path}' did not produce a verifiable read-back change.` });
+        return { reference: args.reference, path: args.path, changed: true, before, after: nativeChanged ? after : importerValue };
     }
     @utcpTool(
         'assetDbQuery',

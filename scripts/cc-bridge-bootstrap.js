@@ -23,6 +23,7 @@ function fetchJson(url, timeoutMs = 2500) {
   return new Promise((resolve) => {
     const req = http.get(url, (res) => {
       let body = '';
+      if (res.statusCode < 200 || res.statusCode >= 300) { res.resume(); resolve(null); return; }
       res.on('data', (c) => (body += c));
       res.on('end', () => { try { resolve(JSON.parse(body)); } catch { resolve(null); } });
     });
@@ -112,6 +113,18 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
     const tools = toolDefs.map((t) => t.name);
     const buildInfo = await doFetch(`${base}/build-info`);
     const live = isLiveProbe(manual, buildInfo, toolDefs.length);
+    let handshake = { status: 'unavailable', checkedAt: nowIso, result: null };
+    if (live && tools.includes('editorHandshake')) {
+      const response = await doFetch(`${base}/tools/editorHandshake?timeoutMs=1000`);
+      // Envelope mode is optional on the server. Never infer readiness from HTTP 200 alone.
+      const result = response?.probe ? response : response?.ok === true && response?.tool === 'editorHandshake' ? response.data : null;
+      const valid = result && typeof result.instanceId === 'string'
+        && ['responsive', 'timeout', 'error', 'invalid-response'].includes(result.probe?.status)
+        && (result.probe.status !== 'responsive' || typeof result.probe.sceneReady === 'boolean');
+      handshake = { status: valid ? result.probe.status : 'unverified', checkedAt: nowIso, result: valid ? result : null };
+    } else if (live) {
+      handshake.status = 'unsupported';
+    }
 
     const prior = priorManuals[cKey];
 
@@ -122,6 +135,7 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
         tools,
         toolDefs,
         buildInfo: buildInfo || null,
+        handshake,
         fetchedAt: nowIso,
         age_ms: 0,
         live: true,
@@ -139,6 +153,7 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
         nextManuals[cKey] = {
           ...prior,
           age_ms: ageOut != null ? ageOut : prior.age_ms ?? null,
+          handshake,
           live: false,
           stale: true,
           staleReason: overMaxAge ? 'max_age' : 'probe_failed',
@@ -148,6 +163,7 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
         const ageMs = computeAgeMs(prior.fetchedAt, nowMs);
         nextManuals[cKey] = {
           ...prior,
+          handshake,
           age_ms: ageMs != null ? ageMs : prior.age_ms ?? 0,
           live: false,
           stale: true,
@@ -165,6 +181,7 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
           tools: [],
           toolDefs: [],
           buildInfo: buildInfo || null,
+          handshake,
           fetchedAt: nowIso,
           age_ms: 0,
           live: false,
@@ -182,13 +199,14 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
   for (const [k, v] of Object.entries(priorManuals)) {
     if (nextManuals[k] !== undefined) continue;
     const ageMs = computeAgeMs(v.fetchedAt || v.updatedAt || priorCache.updatedAt, nowMs);
+    const retained = { ...v, handshake: { status: 'unverified', checkedAt: null, result: null } };
     if (ageMs != null && ageMs > STALE_AFTER_MS) {
-      nextManuals[k] = { ...v, age_ms: ageMs, stale: true, staleReason: 'max_age', live: false };
+      nextManuals[k] = { ...retained, age_ms: ageMs, stale: true, staleReason: 'max_age', live: false };
     } else if (ageMs != null) {
       // Keep as-is but keep age_ms fresh so readers can run age_ms = now - fetchedAt.
-      nextManuals[k] = { ...v, age_ms: ageMs };
+      nextManuals[k] = { ...retained, age_ms: ageMs };
     } else {
-      nextManuals[k] = { ...v };
+      nextManuals[k] = retained;
     }
   }
 
@@ -232,6 +250,13 @@ async function main() {
     .reduce((s, v) => s + (v.toolCount || 0), 0);
   const staleNote = Object.values(cache.manuals).some((v) => v.stale) ? ' (stale)' : '';
   console.log(`[cc-bridge-bootstrap] cached ${names} (${liveTotal} live tools) → .claude/cc-bridge-cache.json${staleNote}`);
+  for (const [name, info] of Object.entries(cache.manuals)) {
+    if (info.handshake?.status === 'unsupported') {
+      console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake not advertised by this build; discovery is not IPC readiness. Update CCB to use handshake.`);
+    } else {
+      console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake HTTP probe=${info.handshake?.status ?? 'unverified'}. After register_manual + list_tools, call ${name}.editorHandshake({timeoutMs:1000, expectedProjectPath:"<absolute Creator project path>"}) through call_tool_chain. Require projectMatches:true before mutations; sceneReady:false means connected but scene not ready. Cache/HTTP probe does not verify the Code Mode route. Do not loop on timeout; restart/reload CCB to renew probes if IPC stays stuck.`);
+    }
+  }
 }
 
 // Test seam: pure helpers + core. main() path stays fs/http-coupled as before.

@@ -53,6 +53,43 @@ const LIVE_MANUAL = { utcp_version: '1.0.1', manual_version: '1.0.0', tools: [{ 
 const LIVE_BUILD = { version: '2.0.0', commit: 'deadbeef', branch: 'cc-3x7', dirty: false, builtAt: new Date().toISOString() };
 const DEAD_MANUAL_EMPTY = { utcp_version: '1.0.1', manual_version: '1.0.0', tools: [] };
 
+describe('bootstrap handshake evidence', () => {
+  it('distinguishes responsive not-ready, timeout, malformed response and old builds without poisoning discovery', async () => {
+    const config = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const payload = { instanceId: 'instance', probe: { status: 'responsive', sceneReady: false, code: null } };
+    for (const [response, status] of [
+      [payload, 'responsive'],
+      [{ ok: true, tool: 'editorHandshake', data: payload }, 'responsive'],
+      [{ instanceId: 'instance', probe: { status: 'timeout', sceneReady: null } }, 'timeout'],
+      [{ instanceId: 'instance', probe: { status: 'responsive', sceneReady: 'false' } }, 'unverified'],
+      [null, 'unverified'],
+    ]) {
+      const cache = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(), fetchJson: mockFetch({
+        'http://localhost:11111/utcp': { ...LIVE_MANUAL, tools: [{ name: 'editorHandshake' }] },
+        'http://localhost:11111/build-info': LIVE_BUILD,
+        'http://localhost:11111/tools/editorHandshake?timeoutMs=1000': response,
+      }) });
+      assert.equal(cache.manuals.ccb3x.handshake.status, status);
+      assert.equal(cache.manuals.ccb3x.live, true, 'manual discovery is independent of IPC readiness');
+      if (status === 'responsive') assert.equal(cache.manuals.ccb3x.handshake.result.probe.sceneReady, false);
+    }
+    const old = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(), fetchJson: mockFetch({
+      'http://localhost:11111/utcp': LIVE_MANUAL, 'http://localhost:11111/build-info': LIVE_BUILD,
+    }) });
+    assert.equal(old.manuals.ccb3x.handshake.status, 'unsupported');
+  });
+
+  it('never reuses cached handshake success after failed or omitted probes', async () => {
+    const priorCache = { manuals: { ccb3x: makePriorEntry({ handshake: { status: 'responsive', result: { instanceId: 'old' } } }) } };
+    for (const entries of [[{ name: 'ccb3x', port: 11111 }], []]) {
+      const cache = await buildCache({ utcpConfig: utcpConfigFor(entries), priorCache, now: new Date(), fetchJson: async () => null });
+      assert.notEqual(cache.manuals.ccb3x.handshake.status, 'responsive');
+      assert.equal(cache.manuals.ccb3x.handshake.result, null);
+      assert.equal(cache.manuals.ccb3x.toolCount, 42);
+    }
+  });
+});
+
 // ── isLiveProbe unit ─────────────────────────────────────────────────────
 
 describe('cc-bridge-bootstrap — isLiveProbe liveness gate', () => {
