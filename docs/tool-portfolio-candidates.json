@@ -984,7 +984,7 @@
         },
         {
           "name": "particlePlayback",
-          "state": "probe-required",
+          "state": "implemented-unverified",
           "contractDelta": "Play, stop, clear and completion observation in a named runtime session.",
           "route": "runtime particle adapter",
           "prerequisites": [

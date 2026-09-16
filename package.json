@@ -43,7 +43,7 @@
   },
   "panels": {
     "status": {
-      "title": "CC Bridge 3x Status",
+      "title": "Cocos Pilot 3x Status",
       "type": "dockable",
       "main": "dist/panels/status",
       "size": {
@@ -97,13 +97,13 @@
         "path": "Cocos Pilot 3x",
         "label": "i18n:cocos-pilot-3x.open_panel",
 =======
-        "path": "CC Bridge 3x",
+        "path": "Cocos Pilot 3x",
         "label": "Status",
         "message": "open-status"
       },
       {
-        "path": "CC Bridge 3x",
-        "label": "i18n:cc-bridge-3x.open_panel",
+        "path": "Cocos Pilot 3x",
+        "label": "i18n:cocos-pilot-3x.open_panel",
 >>>>>>> 52bede2 (feat(editor): add nonblocking agent interactions)
         "message": "open-panel"
       },

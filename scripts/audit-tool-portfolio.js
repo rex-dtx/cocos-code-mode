@@ -142,6 +142,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'buildTargetSmoke',
   'runtimeScreenshotAssert',
   'runtimeInputDispatch',
+  'particlePlayback',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

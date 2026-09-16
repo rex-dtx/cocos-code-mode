@@ -14,7 +14,7 @@ afterEach(() => {
 });
 
 describe('openDebugFolder', () => {
-  it('creates the debug directory before opening it', () => {
+  it('creates the debug directory before opening it', async () => {
     const calls = { mkdir: [], exec: [] };
     fs.mkdirSync = (directory, options) => calls.mkdir.push({ directory, options });
     childProcess.exec = (command, callback) => {
@@ -23,7 +23,7 @@ describe('openDebugFolder', () => {
     };
 
     const { methods } = requireDist('main.js');
-    methods.openDebugFolder();
+    await methods.openDebugFolder();
 
     assert.equal(calls.mkdir.length, 1);
     assert.match(calls.mkdir[0].directory, /\.utcp-debug$/);
