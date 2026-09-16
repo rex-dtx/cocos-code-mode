@@ -141,6 +141,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'buildTargetLaunch',
   'buildTargetSmoke',
   'runtimeScreenshotAssert',
+  'runtimeInputDispatch',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

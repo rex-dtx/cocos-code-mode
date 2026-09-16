@@ -180,6 +180,46 @@ export class InputTools {
     }
 
     @utcpTool(
+        'runtimeInputDispatch',
+        'Dispatch one bounded keyboard or pointer action to the active Creator runtime/editor target.',
+        {
+            type: 'object', additionalProperties: false,
+            properties: {
+                action: { type: 'string', enum: ['key', 'click'] },
+                key: { type: 'string', minLength: 1, maxLength: 64 },
+                modifiers: { type: 'object', properties: { shift: { type: 'boolean' }, ctrl: { type: 'boolean' }, alt: { type: 'boolean' }, meta: { type: 'boolean' } } },
+                x: { type: 'number', minimum: 0, maximum: 16384 },
+                y: { type: 'number', minimum: 0, maximum: 16384 },
+                button: { type: 'string', enum: ['left', 'middle', 'right'] },
+            },
+            required: ['action'],
+            allOf: [
+                { if: { properties: { action: { const: 'key' } }, required: ['action'] }, then: { required: ['key'] } },
+                { if: { properties: { action: { const: 'click' } }, required: ['action'] }, then: { required: ['x', 'y'] } },
+            ],
+        },
+        {
+            type: 'object', properties: { success: { type: 'boolean' }, action: { type: 'string' }, target: { type: 'string' } },
+            required: ['success', 'action', 'target'],
+        },
+        'POST',
+        ['runtime', 'input', 'dispatch', 'keyboard', 'pointer'],
+    )
+    async runtimeInputDispatch(args: { action: 'key' | 'click', key?: string, modifiers?: { shift?: boolean, ctrl?: boolean, alt?: boolean, meta?: boolean }, x?: number, y?: number, button?: 'left' | 'middle' | 'right' }): Promise<{ success: boolean, action: string, target: string }> {
+        if (args.action === 'key') {
+            if (!args.key) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeInputDispatch key action requires key.' });
+            await this.simulateKeyPress({ key: args.key, modifiers: args.modifiers });
+            return { success: true, action: args.action, target: 'active-electron-window' };
+        }
+        if (args.action === 'click') {
+            if (typeof args.x !== 'number' || typeof args.y !== 'number') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeInputDispatch click action requires x and y.' });
+            await this.simulateMouseClick({ x: args.x, y: args.y, button: args.button });
+            return { success: true, action: args.action, target: 'active-electron-window' };
+        }
+        throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Unsupported runtime input action: ${String(args.action)}` });
+    }
+
+    @utcpTool(
         'simulateMouseDrag',
         'Simulate a mouse drag from (x, y) to (x2, y2) via webContents.sendInputEvent (mouseDown, mouseMove steps, mouseUp).',
         {
