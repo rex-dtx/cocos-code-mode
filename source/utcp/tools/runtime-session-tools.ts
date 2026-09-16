@@ -212,7 +212,13 @@ export class RuntimeSessionTools {
         ['runtime', 'state', 'observe', 'session'],
     )
     async runtimeStateObserve(args: { sessionId: string }): Promise<{ success: true, sessionId: string, state: RuntimeState }> {
-        const session = store.inspect(args.sessionId);
+        let session: RuntimeSession;
+        try {
+            session = store.inspect(args.sessionId);
+        } catch (error) {
+            if (error instanceof RuntimeSessionError) throw new ToolError({ code: error.code, status: error.code === 'SESSION_NOT_FOUND' ? 404 : 400, message: error.message });
+            throw error;
+        }
         if (session.status === 'stopped') {
             throw new ToolError({
                 code: 'RUNTIME_SESSION_STOPPED',
