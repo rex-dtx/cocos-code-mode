@@ -19,6 +19,12 @@ Registry writers serialize read–modify–write using `<config-path>.ccb-lock`,
 
 Open **CC Bridge 3x → Status** and click **Check Status** to refresh a read-only snapshot. The panel shows build provenance, Creator project/version, server port/namespace/instance, debug mode, registry ownership, local HTTP handshake, and scene IPC readiness. It checks once on open, then only on demand; it does not restart the server or poll in the background. HTTP success requires the handshake to match this editor instance/project. A responsive scene with `ready:false` is not a disconnected server. Local HTTP checks do not prove a remote agent's Code Mode connection; no agent-connected count is inferred.
 
+### Creator 3.7 module compatibility
+
+`npm run build` and direct `node scripts/package.js` run `check:creator-load` before publishing an artifact. The gate loads every manifest entrypoint and compiled module under Creator's sibling-`.js` preference, then resolves deferred literal Node/package requires. It rejects dual-package dependencies whose `.cjs` entry has an ESM `.js` sibling even when ordinary Node tests pass. Do not repair this by patching Creator's global loader or editing dependency files.
+
+Run `npm run check:creator-load` independently after dependency changes. The gate is a CommonJS-loader compatibility check, not a full Creator runtime emulator: Electron/`db://` modules and scene/UI behavior still require editor verification; any unresolved dynamic requires are reported. Dependency paths in a stack trace may resolve through junctions and do not identify the loaded extension build—check `/build-info` before reloading a live editor.
+
 ## 1. Configure the MCP bridge
 
 Add Code Mode MCP to the AI client. `cc-bridge` is the client-facing server name; `@utcp/code-mode-mcp` remains the adapter package that implements the bridge.

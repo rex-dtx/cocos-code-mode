@@ -1,31 +1,33 @@
 'use strict';
 const { it } = require('node:test');
 const assert = require('node:assert/strict');
-const { execFileSync } = require('node:child_process');
+const { execFileSync, spawnSync } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
+const root = path.resolve(__dirname, '../..');
+const gate = path.join(root, 'scripts/check-creator-load.js');
 
-it('main and Status panel load under Creator 3.7 sibling-JS preference', () => {
-  const script = `
-    const Module = require('module'), fs = require('fs'), path = require('path');
-    // Creator 3.7 extFunction prefers sibling .js even for a resolved .cjs file.
-    Module._extensions['.js'] = (module, filename) => {
-      const base = path.basename(filename, path.extname(filename));
-      const sibling = path.join(path.dirname(filename), base + '.js');
-      const source = fs.existsSync(sibling) ? sibling : filename;
-      const text = fs.readFileSync(source, 'utf8');
-      new (require('vm').Script)(Module.wrap(text), { filename: source });
-      module._compile(text, source);
-    };
-    global.Editor = { Panel: { define: value => value } };
-    Module._extensions['.cjs'] = Module._extensions['.js'];
-    const main = require('./dist/main.js');
-    const panel = require('./dist/panels/status/index.js');
-    if(typeof main.methods.getExtensionStatus !== 'function' || typeof panel.ready !== 'function') throw new Error('Missing public entrypoints');
-    main.methods.getExtensionStatus().then(value => {
-      if(value.http.status !== 'not-running') throw new Error('Stopped state missing');
-      console.log('CREATOR_COMMONJS_LOAD_OK');
-    }).catch(error => { console.error(error); process.exitCode = 1; });
-  `;
-  const output = execFileSync(process.execPath, ['-e', script], { cwd: path.resolve(__dirname, '../..'), encoding: 'utf8' });
-  assert.match(output, /CREATOR_COMMONJS_LOAD_OK/);
+it('all extension entrypoints and compiled modules pass Creator loader gate', () => {
+  const output = execFileSync(process.execPath, [gate], { cwd: root, encoding: 'utf8' });
+  assert.match(output, /CREATOR_LOAD_OK/);
+});
+
+it('gate rejects a dual-package ESM sibling hidden behind a valid CommonJS entry', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-loader-regression-'));
+  try {
+    fs.mkdirSync(path.join(dir, 'dist'));
+    fs.mkdirSync(path.join(dir, 'node_modules/dual'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ main: './dist/main.js' }));
+    fs.writeFileSync(path.join(dir, 'dist/main.js'), "module.exports = require('dual');");
+    fs.writeFileSync(path.join(dir, 'node_modules/dual/package.json'), JSON.stringify({ name: 'dual', type: 'module', main: './index.cjs' }));
+    fs.writeFileSync(path.join(dir, 'node_modules/dual/index.cjs'), 'module.exports = { valid: true };');
+    fs.writeFileSync(path.join(dir, 'node_modules/dual/index.js'), 'export const valid = true;');
+    // Ordinary Node succeeds: the regression is specifically the Creator loader.
+    execFileSync(process.execPath, ['-e', 'require(process.argv[1])', path.join(dir, 'dist/main.js')]);
+    const failed = spawnSync(process.execPath, [gate, dir], { encoding: 'utf8' });
+    assert.equal(failed.status, 1);
+    assert.match(failed.stderr, /CREATOR_LOAD_FAILED/);
+    assert.match(failed.stderr, /Unexpected token 'export'/);
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
