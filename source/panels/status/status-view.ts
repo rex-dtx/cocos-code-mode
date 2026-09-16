@@ -1,5 +1,10 @@
 import packageJSON from '../../../package.json';
 
+export interface StatusSession {
+    sessionId: string; label: string | null; transport: 'http-helper' | 'code-mode';
+    lastSeen: number; ageMs: number; status: 'Active' | 'Stale' | 'Expired';
+}
+
 export interface Status {
     checkedAt: number;
     build: { version: string; commit: string; branch: string; dirty: boolean; builtAt: string };
@@ -12,6 +17,7 @@ export interface Status {
     registry: { path: string; status: 'matched' | 'missing' | 'mismatch' | 'error' | 'not-running'; detail: string | null };
     http: { status: 'ok' | 'error' | 'not-running'; detail: string | null };
     probe: { status: string; sceneReady: boolean | null; code: string | null } | null;
+    sessions: StatusSession[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -24,7 +30,7 @@ function isNullableText(value: unknown): value is string | null {
 
 export function isStatus(value: unknown): value is Status {
     if (!isRecord(value)) return false;
-    const { checkedAt, build, server, registry, http, probe } = value;
+    const { checkedAt, build, server, registry, http, probe, sessions } = value;
     return typeof checkedAt === 'number' && Number.isInteger(checkedAt) && checkedAt > 0 && checkedAt <= 8640000000000000
         && isRecord(build) && typeof build.version === 'string' && typeof build.commit === 'string'
         && typeof build.branch === 'string' && typeof build.dirty === 'boolean' && typeof build.builtAt === 'string'
@@ -36,16 +42,29 @@ export function isStatus(value: unknown): value is Status {
         && (registry.status === 'matched' || registry.status === 'missing' || registry.status === 'mismatch' || registry.status === 'error' || registry.status === 'not-running')
         && isRecord(http) && (http.status === 'ok' || http.status === 'error' || http.status === 'not-running') && isNullableText(http.detail)
         && (probe === null || (isRecord(probe) && typeof probe.status === 'string'
-            && (probe.sceneReady === null || typeof probe.sceneReady === 'boolean') && isNullableText(probe.code)));
+            && (probe.sceneReady === null || typeof probe.sceneReady === 'boolean') && isNullableText(probe.code)))
+        && Array.isArray(sessions) && sessions.length <= 100 && sessions.every((session) => isRecord(session)
+            && typeof session.sessionId === 'string' && session.sessionId.length > 0 && session.sessionId.length <= 128
+            && isNullableText(session.label) && (session.label === null || session.label.length <= 256)
+            && (session.transport === 'http-helper' || session.transport === 'code-mode')
+            && typeof session.lastSeen === 'number' && Number.isFinite(session.lastSeen)
+            && typeof session.ageMs === 'number' && Number.isFinite(session.ageMs) && session.ageMs >= 0
+            && (session.status === 'Active' || session.status === 'Stale' || session.status === 'Expired'));
 }
 const registryLabels = { matched: 'Matched this instance', missing: 'Missing', mismatch: 'Mismatch', error: 'Error', 'not-running': 'Not checked — server stopped' };
 const httpLabels = { ok: 'Verified this instance', error: 'Error', 'not-running': 'Not checked — server stopped' };
-
 export function renderStatus(container: HTMLElement, snapshot: Status | null): void {
     const build = snapshot?.build;
     const server = snapshot?.server;
     const probe = snapshot?.probe;
+    const sessionRows: Array<[string, string]> = [['Meaning', 'Caller-reported heartbeat presence, not model activity or verified Code Mode connectivity. Check Status to refresh.']];
+    if (!snapshot?.sessions.length) sessionRows.push(['Sessions', 'No session heartbeat observed']);
+    for (const session of snapshot?.sessions ?? []) {
+        sessionRows.push([session.label || session.sessionId,
+            `${session.status} — ${session.transport} (caller-reported)\nSession: ${session.sessionId}\nLast seen: ${new Date(session.lastSeen).toLocaleString()}\nAge: ${Math.floor(session.ageMs / 1000)}s`]);
+    }
     const groups: Array<[string, Array<[string, string | null | undefined]>]> = [
+        ['Session connections', sessionRows],
         ['Server', [
             ['State', server ? (server.running ? 'Running' : 'Stopped') : null],
             ['Port', server ? String(server.port) : null], ['URL', server?.url],

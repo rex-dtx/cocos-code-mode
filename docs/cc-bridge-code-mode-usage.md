@@ -104,6 +104,22 @@ Use the actual binding, never a cached latest alias. `--once` performs one check
 
 This is an advisory agent-side monitor, not a server-side mutation lock. An agent must stop writes on unsafe or stale observations. Never repeat a timed-out mutation automatically: its outcome is unknown. After failures, read back the affected state and re-handshake through Code Mode; only then restart the watchdog to clear the conservative read-back latch. It does not kill/restart Creator, switch editors, or predict all freezes. Import/build can legitimately delay responses; initial thresholds need tuning with real editor measurements. Built-in Electron/Creator freezes can prevent CCB's own timers from firing, hence the independent process and client deadline.
 
+### Session connections in Status
+
+Status shows registered session heartbeats with lastSeen, age and Active (up to 15s), Stale (up to 60s), or Expired. Check Status refreshes this snapshot; absence means no heartbeat observed, not proof that no agent exists. Presence is instance-scoped and cleared on server restart. Session IDs must be unique per chat/harness session; labels and transport are caller-reported, not authenticated identities or evidence that the model is working.
+
+For token-free HTTP helper presence, the session harness can supervise this foreground process after verifying the binding:
+
+```sh
+node scripts/cc-bridge-session.js --url http://localhost:49650/utcp --project "G:/projects/my-game" --instance "<verified instanceId>" --session "<unique chat session id>" --label "My session helper"
+```
+
+The helper verifies the binding and sends `editorSessionHeartbeat` every 5s with transport `http-helper`. It emits state changes only; normal beats never enter the model context. The harness must terminate it when the session ends; an orphan helper proves only that helper is alive. SIGINT/SIGTERM attempts a bounded close; a crash ages to Stale/Expired. Nothing starts automatically from a chat message or bootstrap. `--once` leaves a single observation to expire naturally.
+
+`--interval-ms` is limited to 1000–10000ms so normal polling leaves deadline margin below the 15-second Active threshold. At most 100 sessions are retained; expired observations remain visible for up to five minutes, but may be evicted earlier to admit a new session when capacity is full. IDs and labels reject control characters. Unique session IDs are a caller obligation: this local presence API is not an authentication or ownership-lock protocol.
+
+An adapter that actually invokes heartbeat through Code Mode can call `editorSessionHeartbeat({ sessionId, label, expectedInstanceId, transport: 'code-mode', operation: 'beat' })` and `operation:'close'` on shutdown. The transport label is still self-reported, not server verification of that route. Do not ask the model to send periodic tool calls: that would consume tokens. No external MCP package is patched; automatic heartbeat lifecycle requires harness integration.
+
 ## 3. Discover before acting
 
 Use the Code Mode MCP management tools in this order:

@@ -321,6 +321,7 @@ async function main() {
     }
   }
   console.log('[cc-bridge-bootstrap] During active work, optionally run node scripts/cc-bridge-watchdog.js --url <selected endpoint> --project <absolute Creator project path> --instance <verified handshake instanceId> outside Creator. Stop mutations on unhealthy/stale observations; never retry a timed-out mutation blindly. Recovery requires read-back and a fresh Code Mode handshake. Monitoring does not enforce a server-side write lock or predict every freeze.');
+  console.log('[cc-bridge-bootstrap] Status can show session presence via editorSessionHeartbeat. A session harness may supervise node scripts/cc-bridge-session.js --url <bound endpoint> --project <project> --instance <verified ID> --session <unique session ID>. Helper beats use no LLM calls and are labeled http-helper, not verified Code Mode connectivity. Terminate the helper with its chat session; never feed routine beats into model context.');
 }
 
 // Test seam: pure helpers + core. main() path stays fs/http-coupled as before.
