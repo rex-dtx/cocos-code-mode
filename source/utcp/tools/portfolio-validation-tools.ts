@@ -305,7 +305,7 @@ export class PortfolioValidationTools {
             type: 'object',
             additionalProperties: false,
             properties: {
-                assetPath: { type: 'string', pattern: '^db://assets/[A-Za-z0-9._/-]+$' },
+                assetPath: { type: 'string', pattern: '^db://assets/(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$' },
                 name: { type: 'string', minLength: 1, maxLength: 128 },
                 parentReference: InstanceReferenceSchema,
             },
@@ -325,7 +325,7 @@ export class PortfolioValidationTools {
         ['terrain', 'create', 'scene', 'asset', 'compound'],
     )
     async terrainCreate(args: { assetPath: string, name: string, parentReference?: IInstanceReference }): Promise<Record<string, unknown>> {
-        if (!ASSET_PATH_PATTERN.test(args.assetPath)) invalid('assetPath must be a project-local db://assets path');
+        if (!ASSET_PATH_PATTERN.test(args.assetPath) || args.assetPath.includes('..')) invalid('assetPath must be a project-local db://assets path without traversal');
         if (!args.name.trim()) invalid('name must not be empty');
         let asset: { reference: IInstanceReference };
         try {
