@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "creator": "3.7.3",
+  "buildCommit": "432ede0",
+  "artifact": "linked-extension-dist",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64449",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T07:48:11.589Z"
+  },
+  "qualified": true,
+  "tool": "runtimeScenarioRun",
+  "positiveWitness": {
+    "test": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
+    "iterations": 5,
+    "result": "executed a finite typed assert plus wait scenario and returned two observed outcomes"
+  },
+  "negativeWitness": {
+    "test": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
+    "iterations": 5,
+    "result": "scenario primitives remained allow-listed and invalid wait input was rejected through the delegated contract"
+  },
+  "persistence": "runtime-only finite scenario",
+  "cleanup": "local session marked stopped on every iteration"
+}

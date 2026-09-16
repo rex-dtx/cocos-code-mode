@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "creator": "3.7.3",
+  "buildCommit": "432ede0",
+  "artifact": "linked-extension-dist",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64449",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T07:48:11.589Z"
+  },
+  "qualified": true,
+  "tool": "materialEdit",
+  "positiveWitness": {
+    "test": "tests/live/material-edit-qualification.test.js#MATERIAL-EDIT-01",
+    "iterations": 5,
+    "result": "created a disposable material, changed technique 0 to 1, verified importer read-back, restored technique to 0, and repeated without leaked assets"
+  },
+  "negativeWitness": {
+    "test": "tests/live/material-edit-qualification.test.js#MATERIAL-EDIT-01",
+    "iterations": 5,
+    "result": "unsafe property syntax was rejected with HTTP 400 before mutation"
+  },
+  "persistence": "exact material importer property read-back after Creator apply-material",
+  "cleanup": "material property restored and disposable material deleted on every iteration"
+}
