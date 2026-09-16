@@ -984,7 +984,7 @@
         },
         {
           "name": "particlePlayback",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Play, stop, clear and completion observation in a named runtime session.",
           "route": "runtime particle adapter",
           "prerequisites": [
@@ -997,6 +997,7 @@
           "negativeTestID": "candidate.particlePlayback.negative.v1",
           "fixtureID": "fixture.candidate.particlePlayback.v1",
           "evidenceArtifact": "reports/evidence/candidates/particlePlayback/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/particle-playback-qualification.test.js#PARTICLE-PLAYBACK-01",
           "proposedExecutionPhase": "P4"
         },
         {

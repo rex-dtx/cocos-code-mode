@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "particlePlayback",
+  "creator": "3.7.3",
+  "buildCommit": "01635c7",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/particle-playback-qualification.test.js#PARTICLE-PLAYBACK-01",
+    "iterations": 5,
+    "result": "created a real cc.ParticleSystem runtime fixture, attached a verified game-view session, and executed play, stop, and clear with typed state read-back on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/particle-playback-qualification.test.js#PARTICLE-PLAYBACK-01",
+    "iterations": 5,
+    "result": "unsupported seek operation was rejected with HTTP 400 before scene dispatch on every iteration"
+  },
+  "persistence": "runtime-only particle playback control tied to a verified session identity",
+  "cleanup": "local runtime session stopped and particle node destroyed on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:51789",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T09:14:17.348Z"
+  },
+  "qualified": true
+}
