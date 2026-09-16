@@ -140,6 +140,7 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'buildArtifactServe',
   'buildTargetLaunch',
   'buildTargetSmoke',
+  'runtimeScreenshotAssert',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',

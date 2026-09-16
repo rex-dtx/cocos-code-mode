@@ -1631,7 +1631,7 @@
     },
     {
       "name": "runtimeScreenshotAssert",
-      "state": "candidate",
+      "state": "implemented-unverified",
       "contractDelta": "Compare a target capture using declared tolerance and diagnostics.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
