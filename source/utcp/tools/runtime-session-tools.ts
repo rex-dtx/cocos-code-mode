@@ -111,16 +111,20 @@ export class RuntimeSessionTools {
                 recovery: 'Use targetKind=game-view or qualify the target transport before attaching.',
             });
         }
-        // Creator 3.7 exposes the game-view message surface but does not
-        // expose a verified preview-ready signal to this extension context.
-        // Keep this candidate fail-closed until a real preview transport is
-        // observed; runtimePreviewControl remains the direct lifecycle route.
-        throw new ToolError({
-            code: 'RUNTIME_NOT_READY',
-            status: 409,
-            message: 'Creator game-view preview readiness is not verified on this runtime.',
-            recovery: 'Start a verified game-view preview transport before attaching a runtime session.',
-        });
+        let state: RuntimeState;
+        try {
+            state = await this.readState();
+        } catch (error) {
+            throw new ToolError({
+                code: 'RUNTIME_NOT_READY',
+                status: 409,
+                message: 'Creator game-view preview readiness is not verified on this runtime.',
+                recovery: 'Start a verified game-view preview transport before attaching a runtime session.',
+                details: { cause: error instanceof Error ? error.message : String(error) },
+            });
+        }
+        const session = store.attach(args.targetKind, args.targetId);
+        return { success: true, operation: 'attach', session, state, ready: true };
     }
 
     private async inspect(args: LifecycleArgs): Promise<{
@@ -149,12 +153,12 @@ export class RuntimeSessionTools {
     }
 
     private stop(args: LifecycleArgs): never {
-        store.reset(args.sessionId ?? '');
+        store.stop(args.sessionId ?? '');
         throw new ToolError({
             code: 'RUNTIME_CONTROL_UNAVAILABLE',
             status: 409,
-            message: 'Creator preview stop control is not verified for this runtime target; local session was released.',
-            recovery: 'Use a Creator version with a verified preview lifecycle transport.',
+            message: 'Creator preview stop control is not verified for this runtime target; local session was stopped.',
+            recovery: 'Use runtimePreviewControl to stop the Creator preview, then reset this session.',
         });
     }
 
