@@ -51,6 +51,26 @@ const tools = await list_tools();
 
 `list_tools()` must include the `ccb3x` manual before the agent continues. After restarting Cocos Creator, repeat this bootstrap because the port and in-memory registration may have changed.
 
+### Verify the connection and project
+
+After registration, call the handshake through `call_tool_chain` so it exercises the same path as subsequent tools:
+
+```typescript
+const connection = await ccb3x.editorHandshake({
+  timeoutMs: 1000,
+  expectedProjectPath: 'G:/projects/my-game',
+});
+return connection;
+```
+
+`editorHandshake` is read-only and always exposed, including custom profiles and explicit disabled-tool lists. It does not open panels or change scenes. Its response includes `instanceId` (new per server start), project path, editor version, build provenance, capture time, elapsed server processing time, and:
+
+- `projectMatches`: true/false when an expected absolute path and actual project path are available; otherwise null. Comparison normalizes separators/trailing separators and is case-insensitive on Windows; symlinks are not resolved. A mismatch means reachable but the wrong target: do not mutate it.
+- `probe.status`: `responsive`, `timeout`, `error`, or `invalid-response`. Only a boolean response from Creator's scene IPC counts as responsive. Failures carry `EDITOR_IPC_TIMEOUT`, `EDITOR_IPC_ERROR`, or `INVALID_EDITOR_RESPONSE` in `probe.code`.
+- `probe.sceneReady`: true/false after a valid response, otherwise null. False means connected but the scene is not ready; it is not a disconnected editor.
+
+The IPC deadline defaults to 1000ms (1–5000ms allowed); repeated probes share outstanding IPC rather than accumulating hung requests. This is a point-in-time check, not a persistent session or a guarantee that all tools will succeed. Client transport deadlines must allow additional HTTP/adapter overhead. Connection refused, registration failure, or an older build without this tool are client-side failures, not handshake responses. `/utcp` discovery alone does not prove Creator IPC readiness.
+
 ## 3. Discover before acting
 
 Use the Code Mode MCP management tools in this order:
