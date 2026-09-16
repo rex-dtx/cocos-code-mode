@@ -1594,7 +1594,7 @@
     },
     {
       "name": "runtimeInputDispatch",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Dispatch bounded keyboard/pointer actions to one session target.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1608,7 +1608,8 @@
       "positiveTestID": "candidate.runtimeInputDispatch.positive.v1",
       "negativeTestID": "candidate.runtimeInputDispatch.negative.v1",
       "fixtureID": "fixture.candidate.runtimeInputDispatch.v1",
-      "evidenceArtifact": "reports/evidence/candidates/runtimeInputDispatch/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/runtimeInputDispatch/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/runtime-input-dispatch.test.js#RUNTIME-INPUT-01"
     },
     {
       "name": "runtimeWaitForState",
@@ -1631,7 +1632,7 @@
     },
     {
       "name": "runtimeScreenshotAssert",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Compare a target capture using declared tolerance and diagnostics.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1647,7 +1648,8 @@
       "positiveTestID": "candidate.runtimeScreenshotAssert.positive.v1",
       "negativeTestID": "candidate.runtimeScreenshotAssert.negative.v1",
       "fixtureID": "fixture.candidate.runtimeScreenshotAssert.v1",
-      "evidenceArtifact": "reports/evidence/candidates/runtimeScreenshotAssert/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/runtimeScreenshotAssert/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/runtime-screenshot-assert.test.js#RUNTIME-SCREENSHOT-01"
     },
     {
       "name": "assetBatchImport",

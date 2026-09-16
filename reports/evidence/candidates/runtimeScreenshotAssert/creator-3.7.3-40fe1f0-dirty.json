@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "tool": "runtimeScreenshotAssert",
+  "creator": "3.7.3",
+  "buildCommit": "40fe1f0",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": {
+    "test": "tests/live/runtime-screenshot-assert.test.js#RUNTIME-SCREENSHOT-01",
+    "iterations": 5,
+    "result": "captured a bounded Creator window target, validated PNG signature, returned SHA-256 and byte count, and passed exact-hash comparison on every iteration"
+  },
+  "negativeWitness": {
+    "test": "tests/live/runtime-screenshot-assert.test.js#RUNTIME-SCREENSHOT-01",
+    "iterations": 5,
+    "result": "declared hash mismatch returned passed=false with deterministic SHA256_MISMATCH diagnostics on every iteration"
+  },
+  "persistence": "read-only screenshot assertion",
+  "cleanup": "no persistent fixture state created",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:52293",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T08:57:05.044Z"
+  },
+  "qualified": true
+}
