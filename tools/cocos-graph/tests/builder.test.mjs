@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { buildAll } from '../src/builder.mjs';
 import { loadShard } from '../src/query.mjs';
+import { validateSessionGraph } from '../src/session-staleness.mjs';
 
 const fixtures = join(import.meta.dirname, 'fixtures');
 const fixture = (name) => readFileSync(join(fixtures, name), 'utf8');
@@ -75,6 +76,9 @@ describe('builder schema v4 integrity', () => {
       assert.ok(graph.nodes.some((node) => node.name === 'LivePlayer' && node.source === 'live'));
       assert.ok(graph.nodes.some((node) => node.name === 'OtherPlayer' && node.file.endsWith('/b.scene') && node.source === 'disk'));
       assert.equal(graph.nodes.some((node) => node.file.endsWith('/a.scene') && node.source === 'disk'), false);
+      assert.deepEqual(graph.comps.filter((component) => component.file.endsWith('/a.scene')).map((component) => component.uuid), ['live-component-1']);
+      assert.equal(graph.refs.some((ref) => ref.file.endsWith('/a.scene')), false);
+      assert.ok(graph.refs.some((ref) => ref.file.endsWith('/b.scene')));
       assert.equal(graph.files.length, 2);
     } finally { rmSync(project, { recursive: true, force: true }); }
   });
@@ -140,6 +144,116 @@ describe('builder schema v4 integrity', () => {
     try {
       assert.throws(() => buildAll({ project, outDir, bundleFilter: 'bundle-a', liveJsonByBundle: { 'bundle-a': livePath } }), /requires sourceFile/);
       assert.equal(existsSync(join(outDir, '_manifest.json')), false);
+    } finally { rmSync(project, { recursive: true, force: true }); }
+  });
+
+  it('returns an overlaid scene to its current disk nodes, components, and asset references', () => {
+    const project = projectWithBundles();
+    const outDir = join(project, '.cocos-graph');
+    try {
+      const livePath = join(project, 'live.json');
+      const live = { ...JSON.parse(fixture('live-overlay.json')), sourceFile: 'assets/bundle-a/a.scene' };
+      writeFileSync(livePath, JSON.stringify(live));
+      buildAll({ project, outDir, bundleFilter: 'bundle-a', liveJsonByBundle: { 'bundle-a': livePath } });
+      const untouched = loadShard(outDir, 'bundle-a').nodes.filter((node) => node.file.endsWith('/b.scene'));
+      writeFileSync(join(project, 'assets', 'bundle-a', 'a.scene'), fixture('mini.scene.json').replace('Player', 'SavedPlayer'));
+      buildAll({ project, outDir, bundleFilter: 'bundle-a' });
+      const graph = loadShard(outDir, 'bundle-a');
+      const restored = graph.nodes.filter((node) => node.file.endsWith('/a.scene'));
+      assert.deepEqual(restored.map((node) => node.name).sort(), ['Enemy', 'SavedPlayer', 'ScoreLabel', 'TestScene']);
+      assert.ok(restored.every((node) => node.source === 'disk'));
+      assert.equal(graph.nodes.some((node) => node.uuid === 'live-node-1'), false);
+      assert.deepEqual(graph.comps.filter((component) => component.file.endsWith('/a.scene')).map((component) => component.uuid).sort(),
+        ['comp-label-b', 'comp-label-c', 'comp-sprite-a', 'comp-transform-a']);
+      assert.ok(graph.refs.some((ref) => ref.file.endsWith('/a.scene') && ref.source === 'disk'));
+      assert.deepEqual(graph.nodes.filter((node) => node.file.endsWith('/b.scene')), untouched);
+      assert.equal(graph.dirty, 'unknown');
+      assert.equal(graph.prefabOpaque, true);
+    } finally { rmSync(project, { recursive: true, force: true }); }
+  });
+
+  it('preserves all published shards when a later bundle fails and releases the build lock', () => {
+    const project = projectWithBundles();
+    const outDir = join(project, '.cocos-graph');
+    try {
+      buildAll({ project, outDir });
+      const before = readFileSync(join(outDir, '_manifest.json'), 'utf8');
+      const graphBefore = loadShard(outDir, 'bundle-a');
+      writeFileSync(join(project, 'assets', 'bundle-a', 'a.scene'), fixture('mini.scene.json').replace('Player', 'ChangedPlayer'));
+      writeFileSync(join(project, 'assets', 'bundle-b', 'only.scene'), '{broken');
+      assert.throws(() => buildAll({ project, outDir }), /invalid JSON/);
+      assert.equal(readFileSync(join(outDir, '_manifest.json'), 'utf8'), before);
+      assert.deepEqual(loadShard(outDir, 'bundle-a'), graphBefore);
+      assert.equal(existsSync(join(outDir, '.build-lock')), false);
+      writeFileSync(join(project, 'assets', 'bundle-b', 'only.scene'), fixture('mini.scene.json'));
+      buildAll({ project, outDir, lockOptions: { timeoutMs: 0 } });
+      assert.ok(loadShard(outDir, 'bundle-a').nodes.some((node) => node.name === 'ChangedPlayer'));
+    } finally { rmSync(project, { recursive: true, force: true }); }
+  });
+
+  it('rejects malformed live authority without replacing the last valid graph', () => {
+    const project = projectWithBundles();
+    const outDir = join(project, '.cocos-graph');
+    try {
+      buildAll({ project, outDir, bundleFilter: 'bundle-a' });
+      const before = readFileSync(join(outDir, '_manifest.json'), 'utf8');
+      const graphBefore = loadShard(outDir, 'bundle-a');
+      const livePath = join(project, 'live.json');
+      writeFileSync(livePath, JSON.stringify({ sourceFile: 'assets/bundle-a/a.scene', dirty: false, tree: {} }));
+      assert.throws(() => buildAll({ project, outDir, bundleFilter: 'bundle-a', liveJsonByBundle: { 'bundle-a': livePath } }),
+        /tree|node|identity|children|reference/i);
+      assert.equal(readFileSync(join(outDir, '_manifest.json'), 'utf8'), before);
+      assert.deepEqual(loadShard(outDir, 'bundle-a'), graphBefore);
+    } finally { rmSync(project, { recursive: true, force: true }); }
+  });
+
+  it('rejects incomplete or cross-bundle live snapshots before initial publication', () => {
+    const project = projectWithBundles();
+    const outDir = join(project, '.cocos-graph');
+    try {
+      const livePath = join(project, 'live.json');
+      const cases = [
+        [{ sourceFile: 'assets/bundle-b/only.scene', tree: { children: [] } }, /outside bundle/],
+        [{ sourceFile: 'assets/bundle-a/missing.scene', tree: { children: [] } }, /did not resolve uniquely/],
+        [{ sourceFile: 'assets/bundle-a/a.scene', tree: { children: [{ reference: { id: 'root' }, childrenOmitted: 2 }] } }, /omitted children/],
+      ];
+      for (const [payload, error] of cases) {
+        writeFileSync(livePath, JSON.stringify(payload));
+        assert.throws(() => buildAll({ project, outDir, bundleFilter: 'bundle-a', liveJsonByBundle: { 'bundle-a': livePath } }), error);
+        assert.equal(existsSync(join(outDir, '_manifest.json')), false);
+      }
+    } finally { rmSync(project, { recursive: true, force: true }); }
+  });
+
+  it('keeps an old generation readable for a reader that already acquired its manifest', () => {
+    const project = projectWithBundles();
+    const outDir = join(project, '.cocos-graph');
+    try {
+      buildAll({ project, outDir, bundleFilter: 'bundle-a' });
+      const readerManifest = JSON.parse(readFileSync(join(outDir, '_manifest.json'), 'utf8'));
+      writeFileSync(join(project, 'assets', 'bundle-a', 'a.scene'), fixture('mini.scene.json').replace('Player', 'ChangedPlayer'));
+      buildAll({ project, outDir, bundleFilter: 'bundle-a' });
+      const oldGraph = JSON.parse(readFileSync(join(outDir, readerManifest.shards[0].graphFile), 'utf8'));
+      assert.ok(oldGraph.nodes.some((node) => node.name === 'Player'));
+      assert.equal(oldGraph.nodes.some((node) => node.name === 'ChangedPlayer'), false);
+      assert.ok(loadShard(outDir, 'bundle-a').nodes.some((node) => node.name === 'ChangedPlayer'));
+    } finally { rmSync(project, { recursive: true, force: true }); }
+  });
+
+  it('marks a session stale when its supposedly clean published graph is missing', () => {
+    const project = projectWithBundles();
+    const outDir = join(project, '.cocos-graph');
+    try {
+      const livePath = join(project, 'live.json');
+      writeFileSync(livePath, JSON.stringify({
+        ...JSON.parse(fixture('live-overlay.json')), sourceFile: 'assets/bundle-a/a.scene', dirty: false,
+      }));
+      const manifest = buildAll({ project, outDir, bundleFilter: 'bundle-a', liveJsonByBundle: { 'bundle-a': livePath } });
+      rmSync(join(outDir, manifest.shards[0].graphFile));
+      const result = validateSessionGraph({
+        cwd: project, env: {}, session: { project, bundle: 'bundle-a', sceneUuid: 'live-scene-uuid' },
+      });
+      assert.equal(result.stale, true);
     } finally { rmSync(project, { recursive: true, force: true }); }
   });
 });

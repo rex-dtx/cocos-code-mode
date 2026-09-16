@@ -21,6 +21,65 @@ describe('composite handles', () => {
   });
 });
 
+describe('parser edge identities and references', () => {
+  it('decodes script component types while preserving component identity', () => {
+    const result = parseEntries([
+      { __type__: 'cc.Scene', _id: 'scene', _name: 'Scene', _parent: null },
+      { __type__: 'cc.Node', _id: 'node', _name: 'Controller', _parent: { __id__: 0 }, _components: [{ __id__: 2 }] },
+      { __type__: 'fcmR3XADNLgJ1ByKhqcC5Z', _id: 'script', node: { __id__: 1 }, config: { target: { __uuid__: 'fcmR3XADNLgJ1ByKhqcC5Z' } } },
+    ], { file: 'assets\\controller.scene', source: 'cache' });
+    assert.deepEqual(result.comps, [{
+      handle: 'assets/controller.scene#component:script',
+      uuid: 'script',
+      node: 'assets/controller.scene#node',
+      nodeUuid: 'node',
+      file: 'assets/controller.scene',
+      source: 'cache',
+      type: 'fcmR3XADNLgJ1ByKhqcC5Z',
+      script: 'fc991dd7-0033-4b80-9d41-c8a86a702e59',
+    }]);
+    assert.deepEqual(result.refs, [{
+      node: 'assets/controller.scene#node',
+      nodeUuid: 'node',
+      file: 'assets/controller.scene',
+      source: 'cache',
+      uuid: 'fc991dd7-0033-4b80-9d41-c8a86a702e59',
+      prop: 'fcmR3XADNLgJ1ByKhqcC5Z.config.target',
+    }]);
+  });
+
+  it('rejects malformed composite handles without throwing', () => {
+    assert.equal(parseHandle(''), null);
+    assert.equal(parseHandle('#uuid'), null);
+    assert.equal(parseHandle('assets/a.scene#'), null);
+  });
+
+  it('marks unresolved prefab instances opaque even when they have no stable node id', () => {
+    const result = parseEntries([
+      { __type__: 'cc.Scene', _id: 'scene', _name: 'Scene' },
+      { __type__: 'cc.Node', _name: 'Instance', _parent: { __id__: 0 }, _prefab: { __id__: 2 } },
+      { __type__: 'cc.PrefabInfo', asset: { __uuid__: 'prefab-asset' } },
+    ], { file: 'assets/test/opaque.scene' });
+    assert.deepEqual(result.nodes.map((node) => node.handle), ['assets/test/opaque.scene#scene']);
+    assert.equal(result.prefabOpaque, true);
+  });
+
+  it('retains asset references nested beyond six serialized property levels', () => {
+    const result = parseEntries([
+      { __type__: 'cc.Node', _id: 'owner', _name: 'Owner', _components: [{ __id__: 1 }] },
+      {
+        __type__: 'CustomController', _id: 'controller',
+        settings: { a: { b: { c: { d: { e: { f: { g: { __uuid__: 'fcmR3XADNLgJ1ByKhqcC5Z@sub' } } } } } } } },
+      },
+    ], { file: 'assets/test/deep.scene' });
+    assert.deepEqual(result.refs.map(({ node, uuid, prop }) => ({ node, uuid, prop })), [{
+      node: 'assets/test/deep.scene#owner',
+      uuid: 'fc991dd7-0033-4b80-9d41-c8a86a702e59@sub',
+      prop: 'CustomController.settings.a.b.c.d.e.f.g',
+    }]);
+  });
+});
+
 describe('parseEntries schema v4', () => {
   it('preserves engine ids, component ids, file provenance, and composite parents', () => {
     const text = readFileSync(join(fixtures, 'mini.scene.json'), 'utf8');
