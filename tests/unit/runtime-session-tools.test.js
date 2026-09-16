@@ -75,4 +75,12 @@ describe('verified game-view runtime sessions', () => {
     assert.equal(preview.ready, false);
     assert.equal(preview.stale, true);
   });
+
+  it('maps missing observed sessions to typed 404 errors', async () => {
+    const tools = new RuntimeSessionTools();
+    await assert.rejects(
+      tools.runtimeStateObserve({ sessionId: '__missing_session__' }),
+      (error) => error.code === 'SESSION_NOT_FOUND' && error.status === 404,
+    );
+  });
 });
