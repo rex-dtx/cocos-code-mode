@@ -10,6 +10,7 @@ import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { cancelEditorAsk } from './utcp/editor-ask';
 import { cancelEditorPrompt, getEditorPrompt, respondEditorPrompt } from './utcp/editor-prompt';
 import { cancelEditorTask, disposeEditorControl, getEditorControl } from './utcp/editor-control-plane';
+import { inspectExtensionStatus } from './extension-status';
 
 let utcpServer: UtcpServerManager | null = null;
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
@@ -20,6 +21,20 @@ export const methods: { [key: string]: (...any: any) => any } = {
     respondEditorPrompt,
     getEditorControl,
     cancelEditorTask,
+    openStatus() {
+        return Editor.Panel.open(`${packageJSON.name}.status`);
+    },
+    async getExtensionStatus() {
+        const server = utcpServer;
+        const snapshot = await inspectExtensionStatus(server ? {
+            port: server.port, instanceId: server.instanceId, debug: server.getDebugEnabled(),
+        } : null, (server && registryPaths.get(server)) || getConfigManager().getConfigPath());
+        if (server !== utcpServer || (server && server.instanceId !== snapshot.server.instanceId)) {
+            snapshot.http = { status: 'error', detail: 'Server changed during this check. Check status again.' };
+            snapshot.probe = null;
+        }
+        return snapshot;
+    },
     openAgentInbox() {
         return Editor.Panel.open(`${packageJSON.name}.prompt`);
     },
