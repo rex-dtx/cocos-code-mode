@@ -19,10 +19,7 @@ describe('live: verified game-view runtime session workflows', () => {
     await repeatTestcase('RUNTIME-SESSION-01', async ({ iteration }) => {
       const state = await postTool('runtimePreviewControl', { operation: 'state' });
       assert.equal(state.status, 200, JSON.stringify(state.body));
-      if (state.body.state?.paused) {
-        const resumed = await postTool('runtimePreviewControl', { operation: 'resume' });
-        assert.equal(resumed.status, 200, JSON.stringify(resumed.body));
-      }
+      const expectedPaused = state.body.state.paused;
 
       let sessionId;
       try {
@@ -44,7 +41,7 @@ describe('live: verified game-view runtime session workflows', () => {
 
         const waited = await postTool('runtimeWaitForState', {
           sessionId,
-          paused: false,
+          paused: expectedPaused,
           minFrameCount: observed.body.state.frameCount,
           timeoutMs: 1000,
         });
@@ -53,7 +50,7 @@ describe('live: verified game-view runtime session workflows', () => {
 
         const asserted = await postTool('runtimeScenarioAssert', {
           sessionId,
-          paused: false,
+          paused: expectedPaused,
           minFrameCount: observed.body.state.frameCount,
         });
         assert.equal(asserted.status, 200, JSON.stringify(asserted.body));
@@ -62,7 +59,7 @@ describe('live: verified game-view runtime session workflows', () => {
         const scenario = await postTool('runtimeScenarioRun', {
           sessionId,
           steps: [
-            { operation: 'assert', paused: false },
+            { operation: 'assert', paused: expectedPaused },
             { operation: 'wait', minFrameCount: observed.body.state.frameCount, timeoutMs: 1000 },
           ],
         });

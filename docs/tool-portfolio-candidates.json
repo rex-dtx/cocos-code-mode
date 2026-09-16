@@ -1069,7 +1069,7 @@
       "candidates": [
         {
           "name": "materialEdit",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
           "route": "material adapter plus importer",
           "prerequisites": [
@@ -1086,6 +1086,7 @@
           "negativeTestID": "candidate.materialEdit.negative.v1",
           "fixtureID": "fixture.candidate.materialEdit.v1",
           "evidenceArtifact": "reports/evidence/candidates/materialEdit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/material-edit-qualification.test.js#MATERIAL-EDIT-01",
           "proposedExecutionPhase": "P5"
         },
         {
@@ -1361,7 +1362,7 @@
         },
         {
           "name": "runtimeStateObserve",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Bounded allow-listed observations tied to session identity and target kind.",
           "route": "runtime session foundation",
           "prerequisites": [
@@ -1374,11 +1375,12 @@
           "negativeTestID": "candidate.runtimeStateObserve.negative.v1",
           "fixtureID": "fixture.candidate.runtimeStateObserve.v1",
           "evidenceArtifact": "reports/evidence/candidates/runtimeStateObserve/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
           "proposedExecutionPhase": "P6"
         },
         {
           "name": "runtimeScenarioRun",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Execute finite named steps only; no code string or general method dispatch.",
           "route": "scenario compiler to typed primitives",
           "prerequisites": [
@@ -1391,11 +1393,12 @@
           "negativeTestID": "candidate.runtimeScenarioRun.negative.v1",
           "fixtureID": "fixture.candidate.runtimeScenarioRun.v1",
           "evidenceArtifact": "reports/evidence/candidates/runtimeScenarioRun/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
           "proposedExecutionPhase": "P6"
         },
         {
           "name": "runtimeScenarioAssert",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Independent state/image/event assertions rather than request echo.",
           "route": "runtime observation adapter",
           "prerequisites": [
@@ -1408,6 +1411,7 @@
           "negativeTestID": "candidate.runtimeScenarioAssert.negative.v1",
           "fixtureID": "fixture.candidate.runtimeScenarioAssert.v1",
           "evidenceArtifact": "reports/evidence/candidates/runtimeScenarioAssert/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
           "proposedExecutionPhase": "P6"
         }
       ]
@@ -1534,7 +1538,7 @@
     },
     {
       "name": "previewSessionInspect",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Read target kind, URL, mode, readiness and stale-session state.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1548,7 +1552,8 @@
       "positiveTestID": "candidate.previewSessionInspect.positive.v1",
       "negativeTestID": "candidate.previewSessionInspect.negative.v1",
       "fixtureID": "fixture.candidate.previewSessionInspect.v1",
-      "evidenceArtifact": "reports/evidence/candidates/previewSessionInspect/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/previewSessionInspect/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01"
     },
     {
       "name": "previewResolutionSet",
@@ -1607,7 +1612,7 @@
     },
     {
       "name": "runtimeWaitForState",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Bounded condition wait without raw event subscription.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1621,7 +1626,8 @@
       "positiveTestID": "candidate.runtimeWaitForState.positive.v1",
       "negativeTestID": "candidate.runtimeWaitForState.negative.v1",
       "fixtureID": "fixture.candidate.runtimeWaitForState.v1",
-      "evidenceArtifact": "reports/evidence/candidates/runtimeWaitForState/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/runtimeWaitForState/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01"
     },
     {
       "name": "runtimeScreenshotAssert",

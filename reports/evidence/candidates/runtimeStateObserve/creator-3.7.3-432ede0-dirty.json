@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "creator": "3.7.3",
+  "buildCommit": "432ede0",
+  "artifact": "linked-extension-dist",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64449",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": true,
+    "builtAt": "2026-09-16T07:48:11.589Z"
+  },
+  "qualified": true,
+  "tool": "runtimeStateObserve",
+  "positiveWitness": {
+    "test": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
+    "iterations": 5,
+    "result": "observed typed paused/timeScale/frameCount state tied to an attached game-view session"
+  },
+  "negativeWitness": {
+    "test": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
+    "iterations": 5,
+    "result": "session stop produced explicit RUNTIME_CONTROL_UNAVAILABLE while marking the local session stopped"
+  },
+  "persistence": "runtime-only session state",
+  "cleanup": "local session marked stopped on every iteration"
+}
