@@ -1,13 +1,19 @@
 import { promises as fs, readFileSync } from 'fs';
 import { dirname } from 'path';
 import { randomBytes } from 'crypto';
-import { z } from 'zod';
 
-const registrySchema = z.object({
-    manual_call_templates: z.array(z.object({ name: z.string(), url: z.string().optional() }).passthrough()).default([]),
-    variables: z.record(z.string(), z.string()).optional(),
-}).passthrough();
-export type Registry = z.infer<typeof registrySchema>;
+interface RegistryTemplate { name: string; url?: string; [key: string]: unknown }
+export interface Registry { manual_call_templates: RegistryTemplate[]; variables?: Record<string, string>; [key: string]: unknown }
+
+function isRegistry(value: unknown): value is Registry {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    if (!('manual_call_templates' in value) || !Array.isArray(value.manual_call_templates)) return false;
+    if (!value.manual_call_templates.every((item: unknown) => item !== null && typeof item === 'object' && !Array.isArray(item)
+        && 'name' in item && typeof item.name === 'string' && (!('url' in item) || typeof item.url === 'string'))) return false;
+    if ('variables' in value && (value.variables === null || typeof value.variables !== 'object' || Array.isArray(value.variables)
+        || !Object.values(value.variables).every(item => typeof item === 'string'))) return false;
+    return true;
+}
 
 export function readRegistry(path: string): Registry {
     let text: string;
@@ -16,7 +22,12 @@ export function readRegistry(path: string): Registry {
         if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return { manual_call_templates: [] };
         throw error;
     }
-    return registrySchema.parse(JSON.parse(text));
+    const value: unknown = JSON.parse(text);
+    if (value && typeof value === 'object' && !Array.isArray(value) && !('manual_call_templates' in value)) {
+        Object.assign(value, { manual_call_templates: [] });
+    }
+    if (!isRegistry(value)) throw new Error(`Invalid UTCP registry: ${path}`);
+    return value;
 }
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

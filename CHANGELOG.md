@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix Creator 3.7 extension loading: remove new runtime Zod imports from registry/status validation because Creator's CommonJS loader prefers sibling ESM `.js` files over `.cjs`. Retain boundary validation and add a loader regression covering main and Status panel.
+- Replace the Agent Inbox menu entry with a read-only Status panel and on-demand Check Status button: build/project identity, server endpoint, registry ownership, HTTP handshake and scene readiness. Inbox APIs and explicit panel opening remain available.
 - Default each Creator launch to an OS-assigned port; explicit fixed ports use `fixedServerPort` (0 = auto). Publish stable `ccb3x_<port>` namespaces, not a latest alias. Registry updates use a cross-process lock and atomic replacement; instance-owned cleanup cannot delete a replacement editor. Agent discovery binds endpoint, project and instance with no cross-editor fallback.
 - Announce `editorHandshake` in SessionStart bootstrap with separate HTTP probe evidence and required Code Mode verification guidance. Clear stale IPC probe slots on CCB server start and guard against late responses from the previous lifecycle; no automatic timeout retry.
 - Add always-exposed, read-only `editorHandshake` with per-server identity, build/project identity, optional expected-project matching, and a bounded scene IPC probe that distinguishes not-ready, timeout, invalid response and IPC failure without accumulating hung requests.

@@ -41,6 +41,17 @@
     "typescript": "^5.8.2"
   },
   "panels": {
+    "status": {
+      "title": "CC Bridge 3x Status",
+      "type": "dockable",
+      "main": "dist/panels/status",
+      "size": {
+        "min-width": 320,
+        "min-height": 240,
+        "width": 450,
+        "height": 680
+      }
+    },
     "prompt": {
       "title": "Agent Inbox",
       "type": "dockable",
@@ -82,8 +93,8 @@
     "menu": [
       {
         "path": "CC Bridge 3x",
-        "label": "Agent Inbox",
-        "message": "open-agent-inbox"
+        "label": "Status",
+        "message": "open-status"
       },
       {
         "path": "CC Bridge 3x",
@@ -117,6 +128,12 @@
       }
     ],
     "messages": {
+      "open-status": {
+        "methods": ["openStatus"]
+      },
+      "extension-status": {
+        "methods": ["getExtensionStatus"]
+      },
       "editor-control-get": {
         "methods": ["getEditorControl"]
       },

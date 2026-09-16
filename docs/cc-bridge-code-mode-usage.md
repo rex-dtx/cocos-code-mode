@@ -15,6 +15,10 @@ Every launch defaults to an OS-assigned free port (`listen(0)`). Previously save
 
 Registry writers serialize read–modify–write using `<config-path>.ccb-lock`, then replace the JSON atomically. Instance ownership is stored in the supported `variables.CCB3X_OWNER_<port>` string field, committed with its endpoint; late cleanup cannot remove a newer owner. Lock acquisition fails after 5 seconds rather than overwriting another writer. After a crash, an abandoned lock requires operator cleanup: close all registry writers, inspect its `owner.json`, then remove that lock directory. Older extension versions do not participate in this locking protocol; upgrade all concurrent Creator instances before relying on it.
 
+### Extension Status panel
+
+Open **CC Bridge 3x → Status** and click **Check Status** to refresh a read-only snapshot. The panel shows build provenance, Creator project/version, server port/namespace/instance, debug mode, registry ownership, local HTTP handshake, and scene IPC readiness. It checks once on open, then only on demand; it does not restart the server or poll in the background. HTTP success requires the handshake to match this editor instance/project. A responsive scene with `ready:false` is not a disconnected server. Local HTTP checks do not prove a remote agent's Code Mode connection; no agent-connected count is inferred.
+
 ## 1. Configure the MCP bridge
 
 Add Code Mode MCP to the AI client. `cc-bridge` is the client-facing server name; `@utcp/code-mode-mcp` remains the adapter package that implements the bridge.
@@ -133,7 +137,7 @@ Console display is bounded to 112 lines, approximately 14,000 characters, eight 
 
 Both tools appear in the full `/utcp` manual after rebuilding/reloading the extension and re-registering it. Enable them explicitly when using a core/custom profile.
 
-**Nonblocking by default:** `editorAsk` uses choice buttons in the nonmodal **Agent Inbox**, and `editorPrompt` uses a form in the same panel. Neither automatically opens a window or moves focus. A pending request logs a short notice; the user opens **CC Bridge 3x > Agent Inbox** when convenient. An already open inbox updates through broadcasts without being activated. The response deadline includes time waiting for the user to open the inbox.
+**Nonblocking by default:** `editorAsk` uses choice buttons in the nonmodal **Agent Inbox**, and `editorPrompt` uses a form in the same panel. Neither automatically opens a window or moves focus. Agent Inbox is no longer a menu entry; the panel/API remains available through explicit `openPanel: true` or the `open-agent-inbox` editor message. An already open inbox updates through broadcasts without activation. The response deadline includes waiting for the user.
 
 `openPanel: true` is an explicit opt-in to `Editor.Panel.open`, which may activate/focus the panel; omit it to avoid interrupting mouse/keyboard work. `editorAsk` additionally supports `presentation: 'native'` as explicit opt-in to a modal native dialog that can block/focus Creator. No foregrounding, OS input automation, or control focus is performed by the default tools.
 
