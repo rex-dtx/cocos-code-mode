@@ -5,7 +5,7 @@ import { getEditorPrompt } from './editor-prompt';
 
 // A hung Creator IPC must not accumulate new requests on each snapshot poll.
 const inFlight = new Map<string, Promise<unknown>>();
-function query(channel: string, message: string): Promise<unknown> {
+export function queryEditorMessage(channel: string, message: string): Promise<unknown> {
     const key = `${channel}:${message}`;
     let pending = inFlight.get(key);
     if (!pending) {
@@ -47,7 +47,7 @@ export async function getEditorState(input: EditorStateArgs = {}): Promise<Edito
         ['scene.ready', 'scene', 'query-is-ready'], ['scene.dirty', 'scene', 'query-dirty'], ['scene.current', 'scene', 'query-current-scene'],
         ['busy.assetImport', 'asset-db', 'is-busy'], ['busy.build', 'builder', 'query-tasks-info'], ['engineVersion', 'engine', 'query-info'],
     ];
-    const reads = queries.map(([key, channel, message]) => query(channel, message).then(value => {
+    const reads = queries.map(([key, channel, message]) => queryEditorMessage(channel, message).then(value => {
         if (finished) return;
         if (key === 'scene.current') {
             if (value === null || value === '') { available.add(key); return; }

@@ -10,6 +10,7 @@ import './tools/asset-tools';
 import './tools/component-tools';
 import './tools/scene-tools';
 import './tools/editor-tools';
+import './tools/editor-handshake-tools';
 import './tools/build-tools';
 import './tools/program-tools';
 import './tools/project-tools';

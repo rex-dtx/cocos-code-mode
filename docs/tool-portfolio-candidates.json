@@ -1451,7 +1451,7 @@
         },
         {
           "name": "buildTargetLaunch",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Launch the exact produced artifact on a declared target, not preview fallback.",
           "route": "target-specific launcher",
           "prerequisites": [
@@ -1466,11 +1466,12 @@
           "negativeTestID": "candidate.buildTargetLaunch.negative.v1",
           "fixtureID": "fixture.candidate.buildTargetLaunch.v1",
           "evidenceArtifact": "reports/evidence/candidates/buildTargetLaunch/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/build-target-qualification.test.js#BUILD-TARGET-01",
           "proposedExecutionPhase": "P6"
         },
         {
           "name": "buildTargetSmoke",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Interact with and observe the launched artifact on its declared target.",
           "route": "runtime session plus target launcher",
           "prerequisites": [
@@ -1485,6 +1486,7 @@
           "negativeTestID": "candidate.buildTargetSmoke.negative.v1",
           "fixtureID": "fixture.candidate.buildTargetSmoke.v1",
           "evidenceArtifact": "reports/evidence/candidates/buildTargetSmoke/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/build-target-qualification.test.js#BUILD-TARGET-01",
           "proposedExecutionPhase": "P6"
         }
       ]
