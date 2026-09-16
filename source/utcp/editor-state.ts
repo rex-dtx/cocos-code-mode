@@ -5,6 +5,11 @@ import { getEditorPrompt } from './editor-prompt';
 
 // A hung Creator IPC must not accumulate new requests on each snapshot poll.
 const inFlight = new Map<string, Promise<unknown>>();
+
+// Called only at a bridge lifecycle boundary, never by timeout/polling callers.
+export function resetEditorMessageProbes(): void {
+    inFlight.clear();
+}
 export function queryEditorMessage(channel: string, message: string): Promise<unknown> {
     const key = `${channel}:${message}`;
     let pending = inFlight.get(key);
@@ -17,11 +22,11 @@ export function queryEditorMessage(channel: string, message: string): Promise<un
             timer.unref?.();
             Promise.resolve().then(() => Editor.Message.request(channel, message)).then(value => {
                 clearTimeout(timer);
-                inFlight.delete(key);
+                if (inFlight.get(key) === pending) inFlight.delete(key);
                 resolve(value);
             }, error => {
                 clearTimeout(timer);
-                inFlight.delete(key);
+                if (inFlight.get(key) === pending) inFlight.delete(key);
                 reject(error);
             });
         });

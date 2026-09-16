@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Announce `editorHandshake` in SessionStart bootstrap with separate HTTP probe evidence and required Code Mode verification guidance. Clear stale IPC probe slots on CCB server start and guard against late responses from the previous lifecycle; no automatic timeout retry.
 - Add always-exposed, read-only `editorHandshake` with per-server identity, build/project identity, optional expected-project matching, and a bounded scene IPC probe that distinguishes not-ready, timeout, invalid response and IPC failure without accumulating hung requests.
 - Add `editorLog` for agent messages in the Creator editor console/project log, with `debug/info/warn/error`, optional JSON data, and bounded input validation. `debug` maps to `console.log` with a `[debug]` prefix.
 - Add `editorAsk` and `editorPrompt` through a bounded, nonmodal **Agent Inbox** with choice buttons and text/select/confirm fields. Defaults only log/quietly notify, never open or focus a panel; the user opens it from the menu. Panel opening and modal native dialogs require explicit opt-in. Creator 3.7 native dialogs use `Dialog.info/warn/error`, with deterministic timeout but manual dismissal.

@@ -11,6 +11,7 @@ import './tools/component-tools';
 import './tools/scene-tools';
 import './tools/editor-tools';
 import './tools/editor-handshake-tools';
+import { resetEditorMessageProbes } from './editor-state';
 import './tools/build-tools';
 import './tools/program-tools';
 import './tools/project-tools';
@@ -405,6 +406,7 @@ export class UtcpServerManager {
                 console.info(`[cx3][api] LISTENING <- http://localhost:${currentPort}/utcp`);
                 // Now register tools with the correct port
                 this.port = currentPort;
+                resetEditorMessageProbes();
                 this.registerTools(currentPort, tools, toolInstances, utcpTools);
 
                 const message = `[cx3][lifecycle] CONNECTED <- http://localhost:${currentPort}/utcp`;
