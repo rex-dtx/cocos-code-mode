@@ -18,7 +18,7 @@ export interface UpdateHealthInput {
   packageCompatible: boolean;
   creatorCompatible: boolean;
   protectedProbeTimeoutMs: number;
-  protectedProbe: (signal: AbortSignal) => Promise<boolean>;
+  protectedProbe: () => Promise<boolean>;
 }
 
 export interface UpdateHealthResult {
@@ -42,18 +42,19 @@ export async function evaluateUpdateHealth(input: UpdateHealthInput): Promise<Up
   if (failures.length > 0) return { healthy: false, failures };
 
   const startedAt = Date.now();
-  const controller = new AbortController();
-  const timeoutHandle = scheduleTimeout(() => controller.abort(), input.protectedProbeTimeoutMs);
+  let timeoutHandle: NodeJS.Timeout | undefined;
   let probeOutcome: "passed" | "failed" | "timeout";
   try {
     probeOutcome = await Promise.race([
-      input.protectedProbe(controller.signal).then((ok) => ok ? "passed" as const : "failed" as const).catch(() => "failed" as const),
-      new Promise<"timeout">((resolve) => scheduleTimeout(() => resolve("timeout"), input.protectedProbeTimeoutMs)),
+      input.protectedProbe().then((ok) => ok ? "passed" as const : "failed" as const).catch(() => "failed" as const),
+      new Promise<"timeout">((resolve) => {
+        timeoutHandle = scheduleTimeout(() => resolve("timeout"), input.protectedProbeTimeoutMs);
+      }),
     ]);
   } catch {
     probeOutcome = "failed";
   } finally {
-    clearTimeout(timeoutHandle);
+    if (timeoutHandle !== undefined) clearTimeout(timeoutHandle);
   }
   const probeDurationMs = Date.now() - startedAt;
   if (probeOutcome === "passed") return { healthy: true, failures, probeDurationMs };
