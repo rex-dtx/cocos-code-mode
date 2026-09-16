@@ -25,4 +25,13 @@ describe('runtimeScreenshotAssert', () => {
     assert.equal(mismatch.matched, false);
     assert.deepEqual(mismatch.diagnostics, ['SHA256_MISMATCH']);
   });
+
+  it('falls back to full-window capture when bounded panel capture is unavailable', async () => {
+    const tools = new ScreenshotTools();
+    tools.editorPanelCapture = async () => { throw new Error('capturePage unavailable'); };
+    tools.captureEditorScreenshot = async () => ({ type: 'image', data: PNG.toString('base64'), mimeType: 'image/png' });
+    const result = await tools.runtimeScreenshotAssert({ windowTitle: 'Creator', bounds: { x: 0, y: 0, width: 8, height: 8 } });
+    assert.equal(result.passed, true);
+    assert.equal(result.signatureValid, true);
+  });
 });
