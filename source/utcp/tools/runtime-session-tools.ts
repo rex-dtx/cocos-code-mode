@@ -173,9 +173,12 @@ export class RuntimeSessionTools {
     }
 
     private async readState(): Promise<RuntimeState> {
-        const result = await withRuntimeStateTimeout(Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'runtimeGetState', args: [] })) as any;
-        if (!result || result.running !== true || typeof result.paused !== 'boolean' || typeof result.timeScale !== 'number' || typeof result.frameCount !== 'number') {
-            throw new Error('Runtime preview is not running or returned malformed state');
+        const result: unknown = await withRuntimeStateTimeout(Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'runtimeGetState', args: [] }));
+        if (!result || typeof result !== 'object'
+            || !('paused' in result) || typeof result.paused !== 'boolean'
+            || !('timeScale' in result) || typeof result.timeScale !== 'number'
+            || !('frameCount' in result) || typeof result.frameCount !== 'number') {
+            throw new Error('Runtime preview returned malformed state');
         }
         return { running: true, paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
     }
