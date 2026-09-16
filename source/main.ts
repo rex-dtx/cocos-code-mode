@@ -33,7 +33,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
             snapshot.http = { status: 'error', detail: 'Server changed during this check. Check status again.' };
             snapshot.probe = null;
         }
-        return snapshot;
+        return { ...snapshot, sessions: server === utcpServer && server?.port ? server.sessionPresence.snapshot() : [] };
     },
     openAgentInbox() {
         return Editor.Panel.open(`${packageJSON.name}.prompt`);

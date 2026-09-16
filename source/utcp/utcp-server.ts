@@ -12,6 +12,8 @@ import './tools/scene-tools';
 import './tools/editor-tools';
 import { EditorHandshakeTools } from './tools/editor-handshake-tools';
 import { resetEditorMessageProbes } from './editor-state';
+import { SessionPresenceStore } from './session-presence';
+import { SessionTools } from './tools/session-tools';
 import './tools/build-tools';
 import './tools/program-tools';
 import './tools/project-tools';
@@ -348,6 +350,7 @@ export class UtcpServerManager {
     // Resolved port after start(); used by unload to GC the config entry.
     public port: number = 0;
     public instanceId: string = '';
+    public sessionPresence = new SessionPresenceStore('not-started');
 
     constructor() {
         this.app = express();
@@ -361,6 +364,7 @@ export class UtcpServerManager {
         if (this.server) throw new Error('UTCP Server is already started. Stop it before starting again.');
         this.app = express();
         this.instanceId = randomBytes(16).toString('hex');
+        this.sessionPresence = new SessionPresenceStore(this.instanceId);
         // PHAI set TRUOC moi app.use(): express bind 'query parser fn' luc lazyrouter
         // chay (o use() dau tien) va khong doc lai. Set sau -> decoder nay khong bao gio
         // chay, moi arg so/bool ve tay tool duoi dang string.
@@ -451,7 +455,7 @@ export class UtcpServerManager {
             if (!instance) {
                 instance = ToolClass === EditorHandshakeTools
                     ? new EditorHandshakeTools(this.instanceId)
-                    : new ToolClass();
+                    : ToolClass === SessionTools ? new SessionTools(this.sessionPresence) : new ToolClass();
                 toolInstances.set(ToolClass, instance);
             }
 

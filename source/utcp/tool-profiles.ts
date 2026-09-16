@@ -74,7 +74,7 @@ export const CORE_TOOLS = new Set([
 
 export function isToolExposed(toolName: string, activeProfile: ToolProfile, enabledTools?: Set<string>, disabledTools?: Set<string>): boolean {
     // Connectivity diagnostics must remain reachable even with an empty custom profile.
-    if (toolName === 'editorHandshake') return true;
+    if (toolName === 'editorHandshake' || toolName === 'editorSessionHeartbeat') return true;
     // Custom profile: check enabled/disabled lists
     if (activeProfile === 'custom') {
         if (disabledTools?.has(toolName)) return false;

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add instance-bound session heartbeat presence and Status session snapshots (Active/Stale/Expired), with a token-free external HTTP helper. Transport labels are caller-reported; helper presence never claims model activity or verified Code Mode connectivity. Session lifecycle supervision remains explicit.
 - Add endpoint/project/instance-bound external health watchdog with independent HTTP deadlines, serial polling, shared IPC evidence and conservative recovery/read-back guidance. No automatic mutation retries, editor fallback or process restart.
 - Keep quick menu actions for Status, Restart Server, Toggle Debug Logging, Open Logs and Settings. Status also provides confirmed log operations and collapsed technical details; Settings focuses on AI setup with advanced port/path controls and serialized main-process apply.
 - Gate builds and direct packaging on Creator 3.7 CommonJS-loader checks across all declared entrypoints, compiled modules and deferred literal dependencies; add a negative dual-package regression that ordinary Node loading misses.
