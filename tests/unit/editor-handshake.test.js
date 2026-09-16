@@ -27,13 +27,18 @@ it('handshake distinguishes readiness, wrong project and hung IPC through HTTP i
       assert.ok(manual.tools.some(tool => tool.name === 'editorHandshake'));
       const result = await handshake({ expectedProjectPath: project + path.sep });
       assert.equal(result.projectMatches, true);
-      assert.deepEqual(result.probe, { status: 'responsive', sceneReady: false, code: null });
+      assert.equal(result.probe.status, 'responsive');
+      assert.equal(result.probe.sceneReady, false);
+      assert.equal(result.probe.evidence.settled, true);
     }
     const wrong = await handshake({ expectedProjectPath: path.resolve('another-project') });
     assert.equal(wrong.projectMatches, false);
     respond = async () => true;
     const ready = await handshake();
-    assert.deepEqual(ready.probe, { status: 'responsive', sceneReady: true, code: null });
+    assert.equal(ready.probe.status, 'responsive');
+    assert.equal(ready.probe.sceneReady, true);
+    assert.equal(ready.probe.evidence.shared, false);
+    assert.notEqual(ready.probe.evidence.requestId, wrong.probe.evidence.requestId);
     assert.equal(ready.projectMatches, null);
     assert.equal(ready.instanceId, wrong.instanceId);
     assert.equal(ready.instanceId, first.instanceId);
@@ -44,9 +49,17 @@ it('handshake distinguishes readiness, wrong project and hung IPC through HTTP i
     let release;
     respond = () => new Promise(resolve => { release = resolve; });
     const before = calls;
+    const timeouts = [];
     for (let i = 0; i < 2; i++) {
-      assert.deepEqual((await handshake({ timeoutMs: 5 })).probe, { status: 'timeout', sceneReady: null, code: 'EDITOR_IPC_TIMEOUT' });
+      const result = await handshake({ timeoutMs: 5 });
+      assert.equal(result.probe.status, 'timeout');
+      assert.equal(result.probe.evidence.settled, false);
+      timeouts.push(result.probe.evidence);
     }
+    assert.equal(timeouts[0].requestId, timeouts[1].requestId);
+    assert.equal(timeouts[0].shared, false);
+    assert.equal(timeouts[1].shared, true);
+    assert.ok(timeouts[1].ageMs >= timeouts[0].ageMs);
     assert.equal(calls, before + 1, 'repeated timeout must not accumulate IPC');
     release(true);
     await new Promise(resolve => setImmediate(resolve));

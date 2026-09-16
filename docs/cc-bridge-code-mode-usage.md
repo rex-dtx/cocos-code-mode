@@ -82,6 +82,7 @@ return connection;
 - `projectMatches`: true/false when an expected absolute path and actual project path are available; otherwise null. Comparison normalizes separators/trailing separators and is case-insensitive on Windows; symlinks are not resolved. A mismatch means reachable but the wrong target: do not mutate it.
 - `probe.status`: `responsive`, `timeout`, `error`, or `invalid-response`. Only a boolean response from Creator's scene IPC counts as responsive. Failures carry `EDITOR_IPC_TIMEOUT`, `EDITOR_IPC_ERROR`, or `INVALID_EDITOR_RESPONSE` in `probe.code`.
 - `probe.sceneReady`: true/false after a valid response, otherwise null. False means connected but the scene is not ready; it is not a disconnected editor.
+- `probe.evidence`: `requestId`, `startedAt`, `ageMs`, `shared`, `settled`. Repeated observations of one hanging request retain the same ID. `settled` tracks actual IPC completion, not the wrapper deadline; `ageMs` is monotonic elapsed time. Repeated timeouts on that ID are not independent IPC failures.
 
 The IPC deadline defaults to 1000ms (1–5000ms allowed); repeated probes share outstanding IPC rather than accumulating hung requests. This is a point-in-time check, not a persistent session or a guarantee that all tools will succeed. Client transport deadlines must allow additional HTTP/adapter overhead. Connection refused, registration failure, or an older build without this tool are client-side failures, not handshake responses. `/utcp` discovery alone does not prove Creator IPC readiness.
 
@@ -90,6 +91,18 @@ The SessionStart bootstrap announces `editorHandshake` and the exact per-port na
 Keep an agent-local binding of **namespace + endpoint + projectPath + instanceId** from the verified Code Mode handshake. Require `projectMatches:true` and `probe.status:responsive` before mutations; scene-dependent operations may also require `sceneReady:true`. Recheck after any reconnect/restart. A new `instanceId` invalidates old object references even when the namespace and port are unchanged. A project mismatch, ambiguous selection, or unreachable bound endpoint must stop mutation rather than trigger fallback to another editor. Independent agents may bind different editors without changing each other's routing.
 
 If IPC stays stuck, do not poll in a tight loop. Restart/reload CCB to establish a new probe lifecycle, then re-register and handshake again. Starting a new CCB server clears stale probe slots; late responses from the previous lifecycle cannot evict current probes. A timeout alone never clears a slot or triggers background retries. This does not cancel an outstanding Creator IPC or guarantee recovery if Creator itself remains unresponsive.
+
+### External health watchdog
+
+After verifying the selected editor through Code Mode, run this outside Creator while actively working:
+
+```sh
+node scripts/cc-bridge-watchdog.js --url http://localhost:49650/utcp --project "G:/projects/my-game" --instance "<verified instanceId>"
+```
+
+Use the actual binding, never a cached latest alias. `--once` performs one check. Defaults are a 5-second interval and 2-second absolute HTTP deadline; polling is serial, one outstanding request per watcher. JSONL observations distinguish Healthy, Degraded, Unresponsive and Recovering, with reason, latency, safeToMutate and requiresReadback. A scene not ready is not a freeze, but does not permit scene mutations. Wrong project/instance requires explicit rebinding, never automatic acceptance.
+
+This is an advisory agent-side monitor, not a server-side mutation lock. An agent must stop writes on unsafe or stale observations. Never repeat a timed-out mutation automatically: its outcome is unknown. After failures, read back the affected state and re-handshake through Code Mode; only then restart the watchdog to clear the conservative read-back latch. It does not kill/restart Creator, switch editors, or predict all freezes. Import/build can legitimately delay responses; initial thresholds need tuning with real editor measurements. Built-in Electron/Creator freezes can prevent CCB's own timers from firing, hence the independent process and client deadline.
 
 ## 3. Discover before acting
 

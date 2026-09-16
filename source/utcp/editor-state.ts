@@ -2,37 +2,47 @@ import { EditorStateArgs, EditorStateResult } from './editor-control-contracts';
 import { controlNumber, controlObject } from './editor-control-validation';
 import { listEditorTasks } from './editor-control-plane';
 import { getEditorPrompt } from './editor-prompt';
+import { randomBytes } from 'crypto';
+import { performance } from 'perf_hooks';
 
 // A hung Creator IPC must not accumulate new requests on each snapshot poll.
-const inFlight = new Map<string, Promise<unknown>>();
+interface MessageProbe { promise: Promise<unknown>; requestId: string; startedAt: number; startedTick: number; settled: boolean }
+const inFlight = new Map<string, MessageProbe>();
 
 // Called only at a bridge lifecycle boundary, never by timeout/polling callers.
 export function resetEditorMessageProbes(): void {
     inFlight.clear();
 }
-export function queryEditorMessage(channel: string, message: string): Promise<unknown> {
+export function beginEditorMessageProbe(channel: string, message: string) {
     const key = `${channel}:${message}`;
-    let pending = inFlight.get(key);
-    if (!pending) {
-        // Creator 3.7's Node runtime does not support Promise.withResolvers.
-        pending = new Promise((resolve, reject) => {
-            // Settle subscribers even if IPC never resolves. Keep the slot occupied
-            // until the real request settles, so later polls cannot pile up IPC.
+    let entry = inFlight.get(key);
+    const shared = entry !== undefined;
+    if (!entry) {
+        const metadata = { requestId: randomBytes(8).toString('hex'), startedAt: Date.now(), startedTick: performance.now(), settled: false };
+        const promise = new Promise<unknown>((resolve, reject) => {
             const timer = setTimeout(() => reject(Object.assign(new Error('Scene query deadline exceeded.'), { code: 'EDITOR_IPC_TIMEOUT' })), 5000);
             timer.unref?.();
+            const finish = () => {
+                clearTimeout(timer);
+                metadata.settled = true;
+                if (inFlight.get(key)?.requestId === metadata.requestId) inFlight.delete(key);
+            };
             Promise.resolve().then(() => Editor.Message.request(channel, message)).then(value => {
-                clearTimeout(timer);
-                if (inFlight.get(key) === pending) inFlight.delete(key);
-                resolve(value);
-            }, error => {
-                clearTimeout(timer);
-                if (inFlight.get(key) === pending) inFlight.delete(key);
-                reject(error);
-            });
+                finish(); resolve(value);
+            }, error => { finish(); reject(error); });
         });
-        inFlight.set(key, pending);
+        entry = Object.assign(metadata, { promise });
+        inFlight.set(key, entry);
     }
-    return pending;
+    const probe = entry;
+    return {
+        promise: probe.promise,
+        evidence: () => ({ requestId: probe.requestId, startedAt: probe.startedAt,
+            ageMs: Math.max(0, Math.round(performance.now() - probe.startedTick)), shared, settled: probe.settled }),
+    };
+}
+export function queryEditorMessage(channel: string, message: string): Promise<unknown> {
+    return beginEditorMessageProbe(channel, message).promise;
 }
 function boundedText(value: unknown, maximum: number): string | null {
     return typeof value === 'string' ? value.slice(0, maximum) : null;

@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Simplify the extension menu to Status and Settings. Move restart/debug/log actions into Status with confirmations and visible state; collapse technical details. Settings now focuses on AI setup with advanced port/path controls, removes arbitrary registry template editing, and applies changes through serialized main-process RPC.
+- Add endpoint/project/instance-bound external health watchdog with independent HTTP deadlines, serial polling, shared IPC evidence and conservative recovery/read-back guidance. No automatic mutation retries, editor fallback or process restart.
+- Keep quick menu actions for Status, Restart Server, Toggle Debug Logging, Open Logs and Settings. Status also provides confirmed log operations and collapsed technical details; Settings focuses on AI setup with advanced port/path controls and serialized main-process apply.
 - Gate builds and direct packaging on Creator 3.7 CommonJS-loader checks across all declared entrypoints, compiled modules and deferred literal dependencies; add a negative dual-package regression that ordinary Node loading misses.
 - Fix Creator 3.7 extension loading: remove new runtime Zod imports from registry/status validation because Creator's CommonJS loader prefers sibling ESM `.js` files over `.cjs`. Retain boundary validation and add a loader regression covering main and Status panel.
 - Replace the Agent Inbox menu entry with a read-only Status panel and on-demand Check Status button: build/project identity, server endpoint, registry ownership, HTTP handshake and scene readiness. Inbox APIs and explicit panel opening remain available.
