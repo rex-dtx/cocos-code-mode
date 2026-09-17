@@ -4,8 +4,13 @@ const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { getJson, postTool, repeatTestcase, healthCheck } = require('../helpers/utcp-client');
-
+const {
+  getJson,
+  postTool,
+  repeatTestcase,
+  healthCheck,
+  fetchTargetUrl,
+} = require('../helpers/utcp-client');
 describe('live: build target HTTP route scenarios', () => {
   let health;
   let projectPath;
@@ -33,14 +38,14 @@ describe('live: build target HTTP route scenarios', () => {
         serverId = launched.body.serverId;
         const base = launched.body.url;
 
-        const nested = await fetch(new URL('nested/data.txt', base), { signal: AbortSignal.timeout(3000) });
+        const nested = await fetchTargetUrl(new URL('nested/data.txt', base).toString());
         assert.equal(nested.status, 200);
         assert.equal(await nested.text(), expected);
 
-        const missing = await fetch(new URL('missing.txt', base), { signal: AbortSignal.timeout(3000) });
+        const missing = await fetchTargetUrl(new URL('missing.txt', base).toString());
         assert.equal(missing.status, 404);
 
-        const traversal = await fetch(new URL('%2e%2e/package.json', base), { signal: AbortSignal.timeout(3000) });
+        const traversal = await fetchTargetUrl(new URL('%2e%2e/package.json', base).toString());
         assert.ok([403, 404].includes(traversal.status));
       } finally {
         if (serverId) {
