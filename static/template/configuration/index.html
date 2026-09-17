@@ -1,5 +1,14 @@
 <main class="panel">
     <h1>Settings</h1>
+    <section aria-labelledby="logging-heading">
+        <h2 id="logging-heading">Verbose logging</h2>
+        <p>Enable detailed extension interaction logs for troubleshooting. Changes apply immediately without restarting the server.</p>
+        <div class="actions">
+            <button id="verbose-toggle" type="button" aria-pressed="false" disabled>Verbose logs: unavailable</button>
+            <button id="verbose-refresh" type="button">Refresh logging state</button>
+        </div>
+        <p id="verbose-feedback" class="feedback" role="status" aria-live="polite">Reading logging state…</p>
+    </section>
     <section aria-labelledby="client-heading">
         <h2 id="client-heading">AI client setup</h2>
         <p>Add this read-only snippet to your AI client's MCP configuration, then restart the client. The bridge registry is managed automatically; do not edit its JSON here.</p>

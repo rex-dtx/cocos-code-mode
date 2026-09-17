@@ -1,7 +1,7 @@
 import packageJSON from '../../../package.json';
 import { readFileSync } from 'fs-extra';
 import { isAbsolute, join } from 'path';
-
+import { attachLoggingControl } from './logging-control';
 interface Settings { fixedPort: number; configPath: string }
 interface SettingsPanel { $: { app: HTMLElement } }
 const cleanup = new WeakMap<SettingsPanel, () => void>();
@@ -137,7 +137,8 @@ module.exports = Editor.Panel.define({
                 }
             });
         });
-        cleanup.set(this, () => { closed = true; listeners.forEach(remove => remove()); });
+        const detachLogging = attachLoggingControl(root);
+        cleanup.set(this, () => { closed = true; listeners.forEach(remove => remove()); detachLogging(); });
         void load();
     },
     close(this: SettingsPanel) { cleanup.get(this)?.(); cleanup.delete(this); },
