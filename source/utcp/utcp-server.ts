@@ -28,6 +28,7 @@ import './tools/file-tools';
 import './tools/ui-tools';
 import './tools/runtime-tools';
 import './tools/runtime-session-tools';
+import './tools/audio-playback-tools';
 import './tools/batch-tools';
 import './tools/batch-read-tools';
 import './tools/validation-tools';
