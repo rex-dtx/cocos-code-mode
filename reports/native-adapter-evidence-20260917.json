@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "creatorVersion": "3.7.3",
+  "observedBuild": "0c8dc56",
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+  "sceneUuid": "85929863-e06d-4ca8-ae95-1ba807ee401d",
+  "source": "Read-only Code Mode inspection of actual loaded Creator function bodies and installed engine source",
+  "preview": {
+    "adapter": "cce.PreviewPlay._state",
+    "observedStopped": { "state": "stop", "gamePaused": true, "directorPaused": false },
+    "start": "Sets state play before asynchronous settings/bundles/softReloadScene; await native IPC acknowledgment AND read back state/scene before success.",
+    "stop": "Sets state stop before softReloadScene, then pauses game; editor may resume director for editing so directorPaused alone is not termination evidence.",
+    "resume": "editor-preview-call-method('pause', false), not a nonexistent resume method",
+    "publicReadbackProbes": "query-preview-game-view-data and query-preview-data returned undefined without arguments",
+    "limitations": ["Private version-pinned scene-preview adapter", "No browser/simulator lifecycle claim", "Same-scene external restart generation not observed by a UUID-only session"]
+  },
+  "prefabApply": {
+    "module": "builtin/scene/dist/script/3d/manager/prefab/node.ccc",
+    "nativeBody": "async applyPrefab(e){const t=await this.doApplyPrefab(e);return!!t&&(cce.SceneFacadeManager.snapshot(new ApplyPrefabCommand(t,this.undoApplyPrefab.bind(this),this.doApplyPrefab.bind(this))),cce.SceneFacadeManager.abortSnapshot(),await this.waitForSceneLoaded(),!1)}",
+    "finding": "Native false return occurs on success and failure; boolean cannot be used as success evidence.",
+    "postconditions": ["same linked prefab asset identity", "instance present after native reload", "no remaining non-reserved property/mounted/removed overrides", "main tool independently reads source hashes and node dump"],
+    "reservedRootPropertiesObserved": ["_name", "_lpos", "_lrot", "_euler"],
+    "notReservedObserved": ["_lscale", "_active", "_layer", "_mobility"],
+    "status": "source fix written; regression and real disposable fixture verification pending"
+  }
+}

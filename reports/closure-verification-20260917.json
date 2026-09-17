@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "status": "wip-fixbug-handoff-unit-migration-blocker",
+  "artifact": {
+    "commit": "6bf0be8",
+    "dirty": true,
+    "builtAt": "2026-09-17T04:56:36.682Z",
+    "endpoint": "http://localhost:59565",
+    "registeredTools": 216
+  },
+  "build": {
+    "passed": true,
+    "creatorLoader": {
+      "entries": 6,
+      "modules": 115,
+      "loadedFiles": 310,
+      "literalRequires": 160
+    }
+  },
+  "unit": {
+    "passed": 455,
+    "failed": 0,
+    "skipped": 0,
+    "total": 455,
+    "percent": 100,
+    "output": "artifact://54"
+  },
+  "closureLiveFirstRun": {
+    "passed": 36,
+    "failed": 8,
+    "skipped": 6,
+    "total": 50,
+    "percent": 72,
+    "threshold": 95,
+    "output": "artifact://44"
+  },
+  "triage": [
+    {
+      "case": "BUILD-TARGET-E01",
+      "cause": "Preexisting staged route test omitted node:fs and node:path imports",
+      "action": "Fixed; live route test passed 5 iterations"
+    },
+    {
+      "case": "preview lifecycle start and downstream session cases",
+      "cause": "Native previewClient.checkAvailable waits without timeout until game-view platform loads; main scene preview state remains stopped",
+      "action": "Root cause proved from installed previewClient: browser platform readiness promise never settles. Added non-mutating Game View preflight in latest local source; unit proven, not reloaded into uncertain editor."
+    },
+    {
+      "case": "RUNTIME-F01",
+      "cause": "Legacy test uses raw send/start and fixed sleep without asserting transport readiness",
+      "action": "Migrated to verified lifecycle; positive run pending safe preview recovery"
+    },
+    {
+      "case": "fixedServerPort preference",
+      "cause": "Response optional/null trimming vs old assertion; inspect exact response before correction",
+      "action": "Removed incidental default/null assertion; public key and invalid-input behavior pass live"
+    },
+    {
+      "case": "audioSourceInspect fixture",
+      "cause": "Fixture creation can return skip object and cleanup looks under wrong parent",
+      "action": "Created disposable AudioSource directly under current scene with exact UUID finally cleanup; passed live"
+    }
+  ],
+  "coverage": {
+    "minimumImplementationPercent": 90,
+    "actualPercent": null,
+    "reason": "Missing approved comparable-workflow denominator; original source and lane inventories recovered separately"
+  },
+  "releaseQualified": false,
+  "finalLocalBuild": {
+    "commit": "6bf0be8",
+    "branch": "feat/ccb3x-api-capability-expansion",
+    "dirty": true,
+    "builtAt": "2026-09-17T05:08:21.919Z"
+  },
+  "registration": {
+    "registered": 216,
+    "approvedOrImplemented": 77,
+    "qualifiedExpansion": 71,
+    "probeRequired": 14
+  },
+  "focusedPostFix": {
+    "tests": 30,
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0
+  },
+  "independentLiveReruns": {
+    "buildRoutes": {
+      "passed": 1,
+      "failed": 0,
+      "iterations": 5
+    },
+    "preferenceAndAudioInspection": {
+      "passed": 2,
+      "failed": 0
+    },
+    "prefabApply": {
+      "passed": true,
+      "evidence": "reports/prefab-apply-closure-20260917.json"
+    }
+  },
+  "liveThreshold": {
+    "frozenCases": 50,
+    "requiredPass": 48,
+    "firstRunPass": 36,
+    "afterIndependentFixesAtMost": 39,
+    "percentUpperBound": 78,
+    "remainingFailed": 5,
+    "skipped": 6,
+    "note": "Mixed-run reconciliation only; not a passing rerun of the frozen scope"
+  },
+  "recovery": {
+    "currentEditorBuild": {
+      "commit": "6bf0be8",
+      "dirty": true,
+      "builtAt": "2026-09-17T04:56:36.682Z",
+      "endpoint": "http://localhost:59565",
+      "registeredTools": 216
+    },
+    "latestLocalBuildLoaded": false,
+    "platform": "browser",
+    "nativePendingStart": true,
+    "previewObserved": "stop",
+    "sceneDirty": true,
+    "prohibition": "Superseded by controlled restart; no pending request survives process exit.",
+    "required": "Fixbug: stabilize cold-start/stop on disposable Game View fixture; rerun unchanged closure-live scope. No runtime audio/particle qualification."
+  },
+  "rendererRouteCorrection": {
+    "editRenderer": {
+      "sceneUuid": "85929863-e06d-4ca8-ae95-1ba807ee401d",
+      "gameView": false
+    },
+    "actualGameView": {
+      "observedRuntimeSceneUuids": [
+        "5c508621-dfab-4a16-ab45-a26c3229aa74",
+        "1d918508-587a-46b4-b4a1-cb800f0ac03c"
+      ],
+      "gameView": true
+    },
+    "evidence": "reports/game-view-renderer-route-20260917.json"
+  },
+  "controlledRecovery": {
+    "approved": true,
+    "sceneDiskBackup": "C:/Temp/ccb3x-closure-scene-002-20260917.scene.backup",
+    "note": "Target Creator exited before unsaved scene export; unrelated Creator instance untouched. Restarted exact project with loopback CDP and verified matching bridge."
+  },
+  "finalSource": {
+    "buildPass": true,
+    "loader": {
+      "entries": 6,
+      "modules": 116,
+      "loadedFiles": 311,
+      "literalRequires": 162
+    },
+    "registered": 216,
+    "portfolioApprovedImplemented": 75,
+    "portfolioProbeRequired": 16,
+    "audioState": "probe-required fail-closed"
+  },
+  "lifecycle": {
+    "finiteHostAdapter": true,
+    "sourceUnitProven": true,
+    "liveObservations": [
+      "actual Game View host running with real runtime UUID/metrics",
+      "session attached once after stabilized runtime",
+      "cold-start/stop combined sequence nondeterministic on large fixture"
+    ],
+    "qualified": false,
+    "fixbugRequired": true
+  },
+  "finalFullUnit": {
+    "passed": 457,
+    "failed": 1,
+    "skipped": 0,
+    "total": 458,
+    "percent": 99.78,
+    "failedArea": "out-of-scope session-helper migration suites; scripts/cc-bridge-session.js deleted while tests still import it",
+    "output": "artifact://135"
+  }
+}

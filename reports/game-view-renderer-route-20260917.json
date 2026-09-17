@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "creator": "3.7.3",
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+  "recoveredEndpoint": "http://localhost:56294",
+  "artifact": { "commit": "6bf0be8", "dirty": true, "builtAt": "2026-09-17T05:08:21.919Z" },
+  "observations": {
+    "editRenderer": { "previewState": "stop", "gameView": false, "sceneUuid": "85929863-e06d-4ca8-ae95-1ba807ee401d" },
+    "previewRenderer": { "previewState": "play", "gameView": true, "runtimeSceneUuid": "1d918508-587a-46b4-b4a1-cb800f0ac03c" },
+    "toolbar": { "platform": "gameView", "engineViewVisible": true, "previewClientReady": true, "previewClientFailed": false, "previewLoaded": true },
+    "ipcRouting": "Creator scene IPC allowlist routes executeSceneScriptMethod to edit renderer; preview lifecycle/current-scene/pause methods route to preview renderer.",
+    "previewManager": "query-preview-data/call-preview-function expose image/specialized preview managers only; no generic extension runtime execution route."
+  },
+  "decision": "Do not use execute-scene-script for runtime state, audio or particle claims. Implement a finite host Game View adapter for lifecycle/state only. Keep audio/particle runtime rows probe-required and public audio routes fail closed until a separately qualified finite transport exists.",
+  "securityBoundary": "Private _previewIpc generic send can bypass the native allowlist and was not used."
+}
