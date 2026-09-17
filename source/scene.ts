@@ -3,6 +3,21 @@ import { buildUiLayoutReport, LayoutReportRequest } from './ui-layout-report';
 import { buildUiSafeAreaInspect, UiSafeAreaInspectRequest } from './ui-safe-area-inspect';
 import { buildUiLayoutValidate, UiLayoutValidateRequest } from './ui-layout-validate';
 import { buildUiLayoutInspectGeometry, UiLayoutGeometryRequest, UiLayoutGeometryResult } from './ui-layout-inspect';
+import { executeAudioPlayback, AudioPlaybackRequest, AudioPlaybackResult, AudioRuntimeEngine } from './audio-playback';
+
+interface PreviewEngineGlobals {
+    cc?: {
+        game?: { paused?: unknown; isPaused?: () => unknown };
+        director?: {
+            totalFrames?: unknown;
+            getTotalFrames?: () => unknown;
+            getScene?: () => { uuid?: unknown } | null;
+            getScheduler?: () => { getTimeScale?: () => unknown };
+            isPaused?: () => unknown;
+        };
+    };
+    cce?: { PreviewPlay?: { _state?: unknown } };
+}
 
 export function load() { }
 export function unload() { }
@@ -43,6 +58,12 @@ function getSceneExecuteGlobals(): Record<string, any> {
 }
 
 export const methods = {
+    async audioPlayback(request: AudioPlaybackRequest): Promise<AudioPlaybackResult> {
+        // The scene renderer supplies the native engine; the adapter validates its runtime capabilities.
+        const globals = globalThis as unknown as { cc: AudioRuntimeEngine };
+        return executeAudioPlayback(request, globals.cc, methods.findRuntimeNodeUuid);
+    },
+
     async startCatchLogging() {
         _caughtLogs = [];
         _originalConsoleError = console.error;
@@ -102,17 +123,34 @@ export const methods = {
 
     async applyPrefabByNode(nodeUuid: string): Promise<string | null> {
         try {
-            const cce = (globalThis as any)['cce'];
-            if (!cce || !cce.Prefab || !cce.Prefab.applyPrefab) {
-                throw new Error('CCE API not found');
+            const globals = globalThis as unknown as { cce?: { Prefab?: { applyPrefab?: (id: string) => Promise<unknown> } } };
+            const apply = globals.cce?.Prefab?.applyPrefab;
+            if (typeof apply !== 'function') throw new Error('CCE prefab apply API not found');
+            const before = await methods.findRuntimeNodeUuid(nodeUuid);
+            const assetId: unknown = before?._prefab?.asset?._uuid;
+            if (typeof assetId !== 'string' || !before?._prefab?.instance) throw new Error('Target is not a linked prefab instance');
+            // Creator 3.7.3 returns false even after successful apply and reload.
+            // Its return value cannot distinguish success: verify the resulting instance instead.
+            await apply.call(globals.cce!.Prefab, nodeUuid);
+            const after = await methods.findRuntimeNodeUuid(nodeUuid);
+            if (after?._prefab?.asset?._uuid !== assetId) throw new Error('Prefab identity changed during apply');
+            const instance = after?._prefab?.instance;
+            if (!instance) throw new Error('Prefab instance disappeared during apply');
+            const reservedRootPaths: Record<string, true> = { _name: true, _lpos: true, _lrot: true, _euler: true };
+            for (const key of ['propertyOverrides', 'mountedChildren', 'mountedComponents', 'removedComponents']) {
+                const remaining: unknown = instance[key];
+                if (!Array.isArray(remaining)) throw new Error(`Prefab apply returned invalid ${key}`);
+                const pending = key === 'propertyOverrides' ? remaining.filter((entry: unknown) => {
+                    if (!entry || typeof entry !== 'object' || !('targetInfo' in entry) || !('propertyPath' in entry)) return true;
+                    const target = entry.targetInfo;
+                    const propertyPath = entry.propertyPath;
+                    return !(target && typeof target === 'object' && 'localID' in target && Array.isArray(target.localID)
+                        && target.localID.length === 1 && target.localID[0] === after._prefab.fileId
+                        && Array.isArray(propertyPath) && propertyPath.length === 1 && Object.prototype.hasOwnProperty.call(reservedRootPaths, propertyPath[0]));
+                }) : remaining;
+                if (pending.length > 0) throw new Error(`Prefab apply left pending ${key}`);
             }
-
-            const success: boolean = await cce.Prefab.applyPrefab(nodeUuid);
-            if (!success) {
-                throw new Error('Failed to apply prefab');
-            } else {
-                return null;
-            }
+            return null;
         } catch (error) {
             return error instanceof Error ? error.message : String(error);
         }
@@ -937,24 +975,43 @@ export const methods = {
         return { handlerCount: button.clickEvents.length };
     },
 
-    async runtimeGetState(): Promise<{ running: boolean, paused: boolean, timeScale: number, frameCount: number }> {
-        const cc = (globalThis as any)['cc'];
+    async runtimePreviewState(): Promise<{ state: 'play' | 'pause' | 'stop', sceneUuid: string, gamePaused: boolean, directorPaused: boolean }> {
+        const globals = globalThis as unknown as PreviewEngineGlobals;
+        const cc = globals.cc;
+        const state = globals.cce?.PreviewPlay?._state;
+        const sceneUuid = cc?.director?.getScene?.()?.uuid;
+        const gamePaused = cc?.game?.isPaused?.();
+        const directorPaused = cc?.director?.isPaused?.();
+        // Creator 3.7.3's native game-view controller owns this state. Generic
+        // scene-engine availability is not evidence that a preview is running.
+        if ((state !== 'play' && state !== 'pause' && state !== 'stop') || typeof sceneUuid !== 'string' || !sceneUuid
+            || typeof gamePaused !== 'boolean' || typeof directorPaused !== 'boolean') {
+            throw new Error('Creator game-view preview state is unavailable');
+        }
+        return { state, sceneUuid, gamePaused, directorPaused };
+    },
+
+    async runtimeGetState(): Promise<{ running: boolean, paused: boolean, timeScale: number, frameCount: number, sceneUuid: string }> {
+        const globals = globalThis as unknown as PreviewEngineGlobals;
+        const cc = globals.cc;
         const game = cc?.game;
         const scheduler = cc?.director?.getScheduler?.();
         const director = cc?.director;
         const timeScale = scheduler?.getTimeScale?.();
         const frameCount = typeof director?.totalFrames === 'number' ? director.totalFrames : director?.getTotalFrames?.();
-        const paused = typeof game?.paused === 'boolean' ? game.paused : Boolean(game?.isPaused?.());
+        const paused = typeof game?.paused === 'boolean' ? game.paused : game?.isPaused?.();
+        const sceneUuid = director?.getScene?.()?.uuid;
+        const previewState = globals.cce?.PreviewPlay?._state;
+        if (typeof sceneUuid !== 'string' || !sceneUuid) throw new Error('Runtime scene identity is unavailable');
         if (!game || typeof paused !== 'boolean' || typeof timeScale !== 'number' || !Number.isFinite(timeScale) || typeof frameCount !== 'number' || !Number.isFinite(frameCount)) {
             throw new Error('Runtime preview state is unavailable');
         }
         return {
-            // Creator 3.7 omits game.isPlaying from the editor scene context;
-            // absence therefore means preview readiness is unverified.
-            running: typeof game.isPlaying === 'boolean' ? game.isPlaying : false,
+            running: previewState === 'play' || previewState === 'pause',
             paused,
             timeScale,
             frameCount,
+            sceneUuid,
         };
     },
     async particlePlaybackControl(nodeUuid: string, operation: 'play' | 'stop' | 'clear'): Promise<{ playing: boolean, operation: string, nodeUuid: string }> {

@@ -879,6 +879,74 @@ declare namespace cocos_pilot_3x {
         verified: true
     };
 
+    interface AudioPlaybackResult {
+        success: true;
+        sessionId: string;
+        targetId: string;
+        nodeUuid: string;
+        operation: "play" | "pause" | "stop" | "seek" | "observe";
+        state: {
+            currentTime: number;
+            duration: number;
+            playing: boolean;
+            playbackState: "init" | "playing" | "paused" | "stopped" | "interrupted";
+            loaded: boolean;
+            userActivation: "active" | "inactive" | "unknown";
+            activationRequirement: "unknown";
+        };
+        started: boolean;
+        ended: boolean;
+    }
+    /** Reserved contract only: Creator 3.7.3 has no qualified extension route into active Game View. Calls fail with UNSUPPORTED_RUNTIME_TRANSPORT. */
+    function audioPlaybackControl(args: {
+        sessionId: string;
+        nodeReference: { id: string };
+        operation: "play" | "pause" | "stop" | "seek";
+        time?: number;
+        timeoutMs?: number;
+    }): AudioPlaybackResult;
+    /** Reserved contract only: runtime audio observation fails closed rather than reading the edit renderer. */
+    function audioPlaybackObserve(args: { sessionId: string; nodeReference: { id: string } }): AudioPlaybackResult;
+
+    interface RuntimeSession {
+        sessionId: string;
+        targetKind: "game-view" | "browser-preview" | "simulator";
+        targetId: string;
+        status: "attached" | "stopped";
+        createdAt: number;
+        stoppedAt?: number;
+    }
+    interface RuntimePreviewResult {
+        success: true;
+        operation: string;
+        session?: RuntimeSession;
+        preview: { state: "play" | "pause" | "stop"; sceneUuid: string; gamePaused: boolean; directorPaused: boolean };
+        state?: { running: boolean; paused: boolean; timeScale: number; frameCount: number; sceneUuid: string };
+        ready: boolean;
+    }
+    /** Creator 3.7.3 game-view only. targetId is an expected real scene UUID; stop verifies native termination. */
+    function runtimePreviewControl(args: {
+        operation: "start" | "pause" | "resume" | "stop" | "step" | "state";
+        sessionId?: string;
+        targetId?: string;
+        timeoutMs?: number;
+    }): RuntimePreviewResult;
+    /** reset releases a local handle only. It does not stop the preview. */
+    function runtimeSessionLifecycle(args: {
+        operation: "start" | "attach" | "inspect" | "stop" | "reset" | "list";
+        targetKind?: "game-view" | "browser-preview" | "simulator";
+        targetId?: string;
+        sessionId?: string;
+        timeoutMs?: number;
+    }): {
+        success: boolean;
+        operation: string;
+        session?: RuntimeSession | { sessionId: string; reset: true };
+        sessions?: RuntimeSession[];
+        state?: RuntimePreviewResult["state"];
+        ready?: boolean;
+    };
+
     /** Candidate: audit up to 64 explicitly typed cc.AudioClip assets against a declared target using only public asset metadata. Reports source extension/importer and exposed web load mode; it does not claim decode, duration, or playback success. Candidate remains unqualified until live importer evidence exists. */
     function audioAssetCompatibilityAudit(args: {
         assets: Array<InstanceReference & { type: "cc.AudioClip" }>,
