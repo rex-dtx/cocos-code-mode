@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
+const net = require('node:net');
 const { requireDist } = require('../helpers/require-dist');
 const { UtcpConfigManager } = requireDist('utcp/config-manager.js');
 const { UtcpClientConfigSerializer } = require('@utcp/sdk');
@@ -22,12 +23,18 @@ it('concurrent processes preserve all editor endpoints and ownership; late clean
   const reader = setInterval(() => {
     try { JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch (error) { invalidReads.push(error.message); }
   }, 2);
-  const worker = `global.Editor={Profile:{setConfig:async()=>{}}};const {UtcpConfigManager}=require(process.argv[1]);(async()=>{const m=UtcpConfigManager.getInstance();await m.setConfigPath(process.argv[2]);await m.ensureCocosEditorTemplate(Number(process.argv[3]),process.argv[4]);})().catch(e=>{console.error(e);process.exitCode=1});`;
+  const barrier = path.join(dir, 'start');
+  const worker = `global.Editor={Project:{path:process.argv[5]},Profile:{setConfig:async()=>{}}};const fs=require('node:fs');const net=require('node:net');const {UtcpConfigManager}=require(process.argv[1]);(async()=>{const port=Number(process.argv[3]);const server=net.createServer();await new Promise((r,j)=>{server.once('error',j);server.listen(port,'127.0.0.1',r)});while(!fs.existsSync(process.argv[6]))await new Promise(r=>setTimeout(r,5));const m=UtcpConfigManager.getInstance();await m.setConfigPath(process.argv[2]);await m.ensureCocosEditorTemplate(port,process.argv[4],process.argv[5]);await new Promise(r=>server.close(r));})().catch(e=>{console.error(e);process.exitCode=1});`;
+  const legacyServer = net.createServer();
+  await new Promise((resolve, reject) => { legacyServer.once('error', reject); legacyServer.listen(42000, '127.0.0.1', resolve); });
   try {
-    await Promise.all(Array.from({ length: 8 }, (_, i) => new Promise((resolve, reject) => {
-      execFile(process.execPath, ['-e', worker, modulePath, configPath, String(42001 + i), String(i + 1).padStart(32, '0')],
+    const workers = Array.from({ length: 8 }, (_, i) => new Promise((resolve, reject) => {
+      execFile(process.execPath, ['-e', worker, modulePath, configPath, String(42001 + i), String(i + 1).padStart(32, '0'), path.join(dir, `project-${i}`), barrier],
         (error, stdout, stderr) => error ? reject(new Error(stdout + stderr)) : resolve());
-    })));
+    }));
+    await new Promise(resolve => setTimeout(resolve, 150));
+    fs.writeFileSync(barrier, 'go');
+    await Promise.all(workers);
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     assert.deepEqual(config.manual_call_templates.map(t => t.name).sort(), ['other', ...Array.from({ length: 9 }, (_, i) => `ccb3x_${42000 + i}`)].sort());
     assert.equal(config.variables.USER_VALUE, 'keep');
@@ -48,10 +55,14 @@ it('concurrent processes preserve all editor endpoints and ownership; late clean
       assert.ok(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42001'));
       await manager.removeCocosEditorTemplate(42001, newId);
       assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42001'), false);
-      assert.ok(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42002'));
+      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42002'), false, 'a later publication prunes definitively closed endpoints');
       assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x'), false);
     } finally { global.Editor = original; }
-  } finally { clearInterval(reader); fs.rmSync(dir, { recursive: true, force: true }); }
+  } finally {
+    await new Promise(resolve => legacyServer.close(resolve));
+    clearInterval(reader);
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 it('invalid registry is preserved rather than overwritten by publication', async () => {
@@ -69,7 +80,7 @@ it('invalid registry is preserved rather than overwritten by publication', async
   } finally { global.Editor = original; fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
-it('auto ports ignore previously persisted bound ports; fixed ports require explicit configuration', async () => {
+it('ignores legacy serverPort while fixedServerPort remains explicit', async () => {
   const original = global.Editor;
   const values = { serverPort: 49999 };
   global.Editor = { Profile: { getConfig: async (_, key) => values[key], setConfig: async (_, key, value) => { values[key] = value; } } };
