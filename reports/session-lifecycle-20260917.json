@@ -1,0 +1,163 @@
+{
+  "date": "2026-09-17",
+  "scope": "host-neutral lifecycle implementation; no deployment",
+  "sourceHashes": {
+    "scripts/cc-bridge-session-supervisor.js": "85fbabc60ed59cdd2f26f4158c7fbec4e8d8dbcc2143187672cec8c83b9b5d26",
+    "scripts/cc-bridge-session-discovery.js": "0e783c26426026003c69ed912dfe0d0623d0e0e5110e7dd2a972b4c05052a4a8",
+    "scripts/cc-bridge-session-cli.js": "d5a0b548742230099f87d6a354dc1033b3daea8c0aa765bb9347c1591c63a161",
+    "scripts/cc-bridge-session-host.js": "e351cf1f4885479418c9c05a4c85ae05fb846259d98516da3892cca18a611494",
+    ".omp/extensions/ccb-session.js": "9e07848de19f5c0e78d888160527ee9828c9e542ef5950798b6930d33075842b",
+    "scripts/cc-bridge-session-omp.js": "88d4d0ea8f3f72abe6b13679cd39608e0e5e85b09355ec96d9f3c76ea4359e2e",
+    "tests/unit/cc-bridge-session-host.test.js": "4fb1e98785e529580259c796744712f49aa07df106143792b3ad2799b96f65a4",
+    "tests/unit/cc-bridge-session-supervisor.test.js": "c81c8899d463621a7a24d4a45cf3c1dfdc3c07e9bab537a3c388a086e492bf71",
+    "scripts/cc-bridge-session.js": "5efcb65562e4d34f3713b7e15b15cc00abc6e765c2edb19230dbcc97ae84aa4b",
+    "scripts/cc-bridge-session-manager.js": "fcaccb4e5c7390c014fd3ac64543c626f2e83712374bd34423682f2a39def5a7",
+    "scripts/cc-bridge-session-stdio.js": "b79c0f1812e2fad052c274417b510a003a7112ad4720875c9da517a7bce365be",
+    "tests/unit/cc-bridge-session-manager.test.js": "2df02a97c61221768b0a36e17f1569a73a7a2528ae95177eff3a2a370c8e720f"
+  },
+  "build": {
+    "passed": true,
+    "creatorLoader": {
+      "entries": 6,
+      "modules": 113,
+      "loadedFiles": 308,
+      "literalRequires": 158
+    }
+  },
+  "tests": {
+    "unit": 427,
+    "passed": 427,
+    "failed": 0,
+    "skipped": 0
+  },
+  "live": {
+    "editor": {
+      "name": "ccb3x_63908",
+      "url": "http://127.0.0.1:63908",
+      "status": 200,
+      "project": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+      "instance": "5f1a3f4d6263c0e97221989b62521bbb",
+      "build": {
+        "version": "2.0.0",
+        "commit": "0c8dc56",
+        "branch": "feat/ccb3x-api-capability-expansion",
+        "dirty": false,
+        "builtAt": "2026-09-16T10:41:14.664Z"
+      }
+    },
+    "cliAndNonCli": {
+      "exitCode": 0,
+      "concurrentActive": true,
+      "cliEofCloseAcknowledged": true
+    },
+    "omp": {
+      "version": "18.2.1",
+      "nativeFactoryLoaded": true,
+      "active": true,
+      "newSessionActive": true,
+      "gracefulEofExitCode": 0,
+      "hostShutdown": true,
+      "modelCalls": 0
+    }
+  },
+  "unverified": [
+    "two actual Creator instances on frozen intended artifact",
+    "actual Creator restart/rebind",
+    "actual Creator Status visual freshness transitions and expiry",
+    "deployed package qualification"
+  ],
+  "notes": [
+    "Integration tests exercise restart/port change with real loopback HTTP and compiled store, simulated Creator identity.",
+    "Windows supervised SIGTERM OMP smoke exited1; separate genuine stdin EOF runtime passed exit0.",
+    "Observed live build differs from local build; no exact-artifact qualification claimed."
+  ],
+  "review": {
+    "blockingFindings": 2,
+    "addressed": [
+      "unconfirmed close rejects host replacement",
+      "active registry removal or owner replacement cancels old binding"
+    ],
+    "focusedTests": 18
+  },
+  "multiAgent": {
+    "tests": {
+      "focused": 21,
+      "full": 450,
+      "passed": 450
+    },
+    "liveStatus": [
+      {
+        "type": "status",
+        "logicalSessionId": "vscode-chat",
+        "state": "Discovering",
+        "reason": "SESSION_DISCOVERY_STARTED",
+        "sessionId": "aa058064-656b-4fd7-864b-29a40af2a2f4"
+      },
+      {
+        "type": "response",
+        "id": "a",
+        "ok": true,
+        "presenceId": "aa058064-656b-4fd7-864b-29a40af2a2f4"
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "external-agent",
+        "state": "Discovering",
+        "reason": "SESSION_DISCOVERY_STARTED",
+        "sessionId": "16c7602d-f179-4c44-ac7b-f1b742f55d83"
+      },
+      {
+        "type": "response",
+        "id": "b",
+        "ok": true,
+        "presenceId": "16c7602d-f179-4c44-ac7b-f1b742f55d83"
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "vscode-chat",
+        "state": "Binding",
+        "reason": "BINDING_VERIFIED",
+        "sessionId": "aa058064-656b-4fd7-864b-29a40af2a2f4"
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "external-agent",
+        "state": "Binding",
+        "reason": "BINDING_VERIFIED",
+        "sessionId": "16c7602d-f179-4c44-ac7b-f1b742f55d83"
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "vscode-chat",
+        "state": "Active",
+        "reason": "HTTP_HELPER_HEARTBEAT_ACCEPTED",
+        "sessionId": "aa058064-656b-4fd7-864b-29a40af2a2f4"
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "external-agent",
+        "state": "Active",
+        "reason": "HTTP_HELPER_HEARTBEAT_ACCEPTED",
+        "sessionId": "16c7602d-f179-4c44-ac7b-f1b742f55d83"
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "external-agent",
+        "state": "Stopped",
+        "reason": "HOST_SHUTDOWN",
+        "sessionId": null
+      },
+      {
+        "type": "status",
+        "logicalSessionId": "vscode-chat",
+        "state": "Stopped",
+        "reason": "HOST_SHUTDOWN",
+        "sessionId": null
+      }
+    ],
+    "limitations": [
+      "native VSCode/Codex/Claude Code integrations not exercised",
+      "existing single Creator artifact only"
+    ]
+  }
+}

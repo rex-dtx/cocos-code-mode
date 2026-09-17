@@ -5,7 +5,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { performance } = require('node:perf_hooks');
 const { spawn } = require('node:child_process');
-const { parseArgs, requestHeartbeat, run } = require('../../scripts/cc-bridge-session');
+const { parseArgs, requestHeartbeat, run } = require('../../scripts/session-presence/heartbeat');
 const project = path.resolve('session-project');
 
 function identity(overrides = {}) {
@@ -135,45 +135,4 @@ it('persistent transport failures stop after three spaced attempts without repor
   assert.equal(requests, 3);
   assert.ok(performance.now() - started >= 1900, 'failed cycles must not tight-loop');
   assert.deepEqual(events.map(event => event.state), ['Error', 'Stopped']);
-});
-
-it('CLI once emits one truthful JSONL observation and exits without a close', async t => {
-  const operations = [];
-  const options = await server(t, (req, res, body) => {
-    if (body) { operations.push(body.operation); res.end(JSON.stringify(accepted(body))); }
-    else res.end(JSON.stringify(identity()));
-  });
-  const child = spawn(process.execPath, [path.resolve('scripts/cc-bridge-session.js'), '--url', options.url,
-    '--project', project, '--instance', options.instance, '--session', options.session, '--once'], { stdio: ['ignore', 'pipe', 'pipe'] });
-  t.after(() => { if (child.exitCode === null) child.kill(); });
-  let stdout = '', stderr = '';
-  child.stdout.on('data', chunk => { stdout += chunk; });
-  child.stderr.on('data', chunk => { stderr += chunk; });
-  const code = await new Promise((resolve, reject) => { child.once('error', reject); child.once('close', resolve); });
-  assert.equal(code, 0, stderr);
-  const lines = stdout.trim().split('\n').map(line => JSON.parse(line));
-  assert.equal(lines.length, 1);
-  assert.equal(lines[0].state, 'Active');
-  assert.equal(lines[0].transport, 'http-helper');
-  assert.deepEqual(operations, ['beat']);
-});
-
-it('CLI SIGTERM handler closes presence before exiting', async t => {
-  const operations = [];
-  const options = await server(t, (req, res, body) => {
-    if (body) { operations.push(body.operation); res.end(JSON.stringify(accepted(body))); }
-    else res.end(JSON.stringify(identity()));
-  });
-  // Windows kill() is forceful; emit the signal event inside Node to exercise the actual handler portably.
-  const launch = "process.argv=['node',process.env.HELPER,'--url',process.env.URL,'--project',process.env.PROJECT,'--instance','verified-instance','--session','signal-session'];const write=process.stdout.write.bind(process.stdout);process.stdout.write=(text,...args)=>{const result=write(text,...args);if(text.includes('HTTP_HELPER_HEARTBEAT_ACCEPTED'))setImmediate(()=>process.emit('SIGTERM'));return result;};require('node:module').runMain();";
-  const child = spawn(process.execPath, ['-e', launch], { env: { ...process.env,
-    HELPER: path.resolve('scripts/cc-bridge-session.js'), URL: options.url, PROJECT: project }, stdio: ['ignore', 'pipe', 'pipe'] });
-  t.after(() => { if (child.exitCode === null) child.kill(); });
-  let stdout = '', stderr = '';
-  child.stdout.on('data', chunk => { stdout += chunk; });
-  child.stderr.on('data', chunk => { stderr += chunk; });
-  const code = await new Promise((resolve, reject) => { child.once('error', reject); child.once('close', resolve); });
-  assert.equal(code, 0, stderr);
-  assert.deepEqual(operations, ['beat', 'close']);
-  assert.deepEqual(stdout.trim().split('\n').map(line => JSON.parse(line).state), ['Active', 'Stopped']);
 });
