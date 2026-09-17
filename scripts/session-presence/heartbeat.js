@@ -4,7 +4,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { performance } = require('node:perf_hooks');
 const { setTimeout: delay } = require('node:timers/promises');
-const { parseArgs: parseWatchdogArgs, requestHandshake } = require('./cc-bridge-watchdog');
+const { parseArgs: parseWatchdogArgs, requestHandshake } = require('../cc-bridge-watchdog');
 
 function parseArgs(argv) {
   const args = {};
@@ -134,7 +134,7 @@ async function run(input, signal, emit = status => process.stdout.write(JSON.str
     }
   } finally {
     // --once deliberately leaves one observation to age; a supervised daemon closes on stop.
-    if ((!options.once || signal?.aborted) && attemptedBeat && !identityFailed) {
+    if ((!options.once || signal?.aborted) && attemptedBeat && !identityFailed && signal?.reason !== 'IDENTITY_MISMATCH_REBIND_REQUIRED') {
       try {
         await requestHeartbeat(options, 'close');
         transition('Stopped', 'HTTP_HELPER_CLOSED');
