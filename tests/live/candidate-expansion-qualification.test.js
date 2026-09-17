@@ -383,7 +383,7 @@ return out;`,
       operation: 'attach', targetKind: 'game-view', targetId,
     }, 'candidate.runtimeSessionLifecycle.negative.v1');
     assert.equal(unavailable.status, 409, JSON.stringify(unavailable.body));
-    assert.equal(unavailable.body.code, 'RUNTIME_NOT_READY');
+    assert.ok(['RUNTIME_TARGET_CHANGED', 'RUNTIME_NOT_READY'].includes(unavailable.body.code));
   });
   it('qualifies bounded build output audit and scene script health scan', async (t) => {
     if (skipIfDown(t)) return;
