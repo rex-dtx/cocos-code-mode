@@ -1,0 +1,792 @@
+{
+  "schemaVersion": 1,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
+  "generatedAt": "2026-09-17T10:27:44.058Z",
+  "status": "open-review-queue",
+  "rows": [
+    {
+      "workflowId": "editor.editor-viewport",
+      "state": "complete",
+      "sourceFanIn": 20,
+      "implementationRoutes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "design-prefab.reference-image",
+      "state": "complete",
+      "sourceFanIn": 13,
+      "implementationRoutes": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "asset.asset",
+      "state": "complete",
+      "sourceFanIn": 12,
+      "implementationRoutes": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "assetFindReferences",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "asset.editor-preference",
+      "state": "complete",
+      "sourceFanIn": 10,
+      "implementationRoutes": [
+        {
+          "tool": "getEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        },
+        {
+          "tool": "setEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "asset.asset-operate",
+      "state": "complete",
+      "sourceFanIn": 8,
+      "implementationRoutes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.inspector",
+      "state": "complete",
+      "sourceFanIn": 8,
+      "implementationRoutes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.scene",
+      "state": "complete",
+      "sourceFanIn": 7,
+      "implementationRoutes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "build.build",
+      "state": "complete",
+      "sourceFanIn": 6,
+      "implementationRoutes": [
+        {
+          "tool": "buildManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "build.editor-env-info",
+      "state": "complete",
+      "sourceFanIn": 5,
+      "implementationRoutes": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "state": "test-pending",
+      "sourceFanIn": 5,
+      "implementationRoutes": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "diagnostics.editor-logs",
+      "state": "complete",
+      "sourceFanIn": 5,
+      "implementationRoutes": [
+        {
+          "tool": "editorGetLogs",
+          "file": "source/utcp/tools/editor-tools.ts"
+        },
+        {
+          "tool": "projectSearchFiles",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.node-component",
+      "state": "complete",
+      "sourceFanIn": 5,
+      "implementationRoutes": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "editor.broadcast-observe",
+      "state": "complete",
+      "sourceFanIn": 4,
+      "implementationRoutes": [
+        {
+          "tool": "broadcastObserve",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "other.execute-javascript",
+      "state": "complete",
+      "sourceFanIn": 4,
+      "implementationRoutes": [
+        {
+          "tool": "executeJavascript",
+          "file": "source/utcp/execute/execute-tool.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.node-operate",
+      "state": "complete",
+      "sourceFanIn": 4,
+      "implementationRoutes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        },
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "animation.node-clipboard",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "nodeClipboard",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "asset.asset-resolve-path",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetGetAtPath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetGetAvailableUrl",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "design-prefab.prefab-overrides",
+      "state": "test-pending",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "editor.editor-env-info",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "editor.editor-select",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "editor.editor-undo-transaction-probe",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "editorUndoTransactionProbe",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "other.write-project-instruction",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "writeProjectInstruction",
+          "file": "source/utcp/tools/instruction-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.find-nodes",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.node",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.node-reset",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.node-tree",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.scene-info",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "scene.ui-node",
+      "state": "complete",
+      "sourceFanIn": 3,
+      "implementationRoutes": [
+        {
+          "tool": "createUiNode",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
+    },
+    {
+      "workflowId": "localization.localization",
+      "state": "test-pending",
+      "sourceFanIn": 2,
+      "implementationRoutes": [
+        {
+          "tool": "localizationInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        },
+        {
+          "tool": "localizationValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "scene.ui-layout",
+      "state": "missing",
+      "sourceFanIn": 2,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "animation-graph.animation-graph-edit",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "animation-graph.animation-graph-preview",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "animation-graph.animation-retarget",
+      "state": "test-pending",
+      "sourceFanIn": 1,
+      "implementationRoutes": [
+        {
+          "tool": "animationRetargetValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "asset.asset-dependencies",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "asset.build-artifact",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "asset.clear-logs",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "asset.prefab-instance",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "asset.preview-mode",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "audio.audio-playback",
+      "state": "partial",
+      "sourceFanIn": 1,
+      "implementationRoutes": [
+        {
+          "tool": "audioPlaybackControl",
+          "file": "source/utcp/tools/audio-playback-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "audio.audio-playback-observe",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [
+        {
+          "tool": "audioPlaybackObserve",
+          "file": "source/utcp/tools/audio-playback-tools.ts"
+        }
+      ],
+      "limitations": [
+        "Public route fails closed; no qualified actual-Game-View audio observation transport."
+      ],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "build.golden-tracer",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "build.long-job",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "diagnostics.clear-console",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "localization.localization-preview",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "localization.localization-table-edit",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "particles.particle-playback",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [
+        {
+          "tool": "particlePlayback",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        }
+      ],
+      "limitations": [
+        "Extension scene scripts target edit renderer; actual Game View particle route is unqualified."
+      ],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "prefab.ui-scroll-view",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "rendering-materials.light-bake",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "rendering-materials.render-configuration",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "rendering-materials.render-diagnostics-collect",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.camera-properties",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.cameras",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.check-for-updates",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.component",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.components",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.emit-node-event",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.hierarchy",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.reset-component-property",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.runtime-capture",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.runtime-input",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.runtime-observation",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.runtime-session",
+      "state": "partial",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [
+        "Finite actual-Game-View host adapter exists; cold-start/stop repeatability on qualification fixture remains open."
+      ],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.simulate-preview-input",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "runtime.ui-input-form",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "scene.compound-scene",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "scene.mutation-workflow",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "skeletal-animation.skeletal-animation-events",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "skeletal-animation.skeletal-animation-play",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "terrain-model.terrain-edit",
+      "state": "missing",
+      "sourceFanIn": 1,
+      "implementationRoutes": [],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    },
+    {
+      "workflowId": "ui-layout.preview-resolution",
+      "state": "partial",
+      "sourceFanIn": 1,
+      "implementationRoutes": [
+        {
+          "tool": "previewResolutionSet",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "reviewReason": "Incomplete classification requires contract or transport decision."
+    }
+  ]
+}

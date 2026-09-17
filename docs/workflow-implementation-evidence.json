@@ -1,0 +1,2290 @@
+{
+  "schemaVersion": 1,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
+  "generatedAt": "2026-09-17T10:27:44.058Z",
+  "rows": [
+    {
+      "workflowId": "animation-graph.animation-graph",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "animationGraphCreate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        },
+        {
+          "tool": "animationGraphInspect",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        },
+        {
+          "tool": "animationGraphValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation-graph.animation-graph-edit",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation-graph.animation-graph-preview",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation-graph.animation-retarget",
+      "state": "test-pending",
+      "routes": [
+        {
+          "tool": "animationRetargetValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation.animation-catalog",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "animationCatalogInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation.animation-clip",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "animationClipConfigure",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation.animation-runtime",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "animationRuntimeControl",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "animation.node-clipboard",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeClipboard",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "assetFindReferences",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-at-path",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetGetAtPath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-available-url",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetGetAvailableUrl",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-db",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetDbQuery",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-dependencies",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-find-references",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetFindReferences",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-import",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-import-settings",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetImportSettingsGet",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-manifest-export",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetManifestExport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-operate",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-resolve-path",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetGetAtPath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        },
+        {
+          "tool": "assetGetAvailableUrl",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-save-content",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.asset-usage-analyze",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetUsageAnalyze",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.build-artifact",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.clear-logs",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.editor-logs",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorGetLogs",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.editor-preference",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "getEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        },
+        {
+          "tool": "setEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.editor-select",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.find-nodes-asset",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "findNodesByAsset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.prefab-instance",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.preview-mode",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.program",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "programManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.project-file-exists",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectFileExists",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.project-read-file",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectReadFile",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.project-replace-in-file",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectReplaceInFile",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.project-search-files",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectSearchFiles",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.project-write-file",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectWriteFile",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "asset.runtime-preview",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimePreviewControl",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "assets-import.asset-batch-import",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetBatchImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "assets-import.asset-batch-operate",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetBatchOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "assets-import.asset-bundle",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetBundleValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "assets-import.asset-compression",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetCompressionConfigure",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "assets-import.asset-import-settings",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetImportSettingsSet",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "assets-import.asset-missing-reference-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "audio.audio-asset-compatibility-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "audioAssetCompatibilityAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "audio.audio-playback",
+      "state": "partial",
+      "routes": [
+        {
+          "tool": "audioPlaybackControl",
+          "file": "source/utcp/tools/audio-playback-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "audio.audio-playback-observe",
+      "state": "missing",
+      "routes": [
+        {
+          "tool": "audioPlaybackObserve",
+          "file": "source/utcp/tools/audio-playback-tools.ts"
+        }
+      ],
+      "limitations": [
+        "Public route fails closed; no qualified actual-Game-View audio observation transport."
+      ],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "audio.audio-source",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "audioSourceConfigure",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.build-artifact-serve",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildArtifactServe",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.build-log",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildLogInspect",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.build-preset-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildPresetAudit",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.build-target-launch",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildTargetLaunch",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.build-target-smoke",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildTargetSmoke",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.build-task-wait",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildTaskWait",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build-platform.project-settings",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectSettingsValidate",
+          "file": "source/utcp/tools/project-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build.build",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build.editor-env-info",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build.golden-tracer",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build.long-job",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "build.preview",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "previewManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "buildArtifactServe",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.prefab-instantiate",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.prefab-override-diff",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "prefabOverrideDiff",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.prefab-overrides",
+      "state": "test-pending",
+      "routes": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.prefab-reference-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "prefabReferenceAudit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "state": "test-pending",
+      "routes": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.reference-image",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.scene-hierarchy",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "sceneHierarchyValidate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "design-prefab.scene-reference",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "sceneReferenceValidate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.broadcast-observe",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "broadcastObserve",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.clear-console",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.editor-logs",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorGetLogs",
+          "file": "source/utcp/tools/editor-tools.ts"
+        },
+        {
+          "tool": "projectSearchFiles",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.editor-state",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorState",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.execute-javascript",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "executeJavascript",
+          "file": "source/utcp/execute/execute-tool.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.performance-snapshot",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "getPerformanceSnapshot",
+          "file": "source/utcp/tools/validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.scene",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "validateScene",
+          "file": "source/utcp/tools/validation-tools.ts"
+        },
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.script-diagnostic-context",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "getScriptDiagnosticContext",
+          "file": "source/utcp/tools/diagnostics-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "diagnostics.script-diagnostics",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runScriptDiagnostics",
+          "file": "source/utcp/tools/diagnostics-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.broadcast-observe",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "broadcastObserve",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.capture-editor-screenshot",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "captureEditorScreenshot",
+          "file": "source/utcp/tools/screenshot-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorQuery",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor-env-info",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor-select",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor-state",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorState",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor-undo-transaction-probe",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorUndoTransactionProbe",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor-viewport",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.editor-windows",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "listEditorWindows",
+          "file": "source/utcp/tools/screenshot-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "editor.execute-javascript",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "executeJavascript",
+          "file": "source/utcp/execute/execute-tool.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "localization.localization",
+      "state": "test-pending",
+      "routes": [
+        {
+          "tool": "localizationInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        },
+        {
+          "tool": "localizationValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "localization.localization-preview",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "localization.localization-table-edit",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "other.execute-javascript",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "executeJavascript",
+          "file": "source/utcp/execute/execute-tool.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "other.project",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "projectSettingsValidate",
+          "file": "source/utcp/tools/project-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "other.project-directory",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "projectListDirectory",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "other.property-array-element",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "propertyArrayElement",
+          "file": "source/utcp/tools/property-array-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "other.read-project-instruction",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "readProjectInstruction",
+          "file": "source/utcp/tools/instruction-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "other.write-project-instruction",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "writeProjectInstruction",
+          "file": "source/utcp/tools/instruction-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "particles.particle",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "particleInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        },
+        {
+          "tool": "particleValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "particles.particle-playback",
+      "state": "missing",
+      "routes": [
+        {
+          "tool": "particlePlayback",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        }
+      ],
+      "limitations": [
+        "Extension scene scripts target edit renderer; actual Game View particle route is unqualified."
+      ],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-2d.physics2d",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics2dConfigure",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        },
+        {
+          "tool": "physics2dQuery",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-2d.physics2d-body",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics2dCreateBody",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-2d.physics2d-compatibility-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics2dCompatibilityAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-2d.physics2d-joint",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics2dCreateJoint",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-2d.physics2d-topology-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics2dTopologyAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-3d.physics3d",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics3dConfigure",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        },
+        {
+          "tool": "physics3dValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-3d.physics3d-body",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics3dCreateBody",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-3d.physics3d-joint",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics3dCreateJoint",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "physics-3d.physics3d-topology-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "physics3dTopologyAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "prefab.duplicate-prefab",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "duplicatePrefab",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "prefab.edit-prefab-json",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "editPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "prefab.node-operate",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "prefab.read-prefab-json",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "readPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "prefab.ui-scroll-view",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "rendering-materials.light-bake",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "rendering-materials.material-edit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "materialEdit",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "rendering-materials.render-configuration",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "rendering-materials.render-diagnostics-collect",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "rendering-materials.render-pipeline",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "renderPipelineInspect",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "rendering-materials.shader",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "shaderValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime-qa.runtime-scenario",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeScenarioRun",
+          "file": "source/utcp/tools/runtime-session-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime-qa.runtime-scenario-assert",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeScenarioAssert",
+          "file": "source/utcp/tools/runtime-session-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime-qa.runtime-state-observe",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeStateObserve",
+          "file": "source/utcp/tools/runtime-session-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.camera-properties",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.cameras",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.capture-scene-screenshot",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "captureSceneScreenshot",
+          "file": "source/utcp/tools/screenshot-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.check-for-updates",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.component",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.components",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.emit-node-event",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.hierarchy",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.preview",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "previewManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "runtimePreviewControl",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.reset-component-property",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-capture",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-input",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-observation",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-pause",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimePause",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-preview",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimePreviewControl",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-resume",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeResume",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-screenshot-assert",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeScreenshotAssert",
+          "file": "source/utcp/tools/screenshot-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-session",
+      "state": "partial",
+      "routes": [],
+      "limitations": [
+        "Finite actual-Game-View host adapter exists; cold-start/stop repeatability on qualification fixture remains open."
+      ],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-state",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeGetState",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.runtime-time-scale",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "runtimeSetTimeScale",
+          "file": "source/utcp/tools/runtime-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.simulate-button-click",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "simulateButtonClick",
+          "file": "source/utcp/tools/event-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.simulate-key-combo",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "simulateKeyCombo",
+          "file": "source/utcp/tools/input-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.simulate-key-press",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "simulateKeyPress",
+          "file": "source/utcp/tools/input-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.simulate-mouse-click",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "simulateMouseClick",
+          "file": "source/utcp/tools/input-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.simulate-mouse-drag",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "simulateMouseDrag",
+          "file": "source/utcp/tools/input-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.simulate-preview-input",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "runtime.ui-input-form",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.bind-button-click-event",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "bindButtonClickEvent",
+          "file": "source/utcp/tools/event-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.call-component-method",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "callComponentMethod",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.component-classes",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "listComponentClasses",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.compound-scene",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.execute-javascript",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "executeJavascript",
+          "file": "source/utcp/execute/execute-tool.ts"
+        },
+        {
+          "tool": "sceneScriptRepair",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.find-nodes",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.inspector",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        },
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.label",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "createLabel",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.mutation-workflow",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-available-component-types",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeGetAvailableComponentTypes",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-component",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-components",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-operate",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        },
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-primitive",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeCreatePrimitive",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-reset",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.node-tree",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.scene",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.scene-info",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.scene-snapshot",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "sceneSnapshot",
+          "file": "source/utcp/tools/scene-snapshot-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.ui-layout",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "scene.ui-node",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "createUiNode",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "skeletal-animation.skeletal-animation",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "skeletalAnimationInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "skeletalAnimationConfigure",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        },
+        {
+          "tool": "skeletalAnimationValidate",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "skeletal-animation.skeletal-animation-events",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "skeletal-animation.skeletal-animation-play",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "terrain-model.model-import",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "modelImportConfigure",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "terrain-model.terrain",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "terrainInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        },
+        {
+          "tool": "terrainCreate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "terrain-model.terrain-edit",
+      "state": "missing",
+      "routes": [],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "tilemap-atlas.sprite-atlas",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "spriteAtlasConfigure",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "tilemap-atlas.tilemap",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "tilemapInspect",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        },
+        {
+          "tool": "tilemapValidate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "tilemap-atlas.tilemap-layer-edit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "tilemapLayerEdit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "tilemap-atlas.tilemap-object-edit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "tilemapObjectEdit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "ui-layout.preview-resolution",
+      "state": "partial",
+      "routes": [
+        {
+          "tool": "previewResolutionSet",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "ui-layout.ui-accessibility-audit",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "uiAccessibilityAudit",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    },
+    {
+      "workflowId": "ui-layout.ui-responsive-preview",
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "uiResponsivePreview",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": [],
+      "verificationIds": [],
+      "evidenceArtifacts": []
+    }
+  ]
+}
