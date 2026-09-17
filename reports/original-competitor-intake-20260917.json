@@ -1,0 +1,1318 @@
+{
+  "schemaVersion": 1,
+  "source": "G:/_devtools/cfg-n-scripts/notes/plans/cc-code-mode-cst/_bucket-docs/tool-expansion-survey/03-external-tools-complete-inventory.md",
+  "total": 262,
+  "status": "262 original source rows recovered; not deduplicated Creator workflow denominator and no parity credit",
+  "rows": [
+    {
+      "catalog": "Funplay",
+      "name": "add_animation_clip",
+      "contract": "- *Tính năng:* Gán một asset AnimationClip vào component `cc.Animation` trên một node cụ thể.\n   - *Inputs:* `nodeUuid: string`, `clipUuid: string`, `clipName?: string`.\n   - *Outputs:* `{ success: boolean, clipName: string }`.\n   - *Cơ chế:* IPC `scene:execute-scene-script` gọi method thêm clip vào `cc.Animation`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_animations",
+      "contract": "- *Tính năng:* Liệt kê tất cả các component `cc.Animation` trong scene đang mở hoặc dưới một node chỉ định.\n   - *Inputs:* `nodeUuid?: string`, `recursive?: boolean`.\n   - *Outputs:* `{ animations: Array<{ nodeUuid, defaultClip, clips: string[] }> }`.\n   - *Cơ chế:* Duyệt cây scene trong context renderer, đọc component `cc.Animation`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "play_animation",
+      "contract": "- *Tính năng:* Chạy một clip animation trên node (hỗ trợ test trực quan lúc edit/preview).\n   - *Inputs:* `nodeUuid: string`, `clipName?: string`.\n   - *Outputs:* `{ playing: boolean, clipName: string }`.\n   - *Cơ chế:* Gọi `animationComponent.play(clipName)` trong context scene."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "stop_animation",
+      "contract": "- *Tính năng:* Dừng phát animation trên node.\n   - *Inputs:* `nodeUuid: string`.\n   - *Outputs:* `{ stopped: boolean }`.\n   - *Cơ chế:* Gọi `animationComponent.stop()` trong context scene."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_scene",
+      "contract": "- *Tính năng:* Tạo scene rỗng mới hoặc nhân bản scene hiện tại tại đường dẫn chỉ định mà không mở hộp thoại OS file picker.\n   - *Inputs:* `path: string` (e.g. `db://assets/scenes/Game.scene`), `fromActiveScene?: boolean`.\n   - *Outputs:* `{ success: boolean, uuid: string, url: string }`.\n   - *Cơ chế:* `asset-db:create-asset` với template scene mặc định."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "delete_asset",
+      "contract": "- *Tính năng:* Xóa một asset khỏi asset-db theo uuid, db url hoặc fspath.\n   - *Inputs:* `target: string` (uuid hoặc url).\n   - *Outputs:* `{ deleted: boolean, target: string }`.\n   - *Cơ chế:* `Editor.Message.request('asset-db', 'delete-asset', target)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "inspect_asset",
+      "contract": "- *Tính năng:* Đọc thông tin chi tiết asset: metadata, serialized JSON data, import settings.\n   - *Inputs:* `target: string` (uuid hoặc db url).\n   - *Outputs:* `{ uuid, url, type, file, isDirectory, meta, data }`.\n   - *Cơ chế:* Kết hợp `asset-db:query-asset-info` và `asset-db:query-asset-meta`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "inspect_asset_dependencies",
+      "contract": "- *Tính năng:* Quét toàn bộ UUID dependencies được tham chiếu bên trong nội dung serialized của asset.\n   - *Inputs:* `target: string`, `limit?: number`.\n   - *Outputs:* `{ ok, referenceCount, dependencies: Array<{ uuid, url, type, exists }>, missing: Array<{ uuid, error }> }`.\n   - *Cơ chế:* Đọc file từ đĩa, parse JSON + regex quét UUID, kiểm tra tồn tại qua `asset-db:query-asset-info`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_assets",
+      "contract": "- *Tính năng:* Truy vấn danh sách asset theo pattern glob hoặc ccType.\n   - *Inputs:* `pattern?: string`, `ccType?: string`, `limit?: number`.\n   - *Outputs:* `Array<{ uuid, url, type, isDirectory }>`.\n   - *Cơ chế:* `Editor.Message.request('asset-db', 'query-assets', { pattern, ccType })`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_scenes",
+      "contract": "- *Tính năng:* Liệt kê tất cả các file scene (`.scene`) trong toàn bộ project.\n    - *Inputs:* `limit?: number`.\n    - *Outputs:* `Array<{ uuid, url, name, path }>`.\n    - *Cơ chế:* Filter `query-assets` với `ccType: 'cc.SceneAsset'`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "open_asset",
+      "contract": "- *Tính năng:* Mở asset trong editor (mở script trong VS Code hoặc mở prefab/material panel).\n    - *Inputs:* `target: string` (uuid hoặc url).\n    - *Outputs:* `{ opened: boolean, target: string }`.\n    - *Cơ chế:* `Editor.Message.request('asset-db', 'open-asset', target)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "open_scene",
+      "contract": "- *Tính năng:* Mở scene asset vào viewport editor.\n    - *Inputs:* `uuid?: string`, `url?: string`, `path?: string`.\n    - *Outputs:* `{ opened: boolean, sceneUuid: string }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'open-scene', uuid)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "run_scene_asset",
+      "contract": "- *Tính năng:* Nạp thẳng một asset scene theo UUID vào runtime context đang chạy.\n    - *Inputs:* `uuid: string`.\n    - *Outputs:* `{ loaded: boolean }`.\n    - *Cơ chế:* `cc.director.loadScene(sceneName)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "select_asset",
+      "contract": "- *Tính năng:* Chọn (highlight) asset trong panel Assets của editor.\n    - *Inputs:* `target: string`.\n    - *Outputs:* `{ selected: boolean }`.\n    - *Cơ chế:* `Editor.Selection.select('asset', [uuid])`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "broadcast_editor_message",
+      "contract": "- *Tính năng:* Gửi hoặc phát broadcast một IPC message tùy ý tới editor.\n    - *Inputs:* `channel: string`, `method: string`, `args?: any[]`, `mode?: 'request'|'send'|'broadcast'`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* Gọi `Editor.Message.request` hoặc `Editor.Message.send/broadcast`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_build_status",
+      "contract": "- *Tính năng:* Kiểm tra trạng thái tiến trình build dự án.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ state, progress, taskName }`.\n    - *Cơ chế:* `Editor.Message.request('builder', 'query-worker-state')`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_preview_mode",
+      "contract": "- *Tính năng:* Đọc chế độ preview hiện tại và các địa chỉ URL preview (localhost / LAN IP).\n    - *Inputs:* `includeUrl?: boolean`.\n    - *Outputs:* `{ mode: 'browser'|'gameView'|'simulator', url, localUrl, networkUrl }`.\n    - *Cơ chế:* Đọc `Editor.Profile.getConfig('preview', 'preview.current.platform')` và `preview:query-preview-url`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "open_build_panel",
+      "contract": "- *Tính năng:* Mở bảng điều khiển Build panel của Cocos Creator.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ opened: boolean }`.\n    - *Cơ chế:* `Editor.Panel.open('builder')`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "run_project_preview",
+      "contract": "- *Tính năng:* Khởi chạy preview game trên Browser, Game View của Editor hoặc Simulator.\n    - *Inputs:* `mode?: 'browser'|'gameView'|'simulator'`.\n    - *Outputs:* `{ mode, url?, started: boolean }`.\n    - *Cơ chế:* Gọi `preview-scene-in-browser` hoặc `editor-preview-set-play`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "save_current_scene",
+      "contract": "- *Tính năng:* Lưu scene đang mở.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ saved: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'save-scene')`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_preview_mode",
+      "contract": "- *Tính năng:* Chuyển đổi nền tảng preview trong toolbar của editor.\n    - *Inputs:* `mode: 'browser'|'gameView'|'simulator'`.\n    - *Outputs:* `{ changed: boolean, previousMode, mode }`.\n    - *Cơ chế:* Cập nhật Profile `preview.current.platform` và gửi `preview:change-platform`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_camera",
+      "contract": "- *Tính năng:* Tạo node Camera trong scene.\n    - *Inputs:* `name?: string`, `is2D?: boolean`, `parentUuid?: string`.\n    - *Outputs:* `{ nodeUuid, cameraUuid }`.\n    - *Cơ chế:* `scene:create-node` kèm component `cc.Camera`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_cameras",
+      "contract": "- *Tính năng:* Liệt kê tất cả Camera components trong scene.\n    - *Inputs:* Không có.\n    - *Outputs:* `Array<{ nodeUuid, name, priority, visibility, projection }>`.\n    - *Cơ chế:* Duyệt các node có component `cc.Camera`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_camera_properties",
+      "contract": "- *Tính năng:* Cấu hình các thuộc tính của Camera (clearFlags, projection, orthoHeight, fov).\n    - *Inputs:* `cameraUuid: string`, `properties: object`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property` trên component Camera."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "add_component",
+      "contract": "- *Tính năng:* Gắn thêm component vào node theo tên class.\n    - *Inputs:* `nodeUuid: string`, `component: string`.\n    - *Outputs:* `{ componentId: string }`.\n    - *Cơ chế:* `scene:create-component`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "inspect_component",
+      "contract": "- *Tính năng:* Đọc toàn bộ dump thuộc tính của 1 component.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`.\n    - *Outputs:* `{ type, values: Record<string, any> }`.\n    - *Cơ chế:* `scene:query-component`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "invoke_component_method",
+      "contract": "- *Tính năng:* Gọi một method trên component ở runtime (phục vụ test hook).\n    - *Inputs:* `nodeUuid: string`, `component: string`, `method: string`, `args?: any[]`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* Chạy method qua context scene script."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_components",
+      "contract": "- *Tính năng:* Liệt kê danh sách các component gắn trên 1 node.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `Array<{ uuid, type, cid, name }>`.\n    - *Cơ chế:* Đọc mảng `__comps__` từ node dump."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "remove_component",
+      "contract": "- *Tính năng:* Gỡ bỏ component khỏi node theo uuid hoặc index.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`.\n    - *Outputs:* `{ removed: boolean }`.\n    - *Cơ chế:* `scene:remove-component`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "reset_component_property",
+      "contract": "- *Tính năng:* Reset một thuộc tính component về giá trị mặc định theo dot path.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`, `path: string`.\n    - *Outputs:* `{ reset: boolean }`.\n    - *Cơ chế:* `scene:reset-property`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_component_property",
+      "contract": "- *Tính năng:* Đặt giá trị thuộc tính component theo JSON value.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`, `path: string`, `value: any`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_script_diagnostic_context",
+      "contract": "- *Tính năng:* Chạy TypeScript compile check và trích xuất đoạn code thực tế (±3 dòng) quanh dòng bị lỗi để AI sửa code.\n    - *Inputs:* `maxDiagnostics?: number`.\n    - *Outputs:* `Array<{ file, line, column, code, message, snippet: string }>`.\n    - *Cơ chế:* Chạy `npx tsc --noEmit` rồi đọc file từ ổ cứng lấy lines tương ứng."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "run_script_diagnostics",
+      "contract": "- *Tính năng:* Chạy `tsc --noEmit` lấy danh sách lỗi cú pháp/kiểu trong toàn bộ project.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ errorCount, diagnostics: Array<{ file, line, column, message }> }`.\n    - *Cơ chế:* Spawn tiến trình Node con chạy `tsc`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "validate_asset_dependencies",
+      "contract": "- *Tính năng:* Kiểm tra tính toàn vẹn của dependencies cho một asset hoặc toàn project.\n    - *Inputs:* `target?: string`, `pattern?: string`.\n    - *Outputs:* `{ ok, brokenCount, brokenList: Array<{ asset, missingUuid }> }`.\n    - *Cơ chế:* Quét UUID serialized so sánh với asset-db."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "validate_prefab_references",
+      "contract": "- *Tính năng:* Kiểm tra các file `.prefab` xem có tham chiếu UUID nào bị gãy không.\n    - *Inputs:* `pattern?: string`.\n    - *Outputs:* `{ valid: boolean, brokenPrefabs: string[] }`.\n    - *Cơ chế:* Đọc file prefab đĩa và tra cứu UUID trên asset-db."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "validate_scene",
+      "contract": "- *Tính năng:* Chạy validation tổng hợp gồm scene tree, runtime state, TS diagnostics và log lỗi gần nhất.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ sceneOk, diagnosticsOk, logErrorsCount, summary: string }`.\n    - *Cơ chế:* Kết hợp kiểm tra cây scene + log file + tsc runner."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "bind_button_click_event",
+      "contract": "- *Tính năng:* Gắn một `cc.EventHandler` vào nút `cc.Button`, trỏ đến hàm của một component khác.\n    - *Inputs:* `buttonNodeUuid: string`, `targetNodeUuid: string`, `componentName: string`, `handler: string`, `customEventData?: string`.\n    - *Outputs:* `{ bound: boolean, totalEvents: number }`.\n    - *Cơ chế:* Thao tác mảng `clickEvents` của component `cc.Button` trong scene script."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "emit_node_event",
+      "contract": "- *Tính năng:* Kích hoạt một custom event trên node với payload JSON tùy ý.\n    - *Inputs:* `nodeUuid: string`, `event: string`, `payload?: any`.\n    - *Outputs:* `{ emitted: boolean }`.\n    - *Cơ chế:* `node.emit(event, payload)` trong scene context."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_button_click_events",
+      "contract": "- *Tính năng:* Đọc danh sách các liên kết sự kiện click trên `cc.Button`.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `Array<{ targetUuid, componentName, handler, customEventData }>`.\n    - *Cơ chế:* Đọc `button.clickEvents`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "simulate_button_click",
+      "contract": "- *Tính năng:* Mô phỏng bấm nút bằng cách gọi trực tiếp mảng `clickEvents` và emit event `click` trên node thật.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ clicked: boolean, clickEventCount: number }`.\n    - *Cơ chế:* `Component.EventHandler.emitEvents(button.clickEvents, button)` + `node.emit('click', button)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "execute_editor_script",
+      "contract": "- *Tính năng:* Chạy mã JavaScript tùy ý trong tiến trình chính của Editor (truy cập `Editor`, `require('fs')`, etc.).\n    - *Inputs:* `script: string`, `args?: any`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* Chạy qua `eval` có bọc try/catch và sandbox kiểm tra an toàn."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "execute_javascript",
+      "contract": "- *Tính năng:* Tool thực thi JavaScript hợp nhất, nhận context `'scene'` (có biến toàn cục `cc`, `cce`) hoặc `'editor'`.\n    - *Inputs:* `script: string`, `context: 'scene'|'editor'`, `args?: any`, `safety_checks?: boolean`.\n    - *Outputs:* `{ result: any, durationMs: number }`.\n    - *Cơ chế:* Pipeline kiểm tra AST/regex an toàn, sau đó điều hướng tới scene script renderer hoặc editor process."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "exists",
+      "contract": "- *Tính năng:* Kiểm tra file hoặc thư mục có tồn tại trong project không.\n    - *Inputs:* `path: string`.\n    - *Outputs:* `{ exists: boolean, isDirectory: boolean }`.\n    - *Cơ chế:* `fs.existsSync` có bảo vệ đường dẫn `isPathInside`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_file_snippet",
+      "contract": "- *Tính năng:* Đọc đoạn code xung quanh dòng chỉ định (mặc định ±5 dòng).\n    - *Inputs:* `path: string`, `line: number`, `radius?: number`.\n    - *Outputs:* `{ snippet: string, startLine: number, endLine: number }`.\n    - *Cơ chế:* Đọc file và cắt mảng dòng."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_directory",
+      "contract": "- *Tính năng:* Liệt kê file và thư mục con.\n    - *Inputs:* `path: string`, `recursive?: boolean`.\n    - *Outputs:* `Array<{ name, path, isDirectory, size }>`.\n    - *Cơ chế:* `fs.readdirSync`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "read_file",
+      "contract": "- *Tính năng:* Đọc toàn bộ nội dung file văn bản từ project.\n    - *Inputs:* `path: string`.\n    - *Outputs:* `{ content: string, size: number }`.\n    - *Cơ chế:* `fs.readFileSync`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "refresh_assets",
+      "contract": "- *Tính năng:* Kích hoạt asset-db quét lại file mới/sửa đổi.\n    - *Inputs:* `path?: string`.\n    - *Outputs:* `{ refreshed: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('asset-db', 'refresh-asset', path || 'db://assets')`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "replace_in_file",
+      "contract": "- *Tính năng:* Tìm và thay thế chuỗi/regex trong file mã nguồn.\n    - *Inputs:* `path: string`, `find: string`, `replace: string`, `isRegex?: boolean`.\n    - *Outputs:* `{ replacedCount: number }`.\n    - *Cơ chế:* Đọc, replace và ghi lại file."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "search_files",
+      "contract": "- *Tính năng:* Tìm file theo wildcard pattern (`*.ts`, `*Model*`).\n    - *Inputs:* `pattern: string`, `directory?: string`.\n    - *Outputs:* `string[]` (mảng đường dẫn tương đối).\n    - *Cơ chế:* Glob scanner trong project directory."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "write_file",
+      "contract": "- *Tính năng:* Ghi hoặc ghi đè nội dung file vào project (tự động kích hoạt refresh nếu nằm trong `assets/`).\n    - *Inputs:* `path: string`, `content: string`.\n    - *Outputs:* `{ written: boolean, bytes: number }`.\n    - *Cơ chế:* `fs.writeFileSync` kèm auto-refresh asset-db."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "simulate_key_combo",
+      "contract": "- *Tính năng:* Gửi tổ hợp phím như Ctrl+S, Ctrl+Z, Cmd+P tới cửa sổ editor hoặc preview.\n    - *Inputs:* `combo: string` (e.g. `\"Ctrl+S\"`), `windowKind?: 'editor'|'preview'|'simulator'`.\n    - *Outputs:* `{ sent: boolean }`.\n    - *Cơ chế:* Electron `webContents.sendInputEvent` với modifiers `['control', ...]`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "simulate_key_press",
+      "contract": "- *Tính năng:* Gửi một phím đơn lẻ (keyDown + keyUp).\n    - *Inputs:* `key: string`, `windowKind?: string`.\n    - *Outputs:* `{ sent: boolean }`.\n    - *Cơ chế:* Electron `webContents.sendInputEvent({ type: 'keyDown', keyCode: key })`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "simulate_mouse_click",
+      "contract": "- *Tính năng:* Gửi sự kiện click chuột tại tọa độ client (x, y).\n    - *Inputs:* `x: number`, `y: number`, `button?: 'left'|'right'`, `windowKind?: string`.\n    - *Outputs:* `{ clicked: boolean }`.\n    - *Cơ chế:* Electron `sendInputEvent({ type: 'mouseDown' })` + `sendInputEvent({ type: 'mouseUp' })`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "simulate_mouse_drag",
+      "contract": "- *Tính năng:* Kéo thả chuột từ tọa độ (x1, y1) tới (x2, y2).\n    - *Inputs:* `startX: number`, `startY: number`, `endX: number`, `endY: number`, `steps?: number`.\n    - *Outputs:* `{ dragged: boolean }`.\n    - *Cơ chế:* Chuỗi events `mouseDown` -> N steps `mouseMove` -> `mouseUp`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "simulate_preview_input",
+      "contract": "- *Tính năng:* Wrapper gửi tương tác nhanh tới cửa sổ Preview của game.\n    - *Inputs:* `x?: number`, `y?: number`, `keyCode?: string`.\n    - *Outputs:* `{ sent: boolean }`.\n    - *Cơ chế:* Tự động target tới cửa sổ preview/simulator."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_cocos_mcp_project_skill",
+      "contract": "- *Tính năng:* Tạo file skill Codex chuẩn cho funplay trong dự án.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ path: string, created: boolean }`.\n    - *Cơ chế:* Ghi file `.codex/skills/cocos-mcp/SKILL.md`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_project_skill",
+      "contract": "- *Tính năng:* Tạo custom skill mới trong thư mục `.codex/skills/`.\n    - *Inputs:* `skillName: string`, `content: string`.\n    - *Outputs:* `{ path: string }`.\n    - *Cơ chế:* Ghi file skill markdown."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_project_instructions",
+      "contract": "- *Tính năng:* Liệt kê các file hướng dẫn AI (AGENTS.md, CLAUDE.md, GEMINI.md, .codex).\n    - *Inputs:* Không có.\n    - *Outputs:* `Array<{ fileName, path, size }>`.\n    - *Cơ chế:* Quét thư mục gốc và thư mục `.codex/`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "read_project_instruction",
+      "contract": "- *Tính năng:* Đọc nội dung file chỉ dẫn AI.\n    - *Inputs:* `fileName: string`.\n    - *Outputs:* `{ content: string }`.\n    - *Cơ chế:* Đọc file."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "write_project_instruction",
+      "contract": "- *Tính năng:* Ghi cập nhật file chỉ dẫn AI.\n    - *Inputs:* `fileName: string`, `content: string`.\n    - *Outputs:* `{ written: boolean }`.\n    - *Cơ chế:* Ghi file."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "clear_logs",
+      "contract": "- *Tính năng:* Xóa bộ nhớ đệm log và làm rỗng file `temp/logs/project.log`.\n    - *Inputs:* `confirm?: boolean`.\n    - *Outputs:* `{ cleared: boolean }`.\n    - *Cơ chế:* Truncate file log trên đĩa."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_recent_logs",
+      "contract": "- *Tính năng:* Lấy các dòng log runtime gần nhất từ console và file log.\n    - *Inputs:* `lines?: number`.\n    - *Outputs:* `{ logs: string[] }`.\n    - *Cơ chế:* Đọc tail của file log."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "search_project_logs",
+      "contract": "- *Tính năng:* Tìm kiếm trong file log theo từ khóa hoặc biểu thức chính quy (regex).\n    - *Inputs:* `query: string`, `isRegex?: boolean`, `limit?: number`.\n    - *Outputs:* `Array<{ line: number, text: string }>`.\n    - *Cơ chế:* Quét và filter từng dòng log file."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_performance_snapshot",
+      "contract": "- *Tính năng:* Báo cáo thống kê quy mô scene: tổng node, tổng components, số node UI, độ sâu cây tối đa, dung lượng bộ nhớ.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ totalNodes, totalComponents, uiNodes, maxDepth, memoryUsage }`.\n    - *Cơ chế:* Duyệt cây scene đếm node và đọc `process.memoryUsage()`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_editor_windows",
+      "contract": "- *Tính năng:* Liệt kê tất cả các cửa sổ Electron BrowserWindow đang mở của Cocos Creator kèm ID, tiêu đề và tọa độ bounds.\n    - *Inputs:* Không có.\n    - *Outputs:* `Array<{ id, title, bounds, isFocused, isVisible, kind }>`.\n    - *Cơ chế:* `BrowserWindow.getAllWindows()`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "apply_prefab_instance",
+      "contract": "- *Tính năng:* Đẩy thay đổi từ node prefab instance trên scene ngược lại file `.prefab` gốc.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ applied: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'apply-prefab', nodeUuid)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_prefab_from_node",
+      "contract": "- *Tính năng:* Tạo file prefab mới từ một node trên scene và chuẩn hóa hierarchy.\n    - *Inputs:* `nodeUuid: string`, `targetPath: string`.\n    - *Outputs:* `{ uuid: string, path: string }`.\n    - *Cơ chế:* `scene:create-prefab` hoặc serialize node và lưu qua `asset-db:create-asset`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_prefab_instance",
+      "contract": "- *Tính năng:* Tạo một instance của prefab vào scene có liên kết (link) hoàn chỉnh.\n    - *Inputs:* `prefabUuid: string`, `parentUuid?: string`.\n    - *Outputs:* `{ nodeUuid: string }`.\n    - *Cơ chế:* `scene:create-node` với tham số `assetUuid`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "duplicate_prefab",
+      "contract": "- *Tính năng:* Nhân bản file prefab thành file mới với UUID độc lập (không copy meta cũ).\n    - *Inputs:* `sourcePath: string`, `targetPath: string`.\n    - *Outputs:* `{ newUuid: string, newPath: string }`.\n    - *Cơ chế:* Copy file JSON, tạo meta mới qua asset-db."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "edit_prefab_json",
+      "contract": "- *Tính năng:* Chỉnh sửa file `.prefab` trực tiếp trên đĩa theo JSON path hoặc search/replace.\n    - *Inputs:* `target: string`, `edits: Array<{ path, value }>`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* Đọc JSON, mutate object, ghi lại file và refresh asset-db."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "inspect_prefab",
+      "contract": "- *Tính năng:* Đọc cấu trúc nội dung serialized của file `.prefab` trên đĩa.\n    - *Inputs:* `target: string`.\n    - *Outputs:* `{ rootNode, totalEntries, components, references }`.\n    - *Cơ chế:* Đọc và parse JSON file `.prefab`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "inspect_prefab_instance",
+      "contract": "- *Tính năng:* Kiểm tra một node trên scene có phải là instance của prefab không, và đang bị override những thuộc tính nào.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ isPrefabInstance: boolean, prefabUuid?: string, overrides?: any[] }`.\n    - *Cơ chế:* Đọc `node.__prefab__` và mảng `propertyOverrides`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "instantiate_prefab",
+      "contract": "- *Tính năng:* Nạp prefab vào scene bằng UUID asset.\n    - *Inputs:* `prefabUuid: string`.\n    - *Outputs:* `{ nodeUuid: string }`.\n    - *Cơ chế:* `scene:create-node` kèm `assetUuid`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "list_prefabs",
+      "contract": "- *Tính năng:* Liệt kê tất cả asset prefab trong project.\n    - *Inputs:* `pattern?: string`.\n    - *Outputs:* `Array<{ uuid, url, name }>`.\n    - *Cơ chế:* Query `cc.Prefab` từ asset-db."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "revert_prefab_instance",
+      "contract": "- *Tính năng:* Hủy bỏ các thay đổi cục bộ, khôi phục node về đúng trạng thái của prefab gốc.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ reverted: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'revert-prefab', nodeUuid)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_editor_preference",
+      "contract": "- *Tính năng:* Đọc cấu hình tùy chọn của editor từ `Editor.Profile`.\n    - *Inputs:* `pkg: string`, `key: string`.\n    - *Outputs:* `{ value: any }`.\n    - *Cơ chế:* `Editor.Profile.getConfig(pkg, key)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_editor_preference",
+      "contract": "- *Tính năng:* Ghi cấu hình tùy chọn vào `Editor.Profile`.\n    - *Inputs:* `pkg: string`, `key: string`, `value: any`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `Editor.Profile.setConfig(pkg, key, value)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_editor_state",
+      "contract": "- *Tính năng:* Lấy snapshot tổng hợp nhanh: project info, server status, selection hiện tại và các cửa sổ hiển thị.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ projectPath, creatorVersion, activeScene, selectedNodes }`.\n    - *Cơ chế:* Tổng hợp nhiều IPC requests nhẹ."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_project_info",
+      "contract": "- *Tính năng:* Lấy thông tin cơ bản: đường dẫn, phiên bản Cocos, cấu hình MCP.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ name, path, version }`.\n    - *Cơ chế:* `Editor.Project.path` & `Editor.App.version`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_tool_catalog",
+      "contract": "- *Tính năng:* Trả về toàn bộ danh mục các tool có trong plugin kèm profile và trạng thái kích hoạt.\n    - *Inputs:* Không có.\n    - *Outputs:* `Array<{ name, profile, category, enabled }>`.\n    - *Cơ chế:* Đọc từ registry nội bộ."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_runtime_state",
+      "contract": "- *Tính năng:* Đọc trạng thái game runtime: đang pause hay chạy, frame count, time scale.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ isPaused: boolean, timeScale: number, totalFrames: number }`.\n    - *Cơ chế:* Đọc `cc.director.isPaused()` và scheduler trong context scene."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "pause_runtime",
+      "contract": "- *Tính năng:* Tạm dừng vòng lặp game.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ paused: true }`.\n    - *Cơ chế:* `cc.director.pause()`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "resume_runtime",
+      "contract": "- *Tính năng:* Tiếp tục vòng lặp game.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ resumed: true }`.\n    - *Cơ chế:* `cc.director.resume()`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_time_scale",
+      "contract": "- *Tính năng:* Đổi tốc độ game (0 = freeze, 1 = normal, 2 = 2x speed).\n    - *Inputs:* `scale: number`.\n    - *Outputs:* `{ timeScale: number }`.\n    - *Cơ chế:* `cc.director.getScheduler().setTimeScale(scale)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_node",
+      "contract": "- *Tính năng:* Tạo node mới dưới scene root hoặc dưới một parent node chỉ định.\n    - *Inputs:* `name: string`, `parentUuid?: string`, `parentPath?: string`.\n    - *Outputs:* `{ nodeUuid: string, name: string }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'create-node', { name, parent })`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "delete_node",
+      "contract": "- *Tính năng:* Xóa node theo path, uuid hoặc tên.\n    - *Inputs:* `nodeUuid?: string`, `path?: string`.\n    - *Outputs:* `{ deleted: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'remove-node', { uuid })`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "execute_scene_script",
+      "contract": "- *Tính năng:* Chạy script trực tiếp trong context của scene.\n    - *Inputs:* `script: string`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* `execute-scene-script` IPC message."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "find_nodes",
+      "contract": "- *Tính năng:* Tìm kiếm node theo tên chính xác, đường dẫn phân cấp hoặc loại component gắn kèm.\n    - *Inputs:* `name?: string`, `pathPattern?: string`, `componentType?: string`.\n    - *Outputs:* `Array<{ uuid, name, path, components: string[] }>`.\n    - *Cơ chế:* Duyệt cây scene node in-memory và lọc kết quả."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_hierarchy",
+      "contract": "- *Tính năng:* Trả về cây phân cấp node có cấu trúc lồng nhau từ scene root hoặc từ 1 node.\n    - *Inputs:* `rootNodeUuid?: string`, `depth?: number`.\n    - *Outputs:* `{ uuid, name, children: [...] }`.\n    - *Cơ chế:* `scene:query-node-tree`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_scene_info",
+      "contract": "- *Tính năng:* Đọc thông tin tóm tắt của scene đang mở (tên, UUID, dirty state, bounds).\n    - *Inputs:* Không có.\n    - *Outputs:* `{ name, uuid, isDirty, nodeCount }`.\n    - *Cơ chế:* Kết hợp `query-current-scene` và `query-node-tree`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "inspect_node",
+      "contract": "- *Tính năng:* Kiểm tra chi tiết 1 node: transform, layer, active state, components.\n    - *Inputs:* `nodeUuid?: string`, `path?: string`.\n    - *Outputs:* `{ uuid, name, active, position, rotation, scale, layer, components }`.\n    - *Cơ chế:* `scene:query-node`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_node_transform",
+      "contract": "- *Tính năng:* Cập nhật vị trí, góc xoay, tỉ lệ và trạng thái active của node.\n    - *Inputs:* `nodeUuid: string`, `position?: {x,y,z}`, `rotation?: {x,y,z}`, `scale?: {x,y,z}`, `active?: boolean`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* Gọi `scene:set-property` cho từng thuộc tính transform."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "capture_desktop_screenshot",
+      "contract": "- *Tính năng:* Chụp toàn bộ màn hình desktop của hệ điều hành.\n    - *Inputs:* `fileName?: string`.\n    - *Outputs:* `{ dataUri: string, size: number, filePath: string }`.\n    - *Cơ chế:* Gọi lệnh CLI hệ thống (`screencapture` trên macOS, PowerShell `System.Drawing.Graphics` trên Windows)."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "capture_editor_screenshot",
+      "contract": "- *Tính năng:* Chụp toàn bộ cửa sổ Cocos Creator đang được focus.\n    - *Inputs:* `titleContains?: string`.\n    - *Outputs:* `{ dataUri: string, size: number, title: string }`.\n    - *Cơ chế:* Electron `BrowserWindow.capturePage()`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "capture_game_screenshot",
+      "contract": "- *Tính năng:* Tự động tìm kiếm vị trí của **Game View Panel** trong cửa sổ editor và crop chụp riêng khung game đó.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ dataUri: string, size: number, bounds: {x,y,width,height} }`.\n    - *Cơ chế:* Inject JS vào webContents tìm element chứa thẻ `<canvas>` hoặc tên `game`, tính bounds nhân pixelRatio, gọi `capturePage(bounds)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "capture_preview_screenshot",
+      "contract": "- *Tính năng:* Chụp cửa sổ Preview trình duyệt hoặc cửa sổ Simulator.\n    - *Inputs:* `windowKind?: 'preview'|'simulator'`.\n    - *Outputs:* `{ dataUri: string, size: number }`.\n    - *Cơ chế:* Tìm BrowserWindow tương ứng qua `getAllWindows()` và gọi `capturePage()`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "capture_scene_screenshot",
+      "contract": "- *Tính năng:* Crop chụp riêng vùng panel Scene View của editor.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ dataUri: string, size: number, bounds }`.\n    - *Cơ chế:* Inject JS tìm panel `scene`, tính bounds và gọi `capturePage(bounds)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_editor_selection",
+      "contract": "- *Tính năng:* Đọc danh sách các node và asset đang được bôi chọn (selected).\n    - *Inputs:* Không có.\n    - *Outputs:* `{ nodes: string[], assets: string[] }`.\n    - *Cơ chế:* `Editor.Selection.getSelected('node')` & `getSelected('asset')`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "get_selection",
+      "contract": "- *Tính năng:* Đọc gọn đối tượng đang chọn theo loại.\n    - *Inputs:* `type?: 'node'|'asset'`.\n    - *Outputs:* `string[]` (danh sách UUIDs).\n    - *Cơ chế:* `Editor.Selection.getSelected(type)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "set_selection",
+      "contract": "- *Tính năng:* Chọn hoặc bỏ chọn node/asset trong editor.\n     - *Inputs:* `type: 'node'|'asset'`, `uuids: string[]`, `mode?: 'set'|'add'|'clear'`.\n     - *Outputs:* `{ selectedCount: number }`.\n     - *Cơ chế:* `Editor.Selection.select(type, uuids)` hoặc `clear(type)`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_button",
+      "contract": "- *Tính năng:* Tạo node UI Button hoàn chỉnh (gồm node Button có UITransform + component Button + node con Label).\n     - *Inputs:* `name?: string`, `parentUuid?: string`, `text?: string`.\n     - *Outputs:* `{ buttonUuid: string, labelUuid: string }`.\n     - *Cơ chế:* Tạo hierarchy 2 tầng, gán `cc.Button`, `cc.Label`, `cc.UITransform`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_canvas",
+      "contract": "- *Tính năng:* Tạo node Canvas gốc chuẩn cho UI 2D nếu scene chưa có.\n     - *Inputs:* `name?: string`.\n     - *Outputs:* `{ canvasUuid: string }`.\n     - *Cơ chế:* Tạo node kèm `cc.Canvas` và `cc.UITransform`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_label",
+      "contract": "- *Tính năng:* Tạo node Text Label.\n     - *Inputs:* `text: string`, `parentUuid?: string`, `fontSize?: number`.\n     - *Outputs:* `{ nodeUuid: string, labelUuid: string }`.\n     - *Cơ chế:* Tạo node kèm `cc.Label`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "create_sprite",
+      "contract": "- *Tính năng:* Tạo node UI Sprite, có thể gán sẵn SpriteFrame asset UUID.\n     - *Inputs:* `parentUuid?: string`, `spriteFrameUuid?: string`.\n     - *Outputs:* `{ nodeUuid: string, spriteUuid: string }`.\n     - *Cơ chế:* Tạo node kèm `cc.Sprite`, set thuộc tính `spriteFrame`."
+    },
+    {
+      "catalog": "Funplay",
+      "name": "check_for_updates",
+      "contract": "- *Tính năng:* So sánh phiên bản plugin đang cài với bản phát hành mới nhất trên GitHub releases.\n     - *Inputs:* Không có.\n     - *Outputs:* `{ hasUpdate: boolean, currentVersion: string, latestVersion: string, releaseNotes: string }`.\n     - *Cơ chế:* Gọi GitHub API fetch release tag mới nhất."
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_current_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_scene_list",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "open_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "save_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "create_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "save_scene_as",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "close_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_scene_hierarchy",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "create_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_node_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "find_nodes",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "find_node_by_name",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_all_nodes",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_node_property",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_node_transform",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "delete_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "move_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "duplicate_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "detect_node_type",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "add_component",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "remove_component",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_components",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_component_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_component_property",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "attach_script",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_available_components",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_prefab_list",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "load_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "instantiate_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "create_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "update_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "revert_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_prefab_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "validate_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "duplicate_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "restore_prefab_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "run_project",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "build_project",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_project_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_project_settings",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "refresh_assets",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "import_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_asset_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_assets",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_build_settings",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "open_build_panel",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "check_builder_status",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "start_preview_server",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "stop_preview_server",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "create_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "copy_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "move_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "delete_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "save_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "reimport_asset",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_asset_path",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_asset_uuid",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_asset_url",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "find_asset_by_name",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_asset_details",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_console_logs",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "clear_console",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "execute_script",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_node_tree",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_performance_stats",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "validate_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_editor_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_project_logs",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_log_file_info",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "search_project_logs",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "change_gizmo_tool",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_gizmo_tool_name",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "change_gizmo_pivot",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_gizmo_pivot",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_gizmo_view_mode",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "change_gizmo_coordinate",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_gizmo_coordinate",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "change_view_mode_2d_3d",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_view_mode_2d_3d",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_grid_visible",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_grid_visible",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_icon_gizmo_3d",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_icon_gizmo_3d",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_icon_gizmo_size",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_icon_gizmo_size",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "focus_camera_on_nodes",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "align_camera_with_view",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "align_view_with_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_scene_view_status",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "reset_scene_view",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "reset_node_property",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "move_array_element",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "remove_array_element",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "copy_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "paste_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "cut_node",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "reset_node_transform",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "reset_component",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "restore_prefab",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "execute_component_method",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "execute_scene_script",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "scene_snapshot",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "scene_snapshot_abort",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "begin_undo_recording",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "end_undo_recording",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "cancel_undo_recording",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "soft_reload_scene",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_scene_ready",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_scene_dirty",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_scene_classes",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_scene_components",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_component_has_script",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_nodes_by_asset_uuid",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "add_reference_image",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "remove_reference_image",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "switch_reference_image",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_reference_image_data",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_reference_image_config",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_current_reference_image",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "refresh_reference_image",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_reference_image_position",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_reference_image_scale",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_reference_image_opacity",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "list_reference_images",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "clear_all_reference_images",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "save_asset_meta",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "generate_available_url",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_asset_db_ready",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "open_asset_external",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "batch_import_assets",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "batch_delete_assets",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "validate_asset_references",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_asset_dependencies",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_unused_assets",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "compress_textures",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "export_asset_manifest",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_broadcast_log",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "listen_broadcast",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "stop_listening",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "clear_broadcast_log",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_active_listeners",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "open_preferences_settings",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_preferences_config",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "set_preferences_config",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_all_preferences",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "reset_preferences",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "export_preferences",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "import_preferences",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "validate_json_params",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "safe_string_value",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "format_mcp_request",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_server_ip_list",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_sorted_server_ip_list",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "query_server_port",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_server_status",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "check_server_connectivity",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    },
+    {
+      "catalog": "cocos-mcp-server",
+      "name": "get_network_interfaces",
+      "contractSource": "Original category list; per-mode contract reconciliation pending"
+    }
+  ]
+}

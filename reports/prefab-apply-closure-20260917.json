@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "creator": "3.7.3",
+  "build": { "commit": "6bf0be8", "dirty": true, "builtAt": "2026-09-17T04:56:36.682Z" },
+  "endpoint": "http://localhost:59565",
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+  "fixture": "Disposable prefab asset and linked instance, root active true -> false via scene set-property",
+  "observed": { "persisted": true, "instanceActive": false, "sourceHashChanged": true, "serializedSourceNodeInactive": true, "remainingFixtureAssets": 0 },
+  "rootCause": "Creator3.7.3 native applyPrefab returns false even after successful apply/reload. Old helper misreported every such success as failure.",
+  "verification": "Real HTTP/CodeMode tool apply; source JSON independently read and checked; node and asset removed in finally; unit regression covers no-op false, real postcondition, root-reserved overrides and identity mismatch.",
+  "limitations": ["Whole-instance apply only", "No selective revert qualification", "No blanket ledger promotion or release claim"]
+}

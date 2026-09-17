@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-17",
+  "purpose": "Owner-approved implementation closure; not exhaustive release qualification",
+  "target": { "creator": "3.7.3", "platform": "windows-x64", "project": "G:/_ws/cc-fws/cc30-new-all-in-one" },
+  "implementationGate": { "minimumPercent": 90, "denominatorStatus": "unresolved", "reason": "Plan requires deduplicated frozen Creator workflows; no row-level workflow inventory located. Original competitor inputs are Funplay105+cocos-mcp-server157; existing259-row report instead maps ALX163+CCB2 96. Candidate94 pool is not an approved workflow denominator." },
+  "verificationGate": { "minimumPassPercent": 95, "formula": "passed / (passed + failed + skipped + cancelled)", "separateGroups": ["unit", "closure-live"], "criticalFailuresAllowed": 0, "pendingRule": "Every skipped, failed or cancelled case remains visible; no cross-group averaging or post-result scope reduction." },
+  "unitCommand": "npm run test:unit",
+  "closureLiveFiles": [
+    "tests/live/animation-editor-workflow.test.js",
+    "tests/live/animation-witness.test.js",
+    "tests/live/editor-viewport-gizmo.test.js",
+    "tests/live/read-only-tools.test.js",
+    "tests/live/editor-handshake-qualification.test.js",
+    "tests/live/runtime-session-workflow.test.js",
+    "tests/live/runtime-session-error-scenarios.test.js",
+    "tests/live/runtime-visual-input-workflow.test.js",
+    "tests/live/build-target-route-scenarios.test.js",
+    "tests/live/particle-playback-error-scenarios.test.js"
+  ],
+  "newBehaviorSmoke": ["preview lifecycle start/stop identity and state read-back, including missing/wrong target", "audio play/pause/stop/seek and observation with malformed/missing target/activation failure boundaries"],
+  "deferredQualification": ["exhaustive full live suite", "two-real-editor/session-helper endurance", "full competitor behavioral parity", "golden projects", "immutable package/install/restart/rollback"],
+  "status": "scope frozen before implementation validation; no pass claimed"
+}

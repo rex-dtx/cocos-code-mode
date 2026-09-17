@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-17",
+  "status": "reconciliation-input-not-approved-denominator",
+  "scope": "Original P2-P6 explicit Candidate contract queue bullets; P1 and competitor outcomes remain separate and must not be silently omitted",
+  "count": 84,
+  "declaredVsListed": {
+    "P2": {
+      "declared": 28,
+      "listed": 28
+    },
+    "P3": {
+      "declared": 16,
+      "listed": 15
+    },
+    "P4": {
+      "declared": 16,
+      "listed": 15
+    },
+    "P5": {
+      "declared": 10,
+      "listed": 10
+    },
+    "P6": {
+      "declared": 16,
+      "listed": 16
+    }
+  },
+  "rows": [
+    {
+      "name": "assetImportSettingsGet",
+      "requirement": "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetImportSettingsSet",
+      "requirement": "Implemented typed importer mutation, reimport and read-back; consumed by the live atlas fixture. Candidate approval remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetCompressionConfigure",
+      "requirement": "Implemented platform-aware settings mutation, but no successful generated build artifact was available; release qualification remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetManifestExport",
+      "requirement": "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetUsageAnalyze",
+      "requirement": "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetBatchImport",
+      "requirement": "Preflight and import bounded explicit items with per-item outcome. Prerequisites: `asset-import-contract`, `mutation-workflow`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetBatchOperate",
+      "requirement": "Bounded move/copy/delete/reimport with partial-failure accounting. Prerequisites: `asset-operate-contract`, `mutation-workflow`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "assetMissingReferenceAudit",
+      "requirement": "Cross-scene and asset missing-reference evidence with recovery locations. Prerequisites: `graph-v4`, `asset-query-contract`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "referenceImageManage",
+      "requirement": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "prefabOverrideDiff",
+      "requirement": "Structural live-instance versus prefab-source override diff with stable identities. Prerequisites: `live-prefab-identity`, `asset-query-contract`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "prefabReferenceAudit",
+      "requirement": "Detect broken or ambiguous nested prefab and override references after reload. Prerequisites: `live-prefab-identity`, `graph-v4`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "sceneHierarchyValidate",
+      "requirement": "Validate duplicate paths, invalid parenting and persistence invariants. Prerequisites: `scene-query-contract`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "sceneReferenceValidate",
+      "requirement": "Validate serialized node/component/asset references after reopen. Prerequisites: `graph-v4`, `live-prefab-identity`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "prefabInstantiate",
+      "requirement": "Live instantiate and snapshot evidence exists; broader persistent identity qualification remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "prefabApplyOverrides",
+      "requirement": "Typed source read-back and hashes are implemented, but live apply returned `Failed to apply prefab` on the writable fixture; unqualified.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "prefabRevertOverrides",
+      "requirement": "Full restore delegates to Creator; selective paths are explicitly rejected with `UNSUPPORTED_SELECTIVE_REVERT` on Creator 3.7.3.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "tilemapInspect",
+      "requirement": "Live-scoped typed TMX map, tileset, layer and object-group inspection passed on an imported fixture.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "tilemapLayerEdit",
+      "requirement": "Live source mutation, reimport, SHA change and typed read-back passed.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "tilemapObjectEdit",
+      "requirement": "Live typed object mutation, TMX round-trip, SHA change and read-back passed.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "tilemapValidate",
+      "requirement": "Live-scoped imported UUID reference validation passed; full gids/dimensions validation remains unqualified.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "spriteAtlasConfigure",
+      "requirement": "Live typed importer mutation, reimport and generated library-output hash passed; the fixture exposed no sprite frames, so frame qualification remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "uiLayoutInspect",
+      "requirement": "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "uiLayoutApply",
+      "requirement": "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "uiAccessibilityAudit",
+      "requirement": "Live bounded inferred labels, roles and interactability audit passed; no screen-reader runtime support is claimed.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "uiResponsivePreview",
+      "requirement": "Replacement-scoped deterministic world-rect projections passed; rendered preview comparison is unavailable without viewport-resolution IPC.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "uiCreateScrollView",
+      "requirement": "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "uiCreateInputForm",
+      "requirement": "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "previewResolutionSet",
+      "requirement": "Explicitly rejected on Creator 3.7.3 with `UNSUPPORTED_PREVIEW_IPC`.",
+      "source": "1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md"
+    },
+    {
+      "name": "animationGraphCreate",
+      "requirement": "Create a valid native graph asset and prove import/read-back. Prerequisites: `animation-graph-format`, `asset-create`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "animationGraphInspect",
+      "requirement": "Typed layers, states, transitions, variables and masks from native serialized data. Prerequisites: `animation-graph-format`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "animationGraphEdit",
+      "requirement": "Persistent bounded graph mutations independent of panel selection state. Prerequisites: `animation-graph-write`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "animationGraphValidate",
+      "requirement": "Validate unreachable states, missing clips, invalid variables and transition conditions. Prerequisites: `animation-graph-format`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "animationGraphPreview",
+      "requirement": "Run graph and observe transitions/events in a named runtime session. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "animationRetargetValidate",
+      "requirement": "Check skeleton, joint and clip compatibility without claiming automatic retargeting. Prerequisites: `model-skeleton-metadata`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "audioSourceConfigure",
+      "requirement": "Implemented conservative typed bounded source configuration for volume, loop, playOnAwake and proven `cc.AudioClip` UUIDs with read-back and rollback; live evidence remains pending. Prerequisites: `audio-schema`, `mutation-workflow`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "audioPlaybackControl",
+      "requirement": "Play, pause, stop and seek on a named runtime source with state confirmation. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "audioPlaybackObserve",
+      "requirement": "Bounded playback progress/state observation with activation errors. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "audioAssetCompatibilityAudit",
+      "requirement": "Implemented bounded target-aware format/import-state audit using public asset-db metadata; focused unit suite passes 8/8. It deliberately does not claim decode or duration proof, and live qualification remains pending. Prerequisites: `audio-import-contract`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "skeletalAnimationInspect",
+      "requirement": "Typed skins, tracks, sockets, animations and extension availability. Prerequisites: `skeletal-extension-detection`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "skeletalAnimationConfigure",
+      "requirement": "Typed skin, mix and socket setup with component read-back. Prerequisites: `skeletal-extension-detection`, `mutation-workflow`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "skeletalAnimationPlay",
+      "requirement": "Bounded play/queue/stop contract on a named runtime target. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "skeletalAnimationEvents",
+      "requirement": "Bounded ordered event observation tied to one playback session. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "skeletalAnimationValidate",
+      "requirement": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support. Prerequisites: `skeletal-extension-detection`.",
+      "source": "1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md"
+    },
+    {
+      "name": "particleInspect",
+      "requirement": "Normalized modules, curves, gradients, assets and current configuration. Qualified on a real `cc.ParticleSystem`.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "particleConfigure",
+      "requirement": "Typed module/curve mutation with persistent read-back, not panel scraping. Prerequisites: `particle-schema`.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "particlePlayback",
+      "requirement": "Play, stop, clear and completion observation in a named runtime session. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "particleValidate",
+      "requirement": "Valid/invalid component-presence witnesses qualified on Creator 3.7.3.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics2dTopologyAudit",
+      "requirement": "Normalized body, collider and joint topology; qualified with valid and missing-collider fixtures.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics2dConfigure",
+      "requirement": "Backend-aware settings and collision matrix mutation with read-back. Prerequisites: `project-settings-write`.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics2dCreateBody",
+      "requirement": "Compound Box2D node/body/collider creation qualified with preflight rejection, read-back, snapshot and cleanup witnesses.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics2dCreateJoint",
+      "requirement": "Typed joint creation with endpoint validation and Builtin rejection qualified with component-endpoint read-back and rejection witnesses.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics2dQuery",
+      "requirement": "Runtime raycast/contact/overlap queries identified by backend and session. Prerequisites: `runtime-session`.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics2dCompatibilityAudit",
+      "requirement": "Explicit Box2D-positive and Builtin-negative backend matrix qualified live.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics3dTopologyAudit",
+      "requirement": "Normalized rigidbody, collider, joint and system topology qualified live.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics3dConfigure",
+      "requirement": "Backend-aware settings mutation with version/platform read-back. Prerequisites: `project-settings-write`.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics3dCreateBody",
+      "requirement": "PhysX-only bounded box body/collider creation with size preflight, public scene IPC, read-back and rollback qualified on Creator 3.7.3; sphere/capsule/mesh variants remain unqualified.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics3dCreateJoint",
+      "requirement": "Current ledger marks the bounded PhysX contract qualified; the earlier stale/auth-blocked note is superseded. Preserve fixed/hinge/point-to-point scope and require artifact-bound persistence/rollback proof for the full original contract.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "physics3dValidate",
+      "requirement": "Body/collider semantic validation qualified with valid and invalid fixtures.",
+      "source": "1-wip-260908__tbd-child-p4-physics-particles/plan.md"
+    },
+    {
+      "name": "materialEdit",
+      "requirement": "Typed pass/property mutation followed by import and rendered postcondition. Prerequisites: `material-schema`, `asset-reimport`, `visual-harness`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "shaderValidate",
+      "requirement": "Return real effect importer/compiler diagnostics tied to source locations. Prerequisites: `effect-compiler-diagnostics`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "renderPipelineInspect",
+      "requirement": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query. Prerequisites: `render-pipeline-schema`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "renderConfigurationApply",
+      "requirement": "Atomic camera/light/fog/skybox configuration with scene read-back. Prerequisites: `render-pipeline-schema`, `compound-scene-workflow`, `visual-harness`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "renderDiagnosticsCollect",
+      "requirement": "Target-identified frame/render sampling with bounded results. Prerequisites: `runtime-session`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "lightBakeManage",
+      "requirement": "Finite bake job lifecycle and output asset verification. Prerequisites: `light-bake-job-api`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "terrainInspect",
+      "requirement": "Typed terrain dimensions, layers, materials and asset references. Prerequisites: `terrain-schema`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "terrainCreate",
+      "requirement": "Create and attach a valid terrain asset/component with reopen proof. Prerequisites: `terrain-schema`, `asset-create`, `compound-scene-workflow`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "terrainEdit",
+      "requirement": "Persistent bounded height/layer mutation through a supported API. Prerequisites: `terrain-write-api`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "modelImportConfigure",
+      "requirement": "Typed import, reimport and mesh/skeleton/LOD output validation. Prerequisites: `importer-schema`, `asset-reimport`, `model-skeleton-metadata`.",
+      "source": "2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md"
+    },
+    {
+      "name": "assetBundleValidate",
+      "requirement": "Validate bundle metadata and actual runtime load/release behavior. Prerequisites: `runtime-session`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildPresetAudit",
+      "requirement": "Current primary ledger marks the bounded target-profile contract qualified. Earlier live-pending note is superseded; exact profile/options coverage and current-artifact evidence still constrain release acceptance.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildArtifactInspect",
+      "requirement": "Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildTargetLaunch",
+      "requirement": "Launch the exact produced artifact on a declared target, not preview fallback. Prerequisites: `build-job`, `named-target`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildTargetSmoke",
+      "requirement": "Interact with and observe the launched artifact on its declared target. Prerequisites: `runtime-session`, `named-target`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildTaskWait",
+      "requirement": "Wait boundedly for one build task terminal result with cancellation semantics. Prerequisites: `build-job`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildLogInspect",
+      "requirement": "Implemented distinct read-only task diagnostics inspection using one builder task query, typed query/not-found/invalid-response failures, diagnostic normalization, fallback field selection and bounded entry count/bytes; project build and 5 focused unit tests pass, live evidence remains pending. Prerequisites: `build-job`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "buildArtifactServe",
+      "requirement": "Serve one completed web artifact and return verified URL/lifecycle. Prerequisites: `build-job`, `web-artifact`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "projectSettingsValidate",
+      "requirement": "Validate cross-setting compatibility for the declared Creator/target profile. Prerequisites: `project-settings-read`, `build-schema`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "localizationInspect",
+      "requirement": "Discover enabled package, locales, compiled tables and resource mappings. Prerequisites: `localization-package-api`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "localizationTableEdit",
+      "requirement": "Typed persistent table mutation through documented package API. Prerequisites: `localization-package-api`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "localizationValidate",
+      "requirement": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "localizationPreview",
+      "requirement": "Switch locale with acknowledged runtime restart and visual/read-back evidence. Prerequisites: `runtime-session`, `localization-package-api`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "runtimeStateObserve",
+      "requirement": "Bounded allow-listed observations tied to session identity and target kind. Prerequisites: `runtime-session`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "runtimeScenarioRun",
+      "requirement": "Execute finite named steps only; no code string or general method dispatch. Prerequisites: `runtime-session`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    },
+    {
+      "name": "runtimeScenarioAssert",
+      "requirement": "Independent state/image/event assertions rather than request echo. Prerequisites: `runtime-session`.",
+      "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
+    }
+  ]
+}
