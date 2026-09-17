@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
+  "generatedAt": "2026-09-17T10:27:44.058Z",
+  "status": "draft-not-accepted",
+  "denominator": 181,
+  "complete": 137,
+  "implementationPercent": 75.69,
+  "targetPercent": 90,
+  "targetComplete": 163,
+  "deficitTo90": 26,
+  "marginComplete": 167,
+  "deficitToMargin": 30,
+  "mappingReview": {
+    "reviewedSupplementary": 163,
+    "exactNameProvisional": 75,
+    "heuristicProvisional": 10,
+    "competitorOnly": 14
+  },
+  "byDomain": {
+    "animation-graph": {
+      "total": 4,
+      "complete": 1,
+      "partial": 0,
+      "missing": 2,
+      "testPending": 1,
+      "unsupported": 0,
+      "percent": 25
+    },
+    "animation": {
+      "total": 4,
+      "complete": 4,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "asset": {
+      "total": 28,
+      "complete": 23,
+      "partial": 0,
+      "missing": 5,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 82.14
+    },
+    "assets-import": {
+      "total": 6,
+      "complete": 6,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "audio": {
+      "total": 4,
+      "complete": 2,
+      "partial": 1,
+      "missing": 1,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 50
+    },
+    "build-platform": {
+      "total": 7,
+      "complete": 7,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "build": {
+      "total": 5,
+      "complete": 3,
+      "partial": 0,
+      "missing": 2,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 60
+    },
+    "design-prefab": {
+      "total": 8,
+      "complete": 6,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 2,
+      "unsupported": 0,
+      "percent": 75
+    },
+    "diagnostics": {
+      "total": 9,
+      "complete": 8,
+      "partial": 0,
+      "missing": 1,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 88.89
+    },
+    "editor": {
+      "total": 10,
+      "complete": 10,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "localization": {
+      "total": 3,
+      "complete": 0,
+      "partial": 0,
+      "missing": 2,
+      "testPending": 1,
+      "unsupported": 0,
+      "percent": 0
+    },
+    "other": {
+      "total": 6,
+      "complete": 6,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "particles": {
+      "total": 2,
+      "complete": 1,
+      "partial": 0,
+      "missing": 1,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 50
+    },
+    "physics-2d": {
+      "total": 5,
+      "complete": 5,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "physics-3d": {
+      "total": 4,
+      "complete": 4,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "prefab": {
+      "total": 5,
+      "complete": 4,
+      "partial": 0,
+      "missing": 1,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 80
+    },
+    "rendering-materials": {
+      "total": 6,
+      "complete": 3,
+      "partial": 0,
+      "missing": 3,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 50
+    },
+    "runtime-qa": {
+      "total": 3,
+      "complete": 3,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "runtime": {
+      "total": 27,
+      "complete": 13,
+      "partial": 1,
+      "missing": 13,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 48.15
+    },
+    "scene": {
+      "total": 22,
+      "complete": 19,
+      "partial": 0,
+      "missing": 3,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 86.36
+    },
+    "skeletal-animation": {
+      "total": 3,
+      "complete": 1,
+      "partial": 0,
+      "missing": 2,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 33.33
+    },
+    "terrain-model": {
+      "total": 3,
+      "complete": 2,
+      "partial": 0,
+      "missing": 1,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 66.67
+    },
+    "tilemap-atlas": {
+      "total": 4,
+      "complete": 4,
+      "partial": 0,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 100
+    },
+    "ui-layout": {
+      "total": 3,
+      "complete": 2,
+      "partial": 1,
+      "missing": 0,
+      "testPending": 0,
+      "unsupported": 0,
+      "percent": 66.67
+    }
+  },
+  "stateCounts": {
+    "complete": 137,
+    "missing": 37,
+    "test-pending": 4,
+    "partial": 3
+  },
+  "caveats": [
+    "Automated semantic mapping is conservative and requires human contract review before denominator acceptance.",
+    "Historical qualification labels do not override broader original workflow requirements.",
+    "Verification >=95% remains a separate parent gate."
+  ]
+}

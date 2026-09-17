@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
+  "status": "provisional-until-denominator-accepted",
+  "draftDeficitTo90": 26,
+  "draftDeficitToMargin": 30,
+  "rule": "Complete Wave A/B first; manually review existing routes before selecting new implementation. Do not assume all draft missing rows are truly missing.",
+  "rows": [
+    {
+      "order": 1,
+      "wave": "A-evidence",
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "domain": "design-prefab",
+      "state": "test-pending",
+      "title": "prefabRevertOverrides",
+      "routeCount": 1,
+      "priorityScore": 9,
+      "acceptance": "Implement the complete 'Revert selected overrides and verify restored values.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 5,
+      "routes": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "order": 2,
+      "wave": "A-evidence",
+      "workflowId": "design-prefab.prefab-overrides",
+      "domain": "design-prefab",
+      "state": "test-pending",
+      "title": "prefabApplyOverrides",
+      "routeCount": 1,
+      "priorityScore": 7,
+      "acceptance": "Implement the complete 'Apply a typed override set and verify source/instance result.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 2,
+      "routes": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "order": 3,
+      "wave": "A-evidence",
+      "workflowId": "animation-graph.animation-retarget",
+      "domain": "animation-graph",
+      "state": "test-pending",
+      "title": "animationRetargetValidate",
+      "routeCount": 1,
+      "priorityScore": 5,
+      "acceptance": "Implement the complete 'Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [
+        {
+          "tool": "animationRetargetValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "order": 4,
+      "wave": "A-evidence",
+      "workflowId": "localization.localization",
+      "domain": "localization",
+      "state": "test-pending",
+      "title": "localizationInspect",
+      "routeCount": 2,
+      "priorityScore": 5,
+      "acceptance": "Implement the complete 'Discover enabled package, locales, compiled tables and resource mappings.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 2,
+      "routes": [
+        {
+          "tool": "localizationInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        },
+        {
+          "tool": "localizationValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "order": 5,
+      "wave": "B-near-complete",
+      "workflowId": "audio.audio-playback",
+      "domain": "audio",
+      "state": "partial",
+      "title": "audioPlaybackControl",
+      "routeCount": 1,
+      "priorityScore": 3,
+      "acceptance": "Implement the complete 'Play, pause, stop and seek on a named runtime source with state confirmation.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [
+        {
+          "tool": "audioPlaybackControl",
+          "file": "source/utcp/tools/audio-playback-tools.ts"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "order": 6,
+      "wave": "B-near-complete",
+      "workflowId": "runtime.runtime-session",
+      "domain": "runtime",
+      "state": "partial",
+      "title": "runtime-session",
+      "routeCount": 0,
+      "priorityScore": 3,
+      "acceptance": "Implement the complete 'Attach and identify one bounded Game View runtime session with truthful lifecycle state.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": [
+        "Finite actual-Game-View host adapter exists; cold-start/stop repeatability on qualification fixture remains open."
+      ]
+    },
+    {
+      "order": 7,
+      "wave": "B-near-complete",
+      "workflowId": "ui-layout.preview-resolution",
+      "domain": "ui-layout",
+      "state": "partial",
+      "title": "previewResolutionSet",
+      "routeCount": 1,
+      "priorityScore": 3,
+      "acceptance": "Implement the complete 'Set and read back target resolution through proven IPC.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [
+        {
+          "tool": "previewResolutionSet",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "order": 8,
+      "wave": "C-existing-surface-review",
+      "workflowId": "asset.asset-dependencies",
+      "domain": "asset",
+      "state": "missing",
+      "title": "validate_asset_dependencies",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Kiểm tra tính toàn vẹn của dependencies cho một asset hoặc toàn project.\n    - *Inputs:* `target?: string`, `pattern?: string`.\n    - *Outputs:* `{ ok, brokenCount, brokenList: Array<{ asset, missingUuid }> }`.\n    - *Cơ chế:* Quét UUID serialized so sánh với asset-db.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 2,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 9,
+      "wave": "C-existing-surface-review",
+      "workflowId": "asset.clear-logs",
+      "domain": "asset",
+      "state": "missing",
+      "title": "clear_logs",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Xóa bộ nhớ đệm log và làm rỗng file `temp/logs/project.log`.\n    - *Inputs:* `confirm?: boolean`.\n    - *Outputs:* `{ cleared: boolean }`.\n    - *Cơ chế:* Truncate file log trên đĩa.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 10,
+      "wave": "C-existing-surface-review",
+      "workflowId": "asset.prefab-instance",
+      "domain": "asset",
+      "state": "missing",
+      "title": "create_prefab_instance",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Tạo một instance của prefab vào scene có liên kết (link) hoàn chỉnh.\n    - *Inputs:* `prefabUuid: string`, `parentUuid?: string`.\n    - *Outputs:* `{ nodeUuid: string }`.\n    - *Cơ chế:* `scene:create-node` với tham số `assetUuid`.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 2,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 11,
+      "wave": "C-existing-surface-review",
+      "workflowId": "asset.preview-mode",
+      "domain": "asset",
+      "state": "missing",
+      "title": "set_preview_mode",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Chuyển đổi nền tảng preview trong toolbar của editor.\n    - *Inputs:* `mode: 'browser'|'gameView'|'simulator'`.\n    - *Outputs:* `{ changed: boolean, previousMode, mode }`.\n    - *Cơ chế:* Cập nhật Profile `preview.current.platform` và gửi `preview:change-platform`.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 2,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 12,
+      "wave": "C-existing-surface-review",
+      "workflowId": "diagnostics.clear-console",
+      "domain": "diagnostics",
+      "state": "missing",
+      "title": "clear_console",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete 'Provide the clear_console observable outcome.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 13,
+      "wave": "C-existing-surface-review",
+      "workflowId": "runtime.camera-properties",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "set_camera_properties",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Cấu hình các thuộc tính của Camera (clearFlags, projection, orthoHeight, fov).\n    - *Inputs:* `cameraUuid: string`, `properties: object`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property` trên component Camera.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 14,
+      "wave": "C-existing-surface-review",
+      "workflowId": "runtime.cameras",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "list_cameras",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Liệt kê tất cả Camera components trong scene.\n    - *Inputs:* Không có.\n    - *Outputs:* `Array<{ nodeUuid, name, priority, visibility, projection }>`.\n    - *Cơ chế:* Duyệt các node có component `cc.Camera`.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 15,
+      "wave": "C-existing-surface-review",
+      "workflowId": "runtime.check-for-updates",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "check_for_updates",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* So sánh phiên bản plugin đang cài với bản phát hành mới nhất trên GitHub releases.\n     - *Inputs:* Không có.\n     - *Outputs:* `{ hasUpdate: boolean, currentVersion: string, latestVersion: string, releaseNotes: string }`.\n     - *Cơ chế:* Gọi GitHub API fetch release tag mới nhất.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 16,
+      "wave": "C-existing-surface-review",
+      "workflowId": "runtime.component",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "inspect_component",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Đọc toàn bộ dump thuộc tính của 1 component.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`.\n    - *Outputs:* `{ type, values: Record<string, any> }`.\n    - *Cơ chế:* `scene:query-component`.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 17,
+      "wave": "C-existing-surface-review",
+      "workflowId": "runtime.components",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "list_components",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Liệt kê danh sách các component gắn trên 1 node.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `Array<{ uuid, type, cid, name }>`.\n    - *Cơ chế:* Đọc mảng `__comps__` từ node dump.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 18,
+      "wave": "D-new-implementation",
+      "workflowId": "runtime.emit-node-event",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "emit_node_event",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Kích hoạt một custom event trên node với payload JSON tùy ý.\n    - *Inputs:* `nodeUuid: string`, `event: string`, `payload?: any`.\n    - *Outputs:* `{ emitted: boolean }`.\n    - *Cơ chế:* `node.emit(event, payload)` trong scene context.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 19,
+      "wave": "D-new-implementation",
+      "workflowId": "runtime.hierarchy",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "get_hierarchy",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Trả về cây phân cấp node có cấu trúc lồng nhau từ scene root hoặc từ 1 node.\n    - *Inputs:* `rootNodeUuid?: string`, `depth?: number`.\n    - *Outputs:* `{ uuid, name, children: [...] }`.\n    - *Cơ chế:* `scene:query-node-tree`.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 20,
+      "wave": "D-new-implementation",
+      "workflowId": "runtime.reset-component-property",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "reset_component_property",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Reset một thuộc tính component về giá trị mặc định theo dot path.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`, `path: string`.\n    - *Outputs:* `{ reset: boolean }`.\n    - *Cơ chế:* `scene:reset-property`.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 21,
+      "wave": "D-new-implementation",
+      "workflowId": "runtime.simulate-preview-input",
+      "domain": "runtime",
+      "state": "missing",
+      "title": "simulate_preview_input",
+      "routeCount": 0,
+      "priorityScore": 2,
+      "acceptance": "Implement the complete '- *Tính năng:* Wrapper gửi tương tác nhanh tới cửa sổ Preview của game.\n    - *Inputs:* `x?: number`, `y?: number`, `keyCode?: string`.\n    - *Outputs:* `{ sent: boolean }`.\n    - *Cơ chế:* Tự động target tới cửa sổ preview/simulator.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 22,
+      "wave": "D-new-implementation",
+      "workflowId": "animation-graph.animation-graph-edit",
+      "domain": "animation-graph",
+      "state": "missing",
+      "title": "animationGraphEdit",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Persistent bounded graph mutations independent of panel selection state.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 23,
+      "wave": "D-new-implementation",
+      "workflowId": "animation-graph.animation-graph-preview",
+      "domain": "animation-graph",
+      "state": "missing",
+      "title": "animationGraphPreview",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Run graph and observe transitions/events in a named runtime session.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 24,
+      "wave": "D-new-implementation",
+      "workflowId": "asset.build-artifact",
+      "domain": "asset",
+      "state": "missing",
+      "title": "buildArtifactInspect",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 25,
+      "wave": "D-new-implementation",
+      "workflowId": "audio.audio-playback-observe",
+      "domain": "audio",
+      "state": "missing",
+      "title": "audioPlaybackObserve",
+      "routeCount": 1,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Bounded playback progress/state observation with activation errors.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [
+        {
+          "tool": "audioPlaybackObserve",
+          "file": "source/utcp/tools/audio-playback-tools.ts"
+        }
+      ],
+      "limitations": [
+        "Public route fails closed; no qualified actual-Game-View audio observation transport."
+      ]
+    },
+    {
+      "order": 26,
+      "wave": "D-new-implementation",
+      "workflowId": "build.golden-tracer",
+      "domain": "build",
+      "state": "missing",
+      "title": "golden-tracer",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Run scene to preview, input, observation, screenshot, build and launched artifact smoke.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 27,
+      "wave": "D-new-implementation",
+      "workflowId": "build.long-job",
+      "domain": "build",
+      "state": "missing",
+      "title": "long-job",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Track one build/import job to a bounded terminal outcome.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 28,
+      "wave": "D-new-implementation",
+      "workflowId": "localization.localization-preview",
+      "domain": "localization",
+      "state": "missing",
+      "title": "localizationPreview",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Switch locale with acknowledged runtime restart and visual/read-back evidence.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 29,
+      "wave": "D-new-implementation",
+      "workflowId": "localization.localization-table-edit",
+      "domain": "localization",
+      "state": "missing",
+      "title": "localizationTableEdit",
+      "routeCount": 0,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Typed persistent table mutation through documented package API.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [],
+      "limitations": []
+    },
+    {
+      "order": 30,
+      "wave": "D-new-implementation",
+      "workflowId": "particles.particle-playback",
+      "domain": "particles",
+      "state": "missing",
+      "title": "particlePlayback",
+      "routeCount": 1,
+      "priorityScore": 1,
+      "acceptance": "Implement the complete 'Play, stop, clear and completion observation in a named runtime session.' contract with truthful failure behavior and focused verification.",
+      "sourceFanIn": 1,
+      "routes": [
+        {
+          "tool": "particlePlayback",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        }
+      ],
+      "limitations": [
+        "Extension scene scripts target edit renderer; actual Game View particle route is unqualified."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2844 @@
+{
+  "schemaVersion": 1,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
+  "generatedAt": "2026-09-17T10:27:44.058Z",
+  "sourceCounts": {
+    "competitor": 262,
+    "lane": 84,
+    "parent": 8
+  },
+  "rows": [
+    {
+      "sourceId": "cocos-mcp:add_component",
+      "sourceKind": "competitor-row",
+      "sourceName": "add_component",
+      "workflowId": "scene.node-component",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeComponentManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:add_reference_image",
+      "sourceKind": "competitor-row",
+      "sourceName": "add_reference_image",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:align_camera_with_view",
+      "sourceKind": "competitor-row",
+      "sourceName": "align_camera_with_view",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:align_view_with_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "align_view_with_node",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:attach_script",
+      "sourceKind": "competitor-row",
+      "sourceName": "attach_script",
+      "workflowId": "scene.node-component",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeComponentManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:batch_delete_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "batch_delete_assets",
+      "workflowId": "assets-import.asset-batch-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetBatchOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:batch_import_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "batch_import_assets",
+      "workflowId": "assets-import.asset-batch-import",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetBatchImport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:begin_undo_recording",
+      "sourceKind": "competitor-row",
+      "sourceName": "begin_undo_recording",
+      "workflowId": "editor.editor-undo-transaction-probe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorUndoTransactionProbe; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:build_project",
+      "sourceKind": "competitor-row",
+      "sourceName": "build_project",
+      "workflowId": "build.build",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to buildManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:cancel_undo_recording",
+      "sourceKind": "competitor-row",
+      "sourceName": "cancel_undo_recording",
+      "workflowId": "editor.editor-undo-transaction-probe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorUndoTransactionProbe; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:change_gizmo_coordinate",
+      "sourceKind": "competitor-row",
+      "sourceName": "change_gizmo_coordinate",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:change_gizmo_pivot",
+      "sourceKind": "competitor-row",
+      "sourceName": "change_gizmo_pivot",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:change_gizmo_tool",
+      "sourceKind": "competitor-row",
+      "sourceName": "change_gizmo_tool",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:change_view_mode_2d_3d",
+      "sourceKind": "competitor-row",
+      "sourceName": "change_view_mode_2d_3d",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:check_builder_status",
+      "sourceKind": "competitor-row",
+      "sourceName": "check_builder_status",
+      "workflowId": "build.build",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to buildManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:check_server_connectivity",
+      "sourceKind": "competitor-row",
+      "sourceName": "check_server_connectivity",
+      "workflowId": "build.editor-env-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorEnvInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:clear_all_reference_images",
+      "sourceKind": "competitor-row",
+      "sourceName": "clear_all_reference_images",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:clear_broadcast_log",
+      "sourceKind": "competitor-row",
+      "sourceName": "clear_broadcast_log",
+      "workflowId": "diagnostics.broadcast-observe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to broadcastObserve; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:clear_console",
+      "sourceKind": "competitor-row",
+      "sourceName": "clear_console",
+      "workflowId": "diagnostics.clear-console",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "cocos-mcp:close_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "close_scene",
+      "workflowId": "scene.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:compress_textures",
+      "sourceKind": "competitor-row",
+      "sourceName": "compress_textures",
+      "workflowId": "assets-import.asset-compression",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetCompressionConfigure; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:copy_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "copy_asset",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:copy_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "copy_node",
+      "workflowId": "animation.node-clipboard",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeClipboard; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:create_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_asset",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetCreate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:create_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_node",
+      "workflowId": "scene.node",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeCreate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:create_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_prefab",
+      "workflowId": "prefab.node-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:create_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_scene",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetCreate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:cut_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "cut_node",
+      "workflowId": "animation.node-clipboard",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeClipboard; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:delete_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "delete_asset",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:delete_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "delete_node",
+      "workflowId": "scene.node-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:detect_node_type",
+      "sourceKind": "competitor-row",
+      "sourceName": "detect_node_type",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorGet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:duplicate_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "duplicate_node",
+      "workflowId": "scene.node-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:duplicate_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "duplicate_prefab",
+      "workflowId": "prefab.duplicate-prefab",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to duplicatePrefab; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:end_undo_recording",
+      "sourceKind": "competitor-row",
+      "sourceName": "end_undo_recording",
+      "workflowId": "editor.editor-undo-transaction-probe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorUndoTransactionProbe; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:execute_component_method",
+      "sourceKind": "competitor-row",
+      "sourceName": "execute_component_method",
+      "workflowId": "scene.call-component-method",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to callComponentMethod; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:execute_scene_script",
+      "sourceKind": "competitor-row",
+      "sourceName": "execute_scene_script",
+      "workflowId": "scene.execute-javascript",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to executeJavascript; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:execute_script",
+      "sourceKind": "competitor-row",
+      "sourceName": "execute_script",
+      "workflowId": "other.execute-javascript",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to executeJavascript; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:export_asset_manifest",
+      "sourceKind": "competitor-row",
+      "sourceName": "export_asset_manifest",
+      "workflowId": "asset.asset-manifest-export",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetManifestExport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:export_preferences",
+      "sourceKind": "competitor-row",
+      "sourceName": "export_preferences",
+      "workflowId": "asset.editor-preference",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: getEditorPreference (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:find_asset_by_name",
+      "sourceKind": "competitor-row",
+      "sourceName": "find_asset_by_name",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetQuery; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:find_node_by_name",
+      "sourceKind": "competitor-row",
+      "sourceName": "find_node_by_name",
+      "workflowId": "scene.find-nodes",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to findNodes; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:find_nodes",
+      "sourceKind": "competitor-row",
+      "sourceName": "find_nodes",
+      "workflowId": "scene.find-nodes",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to findNodes; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:focus_camera_on_nodes",
+      "sourceKind": "competitor-row",
+      "sourceName": "focus_camera_on_nodes",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:format_mcp_request",
+      "sourceKind": "competitor-row",
+      "sourceName": "format_mcp_request",
+      "workflowId": "other.execute-javascript",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: executeJavascript (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:generate_available_url",
+      "sourceKind": "competitor-row",
+      "sourceName": "generate_available_url",
+      "workflowId": "asset.asset-available-url",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetGetAvailableUrl; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_active_listeners",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_active_listeners",
+      "workflowId": "editor.broadcast-observe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to broadcastObserve; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_all_nodes",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_all_nodes",
+      "workflowId": "scene.node-tree",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeGetTree; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_all_preferences",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_all_preferences",
+      "workflowId": "asset.editor-preference",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to getEditorPreference; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_asset_dependencies",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_asset_dependencies",
+      "workflowId": "asset.asset-find-references",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetFindReferences; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_asset_details",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_asset_details",
+      "workflowId": "asset.asset-import-settings",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetImportSettingsGet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_asset_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_asset_info",
+      "workflowId": "asset.asset-at-path",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetGetAtPath; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_assets",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetQuery; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_available_components",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_available_components",
+      "workflowId": "scene.node-available-component-types",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeGetAvailableComponentTypes; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_broadcast_log",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_broadcast_log",
+      "workflowId": "diagnostics.broadcast-observe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to broadcastObserve; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_build_settings",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_build_settings",
+      "workflowId": "build.build",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to buildManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_component_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_component_info",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorGet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_components",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_components",
+      "workflowId": "scene.node-components",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeComponentsGet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_console_logs",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_console_logs",
+      "workflowId": "diagnostics.editor-logs",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorGetLogs; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_current_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_current_scene",
+      "workflowId": "scene.scene-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneGetInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_editor_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_editor_info",
+      "workflowId": "editor.editor-env-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorEnvInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_log_file_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_log_file_info",
+      "workflowId": "asset.editor-logs",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorGetLogs; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_network_interfaces",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_network_interfaces",
+      "workflowId": "build.editor-env-info",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorEnvInfo (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_node_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_node_info",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorGet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_node_tree",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_node_tree",
+      "workflowId": "scene.node-tree",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeGetTree; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_performance_stats",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_performance_stats",
+      "workflowId": "diagnostics.performance-snapshot",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to getPerformanceSnapshot; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_prefab_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_prefab_info",
+      "workflowId": "design-prefab.prefab-override-diff",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabOverrideDiff; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_prefab_list",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_prefab_list",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetQuery; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_project_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_project_info",
+      "workflowId": "editor.editor-env-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorEnvInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_project_logs",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_project_logs",
+      "workflowId": "diagnostics.editor-logs",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorGetLogs; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_project_settings",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_project_settings",
+      "workflowId": "other.project",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to projectManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_scene_hierarchy",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_scene_hierarchy",
+      "workflowId": "scene.node-tree",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeGetTree; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_scene_list",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_scene_list",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetQuery; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_scene_view_status",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_scene_view_status",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_server_status",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_server_status",
+      "workflowId": "build.editor-env-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorEnvInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:get_unused_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_unused_assets",
+      "workflowId": "asset.asset-usage-analyze",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetUsageAnalyze; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:import_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "import_asset",
+      "workflowId": "asset.asset-import",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetImport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:import_preferences",
+      "sourceKind": "competitor-row",
+      "sourceName": "import_preferences",
+      "workflowId": "asset.editor-preference",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: setEditorPreference (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:instantiate_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "instantiate_prefab",
+      "workflowId": "design-prefab.prefab-instantiate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabInstantiate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:list_reference_images",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_reference_images",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:listen_broadcast",
+      "sourceKind": "competitor-row",
+      "sourceName": "listen_broadcast",
+      "workflowId": "editor.broadcast-observe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to broadcastObserve; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:load_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "load_prefab",
+      "workflowId": "prefab.read-prefab-json",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to readPrefabJson; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:move_array_element",
+      "sourceKind": "competitor-row",
+      "sourceName": "move_array_element",
+      "workflowId": "other.property-array-element",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to propertyArrayElement; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:move_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "move_asset",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:move_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "move_node",
+      "workflowId": "scene.node-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:open_asset_external",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_asset_external",
+      "workflowId": "asset.program",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to programManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:open_build_panel",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_build_panel",
+      "workflowId": "build.build",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to buildManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:open_preferences_settings",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_preferences_settings",
+      "workflowId": "asset.editor-preference",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: getEditorPreference (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:open_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_scene",
+      "workflowId": "scene.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:paste_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "paste_node",
+      "workflowId": "animation.node-clipboard",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeClipboard; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_db_ready",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_asset_db_ready",
+      "workflowId": "asset.asset-db",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetDbQuery; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_path",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_asset_path",
+      "workflowId": "asset.asset-resolve-path",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetResolvePath; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_url",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_asset_url",
+      "workflowId": "asset.asset-resolve-path",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetResolvePath; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_uuid",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_asset_uuid",
+      "workflowId": "asset.asset-resolve-path",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetResolvePath; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_component_has_script",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_component_has_script",
+      "workflowId": "editor.editor",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorQuery; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_current_reference_image",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_current_reference_image",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_coordinate",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_gizmo_coordinate",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_pivot",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_gizmo_pivot",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_tool_name",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_gizmo_tool_name",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_view_mode",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_gizmo_view_mode",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_grid_visible",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_grid_visible",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_icon_gizmo_3d",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_icon_gizmo_3d",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_icon_gizmo_size",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_icon_gizmo_size",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_nodes_by_asset_uuid",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_nodes_by_asset_uuid",
+      "workflowId": "asset.find-nodes-asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to findNodesByAsset; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_preferences_config",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_preferences_config",
+      "workflowId": "asset.editor-preference",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to getEditorPreference; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_reference_image_config",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_reference_image_config",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_classes",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_scene_classes",
+      "workflowId": "scene.component-classes",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to listComponentClasses; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_components",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_scene_components",
+      "workflowId": "scene.node-available-component-types",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeGetAvailableComponentTypes; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_dirty",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_scene_dirty",
+      "workflowId": "scene.scene-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneGetInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_ready",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_scene_ready",
+      "workflowId": "editor.editor-state",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorState; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_server_ip_list",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_server_ip_list",
+      "workflowId": "build.editor-env-info",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorEnvInfo (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_server_port",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_server_port",
+      "workflowId": "asset.editor-preference",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to getEditorPreference; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_sorted_server_ip_list",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_sorted_server_ip_list",
+      "workflowId": "build.editor-env-info",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorEnvInfo (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:query_view_mode_2d_3d",
+      "sourceKind": "competitor-row",
+      "sourceName": "query_view_mode_2d_3d",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:refresh_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "refresh_assets",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:refresh_reference_image",
+      "sourceKind": "competitor-row",
+      "sourceName": "refresh_reference_image",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:reimport_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "reimport_asset",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:remove_array_element",
+      "sourceKind": "competitor-row",
+      "sourceName": "remove_array_element",
+      "workflowId": "other.property-array-element",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to propertyArrayElement; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:remove_component",
+      "sourceKind": "competitor-row",
+      "sourceName": "remove_component",
+      "workflowId": "scene.node-component",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeComponentManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:remove_reference_image",
+      "sourceKind": "competitor-row",
+      "sourceName": "remove_reference_image",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:reset_component",
+      "sourceKind": "competitor-row",
+      "sourceName": "reset_component",
+      "workflowId": "scene.node-reset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeReset; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:reset_node_property",
+      "sourceKind": "competitor-row",
+      "sourceName": "reset_node_property",
+      "workflowId": "scene.node-reset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeReset; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:reset_node_transform",
+      "sourceKind": "competitor-row",
+      "sourceName": "reset_node_transform",
+      "workflowId": "scene.node-reset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeReset; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:reset_preferences",
+      "sourceKind": "competitor-row",
+      "sourceName": "reset_preferences",
+      "workflowId": "asset.editor-preference",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: setEditorPreference (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:reset_scene_view",
+      "sourceKind": "competitor-row",
+      "sourceName": "reset_scene_view",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:restore_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "restore_prefab",
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabRevertOverrides; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:restore_prefab_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "restore_prefab_node",
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabRevertOverrides; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:revert_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "revert_prefab",
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabRevertOverrides; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:run_project",
+      "sourceKind": "competitor-row",
+      "sourceName": "run_project",
+      "workflowId": "runtime.preview",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to previewManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:safe_string_value",
+      "sourceKind": "competitor-row",
+      "sourceName": "safe_string_value",
+      "workflowId": "other.execute-javascript",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: executeJavascript (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:save_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "save_asset",
+      "workflowId": "asset.asset-save-content",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetSaveContent; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:save_asset_meta",
+      "sourceKind": "competitor-row",
+      "sourceName": "save_asset_meta",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:save_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "save_scene",
+      "workflowId": "scene.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:save_scene_as",
+      "sourceKind": "competitor-row",
+      "sourceName": "save_scene_as",
+      "workflowId": "scene.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:scene_snapshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "scene_snapshot",
+      "workflowId": "scene.scene-snapshot",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneSnapshot; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:scene_snapshot_abort",
+      "sourceKind": "competitor-row",
+      "sourceName": "scene_snapshot_abort",
+      "workflowId": "scene.scene-snapshot",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: sceneSnapshot (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:search_project_logs",
+      "sourceKind": "competitor-row",
+      "sourceName": "search_project_logs",
+      "workflowId": "diagnostics.editor-logs",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorGetLogs; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_component_property",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_component_property",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorSet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_grid_visible",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_grid_visible",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_icon_gizmo_3d",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_icon_gizmo_3d",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_icon_gizmo_size",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_icon_gizmo_size",
+      "workflowId": "editor.editor-viewport",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorViewport; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_node_property",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_node_property",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorSet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_node_transform",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_node_transform",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorSet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_preferences_config",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_preferences_config",
+      "workflowId": "asset.editor-preference",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to setEditorPreference; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_data",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_reference_image_data",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_opacity",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_reference_image_opacity",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_position",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_reference_image_position",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_scale",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_reference_image_scale",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:soft_reload_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "soft_reload_scene",
+      "workflowId": "scene.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:start_preview_server",
+      "sourceKind": "competitor-row",
+      "sourceName": "start_preview_server",
+      "workflowId": "build.preview",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to previewManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:stop_listening",
+      "sourceKind": "competitor-row",
+      "sourceName": "stop_listening",
+      "workflowId": "editor.broadcast-observe",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to broadcastObserve; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:stop_preview_server",
+      "sourceKind": "competitor-row",
+      "sourceName": "stop_preview_server",
+      "workflowId": "build.preview",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to previewManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:switch_reference_image",
+      "sourceKind": "competitor-row",
+      "sourceName": "switch_reference_image",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to referenceImageManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:update_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "update_prefab",
+      "workflowId": "design-prefab.prefab-overrides",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabApplyOverrides; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:validate_asset_references",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_asset_references",
+      "workflowId": "assets-import.asset-missing-reference-audit",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetMissingReferenceAudit; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:validate_json_params",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_json_params",
+      "workflowId": "diagnostics.execute-javascript",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: executeJavascript (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "cocos-mcp:validate_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_prefab",
+      "workflowId": "design-prefab.prefab-reference-audit",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabReferenceAudit; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "cocos-mcp:validate_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_scene",
+      "workflowId": "diagnostics.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to validateScene; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:add_animation_clip",
+      "sourceKind": "competitor-row",
+      "sourceName": "add_animation_clip",
+      "workflowId": "animation.animation-clip",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: animationClipConfigure (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:add_component",
+      "sourceKind": "competitor-row",
+      "sourceName": "add_component",
+      "workflowId": "scene.node-component",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeComponentManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:apply_prefab_instance",
+      "sourceKind": "competitor-row",
+      "sourceName": "apply_prefab_instance",
+      "workflowId": "design-prefab.prefab-overrides",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: prefabApplyOverrides (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:bind_button_click_event",
+      "sourceKind": "competitor-row",
+      "sourceName": "bind_button_click_event",
+      "workflowId": "scene.bind-button-click-event",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: bindButtonClickEvent (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:broadcast_editor_message",
+      "sourceKind": "competitor-row",
+      "sourceName": "broadcast_editor_message",
+      "workflowId": "editor.broadcast-observe",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: broadcastObserve (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:capture_desktop_screenshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "capture_desktop_screenshot",
+      "workflowId": "editor.capture-editor-screenshot",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: captureEditorScreenshot (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:capture_editor_screenshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "capture_editor_screenshot",
+      "workflowId": "editor.capture-editor-screenshot",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: captureEditorScreenshot (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:capture_game_screenshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "capture_game_screenshot",
+      "workflowId": "runtime.capture-scene-screenshot",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: captureSceneScreenshot (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:capture_preview_screenshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "capture_preview_screenshot",
+      "workflowId": "runtime.runtime-screenshot-assert",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimeScreenshotAssert (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:capture_scene_screenshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "capture_scene_screenshot",
+      "workflowId": "runtime.capture-scene-screenshot",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: captureSceneScreenshot (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:check_for_updates",
+      "sourceKind": "competitor-row",
+      "sourceName": "check_for_updates",
+      "workflowId": "runtime.check-for-updates",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:clear_logs",
+      "sourceKind": "competitor-row",
+      "sourceName": "clear_logs",
+      "workflowId": "asset.clear-logs",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:create_button",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_button",
+      "workflowId": "scene.ui-node",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: createUiNode (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_camera",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_camera",
+      "workflowId": "scene.node-primitive",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: nodeCreatePrimitive (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_canvas",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_canvas",
+      "workflowId": "scene.ui-node",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: createUiNode (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_cocos_mcp_project_skill",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_cocos_mcp_project_skill",
+      "workflowId": "other.write-project-instruction",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: writeProjectInstruction (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_label",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_label",
+      "workflowId": "scene.label",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: createLabel (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_node",
+      "workflowId": "scene.node",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeCreate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:create_prefab_from_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_prefab_from_node",
+      "workflowId": "prefab.node-operate",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: nodeOperate (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_prefab_instance",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_prefab_instance",
+      "workflowId": "asset.prefab-instance",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:create_project_skill",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_project_skill",
+      "workflowId": "other.write-project-instruction",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: writeProjectInstruction (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:create_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_scene",
+      "workflowId": "asset.asset",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetCreate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:create_sprite",
+      "sourceKind": "competitor-row",
+      "sourceName": "create_sprite",
+      "workflowId": "scene.ui-node",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: createUiNode (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:delete_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "delete_asset",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:delete_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "delete_node",
+      "workflowId": "scene.node-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:duplicate_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "duplicate_prefab",
+      "workflowId": "prefab.duplicate-prefab",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to duplicatePrefab; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:edit_prefab_json",
+      "sourceKind": "competitor-row",
+      "sourceName": "edit_prefab_json",
+      "workflowId": "prefab.edit-prefab-json",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editPrefabJson (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:emit_node_event",
+      "sourceKind": "competitor-row",
+      "sourceName": "emit_node_event",
+      "workflowId": "runtime.emit-node-event",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:execute_editor_script",
+      "sourceKind": "competitor-row",
+      "sourceName": "execute_editor_script",
+      "workflowId": "editor.execute-javascript",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: executeJavascript (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:execute_javascript",
+      "sourceKind": "competitor-row",
+      "sourceName": "execute_javascript",
+      "workflowId": "other.execute-javascript",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: executeJavascript (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:execute_scene_script",
+      "sourceKind": "competitor-row",
+      "sourceName": "execute_scene_script",
+      "workflowId": "scene.execute-javascript",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to executeJavascript; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:exists",
+      "sourceKind": "competitor-row",
+      "sourceName": "exists",
+      "workflowId": "asset.project-file-exists",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: projectFileExists (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:find_nodes",
+      "sourceKind": "competitor-row",
+      "sourceName": "find_nodes",
+      "workflowId": "scene.find-nodes",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to findNodes; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:get_build_status",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_build_status",
+      "workflowId": "build.build",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: buildManage (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_editor_preference",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_editor_preference",
+      "workflowId": "asset.editor-preference",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: getEditorPreference (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_editor_selection",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_editor_selection",
+      "workflowId": "editor.editor-select",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorSelect (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_editor_state",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_editor_state",
+      "workflowId": "editor.editor-state",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorState (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_file_snippet",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_file_snippet",
+      "workflowId": "asset.project-read-file",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: projectReadFile (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_hierarchy",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_hierarchy",
+      "workflowId": "runtime.hierarchy",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:get_performance_snapshot",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_performance_snapshot",
+      "workflowId": "diagnostics.performance-snapshot",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: getPerformanceSnapshot (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_preview_mode",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_preview_mode",
+      "workflowId": "runtime.runtime-preview",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimePreviewControl (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_project_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_project_info",
+      "workflowId": "editor.editor-env-info",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorEnvInfo; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:get_recent_logs",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_recent_logs",
+      "workflowId": "diagnostics.editor-logs",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorGetLogs (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_runtime_state",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_runtime_state",
+      "workflowId": "runtime.runtime-state",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimeGetState (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_scene_info",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_scene_info",
+      "workflowId": "scene.scene-info",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: sceneGetInfo (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_script_diagnostic_context",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_script_diagnostic_context",
+      "workflowId": "diagnostics.script-diagnostic-context",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: getScriptDiagnosticContext (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_selection",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_selection",
+      "workflowId": "editor.editor-select",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorSelect (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:get_tool_catalog",
+      "sourceKind": "competitor-row",
+      "sourceName": "get_tool_catalog",
+      "workflowId": "diagnostics.editor-state",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorState (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:inspect_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "inspect_asset",
+      "workflowId": "asset.asset",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: assetQuery (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:inspect_asset_dependencies",
+      "sourceKind": "competitor-row",
+      "sourceName": "inspect_asset_dependencies",
+      "workflowId": "asset.asset-find-references",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: assetFindReferences (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:inspect_component",
+      "sourceKind": "competitor-row",
+      "sourceName": "inspect_component",
+      "workflowId": "runtime.component",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:inspect_node",
+      "sourceKind": "competitor-row",
+      "sourceName": "inspect_node",
+      "workflowId": "scene.node",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: nodeCreate (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:inspect_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "inspect_prefab",
+      "workflowId": "prefab.read-prefab-json",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: readPrefabJson (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:inspect_prefab_instance",
+      "sourceKind": "competitor-row",
+      "sourceName": "inspect_prefab_instance",
+      "workflowId": "design-prefab.prefab-override-diff",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: prefabOverrideDiff (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:instantiate_prefab",
+      "sourceKind": "competitor-row",
+      "sourceName": "instantiate_prefab",
+      "workflowId": "design-prefab.prefab-instantiate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to prefabInstantiate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:invoke_component_method",
+      "sourceKind": "competitor-row",
+      "sourceName": "invoke_component_method",
+      "workflowId": "scene.call-component-method",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: callComponentMethod (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_animations",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_animations",
+      "workflowId": "animation.animation-catalog",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: animationCatalogInspect (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_assets",
+      "workflowId": "asset.asset",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: assetQuery (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_button_click_events",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_button_click_events",
+      "workflowId": "runtime.simulate-button-click",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: simulateButtonClick (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_cameras",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_cameras",
+      "workflowId": "runtime.cameras",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:list_components",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_components",
+      "workflowId": "runtime.components",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:list_directory",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_directory",
+      "workflowId": "other.project-directory",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: projectListDirectory (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_editor_windows",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_editor_windows",
+      "workflowId": "editor.editor-windows",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: listEditorWindows (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_prefabs",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_prefabs",
+      "workflowId": "asset.asset",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: assetQuery (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_project_instructions",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_project_instructions",
+      "workflowId": "other.read-project-instruction",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: readProjectInstruction (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:list_scenes",
+      "sourceKind": "competitor-row",
+      "sourceName": "list_scenes",
+      "workflowId": "asset.asset",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: assetQuery (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:open_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_asset",
+      "workflowId": "asset.asset",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: assetQuery (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:open_build_panel",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_build_panel",
+      "workflowId": "build.build",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to buildManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:open_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "open_scene",
+      "workflowId": "scene.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to sceneManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:pause_runtime",
+      "sourceKind": "competitor-row",
+      "sourceName": "pause_runtime",
+      "workflowId": "runtime.runtime-pause",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimePause (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:play_animation",
+      "sourceKind": "competitor-row",
+      "sourceName": "play_animation",
+      "workflowId": "animation.animation-runtime",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: animationRuntimeControl (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:read_file",
+      "sourceKind": "competitor-row",
+      "sourceName": "read_file",
+      "workflowId": "asset.project-read-file",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: projectReadFile (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:read_project_instruction",
+      "sourceKind": "competitor-row",
+      "sourceName": "read_project_instruction",
+      "workflowId": "other.read-project-instruction",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: readProjectInstruction (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:refresh_assets",
+      "sourceKind": "competitor-row",
+      "sourceName": "refresh_assets",
+      "workflowId": "asset.asset-operate",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to assetOperate; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:remove_component",
+      "sourceKind": "competitor-row",
+      "sourceName": "remove_component",
+      "workflowId": "scene.node-component",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to nodeComponentManage; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:replace_in_file",
+      "sourceKind": "competitor-row",
+      "sourceName": "replace_in_file",
+      "workflowId": "asset.project-replace-in-file",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: projectReplaceInFile (token score 0.75). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:reset_component_property",
+      "sourceKind": "competitor-row",
+      "sourceName": "reset_component_property",
+      "workflowId": "runtime.reset-component-property",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:resume_runtime",
+      "sourceKind": "competitor-row",
+      "sourceName": "resume_runtime",
+      "workflowId": "runtime.runtime-resume",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimeResume (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:revert_prefab_instance",
+      "sourceKind": "competitor-row",
+      "sourceName": "revert_prefab_instance",
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: prefabRevertOverrides (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:run_project_preview",
+      "sourceKind": "competitor-row",
+      "sourceName": "run_project_preview",
+      "workflowId": "runtime.runtime-preview",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimePreviewControl (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:run_scene_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "run_scene_asset",
+      "workflowId": "asset.runtime-preview",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runtimePreviewControl (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:run_script_diagnostics",
+      "sourceKind": "competitor-row",
+      "sourceName": "run_script_diagnostics",
+      "workflowId": "diagnostics.script-diagnostics",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: runScriptDiagnostics (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:save_current_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "save_current_scene",
+      "workflowId": "scene.scene",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: sceneManage (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:search_files",
+      "sourceKind": "competitor-row",
+      "sourceName": "search_files",
+      "workflowId": "asset.project-search-files",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: projectSearchFiles (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:search_project_logs",
+      "sourceKind": "competitor-row",
+      "sourceName": "search_project_logs",
+      "workflowId": "diagnostics.editor-logs",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to editorGetLogs; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:select_asset",
+      "sourceKind": "competitor-row",
+      "sourceName": "select_asset",
+      "workflowId": "asset.editor-select",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorSelect (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:set_camera_properties",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_camera_properties",
+      "workflowId": "runtime.camera-properties",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:set_component_property",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_component_property",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorSet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:set_editor_preference",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_editor_preference",
+      "workflowId": "asset.editor-preference",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: getEditorPreference (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:set_node_transform",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_node_transform",
+      "workflowId": "scene.inspector",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to inspectorSet; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:set_preview_mode",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_preview_mode",
+      "workflowId": "asset.preview-mode",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:set_selection",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_selection",
+      "workflowId": "editor.editor-select",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: editorSelect (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:set_time_scale",
+      "sourceKind": "competitor-row",
+      "sourceName": "set_time_scale",
+      "workflowId": "runtime.runtime-time-scale",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: runtimeSetTimeScale (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:simulate_button_click",
+      "sourceKind": "competitor-row",
+      "sourceName": "simulate_button_click",
+      "workflowId": "runtime.simulate-button-click",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: simulateButtonClick (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:simulate_key_combo",
+      "sourceKind": "competitor-row",
+      "sourceName": "simulate_key_combo",
+      "workflowId": "runtime.simulate-key-combo",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: simulateKeyCombo (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:simulate_key_press",
+      "sourceKind": "competitor-row",
+      "sourceName": "simulate_key_press",
+      "workflowId": "runtime.simulate-key-press",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: simulateKeyPress (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:simulate_mouse_click",
+      "sourceKind": "competitor-row",
+      "sourceName": "simulate_mouse_click",
+      "workflowId": "runtime.simulate-mouse-click",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: simulateMouseClick (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:simulate_mouse_drag",
+      "sourceKind": "competitor-row",
+      "sourceName": "simulate_mouse_drag",
+      "workflowId": "runtime.simulate-mouse-drag",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: simulateMouseDrag (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:simulate_preview_input",
+      "sourceKind": "competitor-row",
+      "sourceName": "simulate_preview_input",
+      "workflowId": "runtime.simulate-preview-input",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:stop_animation",
+      "sourceKind": "competitor-row",
+      "sourceName": "stop_animation",
+      "workflowId": "animation.animation-runtime",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: animationRuntimeControl (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:validate_asset_dependencies",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_asset_dependencies",
+      "workflowId": "asset.asset-dependencies",
+      "mapping": "competitor-only",
+      "rationale": "No sufficiently similar current public route found."
+    },
+    {
+      "sourceId": "funplay:validate_prefab_references",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_prefab_references",
+      "workflowId": "design-prefab.prefab-reference-audit",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: prefabReferenceAudit (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:validate_scene",
+      "sourceKind": "competitor-row",
+      "sourceName": "validate_scene",
+      "workflowId": "diagnostics.scene",
+      "mapping": "reviewed-supplementary",
+      "rationale": "Reused supplementary mapping to validateScene; original contract equivalence still requires acceptance review."
+    },
+    {
+      "sourceId": "funplay:write_file",
+      "sourceKind": "competitor-row",
+      "sourceName": "write_file",
+      "workflowId": "asset.project-write-file",
+      "mapping": "heuristic-provisional",
+      "rationale": "Best bounded CCB route: projectWriteFile (token score 0.67). Requires contract review."
+    },
+    {
+      "sourceId": "funplay:write_project_instruction",
+      "sourceKind": "competitor-row",
+      "sourceName": "write_project_instruction",
+      "workflowId": "other.write-project-instruction",
+      "mapping": "exact-name-provisional",
+      "rationale": "Best bounded CCB route: writeProjectInstruction (token score 1.00). Requires contract review."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetBatchImport",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetBatchImport",
+      "workflowId": "assets-import.asset-batch-import",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetBatchOperate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetBatchOperate",
+      "workflowId": "assets-import.asset-batch-operate",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetCompressionConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetCompressionConfigure",
+      "workflowId": "assets-import.asset-compression",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetImportSettingsGet",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetImportSettingsGet",
+      "workflowId": "asset.asset-import-settings",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetImportSettingsSet",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetImportSettingsSet",
+      "workflowId": "assets-import.asset-import-settings",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetManifestExport",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetManifestExport",
+      "workflowId": "asset.asset-manifest-export",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetMissingReferenceAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetMissingReferenceAudit",
+      "workflowId": "assets-import.asset-missing-reference-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetUsageAnalyze",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetUsageAnalyze",
+      "workflowId": "asset.asset-usage-analyze",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabApplyOverrides",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabApplyOverrides",
+      "workflowId": "design-prefab.prefab-overrides",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabInstantiate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabInstantiate",
+      "workflowId": "design-prefab.prefab-instantiate",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabOverrideDiff",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabOverrideDiff",
+      "workflowId": "design-prefab.prefab-override-diff",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabReferenceAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabReferenceAudit",
+      "workflowId": "design-prefab.prefab-reference-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabRevertOverrides",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabRevertOverrides",
+      "workflowId": "design-prefab.prefab-revert-overrides",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:previewResolutionSet",
+      "sourceKind": "lane-requirement",
+      "sourceName": "previewResolutionSet",
+      "workflowId": "ui-layout.preview-resolution",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:referenceImageManage",
+      "sourceKind": "lane-requirement",
+      "sourceName": "referenceImageManage",
+      "workflowId": "design-prefab.reference-image",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:sceneHierarchyValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "sceneHierarchyValidate",
+      "workflowId": "design-prefab.scene-hierarchy",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:sceneReferenceValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "sceneReferenceValidate",
+      "workflowId": "design-prefab.scene-reference",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:spriteAtlasConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "spriteAtlasConfigure",
+      "workflowId": "tilemap-atlas.sprite-atlas",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapInspect",
+      "workflowId": "tilemap-atlas.tilemap",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapLayerEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapLayerEdit",
+      "workflowId": "tilemap-atlas.tilemap-layer-edit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapObjectEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapObjectEdit",
+      "workflowId": "tilemap-atlas.tilemap-object-edit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapValidate",
+      "workflowId": "tilemap-atlas.tilemap",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiAccessibilityAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiAccessibilityAudit",
+      "workflowId": "ui-layout.ui-accessibility-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiCreateInputForm",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiCreateInputForm",
+      "workflowId": "runtime.ui-input-form",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiCreateScrollView",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiCreateScrollView",
+      "workflowId": "prefab.ui-scroll-view",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiLayoutApply",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiLayoutApply",
+      "workflowId": "scene.ui-layout",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiLayoutInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiLayoutInspect",
+      "workflowId": "scene.ui-layout",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiResponsivePreview",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiResponsivePreview",
+      "workflowId": "ui-layout.ui-responsive-preview",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphCreate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphCreate",
+      "workflowId": "animation-graph.animation-graph",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphEdit",
+      "workflowId": "animation-graph.animation-graph-edit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphInspect",
+      "workflowId": "animation-graph.animation-graph",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphPreview",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphPreview",
+      "workflowId": "animation-graph.animation-graph-preview",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphValidate",
+      "workflowId": "animation-graph.animation-graph",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationRetargetValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationRetargetValidate",
+      "workflowId": "animation-graph.animation-retarget",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioAssetCompatibilityAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioAssetCompatibilityAudit",
+      "workflowId": "audio.audio-asset-compatibility-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioPlaybackControl",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioPlaybackControl",
+      "workflowId": "audio.audio-playback",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioPlaybackObserve",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioPlaybackObserve",
+      "workflowId": "audio.audio-playback-observe",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioSourceConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioSourceConfigure",
+      "workflowId": "audio.audio-source",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationConfigure",
+      "workflowId": "skeletal-animation.skeletal-animation",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationEvents",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationEvents",
+      "workflowId": "skeletal-animation.skeletal-animation-events",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationInspect",
+      "workflowId": "skeletal-animation.skeletal-animation",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationPlay",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationPlay",
+      "workflowId": "skeletal-animation.skeletal-animation-play",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationValidate",
+      "workflowId": "skeletal-animation.skeletal-animation",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particleConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particleConfigure",
+      "workflowId": "particles.particle",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particleInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particleInspect",
+      "workflowId": "particles.particle",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particlePlayback",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particlePlayback",
+      "workflowId": "particles.particle-playback",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particleValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particleValidate",
+      "workflowId": "particles.particle",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dCompatibilityAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dCompatibilityAudit",
+      "workflowId": "physics-2d.physics2d-compatibility-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dConfigure",
+      "workflowId": "physics-2d.physics2d",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dCreateBody",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dCreateBody",
+      "workflowId": "physics-2d.physics2d-body",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dCreateJoint",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dCreateJoint",
+      "workflowId": "physics-2d.physics2d-joint",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dQuery",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dQuery",
+      "workflowId": "physics-2d.physics2d",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dTopologyAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dTopologyAudit",
+      "workflowId": "physics-2d.physics2d-topology-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dConfigure",
+      "workflowId": "physics-3d.physics3d",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dCreateBody",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dCreateBody",
+      "workflowId": "physics-3d.physics3d-body",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dCreateJoint",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dCreateJoint",
+      "workflowId": "physics-3d.physics3d-joint",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dTopologyAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dTopologyAudit",
+      "workflowId": "physics-3d.physics3d-topology-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dValidate",
+      "workflowId": "physics-3d.physics3d",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:lightBakeManage",
+      "sourceKind": "lane-requirement",
+      "sourceName": "lightBakeManage",
+      "workflowId": "rendering-materials.light-bake",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:materialEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "materialEdit",
+      "workflowId": "rendering-materials.material-edit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:modelImportConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "modelImportConfigure",
+      "workflowId": "terrain-model.model-import",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderConfigurationApply",
+      "sourceKind": "lane-requirement",
+      "sourceName": "renderConfigurationApply",
+      "workflowId": "rendering-materials.render-configuration",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderDiagnosticsCollect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "renderDiagnosticsCollect",
+      "workflowId": "rendering-materials.render-diagnostics-collect",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderPipelineInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "renderPipelineInspect",
+      "workflowId": "rendering-materials.render-pipeline",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:shaderValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "shaderValidate",
+      "workflowId": "rendering-materials.shader",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainCreate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "terrainCreate",
+      "workflowId": "terrain-model.terrain",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "terrainEdit",
+      "workflowId": "terrain-model.terrain-edit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "terrainInspect",
+      "workflowId": "terrain-model.terrain",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:assetBundleValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetBundleValidate",
+      "workflowId": "assets-import.asset-bundle",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildArtifactInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildArtifactInspect",
+      "workflowId": "asset.build-artifact",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildArtifactServe",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildArtifactServe",
+      "workflowId": "build-platform.build-artifact-serve",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildLogInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildLogInspect",
+      "workflowId": "build-platform.build-log",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildPresetAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildPresetAudit",
+      "workflowId": "build-platform.build-preset-audit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildTargetLaunch",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildTargetLaunch",
+      "workflowId": "build-platform.build-target-launch",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildTargetSmoke",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildTargetSmoke",
+      "workflowId": "build-platform.build-target-smoke",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildTaskWait",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildTaskWait",
+      "workflowId": "build-platform.build-task-wait",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationInspect",
+      "workflowId": "localization.localization",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationPreview",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationPreview",
+      "workflowId": "localization.localization-preview",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationTableEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationTableEdit",
+      "workflowId": "localization.localization-table-edit",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationValidate",
+      "workflowId": "localization.localization",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:projectSettingsValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "projectSettingsValidate",
+      "workflowId": "build-platform.project-settings",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:runtimeScenarioAssert",
+      "sourceKind": "lane-requirement",
+      "sourceName": "runtimeScenarioAssert",
+      "workflowId": "runtime-qa.runtime-scenario-assert",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:runtimeScenarioRun",
+      "sourceKind": "lane-requirement",
+      "sourceName": "runtimeScenarioRun",
+      "workflowId": "runtime-qa.runtime-scenario",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:runtimeStateObserve",
+      "sourceKind": "lane-requirement",
+      "sourceName": "runtimeStateObserve",
+      "workflowId": "runtime-qa.runtime-state-observe",
+      "mapping": "primary",
+      "rationale": "Named original child-plan requirement."
+    },
+    {
+      "sourceId": "parent:compound-scene",
+      "sourceKind": "parent-requirement",
+      "sourceName": "compound-scene",
+      "workflowId": "scene.compound-scene",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:golden-tracer",
+      "sourceKind": "parent-requirement",
+      "sourceName": "golden-tracer",
+      "workflowId": "build.golden-tracer",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:long-job",
+      "sourceKind": "parent-requirement",
+      "sourceName": "long-job",
+      "workflowId": "build.long-job",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:mutation-workflow",
+      "sourceKind": "parent-requirement",
+      "sourceName": "mutation-workflow",
+      "workflowId": "scene.mutation-workflow",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:runtime-capture",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-capture",
+      "workflowId": "runtime.runtime-capture",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:runtime-input",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-input",
+      "workflowId": "runtime.runtime-input",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:runtime-observation",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-observation",
+      "workflowId": "runtime.runtime-observation",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    },
+    {
+      "sourceId": "parent:runtime-session",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-session",
+      "workflowId": "runtime.runtime-session",
+      "mapping": "primary",
+      "rationale": "Explicit parent foundation requirement."
+    }
+  ]
+}
