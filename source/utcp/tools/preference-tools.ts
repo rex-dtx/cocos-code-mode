@@ -9,7 +9,7 @@ import packageJSON from '../../../package.json';
 // persistence of bridge behavior (port, tool profile, envelope).
 
 const KNOWN_KEYS: Record<string, string> = {
-    fixedServerPort: 'number — configured UTCP HTTP port (0 or unset = auto); changes apply on restart, never the actual bound auto port',
+    fixedServerPort: 'number — configured UTCP HTTP port (0 or unset = reusable auto port with occupied-port fallback)',
     toolProfile: 'string — "core" | "full" | "custom"',
     enabledTools: 'string[] — extra tools exposed when profile=core/custom',
     disabledTools: 'string[] — tools hidden even in profile=full',
@@ -55,7 +55,7 @@ export class PreferenceTools {
 
     @utcpTool(
         'setEditorPreference',
-        'Write a cc-bridge-3x persistent preference (Editor.Profile). Known keys are type-validated. fixedServerPort is an integer 0–65535; 0 selects auto allocation on the next restart.',
+        'Write a cc-bridge-3x persistent preference (Editor.Profile). Known keys are type-validated. fixedServerPort is an integer 0–65535; 0 selects reusable automatic allocation on the next restart.',
         {
             type: 'object',
             properties: {

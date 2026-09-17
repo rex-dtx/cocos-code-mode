@@ -33,23 +33,32 @@ async function stopPublishedServer(server: UtcpServerManager): Promise<void> {
 }
 
 async function startPublishedServer(port: number, debugLogging: boolean): Promise<number> {
-    const server = new UtcpServerManager();
-    server.setDebugEnabled(debugLogging);
-    try {
-        const actualPort = await server.start(port);
-        registryPaths.set(server, getConfigManager().getConfigPath());
-        await getConfigManager().updatePort(actualPort, server.instanceId);
-        utcpServer = server;
-        return actualPort;
-    } catch (error) {
+    const config = getConfigManager();
+    const preferred = port === 0 ? await config.getLastAutoPort() : port;
+    const attempts = preferred && port === 0 ? [preferred, 0] : [preferred];
+    let lastError: unknown;
+    for (const candidate of attempts) {
+        const server = new UtcpServerManager();
+        server.setDebugEnabled(debugLogging);
         try {
-            await stopPublishedServer(server);
-        } catch (cleanupError) {
-            console.error('[cx3][api] Failed to clean up unpublished UTCP Server:', cleanupError);
-            throw cleanupError;
+            const actualPort = await server.start(candidate);
+            registryPaths.set(server, config.getConfigPath());
+            await config.updatePort(actualPort, server.instanceId);
+            if (port === 0) await config.setLastAutoPort(actualPort);
+            utcpServer = server;
+            return actualPort;
+        } catch (error) {
+            lastError = error;
+            try { await stopPublishedServer(server); }
+            catch (cleanupError) {
+                console.error('[cx3][api] Failed to clean up unpublished UTCP Server:', cleanupError);
+                throw cleanupError;
+            }
+            if (!(port === 0 && candidate === preferred && preferred > 0
+                && error instanceof Error && 'code' in error && error.code === 'EADDRINUSE')) throw error;
         }
-        throw error;
     }
+    throw lastError;
 }
 
 

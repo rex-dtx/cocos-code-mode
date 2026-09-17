@@ -1,0 +1,1828 @@
+{
+  "date": "2026-09-17",
+  "method": "Actual compiled mutateRegistry called by synchronized Node child processes. total starts after child boot; wait includes mkdir and initial read; held begins at mutator callback, thus excludes lock creation/owner write/JSON read.",
+  "normalC": [
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.853099999999998,
+          "wait": 1.880200000000002,
+          "held": 2.974799999999995,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.0062,
+          "wait": 1.6871999999999971,
+          "held": 3.3206000000000024,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.794500000000003,
+          "wait": 1.6400000000000006,
+          "held": 3.1553000000000004,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.6601,
+          "wait": 1.6450999999999993,
+          "held": 3.016000000000002,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.106199999999998,
+          "wait": 1.6504999999999974,
+          "held": 3.4570000000000007,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.590199999999999,
+          "wait": 1.6319000000000017,
+          "held": 2.959199999999999,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.064899999999998,
+          "wait": 1.7713,
+          "held": 3.2944999999999993,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.761399999999998,
+          "wait": 1.6249000000000002,
+          "held": 3.1372999999999998,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.208500000000001,
+          "wait": 1.8399999999999999,
+          "held": 3.3694000000000024,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.664499999999997,
+          "wait": 1.7500999999999998,
+          "held": 2.9155999999999977,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 31.7211,
+          "wait": 28.526400000000002,
+          "held": 3.195699999999995,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 4.930900000000001,
+          "wait": 1.8085000000000022,
+          "held": 3.123299999999997,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 56.767799999999994,
+          "wait": 53.9374,
+          "held": 2.8312000000000097,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.696400000000001,
+          "wait": 1.7667000000000002,
+          "held": 2.9305999999999983,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 31.1421,
+          "wait": 27.664099999999998,
+          "held": 3.4791999999999987,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 57.1096,
+          "wait": 53.89359999999999,
+          "held": 3.2169999999999987,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.075500000000002,
+          "wait": 1.9735000000000014,
+          "held": 3.102999999999998,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.1707,
+          "wait": 29.019000000000002,
+          "held": 3.152799999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 58.3301,
+          "wait": 55.362899999999996,
+          "held": 2.968199999999996,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 4.9544999999999995,
+          "wait": 1.8438999999999979,
+          "held": 3.1117000000000026,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.1279,
+          "wait": 28.922500000000003,
+          "held": 3.2061999999999955,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 57.133599999999994,
+          "wait": 53.984,
+          "held": 3.1507000000000005,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 31.545299999999997,
+          "wait": 27.997700000000002,
+          "held": 3.548899999999996,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 4.9695,
+          "wait": 1.8732000000000006,
+          "held": 3.097200000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 57.34270000000001,
+          "wait": 54.22240000000001,
+          "held": 3.1212000000000018,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.1813,
+          "wait": 2.0659000000000027,
+          "held": 3.1164999999999985,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.0886,
+          "wait": 29.142200000000003,
+          "held": 2.9472999999999985,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 58.955600000000004,
+          "wait": 55.207899999999995,
+          "held": 3.7486999999999995,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 32.4465,
+          "wait": 28.762599999999996,
+          "held": 3.685200000000002,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 4.8886,
+          "wait": 1.921800000000001,
+          "held": 2.9681999999999995,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 58.2487,
+          "wait": 54.9123,
+          "held": 3.337299999999999,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.218,
+          "wait": 1.8681000000000019,
+          "held": 3.351800000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 58.323100000000004,
+          "wait": 54.452999999999996,
+          "held": 3.871700000000004,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 31.8175,
+          "wait": 27.936400000000003,
+          "held": 3.8823000000000008,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 6.176400000000001,
+          "wait": 2.0624000000000002,
+          "held": 4.115799999999997,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 33.781800000000004,
+          "wait": 30.426199999999998,
+          "held": 3.3571000000000026,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 58.05159999999999,
+          "wait": 54.3929,
+          "held": 3.659800000000004,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.353100000000001,
+          "wait": 1.8344000000000023,
+          "held": 3.5196000000000005,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 31.806,
+          "wait": 28.4999,
+          "held": 3.3074999999999974,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 59.2877,
+          "wait": 55.6036,
+          "held": 3.6850999999999914,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 86.0641,
+          "wait": 82.2513,
+          "held": 3.814300000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.052899999999994,
+          "wait": 29.0784,
+          "held": 2.9754000000000005,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 5.360000000000003,
+          "wait": 2.1569000000000003,
+          "held": 3.2041000000000004,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 59.661699999999996,
+          "wait": 56.1541,
+          "held": 3.5086999999999904,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 109.7476,
+          "wait": 105.49719999999999,
+          "held": 4.251400000000018,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.413200000000003,
+          "wait": 2.351300000000002,
+          "held": 3.062800000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.769099999999995,
+          "wait": 29.2923,
+          "held": 3.4780999999999977,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 58.606899999999996,
+          "wait": 55.226,
+          "held": 3.3825999999999965,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 86.2662,
+          "wait": 81.7972,
+          "held": 4.470399999999998,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 108.79380000000002,
+          "wait": 105.23640000000002,
+          "held": 3.558499999999981,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 58.824000000000005,
+          "wait": 55.7574,
+          "held": 3.067700000000002,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 165.2004,
+          "wait": 161.8203,
+          "held": 3.380899999999997,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 5.6652999999999984,
+          "wait": 2.534600000000001,
+          "held": 3.131599999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 32.43429999999999,
+          "wait": 29.0966,
+          "held": 3.338700000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 109.14220000000002,
+          "wait": 79.8824,
+          "held": 29.262,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 31.7012,
+          "wait": 28.7892,
+          "held": 2.9129999999999967,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 58.608599999999996,
+          "wait": 55.357200000000006,
+          "held": 3.2523999999999944,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 84.3427,
+          "wait": 81.2886,
+          "held": 3.0557000000000016,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 5.809699999999999,
+          "wait": 2.2304999999999993,
+          "held": 3.580199999999998,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 109.99210000000001,
+          "wait": 106.75079999999998,
+          "held": 3.242100000000022,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 59.412800000000004,
+          "wait": 55.72,
+          "held": 3.695300000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 31.7832,
+          "wait": 28.845,
+          "held": 2.9391000000000034,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 6.0284999999999975,
+          "wait": 2.8847999999999985,
+          "held": 3.1446000000000005,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 84.7733,
+          "wait": 81.9655,
+          "held": 2.8085999999999984,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 110.1281,
+          "wait": 106.8379,
+          "held": 3.2915999999999883,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 84.9173,
+          "wait": 81.9041,
+          "held": 3.014099999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 58.65560000000001,
+          "wait": 55.7368,
+          "held": 2.920199999999994,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 4.893799999999999,
+          "wait": 2.0228,
+          "held": 2.872,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 32.001,
+          "wait": 28.9169,
+          "held": 3.085000000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 111.47370000000001,
+          "wait": 108.23679999999999,
+          "held": 3.2378999999999962,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 33.0834,
+          "wait": 29.702099999999998,
+          "held": 3.382400000000004,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 85.0158,
+          "wait": 81.7214,
+          "held": 3.2952999999999975,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 5.543700000000001,
+          "wait": 2.4213000000000022,
+          "held": 3.1235,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 58.87559999999999,
+          "wait": 56.032,
+          "held": 2.844999999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 110.4448,
+          "wait": 107.1408,
+          "held": 3.3048,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 33.687900000000006,
+          "wait": 30.195300000000003,
+          "held": 3.4935999999999936,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 60.3323,
+          "wait": 56.4235,
+          "held": 3.91040000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 5.7635000000000005,
+          "wait": 2.5717999999999996,
+          "held": 3.192700000000002,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 86.7962,
+          "wait": 81.5967,
+          "held": 5.215500000000006,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 110.72130000000001,
+          "wait": 106.8955,
+          "held": 3.826999999999998,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5.716000000000001,
+          "wait": 2.1319000000000017,
+          "held": 3.5852000000000004,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 57.30989999999999,
+          "wait": 53.8243,
+          "held": 3.486699999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 33.1806,
+          "wait": 28.5088,
+          "held": 4.6736,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 84.16329999999999,
+          "wait": 80.8207,
+          "held": 3.3434999999999917,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 108.35950000000001,
+          "wait": 104.9157,
+          "held": 3.4455000000000098,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 58.9973,
+          "wait": 55.7737,
+          "held": 3.2250000000000085,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.87049999999999,
+          "wait": 29.380599999999998,
+          "held": 3.4913999999999987,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 6.8598,
+          "wait": 3.1602999999999994,
+          "held": 3.7011000000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 83.7236,
+          "wait": 79.8245,
+          "held": 3.900499999999994,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 109.15459999999999,
+          "wait": 105.75919999999999,
+          "held": 3.3967999999999847,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    }
+  ],
+  "normalG": [
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 9.094999999999999,
+          "wait": 3.9937000000000005,
+          "held": 5.1023,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 8.7395,
+          "wait": 3.9398000000000017,
+          "held": 4.800899999999999,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 8.5657,
+          "wait": 3.9068000000000005,
+          "held": 4.6599,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 9.147099999999998,
+          "wait": 3.8347999999999978,
+          "held": 5.313500000000001,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 1,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 9.561,
+          "wait": 4.265499999999999,
+          "held": 5.296500000000002,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 1,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 9.362499999999997,
+          "wait": 4.5718,
+          "held": 4.7917999999999985,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 36.6262,
+          "wait": 31.2218,
+          "held": 5.405999999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 59.953300000000006,
+          "wait": 55.243199999999995,
+          "held": 4.710900000000009,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 34.9109,
+          "wait": 30.214700000000004,
+          "held": 4.697199999999995,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 8.868599999999997,
+          "wait": 4.219799999999999,
+          "held": 4.649799999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 60.9829,
+          "wait": 55.9106,
+          "held": 5.073300000000003,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 36.805899999999994,
+          "wait": 31.023099999999996,
+          "held": 5.783900000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 8.953299999999999,
+          "wait": 4.0549,
+          "held": 4.8994,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 60.9113,
+          "wait": 56.2047,
+          "held": 4.708200000000005,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 8.5976,
+          "wait": 3.919500000000003,
+          "held": 4.679199999999998,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 35.059400000000004,
+          "wait": 30.1428,
+          "held": 4.9176,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 62.096799999999995,
+          "wait": 56.816300000000005,
+          "held": 5.281700000000001,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 3,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 9.165700000000001,
+          "wait": 4.196100000000001,
+          "held": 4.970700000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 36.179500000000004,
+          "wait": 31.0606,
+          "held": 5.119999999999997,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 61.816199999999995,
+          "wait": 57.0723,
+          "held": 4.745099999999994,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 3,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 62.82770000000001,
+          "wait": 58.30970000000001,
+          "held": 4.518999999999991,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 36.218500000000006,
+          "wait": 31.796499999999998,
+          "held": 4.4228999999999985,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 88.6381,
+          "wait": 83.8573,
+          "held": 4.781800000000004,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 9.354399999999998,
+          "wait": 4.1813,
+          "held": 5.174199999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 112.331,
+          "wait": 107.3292,
+          "held": 5.002800000000008,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 62.995,
+          "wait": 57.7884,
+          "held": 5.207700000000003,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 10.1678,
+          "wait": 4.047000000000001,
+          "held": 6.123000000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 36.479600000000005,
+          "wait": 31.259800000000002,
+          "held": 5.2211,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 88.2364,
+          "wait": 83.3263,
+          "held": 4.9110999999999905,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 115.7313,
+          "wait": 111.10310000000001,
+          "held": 4.629199999999997,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 9.268799999999999,
+          "wait": 4.152499999999996,
+          "held": 5.1174000000000035,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 36.310599999999994,
+          "wait": 31.450100000000003,
+          "held": 4.8614999999999995,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 63.9422,
+          "wait": 58.34349999999999,
+          "held": 5.599900000000005,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 87.8535,
+          "wait": 82.9461,
+          "held": 4.908500000000004,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 113.8065,
+          "wait": 108.44040000000001,
+          "held": 5.367500000000007,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 61.9367,
+          "wait": 57.01259999999999,
+          "held": 4.9254999999999995,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 114.044,
+          "wait": 109.4823,
+          "held": 4.562700000000007,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 8.890400000000003,
+          "wait": 4.094200000000001,
+          "held": 4.7972,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 35.1572,
+          "wait": 30.1548,
+          "held": 5.003399999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 85.8916,
+          "wait": 80.8828,
+          "held": 5.009699999999995,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 88.9205,
+          "wait": 83.5786,
+          "held": 5.343500000000006,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 8.823700000000002,
+          "wait": 4.207799999999999,
+          "held": 4.616900000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 61.05330000000001,
+          "wait": 56.1874,
+          "held": 4.866900000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 35.0921,
+          "wait": 30.143700000000003,
+          "held": 4.950099999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 111.96600000000001,
+          "wait": 105.9661,
+          "held": 6.000999999999991,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    }
+  ],
+  "cases": [
+    {
+      "n": 5,
+      "bytes": 262144,
+      "hold": 0,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 59.00080000000001,
+          "wait": 55.4396,
+          "held": 3.562100000000001,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 32.613800000000005,
+          "wait": 28.761499999999998,
+          "held": 3.853100000000005,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 84.73150000000001,
+          "wait": 81.5041,
+          "held": 3.2283000000000044,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 5.2866,
+          "wait": 2.1698999999999984,
+          "held": 3.1175999999999995,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 108.58449999999999,
+          "wait": 104.8243,
+          "held": 3.761099999999999,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 250,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 282.756,
+          "wait": 29.4247,
+          "held": 253.3324,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 302.2953,
+          "wait": 298.7844,
+          "held": 3.511799999999994,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 319.28929999999997,
+          "wait": 316.5122,
+          "held": 2.777999999999963,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 5.2959,
+          "wait": 2.2645000000000017,
+          "held": 3.032399999999999,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 344.8824,
+          "wait": 341.9207,
+          "held": 2.962699999999984,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 1000,
+      "fail": false,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 1032.9026999999999,
+          "wait": 29.1077,
+          "held": 1003.7961,
+          "ok": true
+        },
+        {
+          "id": "writer-1",
+          "total": 5.561399999999999,
+          "wait": 2.2216999999999985,
+          "held": 3.3408000000000015,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 1052.1853,
+          "wait": 1048.7954000000002,
+          "held": 3.390899999999874,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 1103.5115,
+          "wait": 1100.4953999999998,
+          "held": 3.0175000000001546,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 1075.0626,
+          "wait": 1072.1777000000002,
+          "held": 2.886399999999867,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 5,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 250,
+      "fail": true,
+      "orphan": false,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 306.2493,
+          "wait": 55.2578,
+          "ok": false,
+          "error": "INJECTED_FAILURE"
+        },
+        {
+          "id": "writer-1",
+          "total": 32.538,
+          "wait": 29.4768,
+          "held": 3.0623000000000005,
+          "ok": true
+        },
+        {
+          "id": "writer-2",
+          "total": 4.7805,
+          "wait": 2.0389000000000017,
+          "held": 2.7426999999999992,
+          "ok": true
+        },
+        {
+          "id": "writer-3",
+          "total": 317.6083,
+          "wait": 314.0202,
+          "held": 3.5889000000000237,
+          "ok": true
+        },
+        {
+          "id": "writer-4",
+          "total": 345.90319999999997,
+          "wait": 342.6823,
+          "held": 3.2217999999999734,
+          "ok": true
+        }
+      ],
+      "badReads": 0,
+      "entries": 4,
+      "preserved": true,
+      "lockRemains": false
+    },
+    {
+      "n": 5,
+      "bytes": 16384,
+      "hold": 0,
+      "fail": false,
+      "orphan": true,
+      "rows": [
+        {
+          "id": "writer-0",
+          "total": 5016.9391000000005,
+          "wait": null,
+          "ok": false,
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        },
+        {
+          "id": "writer-1",
+          "total": 5025.5169000000005,
+          "wait": null,
+          "ok": false,
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        },
+        {
+          "id": "writer-2",
+          "total": 5017.0659,
+          "wait": null,
+          "ok": false,
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        },
+        {
+          "id": "writer-3",
+          "total": 5013.5122,
+          "wait": null,
+          "ok": false,
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        },
+        {
+          "id": "writer-4",
+          "total": 5014.5221,
+          "wait": null,
+          "ok": false,
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        }
+      ],
+      "badReads": 0,
+      "entries": 0,
+      "preserved": true,
+      "lockRemains": true
+    }
+  ],
+  "slowLiveOwner": {
+    "n": 5,
+    "bytes": 16384,
+    "hold": 5500,
+    "fail": false,
+    "orphan": false,
+    "rows": [
+      {
+        "id": "writer-0",
+        "total": 5512.213699999999,
+        "wait": 4.455500000000001,
+        "held": 5507.7594,
+        "ok": true
+      },
+      {
+        "id": "writer-1",
+        "total": 5016.6374,
+        "wait": null,
+        "ok": false,
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+      },
+      {
+        "id": "writer-2",
+        "total": 5011.0771,
+        "wait": null,
+        "ok": false,
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+      },
+      {
+        "id": "writer-3",
+        "total": 5025.4165,
+        "wait": null,
+        "ok": false,
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+      },
+      {
+        "id": "writer-4",
+        "total": 5009.6639,
+        "wait": null,
+        "ok": false,
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+      }
+    ],
+    "badReads": 0,
+    "entries": 1,
+    "preserved": true,
+    "lockRemains": false
+  }
+}
