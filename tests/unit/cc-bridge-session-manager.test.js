@@ -25,6 +25,13 @@ it('keeps concurrent chats independent and rejects conflicting duplicate binding
   assert.equal(f.active.size,0);
   await assert.rejects(manager.open({sessionId:'c',project}), {code:'MANAGER_CLOSED'});
 });
+it('normalizes equivalent project spellings for one logical session', async () => {
+  const f=fixture(),manager=new SessionLifecycleManager(f);
+  const alternate=process.platform==='win32'?project.toUpperCase():path.join(project,'.');
+  const first=await manager.open({sessionId:'same',project});
+  assert.equal(await manager.open({sessionId:'same',project:alternate}),first);
+  await manager.shutdown();
+});
 it('portable JSONL processes independent opens and closes every chat on EOF', async () => {
   const f = fixture(), input = new PassThrough(), output = new PassThrough();
   let text = ''; output.on('data', chunk => {text += chunk;});

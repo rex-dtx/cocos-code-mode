@@ -20,7 +20,7 @@ function parseEndpoint(template) {
   try {
     const url = new URL(template.url);
     const port = Number(url.port || 80);
-    if (url.protocol !== 'http:' || !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+    if (url.protocol !== 'http:' || !['localhost', '127.0.0.1'].includes(url.hostname)
       || !/^\/utcp\/?$/.test(url.pathname) || url.username || url.password || url.search || url.hash
       || port > 65535 || port !== Number(match[1])) return null;
     if (url.hostname === 'localhost') url.hostname = '127.0.0.1';

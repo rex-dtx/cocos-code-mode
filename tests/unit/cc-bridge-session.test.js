@@ -47,6 +47,15 @@ it('requires explicit safe binding and a unique bounded session ID', () => {
   assert.throws(() => parseArgs(['--url', options.url, '--project', 'relative', ...args.slice(4)]));
 });
 
+it('rejects PID-only lifecycle ownership at the CLI boundary', () => {
+  const cli=require('../../scripts/session-presence/cli');
+  assert.throws(() => cli.parseArgs(['--registry','r','--project',project,'--session','s','--parent-pid','123']), /Unknown/);
+});
+
+it('rejects unsupported IPv6 loopback bindings', () => {
+  assert.throws(() => parseArgs(['--url','http://[::1]:3000/utcp','--project',project,'--instance','verified-instance','--session','s']), /IPv4 loopback/);
+});
+
 it('refuses both wrong instance and wrong project without sending any heartbeat', async t => {
   let reply = identity({ instanceId: 'wrong-instance' }), posts = 0;
   const options = await server(t, (req, res) => {

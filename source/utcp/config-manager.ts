@@ -42,7 +42,7 @@ export class UtcpConfigManager {
                 if (template.name === 'ccb3x' || /^ccb3x_\d+$/.test(template.name)) {
                     const url = new URL(template.url ?? '');
                     const endpointPort = Number(url.port);
-                    if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname) || url.protocol !== 'http:' || endpointPort < 1) {
+                    if (!['localhost', '127.0.0.1'].includes(url.hostname) || url.protocol !== 'http:' || endpointPort < 1) {
                         throw new Error('Invalid CCB endpoint in registry.');
                     }
                     const observedOwner = closed.get(endpointPort);
@@ -68,19 +68,27 @@ export class UtcpConfigManager {
     }
     private async findClosedCcbPorts(): Promise<Map<number, string | undefined>> {
         const config = this.readConfig();
-        const ports = [...new Set(config.manual_call_templates.flatMap(template => {
+        const candidates = new Map<number, string>();
+        for (const template of config.manual_call_templates) {
             const match = /^ccb3x_(\d+)$/.exec(template.name);
-            return match ? [Number(match[1])] : [];
-        }).filter(port => Number.isInteger(port) && port > 0 && port <= 65535))];
-        const results = await Promise.all(ports.map(async port => ({
-            port, closed: await this.isLoopbackPortClosed(port), owner: config.variables?.['CCB3X_OWNER_' + port],
+            if (!match || typeof template.url !== 'string') continue;
+            try {
+                const url = new URL(template.url);
+                const port = Number(match[1]);
+                if (!Number.isInteger(port) || port < 1 || port > 65535 || Number(url.port || 80) !== port
+                    || !['localhost', '127.0.0.1'].includes(url.hostname)) continue;
+                candidates.set(port, '127.0.0.1');
+            } catch { /* Invalid endpoints are rejected by the locked mutation. */ }
+        }
+        const results = await Promise.all([...candidates].map(async ([port, host]) => ({
+            port, closed: await this.isLoopbackPortClosed(host, port), owner: config.variables?.['CCB3X_OWNER_' + port],
         })));
         return new Map(results.filter(result => result.closed).map(result => [result.port, result.owner]));
     }
-    private isLoopbackPortClosed(port: number): Promise<boolean> {
+    private isLoopbackPortClosed(host: string, port: number): Promise<boolean> {
         // Creator 3.7's Node runtime has no Promise.withResolvers.
         return new Promise(resolve => {
-            const socket = connect({ host: '127.0.0.1', port });
+            const socket = connect({ host, port });
             let settled = false;
             const finish = (closed: boolean) => {
                 if (settled) return;
