@@ -1,4 +1,7 @@
 import { utcpTool } from '../decorators';
+import { RuntimePreviewResult, RuntimeSessionTools } from './runtime-session-tools';
+import { RuntimeSessionError } from '../utils/runtime-session-store';
+import { ToolError } from '../tool-error';
 
 // Runtime control tools — pause/resume game loop, adjust time scale, query state.
 // Delegates to scene.ts handlers via execute-scene-script for actual cc.* access.
@@ -14,10 +17,8 @@ export class RuntimeTools {
         ['runtime', 'pause', 'game', 'debug', 'control']
     )
     async runtimePause(): Promise<{ success: boolean }> {
-        const result = await Editor.Message.request('scene', 'execute-scene-script', {
-            name: 'cc-bridge-3x', method: 'runtimePause', args: [],
-        });
-        return { success: result === true };
+        await new RuntimeSessionTools().previewControl({ operation: 'pause' });
+        return { success: true };
     }
 
     @utcpTool(
@@ -29,10 +30,8 @@ export class RuntimeTools {
         ['runtime', 'resume', 'game', 'debug', 'control']
     )
     async runtimeResume(): Promise<{ success: boolean }> {
-        const result = await Editor.Message.request('scene', 'execute-scene-script', {
-            name: 'cc-bridge-3x', method: 'runtimeResume', args: [],
-        });
-        return { success: result === true };
+        await new RuntimeSessionTools().previewControl({ operation: 'resume' });
+        return { success: true };
     }
 
     @utcpTool(
@@ -50,14 +49,8 @@ export class RuntimeTools {
         ['runtime', 'time', 'scale', 'speed', 'slow', 'fast', 'game']
     )
     async runtimeSetTimeScale(args: { scale: number }): Promise<{ success: boolean, scale: number }> {
-        if (!Number.isFinite(args.scale)) {
-            throw new Error('runtimeSetTimeScale requires a finite number');
-        }
-        const scale = Math.max(0, Math.min(args.scale, 10));
-        const result = await Editor.Message.request('scene', 'execute-scene-script', {
-            name: 'cc-bridge-3x', method: 'runtimeSetTimeScale', args: [scale],
-        });
-        return { success: result === true, scale };
+        if (!Number.isFinite(args.scale)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeSetTimeScale requires a finite number.' });
+        throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: 'Creator execute-scene-script targets the edit renderer; game-view time-scale mutation is not qualified.' });
     }
 
     @utcpTool(
@@ -68,33 +61,29 @@ export class RuntimeTools {
             type: 'object',
             properties: {
                 paused: { type: 'boolean' },
-                timeScale: { type: 'number' },
-                frameCount: { type: 'number' },
+                timeScale: { type: ['number', 'null'] },
+                frameCount: { type: ['number', 'null'] },
             },
             required: ['paused'],
         },
         'GET',
         ['runtime', 'state', 'game', 'status', 'debug']
     )
-    async runtimeGetState(): Promise<{ paused: boolean, timeScale: number, frameCount: number }> {
-        const result = await Editor.Message.request('scene', 'execute-scene-script', {
-            name: 'cc-bridge-3x', method: 'runtimeGetState', args: [],
-        }) as any;
-        if (!result || typeof result !== 'object') throw new Error('runtimeGetState: no runtime state — is the preview/game running?');
-        // Reject partial payloads outright: field-level coercion would fabricate
-        // false/1/0 again — the exact false-success class this audit removes (docs §2).
-        if (typeof result.paused !== 'boolean' || typeof result.timeScale !== 'number' || typeof result.frameCount !== 'number') {
-            throw new Error(`runtimeGetState: malformed runtime payload ${JSON.stringify(result).slice(0, 160)}`);
-        }
-        return { paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
+    async runtimeGetState(): Promise<{ paused: boolean, timeScale: number | null, frameCount: number | null }> {
+        const result = await new RuntimeSessionTools().previewControl({ operation: 'state' });
+        if (!result.state) throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: 'Creator game-view is not running.' });
+        return { paused: result.state.paused, timeScale: result.state.timeScale, frameCount: result.state.frameCount };
     }
     @utcpTool(
         'runtimePreviewControl',
-        'Manage one Creator preview session lifecycle and optionally return runtime state. Operations start, pause, resume, stop, step, or state.',
+        'Control bounded Creator 3.7.3 game-view lifecycle with native read-back. Start returns actual session/scene identity; stop verifies termination. Browser and simulator transports are unsupported.',
         {
             type: 'object',
             properties: {
                 operation: { type: 'string', enum: ['start', 'pause', 'resume', 'stop', 'step', 'state'] },
+                sessionId: { type: 'string', minLength: 1, maxLength: 64 },
+                targetId: { type: 'string', minLength: 1, maxLength: 256, description: 'Optional expected scene UUID.' },
+                timeoutMs: { type: 'integer', minimum: 100, maximum: 60000 },
             },
             required: ['operation'],
         },
@@ -103,12 +92,17 @@ export class RuntimeTools {
             properties: {
                 success: { type: 'boolean' },
                 operation: { type: 'string' },
+                session: { type: 'object' },
+                preview: { type: 'object' },
+                ready: { type: 'boolean' },
                 state: {
                     type: 'object',
                     properties: {
                         paused: { type: 'boolean' },
-                        timeScale: { type: 'number' },
-                        frameCount: { type: 'number' },
+                        running: { type: 'boolean' },
+                        sceneUuid: { type: 'string' },
+                        timeScale: { type: ['number', 'null'] },
+                        frameCount: { type: ['number', 'null'] },
                     },
                 },
             },
@@ -117,33 +111,12 @@ export class RuntimeTools {
         'POST',
         ['runtime', 'session', 'preview', 'start', 'stop', 'pause', 'resume', 'step', 'state']
     )
-    async runtimeSessionManage(args: { operation: 'start' | 'pause' | 'resume' | 'stop' | 'step' | 'state' }): Promise<{
-        success: boolean,
-        operation: string,
-        state?: { paused: boolean, timeScale: number, frameCount: number },
-    }> {
-        switch (args.operation) {
-            case 'start':
-                await Editor.Message.request('scene', 'editor-preview-set-play', true);
-                return { success: true, operation: args.operation };
-            case 'stop':
-                await Editor.Message.request('scene', 'editor-preview-set-play', false);
-                return { success: true, operation: args.operation };
-            case 'pause':
-                await Editor.Message.request('scene', 'editor-preview-call-method', 'pause', true);
-                return { success: true, operation: args.operation };
-            case 'resume':
-                await Editor.Message.request('scene', 'editor-preview-call-method', 'resume', true);
-                return { success: true, operation: args.operation };
-            case 'step':
-                await Editor.Message.request('scene', 'editor-preview-call-method', 'step');
-                return { success: true, operation: args.operation };
-            case 'state': {
-                const state = await this.runtimeGetState();
-                return { success: true, operation: args.operation, state };
-            }
-            default:
-                throw new Error(`runtimeSessionManage: unknown operation ${String(args.operation)}`);
+    async runtimeSessionManage(args: { operation: 'start' | 'pause' | 'resume' | 'stop' | 'step' | 'state', sessionId?: string, targetId?: string, timeoutMs?: number }): Promise<RuntimePreviewResult> {
+        try {
+            return await new RuntimeSessionTools().previewControl(args);
+        } catch (error) {
+            if (error instanceof RuntimeSessionError) throw new ToolError({ code: error.code, status: error.code === 'SESSION_NOT_FOUND' ? 404 : 400, message: error.message });
+            throw error;
         }
     }
 }

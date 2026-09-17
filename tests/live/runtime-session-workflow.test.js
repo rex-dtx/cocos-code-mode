@@ -17,16 +17,18 @@ describe('live: verified game-view runtime session workflows', () => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
 
     await repeatTestcase('RUNTIME-SESSION-01', async ({ iteration }) => {
-      const state = await postTool('runtimePreviewControl', { operation: 'state' });
-      assert.equal(state.status, 200, JSON.stringify(state.body));
-      const expectedPaused = state.body.state.paused;
+      const before = await postTool('runtimePreviewControl', { operation: 'state' });
+      assert.equal(before.status, 200, JSON.stringify(before.body));
+      const started = await postTool('runtimeSessionLifecycle', { operation: 'start', targetKind: 'game-view' });
+      assert.equal(started.status, 200, JSON.stringify(started.body));
+      const expectedPaused = started.body.state.paused;
 
-      let sessionId;
+      let sessionId = started.body.session.sessionId;
       try {
         const attached = await postTool('runtimeSessionLifecycle', {
           operation: 'attach',
           targetKind: 'game-view',
-          targetId: `qualification-${process.pid}-${iteration}`,
+          targetId: started.body.session.targetId,
         });
         assert.equal(attached.status, 200, JSON.stringify(attached.body));
         assert.equal(attached.body.success, true);
@@ -42,7 +44,7 @@ describe('live: verified game-view runtime session workflows', () => {
         const waited = await postTool('runtimeWaitForState', {
           sessionId,
           paused: expectedPaused,
-          minFrameCount: observed.body.state.frameCount,
+          ...(observed.body.state.frameCount === null ? {} : { minFrameCount: observed.body.state.frameCount }),
           timeoutMs: 1000,
         });
         assert.equal(waited.status, 200, JSON.stringify(waited.body));
@@ -51,7 +53,7 @@ describe('live: verified game-view runtime session workflows', () => {
         const asserted = await postTool('runtimeScenarioAssert', {
           sessionId,
           paused: expectedPaused,
-          minFrameCount: observed.body.state.frameCount,
+          ...(observed.body.state.frameCount === null ? {} : { minFrameCount: observed.body.state.frameCount }),
         });
         assert.equal(asserted.status, 200, JSON.stringify(asserted.body));
         assert.equal(asserted.body.passed, true);
@@ -60,7 +62,7 @@ describe('live: verified game-view runtime session workflows', () => {
           sessionId,
           steps: [
             { operation: 'assert', paused: expectedPaused },
-            { operation: 'wait', minFrameCount: observed.body.state.frameCount, timeoutMs: 1000 },
+            { operation: 'wait', paused: expectedPaused, timeoutMs: 1000 },
           ],
         });
         assert.equal(scenario.status, 200, JSON.stringify(scenario.body));
@@ -78,19 +80,23 @@ describe('live: verified game-view runtime session workflows', () => {
         assert.equal(invalidWait.body.code, 'INVALID_ARGUMENT');
       } finally {
         if (sessionId) {
-          const stoppedSession = await postExpectedErrorTool('runtimeSessionLifecycle', {
-            operation: 'stop',
-            sessionId,
-          }, 'candidate.previewSessionInspect.negative.v1');
-          assert.equal(stoppedSession.status, 409, JSON.stringify(stoppedSession.body));
-          assert.equal(stoppedSession.body.code, 'RUNTIME_CONTROL_UNAVAILABLE');
+          const stoppedSession = await postTool('runtimeSessionLifecycle', { operation: 'stop', sessionId });
+          assert.equal(stoppedSession.status, 200, JSON.stringify(stoppedSession.body));
+          assert.equal(stoppedSession.body.session.status, 'stopped');
+          const native = await postTool('runtimePreviewControl', { operation: 'state' });
+          assert.equal(native.body.preview.state, 'stop');
+          assert.equal(native.body.preview.enabled, false);
           const stale = await postTool('previewSessionInspect', { sessionId });
           assert.equal(stale.status, 200, JSON.stringify(stale.body));
           assert.equal(stale.body.ready, false);
           assert.equal(stale.body.stale, true);
+          await postTool('runtimeSessionLifecycle', { operation: 'reset', sessionId });
         }
-        // The preview already existed before this scenario. Leave it running;
-        // only the bounded local runtime session is stopped above.
+        if (before.body.ready) {
+          const restored = await postTool('runtimePreviewControl', { operation: 'start' });
+          if (before.body.preview.state === 'pause') await postTool('runtimePreviewControl', { operation: 'pause' });
+          if (restored.body.session) await postTool('runtimeSessionLifecycle', { operation: 'reset', sessionId: restored.body.session.sessionId });
+        }
       }
     });
   });

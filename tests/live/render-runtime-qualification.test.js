@@ -29,6 +29,6 @@ describe('live: render and runtime candidate witnesses', () => {
     assert.equal(missing.body.code, 'SESSION_NOT_FOUND');
     const unavailable = await postTool('runtimeSessionLifecycle', { operation: 'attach', targetKind: 'game-view', targetId: '__missing_preview__' });
     assert.equal(unavailable.status, 409);
-    assert.equal(unavailable.body.code, 'RUNTIME_NOT_READY');
+    assert.ok(['RUNTIME_TARGET_CHANGED', 'RUNTIME_NOT_READY'].includes(unavailable.body.code));
   });
 });

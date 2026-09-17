@@ -1,5 +1,6 @@
 import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
+import { dispatchGameViewLifecycle, inspectGameViewRuntime } from '../utils/game-view-transport';
 import {
     RuntimeSession,
     RuntimeSessionError,
@@ -7,25 +8,37 @@ import {
     RuntimeTargetKind,
 } from '../utils/runtime-session-store';
 
-type RuntimeState = { running: boolean, paused: boolean, timeScale: number, frameCount: number };
+type RuntimeState = { running: boolean, paused: boolean, timeScale: number | null, frameCount: number | null, sceneUuid: string };
+type PreviewState = { state: 'play' | 'pause' | 'stop', sceneUuid: string, gamePaused: boolean | null, enabled: boolean, ready: boolean, platform: string, webContentsId: number | null };
+type PreviewOperation = 'start' | 'stop' | 'pause' | 'resume' | 'step' | 'state';
+export interface RuntimePreviewResult {
+    success: true;
+    operation: string;
+    session?: RuntimeSession;
+    state?: RuntimeState;
+    preview: PreviewState;
+    ready: boolean;
+}
 
 type LifecycleArgs = {
-    operation: 'attach' | 'inspect' | 'stop' | 'reset' | 'list';
+    operation: 'start' | 'attach' | 'inspect' | 'stop' | 'reset' | 'list';
     targetKind?: RuntimeTargetKind;
     targetId?: string;
     sessionId?: string;
+    timeoutMs?: number;
 };
 
 const store = new RuntimeSessionStore();
-const RUNTIME_STATE_TIMEOUT_MS = 10_000;
+const RUNTIME_STATE_TIMEOUT_MS = 60_000;
+let previewMutationPending = false;
 
-async function withRuntimeStateTimeout<T>(promise: Promise<T>): Promise<T> {
+async function withRuntimeStateTimeout<T>(promise: Promise<T>, deadline = Date.now() + RUNTIME_STATE_TIMEOUT_MS): Promise<T> {
     let timer: NodeJS.Timeout | undefined;
     try {
         return await Promise.race([
             promise,
             new Promise<never>((_resolve, reject) => {
-                timer = setTimeout(() => reject(new Error(`Runtime state inspection timed out after ${RUNTIME_STATE_TIMEOUT_MS}ms`)), RUNTIME_STATE_TIMEOUT_MS);
+                timer = setTimeout(() => reject(new ToolError({ code: 'RUNTIME_STATE_TIMEOUT', status: 409, message: 'Preview operation exceeded its deadline; any in-flight Creator request may still complete.', recovery: 'Inspect the preview before retrying a mutation.' })), Math.max(0, deadline - Date.now()));
             }),
         ]);
     } finally {
@@ -36,14 +49,15 @@ async function withRuntimeStateTimeout<T>(promise: Promise<T>): Promise<T> {
 export class RuntimeSessionTools {
     @utcpTool(
         'runtimeSessionLifecycle',
-        'Attach, inspect, stop, reset and list finite runtime sessions with verified Creator preview readiness.',
+        'Start, attach, inspect, stop, release local handles and list bounded Creator 3.7.3 game-view sessions. Browser and simulator transports are unsupported.',
         {
             type: 'object',
             properties: {
-                operation: { type: 'string', enum: ['attach', 'inspect', 'stop', 'reset', 'list'] },
+                operation: { type: 'string', enum: ['start', 'attach', 'inspect', 'stop', 'reset', 'list'] },
                 targetKind: { type: 'string', enum: ['game-view', 'browser-preview', 'simulator'] },
-                targetId: { type: 'string', minLength: 1, maxLength: 256 },
+                targetId: { type: 'string', minLength: 1, maxLength: 256, description: 'Optional expected scene UUID; arbitrary target labels are not accepted.' },
                 sessionId: { type: 'string', minLength: 1, maxLength: 64 },
+                timeoutMs: { type: 'integer', minimum: 100, maximum: 60000 },
             },
             required: ['operation'],
         },
@@ -55,12 +69,13 @@ export class RuntimeSessionTools {
                 session: { type: 'object' },
                 sessions: { type: 'array' },
                 state: { type: 'object' },
+                preview: { type: 'object' },
                 ready: { type: 'boolean' },
             },
             required: ['success', 'operation'],
         },
         'POST',
-        ['runtime', 'session', 'lifecycle', 'attach', 'inspect', 'stop', 'reset', 'list'],
+        ['runtime', 'session', 'lifecycle', 'start', 'attach', 'inspect', 'stop', 'reset', 'list'],
     )
     async runtimeSessionLifecycle(args: LifecycleArgs): Promise<{
         success: boolean;
@@ -68,10 +83,13 @@ export class RuntimeSessionTools {
         session?: RuntimeSession | { sessionId: string; reset: true };
         sessions?: RuntimeSession[];
         state?: RuntimeState;
+        preview?: PreviewState;
         ready?: boolean;
     }> {
         try {
             switch (args.operation) {
+                case 'start':
+                    return await this.previewControl({ ...args, operation: 'start' });
                 case 'attach':
                     return await this.attach(args);
                 case 'inspect':
@@ -100,8 +118,8 @@ export class RuntimeSessionTools {
         state: RuntimeState;
         ready: boolean;
     }> {
-        if (!args.targetKind || !args.targetId) {
-            throw new RuntimeSessionError('INVALID_ARGUMENT', 'attach requires targetKind and targetId');
+        if (!args.targetKind) {
+            throw new RuntimeSessionError('INVALID_ARGUMENT', 'attach requires targetKind');
         }
         if (args.targetKind !== 'game-view') {
             throw new ToolError({
@@ -111,10 +129,12 @@ export class RuntimeSessionTools {
                 recovery: 'Use targetKind=game-view or qualify the target transport before attaching.',
             });
         }
+        if (previewMutationPending) throw new ToolError({ code: 'RUNTIME_CONTROL_BUSY', status: 409, message: 'Wait for the pending preview lifecycle transition before attaching.' });
         let state: RuntimeState;
         try {
-            state = await this.readState();
+            state = await this.readState(args.targetId);
         } catch (error) {
+            if (error instanceof ToolError) throw error;
             throw new ToolError({
                 code: 'RUNTIME_NOT_READY',
                 status: 409,
@@ -123,7 +143,7 @@ export class RuntimeSessionTools {
                 details: { cause: error instanceof Error ? error.message : String(error) },
             });
         }
-        const session = store.attach(args.targetKind, args.targetId);
+        const session = store.attach(args.targetKind, state.sceneUuid);
         return { success: true, operation: 'attach', session, state, ready: true };
     }
 
@@ -138,10 +158,10 @@ export class RuntimeSessionTools {
         if (session.status === 'stopped') return { success: true, operation: 'inspect', session, ready: false };
         if (session.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: `Runtime target ${session.targetKind} has no verified transport.` });
         try {
-            const state = await this.readState();
+            const state = await this.readState(session.targetId);
             return { success: true, operation: 'inspect', session, state, ready: true };
         } catch (error) {
-            store.reset(session.sessionId);
+            if (error instanceof ToolError) throw error;
             throw new ToolError({
                 code: 'RUNTIME_NOT_READY',
                 status: 409,
@@ -152,35 +172,110 @@ export class RuntimeSessionTools {
         }
     }
 
-    private stop(args: LifecycleArgs): never {
-        store.stop(args.sessionId ?? '');
-        throw new ToolError({
-            code: 'RUNTIME_CONTROL_UNAVAILABLE',
-            status: 409,
-            message: 'Creator preview stop control is not verified for this runtime target; local session was stopped.',
-            recovery: 'Use runtimePreviewControl to stop the Creator preview, then reset this session.',
-        });
+    private async stop(args: LifecycleArgs): Promise<{ success: true, operation: string, session: RuntimeSession, ready: false }> {
+        const session = store.inspect(args.sessionId ?? '');
+        const result = await this.previewControl({ operation: 'stop', sessionId: session.sessionId, timeoutMs: args.timeoutMs });
+        return { success: true, operation: 'stop', session: result.session!, ready: false };
     }
 
-    private reset(args: LifecycleArgs): never {
-        store.reset(args.sessionId ?? '');
-        throw new ToolError({
-            code: 'RUNTIME_CONTROL_UNAVAILABLE',
-            status: 409,
-            message: 'Creator preview reset control is not verified for this runtime target; local session was released.',
-            recovery: 'Use a Creator version with a verified preview lifecycle transport.',
-        });
+    private reset(args: LifecycleArgs): { success: true, operation: string, session: { sessionId: string, reset: true } } {
+        return { success: true, operation: 'reset', session: store.reset(args.sessionId ?? '') };
     }
 
-    private async readState(): Promise<RuntimeState> {
-        const result: unknown = await withRuntimeStateTimeout(Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'runtimeGetState', args: [] }));
-        if (!result || typeof result !== 'object'
-            || !('paused' in result) || typeof result.paused !== 'boolean'
-            || !('timeScale' in result) || typeof result.timeScale !== 'number'
-            || !('frameCount' in result) || typeof result.frameCount !== 'number') {
-            throw new Error('Runtime preview returned malformed state');
+    private async readPreviewState(deadline: number): Promise<PreviewState> {
+        const result = await withRuntimeStateTimeout(inspectGameViewRuntime(), deadline);
+        return { state: result.running ? result.paused ? 'pause' : 'play' : 'stop', sceneUuid: result.sceneUuid,
+            gamePaused: result.running ? result.paused : null, enabled: result.enabled, ready: result.ready,
+            platform: result.platform, webContentsId: result.webContentsId };
+    }
+
+    private async readState(targetId?: string, deadline = Date.now() + RUNTIME_STATE_TIMEOUT_MS): Promise<RuntimeState> {
+        const result = await withRuntimeStateTimeout(inspectGameViewRuntime(), deadline);
+        if (!result.running || typeof result.paused !== 'boolean') throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: 'Creator game-view preview is stopped.' });
+        if (targetId && result.sceneUuid !== targetId) throw new ToolError({ code: 'RUNTIME_TARGET_CHANGED', status: 409, message: 'The actual game-view scene no longer matches this session.', details: { targetId, sceneUuid: result.sceneUuid } });
+        return { running: result.running, paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount, sceneUuid: result.sceneUuid };
+    }
+
+    async previewControl(args: { operation: PreviewOperation, sessionId?: string, targetId?: string, targetKind?: RuntimeTargetKind, timeoutMs?: number }): Promise<RuntimePreviewResult> {
+        const timeoutMs = args.timeoutMs ?? 30_000;
+        if (!['start', 'stop', 'pause', 'resume', 'step', 'state'].includes(args.operation)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Unknown preview operation.' });
+        if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > RUNTIME_STATE_TIMEOUT_MS) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'timeoutMs must be an integer from 100 to 60000.' });
+        if (args.targetKind && args.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: 'Only Creator 3.7.3 game-view lifecycle is supported.' });
+        const deadline = Date.now() + timeoutMs;
+        const session = args.sessionId ? store.inspect(args.sessionId) : undefined;
+        if (session?.status === 'stopped') throw new ToolError({ code: 'RUNTIME_SESSION_STOPPED', status: 409, message: 'This session already stopped; it cannot control a replacement preview.' });
+        if (args.operation === 'state') {
+            const preview = await this.readPreviewState(deadline);
+            const targetId = session?.targetId ?? args.targetId;
+            if (preview.enabled && targetId && preview.sceneUuid !== targetId) throw new ToolError({ code: 'RUNTIME_TARGET_CHANGED', status: 409, message: 'The current scene no longer matches the requested target.' });
+            const state = preview.state === 'stop' ? undefined : await this.readState(targetId, deadline);
+            return { success: true, operation: 'state', preview, state, ready: !!state };
         }
-        return { running: true, paused: result.paused, timeScale: result.timeScale, frameCount: result.frameCount };
+        let unsettledRequest: Promise<unknown> | undefined;
+        if (previewMutationPending) throw new ToolError({ code: 'RUNTIME_CONTROL_BUSY', status: 409, message: 'A preview lifecycle operation is already pending.' });
+        previewMutationPending = true;
+        try {
+            if (args.operation === 'start') {
+                const platform: unknown = await withRuntimeStateTimeout(Editor.Profile.getConfig('preview', 'preview.current.platform', 'local'), deadline);
+                if (platform !== 'gameView') throw new ToolError({
+                    code: 'RUNTIME_PLATFORM_REQUIRED', status: 409,
+                    message: 'Select Game View in the Creator preview toolbar before starting a game-view session.',
+                    details: { platform: typeof platform === 'string' ? platform : null },
+                    recovery: 'Select Game View manually, wait for its preview transport to load, then retry. This tool does not change the selected platform.',
+                });
+            }
+            let preview = await this.readPreviewState(deadline);
+            if (args.operation === 'start' && (preview.platform !== 'gameView' || !preview.ready)) throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: 'Select Game View and wait for its renderer to load before starting.' });
+            const targetId = session?.targetId ?? args.targetId ?? preview.sceneUuid;
+            if (args.operation !== 'start' && preview.enabled && targetId && targetId !== preview.sceneUuid) throw new ToolError({ code: 'RUNTIME_TARGET_CHANGED', status: 409, message: 'The requested scene does not match the current preview.', details: { targetId, sceneUuid: preview.sceneUuid } });
+            if (args.operation === 'start') store.assertCapacity('game-view', preview.sceneUuid || undefined);
+            if (!['start', 'stop'].includes(args.operation) && preview.state === 'stop') throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: 'Start game-view preview before controlling playback.' });
+            if (args.operation === 'step' && preview.state !== 'pause') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Pause game-view before stepping it.' });
+            const before = args.operation === 'step' ? await this.readState(preview.sceneUuid, deadline) : undefined;
+            if (before && before.frameCount === null) throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_METRIC', status: 422, message: 'Game-view does not expose a frame counter for verified stepping.' });
+            const expected = args.operation === 'stop' ? 'stop' : args.operation === 'pause' || args.operation === 'step' || (args.operation === 'start' && preview.state === 'pause') ? 'pause' : 'play';
+            let requestFailure: unknown;
+            if (args.operation === 'start' || args.operation === 'stop') {
+                await dispatchGameViewLifecycle(args.operation === 'start');
+            } else {
+                const request = args.operation === 'step'
+                    ? Editor.Message.request('scene', 'editor-preview-call-method', 'step')
+                    : Editor.Message.request('scene', 'editor-preview-call-method', 'pause', args.operation === 'pause');
+                unsettledRequest = request;
+                void request.then(undefined, error => { requestFailure = error; });
+            }
+            for (;;) {
+                if (requestFailure !== undefined) throw requestFailure;
+                preview = await this.readPreviewState(deadline);
+                if (args.operation !== 'start' && args.operation !== 'stop' && targetId && preview.sceneUuid !== targetId) throw new ToolError({ code: 'RUNTIME_TARGET_CHANGED', status: 409, message: 'Preview target changed during playback control.' });
+                if (preview.state === expected && (expected === 'stop' ? !preview.enabled : preview.gamePaused === (expected === 'pause'))) {
+                    // Actual Game View renderer state is the authoritative postcondition.
+                    // Creator 3.7.3 can leave the official message promise unsettled after
+                    // the renderer is already running/stopped; do not retain a false busy lock.
+                    unsettledRequest = undefined;
+                    if (args.operation === 'stop') {
+                        const stopped = session ? store.stop(session.sessionId) : undefined;
+                        for (const attached of store.list()) {
+                            if (attached.status === 'attached' && attached.targetKind === 'game-view' && attached.targetId === targetId) store.stop(attached.sessionId);
+                        }
+                        return { success: true, operation: 'stop', session: stopped, preview, ready: false };
+                    }
+                    const state = await this.readState(args.operation === 'start' ? args.targetId : targetId, deadline);
+                    if (!before || (state.frameCount !== null && before.frameCount !== null && state.frameCount > before.frameCount)) {
+                        const attached = args.operation === 'start' ? store.attach('game-view', state.sceneUuid) : session;
+                        return { success: true, operation: args.operation, session: attached, state, preview, ready: true };
+                    }
+                }
+                await withRuntimeStateTimeout(new Promise<void>((resolve) => setTimeout(resolve, 50)), deadline);
+            }
+        } catch (error) {
+            if (error instanceof ToolError || error instanceof RuntimeSessionError) throw error;
+            throw new ToolError({ code: 'RUNTIME_CONTROL_UNAVAILABLE', status: 409, message: 'Creator preview control failed; target state is unconfirmed.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Inspect the target before retrying.' });
+        } finally {
+            if (unsettledRequest) {
+                void unsettledRequest.then(() => { previewMutationPending = false; }, () => { previewMutationPending = false; });
+            } else previewMutationPending = false;
+        }
     }
     @utcpTool(
         'runtimeStateObserve',
@@ -200,10 +295,11 @@ export class RuntimeSessionTools {
                     properties: {
                         running: { type: 'boolean' },
                         paused: { type: 'boolean' },
-                        timeScale: { type: 'number' },
-                        frameCount: { type: 'integer', minimum: 0 },
+                        timeScale: { type: ['number', 'null'] },
+                        frameCount: { type: ['integer', 'null'], minimum: 0 },
+                        sceneUuid: { type: 'string' },
                     },
-                    required: ['running', 'paused', 'timeScale', 'frameCount'],
+                    required: ['running', 'paused', 'timeScale', 'frameCount', 'sceneUuid'],
                 },
             },
             required: ['success', 'sessionId', 'state'],
@@ -235,8 +331,9 @@ export class RuntimeSessionTools {
             });
         }
         try {
-            return { success: true, sessionId: session.sessionId, state: await this.readState() };
+            return { success: true, sessionId: session.sessionId, state: await this.readState(session.targetId) };
         } catch (error) {
+            if (error instanceof ToolError) throw error;
             throw new ToolError({
                 code: 'RUNTIME_NOT_READY',
                 status: 409,
@@ -281,18 +378,21 @@ export class RuntimeSessionTools {
         if (session.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: `Runtime target ${session.targetKind} has no verified transport.` });
         if (args.paused === undefined && args.minFrameCount === undefined) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeWaitForState requires paused or minFrameCount.' });
         const timeoutMs = args.timeoutMs ?? 10000;
+        if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > RUNTIME_STATE_TIMEOUT_MS) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'timeoutMs must be an integer from 100 to 10000.' });
         const started = Date.now();
-        let state = await this.readState();
-        while ((args.paused !== undefined && state.paused !== args.paused) || (args.minFrameCount !== undefined && state.frameCount < args.minFrameCount)) {
+        const deadline = started + timeoutMs;
+        let state = await this.readState(session.targetId, deadline);
+        while ((args.paused !== undefined && state.paused !== args.paused) || (args.minFrameCount !== undefined && (state.frameCount === null || state.frameCount < args.minFrameCount))) {
+            if (args.minFrameCount !== undefined && state.frameCount === null) throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_METRIC', status: 422, message: 'Game-view frame count is unavailable.' });
             if (Date.now() - started >= timeoutMs) throw new ToolError({ code: 'RUNTIME_STATE_TIMEOUT', status: 409, message: 'Runtime state did not match the requested condition before timeout.', recovery: 'Start a verified game-view preview or increase timeoutMs within the bound.', details: { state, elapsedMs: Date.now() - started } });
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            state = await this.readState();
+            await withRuntimeStateTimeout(new Promise<void>((resolve) => setTimeout(resolve, 50)), deadline);
+            state = await this.readState(session.targetId, deadline);
         }
         return { success: true, sessionId: session.sessionId, state, elapsedMs: Date.now() - started };
     }
     @utcpTool(
         'previewSessionInspect',
-        'Inspect one attached preview session and verify its current preview URL.',
+        'Inspect a session against native game-view state and scene identity; URL is ancillary server metadata, never readiness proof.',
         {
             type: 'object',
             additionalProperties: false,
@@ -316,14 +416,19 @@ export class RuntimeSessionTools {
             throw error;
         }
         if (session.status === 'stopped') return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url: '', ready: false, stale: true };
+        const deadline = Date.now() + RUNTIME_STATE_TIMEOUT_MS;
+        const preview = await this.readPreviewState(deadline);
+        const stale = preview.sceneUuid !== session.targetId;
+        if (stale || preview.state === 'stop') return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url: '', ready: false, stale };
+        await this.readState(session.targetId, deadline);
         let url: unknown;
         try {
-            url = await Editor.Message.request('preview', 'query-preview-url');
+            url = await withRuntimeStateTimeout(Editor.Message.request('preview', 'query-preview-url'), deadline);
         } catch (error) {
             throw new ToolError({ code: 'UNSUPPORTED_EDITOR_API', status: 422, message: 'Creator does not expose preview/query-preview-url.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Use a Creator version with preview URL query support.' });
         }
-        if (typeof url !== 'string' || url.length === 0) return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url: '', ready: false, stale: false };
-        return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url, ready: true, stale: false };
+        if (typeof url !== 'string') url = '';
+        return { success: true, sessionId: session.sessionId, targetKind: session.targetKind, url: url as string, ready: true, stale: false };
     }
     @utcpTool(
         'runtimeScenarioRun',
@@ -400,10 +505,11 @@ export class RuntimeSessionTools {
         if (session.status === 'stopped') throw new ToolError({ code: 'RUNTIME_SESSION_STOPPED', status: 409, message: `Runtime session is stopped: ${session.sessionId}`, recovery: 'Attach a new game-view session before asserting runtime state.' });
         if (session.targetKind !== 'game-view') throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422, message: `Runtime target ${session.targetKind} has no verified transport.` });
         if (args.paused === undefined && args.minFrameCount === undefined) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'runtimeScenarioAssert requires paused or minFrameCount.' });
-        const state = await this.readState();
+        const state = await this.readState(session.targetId);
         const issues: string[] = [];
         if (args.paused !== undefined && state.paused !== args.paused) issues.push(`paused expected ${args.paused} but was ${state.paused}`);
-        if (args.minFrameCount !== undefined && state.frameCount < args.minFrameCount) issues.push(`frameCount expected at least ${args.minFrameCount} but was ${state.frameCount}`);
+        if (args.minFrameCount !== undefined && state.frameCount === null) throw new ToolError({ code: 'UNSUPPORTED_RUNTIME_METRIC', status: 422, message: 'Game-view frame count is unavailable.' });
+        if (args.minFrameCount !== undefined && state.frameCount !== null && state.frameCount < args.minFrameCount) issues.push(`frameCount expected at least ${args.minFrameCount} but was ${state.frameCount}`);
         return { success: true, sessionId: session.sessionId, passed: issues.length === 0, state, issues };
     }
 }

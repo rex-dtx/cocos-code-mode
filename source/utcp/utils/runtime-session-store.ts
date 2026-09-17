@@ -43,9 +43,7 @@ export class RuntimeSessionStore {
         ));
         if (existing) return this.clone(existing);
 
-        if (this.sessions.size >= this.maxSessions) {
-            throw new RuntimeSessionError('SESSION_LIMIT', `Runtime session limit reached (${this.maxSessions})`);
-        }
+        this.assertCapacity(targetKind, targetId);
 
         const session: RuntimeSession = {
             sessionId: `runtime-${this.nextId++}`,
@@ -56,6 +54,14 @@ export class RuntimeSessionStore {
         };
         this.sessions.set(session.sessionId, session);
         return this.clone(session);
+    }
+
+    assertCapacity(targetKind: RuntimeTargetKind, targetId?: string): void {
+        if (targetId !== undefined) this.validateTarget(targetKind, targetId);
+        for (const session of this.sessions.values()) {
+            if (session.status === 'attached' && session.targetKind === targetKind && session.targetId === targetId) return;
+        }
+        if (this.sessions.size >= this.maxSessions) throw new RuntimeSessionError('SESSION_LIMIT', `Runtime session limit reached (${this.maxSessions})`);
     }
 
     inspect(sessionId: string): RuntimeSession {
