@@ -10,6 +10,7 @@ const {
   postExpectedErrorTool,
   repeatTestcase,
   healthCheck,
+  fetchTargetUrl,
 } = require('../helpers/utcp-client');
 
 describe('live: build artifact server qualification', () => {
@@ -49,7 +50,7 @@ describe('live: build artifact server qualification', () => {
         serverId = started.body.serverId;
         url = started.body.url;
 
-        const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+        const response = await fetchTargetUrl(url);
         assert.equal(response.status, 200);
         assert.match(await response.text(), new RegExp(expected));
 
@@ -78,7 +79,7 @@ describe('live: build artifact server qualification', () => {
       }
 
       await assert.rejects(
-        fetch(url, { signal: AbortSignal.timeout(1000) }),
+        fetchTargetUrl(url, { signal: AbortSignal.timeout(1000) }),
         (error) => error && (error.name === 'TypeError' || error.name === 'TimeoutError'),
       );
       assert.equal(fs.existsSync(absolutePath), false);

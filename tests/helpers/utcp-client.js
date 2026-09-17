@@ -123,6 +123,13 @@ async function getExpectedErrorJson(urlPath, testId, init = {}) {
   });
 }
 
+async function fetchTargetUrl(url, init = {}) {
+  if (typeof url !== 'string' || !/^http:\/\/127\.0\.0\.1:\d+\//.test(url)) {
+    throw new Error('Target URL must be a loopback HTTP URL returned by a CC Bridge tool.');
+  }
+  return fetch(url, { ...init, signal: init.signal || AbortSignal.timeout(5000) });
+}
+
 const actionDelayMs = Math.min(5000, Math.max(0, Number(process.env.CCB_ACTION_DELAY_MS || 5) || 0));
 
 async function delayAfterAction() {
@@ -215,4 +222,4 @@ function resVal(body) {
   return null;
 }
 
-module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, logTestIteration, repeatTestcase, healthCheck, getCanvasReference, resVal };
+module.exports = { discoverBase, getJson, getExpectedErrorJson, postTool, postExpectedErrorTool, logTestIteration, repeatTestcase, healthCheck, getCanvasReference, resVal, fetchTargetUrl };

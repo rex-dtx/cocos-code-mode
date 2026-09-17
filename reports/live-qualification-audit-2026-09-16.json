@@ -1,0 +1,2466 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-16T11:39:27.338Z",
+  "mode": "quiet",
+  "target": {
+    "baseUrl": "http://localhost:59196",
+    "port": null
+  },
+  "portfolio": {
+    "primary": 80,
+    "reserve": 20,
+    "total": 100,
+    "states": {
+      "qualified": 71,
+      "replace": 6,
+      "probe-required": 16,
+      "implemented-unverified": 4,
+      "candidate": 3
+    }
+  },
+  "staticPortfolioAudit": {
+    "ok": true,
+    "baselineCount": 86,
+    "registeredToolCount": 214,
+    "expansionToolCount": 128,
+    "primaryCandidateCount": 80,
+    "reserveCandidateCount": 20,
+    "replaceCount": 6,
+    "probeRequiredCount": 16,
+    "potentiallyQualifiableCount": 94,
+    "minimumNet": 71,
+    "approvalMargin": 11,
+    "requiredApprovalCount": 82,
+    "approvedCount": 75,
+    "readyForBulkImplementation": false,
+    "dependencyMetadataComplete": true,
+    "witnessContractCount": 46,
+    "evidencePlanComplete": true
+  },
+  "liveTransportAudit": {
+    "ok": true,
+    "checkedFiles": 49,
+    "violations": []
+  },
+  "liveSuite": {
+    "command": "node --test --test-reporter=tap tests/live/ui-fallback.test.js tests/live/alx-inspired-editor-qualification.test.js tests/live/animation-atlas-qualification.test.js tests/live/animation-editor-workflow.test.js tests/live/animation-witness.test.js tests/live/asset-import-settings-qualification.test.js tests/live/audio-asset-compatibility-audit.test.js tests/live/audio-source-configure.test.js tests/live/build-artifact-serve-qualification.test.js tests/live/build-log-qualification.test.js tests/live/build-preset-qualification.test.js tests/live/build-target-qualification.test.js tests/live/build-target-route-scenarios.test.js tests/live/candidate-expansion-qualification.test.js tests/live/cocos-graph.test.js tests/live/core-entity-workflow.test.js tests/live/editor-handshake-qualification.test.js tests/live/editor-panel-capture-qualification.test.js tests/live/editor-viewport-gizmo.test.js tests/live/execute-js-components.test.js tests/live/execute-js-core.test.js tests/live/gap-closure.test.js tests/live/manual.test.js tests/live/material-edit-qualification.test.js tests/live/particle-playback-error-scenarios.test.js tests/live/particle-playback-qualification.test.js tests/live/portfolio-completion-qualification.test.js tests/live/qualification-scene-readiness.test.js tests/live/read-only-candidate-qualification.test.js tests/live/read-only-tools.test.js tests/live/reference-image-qualification.test.js tests/live/render-runtime-qualification.test.js tests/live/responsive-preview-qualification.test.js tests/live/runtime-input-dispatch.test.js tests/live/runtime-screenshot-assert.test.js tests/live/runtime-session-error-scenarios.test.js tests/live/runtime-session-workflow.test.js tests/live/runtime-visual-input-workflow.test.js tests/live/spine-interactive-asset.test.js tests/live/sprite-interactive-asset.test.js tests/live/terrain-create-qualification.test.js tests/live/tilemap-qualification.test.js tests/live/ui-form-validation-qualification.test.js tests/live/ui-layout-inspect.test.js tests/live/ui-layout-report.test.js tests/live/ui-safe-area-inspect.test.js tests/live/ui/ui-component-expansion.test.js tests/live/ui/ui-component-feature-workflow.test.js tests/live/validation-graph-qualification.test.js",
+    "exitCode": 1,
+    "summary": {
+      "tests": 292,
+      "pass": 0,
+      "fail": 5,
+      "skipped": 287,
+      "durationMs": 6385
+    },
+    "files": [
+      {
+        "file": "tests/live/ui-fallback.test.js",
+        "tools": [
+          "assetCreate",
+          "assetImport",
+          "assetOperate",
+          "assetQuery",
+          "assetSaveContent",
+          "bindButtonClickEvent",
+          "callComponentMethod",
+          "createLabel",
+          "createUiNode",
+          "duplicatePrefab",
+          "editPrefabJson",
+          "editorEnvInfo",
+          "executeJavascript",
+          "getEditorPreference",
+          "inspectorSet",
+          "nodeClipboard",
+          "nodeComponentManage",
+          "nodeComponentsGet",
+          "nodeCreate",
+          "nodeCreatePrimitive",
+          "nodeOperate",
+          "nodeReset",
+          "propertyArrayElement",
+          "readPrefabJson",
+          "setEditorPreference",
+          "simulateButtonClick",
+          "simulateKeyCombo",
+          "simulateKeyPress",
+          "simulateMouseClick",
+          "simulateMouseDrag",
+          "uiCreateInputForm",
+          "uiCreateScrollView",
+          "uiLayoutApply",
+          "uiLayoutInspect",
+          "uiLayoutValidate"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 14,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 14,
+          "durationMs": 126
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/alx-inspired-editor-qualification.test.js",
+        "tools": [
+          "executeJavascript",
+          "nodeGetPath",
+          "nodeOperate",
+          "uiLayoutAlign"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 113
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/animation-atlas-qualification.test.js",
+        "tools": [
+          "skeletalAnimationInspect",
+          "skeletalAnimationValidate",
+          "spriteAtlasConfigure"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 2,
+          "durationMs": 122
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/animation-editor-workflow.test.js",
+        "tools": [
+          "animationEdit",
+          "animationQuery",
+          "animationRuntimeControl",
+          "editorSelect",
+          "editorViewport",
+          "executeJavascript",
+          "findNodes"
+        ],
+        "status": "failed",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "durationMs": 130
+        },
+        "attempts": 2
+      },
+      {
+        "file": "tests/live/animation-witness.test.js",
+        "tools": [
+          "animationRuntimeControl",
+          "executeJavascript",
+          "findNodes",
+          "skeletalAnimationInspect",
+          "skeletalAnimationValidate"
+        ],
+        "status": "failed",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 1,
+          "skipped": 1,
+          "durationMs": 124
+        },
+        "attempts": 2
+      },
+      {
+        "file": "tests/live/asset-import-settings-qualification.test.js",
+        "tools": [
+          "assetCompressionConfigure",
+          "assetImportSettingsGet",
+          "assetImportSettingsSet",
+          "assetOperate",
+          "assetQuery"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 117
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/audio-asset-compatibility-audit.test.js",
+        "tools": [
+          "assetQuery",
+          "audioAssetCompatibilityAudit"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 120
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/audio-source-configure.test.js",
+        "tools": [
+          "audioSourceConfigure",
+          "audioSourceInspect",
+          "executeJavascript"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 131
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/build-artifact-serve-qualification.test.js",
+        "tools": [
+          "buildArtifactServe",
+          "editorState"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 117
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/build-log-qualification.test.js",
+        "tools": [
+          "buildLogInspect",
+          "buildManage"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 127
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/build-preset-qualification.test.js",
+        "tools": [
+          "buildPresetAudit"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 174
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/build-target-qualification.test.js",
+        "tools": [
+          "buildArtifactServe",
+          "buildTargetLaunch",
+          "buildTargetSmoke",
+          "editorState"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 156
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/build-target-route-scenarios.test.js",
+        "tools": [
+          "buildArtifactServe",
+          "buildTargetLaunch",
+          "editorState"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 136
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/candidate-expansion-qualification.test.js",
+        "tools": [
+          "assetCatalogManifest",
+          "assetImportSettingsGet",
+          "assetImporterAudit",
+          "assetOperate",
+          "assetQuery",
+          "audioSourceAudit",
+          "buildManage",
+          "buildOutputAudit",
+          "buildTaskWait",
+          "executeJavascript",
+          "inspectorGet",
+          "modelImportConfigure",
+          "nodeComponentManage",
+          "nodeCreate",
+          "nodeOperate",
+          "particleInspect",
+          "particleValidate",
+          "physics2dCompatibilityAudit",
+          "physics2dCreateBody",
+          "physics2dCreateJoint",
+          "physics2dTopologyAudit",
+          "physics3dCreateBody",
+          "physics3dCreateJoint",
+          "physics3dTopologyAudit",
+          "physics3dValidate",
+          "sceneHierarchyValidate",
+          "sceneScriptHealthScan",
+          "skeletalAnimationConfigure",
+          "terrainInspect"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 11,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 11,
+          "durationMs": 129
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/cocos-graph.test.js",
+        "tools": [
+          "assetResolvePath",
+          "nodeGetTree",
+          "sceneGetInfo"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 125
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/core-entity-workflow.test.js",
+        "tools": [
+          "createUiNode",
+          "findNodes",
+          "nodeBatchSet",
+          "nodeGetPath",
+          "nodeOperate",
+          "previewManage",
+          "sceneBatchGet"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 124
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/editor-handshake-qualification.test.js",
+        "tools": [
+          "editorHandshake",
+          "editorState"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 124
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/editor-panel-capture-qualification.test.js",
+        "tools": [
+          "editorPanelCapture",
+          "listEditorWindows"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 117
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/editor-viewport-gizmo.test.js",
+        "tools": [
+          "createUiNode",
+          "editorSelect",
+          "editorViewport",
+          "nodeBatchSet",
+          "nodeOperate"
+        ],
+        "status": "failed",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 1,
+          "skipped": 1,
+          "durationMs": 129
+        },
+        "attempts": 2
+      },
+      {
+        "file": "tests/live/execute-js-components.test.js",
+        "tools": [
+          "executeJavascript"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 54,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 54,
+          "durationMs": 145
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/execute-js-core.test.js",
+        "tools": [
+          "executeJavascript"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 77,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 77,
+          "durationMs": 164
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/gap-closure.test.js",
+        "tools": [
+          "assetQuery",
+          "assetResolvePath",
+          "executeJavascript",
+          "findNodes"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 10,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 10,
+          "durationMs": 124
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/manual.test.js",
+        "tools": [
+          "assetGetTree",
+          "assetQuery",
+          "inspectorGetDefinition",
+          "nodeComponentsGet",
+          "nodeGetTree",
+          "previewManage"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 8,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 8,
+          "durationMs": 123
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/material-edit-qualification.test.js",
+        "tools": [
+          "assetCreate",
+          "assetImportSettingsGet",
+          "assetOperate",
+          "assetQuery",
+          "materialEdit"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 114
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/particle-playback-error-scenarios.test.js",
+        "tools": [
+          "executeJavascript",
+          "runtimeSessionLifecycle"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 114
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/particle-playback-qualification.test.js",
+        "tools": [
+          "executeJavascript",
+          "particlePlayback",
+          "runtimeSessionLifecycle"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 116
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/portfolio-completion-qualification.test.js",
+        "tools": [
+          "assetSceneUsageAudit",
+          "findNodes",
+          "nodeOperate",
+          "uiVirtualListCreate"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 2,
+          "durationMs": 113
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/qualification-scene-readiness.test.js",
+        "tools": [],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 114
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/read-only-candidate-qualification.test.js",
+        "tools": [
+          "assetBatchImport",
+          "assetBatchOperate",
+          "assetMissingReferenceAudit",
+          "executeJavascript",
+          "prefabInstantiate",
+          "prefabOverrideDiff",
+          "prefabReferenceAudit",
+          "projectSettingsValidate",
+          "sceneReferenceValidate",
+          "uiAccessibilityAudit",
+          "uiFocusNavigation"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 7,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 7,
+          "durationMs": 118
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/read-only-tools.test.js",
+        "tools": [
+          "animationEdit",
+          "animationQuery",
+          "assetBatchQuery",
+          "assetDbQuery",
+          "assetFindReferences",
+          "assetGetAtPath",
+          "assetGetAvailableUrl",
+          "assetImportSettingsGet",
+          "assetManifestExport",
+          "assetOperate",
+          "assetQuery",
+          "assetReadContent",
+          "assetUsageAnalyze",
+          "audioAssetValidate",
+          "audioSourceInspect",
+          "buildArtifactInspect",
+          "buildManage",
+          "buildPresetValidate",
+          "captureEditorScreenshot",
+          "captureSceneScreenshot",
+          "editorEnvInfo",
+          "editorGetLogs",
+          "editorHistory",
+          "editorQuery",
+          "editorSelect",
+          "editorViewport",
+          "executeJavascript",
+          "findNodes",
+          "findNodesByAsset",
+          "findNodesWithMissingAssets",
+          "getEditorPreference",
+          "getPerformanceSnapshot",
+          "getScriptDiagnosticContext",
+          "listComponentClasses",
+          "listComponentMethods",
+          "listEditorWindows",
+          "materialQuery",
+          "nodeBatchSet",
+          "nodeGetAtPath",
+          "nodeGetAvailableComponentTypes",
+          "nodeGetTree",
+          "physics2dInspect",
+          "physics2dValidate",
+          "physics3dInspect",
+          "programManage",
+          "projectFileExists",
+          "projectListDirectory",
+          "projectManage",
+          "projectReadFile",
+          "projectReplaceInFile",
+          "projectSearchFiles",
+          "projectWriteFile",
+          "readPrefabJson",
+          "readProjectInstruction",
+          "runScriptDiagnostics",
+          "runtimeGetState",
+          "runtimePause",
+          "runtimePreviewControl",
+          "runtimeResume",
+          "runtimeSetTimeScale",
+          "sceneBatchGet",
+          "sceneGetInfo",
+          "sceneManage",
+          "sceneSnapshot",
+          "writeProjectInstruction"
+        ],
+        "status": "failed",
+        "summary": {
+          "tests": 38,
+          "pass": 0,
+          "fail": 1,
+          "skipped": 37,
+          "durationMs": 153
+        },
+        "attempts": 2
+      },
+      {
+        "file": "tests/live/reference-image-qualification.test.js",
+        "tools": [
+          "referenceImageManage"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 114
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/render-runtime-qualification.test.js",
+        "tools": [
+          "renderPipelineInspect",
+          "runtimeSessionLifecycle"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 2,
+          "durationMs": 110
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/responsive-preview-qualification.test.js",
+        "tools": [
+          "nodeGetAtPath",
+          "uiResponsivePreview"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 111
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/runtime-input-dispatch.test.js",
+        "tools": [
+          "runtimeInputDispatch"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 114
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/runtime-screenshot-assert.test.js",
+        "tools": [
+          "listEditorWindows",
+          "runtimeScreenshotAssert"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 125
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/runtime-session-error-scenarios.test.js",
+        "tools": [
+          "runtimePreviewControl",
+          "runtimeScenarioAssert",
+          "runtimeSessionLifecycle"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 116
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/runtime-session-workflow.test.js",
+        "tools": [
+          "previewSessionInspect",
+          "runtimePreviewControl",
+          "runtimeScenarioAssert",
+          "runtimeScenarioRun",
+          "runtimeSessionLifecycle",
+          "runtimeStateObserve",
+          "runtimeWaitForState"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 116
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/runtime-visual-input-workflow.test.js",
+        "tools": [
+          "listEditorWindows",
+          "runtimeInputDispatch",
+          "runtimeScreenshotAssert"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 111
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/spine-interactive-asset.test.js",
+        "tools": [
+          "editorSelect",
+          "editorViewport",
+          "findNodes",
+          "nodeClipboard",
+          "nodeComponentsGet",
+          "nodeOperate",
+          "previewManage",
+          "sceneBatchGet",
+          "spineRuntimeControl"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 115
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/sprite-interactive-asset.test.js",
+        "tools": [
+          "createSprite",
+          "inspectorSet",
+          "nodeBatchSet",
+          "nodeComponentsGet",
+          "nodeOperate",
+          "previewManage",
+          "sceneBatchGet"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 118
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/terrain-create-qualification.test.js",
+        "tools": [
+          "assetOperate",
+          "assetQuery",
+          "createUiNode",
+          "findNodes",
+          "nodeComponentManage",
+          "nodeOperate",
+          "sceneGetInfo",
+          "terrainCreate",
+          "terrainInspect"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 133
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/tilemap-qualification.test.js",
+        "tools": [
+          "assetBatchImport",
+          "assetBatchOperate",
+          "tilemapInspect",
+          "tilemapLayerEdit",
+          "tilemapObjectEdit",
+          "tilemapValidate"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 143
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/ui-form-validation-qualification.test.js",
+        "tools": [
+          "findNodes",
+          "nodeOperate",
+          "uiFormValidationBind"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 2,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 2,
+          "durationMs": 111
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/ui-layout-inspect.test.js",
+        "tools": [
+          "createUiNode",
+          "executeJavascript",
+          "nodeOperate",
+          "sceneGetInfo",
+          "uiLayoutInspect"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 118
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/ui-layout-report.test.js",
+        "tools": [
+          "createUiNode",
+          "executeJavascript",
+          "inspectorSet",
+          "nodeOperate",
+          "uiLayoutReport"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 123
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/ui-safe-area-inspect.test.js",
+        "tools": [
+          "createUiNode",
+          "nodeOperate",
+          "uiLayoutApply",
+          "uiSafeAreaInspect"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 1,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 1,
+          "durationMs": 120
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/ui/ui-component-expansion.test.js",
+        "tools": [
+          "createUiNode",
+          "inspectorSet",
+          "nodeBatchSet",
+          "nodeComponentManage",
+          "nodeComponentsGet",
+          "nodeOperate",
+          "sceneBatchGet"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 15,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 15,
+          "durationMs": 299
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/ui/ui-component-feature-workflow.test.js",
+        "tools": [
+          "bindButtonClickEvent",
+          "createButton",
+          "createLabel",
+          "createUiNode",
+          "findNodes",
+          "nodeBatchSet",
+          "nodeComponentManage",
+          "nodeComponentsGet",
+          "nodeGetPath",
+          "nodeGetTree",
+          "nodeOperate",
+          "previewManage",
+          "sceneBatchGet",
+          "simulateButtonClick",
+          "uiFormValidationBind",
+          "uiResponsivePreview",
+          "uiVirtualListCreate"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 10,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 10,
+          "durationMs": 233
+        },
+        "attempts": 1
+      },
+      {
+        "file": "tests/live/validation-graph-qualification.test.js",
+        "tools": [
+          "animationGraphCreate",
+          "animationGraphInspect",
+          "animationGraphValidate",
+          "assetBatchImport",
+          "assetBatchOperate",
+          "assetOperate",
+          "assetQuery",
+          "shaderValidate"
+        ],
+        "status": "partial-or-skipped",
+        "summary": {
+          "tests": 3,
+          "pass": 0,
+          "fail": 0,
+          "skipped": 3,
+          "durationMs": 116
+        },
+        "attempts": 1
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "animationEdit",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "animationGraphCreate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "animationGraphInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "animationGraphValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "animationQuery",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "animationRuntimeControl",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/animation-witness.test.js"
+      ]
+    },
+    {
+      "name": "assetBatchImport",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js",
+        "tests/live/tilemap-qualification.test.js",
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetBatchOperate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js",
+        "tests/live/tilemap-qualification.test.js",
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetBatchQuery",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetCatalogManifest",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetCompressionConfigure",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/asset-import-settings-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetCreate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/material-edit-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetDbQuery",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetFindReferences",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetGetAtPath",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetGetAvailableUrl",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetGetTree",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/manual.test.js"
+      ]
+    },
+    {
+      "name": "assetImport",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "assetImporterAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetImportSettingsGet",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/asset-import-settings-qualification.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/material-edit-qualification.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetImportSettingsSet",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/asset-import-settings-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetManifestExport",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetMissingReferenceAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetOperate",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/asset-import-settings-qualification.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/material-edit-qualification.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetQuery",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/asset-import-settings-qualification.test.js",
+        "tests/live/audio-asset-compatibility-audit.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/gap-closure.test.js",
+        "tests/live/manual.test.js",
+        "tests/live/material-edit-qualification.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetReadContent",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "assetResolvePath",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/cocos-graph.test.js",
+        "tests/live/gap-closure.test.js"
+      ]
+    },
+    {
+      "name": "assetSaveContent",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "assetSceneUsageAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/portfolio-completion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "assetUsageAnalyze",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "audioAssetCompatibilityAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/audio-asset-compatibility-audit.test.js"
+      ]
+    },
+    {
+      "name": "audioAssetValidate",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "audioSourceAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "audioSourceConfigure",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/audio-source-configure.test.js"
+      ]
+    },
+    {
+      "name": "audioSourceInspect",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/audio-source-configure.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "bindButtonClickEvent",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "buildArtifactInspect",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "buildArtifactServe",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/build-artifact-serve-qualification.test.js",
+        "tests/live/build-target-qualification.test.js",
+        "tests/live/build-target-route-scenarios.test.js"
+      ]
+    },
+    {
+      "name": "buildLogInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/build-log-qualification.test.js"
+      ]
+    },
+    {
+      "name": "buildManage",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/build-log-qualification.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "buildOutputAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "buildPresetAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/build-preset-qualification.test.js"
+      ]
+    },
+    {
+      "name": "buildPresetValidate",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "buildTargetLaunch",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/build-target-qualification.test.js",
+        "tests/live/build-target-route-scenarios.test.js"
+      ]
+    },
+    {
+      "name": "buildTargetSmoke",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/build-target-qualification.test.js"
+      ]
+    },
+    {
+      "name": "buildTaskWait",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "callComponentMethod",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "captureEditorScreenshot",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "captureSceneScreenshot",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "createButton",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "createLabel",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "createSprite",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/sprite-interactive-asset.test.js"
+      ]
+    },
+    {
+      "name": "createUiNode",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/ui-layout-inspect.test.js",
+        "tests/live/ui-layout-report.test.js",
+        "tests/live/ui-safe-area-inspect.test.js",
+        "tests/live/ui/ui-component-expansion.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "duplicatePrefab",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "editorEnvInfo",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "editorGetLogs",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "editorHandshake",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/editor-handshake-qualification.test.js"
+      ]
+    },
+    {
+      "name": "editorHistory",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "editorPanelCapture",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/editor-panel-capture-qualification.test.js"
+      ]
+    },
+    {
+      "name": "editorQuery",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "editorSelect",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/spine-interactive-asset.test.js"
+      ]
+    },
+    {
+      "name": "editorState",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/build-artifact-serve-qualification.test.js",
+        "tests/live/build-target-qualification.test.js",
+        "tests/live/build-target-route-scenarios.test.js",
+        "tests/live/editor-handshake-qualification.test.js"
+      ]
+    },
+    {
+      "name": "editorViewport",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/spine-interactive-asset.test.js"
+      ]
+    },
+    {
+      "name": "editPrefabJson",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "executeJavascript",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/alx-inspired-editor-qualification.test.js",
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/animation-witness.test.js",
+        "tests/live/audio-source-configure.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/execute-js-components.test.js",
+        "tests/live/execute-js-core.test.js",
+        "tests/live/gap-closure.test.js",
+        "tests/live/particle-playback-error-scenarios.test.js",
+        "tests/live/particle-playback-qualification.test.js",
+        "tests/live/read-only-candidate-qualification.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/ui-layout-inspect.test.js",
+        "tests/live/ui-layout-report.test.js"
+      ]
+    },
+    {
+      "name": "findNodes",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-editor-workflow.test.js",
+        "tests/live/animation-witness.test.js",
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/gap-closure.test.js",
+        "tests/live/portfolio-completion-qualification.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/spine-interactive-asset.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/ui-form-validation-qualification.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "findNodesByAsset",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "findNodesWithMissingAssets",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "getEditorPreference",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "getPerformanceSnapshot",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "getScriptDiagnosticContext",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "inspectorGet",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "inspectorGetDefinition",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/manual.test.js"
+      ]
+    },
+    {
+      "name": "inspectorSet",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/sprite-interactive-asset.test.js",
+        "tests/live/ui-layout-report.test.js",
+        "tests/live/ui/ui-component-expansion.test.js"
+      ]
+    },
+    {
+      "name": "listComponentClasses",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "listComponentMethods",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "listEditorWindows",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/editor-panel-capture-qualification.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/runtime-screenshot-assert.test.js",
+        "tests/live/runtime-visual-input-workflow.test.js"
+      ]
+    },
+    {
+      "name": "materialEdit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/material-edit-qualification.test.js"
+      ]
+    },
+    {
+      "name": "materialQuery",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "modelImportConfigure",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "nodeBatchSet",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/sprite-interactive-asset.test.js",
+        "tests/live/ui/ui-component-expansion.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "nodeClipboard",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/spine-interactive-asset.test.js"
+      ]
+    },
+    {
+      "name": "nodeComponentManage",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/ui/ui-component-expansion.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "nodeComponentsGet",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/manual.test.js",
+        "tests/live/spine-interactive-asset.test.js",
+        "tests/live/sprite-interactive-asset.test.js",
+        "tests/live/ui/ui-component-expansion.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "nodeCreate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "nodeCreatePrimitive",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "nodeGetAtPath",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js",
+        "tests/live/responsive-preview-qualification.test.js"
+      ]
+    },
+    {
+      "name": "nodeGetAvailableComponentTypes",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "nodeGetPath",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/alx-inspired-editor-qualification.test.js",
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "nodeGetTree",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/cocos-graph.test.js",
+        "tests/live/manual.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "nodeOperate",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/alx-inspired-editor-qualification.test.js",
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/portfolio-completion-qualification.test.js",
+        "tests/live/spine-interactive-asset.test.js",
+        "tests/live/sprite-interactive-asset.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/ui-form-validation-qualification.test.js",
+        "tests/live/ui-layout-inspect.test.js",
+        "tests/live/ui-layout-report.test.js",
+        "tests/live/ui-safe-area-inspect.test.js",
+        "tests/live/ui/ui-component-expansion.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "nodeReset",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "particleInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "particlePlayback",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/particle-playback-qualification.test.js"
+      ]
+    },
+    {
+      "name": "particleValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics2dCompatibilityAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics2dCreateBody",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics2dCreateJoint",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics2dInspect",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "physics2dTopologyAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics2dValidate",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "physics3dCreateBody",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics3dCreateJoint",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics3dInspect",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "physics3dTopologyAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "physics3dValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "prefabInstantiate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "prefabOverrideDiff",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "prefabReferenceAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "previewManage",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/manual.test.js",
+        "tests/live/spine-interactive-asset.test.js",
+        "tests/live/sprite-interactive-asset.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "previewSessionInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "programManage",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectFileExists",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectListDirectory",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectManage",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectReadFile",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectReplaceInFile",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectSearchFiles",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "projectSettingsValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "projectWriteFile",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "propertyArrayElement",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "readPrefabJson",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "readProjectInstruction",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "referenceImageManage",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/reference-image-qualification.test.js"
+      ]
+    },
+    {
+      "name": "renderPipelineInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/render-runtime-qualification.test.js"
+      ]
+    },
+    {
+      "name": "runScriptDiagnostics",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "runtimeGetState",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "runtimeInputDispatch",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-input-dispatch.test.js",
+        "tests/live/runtime-visual-input-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimePause",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "runtimePreviewControl",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js",
+        "tests/live/runtime-session-error-scenarios.test.js",
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimeResume",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "runtimeScenarioAssert",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-session-error-scenarios.test.js",
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimeScenarioRun",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimeScreenshotAssert",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-screenshot-assert.test.js",
+        "tests/live/runtime-visual-input-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimeSessionLifecycle",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/particle-playback-error-scenarios.test.js",
+        "tests/live/particle-playback-qualification.test.js",
+        "tests/live/render-runtime-qualification.test.js",
+        "tests/live/runtime-session-error-scenarios.test.js",
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimeSetTimeScale",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "runtimeStateObserve",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "runtimeWaitForState",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/runtime-session-workflow.test.js"
+      ]
+    },
+    {
+      "name": "sceneBatchGet",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/core-entity-workflow.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/spine-interactive-asset.test.js",
+        "tests/live/sprite-interactive-asset.test.js",
+        "tests/live/ui/ui-component-expansion.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "sceneGetInfo",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/cocos-graph.test.js",
+        "tests/live/read-only-tools.test.js",
+        "tests/live/terrain-create-qualification.test.js",
+        "tests/live/ui-layout-inspect.test.js"
+      ]
+    },
+    {
+      "name": "sceneHierarchyValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "sceneManage",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "sceneReferenceValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "sceneScriptHealthScan",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "sceneSnapshot",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    },
+    {
+      "name": "setEditorPreference",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "shaderValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/validation-graph-qualification.test.js"
+      ]
+    },
+    {
+      "name": "simulateButtonClick",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "simulateKeyCombo",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "simulateKeyPress",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "simulateMouseClick",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "simulateMouseDrag",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "skeletalAnimationConfigure",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js"
+      ]
+    },
+    {
+      "name": "skeletalAnimationInspect",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-atlas-qualification.test.js",
+        "tests/live/animation-witness.test.js"
+      ]
+    },
+    {
+      "name": "skeletalAnimationValidate",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/animation-atlas-qualification.test.js",
+        "tests/live/animation-witness.test.js"
+      ]
+    },
+    {
+      "name": "spineRuntimeControl",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/spine-interactive-asset.test.js"
+      ]
+    },
+    {
+      "name": "spriteAtlasConfigure",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/animation-atlas-qualification.test.js"
+      ]
+    },
+    {
+      "name": "terrainCreate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/terrain-create-qualification.test.js"
+      ]
+    },
+    {
+      "name": "terrainInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/candidate-expansion-qualification.test.js",
+        "tests/live/terrain-create-qualification.test.js"
+      ]
+    },
+    {
+      "name": "tilemapInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/tilemap-qualification.test.js"
+      ]
+    },
+    {
+      "name": "tilemapLayerEdit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/tilemap-qualification.test.js"
+      ]
+    },
+    {
+      "name": "tilemapObjectEdit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/tilemap-qualification.test.js"
+      ]
+    },
+    {
+      "name": "tilemapValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/tilemap-qualification.test.js"
+      ]
+    },
+    {
+      "name": "uiAccessibilityAudit",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "uiCreateInputForm",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "uiCreateScrollView",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "uiFocusNavigation",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/read-only-candidate-qualification.test.js"
+      ]
+    },
+    {
+      "name": "uiFormValidationBind",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-form-validation-qualification.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "uiLayoutAlign",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/alx-inspired-editor-qualification.test.js"
+      ]
+    },
+    {
+      "name": "uiLayoutApply",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/ui-safe-area-inspect.test.js"
+      ]
+    },
+    {
+      "name": "uiLayoutInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js",
+        "tests/live/ui-layout-inspect.test.js"
+      ]
+    },
+    {
+      "name": "uiLayoutReport",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-layout-report.test.js"
+      ]
+    },
+    {
+      "name": "uiLayoutValidate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-fallback.test.js"
+      ]
+    },
+    {
+      "name": "uiResponsivePreview",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/responsive-preview-qualification.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "uiSafeAreaInspect",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/ui-safe-area-inspect.test.js"
+      ]
+    },
+    {
+      "name": "uiVirtualListCreate",
+      "liveSuiteStatus": "partial-or-skipped",
+      "testFiles": [
+        "tests/live/portfolio-completion-qualification.test.js",
+        "tests/live/ui/ui-component-feature-workflow.test.js"
+      ]
+    },
+    {
+      "name": "writeProjectInstruction",
+      "liveSuiteStatus": "failed",
+      "testFiles": [
+        "tests/live/read-only-tools.test.js"
+      ]
+    }
+  ],
+  "limitations": [
+    "A passing live test file is attributed to referenced tools, but does not automatically promote portfolio state.",
+    "Tools without a dedicated live test reference are not live-qualified by this run.",
+    "Candidate-specific evidence artifacts and P7 approval reconciliation remain required for release qualification."
+  ]
+}
