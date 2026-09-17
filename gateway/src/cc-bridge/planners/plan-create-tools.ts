@@ -9,7 +9,7 @@ function nodeName(inputs: Record<string, unknown>, fallback: PrimitiveValueRef):
 }
 
 function parent(inputs: Record<string, unknown>, fallback: "sceneRoot" | "root") {
-  return Object.prototype.hasOwnProperty.call(inputs, "parentReference") ? requestValue("parentReference") : observationValue(fallback);
+  return Object.prototype.hasOwnProperty.call(inputs, "parentReference") ? requestValue("parentReference/id") : observationValue(fallback);
 }
 
 function createUiNode(context: PlannerContext): GatewayDecision {
@@ -33,7 +33,7 @@ function createNode(context: PlannerContext): GatewayDecision {
     args: {
       parent: parent(inputs, "root"),
       name: requestValue("name"),
-      asset: Object.prototype.hasOwnProperty.call(inputs, "assetReference") ? requestValue("assetReference") : undefined,
+      asset: Object.prototype.hasOwnProperty.call(inputs, "assetReference") ? requestValue("assetReference/id") : undefined,
       unwrapPrefab: Object.prototype.hasOwnProperty.call(inputs, "unwrapPrefab") ? requestValue("unwrapPrefab") : undefined,
     },
   };

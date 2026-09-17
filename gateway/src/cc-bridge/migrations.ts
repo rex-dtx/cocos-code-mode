@@ -255,6 +255,66 @@ const MIGRATIONS: readonly Migration[] = [
       );
     `,
   },
+  {
+    version: 4,
+    sql: `
+      CREATE TABLE IF NOT EXISTS cc_bridge_audit (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        correlation_id TEXT NOT NULL,
+        timestamp_ms INTEGER NOT NULL,
+        member_id TEXT,
+        device_id TEXT,
+        project_id TEXT,
+        tool_family TEXT NOT NULL,
+        relay_build TEXT,
+        result_class TEXT NOT NULL,
+        error_code TEXT,
+        request_bytes INTEGER NOT NULL,
+        response_bytes INTEGER NOT NULL,
+        phase_timings_json TEXT NOT NULL
+      );
+      CREATE TABLE cc_bridge_security_event (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp_ms INTEGER NOT NULL,
+        actor_member_id TEXT,
+        event_type TEXT NOT NULL,
+        target_id TEXT,
+        result_class TEXT NOT NULL CHECK (result_class IN ('ok', 'deny', 'error')),
+        error_code TEXT
+      );
+      CREATE INDEX cc_bridge_security_time_idx ON cc_bridge_security_event(timestamp_ms, id);
+      CREATE INDEX cc_bridge_audit_member_time_idx ON cc_bridge_audit(member_id, timestamp_ms);
+      CREATE TABLE cc_bridge_usage_hour (
+        hour_ms INTEGER NOT NULL,
+        member_id TEXT NOT NULL,
+        device_id TEXT NOT NULL,
+        project_id TEXT NOT NULL,
+        tool_family TEXT NOT NULL,
+        relay_build TEXT NOT NULL,
+        result_class TEXT NOT NULL,
+        error_code TEXT NOT NULL,
+        requests INTEGER NOT NULL,
+        request_bytes INTEGER NOT NULL,
+        response_bytes INTEGER NOT NULL,
+        PRIMARY KEY (hour_ms, member_id, device_id, project_id, tool_family, relay_build, result_class, error_code)
+      );
+      INSERT INTO cc_bridge_usage_hour
+      SELECT timestamp_ms - timestamp_ms % 3600000, COALESCE(member_id, ''), COALESCE(device_id, ''),
+        COALESCE(project_id, ''), tool_family, COALESCE(relay_build, ''), result_class, COALESCE(error_code, ''),
+        COUNT(*), SUM(request_bytes), SUM(response_bytes)
+      FROM cc_bridge_audit
+      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8;
+    `,
+  },
+  {
+    version: 5,
+    sql: `
+      ALTER TABLE rollout_policy ADD COLUMN emergency_stop INTEGER NOT NULL DEFAULT 0 CHECK (emergency_stop IN (0, 1));
+      ALTER TABLE rollout_policy ADD COLUMN disabled_operations_json TEXT NOT NULL DEFAULT '[]';
+      ALTER TABLE rollout_policy ADD COLUMN signed_wrapper_json TEXT;
+      CREATE INDEX rollout_execution_scope_idx ON rollout_policy(target_hash, channel, sequence DESC);
+    `,
+  },
 ];
 
 export function applyCcBridgeMigrations(db: Database.Database): void {

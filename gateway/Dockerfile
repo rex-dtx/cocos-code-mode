@@ -9,6 +9,7 @@ RUN node -e "const fs=require('fs'); const p=require('./package.json'); p.depend
  && node -e "const fs=require('fs'); const p=require('./package.json'); p.dependencies['@dtx/tool-auth']='1.0.0'; fs.writeFileSync('package.json', JSON.stringify(p));"
 COPY tsconfig.json vitest.config.ts ./
 COPY src ./src
+COPY web ./web
 COPY scripts ./scripts
 COPY tests/fixtures ./tests/fixtures
 RUN yarn typecheck
@@ -21,6 +22,7 @@ ENV NODE_ENV=production
 COPY --from=build /app/package.json /app/yarn.lock ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/src ./src
+COPY --from=build /app/web ./web
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod 755 /app/docker-entrypoint.sh && chown -R node:node /app
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "/app/docker-entrypoint.sh"]

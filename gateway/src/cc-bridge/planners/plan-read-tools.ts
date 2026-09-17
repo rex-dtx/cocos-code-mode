@@ -9,7 +9,7 @@ function optional(inputs: Record<string, unknown>, field: string): PrimitiveValu
 }
 
 function entity(field: string) {
-  return requestValue(field);
+  return requestValue(`${field}/id`);
 }
 
 

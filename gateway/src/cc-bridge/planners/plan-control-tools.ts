@@ -38,7 +38,7 @@ function selection(context: PlannerContext): GatewayDecision {
     args: {
       action,
       selectionType,
-      targets: references?.map((_, index) => requestPointer(`/inputs/references/${index}`)),
+      targets: references?.map((_, index) => requestPointer(`/inputs/references/${index}/id`)),
     },
   };
   return planCommands(context, [command], [command.commandId]);
@@ -58,7 +58,7 @@ function viewport(context: PlannerContext): GatewayDecision {
     op: "editor.viewport", commandId: "viewport", usesHandles: [],
     args: {
       action,
-      targets: references?.map((_, index) => requestPointer(`/inputs/references/${index}`)),
+      targets: references?.map((_, index) => requestPointer(`/inputs/references/${index}/id`)),
       value: selectedValue ? requestValue(selectedValue) : undefined,
     },
   };
@@ -88,7 +88,7 @@ function build(context: PlannerContext): GatewayDecision {
 function simulateButton(context: PlannerContext): GatewayDecision {
   const command: PrimitiveCommand = {
     op: "runtime.simulateButtonClick", commandId: "button-click", usesHandles: [],
-    args: { target: requestValue("reference") },
+    args: { target: requestValue("reference/id") },
   };
   return planCommands(context, [command], [command.commandId]);
 }

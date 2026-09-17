@@ -16,6 +16,7 @@
     "docker:down": "docker compose down",
     "signer:start": "tsx src/signer-main.ts",
     "smoke:production": "tsx scripts/cc-bridge-production-smoke.ts",
+    "qualify:local": "tsx tests/qualification/qualify-cc-bridge-local.ts",
     "bench:cc-bridge": "tsx scripts/diag/bench-cc-bridge.ts"
   },
   "dependencies": {

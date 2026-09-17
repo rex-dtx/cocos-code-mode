@@ -20,9 +20,9 @@ function nodeOperate(context: PlannerContext): GatewayDecision {
     ...(action === "copy" ? { createsHandle: "copied-node" } : {}),
     args: {
       action,
-      target: requestValue("reference"),
-      destination: Object.prototype.hasOwnProperty.call(inputs, "newParentReference") ? requestValue("newParentReference") : undefined,
-      prefabAsset: Object.prototype.hasOwnProperty.call(inputs, "prefabAssetReference") ? requestValue("prefabAssetReference") : undefined,
+      target: requestValue("reference/id"),
+      destination: Object.prototype.hasOwnProperty.call(inputs, "newParentReference") ? requestValue("newParentReference/id") : undefined,
+      prefabAsset: Object.prototype.hasOwnProperty.call(inputs, "prefabAssetReference") ? requestValue("prefabAssetReference/id") : undefined,
       prefabPath: optional(inputs, "newPrefabPath"),
       siblingIndex: optional(inputs, "siblingIndex"),
       recursive: optional(inputs, "recursive"),
@@ -39,7 +39,7 @@ function nodeReset(context: PlannerContext): GatewayDecision {
     op: "scene.reset", commandId: "reset", usesHandles: [],
     args: {
       action,
-      targets: references.map((_, index) => requestPointer(`/inputs/references/${index}`)),
+      targets: references.map((_, index) => requestPointer(`/inputs/references/${index}/id`)),
       propertyPath: optional(inputs, "propertyPath"),
     },
   };
@@ -54,7 +54,7 @@ function inspectorSet(context: PlannerContext): GatewayDecision {
   const command: PrimitiveCommand = {
     op: "scene.setProperties", commandId: "set-properties", usesHandles: [],
     args: {
-      target: inputs.target === "instance" ? requestValue("reference") : requestValue("target"),
+      target: inputs.target === "instance" ? requestValue("reference/id") : requestValue("target"),
       values: paths.map((_, index) => ({
         property: plural ? requestPointer(`/inputs/propertyPaths/${index}`) : requestValue("propertyPath"),
         value: plural ? requestPointer(`/inputs/values/${index}`) : requestValue("value"),
@@ -74,7 +74,7 @@ function nodeBatchSet(context: PlannerContext): GatewayDecision {
     return {
       op: "scene.setProperties", commandId: `batch-set-${entryIndex}`, usesHandles: [],
       args: {
-        target: requestPointer(`/inputs/entries/${entryIndex}/reference`),
+        target: requestPointer(`/inputs/entries/${entryIndex}/reference/id`),
         values: paths.map((_, valueIndex) => ({
           property: requestPointer(`/inputs/entries/${entryIndex}/propertyPaths/${valueIndex}`),
           value: requestPointer(`/inputs/entries/${entryIndex}/values/${valueIndex}`),
@@ -90,10 +90,10 @@ function componentManage(context: PlannerContext): GatewayDecision {
   const action = finiteString(operationName(context), ["add", "remove"] as const, "Component operation");
   const command: PrimitiveCommand = action === "add" ? {
     op: "scene.addComponent", commandId: "add-component", usesHandles: [], createsHandle: "component",
-    args: { target: requestValue("reference"), componentType: requestValue("componentType") },
+    args: { target: requestValue("reference/id"), componentType: requestValue("componentType") },
   } : {
     op: "scene.removeComponent", commandId: "remove-component", usesHandles: [],
-    args: { target: requestValue("reference"), componentType: optional(inputs, "componentType") },
+    args: { target: requestValue("reference/id"), componentType: optional(inputs, "componentType") },
   };
   return planCommands(context, [command], [command.commandId]);
 }
@@ -127,8 +127,8 @@ function animationEdit(context: PlannerContext): GatewayDecision {
     op: "animation.edit", commandId: "animation-edit", usesHandles: [],
     args: {
       action,
-      target: Object.prototype.hasOwnProperty.call(inputs, "nodeReference") ? requestValue("nodeReference") : undefined,
-      clip: Object.prototype.hasOwnProperty.call(inputs, "clipReference") ? requestValue("clipReference") : undefined,
+      target: Object.prototype.hasOwnProperty.call(inputs, "nodeReference") ? requestValue("nodeReference/id") : undefined,
+      clip: Object.prototype.hasOwnProperty.call(inputs, "clipReference") ? requestValue("clipReference/id") : undefined,
       values: (valueFields[action] ?? []).map(requestValue),
     },
   };
@@ -142,7 +142,7 @@ function arrayElement(context: PlannerContext): GatewayDecision {
     op: "scene.arrayElement", commandId: "array-element", usesHandles: [],
     args: {
       action,
-      target: requestValue("reference"),
+      target: requestValue("reference/id"),
       propertyPath: requestValue("propertyPath"),
       index: requestValue("index"),
       toIndex: optional(inputs, "toIndex"),
@@ -159,8 +159,8 @@ function clipboard(context: PlannerContext): GatewayDecision {
     op: "scene.clipboard", commandId: "clipboard", usesHandles: [],
     args: {
       action,
-      targets: references.map((_, index) => requestPointer(`/inputs/references/${index}`)),
-      destination: Object.prototype.hasOwnProperty.call(inputs, "targetReference") ? requestValue("targetReference") : undefined,
+      targets: references.map((_, index) => requestPointer(`/inputs/references/${index}/id`)),
+      destination: Object.prototype.hasOwnProperty.call(inputs, "targetReference") ? requestValue("targetReference/id") : undefined,
       keepWorldTransform: optional(inputs, "keepWorldTransform"),
       pasteAsChild: optional(inputs, "pasteAsChild"),
     },
@@ -173,7 +173,7 @@ function sceneLifecycle(context: PlannerContext): GatewayDecision {
   const action = finiteString(operationName(context), ["open", "save", "save_as", "close", "soft_reload"] as const, "Scene lifecycle operation");
   const command: PrimitiveCommand = {
     op: "scene.lifecycle", commandId: "scene-lifecycle", usesHandles: [],
-    args: { action, target: Object.prototype.hasOwnProperty.call(inputs, "reference") ? requestValue("reference") : undefined },
+    args: { action, target: Object.prototype.hasOwnProperty.call(inputs, "reference") ? requestValue("reference/id") : undefined },
   };
   return planCommands(context, [command], [command.commandId]);
 }

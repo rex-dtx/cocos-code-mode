@@ -6,6 +6,7 @@ import { CcbError } from "./errors.ts";
 import { verifyReleaseMetadata, type SignedMetadata } from "./release-metadata.ts";
 import { assertDurableCanaryPromotion } from "./canary.ts";
 import type { CcBridgeStore } from "./store.ts";
+import { persistSignedExecutionControls } from "./rollout-enforcement.ts";
 
 const Sha256Schema = z.string().regex(/^[a-f0-9]{64}$/);
 const IsoSchema = z.string().refine((value) => {
@@ -138,27 +139,30 @@ export function publishRolloutPolicy(store: CcBridgeStore, auth: AuthContext, wr
       nowMs,
     });
   }
-  const sequence = store.insertRolloutPolicy({
-    sequence: body.policySequence,
-    targetHash: body.targetPayloadSha256,
-    channel: body.channel,
-    ring: body.ring,
-    percentage: body.percentage,
-    minimumBuild: body.minimumBuild ?? null,
-    blockedBuilds: body.blockedBuilds,
-    rollbackTargetHash: body.rollbackTargetPayloadSha256[0] ?? null,
-    expiresAtMs: Date.parse(body.expiresAt),
-  });
-  const previous = store.getRolloutState(body.channel);
-  if (!store.setRolloutState({
-    channel: body.channel,
-    targetHash: body.emergencyStop && previous ? previous.targetHash : body.targetPayloadSha256,
-    packageHash: body.emergencyStop && previous ? previous.packageHash : target.packageHash,
-    ring: body.emergencyStop && previous ? previous.ring : body.ring,
-    policySequence: body.policySequence,
-    updatedAtMs: nowMs,
-  })) {
-    throw new CcbError("CCB_REPLAY", "Rollout state high-water rejected the policy sequence.");
-  }
-  return { sequence, policySequence: body.policySequence };
+  return store.db.transaction(() => {
+    const sequence = store.insertRolloutPolicy({
+      sequence: body.policySequence,
+      targetHash: body.targetPayloadSha256,
+      channel: body.channel,
+      ring: body.ring,
+      percentage: body.percentage,
+      minimumBuild: body.minimumBuild ?? null,
+      blockedBuilds: body.blockedBuilds,
+      rollbackTargetHash: body.rollbackTargetPayloadSha256[0] ?? null,
+      expiresAtMs: Date.parse(body.expiresAt),
+    });
+    persistSignedExecutionControls(store, body, wrapper);
+    const previous = store.getRolloutState(body.channel);
+    if (!store.setRolloutState({
+      channel: body.channel,
+      targetHash: body.emergencyStop && previous ? previous.targetHash : body.targetPayloadSha256,
+      packageHash: body.emergencyStop && previous ? previous.packageHash : target.packageHash,
+      ring: body.emergencyStop && previous ? previous.ring : body.ring,
+      policySequence: body.policySequence,
+      updatedAtMs: nowMs,
+    })) {
+      throw new CcbError("CCB_REPLAY", "Rollout state high-water rejected the policy sequence.");
+    }
+    return { sequence, policySequence: body.policySequence };
+  })();
 }

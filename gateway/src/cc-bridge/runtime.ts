@@ -10,6 +10,7 @@ import { ProtectedToolRegistry } from "./protected-tool-registry.ts";
 import { ReplayStore } from "./replay-store.ts";
 import { CcBridgeStore } from "./store.ts";
 import { UnixSocketSigner } from "./unix-socket-signer.ts";
+import { retainAdminMetadata } from "./admin-audit.ts";
 
 class UnavailableSigner implements EnvelopeSigner {
   readonly keyId = "unavailable";
@@ -83,6 +84,7 @@ export function registerCatalogPlanners(planners: ProtectedToolRegistry): void {
 
 export function createCcBridgeRuntime(): ExecuteDependencies {
   const store = new CcBridgeStore();
+  retainAdminMetadata(store);
   const planners = new ProtectedToolRegistry();
   registerCatalogPlanners(planners);
   return {

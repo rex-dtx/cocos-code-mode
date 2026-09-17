@@ -18,6 +18,7 @@ import {
 } from "./replay-store.ts";
 import type { ProtectedToolRegistry } from "./protected-tool-registry.ts";
 import type { CcBridgeStore } from "./store.ts";
+import { assertSignedExecutionAllowed } from "./rollout-enforcement.ts";
 
 const RESERVATION_LEASE_MS = 30_000;
 const COMPLETED_RESPONSE_RETENTION_MS = 24 * 60 * 60 * 1000;
@@ -82,6 +83,7 @@ export async function executeProtectedTool(
     relayBuild = verified.request.relay.build;
     const digest = canonicalRequestDigest(verified.payloadBytes);
     const authorization = authorizeProtectedRequest(deps.store, auth, verified.device, verified.request, nowMs);
+    assertSignedExecutionAllowed(deps.store, verified.request);
     phaseStartedAt = markPhase(phaseTimings, "authorize", phaseStartedAt);
     const admission = deps.replay.reserve({
       deviceId: verified.request.deviceId,
