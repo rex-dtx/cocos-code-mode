@@ -3,22 +3,17 @@ const path = require('node:path');
 const { setTimeout: delay } = require('node:timers/promises');
 const { run: runSession } = require('./heartbeat');
 const { SessionLifecycleError, discoverBinding, validateBinding, readEndpoints } = require('./discovery');
-function processAlive(pid) {
-  if (!Number.isInteger(pid) || pid < 1) return false;
-  try { process.kill(pid, 0); return true; } catch (error) { return error.code === 'EPERM'; }
-}
 
 class SessionLifecycleSupervisor {
   constructor(options) {
     if (!options || typeof options !== 'object') throw new SessionLifecycleError('INVALID_ARGUMENT', 'Supervisor options are required.');
-    this.options = { retryMs: 5000, intervalMs: 5000, parentPollMs: 1000, isProcessAlive: processAlive, ...options };
+    this.options = { retryMs: 5000, intervalMs: 5000, ...options };
     if (typeof this.options.project !== 'string' || !path.isAbsolute(this.options.project)) throw new SessionLifecycleError('INVALID_PROJECT', 'Session project must be an absolute path.');
     if (typeof this.options.session !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/.test(this.options.session)) throw new SessionLifecycleError('INVALID_SESSION', 'Session must be a unique printable ID of at most 128 characters.');
     if (this.options.label !== undefined && (typeof this.options.label !== 'string' || !this.options.label.trim() || this.options.label.trim() !== this.options.label || this.options.label.length > 256 || /[\x00-\x1f\x7f]/.test(this.options.label))) throw new SessionLifecycleError('INVALID_LABEL', 'Label must be bounded printable text without surrounding whitespace.');
-    for (const [key, min, max] of [['intervalMs', 1000, 10000], ['retryMs', 100, 300000], ['parentPollMs', 100, 10000]]) {
+    for (const [key, min, max] of [['intervalMs', 1000, 10000], ['retryMs', 100, 300000]]) {
       if (!Number.isInteger(this.options[key]) || this.options[key] < min || this.options[key] > max) throw new SessionLifecycleError('INVALID_ARGUMENT', `Invalid ${key}.`);
     }
-    if (options.parentPid !== undefined && (!Number.isInteger(options.parentPid) || options.parentPid < 1)) throw new SessionLifecycleError('INVALID_PARENT_PID', 'parentPid must be positive.');
     this.root = new AbortController();
     this.active = null;
     this.promise = null;
@@ -57,17 +52,6 @@ class SessionLifecycleSupervisor {
 
   async loop() {
     let previouslyBound = false;
-    let parentTimer;
-    const parentPid = this.options.parentPid;
-    if (parentPid !== undefined) {
-      const checkParent = () => {
-        try { if (!this.options.isProcessAlive(parentPid)) this.root.abort('PARENT_EXITED'); }
-        catch { this.root.abort('PARENT_CHECK_FAILED'); }
-      };
-      checkParent();
-      parentTimer = setInterval(checkParent, this.options.parentPollMs);
-      parentTimer.unref?.();
-    }
     try {
       while (!this.root.signal.aborted) {
         this.emit(previouslyBound ? 'Rebinding' : 'Discovering', previouslyBound ? 'BINDING_REFRESH_REQUIRED' : 'SESSION_DISCOVERY_STARTED');
@@ -127,7 +111,6 @@ class SessionLifecycleSupervisor {
         catch { break; }
       }
     } finally {
-      clearInterval(parentTimer);
       this.emit('Closed', this.closeReason);
     }
   }
@@ -135,4 +118,4 @@ class SessionLifecycleSupervisor {
 
 
 
-module.exports = { SessionLifecycleError, SessionLifecycleSupervisor, discoverBinding, processAlive };
+module.exports = { SessionLifecycleError, SessionLifecycleSupervisor, discoverBinding };

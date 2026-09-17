@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
-const { SessionLifecycleError, SessionLifecycleSupervisor, processAlive } = require('./supervisor');
+const { SessionLifecycleError, SessionLifecycleSupervisor } = require('./supervisor');
 function parseArgs(argv) {
   const args = {};
-  const names = new Set(['registry', 'namespace', 'project', 'session', 'label', 'interval-ms', 'retry-ms', 'parent-pid', 'stdin-lifetime']);
+  const names = new Set(['registry', 'namespace', 'project', 'session', 'label', 'interval-ms', 'retry-ms', 'stdin-lifetime']);
   for (let i = 0; i < argv.length; i++) {
     const token = argv[i];
     const name = token.startsWith('--') ? token.slice(2) : '';
@@ -14,16 +14,16 @@ function parseArgs(argv) {
   for (const name of ['registry', 'project', 'session']) if (!args[name]) throw new SessionLifecycleError('INVALID_ARGUMENT', `Required: --${name}`);
   const intervalMs = Number(args['interval-ms'] ?? 5000);
   const retryMs = Number(args['retry-ms'] ?? 5000);
-  const parentPid = args['parent-pid'] === undefined ? undefined : Number(args['parent-pid']);
-  if (!Number.isInteger(intervalMs) || intervalMs < 1000 || intervalMs > 10000 || !Number.isInteger(retryMs) || retryMs < 100 || retryMs > 300000
-    || (parentPid !== undefined && (!Number.isInteger(parentPid) || parentPid < 1))) throw new SessionLifecycleError('INVALID_ARGUMENT', 'Invalid interval, retry or parent PID.');
+  if (!Number.isInteger(intervalMs) || intervalMs < 1000 || intervalMs > 10000 || !Number.isInteger(retryMs) || retryMs < 100 || retryMs > 300000) {
+    throw new SessionLifecycleError('INVALID_ARGUMENT', 'Invalid interval or retry delay.');
+  }
   return { registryPath: args.registry, namespace: args.namespace, project: args.project, session: args.session,
-    label: args.label, intervalMs, retryMs, parentPid, stdinLifetime: args['stdin-lifetime'] === true };
+    label: args.label, intervalMs, retryMs, stdinLifetime: args['stdin-lifetime'] === true };
 }
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const supervisor = new SessionLifecycleSupervisor({ ...options, isProcessAlive: processAlive, emit: event => process.stdout.write(JSON.stringify(event) + '\n') });
+  const supervisor = new SessionLifecycleSupervisor({ ...options, emit: event => process.stdout.write(JSON.stringify(event) + '\n') });
   const stop = () => { void supervisor.stop().catch(() => { process.exitCode = 1; }); };
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);

@@ -16,8 +16,8 @@ function parseArgs(argv) {
   }
   if (!args.url || !args.project || !args.instance) throw new Error('Required: --url <loopback http base or /utcp> --project <absolute path> --instance <verified ID>');
   const url = new URL(args.url);
-  if (url.protocol !== 'http:' || !/^(127(?:\.\d{1,3}){3}|localhost|\[::1\])$/.test(url.hostname)
-      || !['/', '/utcp', '/utcp/'].includes(url.pathname) || url.search || url.hash || url.username || url.password) throw new Error('URL must be a loopback HTTP base or /utcp endpoint without credentials, query or fragment');
+  if (url.protocol !== 'http:' || !/^(127(?:\.\d{1,3}){3}|localhost)$/.test(url.hostname)
+      || !['/', '/utcp', '/utcp/'].includes(url.pathname) || url.search || url.hash || url.username || url.password) throw new Error('URL must be an IPv4 loopback HTTP base or /utcp endpoint without credentials, query or fragment');
   if (url.hostname === 'localhost') url.hostname = '127.0.0.1'; // Avoid DNS/rebinding.
   if (!path.isAbsolute(args.project) || args.project.length > 4096 || /[\x00-\x1f]/.test(args.project)) throw new Error('Project must be an absolute path');
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,255}$/.test(args.instance)) throw new Error('Instance must be an explicit verified ID');
