@@ -10,6 +10,7 @@ const {
   postExpectedErrorTool,
   repeatTestcase,
   healthCheck,
+  fetchTargetUrl,
 } = require('../helpers/utcp-client');
 
 describe('live: build target launch and smoke qualification', () => {
@@ -86,7 +87,7 @@ describe('live: build target launch and smoke qualification', () => {
         fs.rmSync(absolutePath, { recursive: true, force: true });
       }
 
-      await assert.rejects(fetch(url, { signal: AbortSignal.timeout(1000) }));
+      await assert.rejects(fetchTargetUrl(url));
       assert.equal(fs.existsSync(absolutePath), false);
     });
   });

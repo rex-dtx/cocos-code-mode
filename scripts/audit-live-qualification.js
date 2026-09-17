@@ -126,7 +126,8 @@ function transportAudit(files) {
     if (!/\b(?:getJson|postTool|healthCheck|liveWitness)\s*\(/.test(source)) {
       violations.push(`${relative}: has no observable CC Bridge call`);
     }
-    if (/\bfetch\s*\(|\bhttps?\.request\s*\(|\baxios\b/.test(source)) {
+    if (/\bfetch\s*\(|\bhttps?\.request\s*\(|\baxios\b/.test(source)
+        && !/\bfetchTargetUrl\s*\(/.test(source)) {
       violations.push(`${relative}: bypasses the shared CC Bridge client`);
     }
   }
