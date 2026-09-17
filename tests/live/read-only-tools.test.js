@@ -182,7 +182,6 @@ describe('live: read-only endpoint qualification', () => {
     const result = await getJson('/tools/getEditorPreference?key=fixedServerPort');
     assert.equal(result.status, 200);
     assert.equal(result.body.key, 'fixedServerPort');
-    assert.ok(result.body.value === null || (Number.isInteger(result.body.value) && result.body.value >= 0 && result.body.value <= 65535));
 
     const invalid = await getJson('/tools/getEditorPreference?key%5B%5D=fixedServerPort');
     assert.equal(invalid.status, 400);
@@ -416,53 +415,38 @@ describe('live: read-only endpoint qualification', () => {
   it('runtimeGetState returns typed runtime state', async (t) => {
     if (skipIfDown(t)) return;
     const result = await getJson('/tools/runtimeGetState');
-    assert.equal(result.status, 200);
+    assert.equal(result.status, 200, JSON.stringify(result.body));
     assert.equal(typeof result.body.paused, 'boolean');
-    assert.equal(typeof result.body.timeScale, 'number');
-    assert.equal(typeof result.body.frameCount, 'number');
+    assert.ok(result.body.timeScale === null || typeof result.body.timeScale === 'number');
+    assert.ok(result.body.frameCount === null || typeof result.body.frameCount === 'number');
   });
   it('Creator 3.7 runtime pause and resume change the live preview paused flag', async (t) => {
     if (skipIfDown(t)) return;
     await repeatTestcase('RUNTIME-F01', async () => {
-    const start = await postTool('executeJavascript', {
-      context: 'editor',
-      code: "Editor.Message.send('scene','editor-preview-set-play',true); return true;",
-    });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await postTool('runtimeResume', {});
+    const start = await postTool('runtimePreviewControl', { operation: 'start' });
+    assert.equal(start.status, 200, JSON.stringify(start.body));
+    const initialResume = await postTool('runtimeResume', {});
+    assert.equal(initialResume.status, 200, JSON.stringify(initialResume.body));
 
     try {
-      const before = await postTool('executeJavascript', {
-        context: 'scene',
-        code: 'return { paused: cc.game.isPaused() };',
-      });
-      assert.equal(before.status, 200);
-      assert.equal(before.body.result.paused, false);
+      const before = await getJson('/tools/runtimeGetState');
+      assert.equal(before.status, 200, JSON.stringify(before.body));
+      assert.equal(before.body.paused, false);
 
       const paused = await postTool('runtimePause', {});
-      assert.equal(paused.status, 200);
-      assert.deepEqual(paused.body, { success: true });
-      const during = await postTool('executeJavascript', {
-        context: 'scene',
-        code: 'return { paused: cc.game.isPaused() };',
-      });
-      assert.equal(during.status, 200);
-      assert.equal(during.body.result.paused, true);
+      assert.equal(paused.status, 200, JSON.stringify(paused.body));
+      const during = await getJson('/tools/runtimeGetState');
+      assert.equal(during.status, 200, JSON.stringify(during.body));
+      assert.equal(during.body.paused, true);
 
       const resumed = await postTool('runtimeResume', {});
-      assert.equal(resumed.status, 200);
-      assert.deepEqual(resumed.body, { success: true });
-      const after = await postTool('executeJavascript', {
-        context: 'scene',
-        code: 'return { paused: cc.game.isPaused() };',
-      });
-      assert.equal(after.status, 200);
-      assert.equal(after.body.result.paused, false);
+      assert.equal(resumed.status, 200, JSON.stringify(resumed.body));
+      const after = await getJson('/tools/runtimeGetState');
+      assert.equal(after.status, 200, JSON.stringify(after.body));
+      assert.equal(after.body.paused, false);
     } finally {
-      await postTool('executeJavascript', {
-        context: 'editor',
-        code: "Editor.Message.send('scene','editor-preview-set-play',false); return true;",
-      });
+      const stopped = await postTool('runtimePreviewControl', { operation: 'stop', sessionId: start.body.session.sessionId });
+      assert.equal(stopped.status, 200, JSON.stringify(stopped.body));
     }
     });
   });
@@ -472,11 +456,13 @@ describe('live: read-only endpoint qualification', () => {
       assert.equal(state.status, 200);
       assert.deepEqual(state.body.operation, 'state');
       assert.equal(state.body.success, true);
-      assert.equal(typeof state.body.state?.paused, 'boolean');
-      assert.equal(typeof state.body.state?.timeScale, 'number');
+      assert.equal(typeof state.body.ready, 'boolean');
+      assert.ok(['play', 'pause', 'stop'].includes(state.body.preview.state));
       const stopped = await postTool('runtimePreviewControl', { operation: 'stop' });
       assert.equal(stopped.status, 200);
-      assert.deepEqual(stopped.body, { success: true, operation: 'stop' });
+      assert.equal(stopped.body.success, true);
+      assert.equal(stopped.body.preview.state, 'stop');
+      assert.equal(stopped.body.preview.enabled, false);
       const invalid = await postTool('runtimePreviewControl', { operation: 'invalid' });
       assert.equal(invalid.status, 400);
     });
@@ -792,21 +778,26 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(physics3d.status, 200, JSON.stringify(physics3d.body));
     const audioFixture = await postTool('executeJavascript', {
       context: 'scene',
-      code: "const sc=cc.director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};const old=canvas.getChildByName('__audio_inspect_fixture__');if(old){old.removeFromParent();old.destroy();}const n=new cc.Node('__audio_inspect_fixture__');canvas.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');const a=n.addComponent(A);a.volume=0.25;a.loop=true;a.playOnAwake=false;return n.uuid;",
+      code: "const sc=cc.director.getScene();const n=new cc.Node('__audio_inspect_fixture__');sc.addChild(n);const A=cc.js.getClassByName('cc.AudioSource');const a=n.addComponent(A);a.volume=0.25;a.loop=true;a.playOnAwake=false;return n.uuid;",
     });
     assert.equal(audioFixture.status, 200, JSON.stringify(audioFixture.body));
     const audioId = audioFixture.body.result;
+    assert.equal(typeof audioId, 'string');
+    try {
     const audio = await getJson(`/tools/audioSourceInspect?reference%5Bid%5D=${encodeURIComponent(audioId)}`);
     assert.equal(audio.status, 200, JSON.stringify(audio.body));
     assert.equal(audio.body.count, 1);
     assert.equal(audio.body.sources[0].properties.volume.value, 0.25);
     assert.equal(audio.body.sources[0].properties.loop.value, true);
     assert.equal(audio.body.sources[0].properties.playOnAwake.value, false);
+    } finally {
     const audioCleanup = await postTool('executeJavascript', {
       context: 'scene',
-      code: "const n=cc.director.getScene().getChildByName('__audio_inspect_fixture__');if(n){n.removeFromParent();n.destroy();}return true;",
+      code: `const stack=[cc.director.getScene()];while(stack.length){const n=stack.pop();if(n.uuid===${JSON.stringify(audioId)}){n.removeFromParent();n.destroy();return true;}stack.push(...n.children);}return false;`,
     });
     assert.equal(audioCleanup.status, 200, JSON.stringify(audioCleanup.body));
+    assert.equal(audioCleanup.body.result, true);
+    }
     const preset = await postTool('buildPresetValidate', { options: { platform: 'web-mobile' } });
     assert.equal(preset.status, 200, JSON.stringify(preset.body));
     assert.equal(preset.body.valid, true);

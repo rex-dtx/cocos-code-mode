@@ -12,19 +12,27 @@ describe('live: particle playback qualification', () => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
     await repeatTestcase('PARTICLE-PLAYBACK-01', async ({ iteration }) => {
       const name = `__ccb3x_particle_playback_${process.pid}_${iteration}__`;
+      const before = await postTool('runtimePreviewControl', { operation: 'state' });
+      assert.equal(before.status, 200, JSON.stringify(before.body));
+      const started = await postTool('runtimeSessionLifecycle', { operation: 'start', targetKind: 'game-view' });
+      assert.equal(started.status, 200, JSON.stringify(started.body));
       const fixture = await postTool('executeJavascript', {
         context: 'scene',
         code: `const scene=cc.director.getScene();const old=scene.getChildByName(${JSON.stringify(name)});if(old){old.removeFromParent();old.destroy();}const C=cc.ParticleSystem||cc.js.getClassByName('cc.ParticleSystem');if(!C)return {skip:true};const n=new cc.Node(${JSON.stringify(name)});scene.addChild(n);const p=n.addComponent(C);return {id:n.uuid,component:p.uuid};`,
       });
       assert.equal(fixture.status, 200, JSON.stringify(fixture.body));
-      if (fixture.body.result.skip) return { status: 'SKIP', reason: 'cc.ParticleSystem unavailable' };
+      if (fixture.body.result.skip) {
+        await postTool('runtimeSessionLifecycle', { operation: 'reset', sessionId: started.body.session.sessionId });
+        if (!before.body.ready) await postTool('runtimePreviewControl', { operation: 'stop' });
+        return { status: 'SKIP', reason: 'cc.ParticleSystem unavailable' };
+      }
       const nodeReference = { id: fixture.body.result.id };
-      let sessionId;
+      let sessionId = started.body.session.sessionId;
       try {
         const attached = await postTool('runtimeSessionLifecycle', {
           operation: 'attach',
           targetKind: 'game-view',
-          targetId: `particle-${process.pid}-${iteration}`,
+          targetId: started.body.session.targetId,
         });
         assert.equal(attached.status, 200, JSON.stringify(attached.body));
         sessionId = attached.body.session.sessionId;
@@ -46,14 +54,18 @@ describe('live: particle playback qualification', () => {
         assert.equal(invalid.status, 400, JSON.stringify(invalid.body));
       } finally {
         if (sessionId) {
-          const stopped = await postExpectedErrorTool('runtimeSessionLifecycle', { operation: 'stop', sessionId }, 'candidate.particlePlayback.negative.v1');
-          assert.equal(stopped.status, 409, JSON.stringify(stopped.body));
+          const released = await postTool('runtimeSessionLifecycle', { operation: 'reset', sessionId });
+          assert.equal(released.status, 200, JSON.stringify(released.body));
         }
         const removed = await postTool('executeJavascript', {
           context: 'scene',
           code: `const n=cc.director.getScene().getChildByName(${JSON.stringify(name)});if(n){n.removeFromParent();n.destroy();}return true;`,
         });
         assert.equal(removed.status, 200, JSON.stringify(removed.body));
+        if (!before.body.ready) {
+          const stopped = await postTool('runtimePreviewControl', { operation: 'stop' });
+          assert.equal(stopped.status, 200, JSON.stringify(stopped.body));
+        }
       }
     });
   });

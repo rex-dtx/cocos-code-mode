@@ -73,8 +73,8 @@ describe('fail-loud audit (docs §2) regressions', () => {
   });
 
   it('runtime/event reads refuse fabricated state (docs §2 false success)', () => {
-    assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /no runtime state/);
-    assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /malformed runtime payload/);
+    assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /Creator game-view is not running/);
+    assert.match(readSource('source/utcp/tools/runtime-tools.ts'), /UNSUPPORTED_RUNTIME_TRANSPORT/);
     assert.match(readSource('source/utcp/tools/event-tools.ts'), /simulateButtonClick: unexpected response/);
     assert.match(readSource('source/utcp/tools/event-tools.ts'), /bindButtonClickEvent: unexpected response/);
   });
