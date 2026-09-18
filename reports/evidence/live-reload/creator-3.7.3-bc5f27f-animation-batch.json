@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T13:10:00+07:00",
+  "target": { "creator": "3.7.3", "platform": "windows-x64", "project": "G:/_ws/_helpers/cc-3x-test", "endpoint": "http://localhost:51225", "buildCommit": "bc5f27f", "dirty": false },
+  "tests": { "animationWitness": { "passed": 1, "skipped": 1, "failed": 0 }, "readOnlyCandidate": { "passed": 2, "skipped": 1, "failed": 5 } },
+  "positive": ["animationRuntimeControl disposable AnimationState mutation/read-back", "projectSettingsValidate"],
+  "limitations": ["No new candidate row is promoted: SkeletalAnimation inspect fixture absent; prefab/UI/asset candidate fixtures are absent or stale in this project."],
+  "qualification": false
+}
