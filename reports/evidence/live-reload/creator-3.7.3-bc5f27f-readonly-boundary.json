@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T15:30:00+07:00",
+  "target": { "creator": "3.7.3", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "buildCommit": "bc5f27f" },
+  "positive": ["sceneReferenceValidate", "uiFocusNavigation"],
+  "blocked": ["assetMissingReferenceAudit stale scene path", "prefabReferenceAudit missing prefab fixture", "prefabInstantiate missing prefab fixture", "assetBatchOperate hard-coded asset fixture"],
+  "qualification": false,
+  "limitations": ["Only candidate rows with exact fixture-backed complete contracts can be promoted; stale fixture failures remain open."]
+}
