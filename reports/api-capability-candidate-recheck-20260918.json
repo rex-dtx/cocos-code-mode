@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:51009",
+  "buildCommit": "bc5f27f",
+  "remainingQualifiedCandidates": ["assetBundleValidate", "physics2dQuery", "physics3dQuery"],
+  "checks": {
+    "validationGraphQualification": { "test": "tests/live/validation-graph-qualification.test.js", "passed": 3, "failed": 0 },
+    "physics2dQuery": { "observed": "editor topology", "runtimeSessionProof": false, "promoted": false },
+    "physics3dQuery": { "observed": "editor topology", "runtimeSessionProof": false, "promoted": false },
+    "assetBundleValidate": { "bundleFixture": false, "runtimeLoadReleaseProof": false, "promoted": false }
+  },
+  "decision": "All remaining qualified labels were rechecked without sufficient contract evidence. Preserve them as unreviewed; do not convert editor topology or metadata-only results into runtime workflow credit."
+}
