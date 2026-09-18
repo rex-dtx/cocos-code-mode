@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "prefabInstantiate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Instantiated a typed prefab with stable source/scene read-back and cleaned the disposable node." },
+  "negativeWitness": { "test": "candidate.prefabInstantiate.negative.v1", "result": "Missing prefab reference returned TARGET_NOT_FOUND." },
+  "persistence": "Scene instance/source identity read-back",
+  "cleanup": "Disposable prefab instance removed",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}
