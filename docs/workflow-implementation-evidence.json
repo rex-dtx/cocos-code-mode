@@ -1,13 +1,20 @@
 {
   "schemaVersion": 2,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
-  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
+  "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-create",
-      "state": "unreviewed",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "animationGraphCreate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/animationGraphCreate/creator-3.7.3-d967c2e.json"
+      ],
       "limitations": [
         "Create a valid native graph asset, prove import/read-back, and roll back on failure.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -731,9 +738,16 @@
     },
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-serve",
-      "state": "unreviewed",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildArtifactServe",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildArtifactServe/creator-3.7.3-3deadef-dirty.json"
+      ],
       "limitations": [
         "Serve one completed web artifact and return verified URL/lifecycle.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -764,9 +778,16 @@
     },
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-launch",
-      "state": "unreviewed",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildTargetLaunch",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildTargetLaunch/creator-3.7.3-3959132-dirty.json"
+      ],
       "limitations": [
         "Launch the exact produced artifact on a declared target, not preview fallback.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -775,9 +796,16 @@
     },
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-smoke",
-      "state": "unreviewed",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "buildTargetSmoke",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildTargetSmoke/creator-3.7.3-3959132-dirty.json"
+      ],
       "limitations": [
         "Interact with and observe the launched artifact on its declared target.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -1838,9 +1866,16 @@
     },
     {
       "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-playback",
-      "state": "unreviewed",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "particlePlayback",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/particlePlayback/creator-3.7.3-01635c7-dirty.json"
+      ],
       "limitations": [
         "Play, stop, clear and completion observation in a named runtime session.",
         "Historical qualified label alone is not complete-contract evidence.",

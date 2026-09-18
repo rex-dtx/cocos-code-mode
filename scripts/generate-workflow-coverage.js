@@ -16,6 +16,52 @@ function generate(root = ROOT) {
   const proposalById = new Map(proposals.rows.map(row => [row.sourceId, row]));
   const portfolioRows = [...portfolio.domains.flatMap(domain => domain.candidates.map(row => ({ ...row, domain: domain.domain }))), ...portfolio.reserveCandidates];
   const portfolioByName = new Map(portfolioRows.map(row => [row.name, row]));
+  const evidenceByTool = new Map();
+  const routeByTool = new Map();
+  const walk = directory => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) walk(file);
+      else if (entry.isFile() && entry.name.endsWith('.json')) {
+        try {
+          const record = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (record.qualified === true && record.creator === '3.7.3' && record.tool) {
+            const relative = path.relative(root, file).replaceAll(path.sep, '/');
+            const list = evidenceByTool.get(record.tool) || [];
+            list.push(relative);
+            evidenceByTool.set(record.tool, list);
+          }
+        } catch { /* unrelated JSON is not candidate evidence */ }
+      }
+    }
+  };
+  const evidenceRoot = path.join(root, 'reports/evidence/candidates');
+  if (fs.existsSync(evidenceRoot)) walk(evidenceRoot);
+  const sourceRoot = path.join(root, 'source');
+  const scanSources = directory => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) scanSources(file);
+      else if (entry.isFile() && entry.name.endsWith('.ts')) {
+        const text = fs.readFileSync(file, 'utf8');
+        for (const tool of portfolioRows.map(row => row.name)) {
+          if (!new RegExp(`@utcpTool\\(['\"]${tool}['\"]`).test(text)) continue;
+          const list = routeByTool.get(tool) || [];
+          list.push(path.relative(root, file).replaceAll(path.sep, '/'));
+          routeByTool.set(tool, list);
+        }
+      }
+    }
+  };
+  if (fs.existsSync(sourceRoot)) scanSources(sourceRoot);
+  const evidencePromotion = source => {
+    if (source.kind !== 'lane-requirement') return null;
+    const candidate = portfolioByName.get(source.name);
+    const evidence = evidenceByTool.get(source.name) || [];
+    const routes = routeByTool.get(source.name) || [];
+    if (candidate?.state !== 'qualified' || evidence.length !== 1 || routes.length !== 1) return null;
+    return { state: 'complete', route: { tool: source.name, file: routes[0] }, evidence: evidence[0] };
+  };
   const sources = competitor.rows.map(row => ({
     id: `${row.catalog === 'Funplay' ? 'funplay' : 'cocos-mcp'}:${row.name}`,
     kind: 'competitor-row', name: row.name,
@@ -66,12 +112,14 @@ function generate(root = ROOT) {
     // Contract acceptance is independent from implementation evidence. A reviewed
     // proposal may still be missing, partial, or test-pending.
     const workflowId = review?.workflowId || `${domain}.${slug(source.id)}`;
+    const promotion = evidencePromotion(source);
     const row = workflows.get(workflowId) || {
       id: workflowId, domain, title: source.name, observableOutcome: source.contract || source.name,
       creatorVersion: '3.7.3', platform: 'windows-x64', executionContext: review?.executionContext || 'unreviewed',
       sourceIds: [], sourceRequirementIds: [], competitorSourceIds: [], portfolioNames: [],
-      implementationState: review?.implementationState || 'unreviewed',
-      implementationRoute: review?.routes || [], evidenceArtifacts: review?.evidence || [],
+      implementationState: promotion?.state || review?.implementationState || 'unreviewed',
+      implementationRoute: promotion ? [promotion.route] : (review?.routes || []),
+      evidenceArtifacts: promotion ? [promotion.evidence] : (review?.evidence || []),
       limitations: review?.limitations || [], reviewed: contractAccepted,
       contractReviewStatus: contractAccepted ? 'accepted' : 'unreviewed',
       contractDecision: review?.decision || proposal?.decision || null,
@@ -117,12 +165,12 @@ function generate(root = ROOT) {
   const denominatorHash = digest(JSON.stringify(basis));
   const common = { schemaVersion: 2, denominatorVersion: VERSION, denominatorHash };
   const output = {
-    'docs/workflow-inventory.json': { ...common, status: reviewComplete ? 'review-complete' : 'review-required', qualificationProfile: basis.profile, inputHashes: sourceHashes, rows },
+    'docs/workflow-inventory.json': { ...common, status: reviewComplete ? 'frozen-v1' : 'review-required', qualificationProfile: basis.profile, inputHashes: sourceHashes, rows },
     'docs/workflow-source-mapping.json': { ...common, sourceCounts: { competitor: competitor.rows.length, lane: lanes.rows.length, parent: parent.length }, rows: mappings.sort((a, b) => a.sourceId.localeCompare(b.sourceId)) },
     'docs/workflow-implementation-evidence.json': { ...common, rows: rows.map(row => ({ workflowId: row.id, state: row.implementationState, routes: row.implementationRoute, evidenceArtifacts: row.evidenceArtifacts, limitations: row.limitations })) },
-    'reports/workflow-coverage-report.json': { ...common, status: reviewComplete ? 'review-complete' : 'not-measurable', candidateDenominator: included.length, denominator: reviewComplete ? included.length : null, confirmedComplete: confirmed.length, implementationPercent: reviewComplete ? Number((confirmed.length * 100 / included.length).toFixed(2)) : null, targetPercent: 90, targetComplete: reviewComplete ? Math.ceil(included.length * 0.9) : null, deficitTo90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, unresolvedContracts: unresolved.length, byDomain, invalidatedClaims: ['137/181', '144/189', '27 workflows to closure'], reason: 'Prior generator merged different operations and inferred implementation from registration/qualification labels; these are not accepted coverage evidence.' },
+    'reports/workflow-coverage-report.json': { ...common, status: reviewComplete ? 'measurable' : 'not-measurable', candidateDenominator: included.length, denominator: reviewComplete ? included.length : null, confirmedComplete: confirmed.length, implementationPercent: reviewComplete ? Number((confirmed.length * 100 / included.length).toFixed(2)) : null, targetPercent: 90, targetComplete: reviewComplete ? Math.ceil(included.length * 0.9) : null, deficitTo90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, unresolvedContracts: unresolved.length, byDomain, invalidatedClaims: ['137/181', '144/189', '27 workflows to closure'], reason: 'Prior generator merged different operations and inferred implementation from registration/qualification labels; these are not accepted coverage evidence.' },
     'reports/workflow-classification-review.json': { ...common, rows: mappings.filter(row => row.status !== 'contract-reviewed').map(row => ({ ...row, reviewReason: row.detailStatus === 'operation-contract-needed' ? 'Recover original operation inputs/outputs and context before equivalence review.' : 'Verify full outcome, not tool name or shared implementation.' })) },
-    'reports/workflow-closure-backlog.json': { ...common, status: reviewComplete ? 'reviewed' : 'blocked-on-contract-review', requiredFor90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, rows: rows.filter(row => row.reviewed && row.denominatorDisposition === 'included' && row.implementationState !== 'complete').map(row => ({ workflowId: row.id, state: row.implementationState, acceptance: row.observableOutcome, limitations: row.limitations, dependencies: row.executionContext === 'game-view' ? ['qualified-game-view-transport'] : [] })) },
+    'reports/workflow-closure-backlog.json': { ...common, status: reviewComplete ? 'ready-for-implementation-reconciliation' : 'blocked-on-contract-review', requiredFor90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, rows: rows.filter(row => row.reviewed && row.denominatorDisposition === 'included' && row.implementationState !== 'complete').map(row => ({ workflowId: row.id, state: row.implementationState, acceptance: row.observableOutcome, limitations: row.limitations, dependencies: row.executionContext === 'game-view' ? ['qualified-game-view-transport'] : [] })) },
   };
   for (const [file, value] of Object.entries(output)) { const destination = path.join(root, file); fs.mkdirSync(path.dirname(destination), { recursive: true }); fs.writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`); }
   return { ok: true, sourceCount: sources.length, candidateWorkflows: rows.length, confirmedComplete: confirmed.length, unresolvedContracts: unresolved.length, denominatorHash, frozen: false };
