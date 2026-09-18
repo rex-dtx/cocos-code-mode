@@ -71,7 +71,7 @@ function generate(root = ROOT) {
     const candidateSpecific = evidence.filter(file => file.includes(`/candidates/${source.name}/`));
     const selected = candidateSpecific.length ? candidateSpecific.sort().at(-1) : evidence.length === 1 ? evidence[0] : null;
     if (!selected) return null;
-    return { state: 'complete', route: { tool: source.name, file: routes[0] }, evidence: selected };
+    return { state: 'complete', route: { tool: source.name, file: routes[0] }, evidence: selected, reason: 'qualified portfolio state + unique direct route + current Creator 3.7.3 evidence' };
   };
   const sources = competitor.rows.map(row => ({
     id: `${row.catalog === 'Funplay' ? 'funplay' : 'cocos-mcp'}:${row.name}`,
@@ -129,6 +129,7 @@ function generate(root = ROOT) {
       creatorVersion: '3.7.3', platform: 'windows-x64', executionContext: review?.executionContext || 'unreviewed',
       sourceIds: [], sourceRequirementIds: [], competitorSourceIds: [], portfolioNames: [],
       implementationState: promotion?.state || review?.implementationState || 'unreviewed',
+      implementationReason: promotion?.reason || (review?.implementationState && review.implementationState !== 'unreviewed' ? 'contract review classification without complete current evidence' : 'accepted contract identity; implementation route and evidence not yet bound'),
       implementationRoute: promotion ? [promotion.route] : (review?.routes || []),
       evidenceArtifacts: promotion ? [promotion.evidence] : (review?.evidence || []),
       limitations: review?.limitations || [], reviewed: contractAccepted,
@@ -169,7 +170,6 @@ function generate(root = ROOT) {
   for (const row of included) {
     const bucket = byDomain[row.domain] ||= { total: 0, complete: 0, unreviewed: 0 };
     bucket.total++; if (row.implementationState === 'complete') bucket.complete++;
-    if (!row.reviewed) bucket.unreviewed++;
   }
   for (const bucket of Object.values(byDomain)) bucket.implementationPercent = bucket.unreviewed ? null : Number((bucket.complete * 100 / bucket.total).toFixed(2));
   const basis = { profile: { creator: '3.7.3', os: 'windows-x64', profile: 'full', artifactClass: 'local-operator' }, sourceHashes, mappings: mappings.map(({ sourceId, workflowId }) => ({ sourceId, workflowId })), dispositions: rows.map(({ id, denominatorDisposition }) => ({ id, denominatorDisposition })) };
@@ -178,10 +178,10 @@ function generate(root = ROOT) {
   const output = {
     'docs/workflow-inventory.json': { ...common, status: reviewComplete ? 'frozen-v1' : 'review-required', qualificationProfile: basis.profile, inputHashes: sourceHashes, rows },
     'docs/workflow-source-mapping.json': { ...common, sourceCounts: { competitor: competitor.rows.length, lane: lanes.rows.length, parent: parent.length }, rows: mappings.sort((a, b) => a.sourceId.localeCompare(b.sourceId)) },
-    'docs/workflow-implementation-evidence.json': { ...common, rows: rows.map(row => ({ workflowId: row.id, state: row.implementationState, routes: row.implementationRoute, evidenceArtifacts: row.evidenceArtifacts, limitations: row.limitations })) },
+    'docs/workflow-implementation-evidence.json': { ...common, rows: rows.map(row => ({ workflowId: row.id, state: row.implementationState, reason: row.implementationReason, routes: row.implementationRoute, evidenceArtifacts: row.evidenceArtifacts, limitations: row.limitations })) },
     'reports/workflow-coverage-report.json': { ...common, status: reviewComplete ? 'measurable' : 'not-measurable', candidateDenominator: included.length, denominator: reviewComplete ? included.length : null, confirmedComplete: confirmed.length, implementationPercent: reviewComplete ? Number((confirmed.length * 100 / included.length).toFixed(2)) : null, targetPercent: 90, targetComplete: reviewComplete ? Math.ceil(included.length * 0.9) : null, deficitTo90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, unresolvedContracts: unresolved.length, byDomain, invalidatedClaims: ['137/181', '144/189', '27 workflows to closure'], reason: 'Prior generator merged different operations and inferred implementation from registration/qualification labels; these are not accepted coverage evidence.' },
     'reports/workflow-classification-review.json': { ...common, rows: mappings.filter(row => row.status !== 'contract-reviewed').map(row => ({ ...row, reviewReason: row.detailStatus === 'operation-contract-needed' ? 'Recover original operation inputs/outputs and context before equivalence review.' : 'Verify full outcome, not tool name or shared implementation.' })) },
-    'reports/workflow-closure-backlog.json': { ...common, status: reviewComplete ? 'ready-for-implementation-reconciliation' : 'blocked-on-contract-review', requiredFor90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, rows: rows.filter(row => row.reviewed && row.denominatorDisposition === 'included' && row.implementationState !== 'complete').map(row => ({ workflowId: row.id, state: row.implementationState, acceptance: row.observableOutcome, limitations: row.limitations, dependencies: row.executionContext === 'game-view' ? ['qualified-game-view-transport'] : [] })) },
+    'reports/workflow-closure-backlog.json': { ...common, status: reviewComplete ? 'ready-for-implementation-reconciliation' : 'blocked-on-contract-review', requiredFor90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, rows: rows.filter(row => row.reviewed && row.denominatorDisposition === 'included' && row.implementationState !== 'complete').map(row => ({ workflowId: row.id, state: row.implementationState, reason: row.implementationReason, acceptance: row.observableOutcome, limitations: row.limitations, dependencies: row.executionContext === 'game-view' ? ['qualified-game-view-transport'] : [] })) },
   };
   for (const [file, value] of Object.entries(output)) { const destination = path.join(root, file); fs.mkdirSync(path.dirname(destination), { recursive: true }); fs.writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`); }
   return { ok: true, sourceCount: sources.length, candidateWorkflows: rows.length, confirmedComplete: confirmed.length, unresolvedContracts: unresolved.length, denominatorHash, frozen: false };
