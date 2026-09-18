@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "assetMissingReferenceAudit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/candidate-expansion-qualification.test.js", "result": "Validated bounded serialized scene dependency audit with complete scan and explicit missing-reference list." },
+  "negativeWitness": { "test": "candidate.assetMissingReferenceAudit.negative.v1", "result": "Invalid scene/reference inputs rejected with typed error." },
+  "persistence": "Read-only serialized dependency scan",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}

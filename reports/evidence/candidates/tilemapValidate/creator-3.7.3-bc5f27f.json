@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "tilemapValidate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/tilemap-qualification.test.js", "result": "Validated disposable imported TMX with complete typed references and no missing references." },
+  "negativeWitness": { "test": "candidate.tilemapValidate.negative.v1", "result": "Wrong/missing tilemap reference returns typed target/type error." },
+  "persistence": "Read-only imported TMX validation",
+  "cleanup": "Imported TMX deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}

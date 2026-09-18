@@ -2183,10 +2183,17 @@
       "portfolioNames": [
         "assetMissingReferenceAudit"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetMissingReferenceAudit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Cross-scene and asset missing-reference evidence with recovery locations.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -2645,10 +2652,17 @@
       "portfolioNames": [
         "buildTaskWait"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "buildTaskWait",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildTaskWait/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Wait boundedly for one build task terminal result with cancellation semantics.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -11334,10 +11348,17 @@
       "portfolioNames": [
         "tilemapValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "tilemapValidate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/tilemapValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate tileset links, gids, layer dimensions and imported references.",
         "Historical qualified label alone is not complete-contract evidence.",

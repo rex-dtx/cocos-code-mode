@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 276,
+  "requiredFor90": 273,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -641,18 +641,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Cross-scene and asset missing-reference evidence with recovery locations. Prerequisites: `graph-v4`, `asset-query-contract`.\nCross-scene and asset missing-reference evidence with recovery locations.",
-      "limitations": [
-        "Cross-scene and asset missing-reference evidence with recovery locations.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "assets-import.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-asset-bundle-validate",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -682,18 +670,6 @@
       "acceptance": "Bounded playback progress/state observation with activation errors. Prerequisites: `runtime-session`.\nBounded playback progress/state observation with activation errors.",
       "limitations": [
         "Bounded playback progress/state observation with activation errors.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-task-wait",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Wait boundedly for one build task terminal result with cancellation semantics. Prerequisites: `build-job`.\nWait boundedly for one build task terminal result with cancellation semantics.",
-      "limitations": [
-        "Wait boundedly for one build task terminal result with cancellation semantics.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -3275,18 +3251,6 @@
       "acceptance": "Live typed importer mutation, reimport and generated library-output hash passed; the fixture exposed no sprite frames, so frame qualification remains open.\nConfigure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
       "limitations": [
         "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live-scoped imported UUID reference validation passed; full gids/dimensions validation remains unqualified.\nValidate tileset links, gids, layer dimensions and imported references.",
-      "limitations": [
-        "Validate tileset links, gids, layer dimensions and imported references.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
