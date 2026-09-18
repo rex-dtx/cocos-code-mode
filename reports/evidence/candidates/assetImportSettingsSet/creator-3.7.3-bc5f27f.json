@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "assetImportSettingsSet",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/asset-import-settings-qualification.test.js", "result": "Copied image asset, read importer schema, toggled flipVertical, verified read-back, restored original and verified compression outputs." },
+  "negativeWitness": { "test": "candidate.assetImportSettingsSet.negative.v1", "result": "Invalid bounded paths are rejected by the typed importer contract." },
+  "persistence": "Importer metadata read-back after mutation and restoration",
+  "cleanup": "Disposable copied asset deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

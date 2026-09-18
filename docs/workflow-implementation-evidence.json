@@ -707,10 +707,17 @@
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "assetCompressionConfigure",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetCompressionConfigure/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Platform-aware compression validation plus generated-output evidence.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -719,10 +726,17 @@
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "assetImportSettingsSet",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetImportSettingsSet/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed importer mutation with preflight, reimport and output read-back.",
         "Historical qualified label alone is not complete-contract evidence.",

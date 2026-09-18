@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "assetCompressionConfigure",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/asset-import-settings-qualification.test.js", "result": "Applied default web compression preset to a disposable copied image asset and verified PNG format, non-empty generated output bytes and SHA-256 hashes." },
+  "negativeWitness": { "test": "candidate.assetCompressionConfigure.negative.v1", "result": "Unsupported preset/platform combinations are rejected before mutation." },
+  "persistence": "Generated output metadata and source hash read-back",
+  "cleanup": "Disposable copied asset deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
