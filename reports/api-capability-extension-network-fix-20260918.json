@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+  "extension": "ccc-skeleton-viewer",
+  "rootCause": "Startup update check propagated Gitee ECONNRESET/timeout while Creator was loading the main window.",
+  "fixCommit": "3d91fee",
+  "change": "Updater.getRemotePackageJson now catches network/JSON failures, logs a warning, and returns null so update checks fail closed.",
+  "verification": { "syntax": "node --check pass", "startupLog": "update check unavailable warning; Creator process continued startup", "utcpListener": "still absent; main-window:ready lifecycle remains unresolved" },
+  "decision": "Network failure is no longer fatal, but the Creator main-window lifecycle still does not bind UTCP/preview listeners. Runtime probes remain blocked by the independent lifecycle issue.",
+  "qualified": false
+}
