@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:56396",
+  "buildCommit": "bc5f27f",
+  "handshake": { "responsive": true, "sceneReady": true, "projectPath": "G:/_ws/cc-fws/cc30-new-all-in-one" },
+  "runtime": { "running": true, "paused": false, "sceneUuid": "1d918508-587a-46b4-b4a1-cb800f0ac03c", "webContentsId": 7, "frameCount": 4807 },
+  "probes": {
+    "assetBundleValidate": { "valid": false, "issues": ["NOT_BUNDLE", "BUNDLE_MISMATCH"], "runtimeCaveat": "Metadata validation only; runtime loading is not claimed." },
+    "physics2dQuery": { "valid": true, "checkedNodes": 0, "runtimeQueryProof": false },
+    "physics3dQuery": { "valid": true, "checkedNodes": 0, "runtimeQueryProof": false }
+  },
+  "decision": "Transport recovery succeeded and direct runtime identity is now observed, but bundle load/release and physics raycast/sweep/contact/trigger semantics were not proven by these topology/metadata probes. Do not promote coverage from this evidence.",
+  "qualified": false
+}
