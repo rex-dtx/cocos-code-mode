@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:56396",
+  "buildCommit": "bc5f27f",
+  "session": { "sessionId": "runtime-1", "targetId": "1d918508-587a-46b4-b4a1-cb800f0ac03c", "status": "attached" },
+  "fixtures": {
+    "physics2d": { "nodeId": "e4vV3MrCJIILEGKwVSvyMz", "components": ["cc.RigidBody2D", "cc.BoxCollider2D"] },
+    "physics3d": { "nodeId": "9b7pj1oMxBwrsyfshsrQAJ", "components": ["cc.RigidBody", "cc.BoxCollider"] },
+    "bundle": { "uuid": "1dc9707e-6a38-4f28-be56-8912710b7ee5", "name": "ccb3x-runtime" }
+  },
+  "witnesses": {
+    "physics2dQuery": { "valid": true, "checkedNodes": 1, "topologyOnly": true, "runtimeRaycastContactOverlap": false },
+    "physics3dQuery": { "valid": true, "checkedNodes": 1, "topologyOnly": true, "runtimeRaycastSweepContactTrigger": false },
+    "assetBundleValidate": { "valid": true, "metadataOnly": true, "runtimeLoadRelease": false }
+  },
+  "decision": "Fixtures and runtime session are real, but public tools still implement topology/metadata-only behavior. Accepted runtime contracts remain incomplete and receive no coverage promotion.",
+  "qualified": false
+}
