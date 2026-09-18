@@ -73,8 +73,12 @@ const LIFECYCLE_DISPATCH = (enabled: boolean): string => `(() => {
         }
     }
     visit(document);
-    if (views.length !== 1 || typeof views[0].previewSetPlay !== 'function') return false;
-    void views[0].previewSetPlay(${enabled ? 'true' : 'false'});
+    if (views.length !== 1) return false;
+    const view = views[0];
+    const client = view.previewClient;
+    if (typeof view.previewSetPlay === 'function') void view.previewSetPlay(${enabled ? 'true' : 'false'});
+    else if (client && typeof client.previewSetPlay === 'function') void client.previewSetPlay(${enabled ? 'true' : 'false'});
+    else return false;
     return true;
 })()`;
 
