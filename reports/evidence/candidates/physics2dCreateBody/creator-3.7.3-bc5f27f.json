@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "physics2dCreateBody",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/candidate-expansion-qualification.test.js#compound Box2D body creation", "result": "Created a Box2D rigid body plus circle collider, verified topology read-back, and cleaned the disposable node." },
+  "negativeWitness": { "test": "candidate.physics2dCreateBody.negative.v1", "result": "Builtin backend was rejected before mutation with UNSUPPORTED_BACKEND." },
+  "persistence": "Creator scene component read-back plus snapshot before cleanup",
+  "cleanup": "Disposable node removed and scene snapshotted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "sceneUuid": "ad50bcdb-60b3-4b17-8f28-6ca81a22f057", "artifactDirty": false },
+  "qualified": true
+}

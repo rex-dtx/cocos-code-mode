@@ -67,8 +67,11 @@ function generate(root = ROOT) {
     const candidate = portfolioByName.get(source.name);
     const evidence = evidenceByTool.get(source.name) || [];
     const routes = routeByTool.get(source.name) || [];
-    if (candidate?.state !== 'qualified' || evidence.length !== 1 || routes.length !== 1) return null;
-    return { state: 'complete', route: { tool: source.name, file: routes[0] }, evidence: evidence[0] };
+    if (candidate?.state !== 'qualified' || evidence.length === 0 || routes.length !== 1) return null;
+    const candidateSpecific = evidence.filter(file => file.includes(`/candidates/${source.name}/`));
+    const selected = candidateSpecific.length ? candidateSpecific.sort().at(-1) : evidence.length === 1 ? evidence[0] : null;
+    if (!selected) return null;
+    return { state: 'complete', route: { tool: source.name, file: routes[0] }, evidence: selected };
   };
   const sources = competitor.rows.map(row => ({
     id: `${row.catalog === 'Funplay' ? 'funplay' : 'cocos-mcp'}:${row.name}`,
