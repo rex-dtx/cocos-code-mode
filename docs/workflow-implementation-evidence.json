@@ -895,10 +895,17 @@
     },
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-log-inspect",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "buildLogInspect",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildLogInspect/creator-3.7.3-bc5f27f-bc5f27f.json"
+      ],
       "limitations": [
         "Return bounded structured diagnostics for one build task.",
         "Historical qualified label alone is not complete-contract evidence.",

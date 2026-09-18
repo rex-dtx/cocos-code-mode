@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildLogInspect",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/build-log-qualification.test.js", "result": "Inspected terminal successful Creator build task 1789015174581; returned terminal identity and bounded entries without fabricating unavailable logs." },
+  "negativeWitness": { "test": "candidate.buildLogInspect.negative.v1", "result": "Missing build task returned TARGET_NOT_FOUND." },
+  "persistence": "Read-only terminal build task diagnostics",
+  "cleanup": "No mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}

@@ -2481,10 +2481,17 @@
       "portfolioNames": [
         "buildLogInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "buildLogInspect",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildLogInspect/creator-3.7.3-bc5f27f-bc5f27f.json"
+      ],
       "limitations": [
         "Return bounded structured diagnostics for one build task.",
         "Historical qualified label alone is not complete-contract evidence.",

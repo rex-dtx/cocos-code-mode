@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T16:00:00+07:00",
+  "target": { "creator": "3.7.3", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "buildCommit": "bc5f27f", "artifactDirty": false },
+  "task": { "id": "1789015174581", "state": "success", "terminal": true },
+  "result": "buildLogInspect qualification passed with bounded entries and missing-task negative",
+  "coverageAfter": { "complete": 45, "denominator": 356, "percent": 12.64, "deficitTo90": 276 }
+}
