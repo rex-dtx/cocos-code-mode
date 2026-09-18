@@ -13,6 +13,8 @@ import { SignedRequestCache } from "./request-builder";
 import { loadPublicToolManifest } from "./public-tool-loader";
 import manifestJson from "./public-tool-manifest.json";
 import { bootLog } from "./boot-log";
+import { TelemetryBuffer } from "./telemetry-buffer";
+import { QualificationTraceRecorder } from "./qualification-trace";
 
 function readGatewayFile(): Record<string, string> {
   try {
@@ -78,6 +80,8 @@ export class ProtectedRelayHost {
   readonly journal = new MutationJournal();
   readonly replayWindow = new ReplayWindow();
   readonly requestCache = new SignedRequestCache();
+  readonly telemetry = new TelemetryBuffer();
+  readonly qualificationTrace = QualificationTraceRecorder.fromEnv();
   readonly relayInstanceId = randomUUID();
   readonly identity: DeviceIdentity | null;
   readonly packageHash: string | null;
@@ -148,6 +152,7 @@ export class ProtectedRelayHost {
         origin,
         memberCredential: () => memberCredential,
         allowInsecureLoopback: process.env.CCB_ALLOW_INSECURE_GATEWAY === "1" || file.allowInsecureGateway === "1",
+        qualificationTrace: this.qualificationTrace ?? undefined,
       });
       this.executionKeys = new Map([[keyId, createPublicKey({ key: decodeBase64UrlBuffer(executionKey), format: "der", type: "spki" })]]);
       this.projectId = projectId;
@@ -167,6 +172,7 @@ export class ProtectedRelayHost {
   close(): void {
     const wasConnected = this.client !== null || this.state.state === "ACTIVE";
     this.client?.close();
+    this.qualificationTrace?.close();
     this.client = null;
     this.executionKeys.clear();
     this.projectId = null;

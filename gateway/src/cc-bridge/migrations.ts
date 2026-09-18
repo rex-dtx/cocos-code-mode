@@ -315,7 +315,21 @@ const MIGRATIONS: readonly Migration[] = [
       CREATE INDEX rollout_execution_scope_idx ON rollout_policy(target_hash, channel, sequence DESC);
     `,
   },
-];
+  {
+    version: 6,
+    sql: `
+      ALTER TABLE cc_bridge_audit ADD COLUMN request_id TEXT;
+      CREATE INDEX cc_bridge_audit_request_idx ON cc_bridge_audit(request_id);
+      CREATE TABLE cc_bridge_completion_telemetry (
+        request_id TEXT PRIMARY KEY,
+        outcome TEXT NOT NULL CHECK (outcome IN ('completed', 'failed', 'outcome-unknown')),
+        duration_ms INTEGER NOT NULL CHECK (duration_ms BETWEEN 0 AND 300000),
+        error_code TEXT,
+        received_at_ms INTEGER NOT NULL
+      );
+    `,
+  },
+ ];
 
 export function applyCcBridgeMigrations(db: Database.Database): void {
   db.exec(`

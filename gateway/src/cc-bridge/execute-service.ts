@@ -2,7 +2,7 @@ import { performance } from "node:perf_hooks";
 import { randomUUID } from "node:crypto";
 import type { AuthContext } from "../auth.ts";
 import { isEmergencyStopped } from "../emergency-stop.ts";
-import { recordCcBridgeAudit } from "./audit.ts";
+import { recordCcBridgeAudit, recordCcBridgeCompletionTelemetry } from "./audit.ts";
 import { canonicalizeToBytes } from "./canonical-json.ts";
 import { CcbError, toCcbErrorBody } from "./errors.ts";
 import { authorizeProtectedRequest } from "./authorizer.ts";
@@ -65,6 +65,7 @@ export async function executeProtectedTool(
   let deviceId: string | undefined;
   let projectId: string | undefined;
   let relayBuild: string | undefined;
+  let requestId: string | undefined;
   let reservation: Extract<ReplayAdmission, { kind: "reserved" }> | undefined;
   let failureClass: ReplayFailureClass = "internal";
   const phaseTimings: Partial<Record<CcbMetricPhase, number>> = {};
@@ -75,7 +76,8 @@ export async function executeProtectedTool(
     }
     assertCcBridgeProduct(auth);
     const verified = verifyDeviceRequest(deps.store, rawBody, nowMs);
-    filterProtectedInputs(verified.request);
+    try { recordCcBridgeCompletionTelemetry(deps.store, verified.request.priorTelemetry ?? [], nowMs); } catch { /* telemetry must not affect protected execution */ }
+    requestId = verified.request.requestId;
     phaseStartedAt = markPhase(phaseTimings, "verify", phaseStartedAt);
     toolFamily = verified.request.tool.id;
     deviceId = verified.request.deviceId;
@@ -97,7 +99,7 @@ export async function executeProtectedTool(
       expiresAtMs: nowMs + COMPLETED_RESPONSE_RETENTION_MS,
     });
     if (admission.kind === "duplicate") {
-      return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
+      return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, requestId: verified.request.requestId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
     }
     reservation = admission;
     deps.store.markDeviceSeen(verified.device.id, nowMs);
@@ -127,7 +129,7 @@ export async function executeProtectedTool(
     deps.replay.complete(admission.id, admission.owner, responseBody, completedAtMs);
     reservation = undefined;
     markPhase(phaseTimings, "persist", phaseStartedAt);
-    return finish(deps.store, { status: 200, body: responseBody }, { correlationId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
+    return finish(deps.store, { status: 200, body: responseBody }, { correlationId, requestId: verified.request.requestId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
   } catch (error) {
     if (reservation) {
       try {
@@ -144,7 +146,7 @@ export async function executeProtectedTool(
     const failed = errorResult(error);
     const code = toCcbErrorBody(error).code;
     return finish(deps.store, failed, {
-      correlationId, auth, toolFamily, deviceId, projectId, relayBuild,
+      correlationId, requestId, auth, toolFamily, deviceId, projectId, relayBuild,
       requestBytes: rawBody.byteLength,
       resultClass: code === "CCB_INTERNAL" ? "error" : "deny",
       errorCode: code,
@@ -157,7 +159,7 @@ function finish(
   store: CcBridgeStore,
   result: ExecuteResult,
   meta: {
-    correlationId: string; auth: AuthContext; toolFamily: string; deviceId?: string; projectId?: string;
+    correlationId: string; requestId?: string; auth: AuthContext; toolFamily: string; deviceId?: string; projectId?: string;
     relayBuild?: string; requestBytes: number; resultClass: "ok" | "deny" | "error"; errorCode?: string;
     phaseTimings: Partial<Record<CcbMetricPhase, number>>;
   },
@@ -165,6 +167,7 @@ function finish(
   try {
     recordCcBridgeAudit(store, {
       correlationId: meta.correlationId,
+      requestId: meta.requestId,
       memberId: meta.auth.member_id,
       deviceId: meta.deviceId,
       projectId: meta.projectId,

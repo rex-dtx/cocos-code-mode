@@ -6,6 +6,8 @@ import { CCB_ERROR_CODES, CcbError, CcbErrorCode } from "./errors";
 import { canonicalizeToBytes } from "./canonical-json";
 import { EXECUTE_PATH, SignedGatewayDecision, SignedProtectedRequest, WRAPPER_MAX_BYTES } from "./protocol";
 import { parseSignedGatewayDecision } from "./schemas";
+import { decodeBase64UrlBuffer } from "./node14-compat";
+import type { QualificationTraceRecorder } from "./qualification-trace";
 
 const GatewayErrorSchema = z.object({
   error: z.string().min(1).max(512),
@@ -22,6 +24,7 @@ export interface GatewayClientOptions {
   minimumBackoffMs?: number;
   maximumBackoffMs?: number;
   allowInsecureLoopback?: boolean;
+  qualificationTrace?: QualificationTraceRecorder;
 }
 
 function readBoundedResponse(response: IncomingMessage, maxBytes: number): Promise<Buffer> {
@@ -86,7 +89,6 @@ export class GatewayClient {
     if (body.byteLength > WRAPPER_MAX_BYTES) throw new CcbError("CCB_LIMIT_EXCEEDED", "Signed request wrapper exceeds the wire limit.");
     const memberCredential = await this.options.memberCredential();
     if (!memberCredential || /[\r\n]/.test(memberCredential)) throw new CcbError("CCB_AUTH_REQUIRED", "A valid member credential is required.");
-
     try {
       const decision = await this.sendOnce(body, memberCredential);
       this.failures = 0;
@@ -102,6 +104,17 @@ export class GatewayClient {
       throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Gateway request failed before a decision was accepted.");
     }
   }
+  private requestId(body: Buffer): string {
+    try {
+      const wrapper = JSON.parse(body.toString("utf8")) as { payload?: string };
+      if (typeof wrapper.payload !== "string") return "";
+      const request = JSON.parse(decodeBase64UrlBuffer(wrapper.payload).toString("utf8")) as { requestId?: string };
+      return typeof request.requestId === "string" ? request.requestId : "";
+    } catch {
+      return "";
+    }
+  }
+
 
   close(): void {
     this.agent.destroy();
@@ -126,11 +139,13 @@ export class GatewayClient {
 
     const transport = this.endpoint.protocol === "https:" ? httpsRequest : httpRequest;
     return new Promise<SignedGatewayDecision>((resolve, reject) => {
+      const traceId = this.options.qualificationTrace ? this.requestId(body) : "";
       const outgoing = transport(requestOptions, async (response) => {
         try {
           if (response.headers.location) throw new CcbError("CCB_GATEWAY_UNAVAILABLE", "Gateway redirects are not accepted.");
           if (response.headers["content-encoding"]) throw new CcbError("CCB_CANONICAL_INVALID", "Compressed Gateway responses are not accepted.");
           const bytes = await readBoundedResponse(response, this.responseMaxBytes);
+          this.options.qualificationTrace?.gatewayResponse(traceId, bytes.byteLength);
           const mediaType = String(response.headers["content-type"] ?? "").toLowerCase();
           if (!mediaType.startsWith("application/json")) throw new CcbError("CCB_CANONICAL_INVALID", "Gateway returned an unsupported media type.");
           const parsed: unknown = JSON.parse(bytes.toString("utf8"));
@@ -148,6 +163,7 @@ export class GatewayClient {
       });
       outgoing.setTimeout(this.deadlineMs, () => outgoing.destroy(new CcbError("CCB_GATEWAY_UNAVAILABLE", "Gateway request deadline exceeded.")));
       outgoing.once("error", reject);
+      this.options.qualificationTrace?.gatewayRequest(traceId, body);
       outgoing.end(body);
     });
   }

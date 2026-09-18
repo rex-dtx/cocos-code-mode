@@ -21,7 +21,7 @@ describe("CC Bridge audit", () => {
     const stored = store.db.prepare("SELECT * FROM cc_bridge_audit").get() as Record<string, unknown>;
     expect(Object.keys(stored).sort()).toEqual([
       "correlation_id", "device_id", "error_code", "id", "member_id",
-      "phase_timings_json", "project_id", "relay_build", "request_bytes",
+      "phase_timings_json", "project_id", "relay_build", "request_bytes", "request_id",
       "response_bytes", "result_class", "timestamp_ms", "tool_family",
     ].sort());
     expect(JSON.stringify(stored)).not.toMatch(/observation|screenshot|parentUuid|scene-root/);

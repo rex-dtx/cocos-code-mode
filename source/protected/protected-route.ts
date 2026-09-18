@@ -90,5 +90,7 @@ export async function dispatchProtectedCustomerTool(
       readIpcCount: () => creatorIpcCount,
     },
     observationRuntime: { request: creatorRequest, selection },
+    telemetry: host.telemetry,
+    qualificationTrace: host.qualificationTrace ?? undefined,
   }, canonicalManifest(), name, inputs, dispatch);
 }

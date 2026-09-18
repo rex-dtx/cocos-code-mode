@@ -13,6 +13,9 @@ import type { ReplayWindow } from "./replay-window";
 import type { DeviceIdentity } from "./device-identity";
 import type { ProtectedRelayStateMachine } from "./state-machine";
 import { DeviceIdentityStore } from "./device-identity";
+import type { QualificationTraceRecorder } from "./qualification-trace";
+import type { TelemetryBuffer } from "./telemetry-buffer";
+import type { CompletionTelemetry } from "./protocol";
 
 export interface ProtectedDispatchContext {
   idempotencyKey?: string;
@@ -33,6 +36,8 @@ export interface DispatcherContext {
   relay: { build: string; packageHash: string; creatorVersion: string; os: string };
   adapters: PrimitiveAdapters;
   observationRuntime: ObservationRuntime;
+  qualificationTrace?: QualificationTraceRecorder;
+  telemetry?: TelemetryBuffer;
 }
 
 function evidenceFromError(error: CcbError): JournalOutcomeEvidence {
@@ -67,6 +72,11 @@ function localResult(execution: PrimitiveExecution): LocalExecutionResult {
   };
   return { commandResults: execution.commandResults, summary };
 }
+function completionOutcome(value: string): CompletionTelemetry["outcome"] {
+  if (value === "completed") return "completed";
+  if (value === "outcome-unknown") return "outcome-unknown";
+  return "failed";
+}
 
 export async function dispatchProtectedTool(
   ctx: DispatcherContext,
@@ -75,7 +85,20 @@ export async function dispatchProtectedTool(
   inputs: IJson,
   dispatch: ProtectedDispatchContext = {},
 ): Promise<IJson> {
+  const startedAtMs = Date.now();
+  let requestId: string | undefined;
   const finish = ctx.state.beginWork();
+  let traceId: string | undefined;
+  let ipcBeforeGateway: number | null = null;
+  let traceKind: "execute" | "result" | "denied" | "failed" = "failed";
+  let traceOutcome: "completed" | "failed" | "denied" | "outcome-unknown" = "failed";
+  let traceResult: unknown = null;
+  let traceError: string | undefined;
+  const completed = (result: IJson): IJson => {
+    traceOutcome = "completed";
+    traceResult = result;
+    return result;
+  };
   try {
     const tool = findPublicTool(manifest, toolName);
     const operation = findPublicToolOperation(tool, inputs);
@@ -90,7 +113,8 @@ export async function dispatchProtectedTool(
       const observation = operation.observation.contractId === "none-v1"
         ? undefined
         : await collectObservation(operation.observation, inputs, ctx.observationRuntime);
-      return buildProtectedRequest({
+      const telemetry = dispatch.idempotencyKey ? undefined : ctx.telemetry?.take();
+      const options = {
         deviceKeyId: ctx.identity.deviceKeyId,
         deviceId: ctx.identity.deviceId,
         projectId: ctx.projectId,
@@ -102,12 +126,34 @@ export async function dispatchProtectedTool(
         ...(observation ? { observation } : {}),
         idempotencyKey: dispatch.idempotencyKey,
         privateKey: ctx.identityStore.privateKey(ctx.identity),
-      });
+      };
+      try {
+        return buildProtectedRequest({ ...options, ...(telemetry ? { priorTelemetry: telemetry } : {}) });
+      } catch (error) {
+        ctx.telemetry?.restore(telemetry);
+        if (telemetry && error instanceof RangeError && error.message === "request payload exceeds limit") return buildProtectedRequest(options);
+        throw error;
+      }
     };
     const built = dispatch.idempotencyKey
       ? await ctx.requestCache.getOrBuild(dispatch.idempotencyKey, inputDigest, build)
       : await build();
-    const signed = await ctx.client.execute(built.signed);
+    requestId = built.request.requestId;
+    if (ctx.qualificationTrace) {
+      ctx.qualificationTrace.begin(built.request);
+      traceId = built.request.requestId;
+      ipcBeforeGateway = ctx.adapters.readIpcCount?.() ?? null;
+    }
+    let signed;
+    try {
+      signed = await ctx.client.execute(built.signed);
+    } catch (error) {
+      const ccb = error instanceof CcbError ? error : new CcbError("CCB_GATEWAY_UNAVAILABLE", "Gateway request failed.");
+      traceKind = "denied";
+      traceOutcome = "denied";
+      traceError = ccb.body.code;
+      throw error;
+    }
     const verified = verifyDecision({
       request: built.request,
       signed,
@@ -116,7 +162,11 @@ export async function dispatchProtectedTool(
       tool,
       operation,
     });
-    if (verified.decision.kind === "result") return routeFiniteResult(verified.decision, built.request);
+    traceKind = verified.decision.kind;
+    ctx.qualificationTrace?.phase(built.request.requestId, "decision-verified");
+    if (verified.decision.kind === "result") {
+      return completed(routeFiniteResult(verified.decision, built.request));
+    }
     const envelope = verified.decision.envelope;
     const adapters: PrimitiveAdapters = {
       ...ctx.adapters,
@@ -133,17 +183,23 @@ export async function dispatchProtectedTool(
       },
     };
     if (envelope.effect === "none") {
+      ctx.qualificationTrace?.phase(built.request.requestId, "execution-start");
       const execution = await executeEnvelope(envelope, adapters, built.request, {
         publicConstants,
         deadlineAtMs: verified.deadlineAtMs,
       });
-      return routeExecutionResult(envelope, localResult(execution));
+      ctx.qualificationTrace?.phase(built.request.requestId, "execution-finish");
+      return completed(routeExecutionResult(envelope, localResult(execution)));
     }
 
     const admission = ctx.journal.prepare(verified.decisionDigest, built.request.requestId, built.request.idempotencyKey);
-    if (admission.action === "return-completed") return admission.result;
+    if (admission.action === "return-completed") {
+      traceKind = "result";
+      return completed(admission.result);
+    }
     let started = false;
     try {
+      ctx.qualificationTrace?.phase(built.request.requestId, "execution-start");
       const execution = await executeEnvelope(envelope, adapters, built.request, {
         publicConstants,
         deadlineAtMs: verified.deadlineAtMs,
@@ -152,13 +208,14 @@ export async function dispatchProtectedTool(
           started = true;
         },
       });
+      ctx.qualificationTrace?.phase(built.request.requestId, "execution-finish");
       const result = routeExecutionResult(envelope, localResult(execution));
       ctx.journal.markCompleted(verified.decisionDigest, result, {
         attemptedCommandIds: execution.attemptedCommandIds,
         completedCommandIds: execution.executedCommandIds,
         snapshot: execution.snapshotOutcome,
       });
-      return result;
+      return completed(result);
     } catch (error) {
       if (started) {
         const ccb = error instanceof CcbError ? error : new CcbError("CCB_OUTCOME_UNKNOWN", "Creator effect may have begun.");
@@ -178,11 +235,19 @@ export async function dispatchProtectedTool(
       throw error;
     }
   } catch (error) {
+    traceError = error instanceof CcbError ? error.body.code : "CCB_INTERNAL";
+    if (traceError === "CCB_OUTCOME_UNKNOWN") traceOutcome = "outcome-unknown";
     if (error instanceof CcbError) throw error;
     throw new CcbError("CCB_INTERNAL", "Protected dispatch failed before a local result was produced.", {
       cause: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512),
     });
   } finally {
+    if (traceId) ctx.qualificationTrace?.finish(traceId, traceOutcome, traceKind,
+      ctx.adapters.readIpcCount?.() ?? null, ipcBeforeGateway, traceResult, traceError);
+    if (requestId) {
+      const telemetryOutcome = completionOutcome(traceOutcome);
+      ctx.telemetry?.push({ requestId, outcome: telemetryOutcome, durationMs: Math.min(300_000, Math.max(0, Date.now() - startedAtMs)), ...(traceError ? { errorCode: traceError } : {}) });
+    }
     finish();
   }
 }

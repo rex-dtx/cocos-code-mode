@@ -13,7 +13,7 @@ import { ProtectedToolRegistry } from "../../src/cc-bridge/protected-tool-regist
 import { ReplayStore } from "../../src/cc-bridge/replay-store.ts";
 import { parseGatewayDecision, parseSignedGatewayDecision } from "../../src/cc-bridge/schemas.ts";
 import { CcBridgeStore } from "../../src/cc-bridge/store.ts";
-import { verifyGatewayDecision } from "../../src/cc-bridge/protocol.ts";
+import { signProtectedRequest, verifyGatewayDecision } from "../../src/cc-bridge/protocol.ts";
 
 const fixtureRoot = join(import.meta.dirname, "..", "fixtures", "cc-bridge", "v1");
 const keys = JSON.parse(readFileSync(join(fixtureRoot, "test-keys.json"), "utf8"));
@@ -112,6 +112,21 @@ describe("CC Bridge execute control plane", () => {
     const decision = parseGatewayDecision(verifyGatewayDecision(signed, executionPublicKey));
     expect(decision.kind).toBe("execute");
     expect(decision.binding.requestId).toBe(vectors.request.requestId);
+  });
+
+  it("persists signed completion telemetry without affecting execution", async () => {
+    const deps = runtime();
+    const completedRequest = {
+      ...vectors.request,
+      priorTelemetry: [{ requestId: "11111111-1111-4111-8111-111111111111", outcome: "completed", durationMs: 17 }],
+    };
+    const signedRequest = signProtectedRequest(vectors.signedRequest.deviceKeyId, completedRequest, devicePrivateKey);
+    const result = await executeProtectedTool(deps, auth, canonicalizeToBytes(signedRequest), vectors.request.issuedAtMs);
+    expect(result.status).toBe(200);
+    expect(deps.store.db.prepare("SELECT request_id, outcome, duration_ms FROM cc_bridge_completion_telemetry").get())
+      .toEqual({ request_id: "11111111-1111-4111-8111-111111111111", outcome: "completed", duration_ms: 17 });
+    expect(deps.store.db.prepare("SELECT request_id FROM cc_bridge_audit ORDER BY id DESC LIMIT 1").get())
+      .toEqual({ request_id: vectors.request.requestId });
   });
 
   it("executes with the unchanged relay-generated device identity after enrollment and approval", async () => {

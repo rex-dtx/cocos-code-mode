@@ -23,6 +23,7 @@
     "forbidden-material": "node ./scripts/forbidden-material-witness.js",
     "support-bundle": "node ./scripts/support-bundle.js",
     "live-prereqs": "node ./scripts/check-live-prereqs.js",
+    "verify:qualification-witness": "node ./scripts/verify-qualification-witness.js",
     "link:project": "node ./scripts/link-project-extension.js",
     "install:package": "node ./scripts/install-package.js",
     "link:plans": "python ../../../_devtools/cfg-n-scripts/notes/08_System/mount_project_plans.py --here",

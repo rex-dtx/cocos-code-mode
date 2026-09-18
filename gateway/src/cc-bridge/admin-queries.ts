@@ -35,7 +35,7 @@ function where(query: Query, time: "hour_ms" | "timestamp_ms") {
   }
   return { sql: clauses.join(" AND "), values, from, to };
 }
-const projection = `id, correlation_id AS correlationId, timestamp_ms AS timestampMs, member_id AS memberId,
+const projection = `id, correlation_id AS correlationId, request_id AS requestId, timestamp_ms AS timestampMs, member_id AS memberId,
   device_id AS deviceId, project_id AS projectId, tool_family AS toolId, relay_build AS relayBuild,
   result_class AS gatewayResult, error_code AS errorCode, request_bytes AS requestBytes, response_bytes AS responseBytes`;
 const PHASES = CCB_METRIC_PHASES;
@@ -70,12 +70,15 @@ export function queryAdminAnalytics(store: CcBridgeStore, view: string, query: Q
   }
   if (view === "requests" || view === "errors") {
     const condition = view === "errors" ? " AND result_class != 'ok'" : "";
-    const rows = store.db.prepare(`SELECT ${projection} FROM cc_bridge_audit WHERE ${detail.sql}${condition}
+    const rows = store.db.prepare(`SELECT ${projection}, telemetry.outcome AS creatorOutcome,
+        telemetry.duration_ms AS creatorDurationMs, telemetry.error_code AS creatorErrorCode
+      FROM cc_bridge_audit LEFT JOIN cc_bridge_completion_telemetry AS telemetry ON telemetry.request_id = cc_bridge_audit.request_id
+      WHERE ${detail.sql}${condition}
       ORDER BY timestamp_ms DESC, id DESC LIMIT ? OFFSET ?`).all(...detail.values, query.limit + 1, query.offset);
     const facets = view === "errors" ? store.db.prepare(`SELECT error_code AS errorCode, COUNT(*) AS requests
       FROM cc_bridge_audit WHERE ${detail.sql}${condition} GROUP BY error_code ORDER BY requests DESC LIMIT 50`)
       .all(...detail.values) : undefined;
-    return { ...base, rows: rows.slice(0, query.limit).map((row) => ({ ...row as object, creatorOutcome: "unknown" })),
+    return { ...base, rows: rows.slice(0, query.limit).map((row) => ({ ...row as object, creatorOutcome: (row as { creatorOutcome?: string }).creatorOutcome ?? "unknown" })),
       facets, hasMore: rows.length > query.limit };
   }
   if (view === "latency") {
