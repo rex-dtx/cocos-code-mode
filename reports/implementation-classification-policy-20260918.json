@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "decision": "Do not infer complete implementation from portfolio labels, registrations, or historical qualification artifacts.",
+  "states": {
+    "complete": "Full frozen workflow contract has a current direct or composition route plus exact Creator 3.7.3 evidence artifact and required postcondition.",
+    "test-pending": "Full route and contract are implemented, but only proportionate current verification is missing; never use for complete numerator.",
+    "partial": "A route exists but covers a narrower contract, has an explicit limitation, or lacks a required persistence/runtime postcondition.",
+    "missing": "No bounded route exists for the frozen outcome.",
+    "unsupported": "A typed fail-closed route exists but the required Creator transport or capability is unavailable.",
+    "unreviewed": "Contract identity is accepted but route/evidence reconciliation has not classified implementation.",
+    "rule": "Current implementation coverage remains 25/356 until each workflow is classified; evidence quality can improve without changing numerator unless the full contract is proven."
+  },
+  "cause": "331 of 356 frozen workflows have accepted contract identities but no implementation route/evidence binding. This is conservative fail-closed behavior, not proof that source registrations are absent.",
+  "next": "Classify the smallest dependency-ordered closure batch from source routes and explicit limitations; promote only complete contract matches with current evidence."
+}
