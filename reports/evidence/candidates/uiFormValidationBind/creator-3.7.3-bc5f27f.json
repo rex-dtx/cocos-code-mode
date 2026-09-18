@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "uiFormValidationBind",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/ui-form-validation-qualification.test.js", "result": "Created bounded Canvas-hosted form, verified rules/focus order/input identity, then deleted disposable form." },
+  "negativeWitness": { "test": "candidate.uiFormValidationBind.negative.v1", "result": "minLength with required=false rejected before scene mutation." },
+  "persistence": "Scene hierarchy and validation metadata read-back",
+  "cleanup": "Disposable form node deleted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 289,
+  "requiredFor90": 288,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -3443,18 +3443,6 @@
       "acceptance": "Explicitly rejected on Creator 3.7.3 with `UNSUPPORTED_PREVIEW_IPC`.\nSet and read back target resolution through proven IPC.",
       "limitations": [
         "Set and read back target resolution through proven IPC.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-accessibility-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live bounded inferred labels, roles and interactability audit passed; no screen-reader runtime support is claimed.\nTyped constraint tree and computed world rectangles, not a generic property dump.",
-      "limitations": [
-        "Typed constraint tree and computed world rectangles, not a generic property dump.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
