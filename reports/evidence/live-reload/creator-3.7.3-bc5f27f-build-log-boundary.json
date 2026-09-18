@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T14:25:00+07:00",
+  "target": { "creator": "3.7.3", "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "buildCommit": "bc5f27f", "dirty": false },
+  "buildManageTasksInfo": { "status": 200, "workerReady": true, "free": true, "total": 0, "truncated": false },
+  "qualification": false,
+  "limitation": "No terminal Creator build task exists in the active fixture, so buildLogInspect cannot receive positive candidate evidence."
+}
