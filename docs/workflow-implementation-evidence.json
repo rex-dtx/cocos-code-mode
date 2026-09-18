@@ -3916,10 +3916,17 @@
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "skeletalAnimationInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/skeletalAnimationInspect/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed skins, tracks, sockets, animations and extension availability.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -3939,10 +3946,17 @@
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "skeletalAnimationValidate",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/skeletalAnimationValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
         "Historical qualified label alone is not complete-contract evidence.",

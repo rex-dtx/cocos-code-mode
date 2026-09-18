@@ -10892,10 +10892,17 @@
       "portfolioNames": [
         "skeletalAnimationInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "skeletalAnimationInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/skeletalAnimationInspect/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed skins, tracks, sockets, animations and extension availability.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -10959,10 +10966,17 @@
       "portfolioNames": [
         "skeletalAnimationValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "skeletalAnimationValidate",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/skeletalAnimationValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
         "Historical qualified label alone is not complete-contract evidence.",

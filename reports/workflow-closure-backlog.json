@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 280,
+  "requiredFor90": 278,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -3271,36 +3271,12 @@
       "dependencies": []
     },
     {
-      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Typed skins, tracks, sockets, animations and extension availability. Prerequisites: `skeletal-extension-detection`.\nTyped skins, tracks, sockets, animations and extension availability.",
-      "limitations": [
-        "Typed skins, tracks, sockets, animations and extension availability.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-play",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "Bounded play/queue/stop contract on a named runtime target. Prerequisites: `runtime-session`.\nBounded play/queue/stop contract on a named runtime target.",
       "limitations": [
         "Bounded play/queue/stop contract on a named runtime target.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support. Prerequisites: `skeletal-extension-detection`.\nValidate skeleton/atlas/textures, named animations, skins and runtime extension support.",
-      "limitations": [
-        "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
