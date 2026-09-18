@@ -50,8 +50,14 @@ export function recordCcBridgeCompletionTelemetry(store: CcBridgeStore, records:
   if (records.length === 0) return;
   store.db.transaction(() => {
     const insert = store.db.prepare(`
-      INSERT OR IGNORE INTO cc_bridge_completion_telemetry(request_id, outcome, duration_ms, error_code, received_at_ms)
+      INSERT INTO cc_bridge_completion_telemetry(request_id, outcome, duration_ms, error_code, received_at_ms)
       VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(request_id) DO UPDATE SET
+        outcome = excluded.outcome,
+        duration_ms = excluded.duration_ms,
+        error_code = excluded.error_code,
+        received_at_ms = excluded.received_at_ms
+      WHERE excluded.received_at_ms >= cc_bridge_completion_telemetry.received_at_ms
     `);
     for (const record of records.slice(-16)) {
       insert.run(record.requestId, record.outcome, record.durationMs, record.errorCode ?? null, nowMs);

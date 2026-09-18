@@ -106,7 +106,7 @@ test("completion telemetry is attached to the next non-idempotent protected requ
     assert.equal(Number.isSafeInteger(payloads()[1].priorTelemetry[0].durationMs), true);
   });
 });
-test("idempotent effect retries do not embed or consume telemetry", async () => {
+test("gateway denials are not reported as Creator completion failures", async () => {
   await surface(async ({ context, payloads }) => {
     const retryKey = randomUUID();
     await assert.rejects(dispatchProtectedTool(context, manifest, "nodeCreate", { name: "APPROVED_MARKER_1234" }, { idempotencyKey: retryKey }), e => e.body.code === "CCB_PROJECT_DENIED");
@@ -115,12 +115,11 @@ test("idempotent effect retries do not embed or consume telemetry", async () => 
     assert.equal(payloads().length, 3);
     assert.equal(payloads()[0].priorTelemetry, undefined);
     assert.equal(payloads()[1].priorTelemetry, undefined);
-    assert.equal(payloads()[2].priorTelemetry.length, 2);
-    assert.equal(payloads()[2].priorTelemetry.every(record => record.outcome === "failed"), true);
+    assert.equal(payloads()[2].priorTelemetry, undefined);
   });
 });
 
-test("idempotent cache hits preserve telemetry for a future fresh request", async () => {
+test("idempotent cache hits do not fabricate Creator completion telemetry", async () => {
   await surface(async ({ context, payloads }) => {
     const retryKey = randomUUID();
     await assert.rejects(dispatchProtectedTool(context, manifest, "nodeCreate", { name: "APPROVED_MARKER_1234" }, { idempotencyKey: retryKey }), e => e.body.code === "CCB_PROJECT_DENIED");
@@ -129,8 +128,7 @@ test("idempotent cache hits preserve telemetry for a future fresh request", asyn
     assert.equal(payloads().length, 3);
     assert.equal(payloads()[1].requestId, payloads()[0].requestId);
     assert.equal(payloads()[1].priorTelemetry, undefined);
-    assert.equal(payloads()[2].priorTelemetry.length, 2);
-    assert.equal(payloads()[2].priorTelemetry.every(record => record.requestId === payloads()[0].requestId && record.outcome === "failed"), true);
+    assert.equal(payloads()[2].priorTelemetry, undefined);
   });
 });
 

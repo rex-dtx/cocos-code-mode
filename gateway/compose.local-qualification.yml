@@ -8,6 +8,7 @@ services:
     environment:
       NODE_ENV: development
       CCB_GATEWAY_HOST: 0.0.0.0
+      CCB_GATEWAY_CONTAINER_LOOPBACK: "1"
       CCB_GATEWAY_PORT: "8787"
       CCB_ALLOWED_HOSTS: 127.0.0.1,localhost
       CCB_DB_PATH: /data/cc-bridge.db

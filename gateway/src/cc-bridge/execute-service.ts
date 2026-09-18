@@ -77,42 +77,42 @@ export async function executeProtectedTool(
     assertCcBridgeProduct(auth);
     const verified = verifyDeviceRequest(deps.store, rawBody, nowMs);
     try { recordCcBridgeCompletionTelemetry(deps.store, verified.request.priorTelemetry ?? [], nowMs); } catch { /* telemetry must not affect protected execution */ }
-    requestId = verified.request.requestId;
+    const request = filterProtectedInputs(verified.request);
+    requestId = request.requestId;
     phaseStartedAt = markPhase(phaseTimings, "verify", phaseStartedAt);
-    toolFamily = verified.request.tool.id;
-    deviceId = verified.request.deviceId;
-    projectId = verified.request.projectId;
-    relayBuild = verified.request.relay.build;
+    toolFamily = request.tool.id;
+    deviceId = request.deviceId;
+    projectId = request.projectId;
+    relayBuild = request.relay.build;
     const digest = canonicalRequestDigest(verified.payloadBytes);
-    const authorization = authorizeProtectedRequest(deps.store, auth, verified.device, verified.request, nowMs);
-    assertSignedExecutionAllowed(deps.store, verified.request);
-    phaseStartedAt = markPhase(phaseTimings, "authorize", phaseStartedAt);
+    const authorization = authorizeProtectedRequest(deps.store, auth, verified.device, request, nowMs);
+    assertSignedExecutionAllowed(deps.store, request);
     const admission = deps.replay.reserve({
-      deviceId: verified.request.deviceId,
-      relayInstanceId: verified.request.relayInstanceId,
-      idempotencyKey: verified.request.idempotencyKey,
+      deviceId: request.deviceId,
+      relayInstanceId: request.relayInstanceId,
+      idempotencyKey: request.idempotencyKey,
       requestDigest: digest,
-      nonce: verified.request.nonce,
-      sequence: verified.request.sequence,
+      nonce: request.nonce,
+      sequence: request.sequence,
       nowMs,
       leaseExpiresAtMs: nowMs + RESERVATION_LEASE_MS,
       expiresAtMs: nowMs + COMPLETED_RESPONSE_RETENTION_MS,
     });
     if (admission.kind === "duplicate") {
-      return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, requestId: verified.request.requestId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
+      return finish(deps.store, { status: 200, body: admission.responseBody }, { correlationId, requestId: request.requestId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
     }
     reservation = admission;
     deps.store.markDeviceSeen(verified.device.id, nowMs);
     failureClass = "planner";
     const unsigned = deps.planners.plan({
-      request: verified.request,
+      request,
       policy: authorization.policy,
       correlationId,
       nowMs,
     });
     phaseStartedAt = markPhase(phaseTimings, "plan", phaseStartedAt);
     failureClass = "validator";
-    const decision = validateGatewayDecision(unsigned, verified.request);
+    const decision = validateGatewayDecision(unsigned, request);
     phaseStartedAt = markPhase(phaseTimings, "validate", phaseStartedAt);
     const payload = canonicalizeToBytes(decision);
     failureClass = "signer";
@@ -129,7 +129,7 @@ export async function executeProtectedTool(
     deps.replay.complete(admission.id, admission.owner, responseBody, completedAtMs);
     reservation = undefined;
     markPhase(phaseTimings, "persist", phaseStartedAt);
-    return finish(deps.store, { status: 200, body: responseBody }, { correlationId, requestId: verified.request.requestId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
+    return finish(deps.store, { status: 200, body: responseBody }, { correlationId, requestId: request.requestId, auth, toolFamily, deviceId, projectId, relayBuild, requestBytes: rawBody.byteLength, resultClass: "ok", phaseTimings });
   } catch (error) {
     if (reservation) {
       try {

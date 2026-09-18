@@ -102,8 +102,8 @@ export class UpdateStateStore {
       if (backupPresent) return state;
       return this.markBackupRetired(false);
     }
-    if (state.activationState === "pending-health") {
-      if (!backupPresent) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Pending-health backup is missing.");
+    if (state.activationState === "pending-health" || state.activationState === "rollback-required") {
+      if (!backupPresent) throw new CcbError("CCB_BUILD_INCOMPATIBLE", "Pending-health rollback backup is missing.");
       return state;
     }
     if (state.activationState === "activation-launching" || state.activationState === "activating") {

@@ -7,8 +7,9 @@ if (!Number.isSafeInteger(port) || port < 1 || port > 65_535) {
   throw new Error("CCB_GATEWAY_PORT must be a valid TCP port");
 }
 const host = process.env.CCB_GATEWAY_HOST || "127.0.0.1";
-if (host !== "127.0.0.1" && host !== "::1" && host !== "0.0.0.0") {
-  throw new Error("CCB_GATEWAY_HOST must be 127.0.0.1, ::1, or 0.0.0.0");
+const containerLoopback = process.env.CCB_GATEWAY_CONTAINER_LOOPBACK === "1";
+if (host !== "127.0.0.1" && host !== "::1" && !(host === "0.0.0.0" && process.env.NODE_ENV === "development" && containerLoopback)) {
+  throw new Error("CCB_GATEWAY_HOST must be loopback; container loopback mode is development-only and explicit.");
 }
 const runtime = createCcBridgeRuntime();
 const app = express();

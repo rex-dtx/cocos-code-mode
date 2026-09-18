@@ -72,10 +72,11 @@ function localResult(execution: PrimitiveExecution): LocalExecutionResult {
   };
   return { commandResults: execution.commandResults, summary };
 }
-function completionOutcome(value: string): CompletionTelemetry["outcome"] {
+function completionOutcome(value: string): CompletionTelemetry["outcome"] | undefined {
   if (value === "completed") return "completed";
   if (value === "outcome-unknown") return "outcome-unknown";
-  return "failed";
+  if (value === "failed") return "failed";
+  return undefined;
 }
 
 export async function dispatchProtectedTool(
@@ -108,12 +109,15 @@ export async function dispatchProtectedTool(
     const toolBinding = { id: tool.name, contractVersion: tool.contractVersion, contractHash: tool.contractHash };
     const inputDigest = canonicalToolInputDigest(toolBinding, inputs);
     assertIJson(tool.publicConstants);
+    let telemetryDelivered = false;
+    let pendingTelemetry: CompletionTelemetry[] | undefined;
     const publicConstants: IJson = tool.publicConstants as IJson;
     const build = async () => {
       const observation = operation.observation.contractId === "none-v1"
         ? undefined
         : await collectObservation(operation.observation, inputs, ctx.observationRuntime);
       const telemetry = dispatch.idempotencyKey ? undefined : ctx.telemetry?.take();
+      pendingTelemetry = telemetry;
       const options = {
         deviceKeyId: ctx.identity.deviceKeyId,
         deviceId: ctx.identity.deviceId,
@@ -131,6 +135,7 @@ export async function dispatchProtectedTool(
         return buildProtectedRequest({ ...options, ...(telemetry ? { priorTelemetry: telemetry } : {}) });
       } catch (error) {
         ctx.telemetry?.restore(telemetry);
+        pendingTelemetry = undefined;
         if (telemetry && error instanceof RangeError && error.message === "request payload exceeds limit") return buildProtectedRequest(options);
         throw error;
       }
@@ -147,7 +152,10 @@ export async function dispatchProtectedTool(
     let signed;
     try {
       signed = await ctx.client.execute(built.signed);
+      telemetryDelivered = true;
+      pendingTelemetry = undefined;
     } catch (error) {
+      if (!telemetryDelivered) ctx.telemetry?.restore(pendingTelemetry);
       const ccb = error instanceof CcbError ? error : new CcbError("CCB_GATEWAY_UNAVAILABLE", "Gateway request failed.");
       traceKind = "denied";
       traceOutcome = "denied";
@@ -246,7 +254,7 @@ export async function dispatchProtectedTool(
       ctx.adapters.readIpcCount?.() ?? null, ipcBeforeGateway, traceResult, traceError);
     if (requestId) {
       const telemetryOutcome = completionOutcome(traceOutcome);
-      ctx.telemetry?.push({ requestId, outcome: telemetryOutcome, durationMs: Math.min(300_000, Math.max(0, Date.now() - startedAtMs)), ...(traceError ? { errorCode: traceError } : {}) });
+      if (telemetryOutcome) ctx.telemetry?.push({ requestId, outcome: telemetryOutcome, durationMs: Math.min(300_000, Math.max(0, Date.now() - startedAtMs)), ...(traceError ? { errorCode: traceError } : {}) });
     }
     finish();
   }

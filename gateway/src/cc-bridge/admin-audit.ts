@@ -9,6 +9,7 @@ export function retainAdminMetadata(store: CcBridgeStore, nowMs = Date.now()): v
   if ((nextPrune.get(store) ?? 0) > nowMs) return;
   store.db.transaction(() => {
     store.db.prepare("DELETE FROM cc_bridge_audit WHERE timestamp_ms < ?").run(nowMs - DETAIL_RETENTION_MS);
+    store.db.prepare("DELETE FROM cc_bridge_completion_telemetry WHERE received_at_ms < ?").run(nowMs - DETAIL_RETENTION_MS);
     store.db.prepare("DELETE FROM cc_bridge_security_event WHERE timestamp_ms < ?").run(nowMs - AGGREGATE_RETENTION_MS);
     store.db.prepare("DELETE FROM cc_bridge_usage_hour WHERE hour_ms < ?").run(nowMs - AGGREGATE_RETENTION_MS);
   })();

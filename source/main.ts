@@ -27,6 +27,12 @@ async function finishPendingHealth(utcpReady: boolean): Promise<void> {
     const stateStore = new UpdateStateStore();
     try {
         const recovered = stateStore.recoverActivation(backupPresent);
+        if (recovered.activationState === 'rollback-required') {
+            pendingHealthRollback = true;
+            relayHost?.state.lock({ code: 'CCB_BUILD_INCOMPATIBLE', error: 'Signed update rollback is required before protected execution can resume.' });
+            bootLog('error', 'Signed update rollback-required state recovered; rollback queued for Creator shutdown');
+            return;
+        }
         if (recovered.activationState === 'retiring-backup') {
             rmSync(backup, { recursive: true, force: true });
             stateStore.markBackupRetired(existsSync(backup));
@@ -59,7 +65,10 @@ async function finishPendingHealth(utcpReady: boolean): Promise<void> {
         stateStore.markBackupRetired(existsSync(backup));
         bootLog('info', 'Signed update passed startup health; prior package removed');
     } catch (error) {
-        bootLog('error', `Unable to resolve pending update health: ${toCcbErrorBody(error).code}`);
+        const code = toCcbErrorBody(error).code;
+        relayHost?.state.lock({ code: 'CCB_BUILD_INCOMPATIBLE', error: 'Signed update recovery could not be completed; protected execution remains locked.' });
+        pendingHealthRollback = backupPresent;
+        bootLog('error', `Unable to resolve pending update health: ${code}`);
     }
 }
 

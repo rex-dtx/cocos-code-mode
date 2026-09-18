@@ -149,7 +149,7 @@ export function createCcBridgeRouter(
     }
   });
 
-  router.get("/v1/admin/devices", (req: Request, res: Response) => {
+  router.get("/v1/admin/devices", ...adminAuth, (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) {
       deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required."));
@@ -175,7 +175,7 @@ export function createCcBridgeRouter(
     }
   });
 
-  router.get("/v1/admin/grants", (req: Request, res: Response) => {
+  router.get("/v1/admin/grants", ...adminAuth, (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) {
       deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required."));
@@ -190,6 +190,7 @@ export function createCcBridgeRouter(
 
   router.post(
     "/v1/admin/grants",
+    ...adminAuth,
     express.json({ limit: "4kb" }),
     (req: Request, res: Response) => {
       const member = req.toolAuth;
@@ -205,7 +206,7 @@ export function createCcBridgeRouter(
     },
   );
 
-  router.post("/v1/admin/grants/:grantId/revoke", (req: Request, res: Response) => {
+  router.post("/v1/admin/grants/:grantId/revoke", ...adminAuth, (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) {
       deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required."));
@@ -218,7 +219,7 @@ export function createCcBridgeRouter(
     }
   });
 
-  router.get("/v1/admin/rollout", (req: Request, res: Response) => {
+  router.get("/v1/admin/rollout", ...adminAuth, (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) {
       deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required."));
@@ -251,7 +252,7 @@ export function createCcBridgeRouter(
     res.type(ccbMetricsRegistry.contentType).send(await ccbMetricsRegistry.metrics());
   });
 
-  router.post("/v1/admin/releases/targets", express.json({ limit: "16kb" }), (req: Request, res: Response) => {
+  router.post("/v1/admin/releases/targets", ...adminAuth, express.json({ limit: "16kb" }), (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
     const keys = loadReleaseKeySet();
@@ -260,14 +261,14 @@ export function createCcBridgeRouter(
     catch (error) { res.status(error instanceof CcbError ? 422 : 400).json(toCcbErrorBody(error)); }
   });
 
-  router.get("/v1/admin/releases/targets", (req: Request, res: Response) => {
+  router.get("/v1/admin/releases/targets", ...adminAuth, (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
     try { res.json({ targets: deps.store.listReleaseTargets() }); }
     catch (error) { res.status(422).json(toCcbErrorBody(error)); }
   });
 
-  router.post("/v1/admin/releases/policies", express.json({ limit: "16kb" }), (req: Request, res: Response) => {
+  router.post("/v1/admin/releases/policies", ...adminAuth, express.json({ limit: "16kb" }), (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
     const keys = loadReleaseKeySet();
@@ -276,7 +277,7 @@ export function createCcBridgeRouter(
     catch (error) { res.status(error instanceof CcbError ? 422 : 400).json(toCcbErrorBody(error)); }
   });
 
-  router.get("/v1/admin/releases/policies", (req: Request, res: Response) => {
+  router.get("/v1/admin/releases/policies", ...adminAuth, (req: Request, res: Response) => {
     const member = req.toolAuth;
     if (!member) { deny(res, 401, new CcbError("CCB_AUTH_REQUIRED", "Member authentication is required.")); return; }
     try { res.json({ policies: deps.store.listRolloutPolicies() }); }
