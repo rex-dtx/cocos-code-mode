@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T10:59:00+07:00",
+  "target": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "endpoint": "http://localhost:55609",
+    "instanceId": "ac9c5cf3772963d0845d7d102be013dc",
+    "buildCommit": "ea1df44",
+    "dirty": false,
+    "builtAt": "2026-09-18T03:46:53.773Z",
+    "manualTools": 216
+  },
+  "checks": [
+    { "name": "editorHandshake", "status": 200, "projectMatches": true, "probeStatus": "responsive", "sceneReady": false },
+    { "name": "projectSettingsValidate", "status": 200, "valid": true, "target": "web-desktop" },
+    { "name": "sceneGetInfo", "status": 200, "sceneUuid": "0fc86c97-a493-42ef-89f5-a3a53327b299", "dirty": false },
+    { "name": "runtimeStateObserve-missing-session", "status": 404, "result": "Cannot GET /tools/runtimeStateObserve" }
+  ],
+  "qualification": false,
+  "limitations": [
+    "Handshake reported sceneReady=false during the smoke.",
+    "runtimeStateObserve is not exposed through this endpoint despite appearing in the manual cache/tool list.",
+    "The broader live qualification suite stalled on runtime preview start and was cancelled; no candidate promotion follows."
+  ]
+}
