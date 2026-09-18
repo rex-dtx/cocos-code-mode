@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "status": "wip-blocked",
+  "denominator": { "workflows": 356, "hash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286", "complete": 38, "implementationPercent": 10.67, "targetComplete": 321, "deficitTo90": 283 },
+  "verification": { "unitFocused": "pass", "workflowCoverageTests": "5/5", "portfolioAudit": "pass", "closureLiveFirstRun": "36/50 pass (72%), threshold 95%" },
+  "registered": { "tools": 216, "baseline": 86, "approvedOrImplemented": 75, "requiredApproval": 82, "probeRequired": 16 },
+  "blockers": [
+    "283 complete workflow rows remain required for the approved 90% implementation gate.",
+    "The actual Game View lifecycle stop postcondition remains nondeterministic on Creator 3.7.3; current evidence records partial start/attach/observe success but no complete lifecycle qualification.",
+    "Prefab/UI/asset qualification fixtures are stale or absent in the active project; skipped fixture cases do not receive credit.",
+    "Build-log positive evidence requires a terminal Creator build task; active fixture reports zero tasks.",
+    "Closure-live remains 72%, below the approved 95% threshold; deep release/parity/install gates remain Fixbug work."
+  ],
+  "nextRequired": "Continue dependency-ordered workflow implementation/evidence closure; do not mark parent Done or claim release readiness from registration count or focused unit green status."
+}
