@@ -6,6 +6,7 @@
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-create",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "animationGraphCreate",
@@ -24,6 +25,7 @@
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -34,6 +36,7 @@
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -45,6 +48,7 @@
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -55,6 +59,7 @@
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -66,6 +71,7 @@
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -76,6 +82,7 @@
     {
       "workflowId": "animation.cocos-mcp-copy-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -85,6 +92,7 @@
     {
       "workflowId": "animation.cocos-mcp-cut-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -94,6 +102,7 @@
     {
       "workflowId": "animation.cocos-mcp-paste-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -103,6 +112,7 @@
     {
       "workflowId": "animation.funplay-add-animation-clip",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -113,6 +123,7 @@
     {
       "workflowId": "animation.funplay-list-animations",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -122,6 +133,7 @@
     {
       "workflowId": "animation.funplay-play-animation",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -131,6 +143,7 @@
     {
       "workflowId": "animation.funplay-stop-animation",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -140,6 +153,7 @@
     {
       "workflowId": "asset.cocos-mcp-copy-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -150,6 +164,7 @@
     {
       "workflowId": "asset.cocos-mcp-create-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -159,6 +174,7 @@
     {
       "workflowId": "asset.cocos-mcp-delete-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -169,6 +185,7 @@
     {
       "workflowId": "asset.cocos-mcp-export-asset-manifest",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -178,6 +195,7 @@
     {
       "workflowId": "asset.cocos-mcp-find-asset-by-name",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -187,6 +205,7 @@
     {
       "workflowId": "asset.cocos-mcp-generate-available-url",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -196,6 +215,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-all-preferences",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -205,6 +225,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-asset-dependencies",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -215,6 +236,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-asset-details",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -225,6 +247,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-asset-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -235,6 +258,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -244,6 +268,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-log-file-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -253,6 +278,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-prefab-list",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -262,6 +288,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-scene-list",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -271,6 +298,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-unused-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -280,6 +308,7 @@
     {
       "workflowId": "asset.cocos-mcp-import-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -289,6 +318,7 @@
     {
       "workflowId": "asset.cocos-mcp-move-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -299,6 +329,7 @@
     {
       "workflowId": "asset.cocos-mcp-open-asset-external",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -308,6 +339,7 @@
     {
       "workflowId": "asset.cocos-mcp-query-asset-db-ready",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -317,6 +349,7 @@
     {
       "workflowId": "asset.cocos-mcp-query-asset-path",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -326,6 +359,7 @@
     {
       "workflowId": "asset.cocos-mcp-query-asset-url",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -335,6 +369,7 @@
     {
       "workflowId": "asset.cocos-mcp-query-asset-uuid",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -344,6 +379,7 @@
     {
       "workflowId": "asset.cocos-mcp-query-nodes-by-asset-uuid",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -353,6 +389,7 @@
     {
       "workflowId": "asset.cocos-mcp-query-preferences-config",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -362,6 +399,7 @@
     {
       "workflowId": "asset.cocos-mcp-refresh-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -372,6 +410,7 @@
     {
       "workflowId": "asset.cocos-mcp-reimport-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -382,6 +421,7 @@
     {
       "workflowId": "asset.cocos-mcp-save-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -392,6 +432,7 @@
     {
       "workflowId": "asset.cocos-mcp-save-asset-meta",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -402,6 +443,7 @@
     {
       "workflowId": "asset.cocos-mcp-set-preferences-config",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -411,6 +453,7 @@
     {
       "workflowId": "asset.funplay-delete-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -421,6 +464,7 @@
     {
       "workflowId": "asset.funplay-exists",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -430,6 +474,7 @@
     {
       "workflowId": "asset.funplay-get-editor-preference",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -439,6 +484,7 @@
     {
       "workflowId": "asset.funplay-get-file-snippet",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -449,6 +495,7 @@
     {
       "workflowId": "asset.funplay-inspect-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -459,6 +506,7 @@
     {
       "workflowId": "asset.funplay-inspect-asset-dependencies",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -469,6 +517,7 @@
     {
       "workflowId": "asset.funplay-list-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -478,6 +527,7 @@
     {
       "workflowId": "asset.funplay-list-prefabs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -488,6 +538,7 @@
     {
       "workflowId": "asset.funplay-list-scenes",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -498,6 +549,7 @@
     {
       "workflowId": "asset.funplay-open-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -508,6 +560,7 @@
     {
       "workflowId": "asset.funplay-read-file",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -518,6 +571,7 @@
     {
       "workflowId": "asset.funplay-refresh-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -528,6 +582,7 @@
     {
       "workflowId": "asset.funplay-replace-in-file",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -537,6 +592,7 @@
     {
       "workflowId": "asset.funplay-search-files",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -546,6 +602,7 @@
     {
       "workflowId": "asset.funplay-set-editor-preference",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -555,6 +612,7 @@
     {
       "workflowId": "asset.funplay-validate-asset-dependencies",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -565,6 +623,7 @@
     {
       "workflowId": "asset.funplay-write-file",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -574,6 +633,7 @@
     {
       "workflowId": "assets-import.cocos-mcp-batch-delete-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -583,6 +643,7 @@
     {
       "workflowId": "assets-import.cocos-mcp-batch-import-assets",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -592,6 +653,7 @@
     {
       "workflowId": "assets-import.cocos-mcp-compress-textures",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -601,6 +663,7 @@
     {
       "workflowId": "assets-import.cocos-mcp-validate-asset-references",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -610,6 +673,7 @@
     {
       "workflowId": "assets-import.funplay-create-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -620,6 +684,7 @@
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -631,6 +696,7 @@
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -642,6 +708,7 @@
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -653,6 +720,7 @@
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -664,6 +732,7 @@
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -675,6 +744,7 @@
     {
       "workflowId": "assets-import.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-asset-bundle-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -686,6 +756,7 @@
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-asset-compatibility-audit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -697,6 +768,7 @@
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-control",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -707,6 +779,7 @@
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-observe",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -717,6 +790,7 @@
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-audit",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "audioSourceAudit",
@@ -735,6 +809,7 @@
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -746,6 +821,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-serve",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "buildArtifactServe",
@@ -764,6 +840,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-log-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -775,6 +852,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-preset-audit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -786,6 +864,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-launch",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "buildTargetLaunch",
@@ -804,6 +883,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-smoke",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "buildTargetSmoke",
@@ -822,6 +902,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-task-wait",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -833,6 +914,7 @@
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-project-settings-validate",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "projectSettingsValidate",
@@ -851,6 +933,7 @@
     {
       "workflowId": "build.cocos-mcp-build-project",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -862,6 +945,7 @@
     {
       "workflowId": "build.cocos-mcp-check-builder-status",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -872,6 +956,7 @@
     {
       "workflowId": "build.cocos-mcp-get-build-settings",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -883,6 +968,7 @@
     {
       "workflowId": "build.cocos-mcp-get-server-status",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -892,6 +978,7 @@
     {
       "workflowId": "build.cocos-mcp-open-build-panel",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -902,6 +989,7 @@
     {
       "workflowId": "build.cocos-mcp-start-preview-server",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -911,6 +999,7 @@
     {
       "workflowId": "build.cocos-mcp-stop-preview-server",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -920,6 +1009,7 @@
     {
       "workflowId": "build.funplay-get-build-status",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -931,6 +1021,7 @@
     {
       "workflowId": "build.funplay-open-build-panel",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -942,6 +1033,7 @@
     {
       "workflowId": "build.parent-long-job",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -952,6 +1044,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-add-reference-image",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -961,6 +1054,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-clear-all-reference-images",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -970,6 +1064,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-get-prefab-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -979,6 +1074,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-instantiate-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -989,6 +1085,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-list-reference-images",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -998,6 +1095,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-query-current-reference-image",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1007,6 +1105,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-query-reference-image-config",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1016,6 +1115,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-refresh-reference-image",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1025,6 +1125,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-remove-reference-image",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1034,6 +1135,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-restore-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1043,6 +1145,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-restore-prefab-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1052,6 +1155,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-revert-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1061,6 +1165,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-set-reference-image-data",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1070,6 +1175,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-set-reference-image-opacity",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1079,6 +1185,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-set-reference-image-position",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1088,6 +1195,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-set-reference-image-scale",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1097,6 +1205,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-switch-reference-image",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1106,6 +1215,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-update-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1115,6 +1225,7 @@
     {
       "workflowId": "design-prefab.cocos-mcp-validate-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1124,6 +1235,7 @@
     {
       "workflowId": "design-prefab.funplay-apply-prefab-instance",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1133,6 +1245,7 @@
     {
       "workflowId": "design-prefab.funplay-create-prefab-instance",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1143,6 +1256,7 @@
     {
       "workflowId": "design-prefab.funplay-inspect-prefab-instance",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1152,6 +1266,7 @@
     {
       "workflowId": "design-prefab.funplay-instantiate-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1162,6 +1277,7 @@
     {
       "workflowId": "design-prefab.funplay-revert-prefab-instance",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1171,6 +1287,7 @@
     {
       "workflowId": "design-prefab.funplay-validate-prefab-references",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1180,6 +1297,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1190,6 +1308,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1201,6 +1320,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1212,6 +1332,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1223,6 +1344,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1233,6 +1355,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1244,6 +1367,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "sceneHierarchyValidate",
@@ -1262,6 +1386,7 @@
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-reference-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1273,6 +1398,7 @@
     {
       "workflowId": "diagnostics.cocos-mcp-get-broadcast-log",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1282,6 +1408,7 @@
     {
       "workflowId": "diagnostics.cocos-mcp-get-console-logs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1291,6 +1418,7 @@
     {
       "workflowId": "diagnostics.cocos-mcp-get-performance-stats",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1300,6 +1428,7 @@
     {
       "workflowId": "diagnostics.cocos-mcp-get-project-logs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1309,6 +1438,7 @@
     {
       "workflowId": "diagnostics.cocos-mcp-search-project-logs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1318,6 +1448,7 @@
     {
       "workflowId": "diagnostics.cocos-mcp-validate-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1327,6 +1458,7 @@
     {
       "workflowId": "diagnostics.funplay-get-performance-snapshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1336,6 +1468,7 @@
     {
       "workflowId": "diagnostics.funplay-get-recent-logs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1345,6 +1478,7 @@
     {
       "workflowId": "diagnostics.funplay-get-script-diagnostic-context",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1354,6 +1488,7 @@
     {
       "workflowId": "diagnostics.funplay-get-tool-catalog",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1364,6 +1499,7 @@
     {
       "workflowId": "diagnostics.funplay-run-script-diagnostics",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1373,6 +1509,7 @@
     {
       "workflowId": "diagnostics.funplay-search-project-logs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1382,6 +1519,7 @@
     {
       "workflowId": "diagnostics.funplay-validate-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1392,6 +1530,7 @@
     {
       "workflowId": "editor.cocos-mcp-align-camera-with-view",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1401,6 +1540,7 @@
     {
       "workflowId": "editor.cocos-mcp-align-view-with-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1410,6 +1550,7 @@
     {
       "workflowId": "editor.cocos-mcp-begin-undo-recording",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1419,6 +1560,7 @@
     {
       "workflowId": "editor.cocos-mcp-cancel-undo-recording",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1428,6 +1570,7 @@
     {
       "workflowId": "editor.cocos-mcp-change-gizmo-coordinate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1437,6 +1580,7 @@
     {
       "workflowId": "editor.cocos-mcp-change-gizmo-pivot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1446,6 +1590,7 @@
     {
       "workflowId": "editor.cocos-mcp-change-gizmo-tool",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1455,6 +1600,7 @@
     {
       "workflowId": "editor.cocos-mcp-change-view-mode-2d-3d",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1464,6 +1610,7 @@
     {
       "workflowId": "editor.cocos-mcp-end-undo-recording",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1473,6 +1620,7 @@
     {
       "workflowId": "editor.cocos-mcp-focus-camera-on-nodes",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1482,6 +1630,7 @@
     {
       "workflowId": "editor.cocos-mcp-get-active-listeners",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1491,6 +1640,7 @@
     {
       "workflowId": "editor.cocos-mcp-get-editor-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1500,6 +1650,7 @@
     {
       "workflowId": "editor.cocos-mcp-get-scene-view-status",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1509,6 +1660,7 @@
     {
       "workflowId": "editor.cocos-mcp-listen-broadcast",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1518,6 +1670,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-component-has-script",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1527,6 +1680,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-gizmo-coordinate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1536,6 +1690,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-gizmo-pivot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1545,6 +1700,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-gizmo-tool-name",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1554,6 +1710,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-gizmo-view-mode",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1563,6 +1720,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-grid-visible",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1572,6 +1730,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-icon-gizmo-3d",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1581,6 +1740,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-icon-gizmo-size",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1590,6 +1750,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-scene-ready",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1600,6 +1761,7 @@
     {
       "workflowId": "editor.cocos-mcp-query-view-mode-2d-3d",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1609,6 +1771,7 @@
     {
       "workflowId": "editor.cocos-mcp-reset-scene-view",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1618,6 +1781,7 @@
     {
       "workflowId": "editor.cocos-mcp-set-grid-visible",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1627,6 +1791,7 @@
     {
       "workflowId": "editor.cocos-mcp-set-icon-gizmo-3d",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1636,6 +1801,7 @@
     {
       "workflowId": "editor.cocos-mcp-set-icon-gizmo-size",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1645,6 +1811,7 @@
     {
       "workflowId": "editor.cocos-mcp-stop-listening",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1654,6 +1821,7 @@
     {
       "workflowId": "editor.funplay-capture-editor-screenshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1663,6 +1831,7 @@
     {
       "workflowId": "editor.funplay-get-editor-selection",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1673,6 +1842,7 @@
     {
       "workflowId": "editor.funplay-get-editor-state",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1682,6 +1852,7 @@
     {
       "workflowId": "editor.funplay-get-project-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1691,6 +1862,7 @@
     {
       "workflowId": "editor.funplay-get-selection",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1701,6 +1873,7 @@
     {
       "workflowId": "editor.funplay-list-editor-windows",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1710,6 +1883,7 @@
     {
       "workflowId": "editor.funplay-select-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1720,6 +1894,7 @@
     {
       "workflowId": "editor.funplay-set-selection",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1730,6 +1905,7 @@
     {
       "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1740,6 +1916,7 @@
     {
       "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-preview",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1750,6 +1927,7 @@
     {
       "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-table-edit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1760,6 +1938,7 @@
     {
       "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1770,6 +1949,7 @@
     {
       "workflowId": "other.cocos-mcp-execute-script",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1779,6 +1959,7 @@
     {
       "workflowId": "other.cocos-mcp-get-project-settings",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1788,6 +1969,7 @@
     {
       "workflowId": "other.cocos-mcp-move-array-element",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1797,6 +1979,7 @@
     {
       "workflowId": "other.cocos-mcp-remove-array-element",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1806,6 +1989,7 @@
     {
       "workflowId": "other.funplay-create-cocos-mcp-project-skill",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1817,6 +2001,7 @@
     {
       "workflowId": "other.funplay-create-project-skill",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1828,6 +2013,7 @@
     {
       "workflowId": "other.funplay-list-directory",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1837,6 +2023,7 @@
     {
       "workflowId": "other.funplay-list-project-instructions",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1847,6 +2034,7 @@
     {
       "workflowId": "other.funplay-read-project-instruction",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1856,6 +2044,7 @@
     {
       "workflowId": "other.funplay-write-project-instruction",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1867,6 +2056,7 @@
     {
       "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1877,6 +2067,7 @@
     {
       "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-inspect",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "particleInspect",
@@ -1895,6 +2086,7 @@
     {
       "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-playback",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "particlePlayback",
@@ -1913,6 +2105,7 @@
     {
       "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-validate",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "particleValidate",
@@ -1931,6 +2124,7 @@
     {
       "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-compatibility-audit",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics2dCompatibilityAudit",
@@ -1949,6 +2143,7 @@
     {
       "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1959,6 +2154,7 @@
     {
       "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-body",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics2dCreateBody",
@@ -1977,6 +2173,7 @@
     {
       "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-joint",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics2dCreateJoint",
@@ -1995,6 +2192,7 @@
     {
       "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-query",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2006,6 +2204,7 @@
     {
       "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-topology-audit",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics2dTopologyAudit",
@@ -2024,6 +2223,7 @@
     {
       "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2034,6 +2234,7 @@
     {
       "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-body",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics3dCreateBody",
@@ -2052,6 +2253,7 @@
     {
       "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-joint",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics3dCreateJoint",
@@ -2070,6 +2272,7 @@
     {
       "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-query",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2081,6 +2284,7 @@
     {
       "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-topology-audit",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics3dTopologyAudit",
@@ -2099,6 +2303,7 @@
     {
       "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-validate",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "physics3dValidate",
@@ -2117,6 +2322,7 @@
     {
       "workflowId": "prefab.cocos-mcp-create-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2127,6 +2333,7 @@
     {
       "workflowId": "prefab.cocos-mcp-duplicate-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2136,6 +2343,7 @@
     {
       "workflowId": "prefab.cocos-mcp-load-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2145,6 +2353,7 @@
     {
       "workflowId": "prefab.funplay-create-prefab-from-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2154,6 +2363,7 @@
     {
       "workflowId": "prefab.funplay-duplicate-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2163,6 +2373,7 @@
     {
       "workflowId": "prefab.funplay-edit-prefab-json",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2172,6 +2383,7 @@
     {
       "workflowId": "prefab.funplay-inspect-prefab",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2181,6 +2393,7 @@
     {
       "workflowId": "product.cocos-mcp-check-server-connectivity",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2192,6 +2405,7 @@
     {
       "workflowId": "product.cocos-mcp-clear-broadcast-log",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2203,6 +2417,7 @@
     {
       "workflowId": "product.cocos-mcp-clear-console",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2214,6 +2429,7 @@
     {
       "workflowId": "product.cocos-mcp-export-preferences",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2225,6 +2441,7 @@
     {
       "workflowId": "product.cocos-mcp-format-mcp-request",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2236,6 +2453,7 @@
     {
       "workflowId": "product.cocos-mcp-get-network-interfaces",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2247,6 +2465,7 @@
     {
       "workflowId": "product.cocos-mcp-get-project-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2257,6 +2476,7 @@
     {
       "workflowId": "product.cocos-mcp-import-preferences",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2268,6 +2488,7 @@
     {
       "workflowId": "product.cocos-mcp-open-preferences-settings",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2279,6 +2500,7 @@
     {
       "workflowId": "product.cocos-mcp-query-server-ip-list",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2290,6 +2512,7 @@
     {
       "workflowId": "product.cocos-mcp-query-server-port",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2300,6 +2523,7 @@
     {
       "workflowId": "product.cocos-mcp-query-sorted-server-ip-list",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2311,6 +2535,7 @@
     {
       "workflowId": "product.cocos-mcp-reset-preferences",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2322,6 +2547,7 @@
     {
       "workflowId": "product.cocos-mcp-safe-string-value",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2333,6 +2559,7 @@
     {
       "workflowId": "product.cocos-mcp-validate-json-params",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2344,6 +2571,7 @@
     {
       "workflowId": "product.funplay-broadcast-editor-message",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2355,6 +2583,7 @@
     {
       "workflowId": "product.funplay-capture-desktop-screenshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2366,6 +2595,7 @@
     {
       "workflowId": "product.funplay-clear-logs",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2377,6 +2607,7 @@
     {
       "workflowId": "product.funplay-execute-editor-script",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2388,6 +2619,7 @@
     {
       "workflowId": "product.funplay-execute-javascript",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2399,6 +2631,7 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-light-bake-manage",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2409,6 +2642,7 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-material-edit",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "materialEdit",
@@ -2427,6 +2661,7 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2437,6 +2672,7 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-diagnostics-collect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2447,6 +2683,7 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-pipeline-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2458,6 +2695,7 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-shader-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2469,6 +2707,7 @@
     {
       "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-assert",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "runtimeScenarioAssert",
@@ -2487,6 +2726,7 @@
     {
       "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-run",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "runtimeScenarioRun",
@@ -2505,6 +2745,7 @@
     {
       "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-state-observe",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "runtimeStateObserve",
@@ -2523,6 +2764,7 @@
     {
       "workflowId": "runtime.cocos-mcp-run-project",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2532,6 +2774,7 @@
     {
       "workflowId": "runtime.funplay-capture-game-screenshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2542,6 +2785,7 @@
     {
       "workflowId": "runtime.funplay-capture-preview-screenshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2552,6 +2796,7 @@
     {
       "workflowId": "runtime.funplay-capture-scene-screenshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2561,6 +2806,7 @@
     {
       "workflowId": "runtime.funplay-check-for-updates",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2571,6 +2817,7 @@
     {
       "workflowId": "runtime.funplay-emit-node-event",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2581,6 +2828,7 @@
     {
       "workflowId": "runtime.funplay-get-hierarchy",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2590,6 +2838,7 @@
     {
       "workflowId": "runtime.funplay-get-preview-mode",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2601,6 +2850,7 @@
     {
       "workflowId": "runtime.funplay-get-runtime-state",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2610,6 +2860,7 @@
     {
       "workflowId": "runtime.funplay-pause-runtime",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2619,6 +2870,7 @@
     {
       "workflowId": "runtime.funplay-resume-runtime",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2628,6 +2880,7 @@
     {
       "workflowId": "runtime.funplay-run-project-preview",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2638,6 +2891,7 @@
     {
       "workflowId": "runtime.funplay-run-scene-asset",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2648,6 +2902,7 @@
     {
       "workflowId": "runtime.funplay-set-preview-mode",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2659,6 +2914,7 @@
     {
       "workflowId": "runtime.funplay-set-time-scale",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2669,6 +2925,7 @@
     {
       "workflowId": "runtime.funplay-simulate-button-click",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2678,6 +2935,7 @@
     {
       "workflowId": "runtime.funplay-simulate-key-combo",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2687,6 +2945,7 @@
     {
       "workflowId": "runtime.funplay-simulate-key-press",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2696,6 +2955,7 @@
     {
       "workflowId": "runtime.funplay-simulate-mouse-click",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2705,6 +2965,7 @@
     {
       "workflowId": "runtime.funplay-simulate-mouse-drag",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2714,6 +2975,7 @@
     {
       "workflowId": "runtime.funplay-simulate-preview-input",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2724,6 +2986,7 @@
     {
       "workflowId": "runtime.parent-golden-tracer",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2734,6 +2997,7 @@
     {
       "workflowId": "runtime.parent-runtime-capture",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2744,6 +3008,7 @@
     {
       "workflowId": "runtime.parent-runtime-input",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2754,6 +3019,7 @@
     {
       "workflowId": "runtime.parent-runtime-observation",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2764,6 +3030,7 @@
     {
       "workflowId": "runtime.parent-runtime-session",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2774,6 +3041,7 @@
     {
       "workflowId": "scene.cocos-mcp-add-component",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2783,6 +3051,7 @@
     {
       "workflowId": "scene.cocos-mcp-attach-script",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2792,6 +3061,7 @@
     {
       "workflowId": "scene.cocos-mcp-close-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2801,6 +3071,7 @@
     {
       "workflowId": "scene.cocos-mcp-create-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2810,6 +3081,7 @@
     {
       "workflowId": "scene.cocos-mcp-create-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2820,6 +3092,7 @@
     {
       "workflowId": "scene.cocos-mcp-delete-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2829,6 +3102,7 @@
     {
       "workflowId": "scene.cocos-mcp-detect-node-type",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2840,6 +3114,7 @@
     {
       "workflowId": "scene.cocos-mcp-duplicate-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2849,6 +3124,7 @@
     {
       "workflowId": "scene.cocos-mcp-execute-component-method",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2858,6 +3134,7 @@
     {
       "workflowId": "scene.cocos-mcp-execute-scene-script",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2868,6 +3145,7 @@
     {
       "workflowId": "scene.cocos-mcp-find-node-by-name",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2877,6 +3155,7 @@
     {
       "workflowId": "scene.cocos-mcp-find-nodes",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2886,6 +3165,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-all-nodes",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2895,6 +3175,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-available-components",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2904,6 +3185,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-component-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2915,6 +3197,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-components",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2924,6 +3207,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-current-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2933,6 +3217,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-node-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2944,6 +3229,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-node-tree",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2953,6 +3239,7 @@
     {
       "workflowId": "scene.cocos-mcp-get-scene-hierarchy",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2962,6 +3249,7 @@
     {
       "workflowId": "scene.cocos-mcp-move-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2971,6 +3259,7 @@
     {
       "workflowId": "scene.cocos-mcp-open-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2980,6 +3269,7 @@
     {
       "workflowId": "scene.cocos-mcp-query-scene-classes",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2989,6 +3279,7 @@
     {
       "workflowId": "scene.cocos-mcp-query-scene-components",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2998,6 +3289,7 @@
     {
       "workflowId": "scene.cocos-mcp-query-scene-dirty",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3007,6 +3299,7 @@
     {
       "workflowId": "scene.cocos-mcp-remove-component",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3016,6 +3309,7 @@
     {
       "workflowId": "scene.cocos-mcp-reset-component",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3026,6 +3320,7 @@
     {
       "workflowId": "scene.cocos-mcp-reset-node-property",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3036,6 +3331,7 @@
     {
       "workflowId": "scene.cocos-mcp-reset-node-transform",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3046,6 +3342,7 @@
     {
       "workflowId": "scene.cocos-mcp-save-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3055,6 +3352,7 @@
     {
       "workflowId": "scene.cocos-mcp-save-scene-as",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3064,6 +3362,7 @@
     {
       "workflowId": "scene.cocos-mcp-scene-snapshot",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3073,6 +3372,7 @@
     {
       "workflowId": "scene.cocos-mcp-scene-snapshot-abort",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3083,6 +3383,7 @@
     {
       "workflowId": "scene.cocos-mcp-set-component-property",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3094,6 +3395,7 @@
     {
       "workflowId": "scene.cocos-mcp-set-node-property",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3105,6 +3407,7 @@
     {
       "workflowId": "scene.cocos-mcp-set-node-transform",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3116,6 +3419,7 @@
     {
       "workflowId": "scene.cocos-mcp-soft-reload-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3125,6 +3429,7 @@
     {
       "workflowId": "scene.funplay-add-component",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3134,6 +3439,7 @@
     {
       "workflowId": "scene.funplay-bind-button-click-event",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3144,6 +3450,7 @@
     {
       "workflowId": "scene.funplay-create-button",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3155,6 +3462,7 @@
     {
       "workflowId": "scene.funplay-create-camera",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3165,6 +3473,7 @@
     {
       "workflowId": "scene.funplay-create-canvas",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3176,6 +3485,7 @@
     {
       "workflowId": "scene.funplay-create-label",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3185,6 +3495,7 @@
     {
       "workflowId": "scene.funplay-create-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3194,6 +3505,7 @@
     {
       "workflowId": "scene.funplay-create-sprite",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3205,6 +3517,7 @@
     {
       "workflowId": "scene.funplay-delete-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3214,6 +3527,7 @@
     {
       "workflowId": "scene.funplay-execute-scene-script",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3224,6 +3538,7 @@
     {
       "workflowId": "scene.funplay-find-nodes",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3233,6 +3548,7 @@
     {
       "workflowId": "scene.funplay-get-scene-info",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3242,6 +3558,7 @@
     {
       "workflowId": "scene.funplay-inspect-component",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3253,6 +3570,7 @@
     {
       "workflowId": "scene.funplay-inspect-node",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3264,6 +3582,7 @@
     {
       "workflowId": "scene.funplay-invoke-component-method",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3273,6 +3592,7 @@
     {
       "workflowId": "scene.funplay-list-button-click-events",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3283,6 +3603,7 @@
     {
       "workflowId": "scene.funplay-list-cameras",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3293,6 +3614,7 @@
     {
       "workflowId": "scene.funplay-list-components",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3302,6 +3624,7 @@
     {
       "workflowId": "scene.funplay-open-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3311,6 +3634,7 @@
     {
       "workflowId": "scene.funplay-remove-component",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3320,6 +3644,7 @@
     {
       "workflowId": "scene.funplay-reset-component-property",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3330,6 +3655,7 @@
     {
       "workflowId": "scene.funplay-save-current-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3339,6 +3665,7 @@
     {
       "workflowId": "scene.funplay-set-camera-properties",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3349,6 +3676,7 @@
     {
       "workflowId": "scene.funplay-set-component-property",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3360,6 +3688,7 @@
     {
       "workflowId": "scene.funplay-set-node-transform",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3371,6 +3700,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3381,6 +3711,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3391,6 +3722,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3401,6 +3733,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-input-form",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3411,6 +3744,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-scroll-view",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3421,6 +3755,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-apply",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3431,6 +3766,7 @@
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3441,6 +3777,7 @@
     {
       "workflowId": "scene.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3451,6 +3788,7 @@
     {
       "workflowId": "scene.parent-compound-scene",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3461,6 +3799,7 @@
     {
       "workflowId": "scene.parent-mutation-workflow",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3471,6 +3810,7 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "skeletalAnimationConfigure",
@@ -3489,6 +3829,7 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-events",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3499,6 +3840,7 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3510,6 +3852,7 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-play",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3520,6 +3863,7 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3531,6 +3875,7 @@
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3542,6 +3887,7 @@
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-create",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "terrainCreate",
@@ -3560,6 +3906,7 @@
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3570,6 +3917,7 @@
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-inspect",
       "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "routes": [
         {
           "tool": "terrainInspect",
@@ -3588,6 +3936,7 @@
     {
       "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-sprite-atlas-configure",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3599,6 +3948,7 @@
     {
       "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-inspect",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3610,6 +3960,7 @@
     {
       "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-layer-edit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3621,6 +3972,7 @@
     {
       "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-object-edit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3632,6 +3984,7 @@
     {
       "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-validate",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3643,6 +3996,7 @@
     {
       "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-preview-resolution-set",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3653,6 +4007,7 @@
     {
       "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-accessibility-audit",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3664,6 +4019,7 @@
     {
       "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-responsive-preview",
       "state": "unreviewed",
+      "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "routes": [],
       "evidenceArtifacts": [],
       "limitations": [

@@ -36,6 +36,7 @@
         "animationGraphCreate"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "animationGraphCreate",
@@ -76,6 +77,7 @@
         "animationGraphEdit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -108,6 +110,7 @@
         "animationGraphInspect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -141,6 +144,7 @@
         "animationGraphPreview"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -173,6 +177,7 @@
         "animationGraphValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -206,6 +211,7 @@
         "animationRetargetValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -236,6 +242,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -265,6 +272,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -294,6 +302,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -323,6 +332,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -353,6 +363,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -382,6 +393,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -411,6 +423,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -440,6 +453,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -470,6 +484,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -499,6 +514,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -529,6 +545,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -558,6 +575,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -587,6 +605,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -616,6 +635,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -645,6 +665,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -675,6 +696,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -705,6 +727,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -735,6 +758,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -764,6 +788,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -793,6 +818,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -822,6 +848,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -851,6 +878,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -880,6 +908,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -909,6 +938,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -939,6 +969,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -968,6 +999,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -997,6 +1029,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1026,6 +1059,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1055,6 +1089,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1084,6 +1119,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1113,6 +1149,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1142,6 +1179,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1172,6 +1210,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1202,6 +1241,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1232,6 +1272,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1262,6 +1303,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1291,6 +1333,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1321,6 +1364,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1350,6 +1394,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1379,6 +1424,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1409,6 +1455,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1439,6 +1486,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1469,6 +1517,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1498,6 +1547,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1528,6 +1578,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1558,6 +1609,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1588,6 +1640,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1618,6 +1671,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1648,6 +1702,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1677,6 +1732,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1706,6 +1762,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1735,6 +1792,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1765,6 +1823,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1794,6 +1853,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1823,6 +1883,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1852,6 +1913,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1881,6 +1943,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1910,6 +1973,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1942,6 +2006,7 @@
         "assetBatchImport"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -1975,6 +2040,7 @@
         "assetBatchOperate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2008,6 +2074,7 @@
         "assetCompressionConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2041,6 +2108,7 @@
         "assetImportSettingsSet"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2074,6 +2142,7 @@
         "assetMissingReferenceAudit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2107,6 +2176,7 @@
         "assetBundleValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2140,6 +2210,7 @@
         "audioAssetCompatibilityAudit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2173,6 +2244,7 @@
         "audioPlaybackControl"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2205,6 +2277,7 @@
         "audioPlaybackObserve"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2237,6 +2310,7 @@
         "audioSourceAudit"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "audioSourceAudit",
@@ -2277,6 +2351,7 @@
         "audioSourceConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2310,6 +2385,7 @@
         "buildArtifactServe"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "buildArtifactServe",
@@ -2350,6 +2426,7 @@
         "buildLogInspect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2383,6 +2460,7 @@
         "buildPresetAudit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2416,6 +2494,7 @@
         "buildTargetLaunch"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "buildTargetLaunch",
@@ -2456,6 +2535,7 @@
         "buildTargetSmoke"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "buildTargetSmoke",
@@ -2496,6 +2576,7 @@
         "buildTaskWait"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2529,6 +2610,7 @@
         "projectSettingsValidate"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "projectSettingsValidate",
@@ -2567,6 +2649,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2598,6 +2681,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2628,6 +2712,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2659,6 +2744,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2688,6 +2774,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2718,6 +2805,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2747,6 +2835,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2776,6 +2865,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2807,6 +2897,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2838,6 +2929,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2868,6 +2960,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2897,6 +2990,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2926,6 +3020,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2955,6 +3050,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -2985,6 +3081,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3014,6 +3111,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3043,6 +3141,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3072,6 +3171,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3101,6 +3201,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3130,6 +3231,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3159,6 +3261,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3188,6 +3291,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3217,6 +3321,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3246,6 +3351,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3275,6 +3381,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3304,6 +3411,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3333,6 +3441,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3362,6 +3471,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3391,6 +3501,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3420,6 +3531,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3449,6 +3561,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3479,6 +3592,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3508,6 +3622,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3538,6 +3653,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3567,6 +3683,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3598,6 +3715,7 @@
         "prefabApplyOverrides"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3630,6 +3748,7 @@
         "prefabInstantiate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3663,6 +3782,7 @@
         "prefabOverrideDiff"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3696,6 +3816,7 @@
         "prefabReferenceAudit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3729,6 +3850,7 @@
         "prefabRevertOverrides"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3761,6 +3883,7 @@
         "referenceImageManage"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3794,6 +3917,7 @@
         "sceneHierarchyValidate"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "sceneHierarchyValidate",
@@ -3834,6 +3958,7 @@
         "sceneReferenceValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3865,6 +3990,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3894,6 +4020,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3923,6 +4050,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3952,6 +4080,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -3981,6 +4110,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4010,6 +4140,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4039,6 +4170,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4068,6 +4200,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4097,6 +4230,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4126,6 +4260,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4156,6 +4291,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4185,6 +4321,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4214,6 +4351,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4244,6 +4382,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4273,6 +4412,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4302,6 +4442,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4331,6 +4472,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4360,6 +4502,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4389,6 +4532,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4418,6 +4562,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4447,6 +4592,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4476,6 +4622,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4505,6 +4652,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4534,6 +4682,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4563,6 +4712,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4592,6 +4742,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4621,6 +4772,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4650,6 +4802,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4679,6 +4832,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4708,6 +4862,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4737,6 +4892,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4766,6 +4922,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4795,6 +4952,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4824,6 +4982,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4853,6 +5012,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4882,6 +5042,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4912,6 +5073,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4941,6 +5103,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4970,6 +5133,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -4999,6 +5163,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5028,6 +5193,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5057,6 +5223,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5086,6 +5253,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5115,6 +5283,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5145,6 +5314,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5174,6 +5344,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5203,6 +5374,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5233,6 +5405,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5262,6 +5435,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5292,6 +5466,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5324,6 +5499,7 @@
         "localizationInspect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5356,6 +5532,7 @@
         "localizationPreview"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5388,6 +5565,7 @@
         "localizationTableEdit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5420,6 +5598,7 @@
         "localizationValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5450,6 +5629,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5479,6 +5659,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5508,6 +5689,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5537,6 +5719,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5566,6 +5749,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5597,6 +5781,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5628,6 +5813,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5657,6 +5843,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5687,6 +5874,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5716,6 +5904,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5749,6 +5938,7 @@
         "particleConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5781,6 +5971,7 @@
         "particleInspect"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "particleInspect",
@@ -5821,6 +6012,7 @@
         "particlePlayback"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "particlePlayback",
@@ -5861,6 +6053,7 @@
         "particleValidate"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "particleValidate",
@@ -5901,6 +6094,7 @@
         "physics2dCompatibilityAudit"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics2dCompatibilityAudit",
@@ -5941,6 +6135,7 @@
         "physics2dConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -5973,6 +6168,7 @@
         "physics2dCreateBody"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics2dCreateBody",
@@ -6013,6 +6209,7 @@
         "physics2dCreateJoint"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics2dCreateJoint",
@@ -6053,6 +6250,7 @@
         "physics2dQuery"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6086,6 +6284,7 @@
         "physics2dTopologyAudit"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics2dTopologyAudit",
@@ -6126,6 +6325,7 @@
         "physics3dConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6158,6 +6358,7 @@
         "physics3dCreateBody"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics3dCreateBody",
@@ -6198,6 +6399,7 @@
         "physics3dCreateJoint"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics3dCreateJoint",
@@ -6238,6 +6440,7 @@
         "physics3dQuery"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6271,6 +6474,7 @@
         "physics3dTopologyAudit"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics3dTopologyAudit",
@@ -6311,6 +6515,7 @@
         "physics3dValidate"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "physics3dValidate",
@@ -6349,6 +6554,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6379,6 +6585,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6408,6 +6615,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6437,6 +6645,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6466,6 +6675,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6495,6 +6705,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6524,6 +6735,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6553,6 +6765,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6584,6 +6797,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6615,6 +6829,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6646,6 +6861,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6677,6 +6893,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6708,6 +6925,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6739,6 +6957,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6769,6 +6988,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6800,6 +7020,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6831,6 +7052,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6862,6 +7084,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6892,6 +7115,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6923,6 +7147,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6954,6 +7179,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -6985,6 +7211,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7016,6 +7243,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7047,6 +7275,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7078,6 +7307,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7109,6 +7339,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7140,6 +7371,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7173,6 +7405,7 @@
         "lightBakeManage"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7205,6 +7438,7 @@
         "materialEdit"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "materialEdit",
@@ -7245,6 +7479,7 @@
         "renderConfigurationApply"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7277,6 +7512,7 @@
         "renderDiagnosticsCollect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7309,6 +7545,7 @@
         "renderPipelineInspect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7342,6 +7579,7 @@
         "shaderValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7375,6 +7613,7 @@
         "runtimeScenarioAssert"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "runtimeScenarioAssert",
@@ -7415,6 +7654,7 @@
         "runtimeScenarioRun"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "runtimeScenarioRun",
@@ -7455,6 +7695,7 @@
         "runtimeStateObserve"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "runtimeStateObserve",
@@ -7493,6 +7734,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7522,6 +7764,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7552,6 +7795,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7582,6 +7826,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7611,6 +7856,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7641,6 +7887,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7671,6 +7918,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7700,6 +7948,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7731,6 +7980,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7760,6 +8010,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7789,6 +8040,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7818,6 +8070,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7848,6 +8101,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7878,6 +8132,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7909,6 +8164,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7939,6 +8195,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7968,6 +8225,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -7997,6 +8255,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8026,6 +8285,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8055,6 +8315,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8084,6 +8345,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8114,6 +8376,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8144,6 +8407,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8174,6 +8438,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8204,6 +8469,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8234,6 +8500,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8264,6 +8531,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8293,6 +8561,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8322,6 +8591,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8351,6 +8621,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8380,6 +8651,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8410,6 +8682,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8439,6 +8712,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8470,6 +8744,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8499,6 +8774,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8528,6 +8804,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8558,6 +8835,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8587,6 +8865,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8616,6 +8895,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8645,6 +8925,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8674,6 +8955,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8705,6 +8987,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8734,6 +9017,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8763,6 +9047,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8794,6 +9079,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8823,6 +9109,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8852,6 +9139,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8881,6 +9169,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8910,6 +9199,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8939,6 +9229,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8968,6 +9259,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -8997,6 +9289,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9026,6 +9319,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9056,6 +9350,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9086,6 +9381,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9116,6 +9412,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9145,6 +9442,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9174,6 +9472,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9203,6 +9502,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9233,6 +9533,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9264,6 +9565,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9295,6 +9597,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9326,6 +9629,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9355,6 +9659,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9384,6 +9689,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9414,6 +9720,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9445,6 +9752,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9475,6 +9783,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9506,6 +9815,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9535,6 +9845,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9564,6 +9875,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9595,6 +9907,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9624,6 +9937,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9654,6 +9968,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9683,6 +9998,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9712,6 +10028,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9743,6 +10060,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9774,6 +10092,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9803,6 +10122,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9833,6 +10153,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9863,6 +10184,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9892,6 +10214,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9921,6 +10244,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9950,6 +10274,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -9980,6 +10305,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10009,6 +10335,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10039,6 +10366,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10070,6 +10398,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10101,6 +10430,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10131,6 +10461,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10161,6 +10492,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10191,6 +10523,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10221,6 +10554,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10251,6 +10585,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10281,6 +10616,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10311,6 +10647,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10341,6 +10678,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10371,6 +10709,7 @@
       "competitorSourceIds": [],
       "portfolioNames": [],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10403,6 +10742,7 @@
         "skeletalAnimationConfigure"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "skeletalAnimationConfigure",
@@ -10443,6 +10783,7 @@
         "skeletalAnimationEvents"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10475,6 +10816,7 @@
         "skeletalAnimationInspect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10508,6 +10850,7 @@
         "skeletalAnimationPlay"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10540,6 +10883,7 @@
         "skeletalAnimationValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10573,6 +10917,7 @@
         "modelImportConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10606,6 +10951,7 @@
         "terrainCreate"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "terrainCreate",
@@ -10646,6 +10992,7 @@
         "terrainEdit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10678,6 +11025,7 @@
         "terrainInspect"
       ],
       "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
       "implementationRoute": [
         {
           "tool": "terrainInspect",
@@ -10718,6 +11066,7 @@
         "spriteAtlasConfigure"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10751,6 +11100,7 @@
         "tilemapInspect"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10784,6 +11134,7 @@
         "tilemapLayerEdit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10817,6 +11168,7 @@
         "tilemapObjectEdit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10850,6 +11202,7 @@
         "tilemapValidate"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10883,6 +11236,7 @@
         "previewResolutionSet"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10915,6 +11269,7 @@
         "uiAccessibilityAudit"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
@@ -10948,6 +11303,7 @@
         "uiResponsivePreview"
       ],
       "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "implementationRoute": [],
       "evidenceArtifacts": [],
       "limitations": [
