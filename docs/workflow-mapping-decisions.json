@@ -1,0 +1,2208 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-17",
+  "status": "reviewed",
+  "rows": [
+    {
+      "sourceId": "cocos-mcp:add_component",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-component",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:add_reference_image",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:align_camera_with_view",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:align_view_with_node",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:attach_script",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-component",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:batch_delete_assets",
+      "decision": "accept",
+      "targetWorkflowId": "assets-import.asset-batch-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:batch_import_assets",
+      "decision": "accept",
+      "targetWorkflowId": "assets-import.asset-batch-import",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:begin_undo_recording",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-undo-transaction-probe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:build_project",
+      "decision": "accept",
+      "targetWorkflowId": "build.build",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:cancel_undo_recording",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-undo-transaction-probe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:change_gizmo_coordinate",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:change_gizmo_pivot",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:change_gizmo_tool",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:change_view_mode_2d_3d",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:check_builder_status",
+      "decision": "remap",
+      "targetWorkflowId": "build.build-status",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:check_server_connectivity",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.check-server-connectivity",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:clear_all_reference_images",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:clear_broadcast_log",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.clear-broadcast-log",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:clear_console",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.clear-console",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:close_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:compress_textures",
+      "decision": "accept",
+      "targetWorkflowId": "assets-import.asset-compression",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:copy_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:copy_node",
+      "decision": "accept",
+      "targetWorkflowId": "animation.node-clipboard",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:create_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:create_node",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:create_prefab",
+      "decision": "remap",
+      "targetWorkflowId": "prefab.prefab-create",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:create_scene",
+      "decision": "remap",
+      "targetWorkflowId": "scene.scene-create",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:cut_node",
+      "decision": "accept",
+      "targetWorkflowId": "animation.node-clipboard",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:delete_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:delete_node",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:detect_node_type",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:duplicate_node",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:duplicate_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "prefab.duplicate-prefab",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:end_undo_recording",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-undo-transaction-probe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:execute_component_method",
+      "decision": "accept",
+      "targetWorkflowId": "scene.call-component-method",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:execute_scene_script",
+      "decision": "accept",
+      "targetWorkflowId": "scene.execute-javascript",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:execute_script",
+      "decision": "accept",
+      "targetWorkflowId": "other.execute-javascript",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:export_asset_manifest",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-manifest-export",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:export_preferences",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.export-preferences",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:find_asset_by_name",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:find_node_by_name",
+      "decision": "accept",
+      "targetWorkflowId": "scene.find-nodes",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:find_nodes",
+      "decision": "accept",
+      "targetWorkflowId": "scene.find-nodes",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:focus_camera_on_nodes",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:format_mcp_request",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.format-mcp-request",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:generate_available_url",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-available-url",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_active_listeners",
+      "decision": "accept",
+      "targetWorkflowId": "editor.broadcast-observe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_all_nodes",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-tree",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_all_preferences",
+      "decision": "accept",
+      "targetWorkflowId": "asset.editor-preference",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_asset_dependencies",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-find-references",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_asset_details",
+      "decision": "remap",
+      "targetWorkflowId": "asset.asset-details",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_asset_info",
+      "decision": "remap",
+      "targetWorkflowId": "asset.asset-details",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_assets",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_available_components",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-available-component-types",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_broadcast_log",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.broadcast-observe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_build_settings",
+      "decision": "accept",
+      "targetWorkflowId": "build.build",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_component_info",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_components",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-components",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_console_logs",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.editor-logs",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_current_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene-info",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_editor_info",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-env-info",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_log_file_info",
+      "decision": "accept",
+      "targetWorkflowId": "asset.editor-logs",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_network_interfaces",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.get-network-interfaces",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_node_info",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_node_tree",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-tree",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_performance_stats",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.performance-snapshot",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_prefab_info",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-override-diff",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_prefab_list",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_project_info",
+      "decision": "remap",
+      "targetWorkflowId": "product.project-info",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_project_logs",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.editor-logs",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_project_settings",
+      "decision": "accept",
+      "targetWorkflowId": "other.project",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_scene_hierarchy",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-tree",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_scene_list",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_scene_view_status",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_server_status",
+      "decision": "accept",
+      "targetWorkflowId": "build.editor-env-info",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:get_unused_assets",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-usage-analyze",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:import_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-import",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:import_preferences",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.import-preferences",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:instantiate_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-instantiate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:list_reference_images",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:listen_broadcast",
+      "decision": "accept",
+      "targetWorkflowId": "editor.broadcast-observe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:load_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "prefab.read-prefab-json",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:move_array_element",
+      "decision": "accept",
+      "targetWorkflowId": "other.property-array-element",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:move_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:move_node",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:open_asset_external",
+      "decision": "accept",
+      "targetWorkflowId": "asset.program",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:open_build_panel",
+      "decision": "remap",
+      "targetWorkflowId": "build.build-panel-open",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:open_preferences_settings",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.open-preferences-settings",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:open_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:paste_node",
+      "decision": "accept",
+      "targetWorkflowId": "animation.node-clipboard",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_db_ready",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-db",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_path",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-resolve-path",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_url",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-resolve-path",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_asset_uuid",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-resolve-path",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_component_has_script",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_current_reference_image",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_coordinate",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_pivot",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_tool_name",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_gizmo_view_mode",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_grid_visible",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_icon_gizmo_3d",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_icon_gizmo_size",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_nodes_by_asset_uuid",
+      "decision": "accept",
+      "targetWorkflowId": "asset.find-nodes-asset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_preferences_config",
+      "decision": "accept",
+      "targetWorkflowId": "asset.editor-preference",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_reference_image_config",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_classes",
+      "decision": "accept",
+      "targetWorkflowId": "scene.component-classes",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_components",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-available-component-types",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_dirty",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene-info",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_scene_ready",
+      "decision": "remap",
+      "targetWorkflowId": "editor.scene-readiness",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_server_ip_list",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.query-server-ip-list",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_server_port",
+      "decision": "remap",
+      "targetWorkflowId": "product.transport-status",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_sorted_server_ip_list",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.query-sorted-server-ip-list",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:query_view_mode_2d_3d",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:refresh_assets",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:refresh_reference_image",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:reimport_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:remove_array_element",
+      "decision": "accept",
+      "targetWorkflowId": "other.property-array-element",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:remove_component",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-component",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:remove_reference_image",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:reset_component",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-reset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:reset_node_property",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-reset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:reset_node_transform",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-reset",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:reset_preferences",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.reset-preferences",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:reset_scene_view",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:restore_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-revert-overrides",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:restore_prefab_node",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-revert-overrides",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:revert_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-revert-overrides",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:run_project",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.preview",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:safe_string_value",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.safe-string-value",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:save_asset",
+      "decision": "split",
+      "targetWorkflowId": "asset.asset-save-content",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:save_asset_meta",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:save_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:save_scene_as",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:scene_snapshot",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene-snapshot",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:scene_snapshot_abort",
+      "decision": "split",
+      "targetWorkflowId": "scene.scene-snapshot-abort",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "Implement or compose the distinct bounded target contract.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:search_project_logs",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.editor-logs",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_component_property",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_grid_visible",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_icon_gizmo_3d",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_icon_gizmo_size",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-viewport",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_node_property",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_node_transform",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_preferences_config",
+      "decision": "accept",
+      "targetWorkflowId": "asset.editor-preference",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_data",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_opacity",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_position",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:set_reference_image_scale",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:soft_reload_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:start_preview_server",
+      "decision": "accept",
+      "targetWorkflowId": "build.preview",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:stop_listening",
+      "decision": "accept",
+      "targetWorkflowId": "editor.broadcast-observe",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:stop_preview_server",
+      "decision": "accept",
+      "targetWorkflowId": "build.preview",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:switch_reference_image",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.reference-image",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:update_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-overrides",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:validate_asset_references",
+      "decision": "accept",
+      "targetWorkflowId": "assets-import.asset-missing-reference-audit",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:validate_json_params",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.validate-json-params",
+      "rationale": "Reviewed Batch B exception: source outcome is broader/different, excluded product utility, or requires a separate workflow.",
+      "implementationImplication": "No implementation credit; retain traceability.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:validate_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-reference-audit",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "cocos-mcp:validate_scene",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.scene",
+      "rationale": "Reviewed Batch B as bounded direct equivalence within recorded limitations.",
+      "implementationImplication": "Retain route and limitations; verification remains separate.",
+      "reviewer": "ReviewMappingBatchB"
+    },
+    {
+      "sourceId": "funplay:add_animation_clip",
+      "decision": "remap",
+      "targetWorkflowId": "animation.animation-component-clips",
+      "targetDescription": "animation.animation-component-clips — attach AnimationClip to cc.Animation",
+      "rationale": "Original attaches clipUuid to a node component; animationClipConfigure only edits clip metadata sample/speed/wrap (original:8-10; animation-tools.ts:858-890).",
+      "implementationImplication": "Add component-clip route; do not credit metadata configuration.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:add_component",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-component",
+      "targetDescription": "scene.node-component — add component",
+      "rationale": "Operation matches nodeComponentManage (mapping:1276-1281; inventory:5412-5448).",
+      "implementationImplication": "Ensure created component reference is returned.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:apply_prefab_instance",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-overrides",
+      "targetDescription": "design-prefab.prefab-overrides — apply instance overrides",
+      "rationale": "Same scene-instance-to-source-prefab operation (original:333-335; mapping:1284-1289).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:bind_button_click_event",
+      "decision": "split",
+      "targetWorkflowId": "scene.bind-button-click-event",
+      "targetDescription": "scene.bind-button-click-event — bind same-node/child handler; new target-node variant",
+      "rationale": "Source accepts separate targetNodeUuid; current route only same node/children (original:188-190; event-tools.ts:41-74).",
+      "implementationImplication": "Add target reference or separate workflow; retain bounded current route.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:broadcast_editor_message",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.arbitrary-editor-ipc",
+      "targetDescription": "excluded.arbitrary-editor-ipc — no arbitrary IPC dispatch",
+      "rationale": "Source accepts arbitrary channel/method/args; public route only observes allowlisted topics (original:78-80; advanced-capability-tools.ts:413-416).",
+      "implementationImplication": "Trace as excluded; no parity credit for privileged arbitrary IPC.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:capture_desktop_screenshot",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.desktop-capture",
+      "targetDescription": "excluded.desktop-capture — no whole-OS capture",
+      "rationale": "Whole desktop exposes unrelated apps/secrets; editor-window capture is not equivalent (original:468-470).",
+      "implementationImplication": "Trace exclusion; no implementation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:capture_editor_screenshot",
+      "decision": "accept",
+      "targetWorkflowId": "editor.capture-editor-screenshot",
+      "targetDescription": "editor.capture-editor-screenshot — capture Creator window",
+      "rationale": "Same focused Creator-window capture (original:473-475; screenshot-tools.ts:98-100).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:capture_game_screenshot",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.game-view-capture",
+      "targetDescription": "runtime.game-view-capture — capture actual Game View panel",
+      "rationale": "Source locates/crops Game View; current route captures edit-renderer canvas (original:478-480; screenshot-tools.ts:43-45).",
+      "implementationImplication": "New qualified Game View target; current route cannot receive parity.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:capture_preview_screenshot",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.preview-window-capture",
+      "targetDescription": "runtime.preview-window-capture — capture Preview/Simulator window",
+      "rationale": "Source targets preview/simulator BrowserWindow; runtimeScreenshotAssert captures bounded editor target and hashes PNG (original:483-485; screenshot-tools.ts:211-270).",
+      "implementationImplication": "Add identified preview-window capture; do not merge with editor assertion.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:capture_scene_screenshot",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.capture-scene-screenshot",
+      "targetDescription": "runtime.capture-scene-screenshot — edit scene view JPEG",
+      "rationale": "Source and route both capture scene-view canvas in edit mode (original:488-490; screenshot-tools.ts:42-91).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:check_for_updates",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.check-for-updates",
+      "targetDescription": "runtime.check-for-updates — release comparison",
+      "rationale": "Contract is valid but inventory implementation is missing; no route exists (original:528-530; inventory:4295-4322).",
+      "implementationImplication": "Implement release API route or mark missing; current competitor-only row is not acceptance.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:clear_logs",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.clear-project-logs",
+      "targetDescription": "excluded.clear-project-logs — destructive log erasure",
+      "rationale": "Clearing/truncating logs destroys diagnostic evidence and has no current public route (original:308-310).",
+      "implementationImplication": "Keep trace with product/safety exclusion; no parity credit.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_button",
+      "decision": "split",
+      "targetWorkflowId": "scene.ui-node",
+      "targetDescription": "scene.ui-node plus scene.create-button — complete Button+Label hierarchy",
+      "rationale": "Generic createUiNode creates a UI prefab, while source requires Button, UITransform and child Label with text (original:508-510; ui-tools.ts:66-190).",
+      "implementationImplication": "Credit generic route only for node creation; add/retain specialized createButton contract.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_camera",
+      "decision": "remap",
+      "targetWorkflowId": "scene.camera-create",
+      "targetDescription": "scene.camera-create — create cc.Camera node",
+      "rationale": "Source creates Camera component; nodeCreatePrimitive creates 3D primitive prefabs (original:113-115; scene-tools.ts:914-970).",
+      "implementationImplication": "Add camera-specific create route; do not merge with primitive creation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_canvas",
+      "decision": "accept",
+      "targetWorkflowId": "scene.ui-node",
+      "targetDescription": "scene.ui-node — create Canvas UI node",
+      "rationale": "createUiNode supports Canvas prefab and source requires Canvas/UITransform (original:513-515; ui-tools.ts:66-105).",
+      "implementationImplication": "Ensure Canvas type selects the native/internal template.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_cocos_mcp_project_skill",
+      "decision": "remap",
+      "targetWorkflowId": "other.write-project-instruction",
+      "targetDescription": "other.write-project-instruction — create fixed skill file",
+      "rationale": "Source has fixed `.codex/skills/cocos-mcp/SKILL.md` semantics; generic instruction writer is broader and different file class (original:283-285; instruction-tools.ts:64-75).",
+      "implementationImplication": "Use dedicated skill-generation workflow or explicit fixed-path policy.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_label",
+      "decision": "accept",
+      "targetWorkflowId": "scene.label",
+      "targetDescription": "scene.label — create Label",
+      "rationale": "Route supports text/font size/color and returns node reference (original:518-520; ui-tools.ts:124-164).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_node",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node",
+      "targetDescription": "scene.node — create node",
+      "rationale": "Exact create-node contract (original:428-430; scene-tools.ts:970+).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_prefab_from_node",
+      "decision": "accept",
+      "targetWorkflowId": "prefab.node-operate",
+      "targetDescription": "prefab.node-operate — create prefab from node",
+      "rationale": "nodeOperate includes prefab create/save; source operation matches (original:338-340).",
+      "implementationImplication": "Verify target path and returned UUID are exposed.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_prefab_instance",
+      "decision": "remap",
+      "targetWorkflowId": "design-prefab.prefab-instantiate",
+      "targetDescription": "design-prefab.prefab-instantiate — linked prefab instance creation",
+      "rationale": "Inventory target is missing and source requires linked scene instance (original:343-345; mapping:1420-1425).",
+      "implementationImplication": "Use/extend prefabInstantiate; do not credit generic asset workflow.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_project_skill",
+      "decision": "remap",
+      "targetWorkflowId": "other.write-project-instruction",
+      "targetDescription": "other.write-project-instruction — create custom skill file",
+      "rationale": "SkillName/content and `.codex/skills/` semantics are specialized; generic instruction route may allow unrelated files (original:288-290).",
+      "implementationImplication": "Constrain path to skills and return created path.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_scene",
+      "decision": "remap",
+      "targetWorkflowId": "assets-import.asset-create",
+      "targetDescription": "assets-import.asset-create — create scene asset",
+      "rationale": "Source creates a scene asset from template and returns UUID/url; asset query is read-only (original:28-30; asset-tools.ts:859-907).",
+      "implementationImplication": "Map to assetCreate preset=scene; remove asset-query credit.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:create_sprite",
+      "decision": "split",
+      "targetWorkflowId": "scene.ui-node",
+      "targetDescription": "scene.ui-node plus scene.create-sprite — create Sprite and assign SpriteFrame",
+      "rationale": "Source requires optional spriteFrame assignment; generic UI node does not guarantee assignment (original:523-525; ui-tools.ts:230-270).",
+      "implementationImplication": "Credit specialized createSprite for full contract.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:delete_asset",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "targetDescription": "asset.asset-operate — delete asset",
+      "rationale": "assetOperate explicitly supports delete (original:33-35; asset-tools.ts:909+).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:delete_node",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-operate",
+      "targetDescription": "scene.node-operate — delete node",
+      "rationale": "Node operation route covers deletion; source accepts UUID/path (original:433-435).",
+      "implementationImplication": "Preserve path-to-UUID resolution.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:duplicate_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "prefab.duplicate-prefab",
+      "targetDescription": "prefab.duplicate-prefab — duplicate prefab with new UUID",
+      "rationale": "Same file-copy/new-meta outcome (original:348-350).",
+      "implementationImplication": "Ensure old meta is not copied.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:edit_prefab_json",
+      "decision": "accept",
+      "targetWorkflowId": "prefab.edit-prefab-json",
+      "targetDescription": "prefab.edit-prefab-json — mutate serialized prefab JSON",
+      "rationale": "Exact disk JSON mutation contract (original:353-355).",
+      "implementationImplication": "Preserve refresh/read-back semantics.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:emit_node_event",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.emit-node-event",
+      "targetDescription": "runtime.emit-node-event — custom event emission",
+      "rationale": "Inventory row is missing route; execute-scene-script/arbitrary event emission is not a bounded public route (original:193-195; inventory:4379-4406).",
+      "implementationImplication": "Add allowlisted event dispatch with payload and emitted confirmation, or keep missing.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:execute_editor_script",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.arbitrary-editor-execution",
+      "targetDescription": "excluded.arbitrary-editor-execution — no arbitrary main-process eval",
+      "rationale": "Source permits arbitrary JS, fs and Editor access; public execute route is reviewed/safety-checked, not equivalent (original:208-210).",
+      "implementationImplication": "Keep trace; no arbitrary eval parity.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:execute_javascript",
+      "decision": "exclude",
+      "targetWorkflowId": "excluded.arbitrary-context-execution",
+      "targetDescription": "excluded.arbitrary-context-execution — no unrestricted scene/editor eval",
+      "rationale": "Unified arbitrary scene/editor script with optional safety bypass exceeds reviewed local JS contract (original:213-215).",
+      "implementationImplication": "Do not count as equivalent; retain reviewed execute route separately.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:execute_scene_script",
+      "decision": "remap",
+      "targetWorkflowId": "scene.execute-javascript",
+      "targetDescription": "scene.execute-javascript — reviewed local scene script only",
+      "rationale": "Source is unrestricted scene eval; current route is reviewed local JS (inventory:5165-5202).",
+      "implementationImplication": "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:exists",
+      "decision": "accept",
+      "targetWorkflowId": "asset.project-file-exists",
+      "targetDescription": "asset.project-file-exists — protected project existence check",
+      "rationale": "Same path-inside protected exists/isDirectory outcome (original:218-220).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:find_nodes",
+      "decision": "accept",
+      "targetWorkflowId": "scene.find-nodes",
+      "targetDescription": "scene.find-nodes — bounded node search",
+      "rationale": "Name/component bounded search aligns; pathPattern may require explicit support (original:443-445; inventory:5203-5237).",
+      "implementationImplication": "Ensure pathPattern support or document limitation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_build_status",
+      "decision": "remap",
+      "targetWorkflowId": "build.build",
+      "targetDescription": "build.build — query worker/task state",
+      "rationale": "Source is read-only status; buildManage is multi-operation build management (original:83-85; consolidated-tools.ts:228-263).",
+      "implementationImplication": "Expose `tasks_info`/worker state as a dedicated status operation; do not conflate trigger/control.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_editor_preference",
+      "decision": "accept",
+      "targetWorkflowId": "asset.editor-preference",
+      "targetDescription": "asset.editor-preference — read Editor.Profile value",
+      "rationale": "getEditorPreference directly reads profile (original:383-385; preference-tools.ts:22-53).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_editor_selection",
+      "decision": "split",
+      "targetWorkflowId": "editor.editor-select",
+      "targetDescription": "editor.editor-select — query selection; explicit node+asset aggregate variant",
+      "rationale": "Source returns both nodes and assets in one object; editorSelect is one selection domain per call (original:493-495; editor-tools.ts:193-245).",
+      "implementationImplication": "Add aggregate query or compose two reads with stable output.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_editor_state",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-state",
+      "targetDescription": "editor.editor-state — bounded aggregate editor snapshot",
+      "rationale": "Contract aligns with editorState bounded aggregate (original:393-395; editor-tools.ts:48-49).",
+      "implementationImplication": "Ensure fields projectPath/version/activeScene/selectedNodes are represented or marked unavailable.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_file_snippet",
+      "decision": "remap",
+      "targetWorkflowId": "asset.project-read-file",
+      "targetDescription": "asset.project-read-file — bounded snippet mode",
+      "rationale": "Source is line/radius snippet; full projectReadFile is broader (original:223-225).",
+      "implementationImplication": "Add line/radius parameters or separate project-file-snippet workflow.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_hierarchy",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.hierarchy",
+      "targetDescription": "runtime.hierarchy — nested node tree",
+      "rationale": "Exact query-node-tree contract; current inventory row missing implementation but semantics align (original:448-450).",
+      "implementationImplication": "Implement bounded hierarchy route; do not claim complete until route exists.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_performance_snapshot",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.performance-snapshot",
+      "targetDescription": "diagnostics.performance-snapshot — scene scale/performance counters",
+      "rationale": "Output counters and memory usage align with getPerformanceSnapshot (original:323-325; validation-tools.ts:9-13).",
+      "implementationImplication": "Ensure memoryUsage is truthful/nullable when unavailable.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_preview_mode",
+      "decision": "split",
+      "targetWorkflowId": "runtime.preview-mode",
+      "targetDescription": "runtime.preview-mode — read mode/URLs; runtime.runtime-preview — lifecycle control",
+      "rationale": "Source is configuration/status read including browser/LAN URLs; runtimePreviewControl is Game View lifecycle and explicitly rejects browser/simulator (original:88-90; runtime-tools.ts:78-126).",
+      "implementationImplication": "Map to preview URL/mode route; do not merge with lifecycle.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_project_info",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-env-info",
+      "targetDescription": "editor.editor-env-info — project/version/config summary",
+      "rationale": "Same basic path/version information (original:398-400).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_recent_logs",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.editor-logs",
+      "targetDescription": "diagnostics.editor-logs — recent log tail",
+      "rationale": "Read-only recent log retrieval aligns with editorGetLogs (original:313-315; editor-tools.ts:539-600).",
+      "implementationImplication": "Map `lines` to bounded count/order.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_runtime_state",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.runtime-state",
+      "targetDescription": "runtime.runtime-state — paused/timeScale/frame state",
+      "rationale": "Same state fields; route truthfully errors when Game View is not running (original:408-410; runtime-tools.ts:57-75).",
+      "implementationImplication": "Document null/unready behavior.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_scene_info",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene-info",
+      "targetDescription": "scene.scene-info — bounds/dirty/current scene",
+      "rationale": "Exact sceneGetInfo outcome (original:453-455; scene-tools.ts:66-105).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_script_diagnostic_context",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.script-diagnostic-context",
+      "targetDescription": "diagnostics.script-diagnostic-context — tsc diagnostics plus snippets",
+      "rationale": "Exact compile-check/context extraction contract if route executes tsc and reads ± lines (original:163-165).",
+      "implementationImplication": "Keep maxDiagnostics and snippet bounds observable.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_selection",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-select",
+      "targetDescription": "editor.editor-select — query one selection domain",
+      "rationale": "Source explicitly accepts type node/asset and returns UUIDs; editorSelect query supports domain (original:498-500; editor-tools.ts:193-245).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:get_tool_catalog",
+      "decision": "remap",
+      "targetWorkflowId": "diagnostics.tool-catalog",
+      "targetDescription": "diagnostics.tool-catalog — list tool profile/category/enabled state",
+      "rationale": "Tool registry catalog is not editor state; current editorState intentionally omits tool catalog (original:403-405; editor-tools.ts:48-49).",
+      "implementationImplication": "Add dedicated catalog route or keep competitor-only.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:inspect_asset",
+      "decision": "remap",
+      "targetWorkflowId": "asset.asset-inspect",
+      "targetDescription": "asset.asset-inspect — metadata/serialized data/import settings",
+      "rationale": "assetQuery lists assets; source requires detailed info/meta/data (original:38-40; asset-tools.ts:786-800).",
+      "implementationImplication": "Map to asset info/meta route; do not credit list query.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:inspect_asset_dependencies",
+      "decision": "split",
+      "targetWorkflowId": "asset.asset-find-references",
+      "targetDescription": "asset.asset-find-references — graph direction; asset.dependency-audit — serialized UUID scan with missing list",
+      "rationale": "Source scans serialized content and reports missing UUIDs; find references is relationship query and does not guarantee missing-reference audit (original:43-45; asset-tools.ts:722-784).",
+      "implementationImplication": "Add dependency audit route or retain as missing.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:inspect_component",
+      "decision": "remap",
+      "targetWorkflowId": "scene.inspector",
+      "targetDescription": "scene.inspector — component property dump",
+      "rationale": "Inventory runtime.component is missing; inspectorGet is the existing property-dump route (original:133-135; consolidated-tools.ts:13-69).",
+      "implementationImplication": "Use component reference with type/values output adapter.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:inspect_node",
+      "decision": "remap",
+      "targetWorkflowId": "scene.inspector",
+      "targetDescription": "scene.inspector — node inspection",
+      "rationale": "nodeCreate creates nodes; source reads transform/layer/active/components (original:458-460; inventory:5343-5377).",
+      "implementationImplication": "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:inspect_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "prefab.read-prefab-json",
+      "targetDescription": "prefab.read-prefab-json — parse prefab structure",
+      "rationale": "Same serialized prefab read outcome (original:358-360).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:inspect_prefab_instance",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-override-diff",
+      "targetDescription": "design-prefab.prefab-override-diff — detect instance and overrides",
+      "rationale": "Exact `__prefab__`/property override inspection semantics (original:363-365).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:instantiate_prefab",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-instantiate",
+      "targetDescription": "design-prefab.prefab-instantiate — instantiate linked prefab",
+      "rationale": "Same UUID-to-scene-node instantiation (original:368-370).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:invoke_component_method",
+      "decision": "accept",
+      "targetWorkflowId": "scene.call-component-method",
+      "targetDescription": "scene.call-component-method — invoke JSON method on component",
+      "rationale": "Operation and JSON result align, though source names node+component while route needs component reference (original:138-140; scene-tools.ts:548-570).",
+      "implementationImplication": "Resolve component reference from node/type or document prerequisite.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_animations",
+      "decision": "accept",
+      "targetWorkflowId": "animation.animation-catalog",
+      "targetDescription": "animation.animation-catalog — inspect Animation/Spine/DragonBones catalogs",
+      "rationale": "Catalog listing is the route's explicit outcome (original:13-15; animation-tools.ts:1074-1100).",
+      "implementationImplication": "Document native cc.Animation result mapping/default clip fields if needed.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_assets",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset",
+      "targetDescription": "asset.asset — asset query/list",
+      "rationale": "Pattern/type filtered asset listing matches assetQuery (original:48-50; asset-tools.ts:786-800).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_button_click_events",
+      "decision": "remap",
+      "targetWorkflowId": "scene.button-click-events-list",
+      "targetDescription": "scene.button-click-events-list — inspect configured handlers",
+      "rationale": "Listing handlers is read-only; simulateButtonClick fires handlers and has different side effects (original:198-200; event-tools.ts:11-38).",
+      "implementationImplication": "Add read route; do not merge with simulation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_cameras",
+      "decision": "remap",
+      "targetWorkflowId": "scene.camera-list",
+      "targetDescription": "scene.camera-list — list Camera components/properties",
+      "rationale": "Inventory row is missing and no current route found; source is editor scene inspection, not generic runtime lifecycle (original:118-120; inventory:4233-4260).",
+      "implementationImplication": "Add bounded camera query route.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_components",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-components",
+      "targetDescription": "scene.node-components — list node components",
+      "rationale": "nodeComponentsGet returns all or filtered component refs (original:143-145; component-tools.ts:45-92).",
+      "implementationImplication": "Adapt output to include cid/name if contract requires.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_directory",
+      "decision": "accept",
+      "targetWorkflowId": "other.project-directory",
+      "targetDescription": "other.project-directory — list protected project directory",
+      "rationale": "Same readdir outcome and path semantics (original:228-230).",
+      "implementationImplication": "Preserve path-inside boundary and recursive option.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_editor_windows",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-windows",
+      "targetDescription": "editor.editor-windows — list BrowserWindow metadata",
+      "rationale": "Same Electron window enumeration outcome (original:328-330; screenshot-tools.ts listEditorWindows route).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_prefabs",
+      "decision": "remap",
+      "targetWorkflowId": "asset.prefab-list",
+      "targetDescription": "asset.prefab-list — list cc.Prefab assets",
+      "rationale": "Generic assetQuery can implement filter, but current merged workflow hides prefab-specific UUID/url/name contract (original:373-375).",
+      "implementationImplication": "Use assetQuery with explicit cc.Prefab adapter or separate workflow.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_project_instructions",
+      "decision": "split",
+      "targetWorkflowId": "other.project-instruction-list",
+      "targetDescription": "other.project-instruction-list — enumerate instruction files; other.read-project-instruction — read one file",
+      "rationale": "List and read are distinct operations; readProjectInstruction cannot satisfy enumeration (original:293-295; instruction-tools.ts:27-62).",
+      "implementationImplication": "Add list route; retain read route separately.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:list_scenes",
+      "decision": "remap",
+      "targetWorkflowId": "asset.scene-list",
+      "targetDescription": "asset.scene-list — list cc.SceneAsset files",
+      "rationale": "Source filters scene assets and returns scene-specific fields; generic asset query is broader (original:53-55).",
+      "implementationImplication": "Use assetQuery cc.SceneAsset adapter/separate workflow.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:open_asset",
+      "decision": "remap",
+      "targetWorkflowId": "asset.asset-operate",
+      "targetDescription": "asset.asset-operate — open asset",
+      "rationale": "Open has side effect; asset query is read-only (original:58-60; asset-tools.ts:909+).",
+      "implementationImplication": "Map to assetOperate operation=open.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:open_build_panel",
+      "decision": "remap",
+      "targetWorkflowId": "build.build",
+      "targetDescription": "build.build — panel_open operation",
+      "rationale": "Opening panel is distinct from status/trigger/control despite shared buildManage facade (original:93-95; consolidated-tools.ts:228-263).",
+      "implementationImplication": "Represent operation explicitly; no blanket build-status equivalence.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:open_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "targetDescription": "scene.scene — open scene",
+      "rationale": "sceneManage open delegates sceneOpen and opens UUID (original:63-65; consolidated-tools.ts:194-223).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:pause_runtime",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.runtime-pause",
+      "targetDescription": "runtime.runtime-pause — pause qualified Game View runtime",
+      "rationale": "RuntimePause delegates bounded runtime session pause (original:413-415; runtime-tools.ts:11-22).",
+      "implementationImplication": "Do not claim edit-renderer scene-script pause.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:play_animation",
+      "decision": "accept",
+      "targetWorkflowId": "animation.animation-runtime",
+      "targetDescription": "animation.animation-runtime — play clip with read-back",
+      "rationale": "Runtime control supports play and clipName (original:18-20; animation-tools.ts:1322-1435).",
+      "implementationImplication": "Require node reference and record runtime readiness.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:read_file",
+      "decision": "accept",
+      "targetWorkflowId": "asset.project-read-file",
+      "targetDescription": "asset.project-read-file — protected full file read",
+      "rationale": "Same project file read operation subject to path protection (original:233-235).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:read_project_instruction",
+      "decision": "accept",
+      "targetWorkflowId": "other.read-project-instruction",
+      "targetDescription": "other.read-project-instruction — read instruction file",
+      "rationale": "Exact file-content read (original:298-300; instruction-tools.ts:27-62).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:refresh_assets",
+      "decision": "accept",
+      "targetWorkflowId": "asset.asset-operate",
+      "targetDescription": "asset.asset-operate — refresh asset DB",
+      "rationale": "assetOperate explicitly supports refresh (original:238-240; asset-tools.ts:909+).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:remove_component",
+      "decision": "accept",
+      "targetWorkflowId": "scene.node-component",
+      "targetDescription": "scene.node-component — remove component",
+      "rationale": "Same node component removal (original:148-150; mapping:1860-1865).",
+      "implementationImplication": "Return removed confirmation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:replace_in_file",
+      "decision": "accept",
+      "targetWorkflowId": "asset.project-replace-in-file",
+      "targetDescription": "asset.project-replace-in-file — protected file replacement",
+      "rationale": "Path/find/replace/isRegex semantics match bounded project replace (original:243-245).",
+      "implementationImplication": "Preserve write protection and replacement count.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:reset_component_property",
+      "decision": "remap",
+      "targetWorkflowId": "scene.node-reset",
+      "targetDescription": "scene.node-reset — reset component property",
+      "rationale": "Source is editor scene mutation; current nodeReset supports property/component operations, while runtime row is missing (original:153-155; scene-tools.ts:496-545).",
+      "implementationImplication": "Map to nodeReset operation=property with component reference.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:resume_runtime",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.runtime-resume",
+      "targetDescription": "runtime.runtime-resume — resume qualified Game View runtime",
+      "rationale": "RuntimeResume delegates bounded runtime session resume (original:418-420; runtime-tools.ts:25-35).",
+      "implementationImplication": "Require identified session/readiness.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:revert_prefab_instance",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-revert-overrides",
+      "targetDescription": "design-prefab.prefab-revert-overrides — revert instance overrides",
+      "rationale": "Same scene revert operation (original:378-380).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:run_project_preview",
+      "decision": "split",
+      "targetWorkflowId": "runtime.runtime-preview",
+      "targetDescription": "runtime.runtime-preview — Game View lifecycle; runtime.preview-manage — browser/simulator preview",
+      "rationale": "Source offers browser, Game View and simulator; current runtimePreviewControl explicitly supports only bounded Game View and rejects browser/simulator (original:98-100; runtime-tools.ts:78-80).",
+      "implementationImplication": "Split by transport; unsupported transports remain unaccepted.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:run_scene_asset",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.scene-load",
+      "targetDescription": "runtime.scene-load — load named scene into runtime session",
+      "rationale": "Source loads scene by UUID through cc.director; runtimePreviewControl starts/stops Game View lifecycle and is not scene-load itself (original:68-70; runtime-tools.ts:78-126).",
+      "implementationImplication": "Add runtime scene-load operation with session/scene read-back.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:run_script_diagnostics",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.script-diagnostics",
+      "targetDescription": "diagnostics.script-diagnostics — project tsc diagnostics",
+      "rationale": "Exact tsc noEmit diagnostic list (original:168-170).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:save_current_scene",
+      "decision": "accept",
+      "targetWorkflowId": "scene.scene",
+      "targetDescription": "scene.scene — save scene",
+      "rationale": "sceneManage save delegates save_scene_or_prefab (original:103-105; consolidated-tools.ts:194-223).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:search_files",
+      "decision": "accept",
+      "targetWorkflowId": "asset.project-search-files",
+      "targetDescription": "asset.project-search-files — protected glob search",
+      "rationale": "Same wildcard project file search (original:248-250).",
+      "implementationImplication": "Preserve directory scoping.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:search_project_logs",
+      "decision": "accept",
+      "targetWorkflowId": "diagnostics.editor-logs",
+      "targetDescription": "diagnostics.editor-logs — bounded log filtering",
+      "rationale": "editorGetLogs supports bounded plain-text filtering; regex is a limitation (original:318-320; editor-tools.ts:539-600).",
+      "implementationImplication": "If regex parity is required, add explicit safe-regex mode; otherwise document plain-text-only limitation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:select_asset",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-select",
+      "targetDescription": "editor.editor-select — select asset",
+      "rationale": "Selection route supports asset domain and returns current selection (original:73-75; editor-tools.ts:193-245).",
+      "implementationImplication": "Correct workflow ID from asset.editor-select to editor.editor-select if inventory has no separate asset route.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_camera_properties",
+      "decision": "remap",
+      "targetWorkflowId": "scene.camera-properties",
+      "targetDescription": "scene.camera-properties — set Camera component properties",
+      "rationale": "Inventory route missing; source is a persistent component mutation, not runtime-only state (original:123-125; inventory:4205-4232).",
+      "implementationImplication": "Use inspectorSet with camera component path or add typed camera route.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_component_property",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "targetDescription": "scene.inspector — set component property",
+      "rationale": "inspectorSet sets aligned property paths/values (original:158-160; consolidated-tools.ts:71-105).",
+      "implementationImplication": "Resolve component path and retain snapshot/undo semantics.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_editor_preference",
+      "decision": "accept",
+      "targetWorkflowId": "asset.editor-preference",
+      "targetDescription": "asset.editor-preference — write Editor.Profile value",
+      "rationale": "setEditorPreference directly writes profile (original:388-390; preference-tools.ts:57-90).",
+      "implementationImplication": "Correct route/tool naming from get to set operation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_node_transform",
+      "decision": "accept",
+      "targetWorkflowId": "scene.inspector",
+      "targetDescription": "scene.inspector — set transform/active properties",
+      "rationale": "Transform is a property mutation and inspectorSet supports aligned paths/values (original:463-465; consolidated-tools.ts:71-105).",
+      "implementationImplication": "Use explicit transform paths and preserve snapshot.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_preview_mode",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.preview-mode",
+      "targetDescription": "runtime.preview-mode — set preview platform",
+      "rationale": "Source writes preview profile and sends platform change; no asset workflow equivalence (original:108-110).",
+      "implementationImplication": "Add bounded preview mode route with supported mode enum and previous-mode read-back.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_selection",
+      "decision": "accept",
+      "targetWorkflowId": "editor.editor-select",
+      "targetDescription": "editor.editor-select — set/add/clear selection",
+      "rationale": "editorSelect supports select/unselect/clear and node/asset domains (original:503-505; editor-tools.ts:193-245).",
+      "implementationImplication": "Map source mode=add explicitly or document unsupported add semantics.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:set_time_scale",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.runtime-time-scale",
+      "targetDescription": "runtime.runtime-time-scale — qualified Game View time scale only",
+      "rationale": "Source mutates scheduler; current public route explicitly throws unsupported edit-renderer transport (original:423-425; runtime-tools.ts:37-54).",
+      "implementationImplication": "Do not accept until native Game View transport is qualified; retain missing/unsupported outcome.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:simulate_button_click",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.simulate-button-click",
+      "targetDescription": "runtime.simulate-button-click — fire Button clickEvents",
+      "rationale": "Same clickEvents emission semantics (original:203-205; event-tools.ts:11-38).",
+      "implementationImplication": "Keep distinct from handler listing.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:simulate_key_combo",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.simulate-key-combo",
+      "targetDescription": "runtime.simulate-key-combo — Electron key combo",
+      "rationale": "Same parsed modifier/key input dispatch (original:258-260; input-tools.ts:84-147).",
+      "implementationImplication": "Document active-window targeting vs source windowKind.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:simulate_key_press",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.simulate-key-press",
+      "targetDescription": "runtime.simulate-key-press — Electron keyDown/keyUp",
+      "rationale": "Same single-key dispatch and fail-fast unavailable API behavior (original:263-265; input-tools.ts:44-82).",
+      "implementationImplication": "Document window targeting limitation.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:simulate_mouse_click",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.simulate-mouse-click",
+      "targetDescription": "runtime.simulate-mouse-click — coordinate click",
+      "rationale": "Same mouseDown/mouseUp editor-coordinate outcome (original:268-270; input-tools.ts:149-198).",
+      "implementationImplication": "Document active editor-window targeting and click count.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:simulate_mouse_drag",
+      "decision": "accept",
+      "targetWorkflowId": "runtime.simulate-mouse-drag",
+      "targetDescription": "runtime.simulate-mouse-drag — coordinate drag",
+      "rationale": "Same down/move/up sequence with steps (original:273-275; input-tools.ts:223-270).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:simulate_preview_input",
+      "decision": "remap",
+      "targetWorkflowId": "runtime.runtime-input",
+      "targetDescription": "runtime.runtime-input — allow-listed input to identified runtime target",
+      "rationale": "Source auto-targets Preview/Simulator; current row is missing and generic editor input routes target active editor window (original:278-280; inventory:4981-5008).",
+      "implementationImplication": "Require session/window identity; browser/simulator unsupported unless qualified.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:stop_animation",
+      "decision": "accept",
+      "targetWorkflowId": "animation.animation-runtime",
+      "targetDescription": "animation.animation-runtime — stop playback",
+      "rationale": "animationRuntimeControl explicitly supports stop with read-back (original:23-25; animation-tools.ts:1322-1435).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:validate_asset_dependencies",
+      "decision": "remap",
+      "targetWorkflowId": "asset.asset-dependency-audit",
+      "targetDescription": "asset.asset-dependency-audit — validate serialized UUID dependencies",
+      "rationale": "Inventory route is missing; source validates broken UUIDs across target/pattern, distinct from relationship lookup (original:173-175).",
+      "implementationImplication": "Add bounded audit route and missing list; no credit for assetFindReferences alone.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:validate_prefab_references",
+      "decision": "accept",
+      "targetWorkflowId": "design-prefab.prefab-reference-audit",
+      "targetDescription": "design-prefab.prefab-reference-audit — validate prefab UUID references",
+      "rationale": "Same disk scan and broken prefab list outcome (original:178-180).",
+      "implementationImplication": "None.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:validate_scene",
+      "decision": "remap",
+      "targetWorkflowId": "diagnostics.scene-validation",
+      "targetDescription": "diagnostics.scene-validation — aggregate scene/runtime/TS/log validation",
+      "rationale": "Source is a composite validation outcome; current diagnostics.scene mapping lacks evidence of all four checks (original:183-185).",
+      "implementationImplication": "Require explicit composition and truthful per-check results; otherwise keep missing.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:write_file",
+      "decision": "accept",
+      "targetWorkflowId": "asset.project-write-file",
+      "targetDescription": "asset.project-write-file — protected project file write",
+      "rationale": "Same write/bytes/asset-refresh behavior (original:253-255).",
+      "implementationImplication": "Preserve path protection and refresh semantics.",
+      "reviewer": "ReviewMappingBatchA"
+    },
+    {
+      "sourceId": "funplay:write_project_instruction",
+      "decision": "accept",
+      "targetWorkflowId": "other.write-project-instruction",
+      "targetDescription": "other.write-project-instruction — write instruction file",
+      "rationale": "Generic fileName/content write matches route (original:303-305; instruction-tools.ts:64-75).",
+      "implementationImplication": "Keep fixed skill-generation source separate.",
+      "reviewer": "ReviewMappingBatchA"
+    }
+  ]
+}

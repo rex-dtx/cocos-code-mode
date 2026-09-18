@@ -11,13 +11,16 @@ Cocos Creator → http://localhost:<port>/utcp → UTCP call template
 
 The extension maintains `~/.utcp_config.json` automatically. Each editor has one stable `ccb3x_<actual-port>` template; there is no `ccb3x` latest-editor pointer. Legacy `ccb3x` discovery entries migrate to the port in their URL, not to whichever editor answers first. Do not register two templates for the same endpoint. A template name must match its URL port; ambiguous endpoints sharing a namespace are not selected.
 
-Every launch defaults to an OS-assigned free port (`listen(0)`). Previously saved `serverPort` values are not reused. Set **Settings → Advanced → Fixed Port** or the `fixedServerPort` preference explicitly to use a fixed port; 0 restores automatic allocation. An occupied fixed port fails without switching to another endpoint. Status reports the actual listening port; Settings shows the configured preference.
+Automatic mode reuses the last successfully published port for this Creator project. If that port is occupied, CCB falls back once to an OS-assigned free port and saves the replacement only after registry publication succeeds. Set **Settings → Advanced → Fixed Port** or `fixedServerPort` for a strict port; an occupied fixed port fails without fallback. Port reuse keeps registry names stable across ordinary restarts while simultaneous Creator instances still receive distinct ports.
 
-Registry writers serialize read–modify–write using `<config-path>.ccb-lock`, then replace the JSON atomically. Instance ownership is stored in the supported `variables.CCB3X_OWNER_<port>` string field, committed with its endpoint; late cleanup cannot remove a newer owner. Lock acquisition fails after 5 seconds rather than overwriting another writer. After a crash, an abandoned lock requires operator cleanup: close all registry writers, inspect its `owner.json`, then remove that lock directory. Older extension versions do not participate in this locking protocol; upgrade all concurrent Creator instances before relying on it.
+On publication, CCB probes existing per-port IPv4 loopback endpoints outside the registry lock. Only `localhost` and `127.0.0.1` are supported; IPv6 loopback entries are invalid and block publication without rewriting the registry. Definitively refused IPv4 ports are removed only if their owner value is unchanged after the writer acquires the lock and rereads the registry; responsive or timed-out endpoints are retained. Each endpoint also records `variables.CCB3X_PROJECT_<port>` for project provenance.
+
+Registry writers serialize read–modify–write using `<config-path>.ccb-lock`, then replace the JSON atomically. Instance ownership is stored in `variables.CCB3X_OWNER_<port>` and committed with its endpoint; late cleanup cannot remove a newer owner. Lock acquisition fails after 5 seconds rather than overwriting another writer. An abandoned crash lock remains the accepted operator-cleanup edge case.
 
 ### Extension Status panel
 
 The extension menu exposes **Status**, **Restart Server**, **Toggle Debug Logging**, **Open Logs**, and **Settings** for quick access. Toggle Debug Logging switches the current state and logs the resulting ON/OFF state; Status retains an explicit ON/OFF checkbox. Restart Server acts immediately and disconnects current agents. Status shows connection health first, with build/registry identifiers under Technical details. Check Status refreshes a read-only snapshot; no polling or automatic mutations. Restart Server, the explicit debug ON/OFF checkbox, Open Logs and confirmed Clear Logs are available in the panel. Restart disconnects current agents; reconnect and handshake again. Clear Logs affects the shared debug folder, including other editors. Settings provides copy-ready AI configuration; fixed port and registry path are hidden under Advanced and applied together with a restart. The extension no longer edits arbitrary shared-registry templates. Local HTTP checks verify this instance, not agent connectivity.
+Settings includes a **Verbose logging** control. It reads the persisted/project logging state, toggles `setDebugLogging` immediately without restarting the server, and keeps unresolved writes locked across panel close/reopen. `Open Logs` and `Clear Logs` remain explicit operations; detailed logs contain bounded interaction metadata, not full request or response payloads.
 
 ### Creator 3.7 module compatibility
 
@@ -111,14 +114,69 @@ Status shows registered session heartbeats with lastSeen, age and Active (up to 
 For token-free HTTP helper presence, the session harness can supervise this foreground process after verifying the binding:
 
 ```sh
-node scripts/cc-bridge-session.js --url http://localhost:49650/utcp --project "G:/projects/my-game" --instance "<verified instanceId>" --session "<unique chat session id>" --label "My session helper"
+node scripts/session-presence/heartbeat.js --url http://localhost:49650/utcp --project "G:/projects/my-game" --instance "<verified instanceId>" --session "<unique chat session id>" --label "My session helper"
 ```
 
-The helper verifies the binding and sends `editorSessionHeartbeat` every 5s with transport `http-helper`. It emits state changes only; normal beats never enter the model context. The harness must terminate it when the session ends; an orphan helper proves only that helper is alive. SIGINT/SIGTERM attempts a bounded close; a crash ages to Stale/Expired. Nothing starts automatically from a chat message or bootstrap. `--once` leaves a single observation to expire naturally.
+The fixed-binding helper verifies the binding and sends `editorSessionHeartbeat` every 5s with transport `http-helper`. It emits state changes only. SIGINT/SIGTERM attempts a bounded close; a crash ages to Stale/Expired. `--once` leaves a single observation to expire naturally. It does not discover replacement endpoints; use the shared supervisor below for recovery. Routine output must remain outside model context.
 
 `--interval-ms` is limited to 1000–10000ms so normal polling leaves deadline margin below the 15-second Active threshold. At most 100 sessions are retained; expired observations remain visible for up to five minutes, but may be evicted earlier to admit a new session when capacity is full. IDs and labels reject control characters. Unique session IDs are a caller obligation: this local presence API is not an authentication or ownership-lock protocol.
 
 An adapter that actually invokes heartbeat through Code Mode can call `editorSessionHeartbeat({ sessionId, label, expectedInstanceId, transport: 'code-mode', operation: 'beat' })` and `operation:'close'` on shutdown. The transport label is still self-reported, not server verification of that route. Do not ask the model to send periodic tool calls: that would consume tokens. No external MCP package is patched; automatic heartbeat lifecycle requires harness integration.
+
+#### Shared lifecycle: CLI and non-CLI agents
+
+The HTTP protocol is independent of OMP, model provider, CLI and UI. **Node.js is the canonical maintained client runtime**: desktop/IDE integrations embed the shared JavaScript modules or own a Node.js helper process. Do not reimplement heartbeat or recovery separately per agent or in Python/Rust. Hosts written in other languages communicate with the same Node.js helper over JSONL. No OMP or Bun-specific API is required by the shared runtime; no browser-only adapter is claimed.
+
+`scripts/session-presence/supervisor.js` owns start/stop and recovery. `scripts/session-presence/discovery.js` is the local registry adapter. `scripts/session-presence/cli.js` is a thin foreground entrypoint:
+
+Canonical repository commands: `npm run session:run -- <options>` for the foreground CLI, `npm run session:stdio` for manual use, and `npm run test:session` for focused regression checks after building. Machine clients must spawn `node scripts/session-presence/stdio.js` directly rather than npm, whose banner would contaminate JSONL stdout.
+
+```sh
+node scripts/session-presence/cli.js --registry "C:/Users/me/.utcp_config.json" --project "G:/projects/my-game" --session "unique-host-session-id" --label "IDE session"
+```
+
+The supervisor considers only loopback `ccb3x_<port>` entries, requires exact project equality and verifies registry instance ownership when present. Duplicate project matches block selection; `--namespace ccb3x_<port>` pins an endpoint, never another editor. An explicit namespace stays pinned after port changes; update host configuration deliberately. Without a namespace, replacement discovery may follow a new port only for the same project. A fixed programmatic `binding` stays fixed; provide `discover` for host-owned replacement resolution.
+Registry publication is serialized across cooperating CCB processes through `<registry>.ccb-lock`. Each writer acquires the lock, reads the latest JSON, applies its own mutation, writes and fsyncs a unique temporary file, then atomically renames it. CCB supports IPv4 loopback only (`localhost`/`127.0.0.1`); stale cleanup probes `127.0.0.1` and rejects IPv6 registry endpoints. Five synchronized writers completed without lost entries or partial JSON; measured worst-case batch completion was about 166ms on the tested Windows machine. Waiters poll every 25ms and fail after 5 seconds rather than stealing a potentially live lock. Ordinary writer exceptions release the lock in `finally`; process crash/power loss may leave an abandoned lock requiring operator cleanup.
+
+
+Use `--stdin-lifetime` with a parent-owned stdin pipe for child helpers. Closing the pipe—including parent crash—stops the supervisor and attempts bounded close. Do not inherit stdin for this mode. PID-only ownership is deliberately unsupported because PID reuse can attach presence to an unrelated process. In-process hosts have no orphan helper process: abrupt host exit stops beats and the server expires presence. Do not detach a CLI helper without lifetime ownership.
+
+Non-CLI embedding:
+
+```js
+const { randomUUID } = require('node:crypto');
+const { SessionLifecycleSupervisor } = require('./scripts/cc-bridge-session-supervisor');
+const session = new SessionLifecycleSupervisor({
+  project: 'G:/projects/my-game',
+  registryPath: 'C:/Users/me/.utcp_config.json',
+  session: randomUUID(),
+  label: 'Desktop agent',
+  emit: state => updateConnectionIndicator(state), // UI-only, never model context
+});
+const lifetime = session.start(); // Idempotent; this promise lasts until stop.
+// On the actual host session end, not an ordinary model turn:
+await session.stop();
+await lifetime;
+```
+
+For logical-session switching, `scripts/session-presence/host.js` provides `SessionLifecycleHost`: `switchSession({sessionId, project})` closes the previous record before starting the next and generates distinct presence UUIDs. `shutdown()` is terminal. It supports desktop/service hosts without OMP events. Integration callbacks must distinguish turn completion from session destruction.
+
+The optional `.omp/extensions/ccb-session.js` ESM adapter uses this same host class. Load it via OMP `--extension <absolute-file>` or native project discovery; set `CCB_SESSION_PROJECT` to the intended Creator project when it differs from the agent cwd, optionally `CCB_SESSION_REGISTRY` and `CCB_SESSION_NAMESPACE` for multi-editor selection. Ordinary agent idle/end does not close an open chat. No global profile or external MCP package is modified. Adapter status is UI-only; Code Mode registration still requires the normal explicit handshake.
+
+#### Multiple chats through the shared Node.js runtime
+
+`SessionLifecycleManager` from `scripts/session-presence/manager.js` provides `open({sessionId, project})`, `close(sessionId)` and terminal `shutdown()`. Each logical chat gets its own host and presence UUID; opening a second chat does not close the first. Reopening the same logical ID with a different project fails `SESSION_CONFLICT`. Capacity is 100 owned sessions.
+
+For Codex/Claude Code wrappers, VS Code extensions or other hosts using a child process, launch `node scripts/session-presence/stdio.js` with an owned stdin pipe and consume stdout JSONL continuously. This is the same Node.js runtime regardless of host language. Set `CCB_SESSION_REGISTRY` if the registry is not in the user home. Send one command per line, at most 8192 UTF-8 bytes:
+
+```json
+{"id":"request-1","operation":"open","sessionId":"chat-1","project":"G:/projects/my-game"}
+{"id":"request-2","operation":"close","sessionId":"chat-1"}
+```
+
+Responses carry `type:"response"`, request `id`, `ok`, and `presenceId` or a bounded error `code`. An open acknowledgement means the local supervisor started, not that CCB is connected; wait for the separate `type:"status", state:"Active"` event. Status carries the logical chat ID and presence UUID. EOF closes all owned chats. Output is integration telemetry, never text to feed to the model. Unsupported/extra command fields are rejected.
+
+VS Code integrations should call open/close on their own chat lifecycle, not assume extension activation/deactivation describes each chat. Codex and Claude Code integrations must use supported session lifecycle hooks or own the process pipe; ordinary turn completion is not session destruction. These are shared integration contracts, not claims that native Codex, Claude Code or VS Code plugins are installed or qualified.
 
 ## 3. Discover before acting
 
@@ -263,6 +321,14 @@ Tasks are tracking records, not a background execution engine. `start` returns `
 - Start with `runScriptDiagnostics` and `getScriptDiagnosticContext`.
 - Use runtime, screenshot, preview, or input-simulation tools for the requested surface.
 - Confirm editor build provenance through `/build-info` when a result looks stale.
+
+### Bounded Game View and audio control
+
+- Select **Game View** in Creator before `runtimeSessionLifecycle({ operation: 'start' })` or `runtimePreviewControl({ operation: 'start' })`. Browser/Simulator lifecycle is unsupported.
+- Runtime identity and state come from the actual visible Game View renderer through a finite host adapter, not `execute-scene-script` in the edit renderer. `targetId` is the returned runtime scene UUID; metrics may be `null` when Creator does not expose them.
+- Stop requires host renderer termination before handles are marked stopped. `reset` only releases a local handle. Live cold-start/stop stability for the large qualification project remains a Fixbug task; do not infer release readiness from unit/build success.
+- `audioPlaybackControl` and `audioPlaybackObserve` are currently fail-closed reservations, not supported runtime operations: Creator 3.7.3 routes extension scene scripts to the edit renderer, while actual Game View runs in a separate webview. Use `audioSourceConfigure` for authoring; no audible-output or playback claim is made.
+- Current source/build/unit verification is distinct from live qualification. See `reports/closure-verification-20260917.json` for observed runtime blockers; no full release qualification is implied.
 
 ## Skills integration
 
