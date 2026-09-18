@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "assetBatchImport",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Imported a bounded text asset with per-item success and captured a missing-source per-item failure without aborting the batch contract." },
+  "negativeWitness": { "test": "candidate.assetBatchImport.negative.v1", "result": "Missing source returned failed outcome with ASSET_IMPORT_FAILED while batch remained typed." },
+  "persistence": "Asset-db reference read-back and cleanup",
+  "cleanup": "Imported disposable asset deleted and temporary source removed",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
