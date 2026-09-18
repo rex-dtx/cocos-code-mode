@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "renderPipelineInspect",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/render-runtime-qualification.test.js", "result": "Inspected a real material render pipeline with typed pipeline output, byte count and untruncated read-back." },
+  "negativeWitness": { "test": "candidate.renderPipelineInspect.negative.v1", "result": "Missing material reference returned TARGET_NOT_FOUND." },
+  "persistence": "Read-only material importer content inspection",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "materialEdit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/material-edit-qualification.test.js", "result": "Created disposable material, mutated technique 0 to 1, verified importer read-back, restored technique to 0, and deleted asset." },
+  "negativeWitness": { "test": "candidate.materialEdit.negative.v1", "result": "Unsafe property path rejected with HTTP 400 before mutation." },
+  "persistence": "Importer setting read-back after bounded mutation",
+  "cleanup": "Material restored and deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
