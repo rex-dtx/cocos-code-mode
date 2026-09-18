@@ -247,6 +247,13 @@ export class RuntimeSessionTools {
             for (;;) {
                 if (requestFailure !== undefined) throw requestFailure;
                 preview = await this.readPreviewState(deadline);
+                if (args.operation === 'stop' && preview.state === 'stop' && !preview.enabled) {
+                    const stopped = session ? store.stop(session.sessionId) : undefined;
+                    for (const attached of store.list()) {
+                        if (attached.status === 'attached' && attached.targetKind === 'game-view' && attached.targetId === targetId) store.stop(attached.sessionId);
+                    }
+                    return { success: true, operation: 'stop', session: stopped, preview, ready: false };
+                }
                 if (args.operation !== 'start' && args.operation !== 'stop' && targetId && preview.sceneUuid !== targetId) throw new ToolError({ code: 'RUNTIME_TARGET_CHANGED', status: 409, message: 'Preview target changed during playback control.' });
                 if (preview.state === expected && (expected === 'stop' ? !preview.enabled : preview.gamePaused === (expected === 'pause'))) {
                     // Actual Game View renderer state is the authoritative postcondition.

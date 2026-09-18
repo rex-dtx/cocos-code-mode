@@ -160,6 +160,20 @@ describe('bounded Creator game-view lifecycle', () => {
     await assert.rejects(tools.runtimeSessionLifecycle({ operation: 'stop', sessionId: session.sessionId, timeoutMs: 100 }), { code: 'RUNTIME_STATE_TIMEOUT' });
   });
 
+it('confirms stop when the host tears down before the next renderer read', async () => {
+  const control = installPreview('play');
+  const { session } = await start();
+  transport.dispatchGameViewLifecycle = async (enabled) => {
+    control.commands.push(['host-preview-set-play', enabled]);
+    control.preview.state = 'stop';
+    control.preview.gamePaused = true;
+    control.runtime.running = false;
+  };
+  const stopped = await tools.runtimeSessionLifecycle({ operation: 'stop', sessionId: session.sessionId, timeoutMs: 100 });
+  assert.equal(stopped.ready, false);
+  assert.equal(stopped.session.status, 'stopped');
+});
+
   it('rejects stale targets without controlling the replacement preview or discarding the session', async () => {
     const control = installPreview('play');
     const { session } = await start();
