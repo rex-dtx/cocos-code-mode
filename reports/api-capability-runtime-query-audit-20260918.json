@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:51009",
+  "buildCommit": "bc5f27f",
+  "tests": { "file": "tests/live/validation-graph-qualification.test.js", "passed": 3, "failed": 0 },
+  "observations": {
+    "physics2dQuery": { "status": "returned topology", "valid": false, "checkedNodes": 2, "issues": ["__candidate_p2_bad__: rigid body has no collider"] },
+    "physics3dQuery": { "status": "returned topology", "valid": true, "checkedNodes": 2, "issues": [] }
+  },
+  "decision": "Do not promote physics2dQuery or physics3dQuery: the test contract only permits 200/404 and does not prove the required runtime-session raycast/contact/overlap or sweep/trigger behavior. No candidate evidence artifact created.",
+  "coverageUnchanged": true
+}
