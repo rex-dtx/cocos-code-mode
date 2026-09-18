@@ -5,11 +5,11 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 31,
-  "implementationPercent": 8.71,
+  "confirmedComplete": 32,
+  "implementationPercent": 8.99,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 290,
+  "deficitTo90": 289,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
@@ -116,9 +116,9 @@
     },
     "rendering-materials": {
       "total": 6,
-      "complete": 1,
+      "complete": 2,
       "unreviewed": 0,
-      "implementationPercent": 16.67
+      "implementationPercent": 33.33
     },
     "runtime-qa": {
       "total": 3,

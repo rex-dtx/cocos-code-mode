@@ -7467,7 +7467,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/materialEdit/creator-3.7.3-432ede0-dirty.json"
+        "reports/evidence/candidates/materialEdit/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
@@ -7565,10 +7565,17 @@
       "portfolioNames": [
         "renderPipelineInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "renderPipelineInspect",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/renderPipelineInspect/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Bounded native pipeline read-back through scene/query-render-pipeline; normalized compatibility diagnostics remain out of scope.",
         "Historical qualified label alone is not complete-contract evidence.",
