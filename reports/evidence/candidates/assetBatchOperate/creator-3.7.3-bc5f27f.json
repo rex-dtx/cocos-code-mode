@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "assetBatchOperate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Executed bounded refresh on an explicit asset reference and verified succeeded=1, failed=0, partial=false; invalid empty batch rejected." },
+  "negativeWitness": { "test": "candidate.assetBatchOperate.negative.v1", "result": "Empty batch rejected with HTTP 400 before operation dispatch." },
+  "persistence": "Asset-db refresh result read-back",
+  "cleanup": "No unintended project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

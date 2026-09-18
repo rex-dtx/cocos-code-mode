@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 283,
+  "requiredFor90": 281,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -636,30 +636,6 @@
       "acceptance": "- *Tính năng:* Tạo scene rỗng mới hoặc nhân bản scene hiện tại tại đường dẫn chỉ định mà không mở hộp thoại OS file picker.\n   - *Inputs:* `path: string` (e.g. `db://assets/scenes/Game.scene`), `fromActiveScene?: boolean`.\n   - *Outputs:* `{ success: boolean, uuid: string, url: string }`.\n   - *Cơ chế:* `asset-db:create-asset` với template scene mặc định.",
       "limitations": [
         "Map to assetCreate preset=scene; remove asset-query credit.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Preflight and import bounded explicit items with per-item outcome. Prerequisites: `asset-import-contract`, `mutation-workflow`.\nPreflight and import bounded explicit items with per-item outcome.",
-      "limitations": [
-        "Preflight and import bounded explicit items with per-item outcome.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Bounded move/copy/delete/reimport with partial-failure accounting. Prerequisites: `asset-operate-contract`, `mutation-workflow`.\nBounded move/copy/delete/reimport with partial-failure accounting.",
-      "limitations": [
-        "Bounded move/copy/delete/reimport with partial-failure accounting.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

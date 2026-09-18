@@ -697,10 +697,17 @@
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "assetBatchImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetBatchImport/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Preflight and import bounded explicit items with per-item outcome.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -709,10 +716,17 @@
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "assetBatchOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetBatchOperate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Bounded move/copy/delete/reimport with partial-failure accounting.",
         "Historical qualified label alone is not complete-contract evidence.",
