@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T12:14:00+07:00",
+  "target": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "project": "G:/_ws/_helpers/cc-3x-test",
+    "endpoint": "http://localhost:51225",
+    "instanceId": "10f4d1d7f25f15b2e689cb8640be3cee",
+    "buildCommit": "bc5f27f",
+    "dirty": false,
+    "sceneUuid": "ad50bcdb-60b3-4b17-8f28-6ca81a22f057"
+  },
+  "result": { "tests": 12, "passed": 7, "failed": 0, "skipped": 4, "fixtureReadinessFailure": 1 },
+  "passed": [
+    "physics2dCreateBody", "physics3dCreateBody", "physics3dCreateJoint", "physics2dCreateJoint", "runtimeNegativeTransport", "FBX importer optional path", "skeletalAnimationConfigure"
+  ],
+  "skipped": [
+    "assetImporterAudit missing TypeScript fixture", "sceneHierarchyValidate missing Canvas", "particle/terrain/physics topology missing camera fixtures", "buildTaskWait missing terminal task"
+  ],
+  "qualification": false,
+  "limitations": ["Dedicated scene readiness failed only because the scene was dirty after smoke mutations; scene was explicitly saved afterward.","Skipped fixtures are not candidate qualification evidence."]
+}
