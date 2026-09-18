@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "workflow": "assetImportSettingsGet",
+  "endpoint": "http://localhost:56396",
+  "test": "tests/live/asset-import-settings-qualification.test.js",
+  "result": { "passed": 0, "failed": 0, "skipped": 1, "reason": "editor not running: fetch failed" },
+  "process": { "name": "creator-main-recovery-4", "exitCode": 0, "exitedBeforeWitness": true },
+  "decision": "Do not bind live evidence or promote the workflow. The typed implementation remains unit-covered, but current Creator lifecycle did not survive long enough for a live roundtrip.",
+  "qualified": false
+}
