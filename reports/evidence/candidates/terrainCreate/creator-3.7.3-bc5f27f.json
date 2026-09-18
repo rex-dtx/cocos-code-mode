@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "terrainCreate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/terrain-create-qualification.test.js", "result": "Created terrain asset/node, verified Terrain component and inspect read-back, rejected traversal, and cleaned asset/node fixtures." },
+  "negativeWitness": { "test": "candidate.terrainCreate.negative.v1", "result": "Traversal asset path rejected with HTTP 400 before mutation." },
+  "persistence": "Asset/component read-back and cleanup verification",
+  "cleanup": "Terrain node and asset deleted; optional created canvas deleted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
