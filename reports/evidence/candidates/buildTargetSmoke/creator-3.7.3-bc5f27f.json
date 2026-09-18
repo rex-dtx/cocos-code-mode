@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildTargetSmoke",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/build-target-qualification.test.js", "result": "Matched expected target content, reported bytes/status, rejected content mismatch truthfully, and rejected missing server identity." },
+  "negativeWitness": { "test": "candidate.buildTargetSmoke.negative.v1", "result": "Missing server returned TARGET_NOT_FOUND." },
+  "persistence": "Active server content and lifecycle read-back",
+  "cleanup": "Server stopped and disposable artifact directory removed",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

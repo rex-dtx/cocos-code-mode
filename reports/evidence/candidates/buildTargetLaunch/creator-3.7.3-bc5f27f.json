@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildTargetLaunch",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/build-target-qualification.test.js", "result": "Served a disposable project-local web artifact, verified URL lifecycle and exact target identity." },
+  "negativeWitness": { "test": "candidate.buildTargetLaunch.negative.v1", "result": "native-desktop target rejected with UNSUPPORTED_TARGET." },
+  "persistence": "Verified server lifecycle and artifact URL response",
+  "cleanup": "Server stopped and disposable artifact directory removed",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
