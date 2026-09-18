@@ -4207,10 +4207,17 @@
     },
     {
       "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-responsive-preview",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "uiResponsivePreview",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/uiResponsivePreview/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Render and compare one scene across declared resolutions with target-specific evidence.",
         "Historical qualified label alone is not complete-contract evidence.",

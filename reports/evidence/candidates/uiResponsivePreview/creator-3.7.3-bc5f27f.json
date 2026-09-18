@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "uiResponsivePreview",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/responsive-preview-qualification.test.js", "result": "Projected the live Canvas fixture at 1280x720 and 720x1280; returned supported=true, stable=true and two deterministic comparisons." },
+  "negativeWitness": { "test": "candidate.uiResponsivePreview.negative.v1", "result": "Missing root returned TARGET_NOT_FOUND." },
+  "persistence": "Read-only UI geometry projection",
+  "cleanup": "Disposable Canvas/root fixture removed after qualification run",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51009", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
