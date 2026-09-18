@@ -865,10 +865,17 @@
     },
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-preset-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "buildPresetAudit",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildPresetAudit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate target-specific required/unsupported build options before dispatch.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -886,7 +893,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/buildTargetLaunch/creator-3.7.3-3959132-dirty.json"
+        "reports/evidence/candidates/buildTargetLaunch/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Launch the exact produced artifact on a declared target, not preview fallback.",
@@ -905,7 +912,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/buildTargetSmoke/creator-3.7.3-3959132-dirty.json"
+        "reports/evidence/candidates/buildTargetSmoke/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Interact with and observe the launched artifact on its declared target.",

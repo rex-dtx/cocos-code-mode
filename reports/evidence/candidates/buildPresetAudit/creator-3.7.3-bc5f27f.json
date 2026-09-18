@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildPresetAudit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/build-preset-qualification.test.js", "result": "Validated web-mobile landscape profile as complete with no errors and rejected unknown option with typed diagnostic." },
+  "negativeWitness": { "test": "candidate.buildPresetAudit.negative.v1", "result": "Unknown build option reported as UNKNOWN_OPTION without dispatch." },
+  "persistence": "Read-only project profile validation",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

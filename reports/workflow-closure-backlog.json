@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 291,
+  "requiredFor90": 290,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -765,18 +765,6 @@
       "acceptance": "Implemented distinct read-only task diagnostics inspection using one builder task query, typed query/not-found/invalid-response failures, diagnostic normalization, fallback field selection and bounded entry count/bytes; project build and 5 focused unit tests pass, live evidence remains pending. Prerequisites: `build-job`.\nReturn bounded structured diagnostics for one build task.",
       "limitations": [
         "Return bounded structured diagnostics for one build task.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-preset-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Current primary ledger marks the bounded target-profile contract qualified. Earlier live-pending note is superseded; exact profile/options coverage and current-artifact evidence still constrain release acceptance.\nValidate target-specific required/unsupported build options before dispatch.",
-      "limitations": [
-        "Validate target-specific required/unsupported build options before dispatch.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
