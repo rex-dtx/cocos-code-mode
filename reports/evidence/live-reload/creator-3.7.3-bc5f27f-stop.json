@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T12:01:00+07:00",
+  "target": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "endpoint": "http://localhost:55609",
+    "instanceId": "9173fe08d0b4e91357ebad10a93e4605",
+    "buildCommit": "bc5f27f",
+    "dirty": false,
+    "manualTools": 216
+  },
+  "test": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
+  "result": "start, attach, observe, wait, assert and scenario paths passed; stop failed with RUNTIME_NOT_READY before postcondition completion",
+  "qualification": false,
+  "limitations": [
+    "Stop fix is loaded, but actual Game View renderer still disappears or loses consistent runtime state before stop read-back.",
+    "No candidate promotion or coverage increase follows from this partial workflow."
+  ]
+}
