@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "tool": "assetBundleValidate",
+  "buildCommit": "source-uncommitted",
+  "positiveWitness": { "test": "tests/unit/p3-remaining-capabilities.test.js", "result": "Reads bundle userData through asset-db/query-asset-meta and returns valid=true for ccb3x-qualification." },
+  "liveFixture": { "project": "G:/_ws/_helpers/cc-3x-test", "reference": "a7b439d3-0959-439b-ac50-f41d90c9870f", "bundleName": "ccb3x-qualification", "metadataPersisted": true },
+  "limitation": "Runtime load/release remains unimplemented and unqualified; this artifact does not promote assetBundleValidate workflow coverage.",
+  "qualified": false
+}
