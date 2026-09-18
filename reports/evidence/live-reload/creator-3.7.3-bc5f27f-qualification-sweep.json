@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T13:42:00+07:00",
+  "target": { "creator": "3.7.3", "platform": "windows-x64", "project": "G:/_ws/_helpers/cc-3x-test", "endpoint": "http://localhost:51225", "buildCommit": "bc5f27f", "dirty": false },
+  "suites": {
+    "asset-import-settings": { "passed": 1, "failed": 0, "skipped": 0 },
+    "tilemap": { "passed": 1, "failed": 0, "skipped": 0 },
+    "candidate-expansion": { "passed": 7, "failed": 0, "skipped": 4 }
+  },
+  "positive": ["assetImportSettingsSet", "assetCompressionConfigure", "tilemapInspect", "tilemapLayerEdit", "tilemapObjectEdit", "physics2dCreateBody", "physics3dCreateBody", "physics3dCreateJoint", "physics2dCreateJoint", "skeletalAnimationConfigure"],
+  "limitations": ["Four candidate-expansion cases skipped because required fixtures are absent; skipped cases are not promoted."],
+  "qualification": false
+}
