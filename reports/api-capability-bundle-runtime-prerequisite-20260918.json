@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "project": "G:/_ws/_helpers/cc-3x-test",
+  "endpoint": "http://localhost:51009",
+  "buildCommit": "bc5f27f",
+  "uiEvidence": {
+    "window": "__ccb3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3",
+    "screenshot": "captureEditorScreenshot",
+    "toolbarAction": { "x": 902, "y": 24, "result": "success" },
+    "windowsAfterAction": ["Blank", "Worker - Assets", "Programming DevTools", "__ccb3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3", "Packages"]
+  },
+  "runtimeEvidence": {
+    "editorState": { "sceneReady": true, "sceneDirty": true, "busy": false },
+    "runtimePreviewControl": { "status": 422, "code": "UNSUPPORTED_RUNTIME_TRANSPORT", "message": "Creator game-view host shape differs from the 3.7.3 adapter." }
+  },
+  "decision": "No runtime bundle adapter or load/release promotion. The UI action did not expose a verified Game View host; metadata-only bundle correction remains the only committed bundle work.",
+  "qualified": false
+}
