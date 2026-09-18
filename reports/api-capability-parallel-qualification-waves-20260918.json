@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:51009",
+  "buildCommit": "bc5f27f",
+  "waves": {
+    "assetEditor": {
+      "tests": 10, "passed": 5, "failed": 2, "skipped": 3,
+      "proved": ["animation runtime state controls", "audio compatibility audit", "UI accessibility/focus", "asset import and typed missing-source outcome", "project settings validation"],
+      "blocked": ["skeletal fixture absent", "prefab fixture absent", "scene reference fixture absent", "asset refresh batch returned succeeded=0", "prefab instantiate returned TARGET_NOT_FOUND"]
+    },
+    "sceneRender": {
+      "tests": 5, "passed": 5, "failed": 0, "skipped": 0,
+      "proved": ["renderPipelineInspect", "runtimeSessionLifecycle fail-closed paths", "uiResponsivePreview", "uiFormValidationBind"]
+    },
+    "importBuild": {
+      "tests": 3, "passed": 2, "failed": 1, "skipped": 0,
+      "proved": ["tilemap import/inspect/validate/round-trip", "buildPresetAudit"],
+      "blocked": ["buildLogInspect: buildManage tasks_info returned no terminal task and no tasks array"]
+    }
+  },
+  "promotion": {
+    "newWorkflowRowsPromoted": 0,
+    "reason": "Proved tools either already have complete ledger rows or lack candidate-specific denominator/evidence bindings; no coverage credit inferred from adjacent contracts."
+  }
+}
