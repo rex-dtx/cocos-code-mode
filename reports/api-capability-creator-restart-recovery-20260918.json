@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+  "restart": { "stoppedPid": 42880, "endpointBefore": 55609, "endpointAfter": 49600, "processRestarted": true },
+  "afterRestart": { "editorState": { "sceneReady": false, "sceneBusy": true, "sceneCurrent": null }, "runtimeState": { "status": 200, "state": "stop", "enabled": false, "ready": false }, "start": "MCP timeout after 30s" },
+  "logs": { "lifecycle": "listen EADDRINUSE 127.0.0.1:55078, UTCP listening on 49600", "projectLog": "EPERM opening temp/logs/project.log" },
+  "decision": "Exact process restart did not recover scene or Game View readiness. No runtime bundle/physics work or promotion is safe; continue only after Creator scene load and preview transport recover.",
+  "qualified": false
+}
