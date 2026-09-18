@@ -1,16 +1,19 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "date": "2026-09-18",
   "status": "wip-blocked",
-  "denominator": { "workflows": 356, "hash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286", "complete": 52, "implementationPercent": 14.61, "targetComplete": 321, "deficitTo90": 269 },
+  "denominator": { "workflows": 356, "hash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286", "complete": 54, "implementationPercent": 15.17, "targetComplete": 321, "deficitTo90": 267 },
   "verification": { "portfolioAudit": "pass", "frozenCoverageAudit": "pass", "workflowCoverageTests": "5/5", "closureLiveFirstRun": "36/50 pass (72%), threshold 95%" },
   "registered": { "tools": 216, "baseline": 86, "approvedOrImplemented": 75, "requiredApproval": 82, "probeRequired": 16 },
-  "remainingWorkflows": 304,
+  "remainingWorkflows": 302,
+  "retryPolicy": { "transientErrors": "retry boundedly with increasing delay; never convert persistent prerequisite absence into success", "lastPrerequisitePoll": { "spineAssets": 0, "bundleAssets": 0, "terminalBuildTasks": 0 } },
   "blockers": [
-    "269 complete workflow rows remain required for the approved 90% implementation gate.",
+    "267 complete workflow rows remain required for the approved 90% implementation gate.",
     "Actual Game View stop postcondition remains nondeterministic on Creator 3.7.3; runtime/audio/physics query routes cannot receive complete credit without stable runtime witnesses.",
-    "Prefab/UI/asset fixture coverage remains partial; absent fixtures are skipped and never promoted.",
-    "Closure-live remains 72%, below the approved 95% threshold; deep release/parity/install gates remain Fixbug work."
+    "Prefab/UI/asset fixture coverage remains partial; absent fixtures are skipped or fail typed and never promoted.",
+    "Closure-live remains 72%, below the approved 95% threshold; deep release/parity/install gates remain Fixbug work.",
+    "No skeletal importer, bundle asset, or terminal build task is available on the current endpoint."
   ],
-  "decision": "No safe executable slice remains from current repository and endpoint evidence. Keep parent WIP and continue only when fresh bounded evidence or an approved implementation contract arrives."
+  "nextExecutablePrerequisite": "Provide a valid skeletal/prefab/bundle/build fixture or a Creator instance with verified Game View transport; then rerun the bounded qualification waves and promote only complete-contract evidence.",
+  "decision": "Retry transient failures, but retain WIP status for persistent missing prerequisites. Do not call goal complete."
 }
