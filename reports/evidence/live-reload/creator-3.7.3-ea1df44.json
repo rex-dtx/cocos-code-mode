@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "recordedAt": "2026-09-18T10:59:00+07:00",
+  "schemaVersion": 2,
+  "recordedAt": "2026-09-18T11:12:00+07:00",
   "target": {
     "creator": "3.7.3",
     "platform": "windows-x64",
@@ -13,15 +13,16 @@
     "manualTools": 216
   },
   "checks": [
-    { "name": "editorHandshake", "status": 200, "projectMatches": true, "probeStatus": "responsive", "sceneReady": false },
+    { "name": "editorHandshake", "status": 200, "projectMatches": true, "probeStatus": "responsive", "sceneReady": true },
     { "name": "projectSettingsValidate", "status": 200, "valid": true, "target": "web-desktop" },
-    { "name": "sceneGetInfo", "status": 200, "sceneUuid": "0fc86c97-a493-42ef-89f5-a3a53327b299", "dirty": false },
-    { "name": "runtimeStateObserve-missing-session", "status": 404, "result": "Cannot GET /tools/runtimeStateObserve" }
+    { "name": "sceneGetInfo", "status": 200, "sceneUuid": "f46876e4-e81b-4931-b493-6d367be385e7", "dirty": false },
+    { "name": "runtimeStateObserve", "method": "POST", "status": "route-advertised" },
+    { "name": "runtimeSessionLifecycle-start-game-view", "method": "POST", "status": 409, "code": "RUNTIME_STATE_TIMEOUT", "timeoutSeconds": 30 }
   ],
   "qualification": false,
   "limitations": [
-    "Handshake reported sceneReady=false during the smoke.",
-    "runtimeStateObserve is not exposed through this endpoint despite appearing in the manual cache/tool list.",
-    "The broader live qualification suite stalled on runtime preview start and was cancelled; no candidate promotion follows."
+    "The active scene is cc30-new-all-in-one and does not match the cc-3x-test qualification manifest UUID.",
+    "Game View runtime start timed out; no runtime candidate qualification is claimed.",
+    "The earlier GET 404 for runtimeStateObserve was a method mismatch, not route absence."
   ]
 }
