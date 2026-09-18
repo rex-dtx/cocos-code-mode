@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:56396",
+  "buildCommit": "bc5f27f",
+  "coverage": { "workflows": 356, "complete": 54, "implementationPercent": 15.17, "targetComplete": 321, "deficit": 267 },
+  "portfolio": { "registered": 216, "approved": 75, "requiredApproval": 82, "readyForBulkImplementation": false },
+  "runtime": { "handshake": "pass", "sceneReady": "pass at direct probe", "sessionIdentity": "pass at runtime-1", "physicsTopology": "topology-only", "bundle": "metadata-only" },
+  "focusedVerification": { "transportUnit": "15/15 pass", "runtimeSessionLive": "failed RUNTIME_STATE_TIMEOUT at 409/200 assertion" },
+  "decision": "Recovered endpoint is usable for bounded read/metadata probes, but runtime lifecycle remains nondeterministic and accepted bundle/physics contracts remain unproven. Keep parent WIP; no coverage promotion.",
+  "nextPrerequisite": "Stable Creator Game View lifecycle across repeated start/stop plus complete runtime bundle/physics witnesses."
+}
