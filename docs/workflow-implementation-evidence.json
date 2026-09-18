@@ -1391,10 +1391,17 @@
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/prefabInstantiate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Instantiate and prove persistent prefab identity and overrides.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -1403,10 +1410,17 @@
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "prefabOverrideDiff",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/prefabOverrideDiff/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Structural live-instance versus prefab-source override diff with stable identities.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -1415,10 +1429,17 @@
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "prefabReferenceAudit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/prefabReferenceAudit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Detect broken or ambiguous nested prefab and override references after reload.",
         "Historical qualified label alone is not complete-contract evidence.",

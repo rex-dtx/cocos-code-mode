@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "prefabOverrideDiff",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Compared bounded prefab source/baseline references and returned unequal structural changes." },
+  "negativeWitness": { "test": "candidate.prefabOverrideDiff.negative.v1", "result": "Missing reference paths fail with typed target errors." },
+  "persistence": "Read-only prefab structural comparison",
+  "cleanup": "No mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "prefabReferenceAudit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Audited active prefab reference with valid=true and no missing references; missing reference typed negative passed." },
+  "negativeWitness": { "test": "candidate.prefabReferenceAudit.negative.v1", "result": "Missing prefab returned TARGET_NOT_FOUND." },
+  "persistence": "Read-only prefab source/reference audit",
+  "cleanup": "No mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}
