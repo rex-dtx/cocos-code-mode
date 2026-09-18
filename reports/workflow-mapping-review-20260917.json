@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-17",
+  "status": "provisional-review-complete; denominator-not-yet-accepted",
+  "sourceInventory": { "competitor": 262, "lane": 86, "parent": 8, "total": 356 },
+  "provisionalMappings": { "total": 99, "reviewedSupplementary": 163, "exactNameProvisional": 75, "heuristicProvisional": 10, "competitorOnly": 14 },
+  "decisions": {
+    "accept": "Only bounded equivalent observable outcomes with matching target/context/effects/read-back; retain source IDs and mapping rationale.",
+    "split": "Separate create/read, configure/query, editor/runtime, lifecycle/abort, and specialized hierarchy outcomes when current route is narrower.",
+    "exclude": "Keep traceable but exclude arbitrary IPC, protocol utilities, destructive log erasure, network administration, whole-desktop capture and unsupported product operations.",
+    "pending": "Retain as partial/missing when route, fixture or Creator transport is not proven; no qualification credit from names or mapping alone."
+  },
+  "batchEvidence": [
+    "ReviewMappingBatchA: all Funplay mappings plus cocos-mcp scene_snapshot_abort reviewed; split hazards recorded.",
+    "ReviewMappingBatchB: cocos-mcp asset/prefab/editor/diagnostic/build/product mappings reviewed; false equivalences and exclusions recorded.",
+    "ResolveLaneMismatch: restore P3 audioSourceAudit and P4 physics3dQuery; retain declared 16/16 counts."
+  ],
+  "highRiskSplits": ["add_animation_clip vs animationClipConfigure", "editor/runtime screenshot contexts", "preview mode vs preview lifecycle", "create_button/create_sprite vs generic UI node", "asset list/inspect/create/operate", "scene snapshot vs snapshot abort", "physics3dQuery vs edit-renderer route", "audioSourceAudit vs audioSourceConfigure"],
+  "acceptanceBlockers": ["manual review of 75 exact-name and 10 heuristic mappings", "14 competitor-only route/disposition decisions", "P3/P4 restored source rows now require regenerated accepted inputs", "implementation states require route-level review before denominator freeze"],
+  "next": "Use regenerated 183-workflow draft only as review input; do not mark denominator v1 accepted until all provisional mapping rows have explicit decisions and the workflow inventory hash is frozen."
+}
