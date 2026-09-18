@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T12:08:00+07:00",
+  "target": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "project": "G:/_ws/_helpers/cc-3x-test",
+    "endpoint": "http://localhost:51225",
+    "instanceId": "10f4d1d7f25f15b2e689cb8640be3cee",
+    "buildCommit": "bc5f27f",
+    "dirty": false,
+    "manualTools": 216,
+    "sceneUuid": "ad50bcdb-60b3-4b17-8f28-6ca81a22f057"
+  },
+  "result": { "tests": 12, "passed": 7, "failed": 4, "skipped": 1 },
+  "positiveWitnesses": [
+    "qualification scene readiness",
+    "physics2dCreateBody",
+    "physics3dCreateBody",
+    "physics3dCreateJoint",
+    "physics2dCreateJoint",
+    "skeletalAnimationConfigure",
+    "asset importer round-trip"
+  ],
+  "limitations": [
+    "Four candidate-expansion subtests failed due missing asset/topology fixture data, runtime host shape mismatch, and build-output fixture assumptions.",
+    "No portfolio promotion from partial suite; candidate-specific witness artifacts remain required."
+  ],
+  "qualification": false
+}
