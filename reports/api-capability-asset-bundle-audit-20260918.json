@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:51009",
+  "buildCommit": "bc5f27f",
+  "fixture": { "reference": "b5b27ab1-e740-4398-b407-848fc2b2c897", "type": "cc.ImageAsset", "bundleQuery": { "total": 0 } },
+  "observations": [
+    { "expectedBundle": "default", "valid": false, "issue": "BUNDLE_MISMATCH" },
+    { "expectedBundle": "__missing_bundle__", "valid": false, "issue": "BUNDLE_MISMATCH" }
+  ],
+  "decision": "Do not promote assetBundleValidate: no imported bundle fixture exists and the endpoint explicitly reports metadata-only validation without runtime load/release proof.",
+  "coverageUnchanged": true
+}
