@@ -9,7 +9,7 @@ describe('live: referenceImageManage candidate witness', () => {
 
   it('sets, inspects, and clears a project reference image with read-back', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const imagePath = 'db://assets/cc-release-slot/cc30-fortune-goat-9664/data/9664_MainUI/9664_ui_loading_bg.png';
+    const imagePath = process.env.CCB_REFERENCE_IMAGE_FIXTURE || 'db://internal/Default-Particle.png';
     try {
       const set = await postTool('referenceImageManage', { operation: 'set', imagePath });
       assert.equal(set.status, 200, JSON.stringify(set.body));

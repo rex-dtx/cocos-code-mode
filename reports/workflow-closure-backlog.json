@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 268,
+  "requiredFor90": 267,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -1056,18 +1056,6 @@
       "acceptance": "Full restore delegates to Creator; selective paths are explicitly rejected with `UNSUPPORTED_SELECTIVE_REVERT` on Creator 3.7.3.\nRevert selected overrides and verify restored values.",
       "limitations": [
         "Revert selected overrides and verify restored values.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.\nFinite persistent reference-image lifecycle with transform read-back.",
-      "limitations": [
-        "Finite persistent reference-image lifecycle with transform read-back.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

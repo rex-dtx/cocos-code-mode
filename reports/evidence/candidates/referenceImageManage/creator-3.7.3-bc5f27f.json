@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "referenceImageManage",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/reference-image-qualification.test.js", "result": "Set and inspected db://internal/Default-Particle.png with persisted=true, then cleared the project profile." },
+  "negativeWitness": { "test": "candidate.referenceImageManage.negative.v1", "result": "Missing image path returned TARGET_NOT_FOUND." },
+  "persistence": "Project-profile read-back",
+  "cleanup": "Reference image cleared after qualification",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51009", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
