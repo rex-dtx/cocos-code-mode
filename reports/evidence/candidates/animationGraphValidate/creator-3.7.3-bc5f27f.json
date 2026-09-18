@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "animationGraphValidate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/validation-graph-qualification.test.js#GRAPH-V02", "result": "Validated a bounded graph containing idle/run nodes and one valid transition." },
+  "negativeWitness": { "test": "candidate.animationGraphValidate.negative.v1", "result": "Missing or semantically invalid graph inputs produce typed validation outcomes." },
+  "persistence": "Read-only graph semantic validation",
+  "cleanup": "Disposable graph asset deleted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

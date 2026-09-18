@@ -35,10 +35,17 @@
     },
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-inspect",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "animationGraphInspect",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/animationGraphInspect/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed layers, states, transitions, variables and masks from native serialized data.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -58,10 +65,17 @@
     },
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "animationGraphValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/animationGraphValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate unreachable states, missing clips, invalid variables and transition conditions.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -2736,10 +2750,17 @@
     },
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-shader-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "shaderValidate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/shaderValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Return real effect importer/compiler diagnostics tied to source locations.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -3937,7 +3958,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/terrainCreate/creator-3.7.3-3959132-dirty.json"
+        "reports/evidence/candidates/terrainCreate/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Create and attach a valid terrain asset/component with reopen proof.",
