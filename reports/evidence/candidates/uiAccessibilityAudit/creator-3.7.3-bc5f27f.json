@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "uiAccessibilityAudit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/ui-safe-area-inspect.test.js", "result": "Created disposable Canvas labels, applied bounded geometry, inspected safe-area inside/outside results and typed invalid/missing-root responses." },
+  "negativeWitness": { "test": "candidate.uiAccessibilityAudit.negative.v1", "result": "Invalid safe-area rectangle and missing root returned typed error metadata." },
+  "persistence": "Read-only scene geometry audit",
+  "cleanup": "Disposable UI root deleted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

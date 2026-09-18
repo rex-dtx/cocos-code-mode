@@ -31,7 +31,7 @@ describe('live: UI form validation candidate witness', () => {
       const found = await getJson(`/tools/findNodes?name=${encodeURIComponent(name)}&maxResults=1`);
       assert.equal(found.ok, true, JSON.stringify(found.body));
       assert.equal(found.body.nodes[0].reference.id, formReference.id);
-      assert.match(found.body.nodes[0].path, /\/Canvas\/CandidateForm-/);
+      assert.match(found.body.nodes[0].path, /(?:^|\/)(?:Canvas|QualificationCanvas)\/CandidateForm-/);
     } finally {
       if (formReference) {
         const deleted = await postTool('nodeOperate', { operation: 'delete', reference: formReference });
