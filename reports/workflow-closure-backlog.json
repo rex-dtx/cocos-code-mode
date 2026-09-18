@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 296,
+  "requiredFor90": 294,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -683,30 +683,6 @@
       "acceptance": "Bounded move/copy/delete/reimport with partial-failure accounting. Prerequisites: `asset-operate-contract`, `mutation-workflow`.\nBounded move/copy/delete/reimport with partial-failure accounting.",
       "limitations": [
         "Bounded move/copy/delete/reimport with partial-failure accounting.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Implemented platform-aware settings mutation, but no successful generated build artifact was available; release qualification remains open.\nPlatform-aware compression validation plus generated-output evidence.",
-      "limitations": [
-        "Platform-aware compression validation plus generated-output evidence.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Implemented typed importer mutation, reimport and read-back; consumed by the live atlas fixture. Candidate approval remains open.\nTyped importer mutation with preflight, reimport and output read-back.",
-      "limitations": [
-        "Typed importer mutation with preflight, reimport and output read-back.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],

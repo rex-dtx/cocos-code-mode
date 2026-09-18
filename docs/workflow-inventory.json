@@ -2073,10 +2073,17 @@
       "portfolioNames": [
         "assetCompressionConfigure"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "assetCompressionConfigure",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetCompressionConfigure/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Platform-aware compression validation plus generated-output evidence.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -2107,10 +2114,17 @@
       "portfolioNames": [
         "assetImportSettingsSet"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "assetImportSettingsSet",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetImportSettingsSet/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed importer mutation with preflight, reimport and output read-back.",
         "Historical qualified label alone is not complete-contract evidence.",
