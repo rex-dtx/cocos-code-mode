@@ -5,11 +5,11 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 5,
-  "implementationPercent": 1.4,
+  "confirmedComplete": 24,
+  "implementationPercent": 6.74,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 316,
+  "deficitTo90": 297,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
@@ -38,15 +38,15 @@
     },
     "audio": {
       "total": 5,
-      "complete": 0,
+      "complete": 1,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 20
     },
     "build-platform": {
       "total": 7,
-      "complete": 3,
+      "complete": 4,
       "unreviewed": 0,
-      "implementationPercent": 42.86
+      "implementationPercent": 57.14
     },
     "build": {
       "total": 10,
@@ -56,9 +56,9 @@
     },
     "design-prefab": {
       "total": 33,
-      "complete": 0,
+      "complete": 1,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 3.03
     },
     "diagnostics": {
       "total": 13,
@@ -86,21 +86,21 @@
     },
     "particles": {
       "total": 4,
-      "complete": 1,
+      "complete": 3,
       "unreviewed": 0,
-      "implementationPercent": 25
+      "implementationPercent": 75
     },
     "physics-2d": {
       "total": 6,
-      "complete": 0,
+      "complete": 4,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 66.67
     },
     "physics-3d": {
       "total": 6,
-      "complete": 0,
+      "complete": 4,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 66.67
     },
     "prefab": {
       "total": 7,
@@ -116,15 +116,15 @@
     },
     "rendering-materials": {
       "total": 6,
-      "complete": 0,
+      "complete": 1,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 16.67
     },
     "runtime-qa": {
       "total": 3,
-      "complete": 0,
+      "complete": 3,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 100
     },
     "runtime": {
       "total": 26,
@@ -146,9 +146,9 @@
     },
     "terrain-model": {
       "total": 4,
-      "complete": 0,
+      "complete": 2,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 50
     },
     "tilemap-atlas": {
       "total": 5,
