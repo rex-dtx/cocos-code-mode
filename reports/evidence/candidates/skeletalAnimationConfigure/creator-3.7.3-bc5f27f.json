@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "skeletalAnimationConfigure",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/candidate-expansion-qualification.test.js#SkeletalAnimation serialized fields", "result": "Configured supported serialized SkeletalAnimation fields and verified read-back on the qualification fixture." },
+  "negativeWitness": { "test": "candidate.skeletalAnimationConfigure.negative.v1", "result": "Unsupported component/property paths fail closed without mutation." },
+  "persistence": "Serialized component read-back with scene snapshot",
+  "cleanup": "Original component values restored and scene snapshotted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "sceneUuid": "ad50bcdb-60b3-4b17-8f28-6ca81a22f057", "artifactDirty": false },
+  "qualified": true
+}
