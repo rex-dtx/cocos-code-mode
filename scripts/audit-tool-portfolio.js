@@ -144,6 +144,8 @@ const IMPLEMENTED_EXPANSION_NAMES = new Set([
   'runtimeScreenshotAssert',
   'runtimeInputDispatch',
   'particlePlayback',
+  'audioPlaybackControl',
+  'audioPlaybackObserve',
 ]);
 const REPLACEMENT_NAMES = new Set([
   'prefabVariantCreate',
