@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "tilemapInspect",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/tilemap-qualification.test.js", "result": "Imported disposable TMX, inspected one layer and object group with typed names." },
+  "negativeWitness": { "test": "candidate.tilemapInspect.negative.v1", "result": "Missing/non-tilemap reference rejected with TARGET_NOT_FOUND or TYPE_MISMATCH." },
+  "persistence": "Imported asset identity and typed read-back",
+  "cleanup": "Imported TMX asset deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

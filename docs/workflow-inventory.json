@@ -11113,10 +11113,17 @@
       "portfolioNames": [
         "tilemapInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "tilemapInspect",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/tilemapInspect/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed TMX map, layer, object and tileset inspection after Creator import.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -11147,10 +11154,17 @@
       "portfolioNames": [
         "tilemapLayerEdit"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "tilemapLayerEdit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/tilemapLayerEdit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Persistent layer mutation without corrupting source TMX.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -11181,10 +11195,17 @@
       "portfolioNames": [
         "tilemapObjectEdit"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "tilemapObjectEdit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/tilemapObjectEdit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Persistent typed object-layer mutation with TMX round-trip.",
         "Historical qualified label alone is not complete-contract evidence.",

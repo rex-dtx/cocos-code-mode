@@ -5,11 +5,11 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 27,
-  "implementationPercent": 7.58,
+  "confirmedComplete": 30,
+  "implementationPercent": 8.43,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 294,
+  "deficitTo90": 291,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
@@ -152,9 +152,9 @@
     },
     "tilemap-atlas": {
       "total": 5,
-      "complete": 0,
+      "complete": 3,
       "unreviewed": 0,
-      "implementationPercent": 0
+      "implementationPercent": 60
     },
     "ui-layout": {
       "total": 3,

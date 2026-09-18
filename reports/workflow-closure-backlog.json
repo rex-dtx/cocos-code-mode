@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 294,
+  "requiredFor90": 291,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -3443,42 +3443,6 @@
       "acceptance": "Live typed importer mutation, reimport and generated library-output hash passed; the fixture exposed no sprite frames, so frame qualification remains open.\nConfigure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
       "limitations": [
         "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-inspect",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live-scoped typed TMX map, tileset, layer and object-group inspection passed on an imported fixture.\nTyped TMX map, layer, object and tileset inspection after Creator import.",
-      "limitations": [
-        "Typed TMX map, layer, object and tileset inspection after Creator import.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-layer-edit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live source mutation, reimport, SHA change and typed read-back passed.\nPersistent layer mutation without corrupting source TMX.",
-      "limitations": [
-        "Persistent layer mutation without corrupting source TMX.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-object-edit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live typed object mutation, TMX round-trip, SHA change and read-back passed.\nPersistent typed object-layer mutation with TMX round-trip.",
-      "limitations": [
-        "Persistent typed object-layer mutation with TMX round-trip.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
