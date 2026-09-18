@@ -1459,10 +1459,17 @@
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Finite persistent reference-image lifecycle with transform read-back.",
         "Historical qualified label alone is not complete-contract evidence.",
