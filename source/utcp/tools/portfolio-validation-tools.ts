@@ -111,9 +111,24 @@ async function queryNode(id: string): Promise<any> {
 export class PortfolioValidationTools {
     @utcpTool('assetBundleValidate', 'Validate bounded bundle metadata for one imported asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, expectedBundle: { type: 'string', minLength: 1, maxLength: 128 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, reference: { type: 'object' }, bundle: {}, issues: { type: 'array' }, runtimeCaveat: { type: 'string' } }, required: ['valid', 'reference', 'bundle', 'issues', 'runtimeCaveat'] }, 'GET', ['asset', 'bundle', 'validate'])
     async assetBundleValidate(args: { reference: IInstanceReference, expectedBundle?: string }) {
-        const asset = await info(args.reference); const meta = asset.meta as any; const data = meta?.userData as any;
-        const bundle = typeof data?.bundleName === 'string' ? data.bundleName : typeof data?.bundle === 'string' ? data.bundle : null;
-        const issues = args.expectedBundle !== undefined && bundle !== args.expectedBundle ? [{ code: 'BUNDLE_MISMATCH', expected: args.expectedBundle, actual: bundle }] : [];
+        const asset = await info(args.reference);
+        let meta: unknown;
+        try {
+            meta = await Editor.Message.request('asset-db', 'query-asset-meta', args.reference.id);
+        } catch (error) {
+            throw new ToolError({ code: 'ASSET_QUERY_FAILED', status: 502, message: `Could not query metadata for asset ${args.reference.id}.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        const userData = meta && typeof meta === 'object' && 'userData' in meta && meta.userData && typeof meta.userData === 'object' ? meta.userData : null;
+        const isBundle = userData !== null && 'isBundle' in userData && userData.isBundle === true;
+        const bundleName = userData !== null && 'bundleName' in userData && typeof userData.bundleName === 'string' && userData.bundleName ? userData.bundleName : null;
+        const priority = userData !== null && 'priority' in userData && Number.isInteger(userData.priority) ? userData.priority : null;
+        const compressionType = userData !== null && 'compressionType' in userData ? userData.compressionType : null;
+        const remote = userData !== null && 'isRemoteBundle' in userData ? userData.isRemoteBundle : null;
+        const bundle = isBundle ? { name: bundleName, priority, compressionType, remote } : null;
+        const issues: Array<{ code: string, expected?: string, actual?: string | null }> = [];
+        if (!isBundle) issues.push({ code: 'NOT_BUNDLE' });
+        if (isBundle && !bundleName) issues.push({ code: 'BUNDLE_NAME_MISSING' });
+        if (args.expectedBundle !== undefined && bundleName !== args.expectedBundle) issues.push({ code: 'BUNDLE_MISMATCH', expected: args.expectedBundle, actual: bundleName });
         return { valid: issues.length === 0, reference: { id: String(asset.uuid ?? args.reference.id), type: String(asset.type ?? 'cc.Asset') }, bundle, issues, runtimeCaveat: 'Metadata validation only; runtime loading is not claimed.' };
     }
     @utcpTool('physics2dQuery', 'Query bounded 2D physics topology.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { valid: { type: 'boolean' }, nodes: { type: 'array' }, issues: { type: 'array' }, checkedNodes: { type: 'integer' } }, required: ['valid', 'nodes', 'issues', 'checkedNodes'] }, 'GET', ['physics', '2d', 'query'])
