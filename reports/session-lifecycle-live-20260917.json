@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-17",
+  "creator": {
+    "version": "3.7.3",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "namespace": "ccb3x_55609",
+    "port": 55609,
+    "build": {
+      "version": "2.0.0",
+      "commit": "0dbdd3b",
+      "branch": "feat/ccb3x-api-capability-expansion",
+      "dirty": true,
+      "builtAt": "2026-09-17T09:40:28.835Z"
+    },
+    "initialInstanceId": "6332d83893fd9c5212c503f4aa98f59e",
+    "replacementInstanceId": "56ccf50bbc77a1864ce5af47ace5dc03"
+  },
+  "concurrentSessions": {
+    "presenceIds": [
+      "2681d12f-5112-4bd9-9df1-85cf593bf83c",
+      "5978cd8c-88b3-4604-9ac3-27162febd4e5"
+    ],
+    "bothActiveInExtensionStatus": true,
+    "isolatedClosePreservedPeer": true,
+    "shutdownRemovedAll": true
+  },
+  "serverRestart": {
+    "presenceId": "20545fe6-93f9-463e-8190-338226a8c70a",
+    "samePort": true,
+    "instanceChanged": true,
+    "observedTransitions": [
+      "Active",
+      "Degraded:ECONNREFUSED",
+      "Rebinding",
+      "Degraded:BINDING_UNAVAILABLE",
+      "Binding:REPLACEMENT_BINDING_VERIFIED",
+      "Active",
+      "Stopped:HOST_SHUTDOWN"
+    ],
+    "activeOnReplacementInstance": true,
+    "shutdownRemovedSession": true
+  },
+  "invariants": {
+    "sceneMutations": 0,
+    "registryOwnerMatched": true,
+    "projectMetadataMatched": true,
+    "ipv4LoopbackOnly": true
+  },
+  "limitations": [
+    "Only one actual Creator instance was available; two-Creator isolation remains open.",
+    "Build was exact reachable candidate but dirty, not an immutable packaged artifact.",
+    "Status data was read through the real extension-status editor message; visual panel rendering was not manually observed.",
+    "Stale/Expired timing was not waited out in this live pass; thresholds remain unit/browser-harness proven."
+  ]
+}

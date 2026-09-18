@@ -1,249 +1,172 @@
 {
-  "schemaVersion": 1,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
-  "generatedAt": "2026-09-17T10:27:44.058Z",
-  "status": "draft-not-accepted",
-  "denominator": 181,
-  "complete": 137,
-  "implementationPercent": 75.69,
+  "schemaVersion": 2,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
+  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
+  "status": "not-measurable",
+  "candidateDenominator": 356,
+  "denominator": null,
+  "confirmedComplete": 0,
+  "implementationPercent": null,
   "targetPercent": 90,
-  "targetComplete": 163,
-  "deficitTo90": 26,
-  "marginComplete": 167,
-  "deficitToMargin": 30,
-  "mappingReview": {
-    "reviewedSupplementary": 163,
-    "exactNameProvisional": 75,
-    "heuristicProvisional": 10,
-    "competitorOnly": 14
-  },
+  "targetComplete": null,
+  "deficitTo90": null,
+  "unresolvedContracts": 94,
   "byDomain": {
     "animation-graph": {
-      "total": 4,
-      "complete": 1,
-      "partial": 0,
-      "missing": 2,
-      "testPending": 1,
-      "unsupported": 0,
-      "percent": 25
+      "total": 6,
+      "complete": 0,
+      "unreviewed": 6,
+      "implementationPercent": null
     },
     "animation": {
-      "total": 4,
-      "complete": 4,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 7,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "asset": {
-      "total": 28,
-      "complete": 23,
-      "partial": 0,
-      "missing": 5,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 82.14
+      "total": 46,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "assets-import": {
-      "total": 6,
-      "complete": 6,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 11,
+      "complete": 0,
+      "unreviewed": 6,
+      "implementationPercent": null
     },
     "audio": {
-      "total": 4,
-      "complete": 2,
-      "partial": 1,
-      "missing": 1,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 50
+      "total": 5,
+      "complete": 0,
+      "unreviewed": 5,
+      "implementationPercent": null
     },
     "build-platform": {
       "total": 7,
-      "complete": 7,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "complete": 0,
+      "unreviewed": 7,
+      "implementationPercent": null
     },
     "build": {
-      "total": 5,
-      "complete": 3,
-      "partial": 0,
-      "missing": 2,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 60
+      "total": 10,
+      "complete": 0,
+      "unreviewed": 1,
+      "implementationPercent": null
     },
     "design-prefab": {
-      "total": 8,
-      "complete": 6,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 2,
-      "unsupported": 0,
-      "percent": 75
+      "total": 33,
+      "complete": 0,
+      "unreviewed": 8,
+      "implementationPercent": null
     },
     "diagnostics": {
-      "total": 9,
-      "complete": 8,
-      "partial": 0,
-      "missing": 1,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 88.89
+      "total": 13,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "editor": {
-      "total": 10,
-      "complete": 10,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 37,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "localization": {
-      "total": 3,
+      "total": 4,
       "complete": 0,
-      "partial": 0,
-      "missing": 2,
-      "testPending": 1,
-      "unsupported": 0,
-      "percent": 0
+      "unreviewed": 4,
+      "implementationPercent": null
     },
     "other": {
-      "total": 6,
-      "complete": 6,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 10,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "particles": {
-      "total": 2,
-      "complete": 1,
-      "partial": 0,
-      "missing": 1,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 50
+      "total": 4,
+      "complete": 0,
+      "unreviewed": 4,
+      "implementationPercent": null
     },
     "physics-2d": {
-      "total": 5,
-      "complete": 5,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 6,
+      "complete": 0,
+      "unreviewed": 6,
+      "implementationPercent": null
     },
     "physics-3d": {
-      "total": 4,
-      "complete": 4,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 6,
+      "complete": 0,
+      "unreviewed": 6,
+      "implementationPercent": null
     },
     "prefab": {
-      "total": 5,
-      "complete": 4,
-      "partial": 0,
-      "missing": 1,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 80
+      "total": 7,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
+    },
+    "product": {
+      "total": 20,
+      "complete": 0,
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "rendering-materials": {
       "total": 6,
-      "complete": 3,
-      "partial": 0,
-      "missing": 3,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 50
+      "complete": 0,
+      "unreviewed": 6,
+      "implementationPercent": null
     },
     "runtime-qa": {
       "total": 3,
-      "complete": 3,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "complete": 0,
+      "unreviewed": 3,
+      "implementationPercent": null
     },
     "runtime": {
-      "total": 27,
-      "complete": 13,
-      "partial": 1,
-      "missing": 13,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 48.15
+      "total": 26,
+      "complete": 0,
+      "unreviewed": 5,
+      "implementationPercent": null
     },
     "scene": {
-      "total": 22,
-      "complete": 19,
-      "partial": 0,
-      "missing": 3,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 86.36
+      "total": 72,
+      "complete": 0,
+      "unreviewed": 10,
+      "implementationPercent": null
     },
     "skeletal-animation": {
-      "total": 3,
-      "complete": 1,
-      "partial": 0,
-      "missing": 2,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 33.33
+      "total": 5,
+      "complete": 0,
+      "unreviewed": 5,
+      "implementationPercent": null
     },
     "terrain-model": {
-      "total": 3,
-      "complete": 2,
-      "partial": 0,
-      "missing": 1,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 66.67
+      "total": 4,
+      "complete": 0,
+      "unreviewed": 4,
+      "implementationPercent": null
     },
     "tilemap-atlas": {
-      "total": 4,
-      "complete": 4,
-      "partial": 0,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 100
+      "total": 5,
+      "complete": 0,
+      "unreviewed": 5,
+      "implementationPercent": null
     },
     "ui-layout": {
       "total": 3,
-      "complete": 2,
-      "partial": 1,
-      "missing": 0,
-      "testPending": 0,
-      "unsupported": 0,
-      "percent": 66.67
+      "complete": 0,
+      "unreviewed": 3,
+      "implementationPercent": null
     }
   },
-  "stateCounts": {
-    "complete": 137,
-    "missing": 37,
-    "test-pending": 4,
-    "partial": 3
-  },
-  "caveats": [
-    "Automated semantic mapping is conservative and requires human contract review before denominator acceptance.",
-    "Historical qualification labels do not override broader original workflow requirements.",
-    "Verification >=95% remains a separate parent gate."
-  ]
+  "invalidatedClaims": [
+    "137/181",
+    "144/189",
+    "27 workflows to closure"
+  ],
+  "reason": "Prior generator merged different operations and inferred implementation from registration/qualification labels; these are not accepted coverage evidence."
 }
