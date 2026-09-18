@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "audioSourceConfigure",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/audio-source-configure.test.js", "result": "Created disposable AudioSource, configured volume/loop/playOnAwake, verified read-back and left playback untouched." },
+  "negativeWitness": { "test": "candidate.audioSourceConfigure.negative.v1", "result": "Unsupported AudioSource property paths fail closed before mutation." },
+  "persistence": "Serialized AudioSource read-back",
+  "cleanup": "Disposable AudioSource node removed",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
