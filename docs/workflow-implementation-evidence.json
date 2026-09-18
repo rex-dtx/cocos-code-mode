@@ -773,10 +773,17 @@
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/assetMissingReferenceAudit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Cross-scene and asset missing-reference evidence with recovery locations.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -971,10 +978,17 @@
     },
     {
       "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-task-wait",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "buildTaskWait",
+          "file": "source/utcp/tools/build-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildTaskWait/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Wait boundedly for one build task terminal result with cancellation semantics.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -4116,10 +4130,17 @@
     },
     {
       "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "tilemapValidate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/tilemapValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate tileset links, gids, layer dimensions and imported references.",
         "Historical qualified label alone is not complete-contract evidence.",

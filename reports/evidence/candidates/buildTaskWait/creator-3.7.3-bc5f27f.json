@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "buildTaskWait",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/candidate-expansion-qualification.test.js", "result": "Observed terminal successful build task and bounded wait returned completed=true, timedOut=false with matching task identity." },
+  "negativeWitness": { "test": "candidate.buildTaskWait.negative.v1", "result": "Missing task returned TARGET_NOT_FOUND." },
+  "persistence": "Read-only terminal build task state",
+  "cleanup": "No mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}

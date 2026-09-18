@@ -5,11 +5,11 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 45,
-  "implementationPercent": 12.64,
+  "confirmedComplete": 48,
+  "implementationPercent": 13.48,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 276,
+  "deficitTo90": 273,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
@@ -32,9 +32,9 @@
     },
     "assets-import": {
       "total": 11,
-      "complete": 4,
+      "complete": 5,
       "unreviewed": 0,
-      "implementationPercent": 36.36
+      "implementationPercent": 45.45
     },
     "audio": {
       "total": 5,
@@ -44,9 +44,9 @@
     },
     "build-platform": {
       "total": 7,
-      "complete": 6,
+      "complete": 7,
       "unreviewed": 0,
-      "implementationPercent": 85.71
+      "implementationPercent": 100
     },
     "build": {
       "total": 10,
@@ -152,9 +152,9 @@
     },
     "tilemap-atlas": {
       "total": 5,
-      "complete": 3,
+      "complete": 4,
       "unreviewed": 0,
-      "implementationPercent": 60
+      "implementationPercent": 80
     },
     "ui-layout": {
       "total": 3,
