@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 273,
+  "requiredFor90": 272,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -3240,18 +3240,6 @@
       "acceptance": "Persistent bounded height/layer mutation through a supported API. Prerequisites: `terrain-write-api`.\nPersistent bounded height/layer mutation through a supported API.",
       "limitations": [
         "Persistent bounded height/layer mutation through a supported API.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-sprite-atlas-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live typed importer mutation, reimport and generated library-output hash passed; the fixture exposed no sprite frames, so frame qualification remains open.\nConfigure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
-      "limitations": [
-        "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

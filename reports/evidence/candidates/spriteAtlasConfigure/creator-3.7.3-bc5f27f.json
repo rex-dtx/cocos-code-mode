@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "spriteAtlasConfigure",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/animation-atlas-qualification.test.js", "result": "Mutated auto-atlas dimensions 2048→1024, verified both read-back operations, and restored original dimensions." },
+  "negativeWitness": { "test": "candidate.spriteAtlasConfigure.negative.v1", "result": "Non-atlas reference returned typed TYPE_MISMATCH." },
+  "persistence": "Importer metadata round-trip",
+  "cleanup": "Atlas settings restored",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:55609", "project": "G:/_ws/cc-fws/cc30-new-all-in-one", "artifactDirty": false },
+  "qualified": true
+}
