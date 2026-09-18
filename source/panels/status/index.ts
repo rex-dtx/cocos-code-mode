@@ -10,7 +10,7 @@ interface StatusPanel {
 }
 interface PanelState {
     closed: boolean; pending: boolean; fresh: boolean; generation: number;
-    snapshot: Status | null; cancel?: () => void;
+    snapshot: Status | null; cancel?: () => void; refreshTimer?: NodeJS.Timeout;
 }
 const states = new Map<StatusPanel, PanelState>();
 // Keep unresolved operations locked even if the panel is closed and reopened.
@@ -108,7 +108,7 @@ export const statusPanelDefinition = {
     template: `<main id="status-root">
         <header><div><h1>CC Bridge 3x</h1><p class="subtitle">Extension status</p></div><button id="check" type="button">Check Status</button></header>
         <div class="check-summary"><p id="state" role="status" aria-live="polite">Status not checked.</p><p id="checked">Not checked yet</p></div>
-        <p class="note">Snapshot only; no automatic polling. HTTP checks verify this editor instance, not agent connectivity.</p>
+        <p class="note">Live snapshot refreshes while this panel is open. HTTP checks verify this editor instance, not agent connectivity.</p>
         <div id="groups"></div>
         <section class="operations" aria-label="Server operations">
             <h2>Operations</h2>
@@ -150,6 +150,8 @@ export const statusPanelDefinition = {
         };
         updateControls();
         void checkStatus(panel);
+        const state = states.get(panel)!;
+        state.refreshTimer = setInterval(() => { void checkStatus(panel); }, 5000);
     },
     close() {
         const panel = this as unknown as StatusPanel;
@@ -158,6 +160,8 @@ export const statusPanelDefinition = {
             state.closed = true;
             ++state.generation;
             state.cancel?.();
+            clearInterval(state.refreshTimer);
+            state.refreshTimer = undefined;
             states.delete(panel);
         }
         for (const control of [panel.$.check, panel.$.restart, panel.$.open, panel.$.clear]) control.onclick = null;

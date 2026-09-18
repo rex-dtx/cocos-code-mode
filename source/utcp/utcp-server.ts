@@ -14,6 +14,7 @@ import { EditorHandshakeTools } from './tools/editor-handshake-tools';
 import { resetEditorMessageProbes } from './editor-state';
 import { SessionPresenceStore } from './session-presence';
 import { SessionTools } from './tools/session-tools';
+import { RequestActivityStore } from './request-activity';
 import './tools/build-tools';
 import './tools/program-tools';
 import './tools/project-tools';
@@ -352,6 +353,7 @@ export class UtcpServerManager {
     public port: number = 0;
     public instanceId: string = '';
     public sessionPresence = new SessionPresenceStore('not-started');
+    public requestActivity = new RequestActivityStore();
 
     constructor() {
         this.app = express();
@@ -366,6 +368,7 @@ export class UtcpServerManager {
         this.app = express();
         this.instanceId = randomBytes(16).toString('hex');
         this.sessionPresence = new SessionPresenceStore(this.instanceId);
+        this.requestActivity.clear();
         // PHAI set TRUOC moi app.use(): express bind 'query parser fn' luc lazyrouter
         // chay (o use() dau tien) va khong doc lai. Set sau -> decoder nay khong bao gio
         // chay, moi arg so/bool ve tay tool duoi dang string.
@@ -484,6 +487,10 @@ export class UtcpServerManager {
                     ...req.query,
                     ...(isPlainJsonObject(body) ? body : {}),
                 };
+                const activityStarted = this.requestActivity.start(requestId, toolDef.name);
+                const finishActivity = (outcome: 'completed' | 'failed', status: number) => {
+                    if (activityStarted) this.requestActivity.finish(requestId, toolDef.name, outcome, status, t0);
+                };
                 interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, args });
                 try {
                     // Check profile exposure
@@ -492,6 +499,7 @@ export class UtcpServerManager {
                         res.setHeader('X-Duration-Ms', String(ms));
                         interactionLog({ phase: 'error', requestId, tool: toolDef.name, args, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED', message: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
+                        finishActivity('failed', 404);
                         return;
                     }
 
@@ -514,6 +522,7 @@ export class UtcpServerManager {
                             ...(missingInputs.length > 0 ? { missingInputs } : {}),
                             validationErrors,
                         });
+                        finishActivity('failed', 400);
                         return;
                     }
 
@@ -533,6 +542,7 @@ export class UtcpServerManager {
                         interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: null });
                         debugLog({ type: 'response', requestId, tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
+                        finishActivity('completed', 200);
                         return;
                     }
 
@@ -545,6 +555,7 @@ export class UtcpServerManager {
                     const ms = Date.now() - t0;
                     interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: payload });
                     debugLog({ type: 'response', requestId, tool: toolDef.name, result: payload, durationMs: ms });
+                    finishActivity('completed', 200);
 
                 } catch (err: any) {
                     const ms2 = Date.now() - ((req as any)._t0 ?? t0);
@@ -583,6 +594,7 @@ export class UtcpServerManager {
                         durationMs: ms2,
                     });
                     res.status(response.status).json(response.body);
+                    finishActivity('failed', response.status);
                 }
             };
 
@@ -671,6 +683,7 @@ export class UtcpServerManager {
                 else resolve();
             });
         });
+        this.requestActivity.clear();
         const message = '[cx3][lifecycle] DISCONNECTED <- UTCP Server stopped';
         console.log(message);
         const editor = (globalThis as any).Editor;
