@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "tilemapObjectEdit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/tilemap-qualification.test.js", "result": "Mutated Spawn object x to 12 and verified persisted read-back." },
+  "negativeWitness": { "test": "candidate.tilemapObjectEdit.negative.v1", "result": "Invalid bounded object paths are rejected before mutation." },
+  "persistence": "TMX object mutation and read-back",
+  "cleanup": "Imported TMX asset deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "tilemapLayerEdit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/tilemap-qualification.test.js", "result": "Mutated Ground layer opacity to 0.5 and verified persisted read-back." },
+  "negativeWitness": { "test": "candidate.tilemapLayerEdit.negative.v1", "result": "Invalid bounded paths are rejected before mutation." },
+  "persistence": "TMX importer mutation and read-back",
+  "cleanup": "Imported TMX asset deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
