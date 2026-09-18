@@ -1,792 +1,1135 @@
 {
-  "schemaVersion": 1,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
-  "generatedAt": "2026-09-17T10:27:44.058Z",
-  "status": "open-review-queue",
+  "schemaVersion": 2,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
+  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
   "rows": [
     {
-      "workflowId": "editor.editor-viewport",
-      "state": "complete",
-      "sourceFanIn": 20,
-      "implementationRoutes": [
-        {
-          "tool": "editorViewport",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "design-prefab.reference-image",
-      "state": "complete",
-      "sourceFanIn": 13,
-      "implementationRoutes": [
-        {
-          "tool": "referenceImageManage",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "asset.asset",
-      "state": "complete",
-      "sourceFanIn": 12,
-      "implementationRoutes": [
-        {
-          "tool": "assetCreate",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetQuery",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "sceneManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "assetFindReferences",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "asset.editor-preference",
-      "state": "complete",
-      "sourceFanIn": 10,
-      "implementationRoutes": [
-        {
-          "tool": "getEditorPreference",
-          "file": "source/utcp/tools/preference-tools.ts"
-        },
-        {
-          "tool": "setEditorPreference",
-          "file": "source/utcp/tools/preference-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "asset.asset-operate",
-      "state": "complete",
-      "sourceFanIn": 8,
-      "implementationRoutes": [
-        {
-          "tool": "assetOperate",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetQuery",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetSaveContent",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.inspector",
-      "state": "complete",
-      "sourceFanIn": 8,
-      "implementationRoutes": [
-        {
-          "tool": "inspectorSet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "inspectorGet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.scene",
-      "state": "complete",
-      "sourceFanIn": 7,
-      "implementationRoutes": [
-        {
-          "tool": "sceneManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "build.build",
-      "state": "complete",
-      "sourceFanIn": 6,
-      "implementationRoutes": [
-        {
-          "tool": "buildManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "build.editor-env-info",
-      "state": "complete",
-      "sourceFanIn": 5,
-      "implementationRoutes": [
-        {
-          "tool": "editorEnvInfo",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "design-prefab.prefab-revert-overrides",
-      "state": "test-pending",
-      "sourceFanIn": 5,
-      "implementationRoutes": [
-        {
-          "tool": "prefabRevertOverrides",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "diagnostics.editor-logs",
-      "state": "complete",
-      "sourceFanIn": 5,
-      "implementationRoutes": [
-        {
-          "tool": "editorGetLogs",
-          "file": "source/utcp/tools/editor-tools.ts"
-        },
-        {
-          "tool": "projectSearchFiles",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.node-component",
-      "state": "complete",
-      "sourceFanIn": 5,
-      "implementationRoutes": [
-        {
-          "tool": "nodeComponentManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "editor.broadcast-observe",
-      "state": "complete",
-      "sourceFanIn": 4,
-      "implementationRoutes": [
-        {
-          "tool": "broadcastObserve",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "other.execute-javascript",
-      "state": "complete",
-      "sourceFanIn": 4,
-      "implementationRoutes": [
-        {
-          "tool": "executeJavascript",
-          "file": "source/utcp/execute/execute-tool.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.node-operate",
-      "state": "complete",
-      "sourceFanIn": 4,
-      "implementationRoutes": [
-        {
-          "tool": "nodeOperate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        },
-        {
-          "tool": "nodeCreate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "animation.node-clipboard",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "nodeClipboard",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "asset.asset-resolve-path",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "assetResolvePath",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetGetAtPath",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetGetAvailableUrl",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "design-prefab.prefab-overrides",
-      "state": "test-pending",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "prefabApplyOverrides",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "editor.editor-env-info",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "editorEnvInfo",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "editor.editor-select",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "editorSelect",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "editor.editor-undo-transaction-probe",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "editorUndoTransactionProbe",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "other.write-project-instruction",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "writeProjectInstruction",
-          "file": "source/utcp/tools/instruction-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.find-nodes",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "findNodes",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.node",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "nodeCreate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.node-reset",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "nodeReset",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.node-tree",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "nodeGetTree",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.scene-info",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "sceneGetInfo",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "scene.ui-node",
-      "state": "complete",
-      "sourceFanIn": 3,
-      "implementationRoutes": [
-        {
-          "tool": "createUiNode",
-          "file": "source/utcp/tools/ui-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "High-fan-in complete classification requires adversarial equivalence review."
-    },
-    {
-      "workflowId": "localization.localization",
-      "state": "test-pending",
-      "sourceFanIn": 2,
-      "implementationRoutes": [
-        {
-          "tool": "localizationInspect",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        },
-        {
-          "tool": "localizationValidate",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "scene.ui-layout",
-      "state": "missing",
-      "sourceFanIn": 2,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "animation-graph.animation-graph-edit",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "animation-graph.animation-graph-preview",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "animation-graph.animation-retarget",
-      "state": "test-pending",
-      "sourceFanIn": 1,
-      "implementationRoutes": [
-        {
-          "tool": "animationRetargetValidate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "asset.asset-dependencies",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "asset.build-artifact",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "asset.clear-logs",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "asset.prefab-instance",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "asset.preview-mode",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "audio.audio-playback",
-      "state": "partial",
-      "sourceFanIn": 1,
-      "implementationRoutes": [
-        {
-          "tool": "audioPlaybackControl",
-          "file": "source/utcp/tools/audio-playback-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "audio.audio-playback-observe",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [
-        {
-          "tool": "audioPlaybackObserve",
-          "file": "source/utcp/tools/audio-playback-tools.ts"
-        }
-      ],
-      "limitations": [
-        "Public route fails closed; no qualified actual-Game-View audio observation transport."
-      ],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "build.golden-tracer",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "build.long-job",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "diagnostics.clear-console",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "localization.localization-preview",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "localization.localization-table-edit",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "particles.particle-playback",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [
-        {
-          "tool": "particlePlayback",
-          "file": "source/utcp/tools/p4-contract-tools.ts"
-        }
-      ],
-      "limitations": [
-        "Extension scene scripts target edit renderer; actual Game View particle route is unqualified."
-      ],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "prefab.ui-scroll-view",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "rendering-materials.light-bake",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "rendering-materials.render-configuration",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "rendering-materials.render-diagnostics-collect",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.camera-properties",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.cameras",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.check-for-updates",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.component",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.components",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.emit-node-event",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.hierarchy",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.reset-component-property",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.runtime-capture",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.runtime-input",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.runtime-observation",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.runtime-session",
-      "state": "partial",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [
-        "Finite actual-Game-View host adapter exists; cold-start/stop repeatability on qualification fixture remains open."
-      ],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.simulate-preview-input",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "runtime.ui-input-form",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "scene.compound-scene",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "scene.mutation-workflow",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "skeletal-animation.skeletal-animation-events",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "skeletal-animation.skeletal-animation-play",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "terrain-model.terrain-edit",
-      "state": "missing",
-      "sourceFanIn": 1,
-      "implementationRoutes": [],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
-    },
-    {
-      "workflowId": "ui-layout.preview-resolution",
-      "state": "partial",
-      "sourceFanIn": 1,
-      "implementationRoutes": [
-        {
-          "tool": "previewResolutionSet",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "reviewReason": "Incomplete classification requires contract or transport decision."
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetBatchImport",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetBatchImport",
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Preflight and import bounded explicit items with per-item outcome. Prerequisites: `asset-import-contract`, `mutation-workflow`.\nPreflight and import bounded explicit items with per-item outcome.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetBatchOperate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetBatchOperate",
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Bounded move/copy/delete/reimport with partial-failure accounting. Prerequisites: `asset-operate-contract`, `mutation-workflow`.\nBounded move/copy/delete/reimport with partial-failure accounting.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetCompressionConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetCompressionConfigure",
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Implemented platform-aware settings mutation, but no successful generated build artifact was available; release qualification remains open.\nPlatform-aware compression validation plus generated-output evidence.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetImportSettingsGet",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetImportSettingsGet",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetImportSettingsSet",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetImportSettingsSet",
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Implemented typed importer mutation, reimport and read-back; consumed by the live atlas fixture. Candidate approval remains open.\nTyped importer mutation with preflight, reimport and output read-back.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetManifestExport",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetManifestExport",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetMissingReferenceAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetMissingReferenceAudit",
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Cross-scene and asset missing-reference evidence with recovery locations. Prerequisites: `graph-v4`, `asset-query-contract`.\nCross-scene and asset missing-reference evidence with recovery locations.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetUsageAnalyze",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetUsageAnalyze",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabApplyOverrides",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabApplyOverrides",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed source read-back and hashes are implemented, but live apply returned `Failed to apply prefab` on the writable fixture; unqualified.\nApply a typed override set and verify source/instance result.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabInstantiate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabInstantiate",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live instantiate and snapshot evidence exists; broader persistent identity qualification remains open.\nInstantiate and prove persistent prefab identity and overrides.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabOverrideDiff",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabOverrideDiff",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Structural live-instance versus prefab-source override diff with stable identities. Prerequisites: `live-prefab-identity`, `asset-query-contract`.\nStructural live-instance versus prefab-source override diff with stable identities.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabReferenceAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabReferenceAudit",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Detect broken or ambiguous nested prefab and override references after reload. Prerequisites: `live-prefab-identity`, `graph-v4`.\nDetect broken or ambiguous nested prefab and override references after reload.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabRevertOverrides",
+      "sourceKind": "lane-requirement",
+      "sourceName": "prefabRevertOverrides",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Full restore delegates to Creator; selective paths are explicitly rejected with `UNSUPPORTED_SELECTIVE_REVERT` on Creator 3.7.3.\nRevert selected overrides and verify restored values.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:previewResolutionSet",
+      "sourceKind": "lane-requirement",
+      "sourceName": "previewResolutionSet",
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-preview-resolution-set",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Explicitly rejected on Creator 3.7.3 with `UNSUPPORTED_PREVIEW_IPC`.\nSet and read back target resolution through proven IPC.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:referenceImageManage",
+      "sourceKind": "lane-requirement",
+      "sourceName": "referenceImageManage",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.\nFinite persistent reference-image lifecycle with transform read-back.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:sceneHierarchyValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "sceneHierarchyValidate",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Validate duplicate paths, invalid parenting and persistence invariants. Prerequisites: `scene-query-contract`.\nValidate duplicate paths, invalid parenting and persistence invariants.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:sceneReferenceValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "sceneReferenceValidate",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-reference-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Validate serialized node/component/asset references after reopen. Prerequisites: `graph-v4`, `live-prefab-identity`.\nValidate serialized node/component/asset references after reopen.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:spriteAtlasConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "spriteAtlasConfigure",
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-sprite-atlas-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live typed importer mutation, reimport and generated library-output hash passed; the fixture exposed no sprite frames, so frame qualification remains open.\nConfigure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapInspect",
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live-scoped typed TMX map, tileset, layer and object-group inspection passed on an imported fixture.\nTyped TMX map, layer, object and tileset inspection after Creator import.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapLayerEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapLayerEdit",
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-layer-edit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live source mutation, reimport, SHA change and typed read-back passed.\nPersistent layer mutation without corrupting source TMX.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapObjectEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapObjectEdit",
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-object-edit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live typed object mutation, TMX round-trip, SHA change and read-back passed.\nPersistent typed object-layer mutation with TMX round-trip.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:tilemapValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "tilemapValidate",
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live-scoped imported UUID reference validation passed; full gids/dimensions validation remains unqualified.\nValidate tileset links, gids, layer dimensions and imported references.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiAccessibilityAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiAccessibilityAudit",
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-accessibility-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live bounded inferred labels, roles and interactability audit passed; no screen-reader runtime support is claimed.\nTyped constraint tree and computed world rectangles, not a generic property dump.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiCreateInputForm",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiCreateInputForm",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-input-form",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiCreateScrollView",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiCreateScrollView",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-scroll-view",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiLayoutApply",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiLayoutApply",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-apply",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiLayoutInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiLayoutInspect",
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiResponsivePreview",
+      "sourceKind": "lane-requirement",
+      "sourceName": "uiResponsivePreview",
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-responsive-preview",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Replacement-scoped deterministic world-rect projections passed; rendered preview comparison is unavailable without viewport-resolution IPC.\nRender and compare one scene across declared resolutions with target-specific evidence.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphCreate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphCreate",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-create",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Create a valid native graph asset and prove import/read-back. Prerequisites: `animation-graph-format`, `asset-create`.\nCreate a valid native graph asset, prove import/read-back, and roll back on failure.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphEdit",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Persistent bounded graph mutations independent of panel selection state. Prerequisites: `animation-graph-write`.\nPersistent bounded graph mutations independent of panel selection state.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphInspect",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed layers, states, transitions, variables and masks from native serialized data. Prerequisites: `animation-graph-format`.\nTyped layers, states, transitions, variables and masks from native serialized data.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphPreview",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphPreview",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Run graph and observe transitions/events in a named runtime session. Prerequisites: `runtime-session`.\nRun graph and observe transitions/events in a named runtime session.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationGraphValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationGraphValidate",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Validate unreachable states, missing clips, invalid variables and transition conditions. Prerequisites: `animation-graph-format`.\nValidate unreachable states, missing clips, invalid variables and transition conditions.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:animationRetargetValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "animationRetargetValidate",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Check skeleton, joint and clip compatibility without claiming automatic retargeting. Prerequisites: `model-skeleton-metadata`.\nCheck bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioAssetCompatibilityAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioAssetCompatibilityAudit",
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-asset-compatibility-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Implemented bounded target-aware format/import-state audit using public asset-db metadata; focused unit suite passes 8/8. It deliberately does not claim decode or duration proof, and live qualification remains pending. Prerequisites: `audio-import-contract`.\nValidate format, decode/load mode, duration and target compatibility.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioPlaybackControl",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioPlaybackControl",
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-control",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Play, pause, stop and seek on a named runtime source with state confirmation. Prerequisites: `runtime-session`.\nPlay, pause, stop and seek on a named runtime source with state confirmation.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioPlaybackObserve",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioPlaybackObserve",
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-observe",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Bounded playback progress/state observation with activation errors. Prerequisites: `runtime-session`.\nBounded playback progress/state observation with activation errors.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioSourceAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioSourceAudit",
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Normalize AudioSource configuration and referenced clip state, including documented load/import and target-compatibility context, without claiming runtime playback or decode proof. Prerequisites: audio-schema.\nNormalized AudioSource and clip state including load mode and platform constraints.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:audioSourceConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "audioSourceConfigure",
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Implemented conservative typed bounded source configuration for volume, loop, playOnAwake and proven `cc.AudioClip` UUIDs with read-back and rollback; live evidence remains pending. Prerequisites: `audio-schema`, `mutation-workflow`.\nTyped bounded source configuration with clip compatibility read-back.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationConfigure",
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed skin, mix and socket setup with component read-back. Prerequisites: `skeletal-extension-detection`, `mutation-workflow`.\nConfigure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationEvents",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationEvents",
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-events",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Bounded ordered event observation tied to one playback session. Prerequisites: `runtime-session`.\nBounded ordered event observation tied to one playback session.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationInspect",
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed skins, tracks, sockets, animations and extension availability. Prerequisites: `skeletal-extension-detection`.\nTyped skins, tracks, sockets, animations and extension availability.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationPlay",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationPlay",
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-play",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Bounded play/queue/stop contract on a named runtime target. Prerequisites: `runtime-session`.\nBounded play/queue/stop contract on a named runtime target.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "skeletalAnimationValidate",
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support. Prerequisites: `skeletal-extension-detection`.\nValidate skeleton/atlas/textures, named animations, skins and runtime extension support.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p3-animation-skeletal-audio/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particleConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particleConfigure",
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed module/curve mutation with persistent read-back, not panel scraping. Prerequisites: `particle-schema`.\nTyped module/curve mutation with persistent read-back, not panel scraping.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particleInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particleInspect",
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Normalized modules, curves, gradients, assets and current configuration. Qualified on a real `cc.ParticleSystem`.\nNormalized modules, curves, gradients, assets and current configuration.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particlePlayback",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particlePlayback",
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-playback",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Play, stop, clear and completion observation in a named runtime session. Prerequisites: `runtime-session`.\nPlay, stop, clear and completion observation in a named runtime session.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:particleValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "particleValidate",
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Valid/invalid component-presence witnesses qualified on Creator 3.7.3.\nValidate ranges, required textures/materials/modules and backend limits.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dCompatibilityAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dCompatibilityAudit",
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-compatibility-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Explicit Box2D-positive and Builtin-negative backend matrix qualified live.\nReject unsupported backend/component/joint/matrix combinations.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dConfigure",
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Backend-aware settings and collision matrix mutation with read-back. Prerequisites: `project-settings-write`.\nBackend-aware settings and collision matrix mutation with read-back.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dCreateBody",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dCreateBody",
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-body",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Compound Box2D node/body/collider creation qualified with preflight rejection, read-back, snapshot and cleanup witnesses.\nCompound node/body/collider creation with backend preflight and persistence.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dCreateJoint",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dCreateJoint",
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-joint",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed joint creation with endpoint validation and Builtin rejection qualified with component-endpoint read-back and rejection witnesses.\nTyped joint creation with endpoint validation and Builtin rejection.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dQuery",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dQuery",
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-query",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Runtime raycast/contact/overlap queries identified by backend and session. Prerequisites: `runtime-session`.\nRuntime raycast/contact/overlap queries identified by backend and session.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics2dTopologyAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics2dTopologyAudit",
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-topology-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Normalized body, collider and joint topology; qualified with valid and missing-collider fixtures.\nNormalized backend, body, collider, group and joint topology.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dConfigure",
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Backend-aware settings mutation with version/platform read-back. Prerequisites: `project-settings-write`.\nBackend-aware settings mutation with version/platform read-back.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dCreateBody",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dCreateBody",
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-body",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "PhysX-only bounded box body/collider creation with size preflight, public scene IPC, read-back and rollback qualified on Creator 3.7.3; sphere/capsule/mesh variants remain unqualified.\nCreate one PhysX rigid-body node with one BoxCollider and bounded Vec3 size, with backend preflight, read-back and rollback.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dCreateJoint",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dCreateJoint",
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-joint",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Current ledger marks the bounded PhysX contract qualified; the earlier stale/auth-blocked note is superseded. Preserve fixed/hinge/point-to-point scope and require artifact-bound persistence/rollback proof for the full original contract.\nTyped constraint creation with backend-specific validation.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dQuery",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dQuery",
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-query",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Runtime raycast, sweep, contact and trigger queries tied to an identified backend and named runtime session. Prerequisites: runtime-session.\nRuntime raycast, sweep, contact and trigger queries tied to backend/session.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dTopologyAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dTopologyAudit",
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-topology-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Normalized rigidbody, collider, joint and system topology qualified live.\nNormalized backend, rigidbody, collider, material and constraint topology.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:1-wip-260908__tbd-child-p4-physics-particles:physics3dValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "physics3dValidate",
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Body/collider semantic validation qualified with valid and invalid fixtures.\nReject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#1-wip-260908__tbd-child-p4-physics-particles/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:lightBakeManage",
+      "sourceKind": "lane-requirement",
+      "sourceName": "lightBakeManage",
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-light-bake-manage",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Finite bake job lifecycle and output asset verification. Prerequisites: `light-bake-job-api`.\nFinite bake job lifecycle and output asset verification.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:materialEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "materialEdit",
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-material-edit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed pass/property mutation followed by import and rendered postcondition. Prerequisites: `material-schema`, `asset-reimport`, `visual-harness`.\nTyped bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:modelImportConfigure",
+      "sourceKind": "lane-requirement",
+      "sourceName": "modelImportConfigure",
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed import, reimport and mesh/skeleton/LOD output validation. Prerequisites: `importer-schema`, `asset-reimport`, `model-skeleton-metadata`.\nTyped import, reimport and mesh/skeleton/LOD output validation.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderConfigurationApply",
+      "sourceKind": "lane-requirement",
+      "sourceName": "renderConfigurationApply",
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Atomic camera/light/fog/skybox configuration with scene read-back. Prerequisites: `render-pipeline-schema`, `compound-scene-workflow`, `visual-harness`.\nAtomic camera/light/fog/skybox configuration with scene read-back.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderDiagnosticsCollect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "renderDiagnosticsCollect",
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-diagnostics-collect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Target-identified frame/render sampling with bounded results. Prerequisites: `runtime-session`.\nTarget-identified frame/render sampling with bounded results.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderPipelineInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "renderPipelineInspect",
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-pipeline-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query. Prerequisites: `render-pipeline-schema`.\nBounded native pipeline read-back through scene/query-render-pipeline; normalized compatibility diagnostics remain out of scope.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:shaderValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "shaderValidate",
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-shader-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Return real effect importer/compiler diagnostics tied to source locations. Prerequisites: `effect-compiler-diagnostics`.\nReturn real effect importer/compiler diagnostics tied to source locations.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainCreate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "terrainCreate",
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-create",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Create and attach a valid terrain asset/component with reopen proof. Prerequisites: `terrain-schema`, `asset-create`, `compound-scene-workflow`.\nCreate and attach a valid terrain asset/component with reopen proof.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "terrainEdit",
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Persistent bounded height/layer mutation through a supported API. Prerequisites: `terrain-write-api`.\nPersistent bounded height/layer mutation through a supported API.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "terrainInspect",
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed terrain dimensions, layers, materials and asset references. Prerequisites: `terrain-schema`.\nTyped terrain dimensions, layers, materials and asset references.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p5-rendering-materials-models-terrain/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:assetBundleValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "assetBundleValidate",
+      "workflowId": "assets-import.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-asset-bundle-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Validate bundle metadata and actual runtime load/release behavior. Prerequisites: `runtime-session`.\nValidate bundle metadata and actual runtime load/release behavior.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildArtifactInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildArtifactInspect",
+      "workflowId": "scene.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildArtifactServe",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildArtifactServe",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-serve",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Serve one completed web artifact and return verified URL/lifecycle. Prerequisites: `build-job`, `web-artifact`.\nServe one completed web artifact and return verified URL/lifecycle.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildLogInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildLogInspect",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-log-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Implemented distinct read-only task diagnostics inspection using one builder task query, typed query/not-found/invalid-response failures, diagnostic normalization, fallback field selection and bounded entry count/bytes; project build and 5 focused unit tests pass, live evidence remains pending. Prerequisites: `build-job`.\nReturn bounded structured diagnostics for one build task.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildPresetAudit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildPresetAudit",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-preset-audit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Current primary ledger marks the bounded target-profile contract qualified. Earlier live-pending note is superseded; exact profile/options coverage and current-artifact evidence still constrain release acceptance.\nValidate target-specific required/unsupported build options before dispatch.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildTargetLaunch",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildTargetLaunch",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-launch",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Launch the exact produced artifact on a declared target, not preview fallback. Prerequisites: `build-job`, `named-target`.\nLaunch the exact produced artifact on a declared target, not preview fallback.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildTargetSmoke",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildTargetSmoke",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-smoke",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Interact with and observe the launched artifact on its declared target. Prerequisites: `runtime-session`, `named-target`.\nInteract with and observe the launched artifact on its declared target.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:buildTaskWait",
+      "sourceKind": "lane-requirement",
+      "sourceName": "buildTaskWait",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-task-wait",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Wait boundedly for one build task terminal result with cancellation semantics. Prerequisites: `build-job`.\nWait boundedly for one build task terminal result with cancellation semantics.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationInspect",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationInspect",
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-inspect",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Discover enabled package, locales, compiled tables and resource mappings. Prerequisites: `localization-package-api`.\nDiscover enabled package, locales, compiled tables and resource mappings.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationPreview",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationPreview",
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-preview",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Switch locale with acknowledged runtime restart and visual/read-back evidence. Prerequisites: `runtime-session`, `localization-package-api`.\nSwitch locale with acknowledged runtime restart and visual/read-back evidence.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationTableEdit",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationTableEdit",
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-table-edit",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Typed persistent table mutation through documented package API. Prerequisites: `localization-package-api`.\nTyped persistent table mutation through documented package API.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "localizationValidate",
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:projectSettingsValidate",
+      "sourceKind": "lane-requirement",
+      "sourceName": "projectSettingsValidate",
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-project-settings-validate",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Validate cross-setting compatibility for the declared Creator/target profile. Prerequisites: `project-settings-read`, `build-schema`.\nValidate cross-setting compatibility for the declared Creator/target profile.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:runtimeScenarioAssert",
+      "sourceKind": "lane-requirement",
+      "sourceName": "runtimeScenarioAssert",
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-assert",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Independent state/image/event assertions rather than request echo. Prerequisites: `runtime-session`.\nIndependent state/image/event assertions rather than request echo.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:runtimeScenarioRun",
+      "sourceKind": "lane-requirement",
+      "sourceName": "runtimeScenarioRun",
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-run",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Execute finite named steps only; no code string or general method dispatch. Prerequisites: `runtime-session`.\nExecute finite named steps only; no code string or general method dispatch.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:runtimeStateObserve",
+      "sourceKind": "lane-requirement",
+      "sourceName": "runtimeStateObserve",
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-state-observe",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Bounded allow-listed observations tied to session identity and target kind. Prerequisites: `runtime-session`.\nBounded allow-listed observations tied to session identity and target kind.",
+      "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:compound-scene",
+      "sourceKind": "parent-requirement",
+      "sourceName": "compound-scene",
+      "workflowId": "scene.parent-compound-scene",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Create complete scene/UI composition with stable node, component and asset identities.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:golden-tracer",
+      "sourceKind": "parent-requirement",
+      "sourceName": "golden-tracer",
+      "workflowId": "runtime.parent-golden-tracer",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Blank project to scene/UI, compile, preview, input, observation, capture, build and launched artifact smoke.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:long-job",
+      "sourceKind": "parent-requirement",
+      "sourceName": "long-job",
+      "workflowId": "build.parent-long-job",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Track a named build/import job to terminal outcome with bounded diagnostics and cancellation semantics.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:mutation-workflow",
+      "sourceKind": "parent-requirement",
+      "sourceName": "mutation-workflow",
+      "workflowId": "scene.parent-mutation-workflow",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Preflight mutation, apply boundedly, verify postconditions and recover from partial failure.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:runtime-capture",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-capture",
+      "workflowId": "runtime.parent-runtime-capture",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Capture bounded visual evidence of the intended runtime target.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:runtime-input",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-input",
+      "workflowId": "runtime.parent-runtime-input",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Dispatch allow-listed input to the intended runtime target and observe the result.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:runtime-observation",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-observation",
+      "workflowId": "runtime.parent-runtime-observation",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Observe allow-listed state from the actual runtime, without an edit-renderer fallback.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
+    },
+    {
+      "sourceId": "parent:runtime-session",
+      "sourceKind": "parent-requirement",
+      "sourceName": "runtime-session",
+      "workflowId": "runtime.parent-runtime-session",
+      "status": "needs-contract-review",
+      "detailStatus": "documented",
+      "originalContract": "Identify, start, observe and stop a declared runtime target with bounded state and unknown-outcome handling.",
+      "contractSource": "API Capability Expansion parent completion policy",
+      "proposal": null,
+      "reviewReason": "Verify full outcome, not tool name or shared implementation."
     }
   ]
 }

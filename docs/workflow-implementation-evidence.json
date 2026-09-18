@@ -1,2290 +1,3501 @@
 {
-  "schemaVersion": 1,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
-  "generatedAt": "2026-09-17T10:27:44.058Z",
+  "schemaVersion": 2,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
+  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
   "rows": [
     {
-      "workflowId": "animation-graph.animation-graph",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "animationGraphCreate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        },
-        {
-          "tool": "animationGraphInspect",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        },
-        {
-          "tool": "animationGraphValidate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation-graph.animation-graph-edit",
-      "state": "missing",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-create",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation-graph.animation-graph-preview",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation-graph.animation-retarget",
-      "state": "test-pending",
-      "routes": [
-        {
-          "tool": "animationRetargetValidate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation.animation-catalog",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "animationCatalogInspect",
-          "file": "source/utcp/tools/animation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation.animation-clip",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "animationClipConfigure",
-          "file": "source/utcp/tools/animation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation.animation-runtime",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "animationRuntimeControl",
-          "file": "source/utcp/tools/animation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "animation.node-clipboard",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeClipboard",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetCreate",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetQuery",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "sceneManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "assetFindReferences",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-at-path",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetGetAtPath",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-available-url",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetGetAvailableUrl",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-db",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetDbQuery",
-          "file": "source/utcp/tools/material-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-dependencies",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-find-references",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetFindReferences",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-import",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetImport",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-import-settings",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetImportSettingsGet",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-manifest-export",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetManifestExport",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-operate",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetOperate",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetQuery",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetSaveContent",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-resolve-path",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetResolvePath",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetGetAtPath",
-          "file": "source/utcp/tools/asset-tools.ts"
-        },
-        {
-          "tool": "assetGetAvailableUrl",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-save-content",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetSaveContent",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.asset-usage-analyze",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetUsageAnalyze",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.build-artifact",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.clear-logs",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.editor-logs",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorGetLogs",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.editor-preference",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "getEditorPreference",
-          "file": "source/utcp/tools/preference-tools.ts"
-        },
-        {
-          "tool": "setEditorPreference",
-          "file": "source/utcp/tools/preference-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.editor-select",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorSelect",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.find-nodes-asset",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "findNodesByAsset",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.prefab-instance",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.preview-mode",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.program",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "programManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.project-file-exists",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectFileExists",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.project-read-file",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectReadFile",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.project-replace-in-file",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectReplaceInFile",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.project-search-files",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectSearchFiles",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.project-write-file",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectWriteFile",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "asset.runtime-preview",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimePreviewControl",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "assets-import.asset-batch-import",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetBatchImport",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "assets-import.asset-batch-operate",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetBatchOperate",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "assets-import.asset-bundle",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetBundleValidate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "assets-import.asset-compression",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetCompressionConfigure",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "assets-import.asset-import-settings",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetImportSettingsSet",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "assets-import.asset-missing-reference-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "assetMissingReferenceAudit",
-          "file": "source/utcp/tools/asset-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "audio.audio-asset-compatibility-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "audioAssetCompatibilityAudit",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "audio.audio-playback",
-      "state": "partial",
-      "routes": [
-        {
-          "tool": "audioPlaybackControl",
-          "file": "source/utcp/tools/audio-playback-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "audio.audio-playback-observe",
-      "state": "missing",
-      "routes": [
-        {
-          "tool": "audioPlaybackObserve",
-          "file": "source/utcp/tools/audio-playback-tools.ts"
-        }
-      ],
+      "evidenceArtifacts": [],
       "limitations": [
-        "Public route fails closed; no qualified actual-Game-View audio observation transport."
-      ],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+        "Create a valid native graph asset, prove import/read-back, and roll back on failure.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "audio.audio-source",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "audioSourceConfigure",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.build-artifact-serve",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildArtifactServe",
-          "file": "source/utcp/tools/artifact-server-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.build-log",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildLogInspect",
-          "file": "source/utcp/tools/build-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.build-preset-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildPresetAudit",
-          "file": "source/utcp/tools/build-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.build-target-launch",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildTargetLaunch",
-          "file": "source/utcp/tools/artifact-server-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.build-target-smoke",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildTargetSmoke",
-          "file": "source/utcp/tools/artifact-server-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.build-task-wait",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildTaskWait",
-          "file": "source/utcp/tools/build-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build-platform.project-settings",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectSettingsValidate",
-          "file": "source/utcp/tools/project-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build.build",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "buildManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build.editor-env-info",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorEnvInfo",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build.golden-tracer",
-      "state": "missing",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build.long-job",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "build.preview",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "previewManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "buildArtifactServe",
-          "file": "source/utcp/tools/artifact-server-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.prefab-instantiate",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "prefabInstantiate",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.prefab-override-diff",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "prefabOverrideDiff",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.prefab-overrides",
-      "state": "test-pending",
-      "routes": [
-        {
-          "tool": "prefabApplyOverrides",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.prefab-reference-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "prefabReferenceAudit",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.prefab-revert-overrides",
-      "state": "test-pending",
-      "routes": [
-        {
-          "tool": "prefabRevertOverrides",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.reference-image",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "referenceImageManage",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.scene-hierarchy",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "sceneHierarchyValidate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "design-prefab.scene-reference",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "sceneReferenceValidate",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.broadcast-observe",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "broadcastObserve",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.clear-console",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.editor-logs",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorGetLogs",
-          "file": "source/utcp/tools/editor-tools.ts"
-        },
-        {
-          "tool": "projectSearchFiles",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.editor-state",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorState",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.execute-javascript",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "executeJavascript",
-          "file": "source/utcp/execute/execute-tool.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.performance-snapshot",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "getPerformanceSnapshot",
-          "file": "source/utcp/tools/validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.scene",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "validateScene",
-          "file": "source/utcp/tools/validation-tools.ts"
-        },
-        {
-          "tool": "sceneManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.script-diagnostic-context",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "getScriptDiagnosticContext",
-          "file": "source/utcp/tools/diagnostics-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "diagnostics.script-diagnostics",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runScriptDiagnostics",
-          "file": "source/utcp/tools/diagnostics-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.broadcast-observe",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "broadcastObserve",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.capture-editor-screenshot",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "captureEditorScreenshot",
-          "file": "source/utcp/tools/screenshot-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorQuery",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor-env-info",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorEnvInfo",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor-select",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorSelect",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor-state",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorState",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor-undo-transaction-probe",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorUndoTransactionProbe",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor-viewport",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editorViewport",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.editor-windows",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "listEditorWindows",
-          "file": "source/utcp/tools/screenshot-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "editor.execute-javascript",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "executeJavascript",
-          "file": "source/utcp/execute/execute-tool.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "localization.localization",
-      "state": "test-pending",
-      "routes": [
-        {
-          "tool": "localizationInspect",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        },
-        {
-          "tool": "localizationValidate",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "localization.localization-preview",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "localization.localization-table-edit",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "other.execute-javascript",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "executeJavascript",
-          "file": "source/utcp/execute/execute-tool.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "other.project",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "projectSettingsValidate",
-          "file": "source/utcp/tools/project-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "other.project-directory",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "projectListDirectory",
-          "file": "source/utcp/tools/file-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "other.property-array-element",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "propertyArrayElement",
-          "file": "source/utcp/tools/property-array-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "other.read-project-instruction",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "readProjectInstruction",
-          "file": "source/utcp/tools/instruction-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "other.write-project-instruction",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "writeProjectInstruction",
-          "file": "source/utcp/tools/instruction-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "particles.particle",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "particleInspect",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        },
-        {
-          "tool": "particleValidate",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "particles.particle-playback",
-      "state": "missing",
-      "routes": [
-        {
-          "tool": "particlePlayback",
-          "file": "source/utcp/tools/p4-contract-tools.ts"
-        }
-      ],
+      "evidenceArtifacts": [],
       "limitations": [
-        "Extension scene scripts target edit renderer; actual Game View particle route is unqualified."
-      ],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+        "Persistent bounded graph mutations independent of panel selection state.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "physics-2d.physics2d",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics2dConfigure",
-          "file": "source/utcp/tools/p4-contract-tools.ts"
-        },
-        {
-          "tool": "physics2dQuery",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-2d.physics2d-body",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics2dCreateBody",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-2d.physics2d-compatibility-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics2dCompatibilityAudit",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-2d.physics2d-joint",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics2dCreateJoint",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-2d.physics2d-topology-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics2dTopologyAudit",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-3d.physics3d",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics3dConfigure",
-          "file": "source/utcp/tools/p4-contract-tools.ts"
-        },
-        {
-          "tool": "physics3dValidate",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-3d.physics3d-body",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics3dCreateBody",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-3d.physics3d-joint",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics3dCreateJoint",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "physics-3d.physics3d-topology-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "physics3dTopologyAudit",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "prefab.duplicate-prefab",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "duplicatePrefab",
-          "file": "source/utcp/tools/prefab-json-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "prefab.edit-prefab-json",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "editPrefabJson",
-          "file": "source/utcp/tools/prefab-json-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "prefab.node-operate",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeOperate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "prefab.read-prefab-json",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "readPrefabJson",
-          "file": "source/utcp/tools/prefab-json-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "prefab.ui-scroll-view",
-      "state": "missing",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-inspect",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "rendering-materials.light-bake",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "rendering-materials.material-edit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "materialEdit",
-          "file": "source/utcp/tools/material-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "rendering-materials.render-configuration",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "rendering-materials.render-diagnostics-collect",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "rendering-materials.render-pipeline",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "renderPipelineInspect",
-          "file": "source/utcp/tools/material-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "rendering-materials.shader",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "shaderValidate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime-qa.runtime-scenario",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeScenarioRun",
-          "file": "source/utcp/tools/runtime-session-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime-qa.runtime-scenario-assert",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeScenarioAssert",
-          "file": "source/utcp/tools/runtime-session-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime-qa.runtime-state-observe",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeStateObserve",
-          "file": "source/utcp/tools/runtime-session-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.camera-properties",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.cameras",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.capture-scene-screenshot",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "captureSceneScreenshot",
-          "file": "source/utcp/tools/screenshot-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.check-for-updates",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.component",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.components",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.emit-node-event",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.hierarchy",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.preview",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "previewManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "runtimePreviewControl",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.reset-component-property",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-capture",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-input",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-observation",
-      "state": "missing",
-      "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-pause",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimePause",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-preview",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimePreviewControl",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-resume",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeResume",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-screenshot-assert",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeScreenshotAssert",
-          "file": "source/utcp/tools/screenshot-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-session",
-      "state": "partial",
-      "routes": [],
+      "evidenceArtifacts": [],
       "limitations": [
-        "Finite actual-Game-View host adapter exists; cold-start/stop repeatability on qualification fixture remains open."
-      ],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+        "Typed layers, states, transitions, variables and masks from native serialized data.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "runtime.runtime-state",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeGetState",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.runtime-time-scale",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "runtimeSetTimeScale",
-          "file": "source/utcp/tools/runtime-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.simulate-button-click",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "simulateButtonClick",
-          "file": "source/utcp/tools/event-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.simulate-key-combo",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "simulateKeyCombo",
-          "file": "source/utcp/tools/input-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.simulate-key-press",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "simulateKeyPress",
-          "file": "source/utcp/tools/input-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.simulate-mouse-click",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "simulateMouseClick",
-          "file": "source/utcp/tools/input-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.simulate-mouse-drag",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "simulateMouseDrag",
-          "file": "source/utcp/tools/input-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "runtime.simulate-preview-input",
-      "state": "missing",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Run graph and observe transitions/events in a named runtime session.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "runtime.ui-input-form",
-      "state": "missing",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-validate",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate unreachable states, missing clips, invalid variables and transition conditions.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "scene.bind-button-click-event",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "bindButtonClickEvent",
-          "file": "source/utcp/tools/event-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.call-component-method",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "callComponentMethod",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.component-classes",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "listComponentClasses",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.compound-scene",
-      "state": "missing",
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "scene.execute-javascript",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "executeJavascript",
-          "file": "source/utcp/execute/execute-tool.ts"
-        },
-        {
-          "tool": "sceneScriptRepair",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.find-nodes",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "findNodes",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.inspector",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "inspectorSet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        },
-        {
-          "tool": "inspectorGet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.label",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "createLabel",
-          "file": "source/utcp/tools/ui-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.mutation-workflow",
-      "state": "missing",
+      "workflowId": "animation.cocos-mcp-copy-node",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "scene.node",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeCreate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-available-component-types",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeGetAvailableComponentTypes",
-          "file": "source/utcp/tools/component-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-component",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeComponentManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-components",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeComponentsGet",
-          "file": "source/utcp/tools/component-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-operate",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeOperate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        },
-        {
-          "tool": "nodeCreate",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-primitive",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeCreatePrimitive",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-reset",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeReset",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.node-tree",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "nodeGetTree",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.scene",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "sceneManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.scene-info",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "sceneGetInfo",
-          "file": "source/utcp/tools/scene-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.scene-snapshot",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "sceneSnapshot",
-          "file": "source/utcp/tools/scene-snapshot-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "scene.ui-layout",
-      "state": "missing",
+      "workflowId": "animation.cocos-mcp-cut-node",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "scene.ui-node",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "createUiNode",
-          "file": "source/utcp/tools/ui-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "skeletal-animation.skeletal-animation",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "skeletalAnimationInspect",
-          "file": "source/utcp/tools/animation-tools.ts"
-        },
-        {
-          "tool": "skeletalAnimationConfigure",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        },
-        {
-          "tool": "skeletalAnimationValidate",
-          "file": "source/utcp/tools/animation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "skeletal-animation.skeletal-animation-events",
-      "state": "missing",
+      "workflowId": "animation.cocos-mcp-paste-node",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "skeletal-animation.skeletal-animation-play",
-      "state": "missing",
+      "workflowId": "animation.funplay-add-animation-clip",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add component-clip route; do not credit metadata configuration.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "terrain-model.model-import",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "modelImportConfigure",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "terrain-model.terrain",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "terrainInspect",
-          "file": "source/utcp/tools/expansion-tools.ts"
-        },
-        {
-          "tool": "terrainCreate",
-          "file": "source/utcp/tools/portfolio-validation-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
-    },
-    {
-      "workflowId": "terrain-model.terrain-edit",
-      "state": "missing",
+      "workflowId": "animation.funplay-list-animations",
+      "state": "unreviewed",
       "routes": [],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "tilemap-atlas.sprite-atlas",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "spriteAtlasConfigure",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "animation.funplay-play-animation",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "tilemap-atlas.tilemap",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "tilemapInspect",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        },
-        {
-          "tool": "tilemapValidate",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "animation.funplay-stop-animation",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "tilemap-atlas.tilemap-layer-edit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "tilemapLayerEdit",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "asset.cocos-mcp-copy-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "tilemap-atlas.tilemap-object-edit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "tilemapObjectEdit",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "asset.cocos-mcp-create-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "ui-layout.preview-resolution",
-      "state": "partial",
-      "routes": [
-        {
-          "tool": "previewResolutionSet",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "asset.cocos-mcp-delete-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "ui-layout.ui-accessibility-audit",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "uiAccessibilityAudit",
-          "file": "source/utcp/tools/ui-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "asset.cocos-mcp-export-asset-manifest",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     },
     {
-      "workflowId": "ui-layout.ui-responsive-preview",
-      "state": "complete",
-      "routes": [
-        {
-          "tool": "uiResponsivePreview",
-          "file": "source/utcp/tools/advanced-capability-tools.ts"
-        }
-      ],
-      "limitations": [],
-      "verificationIds": [],
-      "evidenceArtifacts": []
+      "workflowId": "asset.cocos-mcp-find-asset-by-name",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-generate-available-url",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-all-preferences",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-dependencies",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add dependency audit route or retain as missing.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-details",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-log-file-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-prefab-list",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-scene-list",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-unused-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-import-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-move-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-open-asset-external",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-db-ready",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-path",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-url",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-uuid",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-nodes-by-asset-uuid",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-preferences-config",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-refresh-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-reimport-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-save-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-save-asset-meta",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-set-preferences-config",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-delete-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-exists",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-get-editor-preference",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-get-file-snippet",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add line/radius parameters or separate project-file-snippet workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-inspect-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to asset info/meta route; do not credit list query.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-inspect-asset-dependencies",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add dependency audit route or retain as missing.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-list-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-list-prefabs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use assetQuery with explicit cc.Prefab adapter or separate workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-list-scenes",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use assetQuery cc.SceneAsset adapter/separate workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-open-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-read-file",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add line/radius parameters or separate project-file-snippet workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-refresh-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetOperate operation=open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-replace-in-file",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-search-files",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-set-editor-preference",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-validate-asset-dependencies",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add bounded audit route and missing list; no credit for assetFindReferences alone.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-write-file",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-batch-delete-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-batch-import-assets",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-compress-textures",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-validate-asset-references",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.funplay-create-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to assetCreate preset=scene; remove asset-query credit.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Preflight and import bounded explicit items with per-item outcome.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Bounded move/copy/delete/reimport with partial-failure accounting.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Platform-aware compression validation plus generated-output evidence.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed importer mutation with preflight, reimport and output read-back.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Cross-scene and asset missing-reference evidence with recovery locations.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "assets-import.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-asset-bundle-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate bundle metadata and actual runtime load/release behavior.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-asset-compatibility-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate format, decode/load mode, duration and target compatibility.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-control",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Play, pause, stop and seek on a named runtime source with state confirmation.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-observe",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Bounded playback progress/state observation with activation errors.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Normalized AudioSource and clip state including load mode and platform constraints.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed bounded source configuration with clip compatibility read-back.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-serve",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Serve one completed web artifact and return verified URL/lifecycle.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-log-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Return bounded structured diagnostics for one build task.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-preset-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate target-specific required/unsupported build options before dispatch.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-launch",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Launch the exact produced artifact on a declared target, not preview fallback.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-target-smoke",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Interact with and observe the launched artifact on its declared target.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-task-wait",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Wait boundedly for one build task terminal result with cancellation semantics.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-project-settings-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate cross-setting compatibility for the declared Creator/target profile.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-build-project",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Expose `tasks_info`/worker state as a dedicated status operation; do not conflate trigger/control.",
+        "Represent operation explicitly; no blanket build-status equivalence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-check-builder-status",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-get-build-settings",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Expose `tasks_info`/worker state as a dedicated status operation; do not conflate trigger/control.",
+        "Represent operation explicitly; no blanket build-status equivalence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-get-server-status",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-open-build-panel",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-start-preview-server",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.cocos-mcp-stop-preview-server",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.funplay-get-build-status",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Expose `tasks_info`/worker state as a dedicated status operation; do not conflate trigger/control.",
+        "Represent operation explicitly; no blanket build-status equivalence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.funplay-open-build-panel",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Expose `tasks_info`/worker state as a dedicated status operation; do not conflate trigger/control.",
+        "Represent operation explicitly; no blanket build-status equivalence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "build.parent-long-job",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Track a named job to a bounded terminal outcome.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-add-reference-image",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-clear-all-reference-images",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-get-prefab-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-instantiate-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-list-reference-images",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-query-current-reference-image",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-query-reference-image-config",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-refresh-reference-image",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-remove-reference-image",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-restore-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-restore-prefab-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-revert-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-set-reference-image-data",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-set-reference-image-opacity",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-set-reference-image-position",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-set-reference-image-scale",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-switch-reference-image",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-update-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-validate-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-apply-prefab-instance",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-create-prefab-instance",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-inspect-prefab-instance",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-instantiate-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-revert-prefab-instance",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-validate-prefab-references",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Apply a typed override set and verify source/instance result.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Instantiate and prove persistent prefab identity and overrides.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Structural live-instance versus prefab-source override diff with stable identities.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Detect broken or ambiguous nested prefab and override references after reload.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Revert selected overrides and verify restored values.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Finite persistent reference-image lifecycle with transform read-back.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate duplicate paths, invalid parenting and persistence invariants.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-reference-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate serialized node/component/asset references after reopen.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.cocos-mcp-get-broadcast-log",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.cocos-mcp-get-console-logs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.cocos-mcp-get-performance-stats",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.cocos-mcp-get-project-logs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.cocos-mcp-search-project-logs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.cocos-mcp-validate-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-get-performance-snapshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-get-recent-logs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-get-script-diagnostic-context",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-get-tool-catalog",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add dedicated catalog route or keep competitor-only.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-run-script-diagnostics",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-search-project-logs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "diagnostics.funplay-validate-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Require explicit composition and truthful per-check results; otherwise keep missing.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-align-camera-with-view",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-align-view-with-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-begin-undo-recording",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-cancel-undo-recording",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-gizmo-coordinate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-gizmo-pivot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-gizmo-tool",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-view-mode-2d-3d",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-end-undo-recording",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-focus-camera-on-nodes",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-get-active-listeners",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-get-editor-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-get-scene-view-status",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-listen-broadcast",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-component-has-script",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-coordinate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-pivot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-tool-name",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-view-mode",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-grid-visible",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-icon-gizmo-3d",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-icon-gizmo-size",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-scene-ready",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-view-mode-2d-3d",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-reset-scene-view",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-set-grid-visible",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-set-icon-gizmo-3d",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-set-icon-gizmo-size",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-stop-listening",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-capture-editor-screenshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-editor-selection",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add aggregate query or compose two reads with stable output.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-editor-state",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-project-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-selection",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add aggregate query or compose two reads with stable output.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-list-editor-windows",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-select-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add aggregate query or compose two reads with stable output.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-set-selection",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add aggregate query or compose two reads with stable output.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Discover enabled package, locales, compiled tables and resource mappings.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-preview",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Switch locale with acknowledged runtime restart and visual/read-back evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-table-edit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed persistent table mutation through documented package API.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Detect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.cocos-mcp-execute-script",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.cocos-mcp-get-project-settings",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.cocos-mcp-move-array-element",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.cocos-mcp-remove-array-element",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.funplay-create-cocos-mcp-project-skill",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use dedicated skill-generation workflow or explicit fixed-path policy.",
+        "Constrain path to skills and return created path.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.funplay-create-project-skill",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use dedicated skill-generation workflow or explicit fixed-path policy.",
+        "Constrain path to skills and return created path.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.funplay-list-directory",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.funplay-list-project-instructions",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add list route; retain read route separately.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.funplay-read-project-instruction",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "other.funplay-write-project-instruction",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use dedicated skill-generation workflow or explicit fixed-path policy.",
+        "Constrain path to skills and return created path.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed module/curve mutation with persistent read-back, not panel scraping.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Normalized modules, curves, gradients, assets and current configuration.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-playback",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Play, stop, clear and completion observation in a named runtime session.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate ranges, required textures/materials/modules and backend limits.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-compatibility-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reject unsupported backend/component/joint/matrix combinations.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Backend-aware settings and collision matrix mutation with read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-body",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Compound node/body/collider creation with backend preflight and persistence.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-joint",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed joint creation with endpoint validation and Builtin rejection.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-query",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Runtime raycast/contact/overlap queries identified by backend and session.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-topology-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Normalized backend, body, collider, group and joint topology.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Backend-aware settings mutation with version/platform read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-body",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Create one PhysX rigid-body node with one BoxCollider and bounded Vec3 size, with backend preflight, read-back and rollback.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-joint",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed constraint creation with backend-specific validation.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-query",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Runtime raycast, sweep, contact and trigger queries tied to backend/session.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-topology-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Normalized backend, rigidbody, collider, material and constraint topology.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.cocos-mcp-create-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.cocos-mcp-duplicate-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.cocos-mcp-load-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-create-prefab-from-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-duplicate-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-edit-prefab-json",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-inspect-prefab",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-check-server-connectivity",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-clear-broadcast-log",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-clear-console",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-export-preferences",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-format-mcp-request",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-get-network-interfaces",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-get-project-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-import-preferences",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-open-preferences-settings",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-query-server-ip-list",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-query-server-port",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-query-sorted-server-ip-list",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-reset-preferences",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-safe-string-value",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.cocos-mcp-validate-json-params",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "No implementation credit; retain traceability.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.funplay-broadcast-editor-message",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Trace as excluded; no parity credit for privileged arbitrary IPC.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.funplay-capture-desktop-screenshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Trace exclusion; no implementation.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.funplay-clear-logs",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Keep trace with product/safety exclusion; no parity credit.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.funplay-execute-editor-script",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Keep trace; no arbitrary eval parity.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "product.funplay-execute-javascript",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Do not count as equivalent; retain reviewed execute route separately.",
+        "Exclusion was suggested by a reviewer, not approved by the owner. Retain in denominator pending explicit scope decision.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-light-bake-manage",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Finite bake job lifecycle and output asset verification.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-material-edit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Atomic camera/light/fog/skybox configuration with scene read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-diagnostics-collect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Target-identified frame/render sampling with bounded results.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-pipeline-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Bounded native pipeline read-back through scene/query-render-pipeline; normalized compatibility diagnostics remain out of scope.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-shader-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Return real effect importer/compiler diagnostics tied to source locations.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-assert",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Independent state/image/event assertions rather than request echo.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-run",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Execute finite named steps only; no code string or general method dispatch.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-state-observe",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Bounded allow-listed observations tied to session identity and target kind.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.cocos-mcp-run-project",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-capture-game-screenshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "New qualified Game View target; current route cannot receive parity.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-capture-preview-screenshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add identified preview-window capture; do not merge with editor assertion.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-capture-scene-screenshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-check-for-updates",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement release API route or mark missing; current competitor-only row is not acceptance.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-emit-node-event",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add allowlisted event dispatch with payload and emitted confirmation, or keep missing.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-get-hierarchy",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-get-preview-mode",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to preview URL/mode route; do not merge with lifecycle.",
+        "Add bounded preview mode route with supported mode enum and previous-mode read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-get-runtime-state",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-pause-runtime",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-resume-runtime",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-run-project-preview",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Split by transport; unsupported transports remain unaccepted.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-run-scene-asset",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add runtime scene-load operation with session/scene read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-set-preview-mode",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to preview URL/mode route; do not merge with lifecycle.",
+        "Add bounded preview mode route with supported mode enum and previous-mode read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-set-time-scale",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Do not accept until native Game View transport is qualified; retain missing/unsupported outcome.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-simulate-button-click",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-simulate-key-combo",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-simulate-key-press",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-simulate-mouse-click",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-simulate-mouse-drag",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.funplay-simulate-preview-input",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Require session/window identity; browser/simulator unsupported unless qualified.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.parent-golden-tracer",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Run scene through compile, preview, input, observation, capture and build smoke.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.parent-runtime-capture",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Capture bounded visual evidence of the intended runtime target.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.parent-runtime-input",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Dispatch allow-listed input to the intended runtime target.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.parent-runtime-observation",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Observe allow-listed state from the actual runtime.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "runtime.parent-runtime-session",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Identify, start, observe and stop one bounded Game View runtime session.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-add-component",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-attach-script",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-close-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-create-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-create-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-delete-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-detect-node-type",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-duplicate-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-execute-component-method",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-execute-scene-script",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-find-node-by-name",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-find-nodes",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-all-nodes",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-available-components",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-component-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-components",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-current-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-node-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-node-tree",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-scene-hierarchy",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-move-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-open-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-query-scene-classes",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-query-scene-components",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-query-scene-dirty",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-remove-component",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-reset-component",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to nodeReset operation=property with component reference.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-reset-node-property",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to nodeReset operation=property with component reference.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-reset-node-transform",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to nodeReset operation=property with component reference.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-save-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-save-scene-as",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-scene-snapshot",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-scene-snapshot-abort",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implement or compose the distinct bounded target contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-set-component-property",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-set-node-property",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-set-node-transform",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-soft-reload-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-add-component",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-bind-button-click-event",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add target reference or separate workflow; retain bounded current route.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-button",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Credit generic route only for node creation; add/retain specialized createButton contract.",
+        "Credit specialized createSprite for full contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-camera",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add camera-specific create route; do not merge with primitive creation.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-canvas",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Credit generic route only for node creation; add/retain specialized createButton contract.",
+        "Credit specialized createSprite for full contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-label",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-sprite",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Credit generic route only for node creation; add/retain specialized createButton contract.",
+        "Credit specialized createSprite for full contract.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-delete-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-execute-scene-script",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-find-nodes",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-get-scene-info",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-inspect-component",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-inspect-node",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-invoke-component-method",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-list-button-click-events",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add read route; do not merge with simulation.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-list-cameras",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Add bounded camera query route.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-list-components",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-open-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-remove-component",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-reset-component-property",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Map to nodeReset operation=property with component reference.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-save-current-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-set-camera-properties",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use inspectorSet with camera component path or add typed camera route.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-set-component-property",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-set-node-transform",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-input-form",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-scroll-view",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-apply",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.parent-compound-scene",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Create a complete scene/UI composition with stable identities.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "scene.parent-mutation-workflow",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Mutate editor state with preflight, postcondition and recovery.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Configure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-events",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Bounded ordered event observation tied to one playback session.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed skins, tracks, sockets, animations and extension availability.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-play",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Bounded play/queue/stop contract on a named runtime target.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed import, reimport and mesh/skeleton/LOD output validation.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-create",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Create and attach a valid terrain asset/component with reopen proof.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Persistent bounded height/layer mutation through a supported API.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed terrain dimensions, layers, materials and asset references.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-sprite-atlas-configure",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-inspect",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed TMX map, layer, object and tileset inspection after Creator import.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-layer-edit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Persistent layer mutation without corrupting source TMX.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-object-edit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Persistent typed object-layer mutation with TMX round-trip.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-validate",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Validate tileset links, gids, layer dimensions and imported references.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-preview-resolution-set",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Set and read back target resolution through proven IPC.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-accessibility-audit",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Typed constraint tree and computed world rectangles, not a generic property dump.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-responsive-preview",
+      "state": "unreviewed",
+      "routes": [],
+      "evidenceArtifacts": [],
+      "limitations": [
+        "Render and compare one scene across declared resolutions with target-specific evidence.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
     }
   ]
 }
