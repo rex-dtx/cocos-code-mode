@@ -2223,10 +2223,17 @@
       "portfolioNames": [
         "audioAssetCompatibilityAudit"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "audioAssetCompatibilityAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/audioAssetCompatibilityAudit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate format, decode/load mode, duration and target compatibility.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -2364,10 +2371,17 @@
       "portfolioNames": [
         "audioSourceConfigure"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "audioSourceConfigure",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/audioSourceConfigure/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed bounded source configuration with clip compatibility read-back.",
         "Historical qualified label alone is not complete-contract evidence.",

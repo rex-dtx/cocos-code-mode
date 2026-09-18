@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 288,
+  "requiredFor90": 286,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -713,18 +713,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-asset-compatibility-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Implemented bounded target-aware format/import-state audit using public asset-db metadata; focused unit suite passes 8/8. It deliberately does not claim decode or duration proof, and live qualification remains pending. Prerequisites: `audio-import-contract`.\nValidate format, decode/load mode, duration and target compatibility.",
-      "limitations": [
-        "Validate format, decode/load mode, duration and target compatibility.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-control",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -742,18 +730,6 @@
       "acceptance": "Bounded playback progress/state observation with activation errors. Prerequisites: `runtime-session`.\nBounded playback progress/state observation with activation errors.",
       "limitations": [
         "Bounded playback progress/state observation with activation errors.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Implemented conservative typed bounded source configuration for volume, loop, playOnAwake and proven `cc.AudioClip` UUIDs with read-back and rollback; live evidence remains pending. Prerequisites: `audio-schema`, `mutation-workflow`.\nTyped bounded source configuration with clip compatibility read-back.",
-      "limitations": [
-        "Typed bounded source configuration with clip compatibility read-back.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

@@ -769,10 +769,17 @@
     },
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-asset-compatibility-audit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "audioAssetCompatibilityAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/audioAssetCompatibilityAudit/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate format, decode/load mode, duration and target compatibility.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -822,10 +829,17 @@
     },
     {
       "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "audioSourceConfigure",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/audioSourceConfigure/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed bounded source configuration with clip compatibility read-back.",
         "Historical qualified label alone is not complete-contract evidence.",

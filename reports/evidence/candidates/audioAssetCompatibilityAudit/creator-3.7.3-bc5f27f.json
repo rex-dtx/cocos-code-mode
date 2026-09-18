@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "audioAssetCompatibilityAudit",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/audio-asset-compatibility-audit.test.js", "result": "Audited discovered AudioClip for web-mobile with bounded issues and no decode/duration claims; missing asset returned ASSET_NOT_FOUND." },
+  "negativeWitness": { "test": "candidate.audioAssetCompatibilityAudit.negative.v1", "result": "Missing asset and wrong asset type produced typed bounded outcomes." },
+  "persistence": "Read-only asset compatibility audit",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}
