@@ -79,7 +79,12 @@ export const methods: { [key: string]: (...any: any) => any } = {
             snapshot.http = { status: 'error', detail: 'Server changed during this check. Check status again.' };
             snapshot.probe = null;
         }
-        return { ...snapshot, sessions: server === utcpServer && server?.port ? server.sessionPresence.snapshot() : [] };
+        const current = server === utcpServer && server?.port ? server : null;
+        return {
+            ...snapshot,
+            sessions: current ? current.sessionPresence.snapshot() : [],
+            activity: current ? current.requestActivity.snapshot() : { activeCount: 0, active: [], overflowCount: 0, lastFinished: null },
+        };
     },
     openAgentInbox() {
         return Editor.Panel.open(`${packageJSON.name}.prompt`);
