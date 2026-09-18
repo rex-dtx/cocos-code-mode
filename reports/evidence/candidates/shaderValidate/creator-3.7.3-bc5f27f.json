@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "shaderValidate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/validation-graph-qualification.test.js#GRAPH-V01", "result": "Validated builtin-standard effect with valid=true." },
+  "negativeWitness": { "test": "candidate.shaderValidate.negative.v1", "result": "Missing effect returned valid=false with EFFECT_NOT_FOUND diagnostic." },
+  "persistence": "Read-only effect registry validation",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

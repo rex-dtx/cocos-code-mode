@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "animationGraphInspect",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/validation-graph-qualification.test.js#GRAPH-V02/V03", "result": "Inspected imported JSON graph node/transition structure and native animation graph stable reference read-back." },
+  "negativeWitness": { "test": "candidate.animationGraphInspect.negative.v1", "result": "Missing graph returned TARGET_NOT_FOUND." },
+  "persistence": "Imported graph asset identity and typed read-back",
+  "cleanup": "Disposable graph assets deleted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

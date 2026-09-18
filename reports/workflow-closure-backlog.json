@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 286,
+  "requiredFor90": 283,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -17,36 +17,12 @@
       "dependencies": []
     },
     {
-      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-inspect",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Typed layers, states, transitions, variables and masks from native serialized data. Prerequisites: `animation-graph-format`.\nTyped layers, states, transitions, variables and masks from native serialized data.",
-      "limitations": [
-        "Typed layers, states, transitions, variables and masks from native serialized data.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "Run graph and observe transitions/events in a named runtime session. Prerequisites: `runtime-session`.\nRun graph and observe transitions/events in a named runtime session.",
       "limitations": [
         "Run graph and observe transitions/events in a named runtime session.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Validate unreachable states, missing clips, invalid variables and transition conditions. Prerequisites: `animation-graph-format`.\nValidate unreachable states, missing clips, invalid variables and transition conditions.",
-      "limitations": [
-        "Validate unreachable states, missing clips, invalid variables and transition conditions.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -2257,18 +2233,6 @@
       "acceptance": "Target-identified frame/render sampling with bounded results. Prerequisites: `runtime-session`.\nTarget-identified frame/render sampling with bounded results.",
       "limitations": [
         "Target-identified frame/render sampling with bounded results.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-shader-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Return real effect importer/compiler diagnostics tied to source locations. Prerequisites: `effect-compiler-diagnostics`.\nReturn real effect importer/compiler diagnostics tied to source locations.",
-      "limitations": [
-        "Return real effect importer/compiler diagnostics tied to source locations.",
-        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

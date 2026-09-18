@@ -5,18 +5,18 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 35,
-  "implementationPercent": 9.83,
+  "confirmedComplete": 38,
+  "implementationPercent": 10.67,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 286,
+  "deficitTo90": 283,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
       "total": 6,
-      "complete": 1,
+      "complete": 3,
       "unreviewed": 0,
-      "implementationPercent": 16.67
+      "implementationPercent": 50
     },
     "animation": {
       "total": 7,
@@ -116,9 +116,9 @@
     },
     "rendering-materials": {
       "total": 6,
-      "complete": 2,
+      "complete": 3,
       "unreviewed": 0,
-      "implementationPercent": 33.33
+      "implementationPercent": 50
     },
     "runtime-qa": {
       "total": 3,
