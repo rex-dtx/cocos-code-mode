@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "method": "three parallel read-only investigations",
+  "branches": {
+    "assetBundleValidate": { "current": "metadata-only", "required": ["runtime session", "real bundle fixture", "load", "release"], "completeSliceAvailable": false },
+    "physics2dQuery": { "current": "editor topology alias", "feasiblePartial": ["runtime raycast", "point overlap", "AABB overlap"], "missingForAcceptedContract": ["bounded contact observation"], "completeSliceAvailable": false },
+    "physics3dQuery": { "current": "editor topology alias", "required": ["runtime raycast", "sweep", "contact", "trigger", "backend identity", "session identity"], "completeSliceAvailable": false }
+  },
+  "verification": {
+    "gameViewTransportUnit": "2/2 pass",
+    "runtimeSessionUnit": "13/13 pass",
+    "validationGraphLive": "3/3 pass"
+  },
+  "decision": "Do not add partial public contracts or promote coverage. The safe acceleration strategy is parallel discovery and independent fixture work; shared runtime adapter implementation must remain serialized until each accepted contract has a complete bounded design and witness fixture."
+}
