@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "tool": "animationRetargetValidate",
+  "endpoint": "http://localhost:51009",
+  "buildCommit": "bc5f27f",
+  "unitVerification": { "test": "tests/unit/p3-remaining-capabilities.test.js", "passed": ["matching joints", "joint mismatch", "missing metadata fail-closed"] },
+  "liveProbe": { "importer": "fbx", "assetsProbed": 2, "result": "UNSUPPORTED_METADATA", "sourceJointCount": 0, "targetJointCount": 0 },
+  "decision": "Do not promote animationRetargetValidate: implementation and unit contract are sound, but active Creator FBX fixtures expose no skeleton joint metadata. A real skeletal model fixture is required for live positive evidence.",
+  "qualified": false
+}
