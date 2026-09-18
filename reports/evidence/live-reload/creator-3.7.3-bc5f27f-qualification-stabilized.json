@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T13:16:00+07:00",
+  "target": { "creator": "3.7.3", "platform": "windows-x64", "project": "G:/_ws/_helpers/cc-3x-test", "endpoint": "http://localhost:51225", "buildCommit": "bc5f27f", "dirty": false, "sceneUuid": "ad50bcdb-60b3-4b17-8f28-6ca81a22f057" },
+  "candidateSuite": { "passed": 7, "failed": 0, "skipped": 4 },
+  "readinessSuite": { "passed": 0, "failed": 1, "reason": "scene remains dirty after prior fixture/test activity despite candidate cleanup save" },
+  "change": "Candidate topology cleanup now explicitly calls sceneManage(save).",
+  "qualification": false,
+  "limitations": ["Readiness failure remains project-state contamination outside candidate cleanup path; no candidate promotion."]
+}

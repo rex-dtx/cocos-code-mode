@@ -165,6 +165,8 @@ return out;`,
         code: `const sc=cc.director.getScene();for(const name of ['__candidate_particle__','__candidate_terrain__','__candidate_p2__','__candidate_p2_bad__','__candidate_p3__','__candidate_p3_bad__','__candidate_audio__']){const n=sc.getChildByName(name);if(n){n.removeFromParent();n.destroy();}}return true;`,
       });
       assert.equal(cleanup.status, 200, JSON.stringify(cleanup.body));
+      const saved = await postTool('sceneManage', { operation: 'save' });
+      assert.equal(saved.status, 200, JSON.stringify(saved.body));
     }
     });
   });
