@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T11:52:00+07:00",
+  "target": {
+    "creator": "3.7.3",
+    "platform": "windows-x64",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "endpoint": "http://localhost:55609",
+    "instanceId": "d92db34e84132eda91431e87890a32a0",
+    "buildCommit": "d56cc53",
+    "dirty": false,
+    "manualTools": 216
+  },
+  "positive": {
+    "test": "tests/live/runtime-session-workflow.test.js#RUNTIME-SESSION-01",
+    "result": "start, attach, observe, wait, assert, scenario run and preview inspect passed through actual Game View renderer"
+  },
+  "negative": {
+    "result": "stop postcondition failed with RUNTIME_NOT_READY because the preview renderer disappeared before stop read-back"
+  },
+  "qualification": false,
+  "limitations": [
+    "Runtime start path no longer timed out; stop remains nondeterministic and requires a separate bounded fix.",
+    "No candidate promotion or coverage increase follows from a partial live workflow."
+  ]
+}
