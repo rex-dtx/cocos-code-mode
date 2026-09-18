@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "skeletalAnimationInspect",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/animation-atlas-qualification.test.js", "result": "Inspected a real SkeletalAnimation node, returned typed clip inventory and untruncated total." },
+  "negativeWitness": { "test": "candidate.skeletalAnimationInspect.negative.v1", "result": "Invalid maxClips rejected with HTTP 400." },
+  "persistence": "Read-only serialized component inspection",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

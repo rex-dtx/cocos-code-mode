@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "skeletalAnimationValidate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/animation-atlas-qualification.test.js", "result": "Validated a real SkeletalAnimation node as valid and matched clip count to inspection read-back." },
+  "negativeWitness": { "test": "candidate.skeletalAnimationValidate.negative.v1", "result": "Missing/invalid node and bounded clip input paths fail with typed outcomes." },
+  "persistence": "Read-only serialized component validation",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

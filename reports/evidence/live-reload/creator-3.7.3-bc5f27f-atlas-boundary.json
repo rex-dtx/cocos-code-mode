@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T15:15:00+07:00",
+  "target": { "creator": "3.7.3", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "buildCommit": "bc5f27f" },
+  "result": { "skeletalInspectValidate": "pass", "spriteAtlasConfigure": "fixture missing" },
+  "limitation": "The hard-coded auto-atlas UUID is absent from this qualification project; spriteAtlasConfigure is not promoted."
+}
