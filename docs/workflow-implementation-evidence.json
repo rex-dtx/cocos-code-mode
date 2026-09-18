@@ -3951,10 +3951,17 @@
     },
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "routes": [
+        {
+          "tool": "modelImportConfigure",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/modelImportConfigure/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Typed import, reimport and mesh/skeleton/LOD output validation.",
         "Historical qualified label alone is not complete-contract evidence.",

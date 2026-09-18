@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "modelImportConfigure",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/candidate-expansion-qualification.test.js#FBX importer round-trip", "result": "Discovered an FBX fixture, copied it to a disposable project asset, changed one mutable importer setting, verified read-back and restored/deleted the copy." },
+  "negativeWitness": { "test": "candidate.modelImportConfigure.negative.v1", "result": "Unsupported importer setting/path rejected before mutation." },
+  "persistence": "Importer metadata mutation and read-back",
+  "cleanup": "Disposable FBX copy deleted in finally",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

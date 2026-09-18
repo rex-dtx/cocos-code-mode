@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 281,
+  "requiredFor90": 280,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -3300,18 +3300,6 @@
       "acceptance": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support. Prerequisites: `skeletal-extension-detection`.\nValidate skeleton/atlas/textures, named animations, skins and runtime extension support.",
       "limitations": [
         "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Typed import, reimport and mesh/skeleton/LOD output validation. Prerequisites: `importer-schema`, `asset-reimport`, `model-skeleton-metadata`.\nTyped import, reimport and mesh/skeleton/LOD output validation.",
-      "limitations": [
-        "Typed import, reimport and mesh/skeleton/LOD output validation.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
