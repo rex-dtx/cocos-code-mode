@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:55609",
+  "buildCommit": "bc5f27f",
+  "uiAction": { "operation": "toolbar click", "result": "accepted" },
+  "runtimeStart": { "status": "timeout", "tool": "runtimePreviewControl", "operation": "start", "message": "Request timed out after 30000ms" },
+  "postTimeoutState": { "operation": "state", "status": 200, "previewState": "stop", "enabled": false, "ready": false, "sceneUuid": "" },
+  "liveWitness": { "test": "tests/live/runtime-session-error-scenarios.test.js", "status": "failed", "error": "RUNTIME_STATE_TIMEOUT", "expected": 200, "actual": 409 },
+  "logs": { "status": "failed", "code": "LOG_UNAVAILABLE", "cause": "EPERM opening project temp/logs/project.log" },
+  "decision": "Creator preview lifecycle is stuck before Game View host readiness. Do not retry mutations indefinitely or implement bundle/physics runtime routes without a verified session. Fix Creator preview/log permissions or restart the exact project, then rerun the bounded witness.",
+  "qualified": false
+}
