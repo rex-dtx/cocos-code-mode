@@ -3470,9 +3470,16 @@
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
-      "state": "unreviewed",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "routes": [
+        {
+          "tool": "skeletalAnimationConfigure",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/skeletalAnimationConfigure/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Configure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
         "Historical qualified label alone is not complete-contract evidence.",
