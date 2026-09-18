@@ -2236,9 +2236,16 @@
       "portfolioNames": [
         "audioSourceAudit"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "audioSourceAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Normalized AudioSource and clip state including load mode and platform constraints.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -2521,9 +2528,16 @@
       "portfolioNames": [
         "projectSettingsValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "projectSettingsValidate",
+          "file": "source/utcp/tools/project-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/projectSettingsValidate/creator-3.7.3-d967c2e.json"
+      ],
       "limitations": [
         "Validate cross-setting compatibility for the declared Creator/target profile.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -3779,9 +3793,16 @@
       "portfolioNames": [
         "sceneHierarchyValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "sceneHierarchyValidate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Validate duplicate paths, invalid parenting and persistence invariants.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -5759,9 +5780,16 @@
       "portfolioNames": [
         "particleInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "particleInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Normalized modules, curves, gradients, assets and current configuration.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -5832,9 +5860,16 @@
       "portfolioNames": [
         "particleValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "particleValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Validate ranges, required textures/materials/modules and backend limits.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -5865,9 +5900,16 @@
       "portfolioNames": [
         "physics2dCompatibilityAudit"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics2dCompatibilityAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Reject unsupported backend/component/joint/matrix combinations.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -5930,9 +5972,16 @@
       "portfolioNames": [
         "physics2dCreateBody"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics2dCreateBody",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Compound node/body/collider creation with backend preflight and persistence.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -5963,9 +6012,16 @@
       "portfolioNames": [
         "physics2dCreateJoint"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics2dCreateJoint",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Typed joint creation with endpoint validation and Builtin rejection.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -6029,9 +6085,16 @@
       "portfolioNames": [
         "physics2dTopologyAudit"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics2dTopologyAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Normalized backend, body, collider, group and joint topology.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -6094,9 +6157,16 @@
       "portfolioNames": [
         "physics3dCreateBody"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics3dCreateBody",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Create one PhysX rigid-body node with one BoxCollider and bounded Vec3 size, with backend preflight, read-back and rollback.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -6127,9 +6197,16 @@
       "portfolioNames": [
         "physics3dCreateJoint"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics3dCreateJoint",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Typed constraint creation with backend-specific validation.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -6193,9 +6270,16 @@
       "portfolioNames": [
         "physics3dTopologyAudit"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics3dTopologyAudit",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Normalized backend, rigidbody, collider, material and constraint topology.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -6226,9 +6310,16 @@
       "portfolioNames": [
         "physics3dValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "physics3dValidate",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Reject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -7113,9 +7204,16 @@
       "portfolioNames": [
         "materialEdit"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "materialEdit",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/materialEdit/creator-3.7.3-432ede0-dirty.json"
+      ],
       "limitations": [
         "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -7276,9 +7374,16 @@
       "portfolioNames": [
         "runtimeScenarioAssert"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "runtimeScenarioAssert",
+          "file": "source/utcp/tools/runtime-session-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/runtimeScenarioAssert/creator-3.7.3-432ede0-dirty.json"
+      ],
       "limitations": [
         "Independent state/image/event assertions rather than request echo.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -7309,9 +7414,16 @@
       "portfolioNames": [
         "runtimeScenarioRun"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "runtimeScenarioRun",
+          "file": "source/utcp/tools/runtime-session-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/runtimeScenarioRun/creator-3.7.3-432ede0-dirty.json"
+      ],
       "limitations": [
         "Execute finite named steps only; no code string or general method dispatch.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -7342,9 +7454,16 @@
       "portfolioNames": [
         "runtimeStateObserve"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "runtimeStateObserve",
+          "file": "source/utcp/tools/runtime-session-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/runtimeStateObserve/creator-3.7.3-432ede0-dirty.json"
+      ],
       "limitations": [
         "Bounded allow-listed observations tied to session identity and target kind.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -10479,9 +10598,16 @@
       "portfolioNames": [
         "terrainCreate"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "terrainCreate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/terrainCreate/creator-3.7.3-3959132-dirty.json"
+      ],
       "limitations": [
         "Create and attach a valid terrain asset/component with reopen proof.",
         "Historical qualified label alone is not complete-contract evidence.",
@@ -10544,9 +10670,16 @@
       "portfolioNames": [
         "terrainInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "terrainInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/live-20260912-2bd5970.json"
+      ],
       "limitations": [
         "Typed terrain dimensions, layers, materials and asset references.",
         "Historical qualified label alone is not complete-contract evidence.",

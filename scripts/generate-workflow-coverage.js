@@ -18,6 +18,7 @@ function generate(root = ROOT) {
   const portfolioByName = new Map(portfolioRows.map(row => [row.name, row]));
   const evidenceByTool = new Map();
   const routeByTool = new Map();
+  const isQualifiedEvidenceRecord = record => record?.qualified === true && record?.creator === '3.7.3';
   const walk = directory => {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       const file = path.join(directory, entry.name);
@@ -25,11 +26,18 @@ function generate(root = ROOT) {
       else if (entry.isFile() && entry.name.endsWith('.json')) {
         try {
           const record = JSON.parse(fs.readFileSync(file, 'utf8'));
-          if (record.qualified === true && record.creator === '3.7.3' && record.tool) {
-            const relative = path.relative(root, file).replaceAll(path.sep, '/');
+          const relative = path.relative(root, file).replaceAll(path.sep, '/');
+          if (isQualifiedEvidenceRecord(record) && record.tool) {
             const list = evidenceByTool.get(record.tool) || [];
             list.push(relative);
             evidenceByTool.set(record.tool, list);
+          }
+          if (record.target?.creator === '3.7.3' && record.result?.failed === 0 && Array.isArray(record.witnesses)) {
+            for (const tool of record.witnesses) {
+              const list = evidenceByTool.get(tool) || [];
+              list.push(relative);
+              evidenceByTool.set(tool, list);
+            }
           }
         } catch { /* unrelated JSON is not candidate evidence */ }
       }
@@ -45,7 +53,7 @@ function generate(root = ROOT) {
       else if (entry.isFile() && entry.name.endsWith('.ts')) {
         const text = fs.readFileSync(file, 'utf8');
         for (const tool of portfolioRows.map(row => row.name)) {
-          if (!new RegExp(`@utcpTool\\(['\"]${tool}['\"]`).test(text)) continue;
+          if (!new RegExp(`@utcpTool\\s*\\(\\s*['\"]${tool}['\"]`).test(text)) continue;
           const list = routeByTool.get(tool) || [];
           list.push(path.relative(root, file).replaceAll(path.sep, '/'));
           routeByTool.set(tool, list);
