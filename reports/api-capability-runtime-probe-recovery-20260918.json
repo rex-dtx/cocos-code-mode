@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "endpoint": "http://localhost:56396",
+  "buildCommit": "bc5f27f",
+  "session": { "sessionId": "runtime-1", "sceneUuid": "1d918508-587a-46b4-b4a1-cb800f0ac03c", "webContentsId": 7, "running": true, "frameCount": 24721 },
+  "positiveWitness": { "tool": "runtimeScenarioAssert", "passed": true, "minFrameCount": 1, "stateObserved": true },
+  "negativeWitness": { "tool": "runtimeScenarioAssert", "code": "SESSION_NOT_FOUND", "status": 404 },
+  "runtimeQueries": {
+    "physics2dQuery": { "valid": true, "checkedNodes": 0, "complete": false, "reason": "topology query returned no runtime raycast/overlap/contact witness" },
+    "physics3dQuery": { "valid": true, "checkedNodes": 0, "complete": false, "reason": "topology query returned no runtime raycast/sweep/contact/trigger witness" },
+    "assetBundleValidate": { "code": "TARGET_NOT_FOUND", "reason": "known bundle fixture UUID does not exist in recovered project" }
+  },
+  "lifecycle": { "stop": "RUNTIME_NOT_READY", "reason": "actual Game View renderer lost consistent running scene during stop attempt" },
+  "decision": "Runtime session identity and state assertion are proven, but accepted bundle/physics contracts remain incomplete. No workflow coverage promotion.",
+  "qualified": false
+}
