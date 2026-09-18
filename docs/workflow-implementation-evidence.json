@@ -1966,7 +1966,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/live-20260912-2bd5970.json"
+        "reports/evidence/candidates/physics2dCreateBody/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Compound node/body/collider creation with backend preflight and persistence.",
@@ -1984,7 +1984,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/live-20260912-2bd5970.json"
+        "reports/evidence/candidates/physics2dCreateJoint/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Typed joint creation with endpoint validation and Builtin rejection.",
@@ -2059,7 +2059,7 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/live-20260912-2bd5970.json"
+        "reports/evidence/candidates/physics3dCreateJoint/creator-3.7.3-bc5f27f.json"
       ],
       "limitations": [
         "Typed constraint creation with backend-specific validation.",
