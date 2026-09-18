@@ -1,10 +1,62 @@
 {
   "schemaVersion": 2,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
-  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
-  "status": "blocked-on-contract-review",
-  "requiredFor90": null,
+  "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "status": "ready-for-implementation-reconciliation",
+  "requiredFor90": 316,
   "rows": [
+    {
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
+      "state": "unreviewed",
+      "acceptance": "Persistent bounded graph mutations independent of panel selection state. Prerequisites: `animation-graph-write`.\nPersistent bounded graph mutations independent of panel selection state.",
+      "limitations": [
+        "Persistent bounded graph mutations independent of panel selection state.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-inspect",
+      "state": "unreviewed",
+      "acceptance": "Typed layers, states, transitions, variables and masks from native serialized data. Prerequisites: `animation-graph-format`.\nTyped layers, states, transitions, variables and masks from native serialized data.",
+      "limitations": [
+        "Typed layers, states, transitions, variables and masks from native serialized data.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
+      "state": "unreviewed",
+      "acceptance": "Run graph and observe transitions/events in a named runtime session. Prerequisites: `runtime-session`.\nRun graph and observe transitions/events in a named runtime session.",
+      "limitations": [
+        "Run graph and observe transitions/events in a named runtime session.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-validate",
+      "state": "unreviewed",
+      "acceptance": "Validate unreachable states, missing clips, invalid variables and transition conditions. Prerequisites: `animation-graph-format`.\nValidate unreachable states, missing clips, invalid variables and transition conditions.",
+      "limitations": [
+        "Validate unreachable states, missing clips, invalid variables and transition conditions.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
+      "state": "unreviewed",
+      "acceptance": "Check skeleton, joint and clip compatibility without claiming automatic retargeting. Prerequisites: `model-skeleton-metadata`.\nCheck bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
+      "limitations": [
+        "Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
     {
       "workflowId": "animation.cocos-mcp-copy-node",
       "state": "unreviewed",
@@ -550,6 +602,169 @@
       "dependencies": []
     },
     {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
+      "state": "unreviewed",
+      "acceptance": "Preflight and import bounded explicit items with per-item outcome. Prerequisites: `asset-import-contract`, `mutation-workflow`.\nPreflight and import bounded explicit items with per-item outcome.",
+      "limitations": [
+        "Preflight and import bounded explicit items with per-item outcome.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
+      "state": "unreviewed",
+      "acceptance": "Bounded move/copy/delete/reimport with partial-failure accounting. Prerequisites: `asset-operate-contract`, `mutation-workflow`.\nBounded move/copy/delete/reimport with partial-failure accounting.",
+      "limitations": [
+        "Bounded move/copy/delete/reimport with partial-failure accounting.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
+      "state": "unreviewed",
+      "acceptance": "Implemented platform-aware settings mutation, but no successful generated build artifact was available; release qualification remains open.\nPlatform-aware compression validation plus generated-output evidence.",
+      "limitations": [
+        "Platform-aware compression validation plus generated-output evidence.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
+      "state": "unreviewed",
+      "acceptance": "Implemented typed importer mutation, reimport and read-back; consumed by the live atlas fixture. Candidate approval remains open.\nTyped importer mutation with preflight, reimport and output read-back.",
+      "limitations": [
+        "Typed importer mutation with preflight, reimport and output read-back.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
+      "state": "unreviewed",
+      "acceptance": "Cross-scene and asset missing-reference evidence with recovery locations. Prerequisites: `graph-v4`, `asset-query-contract`.\nCross-scene and asset missing-reference evidence with recovery locations.",
+      "limitations": [
+        "Cross-scene and asset missing-reference evidence with recovery locations.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "assets-import.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-asset-bundle-validate",
+      "state": "unreviewed",
+      "acceptance": "Validate bundle metadata and actual runtime load/release behavior. Prerequisites: `runtime-session`.\nValidate bundle metadata and actual runtime load/release behavior.",
+      "limitations": [
+        "Validate bundle metadata and actual runtime load/release behavior.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-asset-compatibility-audit",
+      "state": "unreviewed",
+      "acceptance": "Implemented bounded target-aware format/import-state audit using public asset-db metadata; focused unit suite passes 8/8. It deliberately does not claim decode or duration proof, and live qualification remains pending. Prerequisites: `audio-import-contract`.\nValidate format, decode/load mode, duration and target compatibility.",
+      "limitations": [
+        "Validate format, decode/load mode, duration and target compatibility.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-control",
+      "state": "unreviewed",
+      "acceptance": "Play, pause, stop and seek on a named runtime source with state confirmation. Prerequisites: `runtime-session`.\nPlay, pause, stop and seek on a named runtime source with state confirmation.",
+      "limitations": [
+        "Play, pause, stop and seek on a named runtime source with state confirmation.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-playback-observe",
+      "state": "unreviewed",
+      "acceptance": "Bounded playback progress/state observation with activation errors. Prerequisites: `runtime-session`.\nBounded playback progress/state observation with activation errors.",
+      "limitations": [
+        "Bounded playback progress/state observation with activation errors.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-audit",
+      "state": "unreviewed",
+      "acceptance": "Normalize AudioSource configuration and referenced clip state, including documented load/import and target-compatibility context, without claiming runtime playback or decode proof. Prerequisites: audio-schema.\nNormalized AudioSource and clip state including load mode and platform constraints.",
+      "limitations": [
+        "Normalized AudioSource and clip state including load mode and platform constraints.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "audio.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-audio-source-configure",
+      "state": "unreviewed",
+      "acceptance": "Implemented conservative typed bounded source configuration for volume, loop, playOnAwake and proven `cc.AudioClip` UUIDs with read-back and rollback; live evidence remains pending. Prerequisites: `audio-schema`, `mutation-workflow`.\nTyped bounded source configuration with clip compatibility read-back.",
+      "limitations": [
+        "Typed bounded source configuration with clip compatibility read-back.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-log-inspect",
+      "state": "unreviewed",
+      "acceptance": "Implemented distinct read-only task diagnostics inspection using one builder task query, typed query/not-found/invalid-response failures, diagnostic normalization, fallback field selection and bounded entry count/bytes; project build and 5 focused unit tests pass, live evidence remains pending. Prerequisites: `build-job`.\nReturn bounded structured diagnostics for one build task.",
+      "limitations": [
+        "Return bounded structured diagnostics for one build task.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-preset-audit",
+      "state": "unreviewed",
+      "acceptance": "Current primary ledger marks the bounded target-profile contract qualified. Earlier live-pending note is superseded; exact profile/options coverage and current-artifact evidence still constrain release acceptance.\nValidate target-specific required/unsupported build options before dispatch.",
+      "limitations": [
+        "Validate target-specific required/unsupported build options before dispatch.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-task-wait",
+      "state": "unreviewed",
+      "acceptance": "Wait boundedly for one build task terminal result with cancellation semantics. Prerequisites: `build-job`.\nWait boundedly for one build task terminal result with cancellation semantics.",
+      "limitations": [
+        "Wait boundedly for one build task terminal result with cancellation semantics.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "build-platform.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-project-settings-validate",
+      "state": "unreviewed",
+      "acceptance": "Validate cross-setting compatibility for the declared Creator/target profile. Prerequisites: `project-settings-read`, `build-schema`.\nValidate cross-setting compatibility for the declared Creator/target profile.",
+      "limitations": [
+        "Validate cross-setting compatibility for the declared Creator/target profile.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
       "workflowId": "build.cocos-mcp-build-project",
       "state": "unreviewed",
       "acceptance": "build_project",
@@ -636,6 +851,16 @@
       "limitations": [
         "Expose `tasks_info`/worker state as a dedicated status operation; do not conflate trigger/control.",
         "Represent operation explicitly; no blanket build-status equivalence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "build.parent-long-job",
+      "state": "unreviewed",
+      "acceptance": "Track a named build/import job to terminal outcome with bounded diagnostics and cancellation semantics.",
+      "limitations": [
+        "Track a named job to a bounded terminal outcome.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -864,6 +1089,92 @@
       "state": "unreviewed",
       "acceptance": "- *Tính năng:* Kiểm tra các file `.prefab` xem có tham chiếu UUID nào bị gãy không.\n    - *Inputs:* `pattern?: string`.\n    - *Outputs:* `{ valid: boolean, brokenPrefabs: string[] }`.\n    - *Cơ chế:* Đọc file prefab đĩa và tra cứu UUID trên asset-db.",
       "limitations": [
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
+      "state": "unreviewed",
+      "acceptance": "Typed source read-back and hashes are implemented, but live apply returned `Failed to apply prefab` on the writable fixture; unqualified.\nApply a typed override set and verify source/instance result.",
+      "limitations": [
+        "Apply a typed override set and verify source/instance result.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
+      "state": "unreviewed",
+      "acceptance": "Live instantiate and snapshot evidence exists; broader persistent identity qualification remains open.\nInstantiate and prove persistent prefab identity and overrides.",
+      "limitations": [
+        "Instantiate and prove persistent prefab identity and overrides.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
+      "state": "unreviewed",
+      "acceptance": "Structural live-instance versus prefab-source override diff with stable identities. Prerequisites: `live-prefab-identity`, `asset-query-contract`.\nStructural live-instance versus prefab-source override diff with stable identities.",
+      "limitations": [
+        "Structural live-instance versus prefab-source override diff with stable identities.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
+      "state": "unreviewed",
+      "acceptance": "Detect broken or ambiguous nested prefab and override references after reload. Prerequisites: `live-prefab-identity`, `graph-v4`.\nDetect broken or ambiguous nested prefab and override references after reload.",
+      "limitations": [
+        "Detect broken or ambiguous nested prefab and override references after reload.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
+      "state": "unreviewed",
+      "acceptance": "Full restore delegates to Creator; selective paths are explicitly rejected with `UNSUPPORTED_SELECTIVE_REVERT` on Creator 3.7.3.\nRevert selected overrides and verify restored values.",
+      "limitations": [
+        "Revert selected overrides and verify restored values.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
+      "state": "unreviewed",
+      "acceptance": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.\nFinite persistent reference-image lifecycle with transform read-back.",
+      "limitations": [
+        "Finite persistent reference-image lifecycle with transform read-back.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
+      "state": "unreviewed",
+      "acceptance": "Validate duplicate paths, invalid parenting and persistence invariants. Prerequisites: `scene-query-contract`.\nValidate duplicate paths, invalid parenting and persistence invariants.",
+      "limitations": [
+        "Validate duplicate paths, invalid parenting and persistence invariants.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-reference-validate",
+      "state": "unreviewed",
+      "acceptance": "Validate serialized node/component/asset references after reopen. Prerequisites: `graph-v4`, `live-prefab-identity`.\nValidate serialized node/component/asset references after reopen.",
+      "limitations": [
+        "Validate serialized node/component/asset references after reopen.",
+        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -1326,6 +1637,46 @@
       "dependencies": []
     },
     {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-inspect",
+      "state": "unreviewed",
+      "acceptance": "Discover enabled package, locales, compiled tables and resource mappings. Prerequisites: `localization-package-api`.\nDiscover enabled package, locales, compiled tables and resource mappings.",
+      "limitations": [
+        "Discover enabled package, locales, compiled tables and resource mappings.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-preview",
+      "state": "unreviewed",
+      "acceptance": "Switch locale with acknowledged runtime restart and visual/read-back evidence. Prerequisites: `runtime-session`, `localization-package-api`.\nSwitch locale with acknowledged runtime restart and visual/read-back evidence.",
+      "limitations": [
+        "Switch locale with acknowledged runtime restart and visual/read-back evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-table-edit",
+      "state": "unreviewed",
+      "acceptance": "Typed persistent table mutation through documented package API. Prerequisites: `localization-package-api`.\nTyped persistent table mutation through documented package API.",
+      "limitations": [
+        "Typed persistent table mutation through documented package API.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
+      "state": "unreviewed",
+      "acceptance": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+      "limitations": [
+        "Detect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
       "workflowId": "other.cocos-mcp-execute-script",
       "state": "unreviewed",
       "acceptance": "execute_script",
@@ -1418,6 +1769,168 @@
       "limitations": [
         "Use dedicated skill-generation workflow or explicit fixed-path policy.",
         "Constrain path to skills and return created path.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-configure",
+      "state": "unreviewed",
+      "acceptance": "Typed module/curve mutation with persistent read-back, not panel scraping. Prerequisites: `particle-schema`.\nTyped module/curve mutation with persistent read-back, not panel scraping.",
+      "limitations": [
+        "Typed module/curve mutation with persistent read-back, not panel scraping.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-inspect",
+      "state": "unreviewed",
+      "acceptance": "Normalized modules, curves, gradients, assets and current configuration. Qualified on a real `cc.ParticleSystem`.\nNormalized modules, curves, gradients, assets and current configuration.",
+      "limitations": [
+        "Normalized modules, curves, gradients, assets and current configuration.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-validate",
+      "state": "unreviewed",
+      "acceptance": "Valid/invalid component-presence witnesses qualified on Creator 3.7.3.\nValidate ranges, required textures/materials/modules and backend limits.",
+      "limitations": [
+        "Validate ranges, required textures/materials/modules and backend limits.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-compatibility-audit",
+      "state": "unreviewed",
+      "acceptance": "Explicit Box2D-positive and Builtin-negative backend matrix qualified live.\nReject unsupported backend/component/joint/matrix combinations.",
+      "limitations": [
+        "Reject unsupported backend/component/joint/matrix combinations.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-configure",
+      "state": "unreviewed",
+      "acceptance": "Backend-aware settings and collision matrix mutation with read-back. Prerequisites: `project-settings-write`.\nBackend-aware settings and collision matrix mutation with read-back.",
+      "limitations": [
+        "Backend-aware settings and collision matrix mutation with read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-body",
+      "state": "unreviewed",
+      "acceptance": "Compound Box2D node/body/collider creation qualified with preflight rejection, read-back, snapshot and cleanup witnesses.\nCompound node/body/collider creation with backend preflight and persistence.",
+      "limitations": [
+        "Compound node/body/collider creation with backend preflight and persistence.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-create-joint",
+      "state": "unreviewed",
+      "acceptance": "Typed joint creation with endpoint validation and Builtin rejection qualified with component-endpoint read-back and rejection witnesses.\nTyped joint creation with endpoint validation and Builtin rejection.",
+      "limitations": [
+        "Typed joint creation with endpoint validation and Builtin rejection.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-query",
+      "state": "unreviewed",
+      "acceptance": "Runtime raycast/contact/overlap queries identified by backend and session. Prerequisites: `runtime-session`.\nRuntime raycast/contact/overlap queries identified by backend and session.",
+      "limitations": [
+        "Runtime raycast/contact/overlap queries identified by backend and session.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-topology-audit",
+      "state": "unreviewed",
+      "acceptance": "Normalized body, collider and joint topology; qualified with valid and missing-collider fixtures.\nNormalized backend, body, collider, group and joint topology.",
+      "limitations": [
+        "Normalized backend, body, collider, group and joint topology.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-configure",
+      "state": "unreviewed",
+      "acceptance": "Backend-aware settings mutation with version/platform read-back. Prerequisites: `project-settings-write`.\nBackend-aware settings mutation with version/platform read-back.",
+      "limitations": [
+        "Backend-aware settings mutation with version/platform read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-body",
+      "state": "unreviewed",
+      "acceptance": "PhysX-only bounded box body/collider creation with size preflight, public scene IPC, read-back and rollback qualified on Creator 3.7.3; sphere/capsule/mesh variants remain unqualified.\nCreate one PhysX rigid-body node with one BoxCollider and bounded Vec3 size, with backend preflight, read-back and rollback.",
+      "limitations": [
+        "Create one PhysX rigid-body node with one BoxCollider and bounded Vec3 size, with backend preflight, read-back and rollback.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-create-joint",
+      "state": "unreviewed",
+      "acceptance": "Current ledger marks the bounded PhysX contract qualified; the earlier stale/auth-blocked note is superseded. Preserve fixed/hinge/point-to-point scope and require artifact-bound persistence/rollback proof for the full original contract.\nTyped constraint creation with backend-specific validation.",
+      "limitations": [
+        "Typed constraint creation with backend-specific validation.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-query",
+      "state": "unreviewed",
+      "acceptance": "Runtime raycast, sweep, contact and trigger queries tied to an identified backend and named runtime session. Prerequisites: runtime-session.\nRuntime raycast, sweep, contact and trigger queries tied to backend/session.",
+      "limitations": [
+        "Runtime raycast, sweep, contact and trigger queries tied to backend/session.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-topology-audit",
+      "state": "unreviewed",
+      "acceptance": "Normalized rigidbody, collider, joint and system topology qualified live.\nNormalized backend, rigidbody, collider, material and constraint topology.",
+      "limitations": [
+        "Normalized backend, rigidbody, collider, material and constraint topology.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-validate",
+      "state": "unreviewed",
+      "acceptance": "Body/collider semantic validation qualified with valid and invalid fixtures.\nReject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
+      "limitations": [
+        "Reject unsupported Builtin/cannon/PhysX shapes, bodies, materials and constraints.",
+        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -1705,6 +2218,102 @@
       "dependencies": []
     },
     {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-light-bake-manage",
+      "state": "unreviewed",
+      "acceptance": "Finite bake job lifecycle and output asset verification. Prerequisites: `light-bake-job-api`.\nFinite bake job lifecycle and output asset verification.",
+      "limitations": [
+        "Finite bake job lifecycle and output asset verification.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-material-edit",
+      "state": "unreviewed",
+      "acceptance": "Typed pass/property mutation followed by import and rendered postcondition. Prerequisites: `material-schema`, `asset-reimport`, `visual-harness`.\nTyped bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
+      "limitations": [
+        "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
+      "state": "unreviewed",
+      "acceptance": "Atomic camera/light/fog/skybox configuration with scene read-back. Prerequisites: `render-pipeline-schema`, `compound-scene-workflow`, `visual-harness`.\nAtomic camera/light/fog/skybox configuration with scene read-back.",
+      "limitations": [
+        "Atomic camera/light/fog/skybox configuration with scene read-back.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-diagnostics-collect",
+      "state": "unreviewed",
+      "acceptance": "Target-identified frame/render sampling with bounded results. Prerequisites: `runtime-session`.\nTarget-identified frame/render sampling with bounded results.",
+      "limitations": [
+        "Target-identified frame/render sampling with bounded results.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-pipeline-inspect",
+      "state": "unreviewed",
+      "acceptance": "Normalized pipeline, passes, cameras and layer compatibility beyond raw material query. Prerequisites: `render-pipeline-schema`.\nBounded native pipeline read-back through scene/query-render-pipeline; normalized compatibility diagnostics remain out of scope.",
+      "limitations": [
+        "Bounded native pipeline read-back through scene/query-render-pipeline; normalized compatibility diagnostics remain out of scope.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-shader-validate",
+      "state": "unreviewed",
+      "acceptance": "Return real effect importer/compiler diagnostics tied to source locations. Prerequisites: `effect-compiler-diagnostics`.\nReturn real effect importer/compiler diagnostics tied to source locations.",
+      "limitations": [
+        "Return real effect importer/compiler diagnostics tied to source locations.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-assert",
+      "state": "unreviewed",
+      "acceptance": "Independent state/image/event assertions rather than request echo. Prerequisites: `runtime-session`.\nIndependent state/image/event assertions rather than request echo.",
+      "limitations": [
+        "Independent state/image/event assertions rather than request echo.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-scenario-run",
+      "state": "unreviewed",
+      "acceptance": "Execute finite named steps only; no code string or general method dispatch. Prerequisites: `runtime-session`.\nExecute finite named steps only; no code string or general method dispatch.",
+      "limitations": [
+        "Execute finite named steps only; no code string or general method dispatch.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime-qa.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-runtime-state-observe",
+      "state": "unreviewed",
+      "acceptance": "Bounded allow-listed observations tied to session identity and target kind. Prerequisites: `runtime-session`.\nBounded allow-listed observations tied to session identity and target kind.",
+      "limitations": [
+        "Bounded allow-listed observations tied to session identity and target kind.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
       "workflowId": "runtime.cocos-mcp-run-project",
       "state": "unreviewed",
       "acceptance": "run_project",
@@ -1901,6 +2510,56 @@
       "acceptance": "- *Tính năng:* Wrapper gửi tương tác nhanh tới cửa sổ Preview của game.\n    - *Inputs:* `x?: number`, `y?: number`, `keyCode?: string`.\n    - *Outputs:* `{ sent: boolean }`.\n    - *Cơ chế:* Tự động target tới cửa sổ preview/simulator.",
       "limitations": [
         "Require session/window identity; browser/simulator unsupported unless qualified.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime.parent-golden-tracer",
+      "state": "unreviewed",
+      "acceptance": "Blank project to scene/UI, compile, preview, input, observation, capture, build and launched artifact smoke.",
+      "limitations": [
+        "Run scene through compile, preview, input, observation, capture and build smoke.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime.parent-runtime-capture",
+      "state": "unreviewed",
+      "acceptance": "Capture bounded visual evidence of the intended runtime target.",
+      "limitations": [
+        "Capture bounded visual evidence of the intended runtime target.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime.parent-runtime-input",
+      "state": "unreviewed",
+      "acceptance": "Dispatch allow-listed input to the intended runtime target and observe the result.",
+      "limitations": [
+        "Dispatch allow-listed input to the intended runtime target.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime.parent-runtime-observation",
+      "state": "unreviewed",
+      "acceptance": "Observe allow-listed state from the actual runtime, without an edit-renderer fallback.",
+      "limitations": [
+        "Observe allow-listed state from the actual runtime.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "runtime.parent-runtime-session",
+      "state": "unreviewed",
+      "acceptance": "Identify, start, observe and stop a declared runtime target with bounded state and unknown-outcome handling.",
+      "limitations": [
+        "Identify, start, observe and stop one bounded Game View runtime session.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -2498,6 +3157,289 @@
       "limitations": [
         "Use component reference with type/values output adapter.",
         "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get",
+      "state": "unreviewed",
+      "acceptance": "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
+      "limitations": [
+        "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export",
+      "state": "unreviewed",
+      "acceptance": "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
+      "limitations": [
+        "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
+      "state": "unreviewed",
+      "acceptance": "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
+      "limitations": [
+        "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-input-form",
+      "state": "unreviewed",
+      "acceptance": "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
+      "limitations": [
+        "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-scroll-view",
+      "state": "unreviewed",
+      "acceptance": "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
+      "limitations": [
+        "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-apply",
+      "state": "unreviewed",
+      "acceptance": "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
+      "limitations": [
+        "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-inspect",
+      "state": "unreviewed",
+      "acceptance": "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
+      "limitations": [
+        "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-build-artifact-inspect",
+      "state": "unreviewed",
+      "acceptance": "Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.",
+      "limitations": [
+        "Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.parent-compound-scene",
+      "state": "unreviewed",
+      "acceptance": "Create complete scene/UI composition with stable node, component and asset identities.",
+      "limitations": [
+        "Create a complete scene/UI composition with stable identities.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "scene.parent-mutation-workflow",
+      "state": "unreviewed",
+      "acceptance": "Preflight mutation, apply boundedly, verify postconditions and recover from partial failure.",
+      "limitations": [
+        "Mutate editor state with preflight, postcondition and recovery.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
+      "state": "unreviewed",
+      "acceptance": "Typed skin, mix and socket setup with component read-back. Prerequisites: `skeletal-extension-detection`, `mutation-workflow`.\nConfigure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
+      "limitations": [
+        "Configure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-events",
+      "state": "unreviewed",
+      "acceptance": "Bounded ordered event observation tied to one playback session. Prerequisites: `runtime-session`.\nBounded ordered event observation tied to one playback session.",
+      "limitations": [
+        "Bounded ordered event observation tied to one playback session.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
+      "state": "unreviewed",
+      "acceptance": "Typed skins, tracks, sockets, animations and extension availability. Prerequisites: `skeletal-extension-detection`.\nTyped skins, tracks, sockets, animations and extension availability.",
+      "limitations": [
+        "Typed skins, tracks, sockets, animations and extension availability.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-play",
+      "state": "unreviewed",
+      "acceptance": "Bounded play/queue/stop contract on a named runtime target. Prerequisites: `runtime-session`.\nBounded play/queue/stop contract on a named runtime target.",
+      "limitations": [
+        "Bounded play/queue/stop contract on a named runtime target.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
+      "state": "unreviewed",
+      "acceptance": "Validate skeleton/atlas/textures, named animations, skins and runtime extension support. Prerequisites: `skeletal-extension-detection`.\nValidate skeleton/atlas/textures, named animations, skins and runtime extension support.",
+      "limitations": [
+        "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
+      "state": "unreviewed",
+      "acceptance": "Typed import, reimport and mesh/skeleton/LOD output validation. Prerequisites: `importer-schema`, `asset-reimport`, `model-skeleton-metadata`.\nTyped import, reimport and mesh/skeleton/LOD output validation.",
+      "limitations": [
+        "Typed import, reimport and mesh/skeleton/LOD output validation.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-create",
+      "state": "unreviewed",
+      "acceptance": "Create and attach a valid terrain asset/component with reopen proof. Prerequisites: `terrain-schema`, `asset-create`, `compound-scene-workflow`.\nCreate and attach a valid terrain asset/component with reopen proof.",
+      "limitations": [
+        "Create and attach a valid terrain asset/component with reopen proof.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
+      "state": "unreviewed",
+      "acceptance": "Persistent bounded height/layer mutation through a supported API. Prerequisites: `terrain-write-api`.\nPersistent bounded height/layer mutation through a supported API.",
+      "limitations": [
+        "Persistent bounded height/layer mutation through a supported API.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-inspect",
+      "state": "unreviewed",
+      "acceptance": "Typed terrain dimensions, layers, materials and asset references. Prerequisites: `terrain-schema`.\nTyped terrain dimensions, layers, materials and asset references.",
+      "limitations": [
+        "Typed terrain dimensions, layers, materials and asset references.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-sprite-atlas-configure",
+      "state": "unreviewed",
+      "acceptance": "Live typed importer mutation, reimport and generated library-output hash passed; the fixture exposed no sprite frames, so frame qualification remains open.\nConfigure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
+      "limitations": [
+        "Configure, reimport and verify generated atlas/frame outputs rather than only writing importer meta.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-inspect",
+      "state": "unreviewed",
+      "acceptance": "Live-scoped typed TMX map, tileset, layer and object-group inspection passed on an imported fixture.\nTyped TMX map, layer, object and tileset inspection after Creator import.",
+      "limitations": [
+        "Typed TMX map, layer, object and tileset inspection after Creator import.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-layer-edit",
+      "state": "unreviewed",
+      "acceptance": "Live source mutation, reimport, SHA change and typed read-back passed.\nPersistent layer mutation without corrupting source TMX.",
+      "limitations": [
+        "Persistent layer mutation without corrupting source TMX.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-object-edit",
+      "state": "unreviewed",
+      "acceptance": "Live typed object mutation, TMX round-trip, SHA change and read-back passed.\nPersistent typed object-layer mutation with TMX round-trip.",
+      "limitations": [
+        "Persistent typed object-layer mutation with TMX round-trip.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "tilemap-atlas.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-tilemap-validate",
+      "state": "unreviewed",
+      "acceptance": "Live-scoped imported UUID reference validation passed; full gids/dimensions validation remains unqualified.\nValidate tileset links, gids, layer dimensions and imported references.",
+      "limitations": [
+        "Validate tileset links, gids, layer dimensions and imported references.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-preview-resolution-set",
+      "state": "unreviewed",
+      "acceptance": "Explicitly rejected on Creator 3.7.3 with `UNSUPPORTED_PREVIEW_IPC`.\nSet and read back target resolution through proven IPC.",
+      "limitations": [
+        "Set and read back target resolution through proven IPC.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-accessibility-audit",
+      "state": "unreviewed",
+      "acceptance": "Live bounded inferred labels, roles and interactability audit passed; no screen-reader runtime support is claimed.\nTyped constraint tree and computed world rectangles, not a generic property dump.",
+      "limitations": [
+        "Typed constraint tree and computed world rectangles, not a generic property dump.",
+        "Historical qualified label alone is not complete-contract evidence.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-responsive-preview",
+      "state": "unreviewed",
+      "acceptance": "Replacement-scoped deterministic world-rect projections passed; rendered preview comparison is unavailable without viewport-resolution IPC.\nRender and compare one scene across declared resolutions with target-specific evidence.",
+      "limitations": [
+        "Render and compare one scene across declared resolutions with target-specific evidence.",
+        "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
-  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
-  "status": "review-required",
+  "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "status": "frozen-v1",
   "qualificationProfile": {
     "creator": "3.7.3",
     "os": "windows-x64",
@@ -14,7 +14,7 @@
     "reports/original-lane-requirements-20260917.json": "cf713fa917d2300d2717ba9840e7e6fe373f7cd9fd5b947961f1afc1dc125663",
     "docs/tool-portfolio-candidates.json": "5ebe2ea6902357ea6689e2de5d725bd5080e40f28a61a9632b3cb92580b9fb87",
     "docs/workflow-mapping-decisions.json": "4c57cb10fc577753efa913bd8ed17ef543ad0db7a3fb22eb7da15a6c5f3c1c9a",
-    "docs/workflow-contract-reviews.json": "a9ce7eb71322c52c7127498dbfe6aedce41e702802c52b762b5ad400daf2f173"
+    "docs/workflow-contract-reviews.json": "6829be8e00bf72dea327a9f579b0e87aa74a77f8a803a7597ec7194507f042a4"
   },
   "rows": [
     {
@@ -35,16 +35,23 @@
       "portfolioNames": [
         "animationGraphCreate"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "animationGraphCreate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/animationGraphCreate/creator-3.7.3-d967c2e.json"
+      ],
       "limitations": [
         "Create a valid native graph asset, prove import/read-back, and roll back on failure.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -75,8 +82,8 @@
         "Persistent bounded graph mutations independent of panel selection state.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -108,8 +115,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -140,8 +147,8 @@
         "Run graph and observe transitions/events in a named runtime session.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -173,8 +180,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -205,8 +212,8 @@
         "Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -1942,8 +1949,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -1975,8 +1982,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2008,8 +2015,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2041,8 +2048,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2074,8 +2081,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2107,8 +2114,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2140,8 +2147,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2172,8 +2179,8 @@
         "Play, pause, stop and seek on a named runtime source with state confirmation.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2204,8 +2211,8 @@
         "Bounded playback progress/state observation with activation errors.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2237,8 +2244,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2270,8 +2277,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2295,16 +2302,23 @@
       "portfolioNames": [
         "buildArtifactServe"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "buildArtifactServe",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildArtifactServe/creator-3.7.3-3deadef-dirty.json"
+      ],
       "limitations": [
         "Serve one completed web artifact and return verified URL/lifecycle.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2336,8 +2350,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2369,8 +2383,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2394,16 +2408,23 @@
       "portfolioNames": [
         "buildTargetLaunch"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "buildTargetLaunch",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildTargetLaunch/creator-3.7.3-3959132-dirty.json"
+      ],
       "limitations": [
         "Launch the exact produced artifact on a declared target, not preview fallback.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2427,16 +2448,23 @@
       "portfolioNames": [
         "buildTargetSmoke"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "buildTargetSmoke",
+          "file": "source/utcp/tools/artifact-server-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/buildTargetSmoke/creator-3.7.3-3959132-dirty.json"
+      ],
       "limitations": [
         "Interact with and observe the launched artifact on its declared target.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2468,8 +2496,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2501,8 +2529,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -2802,8 +2830,8 @@
         "Track a named job to a bounded terminal outcome.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3562,8 +3590,8 @@
         "Apply a typed override set and verify source/instance result.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3595,8 +3623,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3628,8 +3656,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3661,8 +3689,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3693,8 +3721,8 @@
         "Revert selected overrides and verify restored values.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3726,8 +3754,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3759,8 +3787,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -3792,8 +3820,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5281,8 +5309,8 @@
         "Discover enabled package, locales, compiled tables and resource mappings.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5313,8 +5341,8 @@
         "Switch locale with acknowledged runtime restart and visual/read-back evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5345,8 +5373,8 @@
         "Typed persistent table mutation through documented package API.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5377,8 +5405,8 @@
         "Detect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5706,8 +5734,8 @@
         "Typed module/curve mutation with persistent read-back, not panel scraping.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5739,8 +5767,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5764,16 +5792,23 @@
       "portfolioNames": [
         "particlePlayback"
       ],
-      "implementationState": "unreviewed",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationRoute": [
+        {
+          "tool": "particlePlayback",
+          "file": "source/utcp/tools/p4-contract-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/particlePlayback/creator-3.7.3-01635c7-dirty.json"
+      ],
       "limitations": [
         "Play, stop, clear and completion observation in a named runtime session.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5805,8 +5840,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5838,8 +5873,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5870,8 +5905,8 @@
         "Backend-aware settings and collision matrix mutation with read-back.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5903,8 +5938,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5936,8 +5971,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -5969,8 +6004,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6002,8 +6037,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6034,8 +6069,8 @@
         "Backend-aware settings mutation with version/platform read-back.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6067,8 +6102,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6100,8 +6135,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6133,8 +6168,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6166,8 +6201,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -6199,8 +6234,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7053,8 +7088,8 @@
         "Finite bake job lifecycle and output asset verification.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7086,8 +7121,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7118,8 +7153,8 @@
         "Atomic camera/light/fog/skybox configuration with scene read-back.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7150,8 +7185,8 @@
         "Target-identified frame/render sampling with bounded results.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7183,8 +7218,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7216,8 +7251,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7249,8 +7284,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7282,8 +7317,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7315,8 +7350,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7966,8 +8001,8 @@
         "Run scene through compile, preview, input, observation, capture and build smoke.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -7996,8 +8031,8 @@
         "Capture bounded visual evidence of the intended runtime target.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -8026,8 +8061,8 @@
         "Dispatch allow-listed input to the intended runtime target.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -8056,8 +8091,8 @@
         "Observe allow-listed state from the actual runtime.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -8086,8 +8121,8 @@
         "Identify, start, observe and stop one bounded Game View runtime session.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -9953,8 +9988,8 @@
         "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -9983,8 +10018,8 @@
         "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10013,8 +10048,8 @@
         "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10043,8 +10078,8 @@
         "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10073,8 +10108,8 @@
         "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10103,8 +10138,8 @@
         "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10133,8 +10168,8 @@
         "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10163,8 +10198,8 @@
         "Original requirement: verify terminal build outputs, expected files, hashes and target metadata (`build-job`). Current `909e597` provides a project-local inventory with path/symlink checks, lexical ordering and truncation (7 focused tests passed). Terminal task association, hashes/expected manifest and target metadata are not implemented by this inventory and remain open.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10193,8 +10228,8 @@
         "Create a complete scene/UI composition with stable identities.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10223,8 +10258,8 @@
         "Mutate editor state with preflight, postcondition and recovery.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10256,8 +10291,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10288,8 +10323,8 @@
         "Bounded ordered event observation tied to one playback session.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10321,8 +10356,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10353,8 +10388,8 @@
         "Bounded play/queue/stop contract on a named runtime target.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10386,8 +10421,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10419,8 +10454,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10452,8 +10487,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10484,8 +10519,8 @@
         "Persistent bounded height/layer mutation through a supported API.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10517,8 +10552,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10550,8 +10585,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10583,8 +10618,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10616,8 +10651,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10649,8 +10684,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10682,8 +10717,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10714,8 +10749,8 @@
         "Set and read back target resolution through proven IPC.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10747,8 +10782,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",
@@ -10780,8 +10815,8 @@
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
-      "reviewed": false,
-      "contractReviewStatus": "unreviewed",
+      "reviewed": true,
+      "contractReviewStatus": "accepted",
       "contractDecision": "accept",
       "denominatorDisposition": "included",
       "dispositionReason": "No owner-approved scope reduction; unreviewed requirements stay included.",

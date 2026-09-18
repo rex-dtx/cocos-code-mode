@@ -1,22 +1,22 @@
 {
   "schemaVersion": 2,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
-  "denominatorHash": "185b3a3d4ceaa2f27c1672b8f063fa18e31835fccd2b347c23cf399eabc7b43e",
-  "status": "not-measurable",
+  "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "status": "measurable",
   "candidateDenominator": 356,
-  "denominator": null,
-  "confirmedComplete": 0,
-  "implementationPercent": null,
+  "denominator": 356,
+  "confirmedComplete": 5,
+  "implementationPercent": 1.4,
   "targetPercent": 90,
-  "targetComplete": null,
-  "deficitTo90": null,
-  "unresolvedContracts": 94,
+  "targetComplete": 321,
+  "deficitTo90": 316,
+  "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
       "total": 6,
-      "complete": 0,
-      "unreviewed": 6,
-      "implementationPercent": null
+      "complete": 1,
+      "unreviewed": 0,
+      "implementationPercent": 16.67
     },
     "animation": {
       "total": 7,
@@ -33,32 +33,32 @@
     "assets-import": {
       "total": 11,
       "complete": 0,
-      "unreviewed": 6,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "audio": {
       "total": 5,
       "complete": 0,
-      "unreviewed": 5,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "build-platform": {
       "total": 7,
-      "complete": 0,
-      "unreviewed": 7,
-      "implementationPercent": null
+      "complete": 3,
+      "unreviewed": 0,
+      "implementationPercent": 42.86
     },
     "build": {
       "total": 10,
       "complete": 0,
-      "unreviewed": 1,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "design-prefab": {
       "total": 33,
       "complete": 0,
-      "unreviewed": 8,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "diagnostics": {
       "total": 13,
@@ -75,8 +75,8 @@
     "localization": {
       "total": 4,
       "complete": 0,
-      "unreviewed": 4,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "other": {
       "total": 10,
@@ -86,21 +86,21 @@
     },
     "particles": {
       "total": 4,
-      "complete": 0,
-      "unreviewed": 4,
-      "implementationPercent": null
+      "complete": 1,
+      "unreviewed": 0,
+      "implementationPercent": 25
     },
     "physics-2d": {
       "total": 6,
       "complete": 0,
-      "unreviewed": 6,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "physics-3d": {
       "total": 6,
       "complete": 0,
-      "unreviewed": 6,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "prefab": {
       "total": 7,
@@ -117,50 +117,50 @@
     "rendering-materials": {
       "total": 6,
       "complete": 0,
-      "unreviewed": 6,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "runtime-qa": {
       "total": 3,
       "complete": 0,
-      "unreviewed": 3,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "runtime": {
       "total": 26,
       "complete": 0,
-      "unreviewed": 5,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "scene": {
       "total": 72,
       "complete": 0,
-      "unreviewed": 10,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "skeletal-animation": {
       "total": 5,
       "complete": 0,
-      "unreviewed": 5,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "terrain-model": {
       "total": 4,
       "complete": 0,
-      "unreviewed": 4,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "tilemap-atlas": {
       "total": 5,
       "complete": 0,
-      "unreviewed": 5,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     },
     "ui-layout": {
       "total": 3,
       "complete": 0,
-      "unreviewed": 3,
-      "implementationPercent": null
+      "unreviewed": 0,
+      "implementationPercent": 0
     }
   },
   "invalidatedClaims": [
