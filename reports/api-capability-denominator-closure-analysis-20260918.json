@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "denominator": { "workflows": 356, "complete": 54, "open": 302, "implementationPercent": 15.17, "targetComplete": 321, "deficit": 267 },
+  "openDomains": { "scene": 72, "asset": 46, "editor": 37, "design-prefab": 27, "runtime": 26, "product": 20, "diagnostics": 13, "build": 10, "other": 10, "animation": 7, "prefab": 7, "assets-import": 6, "localization": 4, "animation-graph": 3, "rendering-materials": 3, "audio": 2, "physics-2d": 2, "physics-3d": 2, "skeletal-animation": 2, "particles": 1 },
+  "qualifiedUnimplemented": ["assetBundleValidate", "physics2dQuery", "physics3dQuery"],
+  "safePromotionOpportunities": {
+    "animationRetargetValidate": "registered and unit-tested but requires model skeleton metadata live fixture",
+    "localizationInspect": "registered but execute-scene-script route is editor renderer only; no accepted runtime/package fixture",
+    "physics2dConfigure": "registered fail-closed contract; project-settings writer unavailable",
+    "physics3dConfigure": "registered fail-closed contract; project-settings writer unavailable",
+    "previewResolutionSet": "explicitly unsupported on Creator 3.7.3"
+  },
+  "gates": { "coverageAudit": "pass", "portfolioAudit": "pass", "readyForBulkImplementation": false },
+  "decision": "No denominator credit is safe from the current source/fixture state. Continue with parallel discovery only; implementation requires fresh fixtures or approved bounded contracts, and runtime rows require verified Game View transport."
+}
