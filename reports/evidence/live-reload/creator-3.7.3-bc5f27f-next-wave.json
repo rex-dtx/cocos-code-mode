@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-18T14:50:00+07:00",
+  "target": { "creator": "3.7.3", "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "buildCommit": "bc5f27f", "dirty": false },
+  "result": { "tests": 11, "passed": 4, "failed": 5, "skipped": 2 },
+  "positive": ["animationRuntimeControl", "asset importer settings", "assetBatchImport", "projectSettingsValidate"],
+  "failures": ["stale prefab fixture UUID", "UI scene root absent", "stale serialized scene fixture UUID", "asset refresh fixture mismatch", "prefab instantiate fixture absent"],
+  "qualification": false,
+  "limitations": ["No new frozen workflow promotion. Failed and skipped fixture-dependent rows remain open."]
+}
