@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "uiFocusNavigation",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Created disposable Canvas UI focus root, audited accessibility and returned deterministic horizontal focus links." },
+  "negativeWitness": { "test": "candidate.uiFocusNavigation.negative.v1", "result": "Missing UI node returned typed target error." },
+  "persistence": "Read-only live scene geometry/focus audit",
+  "cleanup": "Disposable focus root deleted",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "artifactDirty": false },
+  "qualified": true
+}

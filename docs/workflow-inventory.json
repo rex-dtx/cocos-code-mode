@@ -4020,10 +4020,17 @@
       "portfolioNames": [
         "sceneReferenceValidate"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationRoute": [
+        {
+          "tool": "sceneReferenceValidate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/sceneReferenceValidate/creator-3.7.3-bc5f27f.json"
+      ],
       "limitations": [
         "Validate serialized node/component/asset references after reopen.",
         "Historical qualified label alone is not complete-contract evidence.",

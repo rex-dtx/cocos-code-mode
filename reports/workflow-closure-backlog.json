@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 278,
+  "requiredFor90": 277,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -1139,18 +1139,6 @@
       "acceptance": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.\nFinite persistent reference-image lifecycle with transform read-back.",
       "limitations": [
         "Finite persistent reference-image lifecycle with transform read-back.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-reference-validate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Validate serialized node/component/asset references after reopen. Prerequisites: `graph-v4`, `live-prefab-identity`.\nValidate serialized node/component/asset references after reopen.",
-      "limitations": [
-        "Validate serialized node/component/asset references after reopen.",
         "Historical qualified label alone is not complete-contract evidence.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],

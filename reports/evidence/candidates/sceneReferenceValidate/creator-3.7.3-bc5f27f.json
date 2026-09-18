@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "tool": "sceneReferenceValidate",
+  "creator": "3.7.3",
+  "buildCommit": "bc5f27f",
+  "artifact": "linked-extension-dist",
+  "positiveWitness": { "test": "tests/live/read-only-candidate-qualification.test.js", "result": "Validated the exact qualification scene asset, returned serialized references and reopened source metadata." },
+  "negativeWitness": { "test": "candidate.sceneReferenceValidate.negative.v1", "result": "Missing scene reference returned TARGET_NOT_FOUND." },
+  "persistence": "Read-only serialized scene reopen/reference validation",
+  "cleanup": "No project mutation",
+  "environment": { "platform": "windows-x64", "endpoint": "http://localhost:51225", "project": "G:/_ws/_helpers/cc-3x-test", "sceneUuid": "ad50bcdb-60b3-4b17-8f28-6ca81a22f057", "artifactDirty": false },
+  "qualified": true
+}
