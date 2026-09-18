@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+  "diagnosis": { "port": 55078, "ownerPid": 34372, "ownerCommand": "CocosCreator.exe --project G:/_ws/cc-fws/cc30-new-all-in-one", "parent": "omp.exe __omp_worker_daemon_broker" },
+  "recovery": { "stoppedProcessTree": true, "restartedEndpoint": 49600, "restartReady": true, "editorState": { "sceneReady": false, "sceneBusy": true, "sceneCurrent": null }, "runtimeState": { "state": "stop", "enabled": false, "ready": false, "sceneUuid": "" } },
+  "decision": "Port conflict was stale exact-project Creator ownership, not an unrelated process. Stopping and restarting the exact tree cleared the conflict and produced a healthy UTCP endpoint, but Creator scene loading remains busy and Game View is still not ready. Do not promote runtime evidence.",
+  "qualified": false
+}
