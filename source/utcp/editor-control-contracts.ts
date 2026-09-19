@@ -59,10 +59,10 @@ export const EditorTaskCancelInputSchema = object({ taskId });
 export const EditorTaskCancelOutputSchema = object({ task: EditorTaskSchema, requested: boolean, interrupted: { type: 'boolean', const: false } });
 export const EditorStateInputSchema = object({ timeoutMs: { type: 'integer', minimum: 1, maximum: 5000, description: 'Read deadline, default 1000ms. Unavailable APIs yield null and an unavailable entry.' } }, []);
 export const EditorStateOutputSchema = object({
-    capturedAt: timestamp, projectPath: nullable(text(4096)),
+    capturedAt: timestamp, projectPath: nullable(text(4096)), engineVersion: nullable(text(256)),
     scene: object({ ready: nullable(boolean), dirty: nullable(boolean), current: nullable(object({ uuid: nullable(text(256)), url: nullable(text(4096)), name: nullable(text(256)) })) }),
-    busy: object({ scene: nullable(boolean), tasks: boolean, inbox: boolean }),
+    busy: object({ scene: nullable(boolean), assetImport: nullable(boolean), build: nullable(boolean), tasks: boolean, inbox: boolean }),
     tasks: object({ running: { type: 'integer', minimum: 0, maximum: 100 }, cancellationRequested: { type: 'integer', minimum: 0, maximum: 100 }, retained: { type: 'integer', minimum: 0, maximum: 100 } }),
     inbox: object({ pending: boolean, requestId: nullable(taskId), kind: nullable({ type: 'string', enum: ['form', 'question'] }), expiresAt: nullable(timestamp) }),
-    unavailable: { type: 'array', maxItems: 4, items: { type: 'string', enum: ['projectPath', 'scene.ready', 'scene.dirty', 'scene.current'] } },
+    unavailable: { type: 'array', maxItems: 8, items: { type: 'string', enum: ['projectPath', 'engineVersion', 'scene.ready', 'scene.dirty', 'scene.current', 'busy.assetImport', 'busy.build'] } },
 });

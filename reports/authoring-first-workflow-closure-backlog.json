@@ -3,16 +3,16 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
+  "sourceInventoryHash": "5c2f91c45f5d92fe26213d3dc50d42ebb12c89d248078d4295f9681cd87b3fef",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
+    "docs/workflow-inventory.json": "5c2f91c45f5d92fe26213d3dc50d42ebb12c89d248078d4295f9681cd87b3fef",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "ad6f7d854b1f2feedc4fa30f70e41e81db1247f3d6bc40e7b73cf41d505bc130",
-    "reports/workflow-coverage-report.json": "9045ae4b5f0efe2f2a14c20ce5061698733ffe45919c60cd6ce455daab1e4d20",
-    "reports/workflow-closure-backlog.json": "b9735d000bf2dd3e7026f0838daeb4d323ffd51c35a14d642b1cb55e53828c3d"
+    "docs/workflow-implementation-evidence.json": "1827b6bca21fd5ac6bfad3407faf3001044a4bfcbf5416888e8e5e26e727642c",
+    "reports/workflow-coverage-report.json": "86ab8a3e114a01b8a0094da0e21f42ff1954c4dbca251dcb1547d9988af360d2",
+    "reports/workflow-closure-backlog.json": "1f03127218bbdbd185ccfbced4c4171ac0ce2d0024568f6635b7d6334a1ee596"
   },
   "status": "ready-for-authoring-implementation-reconciliation",
-  "requiredFor90": 170,
+  "requiredFor90": 166,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
@@ -1333,12 +1333,11 @@
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
       "domain": "rendering-materials",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "Wave F source and focused tests confirm bounded editor scene property updates with snapshot, read-back, and rollback, but do not evidence the full camera/light/fog/skybox visual contract.",
       "acceptance": "Atomic camera/light/fog/skybox configuration with scene read-back. Prerequisites: `render-pipeline-schema`, `compound-scene-workflow`, `visual-harness`.\nAtomic camera/light/fog/skybox configuration with scene read-back.",
       "limitations": [
-        "Atomic camera/light/fog/skybox configuration with scene read-back.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."
       ]
     },
     {
@@ -1942,50 +1941,6 @@
       ]
     },
     {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-input-form",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
-      "limitations": [
-        "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-scroll-view",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
-      "limitations": [
-        "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-apply",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
-      "limitations": [
-        "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-inspect",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
-      "limitations": [
-        "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "scene.parent-compound-scene",
       "domain": "scene",
       "state": "unreviewed",
@@ -2020,12 +1975,11 @@
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
       "domain": "terrain-model",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "unsupported",
+      "reason": "Wave F evidence confirms Creator 3.7.3 has no supported persistent terrain height/layer write API and the route fails closed with UNSUPPORTED_EDITOR_API.",
       "acceptance": "Persistent bounded height/layer mutation through a supported API. Prerequisites: `terrain-write-api`.\nPersistent bounded height/layer mutation through a supported API.",
       "limitations": [
-        "Persistent bounded height/layer mutation through a supported API.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Terrain edit remains unsupported until a version-gated native write API is exposed; never claim persistence from the typed failure."
       ]
     },
     {

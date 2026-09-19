@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
+  "sourceInventoryHash": "5c2f91c45f5d92fe26213d3dc50d42ebb12c89d248078d4295f9681cd87b3fef",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
+    "docs/workflow-inventory.json": "5c2f91c45f5d92fe26213d3dc50d42ebb12c89d248078d4295f9681cd87b3fef",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "ad6f7d854b1f2feedc4fa30f70e41e81db1247f3d6bc40e7b73cf41d505bc130",
-    "reports/workflow-coverage-report.json": "9045ae4b5f0efe2f2a14c20ce5061698733ffe45919c60cd6ce455daab1e4d20",
-    "reports/workflow-closure-backlog.json": "b9735d000bf2dd3e7026f0838daeb4d323ffd51c35a14d642b1cb55e53828c3d"
+    "docs/workflow-implementation-evidence.json": "1827b6bca21fd5ac6bfad3407faf3001044a4bfcbf5416888e8e5e26e727642c",
+    "reports/workflow-coverage-report.json": "86ab8a3e114a01b8a0094da0e21f42ff1954c4dbca251dcb1547d9988af360d2",
+    "reports/workflow-closure-backlog.json": "1f03127218bbdbd185ccfbced4c4171ac0ce2d0024568f6635b7d6334a1ee596"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -1200,11 +1200,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetBatchImport"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms bounded batch import with per-item success/failure outcomes, authoritative asset-db read-back, missing-source rejection, and cleanup.",
       "limitations": [
-        "Preflight and import bounded explicit items with per-item outcome.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded editor-side asset import only; external filesystem delivery and runtime credit remain deferred."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: assets-import is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1219,11 +1217,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetBatchOperate"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms bounded batch operation outcomes continue after item failures and report success, failure, partial accounting, and authoritative read-back.",
       "limitations": [
-        "Bounded move/copy/delete/reimport with partial-failure accounting.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded editor-side asset operations only; external open-file delivery remains out of scope."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: assets-import is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1276,11 +1272,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetMissingReferenceAudit"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms bounded serialized dependency scanning with explicit missing-reference, source-location, and recovery evidence.",
       "limitations": [
-        "Cross-scene and asset missing-reference evidence with recovery locations.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded editor asset/reference audit; no runtime loading or external delivery credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: assets-import is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -4215,11 +4209,9 @@
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:materialEdit"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms typed bounded material mutation through importer and native read-back, with explicit mismatch and rollback failure typing.",
       "limitations": [
-        "Typed bounded material property mutation through the registered importer with native material read-back; rendered visual postcondition remains unverified.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Rendered visual postcondition and runtime appearance remain unverified; editor/importer read-back only."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: rendering-materials is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -4233,11 +4225,10 @@
       "sourceIds": [
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderConfigurationApply"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "Wave F source and focused tests confirm bounded editor scene property updates with snapshot, read-back, and rollback, but do not evidence the full camera/light/fog/skybox visual contract.",
       "limitations": [
-        "Atomic camera/light/fog/skybox configuration with scene read-back.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: rendering-materials is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5968,11 +5959,10 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiCreateInputForm"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave F editor/UI evidence confirms labeled input-form hierarchy creation with verified controls, focus-order metadata, and hierarchy read-back.",
       "limitations": [
-        "Create labeled input hierarchy, focus order and validation binding with functional read-back. Prerequisites: `compound-scene-workflow`.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5986,11 +5976,10 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiCreateScrollView"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave F editor/UI evidence confirms ScrollView creation verifies the root, viewport mask, and content hierarchy through component and hierarchy read-back.",
       "limitations": [
-        "Create and verify the complete view-mask-content hierarchy, not one prefab node. Prerequisites: `compound-scene-workflow`.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6004,11 +5993,10 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiLayoutApply"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave F editor/UI evidence confirms bounded UI layout mutation with preflight snapshot, atomic property application, normalized read-back, and rollback on partial failure.",
       "limitations": [
-        "Atomic bounded layout constraint application with preflight, one snapshot and read-back. Prerequisites: `scene-query-contract`, `mutation-workflow`.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6022,11 +6010,10 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiLayoutInspect"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave F editor/UI evidence confirms bounded hierarchy traversal, normalized UI constraints, transformed world rectangles, malformed-response rejection, and truncation accounting.",
       "limitations": [
-        "Live-scoped bounded constraint and world-geometry inspection passed; portfolio approval remains open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side scene geometry inspection only; no panel-click, runtime preview, or rendered visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6182,11 +6169,9 @@
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:modelImportConfigure"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms typed model importer configuration, reimport, setting read-back, unsupported-setting rejection, and bounded output validation.",
       "limitations": [
-        "Typed import, reimport and mesh/skeleton/LOD output validation.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Importer metadata and bounded output evidence only; runtime model behavior remains deferred."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: terrain-model is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6201,11 +6186,9 @@
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainCreate"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms terrain asset/component creation, terrainInspect identity read-back, traversal rejection, and disposable cleanup.",
       "limitations": [
-        "Create and attach a valid terrain asset/component with reopen proof.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side terrain creation and read-back only; terrain height/layer editing remains unsupported and runtime visual credit is deferred."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: terrain-model is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6219,11 +6202,10 @@
       "sourceIds": [
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainEdit"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "unsupported",
+      "implementationReason": "Wave F evidence confirms Creator 3.7.3 has no supported persistent terrain height/layer write API and the route fails closed with UNSUPPORTED_EDITOR_API.",
       "limitations": [
-        "Persistent bounded height/layer mutation through a supported API.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Terrain edit remains unsupported until a version-gated native write API is exposed; never claim persistence from the typed failure."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: terrain-model is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6238,11 +6220,9 @@
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:terrainInspect"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms bounded terrain dimensions, layers, materials, and asset-reference inspection with typed output identity.",
       "limitations": [
-        "Typed terrain dimensions, layers, materials and asset references.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side terrain metadata inspection only; no terrain editing or runtime visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: terrain-model is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6370,11 +6350,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiAccessibilityAudit"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms bounded inferred UI labels, roles, interactability, geometry, and safe-area outcomes with typed invalid/missing-root handling.",
       "limitations": [
-        "Typed constraint tree and computed world rectangles, not a generic property dump.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Inference and editor geometry only; screen-reader runtime support and panel-click credit are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: ui-layout is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6389,11 +6367,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:uiResponsivePreview"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave F evidence confirms deterministic world-rectangle projections at declared resolutions with bounded typed output.",
       "limitations": [
-        "Render and compare one scene across declared resolutions with target-specific evidence.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Read-only geometry projection, not rendered viewport comparison; no runtime preview or panel-click credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: ui-layout is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."

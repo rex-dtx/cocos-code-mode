@@ -82,42 +82,63 @@ export class UiTools {
     async createUiNode(args: { uiType: string, name?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
         const prefabUrl = UI_PREFABS[args.uiType];
         if (!prefabUrl) {
-            throw new Error(`Unknown UI type: ${args.uiType}. Available: ${Object.keys(UI_PREFABS).join(', ')}`);
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Unknown UI type: ${args.uiType}. Available: ${Object.keys(UI_PREFABS).join(', ')}` });
         }
         const nativeComponent = ({
-            Label: 'cc.Label',
-            Button: 'cc.Button',
-            Sprite: 'cc.Sprite',
-            ScrollView: 'cc.ScrollView',
-            EditBox: 'cc.EditBox',
-            Widget: 'cc.UITransform',
+            Canvas: 'cc.Canvas', Label: 'cc.Label', Button: 'cc.Button', Sprite: 'cc.Sprite',
+            ScrollView: 'cc.ScrollView', EditBox: 'cc.EditBox', Widget: 'cc.UITransform',
         } as Record<string, string>)[args.uiType];
-        const [assetUuid, sceneRoot] = await Promise.all([
-            Editor.Message.request('asset-db', 'query-uuid', prefabUrl),
-            args.parentReference?.id ? Promise.resolve(null) : Editor.Message.request('scene', 'query-node-tree'),
-        ]) as [string | null, any];
-
-        const options: Record<string, unknown> = {
-            name: args.name || args.uiType,
-            parent: args.parentReference?.id || sceneRoot?.uuid,
-        };
-
-        if (assetUuid) {
-            const result = await Editor.Message.request('scene', 'create-node', options);
-            const nodeUuid = Array.isArray(result) ? result[0] : result;
-            if (typeof nodeUuid !== 'string' || !nodeUuid) throw new Error(`Failed to create ${args.uiType} node`);
-            await Editor.Message.request('scene', 'snapshot');
-            return { reference: { id: nodeUuid, type: 'cc.Node' } };
+        let assetUuid: string | null;
+        let sceneRoot: { uuid?: string } | null;
+        try {
+            [assetUuid, sceneRoot] = await Promise.all([
+                Editor.Message.request('asset-db', 'query-uuid', prefabUrl),
+                args.parentReference?.id ? Promise.resolve(null) : Editor.Message.request('scene', 'query-node-tree'),
+            ]) as [string | null, { uuid?: string } | null];
+        } catch (error: unknown) {
+            throw new ToolError({ code: 'UI_CREATE_QUERY_FAILED', status: 502, message: `Could not resolve the ${args.uiType} creation target.`, details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Retry after the Creator scene and asset database are ready.' });
         }
-        if (!nativeComponent) throw new Error(`UI prefab not found at ${prefabUrl} — editor version may not include it.`);
-        const result = await Editor.Message.request('scene', 'create-node', options);
+        const parent = args.parentReference?.id || sceneRoot?.uuid;
+        if (!parent) throw new ToolError({ code: 'SCENE_NOT_READY', status: 409, message: 'A scene root or parentReference is required to create a UI node.', recovery: 'Open a scene or pass a valid parentReference.' });
+        const options: Record<string, unknown> = { name: args.name || args.uiType, parent };
+        let result: unknown;
+        try {
+            result = await Editor.Message.request('scene', 'create-node', options);
+        } catch (error: unknown) {
+            throw new ToolError({ code: 'UI_CREATE_FAILED', status: 502, message: `Creator could not create ${args.uiType}.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
         const nodeUuid = Array.isArray(result) ? result[0] : result;
-        if (typeof nodeUuid !== 'string' || !nodeUuid) {
-            throw new Error(`Failed to create native ${args.uiType} node`);
+        if (typeof nodeUuid !== 'string' || !nodeUuid) throw new ToolError({ code: 'UI_CREATE_INVALID_RESPONSE', status: 502, message: `Creator returned no UUID for the ${args.uiType} node.` });
+        try {
+            if (!assetUuid) {
+                if (!nativeComponent) throw new ToolError({ code: 'UNSUPPORTED_EDITOR_API', status: 422, message: `UI prefab not found at ${prefabUrl} and no native fallback is defined for ${args.uiType}.` });
+                await ensureSceneComponents(nodeUuid, [nativeComponent, 'cc.UITransform']);
+            }
+            await Editor.Message.request('scene', 'snapshot');
+            const readBack = await this.queryNodeDump(nodeUuid);
+            if (!readBack || this.unwrapValue(readBack.uuid) !== nodeUuid) throw new Error('query-node did not confirm the created node UUID');
+            if (nativeComponent) {
+                const types = new Set((readBack.__comps__ ?? []).map((component) => component.type).filter((type): type is string => typeof type === 'string'));
+                if (!types.has(nativeComponent)) throw new Error(`query-node did not confirm component ${nativeComponent}`);
+            }
+            return { reference: { id: nodeUuid, type: 'cc.Node' } };
+        } catch (error: unknown) {
+            const rollback = await this.rollbackNode(nodeUuid);
+            if (error instanceof ToolError) throw error;
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 502, message: `createUiNode did not confirm ${args.uiType} ${nodeUuid}${rollback ? `; rollback failed: ${rollback}` : '; created node was rolled back'}.`, details: { createdNodeId: nodeUuid, cause: error instanceof Error ? error.message : String(error) }, recovery: rollback ? `Delete node ${nodeUuid} manually before retrying.` : 'Retry the creation after the scene is ready.' });
         }
-        await ensureSceneComponents(nodeUuid, [nativeComponent, 'cc.UITransform']);
-        await Editor.Message.request('scene', 'snapshot');
-        return { reference: { id: nodeUuid, type: 'cc.Node' } };
+    }
+
+    @utcpTool(
+        'createCanvas',
+        'Create a Canvas UI root with cc.Canvas and cc.UITransform, then verify its node identity.',
+        { type: 'object', additionalProperties: false, properties: { name: { type: 'string' }, parentReference: InstanceReferenceSchema } },
+        { type: 'object', additionalProperties: false, properties: { canvasUuid: { type: 'string' }, reference: InstanceReferenceSchema }, required: ['canvasUuid', 'reference'] },
+        'POST', ['ui', 'canvas', 'create', '2d']
+    )
+    async createCanvas(args: { name?: string, parentReference?: IInstanceReference } = {}): Promise<{ canvasUuid: string, reference: IInstanceReference }> {
+        const { reference } = await this.createUiNode({ uiType: 'Canvas', name: args.name ?? 'Canvas', parentReference: args.parentReference });
+        return { canvasUuid: reference.id, reference };
     }
 
     @utcpTool(
@@ -139,22 +160,30 @@ export class UiTools {
     )
     async createLabel(args: { name?: string, text?: string, fontSize?: number, color?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
         const { reference } = await this.createUiNode({ uiType: 'Label', name: args.name || 'Label', parentReference: args.parentReference });
-
-        if (args.text !== undefined || args.fontSize !== undefined || args.color !== undefined) {
-            const componentPath = await this.componentPath(reference.id, 'cc.Label');
-            const paths: string[] = [];
-            const dumps: IProperty[] = [];
-            if (args.text !== undefined) { paths.push(`${componentPath}.string`); dumps.push({ value: args.text, type: 'cc.String' }); }
-            if (args.fontSize !== undefined) { paths.push(`${componentPath}.fontSize`); dumps.push({ value: args.fontSize, type: 'cc.Integer' }); }
-            if (args.color !== undefined) { paths.push(`${componentPath}.color`); dumps.push({ value: args.color, type: 'cc.Color' }); }
-
-            for (let i = 0; i < paths.length; i++) {
-                await Editor.Message.request('scene', 'set-property', { uuid: reference.id, path: paths[i], dump: dumps[i] });
+        if (args.text === undefined && args.fontSize === undefined && args.color === undefined) return { reference };
+        const componentPath = await this.componentPath(reference.id, 'cc.Label');
+        const properties: Array<{ path: string, dump: IProperty, expected: unknown }> = [];
+        if (args.text !== undefined) properties.push({ path: `${componentPath}.string`, dump: { value: args.text, type: 'cc.String' }, expected: args.text });
+        if (args.fontSize !== undefined) properties.push({ path: `${componentPath}.fontSize`, dump: { value: args.fontSize, type: 'cc.Integer' }, expected: args.fontSize });
+        if (args.color !== undefined) properties.push({ path: `${componentPath}.color`, dump: { value: args.color, type: 'cc.Color' }, expected: args.color });
+        try {
+            for (const property of properties) {
+                const accepted = await Editor.Message.request('scene', 'set-property', { uuid: reference.id, path: property.path, dump: property.dump });
+                if (accepted === false) throw new Error(`Creator refused ${property.path}`);
+            }
+            const dump = await this.queryNodeDump(reference.id);
+            const label = dump?.__comps__?.find((component) => component.type === 'cc.Label')?.value;
+            for (const property of properties) {
+                const field = property.path.slice(property.path.lastIndexOf('.') + 1);
+                const actual = label && field in label ? this.unwrapValue(label[field]) : undefined;
+                if (JSON.stringify(actual) !== JSON.stringify(property.expected)) throw new Error(`read-back mismatch at ${field}`);
             }
             await Editor.Message.request('scene', 'snapshot');
+            return { reference };
+        } catch (error: unknown) {
+            const rollback = await this.rollbackNode(reference.id);
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 502, message: `createLabel configuration was not confirmed for ${reference.id}${rollback ? `; rollback failed: ${rollback}` : '; created node was rolled back'}.`, details: { createdNodeId: reference.id, cause: error instanceof Error ? error.message : String(error) }, recovery: rollback ? `Delete node ${reference.id} manually before retrying.` : 'Retry after the scene is ready.' });
         }
-
-        return { reference };
     }
 
     @utcpTool(
@@ -241,29 +270,26 @@ export class UiTools {
     )
     async createSprite(args: { name?: string, spriteFrameUuid?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
         const { reference } = await this.createUiNode({ uiType: 'Sprite', name: args.name || 'Sprite', parentReference: args.parentReference });
-
-        // No swallow: an unassigned spriteFrame must not read as a successful create.
-        if (args.spriteFrameUuid) {
+        if (!args.spriteFrameUuid) return { reference };
+        try {
             const componentPath = await this.componentPath(reference.id, 'cc.Sprite');
-            const ok = await Editor.Message.request('scene', 'set-property', {
+            const accepted = await Editor.Message.request('scene', 'set-property', {
                 uuid: reference.id,
                 path: `${componentPath}.spriteFrame`,
                 dump: { value: { uuid: args.spriteFrameUuid }, type: 'cc.SpriteFrame' },
-            }) as boolean;
-            if (ok === false) {
-                const rbErr = await this.rollbackNode(reference.id);
-                throw new ToolError({
-                    code: 'PARTIAL_MUTATION',
-                    status: 500,
-                    message: `createSprite: set-property refused for spriteFrame ${args.spriteFrameUuid} on ${reference.id}${rbErr ? `; rollback FAILED (${rbErr}) — delete node ${reference.id} before retrying` : '; created node was rolled back, safe to retry'}`,
-                    details: { createdNodeId: reference.id, spriteFrameUuid: args.spriteFrameUuid },
-                    recovery: 'Sprite node was rolled back, safe to retry; verify the SpriteFrame uuid with query-asset',
-                });
-            }
+            });
+            if (accepted === false) throw new Error('Creator refused spriteFrame assignment');
+            const dump = await this.queryNodeDump(reference.id);
+            const sprite = dump?.__comps__?.find((component) => component.type === 'cc.Sprite')?.value;
+            const spriteFrame = sprite && 'spriteFrame' in sprite ? this.unwrapValue(sprite.spriteFrame) : undefined;
+            const assignedUuid = spriteFrame && typeof spriteFrame === 'object' && 'uuid' in spriteFrame && typeof spriteFrame.uuid === 'string' ? spriteFrame.uuid : undefined;
+            if (assignedUuid !== args.spriteFrameUuid) throw new Error('spriteFrame read-back mismatch');
             await Editor.Message.request('scene', 'snapshot');
+            return { reference };
+        } catch (error: unknown) {
+            const rollback = await this.rollbackNode(reference.id);
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 502, message: `createSprite configuration was not confirmed for ${reference.id}${rollback ? `; rollback failed: ${rollback}` : '; created node was rolled back'}.`, details: { createdNodeId: reference.id, spriteFrameUuid: args.spriteFrameUuid, cause: error instanceof Error ? error.message : String(error) }, recovery: rollback ? `Delete node ${reference.id} manually before retrying.` : 'Verify the SpriteFrame UUID and retry.' });
         }
-
-        return { reference };
     }
     @utcpTool(
         'uiLayoutReport',
@@ -887,19 +913,25 @@ export class UiTools {
     )
     async uiCreateScrollView(args: { name?: string, parentReference?: IInstanceReference }): Promise<{ reference: IInstanceReference, viewport: IInstanceReference, content: IInstanceReference }> {
         const root = await this.createUiNode({ uiType: 'ScrollView', name: args.name ?? 'ScrollView', parentReference: args.parentReference });
-        const viewport = await this.createUiNode({ uiType: 'Widget', name: 'Viewport', parentReference: root.reference });
-        await Editor.Message.request('scene', 'create-component', { uuid: viewport.reference.id, component: 'cc.Mask' });
-        const content = await this.createUiNode({ uiType: 'Widget', name: 'Content', parentReference: viewport.reference });
-        await Editor.Message.request('scene', 'create-component', { uuid: content.reference.id, component: 'cc.Layout' });
-        await Editor.Message.request('scene', 'snapshot');
-        const rootDump = await this.queryNodeDump(root.reference.id);
-        const viewportDump = await this.queryNodeDump(viewport.reference.id);
-        const viewportUuid = await this.findNamedChild(rootDump, 'Viewport');
-        const contentUuid = viewportDump?.children?.map((child) => this.childUuid(child)).find((uuid) => uuid === content.reference.id);
-        if (!rootDump || !viewportUuid || viewportUuid !== viewport.reference.id || contentUuid !== content.reference.id) {
-            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 500, message: 'uiCreateScrollView hierarchy verification failed' });
+        try {
+            const viewport = await this.createUiNode({ uiType: 'Widget', name: 'Viewport', parentReference: root.reference });
+            await Editor.Message.request('scene', 'create-component', { uuid: viewport.reference.id, component: 'cc.Mask' });
+            const content = await this.createUiNode({ uiType: 'Widget', name: 'Content', parentReference: viewport.reference });
+            await Editor.Message.request('scene', 'create-component', { uuid: content.reference.id, component: 'cc.Layout' });
+            await Editor.Message.request('scene', 'snapshot');
+            const rootDump = await this.queryNodeDump(root.reference.id);
+            const viewportDump = await this.queryNodeDump(viewport.reference.id);
+            const viewportUuid = await this.findNamedChild(rootDump, 'Viewport');
+            const contentUuid = viewportDump?.children?.map((child) => this.childUuid(child)).find((uuid) => uuid === content.reference.id);
+            const viewportTypes = new Set((viewportDump?.__comps__ ?? []).map((component) => component.type).filter((type): type is string => typeof type === 'string'));
+            const contentDump = await this.queryNodeDump(content.reference.id);
+            const contentTypes = new Set((contentDump?.__comps__ ?? []).map((component) => component.type).filter((type): type is string => typeof type === 'string'));
+            if (!rootDump || viewportUuid !== viewport.reference.id || contentUuid !== content.reference.id || !viewportTypes.has('cc.Mask') || !contentTypes.has('cc.Layout')) throw new Error('scroll view hierarchy or component read-back mismatch');
+            return { reference: root.reference, viewport: viewport.reference, content: content.reference };
+        } catch (error: unknown) {
+            const rollback = await this.rollbackNode(root.reference.id);
+            throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 502, message: `uiCreateScrollView hierarchy verification failed${rollback ? `; rollback failed: ${rollback}` : '; scroll view was rolled back'}.`, details: { createdNodeId: root.reference.id, cause: error instanceof Error ? error.message : String(error) }, recovery: rollback ? `Delete node ${root.reference.id} manually before retrying.` : 'Retry after the scene is ready.' });
         }
-        return { reference: root.reference, viewport: viewport.reference, content: content.reference };
     }
 
     @utcpTool(

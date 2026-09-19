@@ -4,6 +4,38 @@ import { TextDecoder } from 'util';
 import { isMessageNotExposed } from '../utils/editor-message-error';
 import { ToolError } from '../tool-error';
 import { ImporterManager } from '../utils/asset-importers';
+import { IAssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
+
+function propertyAtPath(value: unknown, path: string): unknown {
+    let current = value;
+    for (const segment of path.split('.')) {
+        if (!current || typeof current !== 'object') return undefined;
+        if (Array.isArray(current)) {
+            if (!/^\d+$/.test(segment)) return undefined;
+            current = current[Number(segment)];
+        } else {
+            if (!Object.prototype.hasOwnProperty.call(current, segment)) return undefined;
+            current = (current as Record<string, unknown>)[segment];
+        }
+        if (current && typeof current === 'object' && !Array.isArray(current) && 'value' in current) current = (current as Record<string, unknown>).value;
+    }
+    return current;
+}
+
+function jsonEqual(left: unknown, right: unknown): boolean {
+    return JSON.stringify(left) === JSON.stringify(right);
+}
+
+async function queryMaterial(id: string): Promise<unknown> {
+    try {
+        const result = await Editor.Message.request('scene', 'query-material' as any, id);
+        if (!result) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Material ${id} was not readable.` });
+        return result;
+    } catch (error) {
+        if (error instanceof ToolError) throw error;
+        throw new ToolError({ code: 'MATERIAL_QUERY_FAILED', status: 502, message: `Could not read material ${id}.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+    }
+}
 const DEFAULT_EFFECT_RESULTS = 200;
 const MAX_EFFECT_RESULTS = 1000;
 const DEFAULT_RAW_DATA_BYTES = 512 * 1024;
@@ -211,27 +243,133 @@ export class MaterialTools {
     async materialEdit(args: { reference?: IInstanceReference, path?: string, value?: unknown }): Promise<{ reference: IInstanceReference, path: string, changed: boolean, before: unknown, after: unknown }> {
         if (!args?.reference?.id || typeof args.reference.id !== 'string') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'materialEdit requires reference.' });
         if (typeof args.path !== 'string' || !/^[A-Za-z0-9_.]{1,256}$/.test(args.path)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'materialEdit path must contain 1-256 identifier characters.' });
-        const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id) as any;
+        const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id) as IAssetInfo | null;
         if (!info || info.importer !== 'material') throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: `Asset ${args.reference.id} is not a material importer target.` });
-        const materialId = info.uuid ?? args.reference.id;
-        const before = await Editor.Message.request('scene', 'query-material', materialId);
-        if (!before) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Material ${args.reference.id} was not readable.` });
+        const materialId = typeof info.uuid === 'string' && info.uuid ? info.uuid : args.reference.id;
+        const before = await queryMaterial(materialId);
         const valueJson = JSON.stringify(args.value);
         if (valueJson === undefined || Buffer.byteLength(valueJson, 'utf8') > 65536) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'materialEdit value must be JSON-serializable and at most 65536 bytes.' });
         const importer = ImporterManager.getInstance().getImporter('material');
         if (!importer) throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: 'Material importer is unavailable.' });
-        const changed = await importer.setProperty({ ...info, uuid: materialId }, args.path, args.value);
-        if (!changed) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Material property '${args.path}' was not found or was not mutable.` });
-        const after = await Editor.Message.request('scene', 'query-material', materialId);
-        const importerAfter = await importer.getProperties({ ...info, uuid: materialId });
-        const importerProperty: unknown = importerAfter[args.path];
-        const importerValue = importerProperty && typeof importerProperty === 'object' && 'value' in importerProperty
-            ? importerProperty.value
-            : importerProperty;
-        const nativeChanged = !!after && JSON.stringify(after) !== JSON.stringify(before);
-        const importerMatched = JSON.stringify(importerValue) === JSON.stringify(args.value);
-        if (!nativeChanged && !importerMatched) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: `Material property '${args.path}' did not produce a verifiable read-back change.` });
-        return { reference: args.reference, path: args.path, changed: true, before, after: nativeChanged ? after : importerValue };
+        const currentProperties = await importer.getProperties({ ...info, uuid: materialId });
+        const previousValue = propertyAtPath(currentProperties, args.path);
+        if (previousValue === undefined) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Material property '${args.path}' was not readable.` });
+        let changed = false;
+        try {
+            changed = await importer.setProperty({ ...info, uuid: materialId }, args.path, args.value);
+            if (!changed) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Material property '${args.path}' was not found or was not mutable.` });
+            const after = await queryMaterial(materialId);
+            const importerAfter = await importer.getProperties({ ...info, uuid: materialId });
+            const importerValue = propertyAtPath(importerAfter, args.path);
+            const nativeChanged = !jsonEqual(after, before);
+            const importerMatched = jsonEqual(importerValue, args.value);
+            if (!nativeChanged && !importerMatched) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: `Material property '${args.path}' did not produce a verifiable read-back change.` });
+            return { reference: args.reference, path: args.path, changed: true, before, after: nativeChanged ? after : importerValue };
+        } catch (error) {
+            if (changed) {
+                try {
+                    if (!await importer.setProperty({ ...info, uuid: materialId }, args.path, previousValue)) throw new Error('Importer rejected rollback value.');
+                    const restored = await importer.getProperties({ ...info, uuid: materialId });
+                    if (!jsonEqual(propertyAtPath(restored, args.path), previousValue)) throw new Error('Material rollback read-back mismatch.');
+                } catch (rollbackError) {
+                    throw new ToolError({ code: 'ROLLBACK_FAILED', status: 500, message: `materialEdit failed and could not restore '${args.path}'.`, details: { cause: error instanceof Error ? error.message : String(error), rollbackCause: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) } });
+                }
+            }
+            if (error instanceof ToolError) throw error;
+            throw new ToolError({ code: 'MUTATION_FAILED', status: 502, message: `materialEdit failed for '${args.path}'.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+    }
+    @utcpTool(
+        'materialValidate',
+        'Validate one material importer target with native and typed property read-back.',
+        { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
+        { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, importer: { type: 'string' }, issues: { type: 'array' }, native: {}, settings: {} }, required: ['valid', 'reference', 'importer', 'issues', 'native', 'settings'] },
+        'GET', ['material', 'validate', 'inspect']
+    )
+    async materialValidate(args: { reference?: IInstanceReference }): Promise<{ valid: boolean, reference: IInstanceReference, importer: string, issues: Array<Record<string, unknown>>, native: unknown, settings: Record<string, unknown> }> {
+        if (!args?.reference?.id || typeof args.reference.id !== 'string') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'materialValidate requires reference.' });
+        const info = await Editor.Message.request('asset-db', 'query-asset-info', args.reference.id) as IAssetInfo | null;
+        if (!info) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Material ${args.reference.id} was not found.` });
+        if (info.importer !== 'material') throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${args.reference.id} is not a material importer target.` });
+        const id = typeof info.uuid === 'string' && info.uuid ? info.uuid : args.reference.id;
+        const native = await queryMaterial(id);
+        const importer = ImporterManager.getInstance().getImporter('material');
+        if (!importer) throw new ToolError({ code: 'UNSUPPORTED_OPERATION', status: 422, message: 'Material importer is unavailable.' });
+        let settings: Record<string, unknown>;
+        try {
+            settings = await importer.getProperties({ ...info, uuid: id }) as unknown as Record<string, unknown>;
+        } catch (error) {
+            throw new ToolError({ code: 'IMPORTER_INSPECTION_FAILED', status: 502, message: `Material importer could not expose settings for ${id}.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        const issues: Array<Record<string, unknown>> = [];
+        if (!native || typeof native !== 'object') issues.push({ code: 'NATIVE_READBACK_INVALID' });
+        if (!settings || typeof settings !== 'object') issues.push({ code: 'IMPORTER_READBACK_INVALID' });
+        return { valid: issues.length === 0, reference: { id, type: typeof info.type === 'string' ? info.type : 'cc.Material' }, importer: 'material', issues, native, settings };
+    }
+
+    @utcpTool(
+        'renderConfigurationApply',
+        'Apply bounded editor scene render-property updates atomically and verify scene read-back.',
+        { type: 'object', additionalProperties: false, properties: { updates: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, path: { type: 'string', minLength: 1, maxLength: 256, pattern: '^[A-Za-z0-9_.]+$' }, value: {} }, required: ['reference', 'path', 'value'] } } }, required: ['updates'] },
+        { type: 'object', additionalProperties: false, properties: { changed: { type: 'array' }, readBack: { type: 'array' }, verified: { type: 'boolean', const: true } }, required: ['changed', 'readBack', 'verified'] },
+        'POST', ['render', 'configuration', 'apply', 'camera', 'light', 'fog', 'skybox']
+    )
+    async renderConfigurationApply(args: { updates?: Array<{ reference: IInstanceReference, path: string, value: unknown }> }): Promise<{ changed: string[], readBack: Array<Record<string, unknown>>, verified: true }> {
+        if (!Array.isArray(args?.updates) || args.updates.length < 1 || args.updates.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'renderConfigurationApply requires 1 to 32 updates.' });
+        const originals: Array<{ update: { reference: IInstanceReference, path: string, value: unknown }, original: unknown }> = [];
+        for (const [index, update] of args.updates.entries()) {
+            if (!update?.reference?.id || typeof update.reference.id !== 'string' || typeof update.path !== 'string' || !/^[A-Za-z0-9_.]{1,256}$/.test(update.path)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `updates[${index}] has an invalid reference or property path.` });
+            const node = await Editor.Message.request('scene', 'query-node', update.reference.id) as unknown as Record<string, unknown> | null;
+            if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Render configuration target ${update.reference.id} was not found.` });
+            originals.push({ update, original: propertyAtPath(node, update.path) });
+        }
+        const applied: typeof originals = [];
+        try {
+            for (const entry of originals) {
+                const result = await Editor.Message.request('scene', 'set-property', { uuid: entry.update.reference.id, path: entry.update.path, dump: { value: entry.update.value as never, type: 'Unknown' } });
+                if (result === false) throw new Error(`Creator refused ${entry.update.path}`);
+                applied.push(entry);
+            }
+            await Editor.Message.request('scene', 'snapshot');
+            const readBack: Array<Record<string, unknown>> = [];
+            for (const entry of originals) {
+                const node = await Editor.Message.request('scene', 'query-node', entry.update.reference.id) as unknown as Record<string, unknown> | null;
+                const actual = node ? propertyAtPath(node, entry.update.path) : undefined;
+                if (!jsonEqual(actual, entry.update.value)) throw new Error(`read-back mismatch for ${entry.update.path}`);
+                readBack.push({ reference: entry.update.reference, path: entry.update.path, value: actual });
+            }
+            return { changed: originals.map((entry) => entry.update.path), readBack, verified: true };
+        } catch (error) {
+            try {
+                for (const entry of [...applied].reverse()) {
+                    const result = await Editor.Message.request('scene', 'set-property', { uuid: entry.update.reference.id, path: entry.update.path, dump: { value: entry.original as never, type: 'Unknown' } });
+                    if (result === false) throw new Error(`Creator refused rollback ${entry.update.path}`);
+                }
+                await Editor.Message.request('scene', 'snapshot');
+            } catch (rollbackError) {
+                throw new ToolError({ code: 'ROLLBACK_FAILED', status: 500, message: 'renderConfigurationApply failed and could not restore scene properties.', details: { cause: error instanceof Error ? error.message : String(error), rollbackCause: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) } });
+            }
+            throw new ToolError({ code: 'MUTATION_FAILED', status: 502, message: 'renderConfigurationApply failed.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+    }
+
+    @utcpTool(
+        'renderDiagnosticsCollect',
+        'Collect editor-side render pipeline diagnostics for one target without claiming runtime frame sampling.',
+        { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxBytes: { type: 'integer', minimum: 1024, maximum: 262144, default: 65536 } }, required: ['reference'] },
+        { type: 'object', properties: { reference: InstanceReferenceSchema, supported: { type: 'boolean' }, pipeline: {}, diagnostics: { type: 'array' }, runtimeSampling: { type: 'boolean', const: false } }, required: ['reference', 'supported', 'diagnostics', 'runtimeSampling'] },
+        'GET', ['render', 'diagnostics', 'editor', 'inspect']
+    )
+    async renderDiagnosticsCollect(args: { reference?: IInstanceReference, maxBytes?: number }): Promise<{ reference: IInstanceReference, supported: boolean, pipeline?: unknown, diagnostics: Array<Record<string, unknown>>, runtimeSampling: false }> {
+        if (!args?.reference?.id || typeof args.reference.id !== 'string') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'renderDiagnosticsCollect requires reference.' });
+        try {
+            const inspected = await this.renderPipelineInspect({ reference: args.reference, maxBytes: args.maxBytes });
+            return { reference: inspected.reference, supported: true, pipeline: inspected.pipeline, diagnostics: [], runtimeSampling: false };
+        } catch (error) {
+            if (error instanceof ToolError && error.code === 'TARGET_NOT_FOUND') throw error;
+            if (error instanceof ToolError && error.code === 'UNSUPPORTED_EDITOR_API') return { reference: args.reference, supported: false, diagnostics: [{ code: error.code, message: error.message }], runtimeSampling: false };
+            throw error;
+        }
     }
     @utcpTool(
         'assetDbQuery',

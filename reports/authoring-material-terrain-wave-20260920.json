@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "editor-side material, rendering, terrain, and model authoring",
+  "implemented": [
+    "materialEdit captures typed importer pre-state, verifies native or importer read-back, and restores the previous property on postcondition failure.",
+    "materialValidate verifies material asset identity plus native query-material and importer property availability.",
+    "renderConfigurationApply applies bounded scene property updates with snapshot, read-back, and rollback failure typing.",
+    "renderDiagnosticsCollect exposes bounded editor-side render pipeline diagnostics and explicitly reports runtimeSampling=false.",
+    "terrainEdit is a typed version-gated adapter and fails closed when Creator 3.7.3 has no supported persistent terrain height/layer write API.",
+    "modelImportConfigure has a typed schema and delegates to importer reimport/read-back; modelImportInspect and modelImportValidate expose typed settings and imported sub-asset output checks."
+  ],
+  "routes": [
+    "materialQuery",
+    "materialEdit",
+    "materialValidate",
+    "renderPipelineInspect",
+    "renderConfigurationApply",
+    "renderDiagnosticsCollect",
+    "terrainCreate",
+    "terrainInspect",
+    "terrainEdit",
+    "modelImportConfigure",
+    "modelImportInspect",
+    "modelImportValidate"
+  ],
+  "observableContracts": [
+    "Material mutations are verified through native material or importer settings read-back and rollback is attempted after mutation failures.",
+    "Rendering configuration is editor-side scene property mutation only; no runtime visual proof is claimed.",
+    "Terrain mutation returns UNSUPPORTED_EDITOR_API 422 rather than pretending persistence when no native write API is exposed.",
+    "Model importer configure uses typed importer descriptors, reimport, and read-back; inspect/validate report bounded sub-asset outputs."
+  ],
+  "blocked": [
+    "Creator 3.7.3 terrain height/layer write API is not exposed; terrainEdit remains fail-closed until a version-gated native route exists.",
+    "Runtime frame sampling and rendered visual comparisons remain deferred by scope."
+  ],
+  "tests": [
+    "tests/unit/material-terrain-authoring.test.js",
+    "tests/unit/material-edit-contract.test.js",
+    "tests/unit/render-pipeline-inspect.test.js",
+    "tests/unit/p3-remaining-capabilities.test.js",
+    "npx tsc --pretty false"
+  ]
+}

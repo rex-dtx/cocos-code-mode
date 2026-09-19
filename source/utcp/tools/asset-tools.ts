@@ -504,6 +504,46 @@ async function waitForCompressionLibrary(uuid: string, initial: IAssetInfo): Pro
     }
     return current;
 }
+type AssetReadback = AssetInfo & { uuid: string, url?: string, type?: string };
+
+function assetReadbackError(operation: string, cause: unknown): ToolError {
+    return new ToolError({
+        code: 'ASSET_READBACK_FAILED',
+        status: 502,
+        message: `${operation} completed without an authoritative asset identity read-back.`,
+        details: { cause: boundedImportText(cause instanceof Error ? cause.message : String(cause), 512) },
+        recovery: 'Retry after the Creator asset database finishes processing the operation.',
+    });
+}
+
+async function readBackAsset(identifier: string, operation: string): Promise<AssetReadback> {
+    let info: unknown;
+    try {
+        info = await Editor.Message.request('asset-db', 'query-asset-info', identifier);
+    } catch (error: unknown) {
+        throw assetReadbackError(operation, error);
+    }
+    if (!info || typeof info !== 'object' || Array.isArray(info)) {
+        throw assetReadbackError(operation, new Error(`Asset '${identifier}' was not returned by query-asset-info.`));
+    }
+    const uuid = Reflect.get(info, 'uuid');
+    if (!isValidImportIdentity(uuid, MAX_IMPORT_REFERENCE_ID_LENGTH)) {
+        throw assetReadbackError(operation, new Error(`Asset '${identifier}' has no stable UUID.`));
+    }
+    return info as AssetReadback;
+}
+
+async function assertAssetRemoved(identifier: string, operation: string): Promise<void> {
+    let info: unknown;
+    try {
+        info = await Editor.Message.request('asset-db', 'query-asset-info', identifier);
+    } catch (error: unknown) {
+        throw assetReadbackError(operation, error);
+    }
+    if (info !== null && info !== undefined) {
+        throw assetReadbackError(operation, new Error(`Asset '${identifier}' is still present after deletion.`));
+    }
+}
 
 
 
@@ -718,6 +758,34 @@ export class AssetTools {
         const content = await (fs as any).readFile(fpResolved, 'utf8');
         return { content, filesystemPath: fpResolved, bytes: stat.size, truncated: false };
     }
+    @utcpTool('assetSaveContent', 'Overwrite content of a text-based asset (TS, JSON, effect, txt). Identify by db:// path or uuid. No binary.', {
+        type: 'object',
+        properties: { assetPath: { type: 'string' }, reference: InstanceReferenceSchema, content: { type: 'string' } },
+        required: ['content'],
+        anyOf: [{ required: ['reference'] }, { required: ['assetPath'] }],
+    }, { type: 'object', properties: { reference: InstanceReferenceSchema, filesystemPath: { type: 'string' } }, required: ['reference'] }, "POST", ['asset', 'save', 'write', 'content', 'script', 'text', 'edit', 'generate'])
+    async assetSaveContent(args: { assetPath?: string, reference?: IInstanceReference, content: string }): Promise<{ reference: IInstanceReference, filesystemPath?: string }> {
+        let url: string | null = null;
+        if (args.reference?.id) {
+            const info = await readBackAsset(args.reference.id, 'assetSaveContent.preflight');
+            url = info.url ?? null;
+        } else if (args.assetPath) url = normalizePath(args.assetPath);
+        if (!url) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetSaveContent requires assetPath or reference.id.' });
+        const saved = await Editor.Message.request('asset-db', 'save-asset', url, args.content ?? '');
+        if (!saved?.uuid) throw new ToolError({ code: 'ASSET_OPERATION_FAILED', status: 502, message: `Failed to save content to ${url}.` });
+        const readBack = await readBackAsset(saved.uuid, 'assetSaveContent');
+        invalidateAfterWrite();
+        return { reference: { id: readBack.uuid, type: readBack.type || saved.type || 'cc.Asset' }, filesystemPath: readBack.file || saved.file || undefined };
+    }
+
+    @utcpTool('assetGetAvailableUrl','Return a non-colliding db:// url for the given path (appends suffix if exists). Use before assetCreate.',{type:'object',properties:{assetPath:{type:'string'}},required:['assetPath']},{type:'object',properties:{url:{type:'string'}},required:['url']},"GET",['asset','available','url','collision','unique','name'])
+    async assetGetAvailableUrl(args:{assetPath:string}):Promise<{url:string}> {
+        if (!args.assetPath) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetGetAvailableUrl requires assetPath.' });
+        const url = await Editor.Message.request('asset-db', 'generate-available-url', normalizePath(args.assetPath));
+        if (typeof url !== 'string' || !url) throw new ToolError({ code: 'ASSET_QUERY_FAILED', status: 502, message: `Failed to generate available url for ${args.assetPath}.` });
+        return { url };
+    }
+
 
     @utcpTool('assetFindReferences', 'Find asset references. Defaults direction to used_by; pass depends_on for assets this asset references. Returns at most 200 results by default and 1,000 at most.', {
         type: 'object',
@@ -817,7 +885,6 @@ export class AssetTools {
         if (args.extname) opts.extname = args.extname;
         if (args.isBundle !== undefined) opts.isBundle = args.isBundle;
         if (Object.keys(opts).length === 0) throw new Error('assetQuery requires at least one filter');
-
         const raw = await queryAssetsCompat(opts) as Array<{ uuid: string, name: string, url: string, type: string, importer?: string, isDirectory?: boolean, isBundle?: boolean }>;
         const filtered = raw.filter((asset) => {
             if (opts.ccType && asset.type !== opts.ccType) return false;
@@ -827,85 +894,65 @@ export class AssetTools {
             return true;
         });
         const limit = boundedPositive(args.limit, 200, 1000);
-        const assets = filtered.slice(0, limit).map((asset) => ({
-            uuid: asset.uuid,
-            name: asset.name,
-            url: asset.url,
-            type: asset.isDirectory ? 'folder' : asset.type,
-            importer: asset.importer,
-            isDirectory: !!asset.isDirectory,
-        }));
+        const assets = filtered.slice(0, limit).map((asset) => ({ uuid: asset.uuid, name: asset.name, url: asset.url, type: asset.isDirectory ? 'folder' : asset.type, importer: asset.importer, isDirectory: !!asset.isDirectory }));
         return { assets, total: filtered.length, truncated: filtered.length > assets.length };
     }
-
-    @utcpTool('assetSaveContent', 'Overwrite content of a text-based asset (TS, JSON, effect, txt). Identify by db:// path or uuid. No binary.', {
-        type: 'object',
-        properties: {
-            assetPath: { type: 'string' },
-            reference: InstanceReferenceSchema,
-            content: { type: 'string' },
-        },
-        required: ['content'],
-        anyOf: [
-            { required: ['reference'] },
-            { required: ['assetPath'] },
-        ],
-    }, { type: 'object', properties: { reference: InstanceReferenceSchema, filesystemPath: { type: 'string' } }, required: ['reference'] }, "POST", ['asset', 'save', 'write', 'content', 'script', 'text', 'edit', 'generate'])
-    async assetSaveContent(args:{assetPath?:string,reference?:IInstanceReference,content:string}):Promise<{reference:IInstanceReference,filesystemPath?:string}>{ let url:string|null=null; if(args.reference&&args.reference.id){ const info=await Editor.Message.request('asset-db','query-asset-info',args.reference.id); if(!info) throw new Error(`Asset ${args.reference.id} not found`); url=info.url; } else if(args.assetPath) url=normalizePath(args.assetPath); if(!url) throw new Error('assetSaveContent requires assetPath or reference.id'); const result=await Editor.Message.request('asset-db','save-asset',url,args.content??''); if(!result) throw new Error(`Failed to save content to ${url}`); invalidateAfterWrite(); return {reference:{id:result.uuid,type:result.type},filesystemPath:result.file||undefined}; }
-
-    @utcpTool('assetGetAvailableUrl','Return a non-colliding db:// url for the given path (appends suffix if exists). Use before assetCreate.',{type:'object',properties:{assetPath:{type:'string'}},required:['assetPath']},{type:'object',properties:{url:{type:'string'}},required:['url']},"GET",['asset','available','url','collision','unique','name'])
-    async assetGetAvailableUrl(args:{assetPath:string}):Promise<{url:string}>{ if(!args.assetPath) throw new Error('assetGetAvailableUrl requires assetPath'); const url=await Editor.Message.request('asset-db','generate-available-url',normalizePath(args.assetPath)); if(!url) throw new Error(`Failed to generate available url for ${args.assetPath}`); return {url}; }
 
     @utcpTool('assetCreate','Create an asset or folder at a db:// path from a Creator 3.7 preset.',{type:'object',properties:{assetPath:{type:'string'},preset:{type:'string',enum:['folder','material','effect','scene','prefab','typescript','animation-clip','render-texture','physics-material','animation-graph','animation-graph-variant','animation-mask','auto-atlas','effect-header','terrain']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}},nullable:true}},required:['assetPath','preset']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','create','new','preset','folder','typescript'])
     async assetCreate(args:{assetPath:string;preset:string;options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}> {
         let targetPath = normalizePath(args.assetPath);
         const type = args.preset;
         const presetMap: Record<string, { source: string, extension: string }> = {
-            material: { source: 'db://internal/default_file_content/mtl', extension: '.mtl' },
-            effect: { source: 'db://internal/default_file_content/effect', extension: '.effect' },
-            scene: { source: 'db://internal/default_file_content/scene', extension: '.scene' },
-            prefab: { source: 'db://internal/default_file_content/prefab', extension: '.prefab' },
-            'animation-clip': { source: 'db://internal/default_file_content/anim', extension: '.anim' },
-            'render-texture': { source: 'db://internal/default_file_content/rt', extension: '.rt' },
-            'physics-material': { source: 'db://internal/default_file_content/pmtl', extension: '.pmtl' },
-            'animation-graph': { source: 'db://internal/default_file_content/animgraph', extension: '.animgraph' },
-            'animation-graph-variant': { source: 'db://internal/default_file_content/animgraphvari', extension: '.animgraphvari' },
-            'animation-mask': { source: 'db://internal/default_file_content/animask', extension: '.animask' },
-            'auto-atlas': { source: 'db://internal/default_file_content/pac', extension: '.pac' },
-            'effect-header': { source: 'db://internal/default_file_content/chunk', extension: '.chunk' },
-            terrain: { source: 'db://internal/default_file_content/terrain', extension: '.terrain' },
+            material: { source: 'db://internal/default_file_content/mtl', extension: '.mtl' }, effect: { source: 'db://internal/default_file_content/effect', extension: '.effect' }, scene: { source: 'db://internal/default_file_content/scene', extension: '.scene' }, prefab: { source: 'db://internal/default_file_content/prefab', extension: '.prefab' }, 'animation-clip': { source: 'db://internal/default_file_content/anim', extension: '.anim' }, 'render-texture': { source: 'db://internal/default_file_content/rt', extension: '.rt' }, 'physics-material': { source: 'db://internal/default_file_content/pmtl', extension: '.pmtl' }, 'animation-graph': { source: 'db://internal/default_file_content/animgraph', extension: '.animgraph' }, 'animation-graph-variant': { source: 'db://internal/default_file_content/animgraphvari', extension: '.animgraphvari' }, 'animation-mask': { source: 'db://internal/default_file_content/animask', extension: '.animask' }, 'auto-atlas': { source: 'db://internal/default_file_content/pac', extension: '.pac' }, 'effect-header': { source: 'db://internal/default_file_content/chunk', extension: '.chunk' }, terrain: { source: 'db://internal/default_file_content/terrain', extension: '.terrain' },
         };
-        const assetOptions: AssetOperationOption = {
-            overwrite: args.options?.overwrite ?? false,
-            rename: args.options?.rename ?? false,
-        };
+        const assetOptions: AssetOperationOption = { overwrite: args.options?.overwrite ?? false, rename: args.options?.rename ?? false };
+        let created: AssetInfo | null;
         if (type === 'folder' || type === 'typescript') {
             let content: string | null = null;
             if (type === 'typescript') {
                 const currentExtension = extname(targetPath);
-                if (currentExtension !== '.ts') {
-                    targetPath = currentExtension ? targetPath.slice(0, -currentExtension.length) : targetPath;
-                    targetPath += '.ts';
-                }
+                if (currentExtension !== '.ts') targetPath = `${currentExtension ? targetPath.slice(0, -currentExtension.length) : targetPath}.ts`;
                 content = this.generateTypescriptClassTemplate(basename(targetPath.slice('db://'.length), '.ts'));
             }
-            const created = await Editor.Message.request('asset-db', 'create-asset', targetPath, content, assetOptions);
-            if (!created) throw new Error(`Failed to create ${type} at ${targetPath}`);
-            invalidateAfterWrite();
-            return { reference: { id: created.uuid, type } };
+            created = await Editor.Message.request('asset-db', 'create-asset', targetPath, content, assetOptions);
+        } else {
+            const preset = presetMap[type];
+            if (!preset) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Unknown asset preset type: ${type}` });
+            if (extname(targetPath) === '') targetPath += preset.extension;
+            created = await Editor.Message.request('asset-db', 'copy-asset', preset.source, targetPath, assetOptions);
         }
-        const preset = presetMap[type];
-        if (!preset) throw new Error(`Unknown asset preset type: ${type}`);
-        if (extname(targetPath) === '') targetPath += preset.extension;
-        const assetInfo = await Editor.Message.request('asset-db', 'copy-asset', preset.source, targetPath, assetOptions);
-        if (!assetInfo) throw new Error(`Failed to create asset at ${targetPath}`);
+        if (!created?.uuid) throw new ToolError({ code: 'ASSET_CREATE_FAILED', status: 502, message: `Failed to create ${type} at ${targetPath}.` });
+        const readBack = await readBackAsset(created.uuid, 'assetCreate');
         invalidateAfterWrite();
-        return { reference: { id: assetInfo.uuid, type: assetInfo.type } };
+        return { reference: { id: readBack.uuid, type: readBack.type || created.type || type } };
     }
 
     @utcpTool('assetImport','Import external file as asset.',{type:'object',properties:{sourceFilesystemPath:{type:'string'},targetAssetPath:{type:'string'},imageType:{type:'string',enum:['raw','texture','normal-map','sprite-frame','texture-cube']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}}}},required:['sourceFilesystemPath','targetAssetPath']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','import','file','external','image'])
-    async assetImport(args:{sourceFilesystemPath:string,targetAssetPath:string,imageType?:string,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ let targetPath=normalizePath(args.targetAssetPath); const assetOptions:AssetOperationOption={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; if(args.sourceFilesystemPath.startsWith('~')) args.sourceFilesystemPath=path.join(os.homedir(),args.sourceFilesystemPath.slice(1)); args.sourceFilesystemPath=path.resolve(args.sourceFilesystemPath); args.sourceFilesystemPath=await fs.realpath(args.sourceFilesystemPath); let existingAssetInfo:AssetInfo|null=null; if(`${(Editor.Project as any).path}${targetPath.slice('db:/'.length)}`===args.sourceFilesystemPath){ await Editor.Message.request('asset-db','refresh-asset',targetPath); existingAssetInfo=await Editor.Message.request('asset-db','query-asset-info',targetPath);} const assetInfo=existingAssetInfo?existingAssetInfo:await Editor.Message.request('asset-db','import-asset',args.sourceFilesystemPath,targetPath,assetOptions); if(!assetInfo) throw new Error(`Failed to import asset to ${targetPath}`); if(assetInfo.extends&&assetInfo.importer==='image'&&args.imageType){ const meta=await Editor.Message.request('asset-db','query-asset-meta',assetInfo.uuid); if(meta&&meta.userData){ let t=args.imageType; if(t==='normal-map') t='normal map'; if(t==='texture-cube') t='texture cube'; meta.userData.type=t; await Editor.Message.request('asset-db','save-asset-meta',assetInfo.uuid,JSON.stringify(meta)); }} invalidateAfterWrite(); return {reference:{id:assetInfo.uuid,type:assetInfo.type}}; }
-
+    async assetImport(args:{sourceFilesystemPath:string,targetAssetPath:string,imageType?:string,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{
+        const targetPath = normalizePath(args.targetAssetPath);
+        const assetOptions: AssetOperationOption = { overwrite: args.options?.overwrite ?? false, rename: args.options?.rename ?? false };
+        let sourcePath = args.sourceFilesystemPath;
+        if (sourcePath.startsWith('~')) sourcePath = path.join(os.homedir(), sourcePath.slice(1));
+        sourcePath = await fs.realpath(path.resolve(sourcePath));
+        let existingAssetInfo: AssetInfo | null = null;
+        const projectPath = typeof Editor.Project?.path === 'string' ? Editor.Project.path : '';
+        if (`${projectPath}${targetPath.slice('db:/'.length)}` === sourcePath) {
+            await Editor.Message.request('asset-db', 'refresh-asset', targetPath);
+            existingAssetInfo = await Editor.Message.request('asset-db', 'query-asset-info', targetPath);
+        }
+        const assetInfo = existingAssetInfo ?? await Editor.Message.request('asset-db', 'import-asset', sourcePath, targetPath, assetOptions) as AssetInfo | null;
+        if (!assetInfo?.uuid) throw new ToolError({ code: 'ASSET_IMPORT_FAILED', status: 502, message: `Failed to import asset to ${targetPath}.` });
+        if (assetInfo.extends && assetInfo.importer === 'image' && args.imageType) {
+            const meta = await Editor.Message.request('asset-db', 'query-asset-meta', assetInfo.uuid);
+            if (meta?.userData) {
+                meta.userData.type = args.imageType === 'normal-map' ? 'normal map' : args.imageType === 'texture-cube' ? 'texture cube' : args.imageType;
+                await Editor.Message.request('asset-db', 'save-asset-meta', assetInfo.uuid, JSON.stringify(meta));
+            }
+        }
+        const readBack = await readBackAsset(assetInfo.uuid, 'assetImport');
+        invalidateAfterWrite();
+        return { reference: { id: readBack.uuid, type: readBack.type || assetInfo.type || 'cc.Asset' } };
+    }
     @utcpTool('assetOperate', 'Move/copy/delete/open/refresh/reimport asset, or save_meta (read meta via assetDbQuery meta first).', {
         type: 'object',
         properties: {
@@ -926,7 +973,53 @@ export class AssetTools {
             { properties: { operation: { const: 'reimport' } } },
         ],
     }, { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, "POST", ['asset', 'operate', 'move', 'copy', 'delete', 'open', 'refresh', 'reimport', 'meta'])
-    async assetOperate(args:{operation:string,reference:IInstanceReference,targetAssetPath?:string,meta?:any,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{ const assetOptions={overwrite:args.options?.overwrite??false,rename:args.options?.rename??false}; const sourceUrl=await toAssetUrl(args.reference.id); const hasTarget=!!args.targetAssetPath; args.targetAssetPath=normalizePath(args.targetAssetPath); let result:AssetInfo|null=null; switch(args.operation){ case 'move': if(!hasTarget) throw new Error('targetAssetPath is required for move'); result=await Editor.Message.request('asset-db','move-asset',sourceUrl,args.targetAssetPath,assetOptions); break; case 'copy': if(!hasTarget) throw new Error('targetAssetPath is required for copy'); result=await Editor.Message.request('asset-db','copy-asset',sourceUrl,args.targetAssetPath,assetOptions); break; case 'delete': result=await Editor.Message.request('asset-db','delete-asset',sourceUrl); break; case 'open': await Editor.Message.request('asset-db','open-asset',args.reference.id); result=null; break; case 'refresh': await Editor.Message.request('asset-db','refresh-asset',sourceUrl); result=null; break; case 'reimport': await Editor.Message.request('asset-db','reimport-asset',sourceUrl); result=null; break; case 'save_meta': { if(args.meta===undefined||args.meta===null) throw new Error('save_meta requires meta (read it with assetDbQuery meta, mutate, pass back)'); const payload=typeof args.meta==='string'?args.meta:JSON.stringify(args.meta); const saved=await Editor.Message.request('asset-db','save-asset-meta',args.reference.id,payload); if(!saved) throw new Error(`Failed to save meta for ${args.reference.id}`); result=null; break; } default: throw new Error(`Unknown operation: ${args.operation}`);} if (result || ['move','copy','delete','refresh','reimport'].includes(args.operation)) invalidateAfterWrite(); return {reference:{id:result?.uuid??args.reference.id, type:result?.type??args.reference.type??''}}; }
+    async assetOperate(args:{operation:string,reference:IInstanceReference,targetAssetPath?:string,meta?:unknown,options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}>{
+        const assetOptions = { overwrite: args.options?.overwrite ?? false, rename: args.options?.rename ?? false };
+        const sourceUrl = await toAssetUrl(args.reference.id);
+        const hasTarget = typeof args.targetAssetPath === 'string' && args.targetAssetPath.length > 0;
+        const targetUrl = hasTarget ? normalizePath(args.targetAssetPath) : undefined;
+        let result: AssetReadback | null = null;
+        switch (args.operation) {
+            case 'move':
+                if (!targetUrl) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'targetAssetPath is required for move.' });
+                await Editor.Message.request('asset-db', 'move-asset', sourceUrl, targetUrl, assetOptions);
+                result = await readBackAsset(targetUrl, 'assetOperate.move');
+                break;
+            case 'copy':
+                if (!targetUrl) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'targetAssetPath is required for copy.' });
+                await Editor.Message.request('asset-db', 'copy-asset', sourceUrl, targetUrl, assetOptions);
+                result = await readBackAsset(targetUrl, 'assetOperate.copy');
+                break;
+            case 'delete':
+                await Editor.Message.request('asset-db', 'delete-asset', sourceUrl);
+                await assertAssetRemoved(args.reference.id, 'assetOperate.delete');
+                break;
+            case 'open':
+                await Editor.Message.request('asset-db', 'open-asset', args.reference.id);
+                result = await readBackAsset(args.reference.id, 'assetOperate.open');
+                break;
+            case 'refresh':
+                await Editor.Message.request('asset-db', 'refresh-asset', sourceUrl);
+                result = await readBackAsset(args.reference.id, 'assetOperate.refresh');
+                break;
+            case 'reimport':
+                await Editor.Message.request('asset-db', 'reimport-asset', sourceUrl);
+                result = await readBackAsset(args.reference.id, 'assetOperate.reimport');
+                break;
+            case 'save_meta': {
+                if (args.meta === undefined || args.meta === null) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'save_meta requires meta.' });
+                const payload = typeof args.meta === 'string' ? args.meta : JSON.stringify(args.meta);
+                const saved = await Editor.Message.request('asset-db', 'save-asset-meta', args.reference.id, payload);
+                if (!saved) throw new ToolError({ code: 'ASSET_OPERATION_FAILED', status: 502, message: `Failed to save meta for ${args.reference.id}.` });
+                result = await readBackAsset(args.reference.id, 'assetOperate.save_meta');
+                break;
+            }
+            default:
+                throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Unknown operation: ${args.operation}.` });
+        }
+        if (args.operation !== 'delete') invalidateAfterWrite();
+        return { reference: { id: result?.uuid ?? args.reference.id, type: result?.type ?? args.reference.type ?? 'cc.Asset' } };
+    }
 
     @utcpTool('assetBatchImport', 'Import a bounded batch of external files and return per-item outcomes without stopping on one failure.', {
         type: 'object',
