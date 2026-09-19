@@ -407,41 +407,30 @@ export class EditorTools {
     /** @deprecated use sceneManage({ operation }) — not registered, kept for delegation */
     async editorOperate(args: { operation: string }): Promise<ISuccessIndicator & { reference?: IInstanceReference }> {
         switch (args.operation) {
-            case 'save_scene_or_prefab':
+            case 'save_scene_or_prefab': {
                 await Editor.Message.request('scene', 'save-scene');
+                const dirty = await Editor.Message.request('scene', 'query-dirty').catch(() => undefined);
+                if (dirty === true) throw new ToolError({ code: 'SCENE_SAVE_UNCONFIRMED', status: 502, message: 'Creator reported the scene remains dirty after save.' });
                 return { success: true };
+            }
             case 'save_as': {
-                // Opens a save dialog in the editor; resolves to the new scene uuid or
-                // undefined when the user cancels.
                 const uuid = await Editor.Message.request('scene', 'save-as-scene');
-                if (!uuid) {
-                    throw new Error('Save as was cancelled or failed - no new scene asset was created');
-                }
+                if (typeof uuid !== 'string' || !uuid) throw new ToolError({ code: 'SCENE_SAVE_AS_UNCONFIRMED', status: 502, message: 'Save as was cancelled or failed - no new scene asset was created.' });
+                const current = await Editor.Message.request('scene', 'query-current-scene').catch(() => undefined);
+                let currentId: string | undefined;
+                if (typeof current === 'string') currentId = current;
+                else if (current && typeof current === 'object' && 'uuid' in current && typeof current.uuid === 'string') currentId = current.uuid;
+                if (currentId && currentId !== uuid) throw new ToolError({ code: 'SCENE_SAVE_AS_UNCONFIRMED', status: 502, message: `Creator did not activate saved scene ${uuid}.` });
                 return { success: true, reference: { id: uuid, type: 'cc.SceneAsset' } };
             }
-            case 'close_scene_or_prefab':
-                await Editor.Message.request('scene', 'close-scene');
-                return { success: true };
-            case 'soft_reload':
-                await Editor.Message.request('scene', 'soft-reload');
-                return { success: true };
-            case 'play_preview':
-                await Editor.Message.request('scene', 'editor-preview-set-play', true);
-                return { success: true };
-            case 'pause':
-                await Editor.Message.request('scene', 'editor-preview-call-method', 'pause', true);
-                return { success: true };
-            case 'step':
-                 await Editor.Message.request('scene', 'editor-preview-call-method', 'step');
-                return { success: true };
-            case 'stop':
-                await Editor.Message.request('scene', 'editor-preview-set-play', false);
-                return { success: true };
-            case 'refresh':
-                await Editor.Message.request('asset-db', 'refresh-asset', 'db://assets');
-                return { success: true };
-            default:
-                throw new Error(`Unknown operation: ${args.operation}`);
+            case 'close_scene_or_prefab': await Editor.Message.request('scene', 'close-scene'); return { success: true };
+            case 'soft_reload': await Editor.Message.request('scene', 'soft-reload'); return { success: true };
+            case 'play_preview': await Editor.Message.request('scene', 'editor-preview-set-play', true); return { success: true };
+            case 'pause': await Editor.Message.request('scene', 'editor-preview-call-method', 'pause', true); return { success: true };
+            case 'step': await Editor.Message.request('scene', 'editor-preview-call-method', 'step'); return { success: true };
+            case 'stop': await Editor.Message.request('scene', 'editor-preview-set-play', false); return { success: true };
+            case 'refresh': await Editor.Message.request('asset-db', 'refresh-asset', 'db://assets'); return { success: true };
+            default: throw new Error(`Unknown operation: ${args.operation}`);
         }
     }
 

@@ -2030,22 +2030,20 @@
         "funplay:read_file"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetReadContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms project-root constrained UTF-8 reads with finite size caps, regular-file checks, and byte read-back accounting.",
       "implementationRoute": [
         {
-          "tool": "assetReadContent",
-          "file": "source/utcp/tools/asset-tools.ts"
+          "tool": "projectReadFile",
+          "file": "source/utcp/tools/file-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side project file read only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2110,12 +2108,20 @@
         "funplay:replace_in_file"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded literal replacement within project-root files, atomic write, and read-back verification.",
+      "implementationRoute": [
+        {
+          "tool": "projectReplaceInFile",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Regex replacement and external filesystem operations are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2140,12 +2146,20 @@
         "funplay:search_files"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded project glob search with optional project-relative directory scope, finite limits, and truncation accounting.",
+      "implementationRoute": [
+        {
+          "tool": "projectSearchFiles",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Project-root bounded search only; external filesystem search is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2247,22 +2261,20 @@
         "funplay:write_file"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms project-root constrained atomic UTF-8 writes with bounded payloads and authoritative content read-back.",
       "implementationRoute": [
         {
-          "tool": "assetSaveContent",
-          "file": "source/utcp/tools/asset-tools.ts"
+          "tool": "projectWriteFile",
+          "file": "source/utcp/tools/file-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side project file write only; assets refresh is editor-side best effort and external delivery is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2287,12 +2299,20 @@
         "cocos-mcp:batch_delete_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded batch asset deletion with per-item outcomes, continuation after failures, and deletion read-back.",
+      "implementationRoute": [
+        {
+          "tool": "assetBatchOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side asset operations only; external open/delivery is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2317,12 +2337,20 @@
         "cocos-mcp:batch_import_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded batch import with per-item success/failure outcomes, authoritative references, and partial accounting.",
+      "implementationRoute": [
+        {
+          "tool": "assetBatchImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded import only; external filesystem delivery remains uncredited."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2347,12 +2375,20 @@
         "cocos-mcp:compress_textures"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms platform-aware texture compression configuration with reimport and source/generated-output evidence.",
+      "implementationRoute": [
+        {
+          "tool": "assetCompressionConfigure",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-file-import-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor/importer evidence only; runtime visual output is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4053,12 +4089,20 @@
         "cocos-mcp:update_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms exact prefab update through linked-source application and source/instance read-back.",
+      "implementationRoute": [
+        {
+          "tool": "prefabUpdate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-prefab-reference-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side linked prefab update only; runtime/Game View credit is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -6916,13 +6960,20 @@
       "portfolioNames": [
         "particleConfigure"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded serialized particle module/curve configuration with snapshot, read-back, and rollback; runtime playback is not claimed.",
+      "implementationRoute": [
+        {
+          "tool": "particleConfigure",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-config-20260920.json",
+        "tests/unit/authoring-wave-k-config.test.js"
+      ],
       "limitations": [
-        "Typed module/curve mutation with persistent read-back, not panel scraping.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Serialized component configuration only; runtime particle playback remains uncredited."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9595,12 +9646,20 @@
         "cocos-mcp:add_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms component creation with authoritative UUID/type verification after mutation.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentAdd",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-scene-composite-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side component creation only; runtime component behavior is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11054,13 +11113,20 @@
         "funplay:bind_button_click_event"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded serialized cc.EventHandler binding with handler-count postcondition; handlers are not executed.",
+      "implementationRoute": [
+        {
+          "tool": "bindButtonClickEvent",
+          "file": "source/utcp/tools/event-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-scene-composite-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Add target reference or separate workflow; retain bounded current route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Serialized event binding only; runtime click execution is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11584,13 +11650,20 @@
         "funplay:list_button_click_events"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms bounded read of serialized cc.Button clickEvents without executing handlers.",
+      "implementationRoute": [
+        {
+          "tool": "listButtonClickEvents",
+          "file": "source/utcp/tools/event-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-scene-composite-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Add read route; do not merge with simulation.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Serialized event inspection only; runtime click execution is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11927,14 +12000,20 @@
         "funplay:set_node_transform"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave K evidence confirms exact position/eulerAngles/scale/active mutation with snapshot and fresh query-node read-back verification.",
+      "implementationRoute": [
+        {
+          "tool": "nodeSetTransform",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-wave-k-scene-composite-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded node transform fields are credited; arbitrary scene scripting is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",

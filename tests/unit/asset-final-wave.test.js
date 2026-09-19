@@ -29,6 +29,22 @@ describe('final asset/import authoring wave', () => {
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
+  it('atomically writes and replaces bounded project files with read-back', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-file-write-'));
+    const previous = global.Editor;
+    global.Editor = { Project: { path: root }, Message: { request: async () => true } };
+    try {
+      const tools = new FileTools();
+      assert.deepEqual(await tools.projectWriteFile({ filePath: 'src/a.ts', content: 'alpha\nbeta\n' }), { success: true, bytesWritten: 11 });
+      assert.deepEqual(await tools.projectReplaceInFile({ filePath: 'src/a.ts', search: 'beta', replace: 'gamma' }), { success: true, replacements: 1 });
+      assert.deepEqual(await tools.projectReadFile({ filePath: 'src/a.ts' }), { content: 'alpha\ngamma\n', bytes: 12 });
+      assert.deepEqual(await tools.projectSearchFiles({ pattern: '*.ts', directory: 'src' }), { files: ['src/a.ts'], total: 1, truncated: false });
+      await assert.rejects(() => tools.projectWriteFile({ filePath: '../outside.ts', content: 'blocked' }), (error) => error.code === 'INVALID_ARGUMENT');
+    } finally {
+      restoreEditor(previous);
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
 
   it('reads and writes bounded package preferences with authoritative read-back', async () => {
     const previous = global.Editor;

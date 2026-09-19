@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "bounded project file, import, asset validation, and preference authoring contracts",
+  "implemented": [
+    {"workflowId":"asset.funplay-read-file","route":"projectReadFile","evidence":"Project-root constrained UTF-8 read with finite size caps, regular-file checks, and byte read-back accounting."},
+    {"workflowId":"asset.funplay-write-file","route":"projectWriteFile","evidence":"Project-root constrained atomic temp-file rename with bounded UTF-8 payload and authoritative content read-back; assets refresh remains editor-side best effort."},
+    {"workflowId":"asset.funplay-replace-in-file","route":"projectReplaceInFile","evidence":"Bounded literal replacement is project-root constrained, atomically written, and verified by read-back."},
+    {"workflowId":"asset.funplay-search-files","route":"projectSearchFiles","evidence":"Bounded glob search supports optional project-relative directory scope and finite result limits with truncation accounting."},
+    {"workflowId":"asset.funplay-get-file-snippet","route":"projectFileSnippet","evidence":"Bounded line/radius snippet validates project-root path, regular file, and finite source size."},
+    {"workflowId":"asset.funplay-exists","route":"projectFileExists","evidence":"Project-root constrained file/directory existence query."},
+    {"workflowId":"asset.funplay-get-editor-preference","route":"queryPreferencesConfig","evidence":"Bounded package/key preferences IPC route returns explicit null for unset values."},
+    {"workflowId":"asset.funplay-set-editor-preference","route":"setPreferencesConfig","evidence":"Bounded package/key preference mutation performs authoritative queryConfig read-back."},
+    {"workflowId":"assets-import.cocos-mcp-batch-delete-assets","route":"assetBatchOperate","evidence":"Existing bounded batch operation handles delete entries, continues after failures, and verifies deletion read-back."},
+    {"workflowId":"assets-import.cocos-mcp-batch-import-assets","route":"assetBatchImport","evidence":"Existing bounded import batch preserves per-item outcomes, failure details, authoritative references, and partial accounting."},
+    {"workflowId":"assets-import.cocos-mcp-compress-textures","route":"assetCompressionConfigure","evidence":"Existing route validates platform preset, persists metadata, reimports, and returns source/generated-output hash evidence."},
+    {"workflowId":"assets-import.cocos-mcp-validate-asset-references","route":"assetMissingReferenceAudit","evidence":"Existing bounded serialized UUID audit reports missing references with source-line evidence and explicit exclusions."}
+  ],
+  "blocked": [
+    {"workflowId":"asset.cocos-mcp-open-asset-external","reason":"Explicitly excluded: no OS external open or file delivery."},
+    {"workflowId":"asset.cocos-mcp-get-log-file-info","reason":"No new route added because editor-tools.ts is owned by the scene lifecycle cohort; existing editorGetLogs remains the bounded log reader and no ownership-safe log-info change was made."}
+  ],
+  "changedFiles": [
+    "source/utcp/tools/file-tools.ts",
+    "tests/unit/asset-final-wave.test.js",
+    "reports/authoring-wave-k-file-import-20260920.json"
+  ],
+  "tests": [
+    "node --test tests/unit/asset-final-wave.test.js (3/3 pass)",
+    "npx tsc --pretty false --noEmit (blocked by pre-existing scene-tools.ts diagnostics at lines 171 and 177; no file-tools diagnostic reported)"
+  ],
+  "notes": [
+    "No plans, denominator hashes, coverage files, or generated coverage artifacts changed.",
+    "No OS external open behavior was added.",
+    "Asset/import batch, compression, reference validation, and preference routes were already present and remain bounded; this wave hardens project file contracts and focused proof."
+  ]
+}

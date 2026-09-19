@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 126,
+  "requiredFor90": 113,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
@@ -79,37 +79,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "asset.funplay-read-file",
-      "state": "partial",
-      "reason": "The registered assetReadContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
-      "acceptance": "- *Tính năng:* Đọc toàn bộ nội dung file văn bản từ project.\n    - *Inputs:* `path: string`.\n    - *Outputs:* `{ content: string, size: number }`.\n    - *Cơ chế:* `fs.readFileSync`.",
-      "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-replace-in-file",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tìm và thay thế chuỗi/regex trong file mã nguồn.\n    - *Inputs:* `path: string`, `find: string`, `replace: string`, `isRegex?: boolean`.\n    - *Outputs:* `{ replacedCount: number }`.\n    - *Cơ chế:* Đọc, replace và ghi lại file.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-search-files",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tìm file theo wildcard pattern (`*.ts`, `*Model*`).\n    - *Inputs:* `pattern: string`, `directory?: string`.\n    - *Outputs:* `string[]` (mảng đường dẫn tương đối).\n    - *Cơ chế:* Glob scanner trong project directory.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "asset.funplay-set-editor-preference",
       "state": "partial",
       "reason": "setEditorPreference writes bounded cc-bridge-3x Editor.Profile settings with type validation, but does not provide arbitrary package scope or a persistence read-back in the returned result.",
@@ -117,47 +86,6 @@
       "limitations": [
         "Package scope is fixed to cc-bridge-3x and known preference keys.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-write-file",
-      "state": "partial",
-      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
-      "acceptance": "- *Tính năng:* Ghi hoặc ghi đè nội dung file vào project (tự động kích hoạt refresh nếu nằm trong `assets/`).\n    - *Inputs:* `path: string`, `content: string`.\n    - *Outputs:* `{ written: boolean, bytes: number }`.\n    - *Cơ chế:* `fs.writeFileSync` kèm auto-refresh asset-db.",
-      "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.cocos-mcp-batch-delete-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "batch_delete_assets",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.cocos-mcp-batch-import-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "batch_import_assets",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "assets-import.cocos-mcp-compress-textures",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "compress_textures",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
     },
@@ -423,16 +351,6 @@
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "switch_reference_image",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "design-prefab.cocos-mcp-update-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "update_prefab",
       "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
@@ -801,17 +719,6 @@
       "limitations": [
         "Use dedicated skill-generation workflow or explicit fixed-path policy.",
         "Constrain path to skills and return created path.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "particles.lane-1-wip-260908-tbd-child-p4-physics-particles-particle-configure",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Typed module/curve mutation with persistent read-back, not panel scraping. Prerequisites: `particle-schema`.\nTyped module/curve mutation with persistent read-back, not panel scraping.",
-      "limitations": [
-        "Typed module/curve mutation with persistent read-back, not panel scraping.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -1432,16 +1339,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-add-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "add_component",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.cocos-mcp-attach-script",
       "state": "partial",
       "reason": "The registered sceneScriptRepair route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
@@ -1562,17 +1459,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.funplay-bind-button-click-event",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Gắn một `cc.EventHandler` vào nút `cc.Button`, trỏ đến hàm của một component khác.\n    - *Inputs:* `buttonNodeUuid: string`, `targetNodeUuid: string`, `componentName: string`, `handler: string`, `customEventData?: string`.\n    - *Outputs:* `{ bound: boolean, totalEvents: number }`.\n    - *Cơ chế:* Thao tác mảng `clickEvents` của component `cc.Button` trong scene script.",
-      "limitations": [
-        "Add target reference or separate workflow; retain bounded current route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.funplay-execute-scene-script",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -1606,17 +1492,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.funplay-list-button-click-events",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đọc danh sách các liên kết sự kiện click trên `cc.Button`.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `Array<{ targetUuid, componentName, handler, customEventData }>`.\n    - *Cơ chế:* Đọc `button.clickEvents`.",
-      "limitations": [
-        "Add read route; do not merge with simulation.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.funplay-save-current-scene",
       "state": "partial",
       "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
@@ -1635,18 +1510,6 @@
       "limitations": [
         "Bounded cc.Camera property mutation is evidenced; unverified native camera fields and visual/runtime behavior are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-set-node-transform",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Cập nhật vị trí, góc xoay, tỉ lệ và trạng thái active của node.\n    - *Inputs:* `nodeUuid: string`, `position?: {x,y,z}`, `rotation?: {x,y,z}`, `scale?: {x,y,z}`, `active?: boolean`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* Gọi `scene:set-property` cho từng thuộc tính transform.",
-      "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
     },

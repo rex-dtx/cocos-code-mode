@@ -214,3 +214,45 @@ describe('final scene adapters', () => {
     assert.equal((await new SceneTools().sceneComponentInfo({ reference: { id: 'component-1' } })).type, 'cc.Label');
   });
 });
+
+describe('scene composite residual adapters', () => {
+  it('sceneGetInfo returns dirty alias and hierarchy node count', async () => {
+    global.Editor = { Message: { request: async (_service, message) => {
+      if (message === 'query-scene-bounds') return { x: 0, y: 0, width: 10, height: 20 };
+      if (message === 'query-dirty') return true;
+      if (message === 'query-current-scene') return { uuid: 'scene-1', name: 'Main' };
+      if (message === 'query-node-tree') return { uuid: 'root', children: [{ uuid: 'child', children: [] }] };
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().sceneGetInfo(), { bounds: { x: 0, y: 0, width: 10, height: 20 }, dirty: true, isDirty: true, nodeCount: 2, currentScene: { uuid: 'scene-1', name: 'Main' } });
+  });
+
+  it('nodeSetTransform applies exact paths and confirms read-back', async () => {
+    const calls = [];
+    const node = { uuid: 'node-1', position: { value: { x: 1, y: 2, z: 3 } }, eulerAngles: { value: { x: 4, y: 5, z: 6 } }, scale: { value: { x: 1, y: 1, z: 1 } }, active: { value: true } };
+    global.Editor = { Message: { request: async (_service, message, payload) => {
+      calls.push([message, payload]);
+      if (message === 'query-node') return node;
+      if (message === 'set-property') { node[payload.path] = { value: payload.dump.value }; return true; }
+      if (message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().nodeSetTransform({ reference: { id: 'node-1' }, position: { x: 8, y: 9, z: 10 }, rotation: { x: 11, y: 12, z: 13 }, scale: { x: 2, y: 3, z: 4 }, active: false }), { updated: true, reference: { id: 'node-1', type: 'cc.Node' } });
+    assert.deepEqual(calls.filter(([message]) => message === 'set-property').map(([, payload]) => payload.path), ['position', 'eulerAngles', 'scale', 'active']);
+  });
+
+  it('lifecycle save and save-as require authoritative outcomes', async () => {
+    const calls = [];
+    global.Editor = { Message: { request: async (_service, message) => {
+      calls.push(message);
+      if (message === 'query-dirty') return false;
+      if (message === 'save-as-scene') return 'scene-2';
+      if (message === 'query-current-scene') return 'scene-2';
+      return true;
+    } } };
+    const tools = new (requireDist('utcp/tools/editor-tools.js').EditorTools)();
+    assert.deepEqual(await tools.editorOperate({ operation: 'save_scene_or_prefab' }), { success: true });
+    assert.deepEqual(await tools.editorOperate({ operation: 'save_as' }), { success: true, reference: { id: 'scene-2', type: 'cc.SceneAsset' } });
+    assert.deepEqual(calls, ['save-scene', 'query-dirty', 'save-as-scene', 'query-current-scene']);
+  });
+});

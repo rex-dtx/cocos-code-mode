@@ -1036,6 +1036,21 @@ export const methods = {
         return { handlerCount: button.clickEvents.length };
     },
 
+    async listButtonClickEvents(nodeUuid: string): Promise<Array<{ targetUuid: string | null, componentName: string | null, handler: string | null, customEventData: string }>> {
+        const node = await methods.findRuntimeNodeUuid(nodeUuid);
+        if (!node) throw new Error(`Runtime node ${nodeUuid} not found in the live scene`);
+        const cc = (globalThis as { cc?: { Button?: unknown } }).cc;
+        const button = typeof node.getComponent === 'function' ? node.getComponent(cc?.Button) as { clickEvents?: unknown[] } | null : null;
+        if (!button) throw new Error(`Node ${nodeUuid} has no cc.Button component`);
+        return (Array.isArray(button.clickEvents) ? button.clickEvents : []).map((event: unknown) => {
+            if (!event || typeof event !== 'object') return { targetUuid: null, componentName: null, handler: null, customEventData: '' };
+            const row = event as Record<string, unknown>;
+            const target = row.target && typeof row.target === 'object' ? row.target as Record<string, unknown> : undefined;
+            return { targetUuid: target && typeof target.uuid === 'string' ? target.uuid : null, componentName: typeof row.component === 'string' ? row.component : null, handler: typeof row.handler === 'string' ? row.handler : null, customEventData: typeof row.customEventData === 'string' ? row.customEventData : '' };
+        });
+    },
+
+
     async runtimePreviewState(): Promise<{ state: 'play' | 'pause' | 'stop', sceneUuid: string, gamePaused: boolean, directorPaused: boolean }> {
         const globals = globalThis as unknown as PreviewEngineGlobals;
         const cc = globals.cc;

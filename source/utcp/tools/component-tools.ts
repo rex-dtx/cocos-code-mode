@@ -171,4 +171,15 @@ export class ComponentTools {
         if (!verified) throw new Error(`Component ${newId} was not present after add read-back`);
         return { reference: { id: newId, type: componentType(verified) ?? args.componentType } };
     }
+
+    @utcpTool(
+        'addComponent',
+        'Alias for bounded node component creation with authoritative UUID/type read-back.',
+        { type: 'object', properties: { reference: InstanceReferenceSchema, componentType: { type: 'string' } }, required: ['reference', 'componentType'] },
+        { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
+        'POST', ['scene', 'node', 'component', 'add']
+    )
+    async addComponent(args: { reference: IInstanceReference, componentType: string }): Promise<{ reference: IInstanceReference }> {
+        return this.nodeComponentAdd(args);
+    }
 }

@@ -104,7 +104,7 @@ export class SceneTools {
 
     @utcpTool(
         'sceneGetInfo',
-        'Get scene bounds, dirty state, and current scene asset.',
+        'Get scene bounds, dirty state, current scene asset, and bounded hierarchy node count.',
         { type: 'object', properties: {} },
         {
             type: 'object',
@@ -114,35 +114,72 @@ export class SceneTools {
                     properties: { x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number' }, height: { type: 'number' } },
                     required: ['x', 'y', 'width', 'height']
                 },
-                dirty: { type: 'boolean' },
-                currentScene: {
-                    type: 'object',
-                    properties: { uuid: { type: 'string' }, url: { type: 'string' }, name: { type: 'string' } }
-                }
+                dirty: { type: 'boolean' }, isDirty: { type: 'boolean' }, nodeCount: { type: 'integer', minimum: 0 },
+                currentScene: { type: 'object', properties: { uuid: { type: 'string' }, url: { type: 'string' }, name: { type: 'string' } } }
             },
-            required: ['bounds', 'dirty']
-        }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved', 'current']
+            required: ['bounds', 'dirty', 'isDirty', 'nodeCount']
+        }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved', 'current', 'nodes', 'count']
     )
-    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, currentScene?: { uuid?: string, url?: string, name?: string } }> {
-        // M1: bounds/dirty/current are independent reads — run as 1 round instead of 3.
-        const [bounds, dirty, currentRaw] = await Promise.all([
+    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, isDirty: boolean, nodeCount: number, currentScene?: { uuid?: string, url?: string, name?: string } }> {
+        const [bounds, dirty, currentRaw, tree] = await Promise.all([
             Editor.Message.request('scene', 'query-scene-bounds'),
             Editor.Message.request('scene', 'query-dirty'),
             Editor.Message.request('scene', 'query-current-scene').catch(() => undefined),
+            Editor.Message.request('scene', 'query-node-tree').catch(() => undefined),
         ]);
-        if (!bounds) {
-            throw new Error('Failed to query scene bounds');
-        }
-
-        // query-current-scene result shape varies by version (uuid string or info object)
+        if (!bounds) throw new Error('Failed to query scene bounds');
         let currentScene: { uuid?: string, url?: string, name?: string } | undefined;
-        if (typeof currentRaw === 'string' && currentRaw) {
-            currentScene = { uuid: currentRaw };
-        } else if (currentRaw && typeof currentRaw === 'object') {
-            currentScene = currentRaw as any;
-        }
+        if (typeof currentRaw === 'string' && currentRaw) currentScene = { uuid: currentRaw };
+        else if (currentRaw && typeof currentRaw === 'object') currentScene = currentRaw as { uuid?: string, url?: string, name?: string };
+        const countNodes = (node: unknown): number => {
+            if (!node || typeof node !== 'object') return 0;
+            const children = 'children' in node && Array.isArray(node.children) ? node.children : [];
+            return 1 + children.reduce((total: number, child: unknown) => total + countNodes(child), 0);
+        };
+        const nodeCount = countNodes(tree);
+        return { bounds, dirty: !!dirty, isDirty: !!dirty, nodeCount, currentScene };
+    }
 
-        return { bounds, dirty: !!dirty, currentScene };
+    @utcpTool(
+        'nodeSetTransform',
+        'Set bounded node position, rotation, scale, and active state through exact scene property paths with read-back.',
+        {
+            type: 'object',
+            properties: {
+                reference: InstanceReferenceSchema,
+                position: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'] },
+                rotation: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'] },
+                scale: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' } }, required: ['x', 'y', 'z'] },
+                active: { type: 'boolean' },
+            },
+            required: ['reference'],
+        },
+        { type: 'object', properties: { updated: { type: 'boolean', const: true }, reference: InstanceReferenceSchema }, required: ['updated', 'reference'] },
+        'POST', ['scene', 'node', 'transform', 'position', 'rotation', 'scale', 'active', 'set']
+    )
+    async nodeSetTransform(args: { reference: IInstanceReference, position?: { x: number, y: number, z: number }, rotation?: { x: number, y: number, z: number }, scale?: { x: number, y: number, z: number }, active?: boolean }): Promise<{ updated: true, reference: IInstanceReference }> {
+        if (!args?.reference?.id) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeSetTransform requires reference.id.' });
+        const changes: Array<{ path: string, value: any, type: string }> = [];
+        if (args.position) changes.push({ path: 'position', value: args.position, type: 'cc.Vec3' });
+        if (args.rotation) changes.push({ path: 'eulerAngles', value: args.rotation, type: 'cc.Vec3' });
+        if (args.scale) changes.push({ path: 'scale', value: args.scale, type: 'cc.Vec3' });
+        if (args.active !== undefined) changes.push({ path: 'active', value: args.active, type: 'Boolean' });
+        if (changes.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeSetTransform requires at least one transform field.' });
+        const before = await Editor.Message.request('scene', 'query-node', args.reference.id);
+        if (!before) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Node ${args.reference.id} not found.` });
+        for (const change of changes) {
+            const accepted = await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: change.path, dump: { value: change.value, type: change.type } });
+            if (accepted === false) throw new ToolError({ code: 'NODE_TRANSFORM_UPDATE_FAILED', status: 502, message: `Creator rejected node property ${change.path}.` });
+        }
+        await Editor.Message.request('scene', 'snapshot');
+        const after = await Editor.Message.request('scene', 'query-node', args.reference.id);
+        if (!after || typeof after !== 'object') throw new ToolError({ code: 'NODE_TRANSFORM_UPDATE_UNCONFIRMED', status: 502, message: `Creator did not return node ${args.reference.id} after transform update.` });
+        const row = after as unknown as Record<string, unknown>;
+        const unwrap = (value: unknown): unknown => value && typeof value === 'object' && 'value' in value ? value.value : value;
+        for (const change of changes) {
+            if (JSON.stringify(unwrap(row[change.path])) !== JSON.stringify(change.value)) throw new ToolError({ code: 'NODE_TRANSFORM_UPDATE_UNCONFIRMED', status: 502, message: `Node property ${change.path} did not match read-back.` });
+        }
+        return { updated: true, reference: { id: args.reference.id, type: 'cc.Node' } };
     }
 
     @utcpTool('sceneCreate', 'Create a scene asset from the built-in Creator template and confirm asset identity.', { type: 'object', properties: { assetPath: { type: 'string', minLength: 1, maxLength: 256 } }, required: ['assetPath'] }, { type: 'object', properties: { success: { type: 'boolean' }, reference: InstanceReferenceSchema }, required: ['success', 'reference'] }, 'POST', ['scene', 'create', 'asset'])

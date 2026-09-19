@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "editor-side animation retarget, skeletal, particle, physics, render, and preview configuration residuals",
+  "complete": [
+    "skeletalAnimationConfigure",
+    "particleConfigure",
+    "renderConfigurationApply"
+  ],
+  "blocked": [
+    {
+      "id": "animationRetargetValidate",
+      "reason": "Creator 3.7 model fixtures do not expose bounded imported skeleton joint metadata; route fails closed with UNSUPPORTED_METADATA."
+    },
+    {
+      "id": "physics2dConfigure",
+      "reason": "Creator 3.7 does not expose project/set-config; route fails closed with UNSUPPORTED_EDITOR_API and performs no mutation."
+    },
+    {
+      "id": "physics3dConfigure",
+      "reason": "Creator 3.7 does not expose project/set-config; route fails closed with UNSUPPORTED_EDITOR_API and performs no mutation."
+    },
+    {
+      "id": "previewResolutionSet",
+      "reason": "Creator 3.7 does not expose preview/set-resolution; route fails closed with UNSUPPORTED_PREVIEW_IPC and performs no mutation."
+    }
+  ],
+  "implementedRoutes": [
+    "animationRetargetValidate",
+    "skeletalAnimationConfigure",
+    "particleConfigure",
+    "physics2dConfigure",
+    "physics3dConfigure",
+    "renderConfigurationApply",
+    "previewResolutionSet"
+  ],
+  "contracts": [
+    "Particle configuration is bounded to serialized component fields, snapshots after mutation, verifies scene read-back, and attempts rollback on failure.",
+    "Skeletal and render configuration retain typed bounded mutation/read-back/rollback contracts.",
+    "Physics project configuration and preview resolution remain fail-closed when Creator-side IPC is unavailable.",
+    "No runtime preview or playback behavior is claimed."
+  ],
+  "tests": [
+    "tests/unit/authoring-wave-k-config.test.js",
+    "tests/unit/p3-remaining-capabilities.test.js",
+    "tests/unit/p4-contract-tools.test.js",
+    "tests/unit/advanced-capability-tools.test.js"
+  ],
+  "build": "Blocked in this worktree by concurrent sibling edits to source/utcp/tools/file-tools.ts; the new expansion route itself is syntactically bounded and isolated to source/utcp/tools/expansion-tools.ts."
+}
