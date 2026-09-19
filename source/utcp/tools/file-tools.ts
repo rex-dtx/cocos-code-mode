@@ -198,6 +198,42 @@ export class FileTools {
     }
 
     @utcpTool(
+        'projectFileSnippet',
+        'Read a bounded line snippet from a project file without exposing files outside the project root.',
+        {
+            type: 'object',
+            properties: {
+                filePath: { type: 'string' },
+                line: { type: 'integer', minimum: 1 },
+                radius: { type: 'integer', minimum: 0, maximum: 50, default: 5 },
+            },
+            required: ['filePath', 'line'],
+        },
+        {
+            type: 'object',
+            properties: { snippet: { type: 'string' }, startLine: { type: 'integer' }, endLine: { type: 'integer' } },
+            required: ['snippet', 'startLine', 'endLine'],
+        },
+        'GET',
+        ['file', 'snippet', 'read', 'project', 'source']
+    )
+    async projectFileSnippet(args: { filePath: string, line: number, radius?: number }): Promise<{ snippet: string, startLine: number, endLine: number }> {
+        const project = Reflect.get(Editor, 'Project');
+        const projectPath = project && typeof project === 'object' ? Reflect.get(project, 'path') : undefined;
+        if (typeof projectPath !== 'string' || !projectPath) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Editor project path is unavailable.' });
+        const radius = args.radius === undefined ? 5 : args.radius;
+        if (!Number.isInteger(radius) || radius < 0 || radius > 50) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'radius must be an integer from 0 to 50.' });
+        const resolved = resolveSafePath(projectPath, args.filePath);
+        if (!fs.existsSync(resolved)) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `File not found: ${args.filePath}` });
+        const stat = fs.statSync(resolved);
+        if (!stat.isFile() || stat.size > MAX_FILE_BYTES) throw new ToolError({ code: 'PAYLOAD_TOO_LARGE', status: 413, message: 'Snippet source must be a regular file within the bounded file size.' });
+        const lines = fs.readFileSync(resolved, 'utf8').split(/\r?\n/);
+        const startLine = Math.max(1, args.line - radius);
+        const endLine = Math.min(lines.length, args.line + radius);
+        return { snippet: lines.slice(startLine - 1, endLine).join('\n'), startLine, endLine };
+    }
+
+    @utcpTool(
         'projectFileExists',
         'Check whether a file or directory exists in the project.',
         {

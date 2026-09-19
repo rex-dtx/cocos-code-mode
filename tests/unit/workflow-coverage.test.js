@@ -11,6 +11,8 @@ function fixture(t) {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-workflow-'));
   t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
   for (const file of INPUTS) { fs.mkdirSync(path.dirname(path.join(temp, file)), { recursive: true }); fs.copyFileSync(path.join(root, file), path.join(temp, file)); }
+  fs.mkdirSync(path.join(temp, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(temp, 'docs/workflow-implementation-overrides.json'), JSON.stringify({ schemaVersion: 1, rows: [] }));
   return temp;
 }
 function read(temp, file) { return JSON.parse(fs.readFileSync(path.join(temp, file), 'utf8')); }

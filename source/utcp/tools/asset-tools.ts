@@ -57,6 +57,24 @@ function normalizePath(p?: string): string {
     if (path2.endsWith('/')) path2=path2.slice(0,-1);
     return `db://assets/${path2}`;
 }
+function enforceProjectFilePath(filePath: string, operation: string): string {
+    const project = Reflect.get(Editor, 'Project');
+    const projectPath = project && typeof project === 'object' ? Reflect.get(project, 'path') : undefined;
+    if (typeof projectPath !== 'string' || !projectPath) return filePath;
+    const root = path.resolve(projectPath);
+    const resolved = path.resolve(filePath);
+    const relative = path.relative(root, resolved);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        throw new ToolError({
+            code: 'INVALID_ARGUMENT',
+            status: 400,
+            message: `${operation} source path escapes the project boundary.`,
+            details: { operation },
+            recovery: 'Use an asset whose source file is inside the open project.',
+        });
+    }
+    return resolved;
+}
 const MAX_MANIFEST_ASSET_PATH_LENGTH = 256;
 const MAX_MANIFEST_DEPENDENCIES = 128;
 const MAX_USAGE_REFERENCES = 128;
@@ -715,15 +733,9 @@ export class AssetTools {
             else fpR = await Editor.Message.request('asset-db', 'query-path', ident).catch(() => null);
         }
         if (!fpR) {
-            throw new ToolError({
-                code: 'TARGET_NOT_FOUND',
-                status: 404,
-                message: `Asset not found: ${ident}`,
-                details: { asset: ident },
-                recovery: 'Use assetGetTree or assetResolvePath to inspect available assets.',
-            });
+            throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset not found: ${ident}`, details: { asset: ident }, recovery: 'Use assetGetTree or assetResolvePath to inspect available assets.' });
         }
-        const fpResolved = fpR as string;
+        const fpResolved = enforceProjectFilePath(fpR as string, 'assetReadContent');
         const extR = path.extname(fpResolved).toLowerCase();
         const BINARY = ['.png', '.jpg', '.jpeg', '.webp', '.mp3', '.ogg', '.wav', '.ttf', '.woff', '.mp4', '.mov', '.zip', '.gz', '.bmp', '.tga', '.psd'];
         if ((BINARY as string[]).includes(extR)) {
@@ -1550,7 +1562,7 @@ export class AssetTools {
         }
         const refreshed = await Editor.Message.request('asset-db', 'query-asset-info', record.uuid) as IAssetInfo | null;
         const evidenced = refreshed ? await waitForCompressionLibrary(record.uuid, refreshed) : refreshed;
-        if (!evidenced?.file || !await fs.pathExists(evidenced.file)) {
+        if (!evidenced?.file || !await fs.pathExists(enforceProjectFilePath(evidenced.file, 'assetCompressionConfigure'))) {
             throw new ToolError({ code: 'READBACK_FAILED', status: 502, message: 'Configured image source is unavailable for evidence hashing.' });
         }
         return {
@@ -1560,11 +1572,12 @@ export class AssetTools {
             previousPresetId,
             platform: request.platform,
             formats,
-            sourceSha256: await sha256File(evidenced.file),
+            sourceSha256: await sha256File(enforceProjectFilePath(evidenced.file, 'assetCompressionConfigure')),
             generatedOutputs: await compressionOutputEvidence(evidenced.library),
             buildArtifactVerified: false,
         };
     }
+
 
     @utcpTool('assetManifestExport', 'Export a bounded deterministic asset manifest with dependencies, source hashes, and explicit exclusions.', {
         type: 'object',
@@ -1647,7 +1660,7 @@ export class AssetTools {
             const info = typeof row.file === 'string'
                 ? row
                 : await Editor.Message.request('asset-db', 'query-asset-info', uuid || url).catch(() => null) as unknown;
-            const sourcePath = isManifestRow(info) && typeof info.file === 'string' ? info.file : '';
+            const sourcePath = isManifestRow(info) && typeof info.file === 'string' ? enforceProjectFilePath(info.file, 'assetManifestExport') : '';
             if (!sourcePath) {
                 exclusions.push({ uuid, url, reason: 'source-file-unavailable' });
                 continue;
@@ -1682,6 +1695,7 @@ export class AssetTools {
         }
         return { assets, exclusions, truncated: files.length > maxAssets, count: assets.length, total: files.length };
     }
+
     @utcpTool('assetCatalogManifest', 'Build a bounded deterministic asset catalog with source hashes and explicit exclusions.', {
         type: 'object',
         properties: {
@@ -1698,8 +1712,10 @@ export class AssetTools {
         const assets: Array<Record<string, unknown>> = [];
         const exclusions: Array<Record<string, unknown>> = [];
         for (const row of files.slice(0, maxAssets)) {
-            const info: any = row.file ? row : await Editor.Message.request('asset-db', 'query-asset-info', row.uuid ?? row.url).catch(() => null);
-            const sourcePath = typeof info?.file === 'string' ? info.file : '';
+            const info: Record<string, unknown> | null = isManifestRow(row)
+                ? row
+                : await Editor.Message.request('asset-db', 'query-asset-info', String(row.uuid ?? row.url)).catch(() => null) as Record<string, unknown> | null;
+            const sourcePath = typeof info?.file === 'string' ? enforceProjectFilePath(info.file, 'assetCatalogManifest') : '';
             if (!sourcePath) {
                 exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
                 continue;
@@ -1772,8 +1788,8 @@ export class AssetTools {
             .filter((row) => !row.isDirectory && typeof row.uuid === 'string' && typeof row.url === 'string')
             .map((row) => row as Record<string, unknown> & { uuid: string, url: string })
             .sort((left, right) => left.url.localeCompare(right.url) || left.uuid.localeCompare(right.uuid));
-        const requestedRoots = args.rootReferences?.map((reference) => assetUuidBase(validateImportReference({ reference }).id.toLowerCase()));
         const graphRows = allRows.slice(0, maxGraphAssets);
+        const requestedRoots = args.rootReferences?.map((reference) => assetUuidBase(validateImportReference({ reference }).id.toLowerCase()));
         if (requestedRoots) {
             for (const rootId of requestedRoots) {
                 const rootRow = allRows.find((row) => assetUuidBase(row.uuid.toLowerCase()) === rootId);
@@ -1794,7 +1810,7 @@ export class AssetTools {
                 const info = typeof row.file === 'string'
                     ? row
                     : await Editor.Message.request('asset-db', 'query-asset-info', row.uuid).catch(() => null) as unknown;
-                const filePath = isManifestRow(info) && typeof info.file === 'string' ? info.file : '';
+                const filePath = isManifestRow(info) && typeof info.file === 'string' ? enforceProjectFilePath(info.file, 'assetUsageAnalyze') : '';
                 if (!filePath) {
                     exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
                 } else {
@@ -1934,7 +1950,7 @@ export class AssetTools {
         const missingReferences: Array<Record<string, unknown>> = [];
         for (const row of scenes.slice(0, maxScenes)) {
             const info = typeof row.file === 'string' ? row : await Editor.Message.request('asset-db', 'query-asset-info', row.uuid).catch(() => null) as unknown;
-            const filePath = isManifestRow(info) && typeof info.file === 'string' ? info.file : '';
+            const filePath = isManifestRow(info) && typeof info.file === 'string' ? enforceProjectFilePath(info.file, 'assetMissingReferenceAudit') : '';
             if (!filePath) {
                 exclusions.push({ uuid: row.uuid, url: row.url, reason: 'source-file-unavailable' });
                 continue;

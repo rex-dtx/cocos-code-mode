@@ -354,6 +354,10 @@ export class AdvancedCapabilityTools {
         if (args.paths && args.paths.length > 0) throw new ToolError({ code: 'UNSUPPORTED_SELECTIVE_REVERT', status: 422, message: 'Creator 3.7.3 restore-prefab reverts the full instance and does not expose selective path restoration.' });
         return this.prefabSceneOperation('revert', args.reference);
     }
+    @utcpTool('prefabRestore', 'Restore a linked prefab instance through Creator native restore-prefab and verify full-instance read-back.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, operation: { type: 'string' }, persisted: { type: 'boolean' }, readBack: { type: 'object' }, sourceReadBack: { type: 'object' } }, required: ['reference', 'operation', 'persisted', 'readBack', 'sourceReadBack'] }, 'POST', ['prefab', 'restore', 'full'])
+    async prefabRestore(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        return this.prefabSceneOperation('revert', args.reference);
+    }
 
     @utcpTool('tilemapInspect', 'Inspect an imported TMX tilemap and return a bounded typed layer/object inventory.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxLayers: { type: 'integer', minimum: 1, maximum: MAX_ITEMS, default: MAX_ITEMS } }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, format: { type: 'string' }, map: { type: 'object' }, tilesets: { type: 'array' }, layers: { type: 'array' }, objectGroups: { type: 'array' }, count: { type: 'integer' } }, required: ['reference', 'format', 'map', 'tilesets', 'layers', 'objectGroups', 'count'] }, 'GET', ['tilemap', 'inspect', 'layers'])
     async tilemapInspect(args: { reference: IInstanceReference, maxLayers?: number }): Promise<Record<string, unknown>> {

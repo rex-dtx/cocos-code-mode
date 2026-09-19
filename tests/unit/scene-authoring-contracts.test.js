@@ -189,3 +189,28 @@ describe('camera authoring adapters', () => {
     assert.deepEqual(await new SceneTools().cameraSetProperties({ reference: { id: 'camera-1' }, properties: { fov: 45 } }), { updated: true, reference: { id: 'camera-1', type: 'cc.Camera' } });
   });
 });
+
+describe('final scene adapters', () => {
+  it('creates a scene asset only after asset-db identity read-back', async () => {
+    const calls = [];
+    global.Editor = { Message: { request: async (service, message, ...args) => {
+      calls.push([service, message, ...args]);
+      if (message === 'copy-asset') return { uuid: 'scene-1' };
+      if (message === 'query-asset-info') return { uuid: 'scene-1', type: 'cc.SceneAsset' };
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().sceneCreate({ assetPath: 'db://assets/final.scene' }), { success: true, reference: { id: 'scene-1', type: 'cc.SceneAsset' } });
+    assert.equal(calls[0][1], 'copy-asset');
+    assert.equal(calls[1][1], 'query-asset-info');
+  });
+
+  it('returns authoritative node and component inspection payloads', async () => {
+    global.Editor = { Message: { request: async (_service, message, id) => {
+      if (message === 'query-node') return { uuid: id, __type__: { value: 'cc.Node' }, __comps__: [] };
+      if (message === 'query-component') return { uuid: id, type: 'cc.Label', string: { value: 'hello' } };
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.equal((await new SceneTools().sceneNodeType({ reference: { id: 'node-1' } })).type, 'cc.Node');
+    assert.equal((await new SceneTools().sceneComponentInfo({ reference: { id: 'component-1' } })).type, 'cc.Label');
+  });
+});

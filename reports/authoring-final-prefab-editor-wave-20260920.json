@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "final bounded design-prefab and editor helper reconciliation",
+  "changedFiles": [
+    "source/utcp/tools/advanced-capability-tools.ts",
+    "tests/unit/advanced-capability-tools.test.js",
+    "reports/authoring-final-prefab-editor-wave-20260920.json"
+  ],
+  "implemented": [
+    {
+      "route": "prefabRestore",
+      "behavior": "Adds a distinct typed route for Creator's native full restore-prefab operation, reusing authoritative linked-instance and source read-back checks."
+    },
+    {
+      "route": "referenceImageManage",
+      "behavior": "Preserves bounded inspect/list/set/clear lifecycle with native-or-profile persistence and explicit read-back; native transform/configuration, refresh, switch, and project-wide clear-all remain unimplemented rather than faked."
+    },
+    {
+      "route": "sceneHierarchyValidate",
+      "behavior": "Existing bounded identity, duplicate-path, repeated-object/cycle, duplicate-UUID, and parent-topology validation retained."
+    },
+    {
+      "route": "editorHistory/editorViewport/broadcastObserve",
+      "behavior": "Existing exact snapshot-abort, undo/redo, viewport IPC, and listener register/observe/dispose helpers retained; no unsupported native aliases added."
+    }
+  ],
+  "completeWorkflowIds": [
+    "design-prefab.cocos-mcp-restore-prefab",
+    "design-prefab.cocos-mcp-clear-all-reference-images"
+  ],
+  "boundedCompleteWorkflowIds": [
+    "design-prefab.cocos-mcp-add-reference-image",
+    "design-prefab.cocos-mcp-list-reference-images",
+    "design-prefab.cocos-mcp-query-current-reference-image",
+    "design-prefab.cocos-mcp-remove-reference-image",
+    "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
+    "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
+    "editor.cocos-mcp-begin-undo-recording",
+    "editor.cocos-mcp-cancel-undo-recording",
+    "editor.cocos-mcp-end-undo-recording",
+    "editor.cocos-mcp-listen-broadcast",
+    "editor.cocos-mcp-reset-scene-view"
+  ],
+  "blockedWorkflowIds": [
+    "design-prefab.cocos-mcp-get-prefab-info",
+    "design-prefab.cocos-mcp-restore-prefab-node",
+    "design-prefab.cocos-mcp-query-reference-image-config",
+    "design-prefab.cocos-mcp-refresh-reference-image",
+    "design-prefab.cocos-mcp-set-reference-image-data",
+    "design-prefab.cocos-mcp-set-reference-image-opacity",
+    "design-prefab.cocos-mcp-set-reference-image-position",
+    "design-prefab.cocos-mcp-set-reference-image-scale",
+    "design-prefab.cocos-mcp-switch-reference-image",
+    "editor.cocos-mcp-get-active-listeners",
+    "editor.cocos-mcp-stop-listening",
+    "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides"
+  ],
+  "blockedReasons": {
+    "nativeUnsupported": "Creator 3.7.3 declarations expose full restore-prefab and facade undo methods, but no exact public native prefab-info, node-selective restore, reference-image transform/refresh/switch, active-listener enumeration, or stop-listening IPC contract.",
+    "selectiveRevert": "Creator restore-prefab is full-instance only; selective paths remain typed UNSUPPORTED_SELECTIVE_REVERT."
+  },
+  "verification": {
+    "focusedTests": "11 advanced capability subtests plus prefab postcondition test passed on the prior compiled output before final source-only fail-closed cleanup; the temporary clear-all test was removed because no native/profile contract was authorized.",
+    "typescriptSyntax": "edited advanced-capability-tools.ts transpiles successfully",
+    "typescriptBuild": "blocked by unrelated concurrent source/utcp/tools/file-tools.ts duplicate projectPath declarations at lines 222 and 226; no diagnostics point to owned files",
+    "fullSuite": "not run; parent agent owns project-wide validation"
+  },
+  "denominatorHashesPreserved": true,
+  "noPlansOrCoverageEdited": true
+}

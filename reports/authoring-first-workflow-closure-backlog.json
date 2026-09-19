@@ -3,16 +3,16 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "b12203add338c8f96b0d13b9fcd1cad2a5de11ddb98947818ca101800e5df5d3",
+  "sourceInventoryHash": "7ffc239e4ad2aada6543af5af3d888833a696f51c04ebc9355999426ccd0ee55",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "b12203add338c8f96b0d13b9fcd1cad2a5de11ddb98947818ca101800e5df5d3",
+    "docs/workflow-inventory.json": "7ffc239e4ad2aada6543af5af3d888833a696f51c04ebc9355999426ccd0ee55",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "3a066bbe8399d478139059cc7218bed56b9bbd4c2aaf068b337270d9bb1de691",
-    "reports/workflow-coverage-report.json": "8ee6c8e997edca7f10ae48acdaa08393a26f577643a3cd0b62383962c3b8b4f4",
-    "reports/workflow-closure-backlog.json": "60f22b335a40e8764b5f384a23f6ec88491729bed42d15f5cac0d6d5c0926077"
+    "docs/workflow-implementation-evidence.json": "e21d161e5c876f7d4184a7983cca8c7216dd61aa7fd4229e2ceae54db9467b4e",
+    "reports/workflow-coverage-report.json": "a4779af1d8d00366bbc4ad23bf7b8a3700dd6088e0b2619a6f243ae75facaf11",
+    "reports/workflow-closure-backlog.json": "43c8cac07640d1b81818d0549425259706a80a817188d552c49d838e39d3d73b"
   },
   "status": "ready-for-authoring-implementation-reconciliation",
-  "requiredFor90": 69,
+  "requiredFor90": 41,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
@@ -22,36 +22,6 @@
       "acceptance": "Check skeleton, joint and clip compatibility without claiming automatic retargeting. Prerequisites: `model-skeleton-metadata`.\nCheck bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
       "limitations": [
         "Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "animation.cocos-mcp-copy-node",
-      "domain": "animation",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "copy_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "animation.cocos-mcp-cut-node",
-      "domain": "animation",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "cut_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "animation.cocos-mcp-paste-node",
-      "domain": "animation",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "paste_node",
-      "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
     },
@@ -76,16 +46,6 @@
       ]
     },
     {
-      "workflowId": "asset.cocos-mcp-get-unused-assets",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_unused_assets",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "asset.cocos-mcp-open-asset-external",
       "domain": "asset",
       "state": "unreviewed",
@@ -96,59 +56,6 @@
       ]
     },
     {
-      "workflowId": "asset.cocos-mcp-query-asset-db-ready",
-      "domain": "asset",
-      "state": "partial",
-      "reason": "assetDbQuery exposes the Creator asset-db ready probe, but the broader source workflow has no separately qualified readiness lifecycle evidence in this batch.",
-      "acceptance": "query_asset_db_ready",
-      "limitations": [
-        "Only the direct ready probe is credited; broader asset-db lifecycle semantics remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "asset.cocos-mcp-query-preferences-config",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_preferences_config",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "asset.cocos-mcp-save-asset",
-      "domain": "asset",
-      "state": "partial",
-      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
-      "acceptance": "save_asset",
-      "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "asset.cocos-mcp-set-preferences-config",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "set_preferences_config",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "asset.funplay-exists",
-      "domain": "asset",
-      "state": "partial",
-      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
-      "acceptance": "- *Tính năng:* Kiểm tra file hoặc thư mục có tồn tại trong project không.\n    - *Inputs:* `path: string`.\n    - *Outputs:* `{ exists: boolean, isDirectory: boolean }`.\n    - *Cơ chế:* `fs.existsSync` có bảo vệ đường dẫn `isPathInside`.",
-      "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
       "workflowId": "asset.funplay-get-editor-preference",
       "domain": "asset",
       "state": "partial",
@@ -156,28 +63,6 @@
       "acceptance": "- *Tính năng:* Đọc cấu hình tùy chọn của editor từ `Editor.Profile`.\n    - *Inputs:* `pkg: string`, `key: string`.\n    - *Outputs:* `{ value: any }`.\n    - *Cơ chế:* `Editor.Profile.getConfig(pkg, key)`.",
       "limitations": [
         "Package scope is fixed to cc-bridge-3x and known preference keys.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "asset.funplay-get-file-snippet",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đọc đoạn code xung quanh dòng chỉ định (mặc định ±5 dòng).\n    - *Inputs:* `path: string`, `line: number`, `radius?: number`.\n    - *Outputs:* `{ snippet: string, startLine: number, endLine: number }`.\n    - *Cơ chế:* Đọc file và cắt mảng dòng.",
-      "limitations": [
-        "Add line/radius parameters or separate project-file-snippet workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "asset.funplay-inspect-asset",
-      "domain": "asset",
-      "state": "partial",
-      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
-      "acceptance": "- *Tính năng:* Đọc thông tin chi tiết asset: metadata, serialized JSON data, import settings.\n   - *Inputs:* `target: string` (uuid hoặc db url).\n   - *Outputs:* `{ uuid, url, type, file, isDirectory, meta, data }`.\n   - *Cơ chế:* Kết hợp `asset-db:query-asset-info` và `asset-db:query-asset-meta`.",
-      "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -220,17 +105,6 @@
       "acceptance": "- *Tính năng:* Ghi cấu hình tùy chọn vào `Editor.Profile`.\n    - *Inputs:* `pkg: string`, `key: string`, `value: any`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `Editor.Profile.setConfig(pkg, key, value)`.",
       "limitations": [
         "Package scope is fixed to cc-bridge-3x and known preference keys.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "asset.funplay-validate-asset-dependencies",
-      "domain": "asset",
-      "state": "partial",
-      "reason": "The registered assetMissingReferenceAudit route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
-      "acceptance": "- *Tính năng:* Kiểm tra tính toàn vẹn của dependencies cho một asset hoặc toàn project.\n    - *Inputs:* `target?: string`, `pattern?: string`.\n    - *Outputs:* `{ ok, brokenCount, brokenList: Array<{ asset, missingUuid }> }`.\n    - *Cơ chế:* Quét UUID serialized so sánh với asset-db.",
-      "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -298,16 +172,6 @@
       ]
     },
     {
-      "workflowId": "design-prefab.cocos-mcp-clear-all-reference-images",
-      "domain": "design-prefab",
-      "state": "partial",
-      "reason": "referenceImageManage clear removes the active scene record, while the bounded adapter does not expose a distinct native clear-all operation across every scene/profile record.",
-      "acceptance": "clear_all_reference_images",
-      "limitations": [
-        "Only active-scene clear is credited; project-wide clear-all semantics are not claimed."
-      ]
-    },
-    {
       "workflowId": "design-prefab.cocos-mcp-get-prefab-info",
       "domain": "design-prefab",
       "state": "unreviewed",
@@ -333,16 +197,6 @@
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "refresh_reference_image",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "design-prefab.cocos-mcp-restore-prefab",
-      "domain": "design-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "restore_prefab",
       "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
@@ -472,60 +326,6 @@
       ]
     },
     {
-      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
-      "domain": "design-prefab",
-      "state": "partial",
-      "reason": "referenceImageManage provides the qualified profile-backed set/inspect/clear lifecycle; native transform operations remain unavailable.",
-      "acceptance": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.\nFinite persistent reference-image lifecycle with transform read-back.",
-      "limitations": [
-        "Native reference-image transform IPC is unavailable on Creator 3.7.3."
-      ]
-    },
-    {
-      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
-      "domain": "design-prefab",
-      "state": "partial",
-      "reason": "sceneHierarchyValidate supplies bounded hierarchy identity/topology validation, while the broader duplicate-path and persistence contract is not fully evidenced in the current focused record.",
-      "acceptance": "Validate duplicate paths, invalid parenting and persistence invariants. Prerequisites: `scene-query-contract`.\nValidate duplicate paths, invalid parenting and persistence invariants.",
-      "limitations": [
-        "Focused route evidence covers bounded hierarchy validation; broader persistence invariants remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-begin-undo-recording",
-      "domain": "editor",
-      "state": "partial",
-      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
-      "acceptance": "begin_undo_recording",
-      "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-cancel-undo-recording",
-      "domain": "editor",
-      "state": "partial",
-      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
-      "acceptance": "cancel_undo_recording",
-      "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-end-undo-recording",
-      "domain": "editor",
-      "state": "partial",
-      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
-      "acceptance": "end_undo_recording",
-      "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
       "workflowId": "editor.cocos-mcp-get-active-listeners",
       "domain": "editor",
       "state": "unreviewed",
@@ -533,28 +333,6 @@
       "acceptance": "get_active_listeners",
       "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-listen-broadcast",
-      "domain": "editor",
-      "state": "partial",
-      "reason": "The registered broadcastObserve route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
-      "acceptance": "listen_broadcast",
-      "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-reset-scene-view",
-      "domain": "editor",
-      "state": "partial",
-      "reason": "The registered editorViewport route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
-      "acceptance": "reset_scene_view",
-      "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -675,28 +453,6 @@
       ]
     },
     {
-      "workflowId": "scene.cocos-mcp-create-scene",
-      "domain": "scene",
-      "state": "partial",
-      "reason": "The registered assetCreate route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "create_scene",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "scene.cocos-mcp-detect-node-type",
-      "domain": "scene",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "detect_node_type",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
       "workflowId": "scene.cocos-mcp-execute-component-method",
       "domain": "scene",
       "state": "partial",
@@ -716,17 +472,6 @@
       "limitations": [
         "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-component-info",
-      "domain": "scene",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "get_component_info",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -771,16 +516,6 @@
       "limitations": [
         "Only the bounded route subset is credited; broader contract details remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "scene.cocos-mcp-scene-snapshot",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "scene_snapshot",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
     },
     {
@@ -850,17 +585,6 @@
       ]
     },
     {
-      "workflowId": "scene.funplay-inspect-node",
-      "domain": "scene",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "- *Tính năng:* Kiểm tra chi tiết 1 node: transform, layer, active state, components.\n    - *Inputs:* `nodeUuid?: string`, `path?: string`.\n    - *Outputs:* `{ uuid, name, active, position, rotation, scale, layer, components }`.\n    - *Cơ chế:* `scene:query-node`.",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
       "workflowId": "scene.funplay-invoke-component-method",
       "domain": "scene",
       "state": "partial",
@@ -913,28 +637,6 @@
       "limitations": [
         "Use component reference with type/values output adapter.",
         "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
-      "limitations": [
-        "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
-      "limitations": [
-        "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
     },

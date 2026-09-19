@@ -145,6 +145,47 @@ export class SceneTools {
         return { bounds, dirty: !!dirty, currentScene };
     }
 
+    @utcpTool('sceneCreate', 'Create a scene asset from the built-in Creator template and confirm asset identity.', { type: 'object', properties: { assetPath: { type: 'string', minLength: 1, maxLength: 256 } }, required: ['assetPath'] }, { type: 'object', properties: { success: { type: 'boolean' }, reference: InstanceReferenceSchema }, required: ['success', 'reference'] }, 'POST', ['scene', 'create', 'asset'])
+    async sceneCreate(args: { assetPath: string }): Promise<{ success: true, reference: IInstanceReference }> {
+        if (typeof args?.assetPath !== 'string' || !/^db:\/\/assets\/.+\.scene$/.test(args.assetPath) || args.assetPath.includes('..')) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetPath must be a db://assets scene path without traversal.' });
+        }
+        const created = await Editor.Message.request('asset-db', 'copy-asset', 'db://internal/default_file_content/scene', args.assetPath, { overwrite: false, rename: false }) as unknown;
+        if (!created || typeof created !== 'object' || !('uuid' in created) || typeof created.uuid !== 'string') {
+            throw new ToolError({ code: 'SCENE_CREATE_FAILED', status: 502, message: `Creator did not create scene ${args.assetPath}.` });
+        }
+        const info = await Editor.Message.request('asset-db', 'query-asset-info', created.uuid) as unknown;
+        if (!info || typeof info !== 'object' || !('uuid' in info) || info.uuid !== created.uuid) {
+            throw new ToolError({ code: 'SCENE_CREATE_UNCONFIRMED', status: 502, message: `Creator did not confirm scene ${created.uuid}.` });
+        }
+        return { success: true, reference: { id: created.uuid, type: 'cc.SceneAsset' } };
+    }
+
+    @utcpTool('sceneInspectNode', 'Inspect one open-scene node with authoritative editor dump.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object' }, 'GET', ['scene', 'inspect', 'node', 'info'])
+    async sceneInspectNode(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        if (!args.reference?.id) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'reference.id is required.' });
+        const node = await Editor.Message.request('scene', 'query-node', args.reference.id) as unknown;
+        if (!node || typeof node !== 'object') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Node ${args.reference.id} was not found.` });
+        return node as Record<string, unknown>;
+    }
+
+    @utcpTool('sceneNodeType', 'Read the authoritative class type of one open-scene node.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: InstanceReferenceSchema, type: { type: 'string' } }, required: ['reference', 'type'] }, 'GET', ['scene', 'node', 'type', 'inspect'])
+    async sceneNodeType(args: { reference: IInstanceReference }): Promise<{ reference: IInstanceReference, type: string }> {
+        const node = await this.sceneInspectNode(args);
+        const typeValue = node.__type__;
+        const type = typeValue && typeof typeValue === 'object' && 'value' in typeValue ? typeValue.value : typeValue;
+        if (typeof type !== 'string' || !type) throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: 'Creator returned no authoritative node type.' });
+        return { reference: { id: args.reference.id, type: 'cc.Node' }, type };
+    }
+
+    @utcpTool('sceneComponentInfo', 'Read one component dump by authoritative UUID.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object' }, 'GET', ['scene', 'component', 'inspect', 'info'])
+    async sceneComponentInfo(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        if (!args.reference?.id) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'reference.id is required.' });
+        const component = await Editor.Message.request('scene', 'query-component', args.reference.id) as unknown;
+        if (!component || typeof component !== 'object') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Component ${args.reference.id} was not found.` });
+        return component as Record<string, unknown>;
+    }
+
     @utcpTool(
         'cameraCreate',
         'Create a scene node with a cc.Camera component and verify both identities by read-back.',

@@ -5,6 +5,20 @@ const MAX_SNAPSHOT_DEPTH = 99;
 const MAX_SNAPSHOT_NODES = 5000;
 const MAX_SNAPSHOT_FIELDS = 100;
 
+function componentReference(component: unknown): IInstanceReference {
+    if (!component || typeof component !== 'object') throw new Error('sceneSnapshot received an invalid component.');
+    const row = component as Record<string, unknown>;
+    const value = row.value && typeof row.value === 'object' ? row.value as Record<string, unknown> : undefined;
+    const nestedUuid = value?.uuid;
+    const nestedUuidValue = nestedUuid && typeof nestedUuid === 'object' ? (nestedUuid as Record<string, unknown>).value : undefined;
+    const id = typeof nestedUuid === 'string' ? nestedUuid : typeof nestedUuidValue === 'string' ? nestedUuidValue : typeof row.uuid === 'string' ? row.uuid : undefined;
+    const typeValue = value?.__type__;
+    const typeNested = typeValue && typeof typeValue === 'object' ? (typeValue as Record<string, unknown>).value : undefined;
+    const type = typeof typeValue === 'string' ? typeValue : typeof typeNested === 'string' ? typeNested : typeof row.type === 'string' ? row.type : typeof row.cid === 'string' ? row.cid : undefined;
+    if (!id || !type) throw new Error('sceneSnapshot received a component without authoritative uuid/type.');
+    return { id, type };
+}
+
 // sceneSnapshot — bounded scene dump for diff / full-state hand-off.
 // Reuses query-node-tree with generous server-enforced limits. Richer than
 // nodeGetTree's default budgets (4/200) — use nodeGetTree for navigational queries.
@@ -91,9 +105,8 @@ export class SceneSnapshotTools {
             if (want('uuid')) item.uuid = node.uuid;
             if (want('path') && node.path) item.path = node.path;
             if (want('components') || !fieldSet) {
-                item.components = (node.components || []).map((c: any) => ({ reference: { id: c.value, type: c.type } }));
+                item.components = (node.components || []).map((component: unknown) => ({ reference: componentReference(component) }));
             }
-            // Preserve extra dump keys when no field filter (full dump semantics)
             if (!fieldSet) {
                 for (const k of Object.keys(node)) {
                     if (k === 'children' || k === 'components' || k in item) continue;
