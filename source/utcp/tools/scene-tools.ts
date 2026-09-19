@@ -122,13 +122,14 @@ export class SceneTools {
                     properties: { x: { type: 'number' }, y: { type: 'number' }, width: { type: 'number' }, height: { type: 'number' } },
                     required: ['x', 'y', 'width', 'height']
                 },
+                name: { type: 'string' }, uuid: { type: 'string' },
                 dirty: { type: 'boolean' }, isDirty: { type: 'boolean' }, nodeCount: { type: 'integer', minimum: 0 },
                 currentScene: { type: 'object', properties: { uuid: { type: 'string' }, url: { type: 'string' }, name: { type: 'string' } } }
             },
             required: ['bounds', 'dirty', 'isDirty', 'nodeCount']
         }, "GET", ['scene', 'info', 'bounds', 'size', 'dirty', 'unsaved', 'current', 'nodes', 'count']
     )
-    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, dirty: boolean, isDirty: boolean, nodeCount: number, currentScene?: { uuid?: string, url?: string, name?: string } }> {
+    async sceneGetInfo(): Promise<{ bounds: { x: number, y: number, width: number, height: number }, name?: string, uuid?: string, dirty: boolean, isDirty: boolean, nodeCount: number, currentScene?: { uuid?: string, url?: string, name?: string } }> {
         const [bounds, dirty, currentRaw, tree] = await Promise.all([
             Editor.Message.request('scene', 'query-scene-bounds'),
             Editor.Message.request('scene', 'query-dirty'),
@@ -145,7 +146,15 @@ export class SceneTools {
             return 1 + children.reduce((total: number, child: unknown) => total + countNodes(child), 0);
         };
         const nodeCount = countNodes(tree);
-        return { bounds, dirty: !!dirty, isDirty: !!dirty, nodeCount, currentScene };
+        return {
+            bounds,
+            ...(currentScene?.name ? { name: currentScene.name } : {}),
+            ...(currentScene?.uuid ? { uuid: currentScene.uuid } : {}),
+            dirty: !!dirty,
+            isDirty: !!dirty,
+            nodeCount,
+            currentScene,
+        };
     }
 
     @utcpTool(

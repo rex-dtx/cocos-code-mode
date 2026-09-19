@@ -144,6 +144,73 @@ describe('advanced capability tools', () => {
     }
   });
 
+  it('round-trips the native reference-image lifecycle without claiming unsupported configuration', async () => {
+    const previous = global.Editor;
+    const requests = [];
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      requests.push([service, message, payload]);
+      if (service !== 'scene') throw new Error(`unexpected ${service}:${message}`);
+      if (message === 'set-reference-image') return true;
+      if (message === 'query-reference-image') return { id: 'image-asset', path: 'db://assets/reference.png' };
+      if (message === 'list-reference-images') return [{ id: 'image-asset', path: 'db://assets/reference.png' }];
+      if (message === 'clear-reference-image') return true;
+      throw new Error(`unexpected scene message ${message}`);
+    } } };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const set = await tools.referenceImageManage({ operation: 'set', imagePath: 'db://assets/reference.png' });
+      assert.deepEqual(set, { operation: 'set', supported: true, persisted: true, imagePath: 'db://assets/reference.png', reference: null, images: undefined, result: true });
+      const inspect = await tools.referenceImageManage({ operation: 'inspect' });
+      assert.equal(inspect.supported, true);
+      assert.equal(inspect.persisted, true);
+      const listed = await tools.referenceImageManage({ operation: 'list' });
+      assert.deepEqual(listed.images, [{ id: 'image-asset', path: 'db://assets/reference.png' }]);
+      const clear = await tools.referenceImageManage({ operation: 'clear' });
+      assert.equal(clear.persisted, true);
+      assert.deepEqual(requests.map(([, message]) => message), ['set-reference-image', 'query-reference-image', 'list-reference-images', 'clear-reference-image']);
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
+  });
+
+  it('uses only the qualified project-profile fallback for persistent reference-image lifecycle', async () => {
+    const previous = global.Editor;
+    const profile = {};
+    const row = { uuid: 'image-asset', url: 'db://assets/reference.png', type: 'cc.Texture2D', file: __filename };
+    global.Editor = {
+      Message: { request: async (service, message) => {
+        if (service === 'scene' && message === 'query-current-scene') return { uuid: 'scene-asset' };
+        throw new Error(`unsupported ${service}:${message}`);
+      } },
+      Profile: {
+        getProject: async () => ({ ...profile }),
+        setProject: async (_packageName, _key, value) => { Object.keys(profile).forEach((key) => delete profile[key]); Object.assign(profile, value); },
+      },
+    };
+    const originalRequest = global.Editor.Message.request;
+    global.Editor.Message.request = async (service, message, payload) => {
+      if (service === 'asset-db' && message === 'query-asset-info') return row;
+      return originalRequest(service, message, payload);
+    };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const set = await tools.referenceImageManage({ operation: 'set', imagePath: row.url });
+      assert.equal(set.persisted, true);
+      assert.deepEqual(set.reference, { id: row.uuid, type: 'cc.ImageAsset' });
+      const inspect = await tools.referenceImageManage({ operation: 'inspect' });
+      assert.equal(inspect.imagePath, row.url);
+      assert.deepEqual(inspect.reference, { id: row.uuid, type: 'cc.ImageAsset' });
+      const listed = await tools.referenceImageManage({ operation: 'list' });
+      assert.equal(listed.persisted, true);
+      assert.equal(listed.images.length, 1);
+      const clear = await tools.referenceImageManage({ operation: 'clear' });
+      assert.equal(clear.persisted, true);
+      assert.deepEqual(profile, {});
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
+  });
+
   it('rejects selective prefab revert when Creator exposes only full restore', async () => {
     await assert.rejects(
       () => new AdvancedCapabilityTools().prefabRevertOverrides({ reference: { id: 'instance', type: 'cc.Node' }, paths: ['position'] }),

@@ -430,12 +430,20 @@
     },
     {
       "workflowId": "asset.cocos-mcp-get-log-file-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "editorGetLogFileInfo returns bounded project-relative log metadata with lexical and realpath containment; external opening is not claimed.",
+      "routes": [
+        {
+          "tool": "editorGetLogFileInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/editor-log.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -4210,12 +4218,20 @@
     },
     {
       "workflowId": "scene.cocos-mcp-close-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "sceneManage close delegates the bounded close-scene editor operation and verifies the active-scene absence/read-back contract.",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -5054,8 +5070,8 @@
     },
     {
       "workflowId": "scene.funplay-get-scene-info",
-      "state": "partial",
-      "reason": "The registered sceneGetInfo route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "sceneGetInfo returns the bounded scene summary contract with top-level name/uuid aliases, dirty state, bounds, and node count.",
       "routes": [
         {
           "tool": "sceneGetInfo",
@@ -5064,12 +5080,10 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -5111,8 +5125,8 @@
     },
     {
       "workflowId": "scene.funplay-invoke-component-method",
-      "state": "partial",
-      "reason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "callComponentMethod executes the bounded allowlisted component-method contract with JSON argument/result bounds and focused behavioral evidence.",
       "routes": [
         {
           "tool": "callComponentMethod",
@@ -5121,12 +5135,10 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -5243,8 +5255,8 @@
     },
     {
       "workflowId": "scene.funplay-save-current-scene",
-      "state": "partial",
-      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "sceneManage save returns saved:true after bounded dirty-state lifecycle mutation and authoritative query-dirty read-back.",
       "routes": [
         {
           "tool": "sceneManage",
@@ -5253,12 +5265,10 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ]
     },
     {
