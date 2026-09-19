@@ -656,8 +656,8 @@
         "cocos-mcp:find_asset_by_name"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact assetQuery name filtering is forwarded to Creator asset-db, then bounded authoritative records are filtered, capped, and returned with total/truncated accounting.",
       "implementationRoute": [
         {
           "tool": "assetQuery",
@@ -665,13 +665,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-authoring-exact.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset search only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -775,8 +773,8 @@
         "cocos-mcp:get_asset_dependencies"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetFindReferences route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact bounded assetFindReferences exposes used-by or depends-on UUID identities with optional authoritative URL/type resolution and truncation accounting.",
       "implementationRoute": [
         {
           "tool": "assetFindReferences",
@@ -784,13 +782,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded dependency/reference query only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -815,22 +811,20 @@
         "cocos-mcp:get_asset_details"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact assetInspect reads authoritative asset identity, importer metadata, and bounded serialized data by UUID or db:// path with byte/truncation evidence.",
       "implementationRoute": [
         {
-          "tool": "assetResolvePath",
+          "tool": "assetInspect",
           "file": "source/utcp/tools/asset-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-authoring-exact.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset inspection only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -855,22 +849,20 @@
         "cocos-mcp:get_asset_info"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact assetInspect returns uuid, URL, type, file, directory flag, importer, metadata, serialized data, byte count, and truncation state.",
       "implementationRoute": [
         {
-          "tool": "assetResolvePath",
+          "tool": "assetInspect",
           "file": "source/utcp/tools/asset-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-authoring-exact.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset inspection only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -895,8 +887,8 @@
         "cocos-mcp:get_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact bounded assetQuery supports the documented asset database filters and authoritative asset records with deterministic cap and truncation reporting.",
       "implementationRoute": [
         {
           "tool": "assetQuery",
@@ -904,13 +896,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-authoring-exact.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset query only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3439,12 +3429,21 @@
         "cocos-mcp:add_reference_image"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage set adds one bounded reference-image record and verifies persistence through native scene IPC or the documented project-profile fallback.",
+      "implementationRoute": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded add/persistence lifecycle only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3469,12 +3468,21 @@
         "cocos-mcp:clear_all_reference_images"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "referenceImageManage clear removes the active scene record, while the bounded adapter does not expose a distinct native clear-all operation across every scene/profile record.",
+      "implementationRoute": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only active-scene clear is credited; project-wide clear-all semantics are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3568,12 +3576,21 @@
         "cocos-mcp:list_reference_images"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage list returns bounded reference-image records from native scene IPC or project-profile read-back with persisted lifecycle state.",
+      "implementationRoute": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded list/read-back lifecycle only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3598,12 +3615,21 @@
         "cocos-mcp:query_current_reference_image"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage inspect returns the active reference-image identity and persistence status through native scene IPC or project-profile read-back.",
+      "implementationRoute": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded current-image identity/read-back only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3628,12 +3654,21 @@
         "cocos-mcp:query_reference_image_config"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "referenceImageManage inspect exposes bounded persisted image identity and path, but native transform/configuration fields are unavailable on Creator 3.7.3.",
+      "implementationRoute": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Transform/configuration fields are not available through native Creator IPC and are not credited."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3688,12 +3723,21 @@
         "cocos-mcp:remove_reference_image"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage clear removes the bounded active reference-image record and verifies absence through native scene IPC or project-profile read-back.",
+      "implementationRoute": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded remove/persistence lifecycle only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -7687,20 +7731,19 @@
       ],
       "portfolioNames": [],
       "implementationState": "complete",
-      "implementationReason": "readPrefabJson returns bounded parsed prefab JSON and metadata for serialized inspection.",
+      "implementationReason": "prefabInspect reads the bounded serialized .prefab asset and returns the exact contract summary: root record, total entries, component type markers, normalized UUID references, and authoritative asset identity.",
       "implementationRoute": [
         {
-          "tool": "readPrefabJson",
+          "tool": "prefabInspect",
           "file": "source/utcp/tools/prefab-json-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-prefab-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js",
-        "tests/live/read-only-candidate-qualification.test.js"
+        "reports/authoring-remaining-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded serialized prefab inspection only; no scene instantiation or Game View/runtime behavior is claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9513,21 +9556,12 @@
         "cocos-mcp:add_component"
       ],
       "portfolioNames": [],
-      "implementationState": "complete",
-      "implementationReason": "The registered nodeComponentManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
-      "implementationRoute": [
-        {
-          "tool": "nodeComponentManage",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
-        "tests/unit/scene-authoring-contracts.test.js"
-      ],
+      "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationRoute": [],
+      "evidenceArtifacts": [],
       "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11049,13 +11083,20 @@
         "funplay:create_camera"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "cameraCreate creates a scene node, adds cc.Camera, applies the optional 2D projection, and verifies node/component identity after snapshot read-back.",
+      "implementationRoute": [
+        {
+          "tool": "cameraCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Add camera-specific create route; do not merge with primitive creation.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded camera creation only; no Game View/runtime visual credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11535,13 +11576,20 @@
         "funplay:list_cameras"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "cameraList traverses the open scene, reads authoritative cc.Camera components, returns stable node/component identities and bounded camera fields with total/truncated accounting.",
+      "implementationRoute": [
+        {
+          "tool": "cameraList",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Add bounded camera query route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded camera listing only; no Game View/runtime visual credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11763,20 +11811,19 @@
       ],
       "portfolioNames": [],
       "implementationState": "partial",
-      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationReason": "cameraSetProperties targets a resolved cc.Camera component, applies bounded requested properties through scene IPC, and verifies each requested value by fresh component read-back; the broader source contract is credited only for this bounded property subset.",
       "implementationRoute": [
         {
-          "tool": "inspectorSet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
+          "tool": "cameraSetProperties",
+          "file": "source/utcp/tools/scene-tools.ts"
         }
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Bounded cc.Camera property mutation is evidenced; unverified native camera fields and visual/runtime behavior are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
@@ -11841,22 +11888,14 @@
         "funplay:set_node_transform"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "implementationRoute": [
-        {
-          "tool": "inspectorSet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
-        }
-      ],
-      "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
-        "tests/unit/scene-authoring-contracts.test.js"
-      ],
+      "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationRoute": [],
+      "evidenceArtifacts": [],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",

@@ -150,3 +150,42 @@ describe('scene inspection identity contracts', () => {
     );
   });
 });
+describe('camera authoring adapters', () => {
+  it('creates a camera and confirms node/component identity', async () => {
+    global.Editor = { Message: { request: async (_module, message, payload) => {
+      if (message === 'query-node-tree') return { uuid: 'root' };
+      if (message === 'create-node') return 'camera-node';
+      if (message === 'create-component') return true;
+      if (message === 'query-node') return { uuid: payload, __comps__: [{ type: 'cc.Camera', uuid: 'camera-component' }] };
+      if (message === 'snapshot' || message === 'set-property') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().cameraCreate({ name: 'Camera' }), {
+      nodeReference: { id: 'camera-node', type: 'cc.Node' },
+      cameraReference: { id: 'camera-component', type: 'cc.Camera' },
+    });
+  });
+
+  it('lists cameras with bounded authoritative component references', async () => {
+    global.Editor = { Message: { request: async (_module, message, payload) => {
+      if (message === 'query-node-tree') return { uuid: 'root', name: 'Root', children: [{ uuid: 'node-1', name: 'Main Camera', children: [] }] };
+      if (message === 'query-node') return payload === 'root' ? { uuid: 'root', __comps__: [] } : { uuid: payload, __comps__: [{ type: 'cc.Camera', value: { uuid: { value: 'camera-1' }, projection: { value: 0 } } }] };
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().cameraList(), {
+      cameras: [{ nodeReference: { id: 'node-1', type: 'cc.Node' }, name: 'Main Camera', cameraReference: { id: 'camera-1', type: 'cc.Camera' }, priority: undefined, visibility: undefined, projection: 0 }],
+      total: 1,
+      truncated: false,
+    });
+  });
+
+  it('sets camera properties only when read-back matches', async () => {
+    global.Editor = { Message: { request: async (_module, message, payload) => {
+      if (message === 'query-node-tree') return { uuid: 'root', children: [{ uuid: 'node-1', __comps__: [{ type: 'cc.Camera', value: { uuid: { value: 'camera-1' }, fov: { value: 45 } } }], children: [] }] };
+      if (message === 'query-node') return { uuid: 'node-1', __comps__: [{ type: 'cc.Camera', value: { uuid: { value: 'camera-1' }, fov: { value: 45 } } }] };
+      if (message === 'set-property' || message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().cameraSetProperties({ reference: { id: 'camera-1' }, properties: { fov: 45 } }), { updated: true, reference: { id: 'camera-1', type: 'cc.Camera' } });
+  });
+});

@@ -31,6 +31,27 @@ describe('advanced capability tools', () => {
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
+  it('inspects serialized prefab structure with bounded component and UUID summaries', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-inspect-'));
+    const file = path.join(root, 'fixture.prefab');
+    fs.writeFileSync(file, JSON.stringify({ __type__: 'cc.Node', child: { __type__: 'cc.Sprite', asset: '11111111-1111-1111-1111-111111111111@sub' } }));
+    const previous = global.Editor;
+    const row = { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
+    global.Editor = { Message: { request: async (service, message) => {
+      if (service === 'asset-db' && message === 'query-asset-info') return row;
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const result = await new (requireDist('utcp/tools/prefab-json-tools.js').PrefabJsonTools)().prefabInspect({ reference: { id: 'prefab-asset', type: 'cc.Prefab' } });
+      assert.equal(result.uuid, 'prefab-asset');
+      assert.equal(result.totalEntries, 2);
+      assert.deepEqual(result.components, ['cc.Node', 'cc.Sprite']);
+      assert.deepEqual(result.references, ['11111111-1111-1111-1111-111111111111']);
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('inspects and edits imported TMX layers and objects with source read-back', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-tmx-'));
     const file = path.join(root, 'fixture.tmx');

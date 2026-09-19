@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "remaining asset and assets-import authoring rows",
+  "implemented": [
+    {
+      "workflowId": "asset.cocos-mcp-find-asset-by-name",
+      "route": "assetQuery",
+      "evidence": "Exact name filter is forwarded to asset-db query-assets, then bounded records are filtered, capped, and returned with total/truncated."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-assets",
+      "route": "assetQuery",
+      "evidence": "Existing bounded query route supports pattern, type, importer, extension, bundle, and exact-name filters with authoritative asset records."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-details",
+      "route": "assetInspect",
+      "evidence": "Exact adapter reads authoritative query-asset-info identity, importer metadata, and bounded query-asset-data read-back by UUID or db:// path."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-info",
+      "route": "assetInspect",
+      "evidence": "Exact adapter returns uuid, url, type, file, directory flag, importer, metadata, serialized data, byte count, and truncation evidence."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-dependencies",
+      "route": "assetFindReferences",
+      "evidence": "Existing used_by and depends_on routes provide bounded dependency/reference identities and optional URL/type resolution."
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-batch-delete-assets",
+      "route": "assetBatchOperate",
+      "evidence": "Existing bounded batch operation accepts delete entries, continues after item failures, and reports per-item outcomes plus partial accounting."
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-batch-import-assets",
+      "route": "assetBatchImport",
+      "evidence": "Existing bounded import batch preserves every item outcome, authoritative references, failure details, and partial accounting."
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-compress-textures",
+      "route": "assetCompressionConfigure",
+      "evidence": "Existing route validates effective platform preset, persists metadata, reimports, verifies preset read-back, and reports source/output hashes."
+    },
+    {
+      "workflowId": "assets-import.cocos-mcp-validate-asset-references",
+      "route": "assetMissingReferenceAudit",
+      "evidence": "Existing bounded serialized UUID audit reports missing references with source URL and line evidence plus exclusions/truncation."
+    },
+    {
+      "workflowId": "assets-import.funplay-create-scene",
+      "route": "assetCreate",
+      "evidence": "Existing scene preset copies the authoritative internal scene template and requires query-asset-info identity read-back before success."
+    },
+    {
+      "workflowId": "asset.funplay-validate-asset-dependencies",
+      "route": "assetMissingReferenceAudit",
+      "evidence": "Existing scene-wide serialized dependency audit is bounded and fail-closed; missing references include recovery locations."
+    }
+  ],
+  "blocked": [
+    {
+      "workflowId": "asset.cocos-mcp-open-asset-external",
+      "reason": "External OS file opening/delivery is explicitly deferred; assetOperate open remains editor-side only."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-log-file-info",
+      "reason": "No exact editor-side asset contract or authoritative Creator route was available; no speculative adapter added."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-unused-assets",
+      "reason": "Static graph reachability is available through assetUsageAnalyze, but a distinct source-compatible unused-assets result contract was not introduced without an exact bounded schema."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-preferences-config",
+      "reason": "Existing preference routes are scoped to cc-bridge-3x keys; arbitrary package preference access is not an exact bounded adapter."
+    },
+    {
+      "workflowId": "asset.cocos-mcp-set-preferences-config",
+      "reason": "Existing preference routes are scoped to cc-bridge-3x keys and do not claim arbitrary package persistence."
+    }
+  ],
+  "tests": [
+    "tests/unit/asset-authoring-exact.test.js (3/3 pass)",
+    "tests/unit/asset-batch-and-missing-audit.test.js (5/5 pass)",
+    "tests/unit/asset-contract-audit.test.js (3/3 pass)",
+    "npx tsc --pretty false (pass)"
+  ],
+  "changedFiles": [
+    "source/utcp/tools/asset-tools.ts",
+    "tests/unit/asset-authoring-exact.test.js",
+    "reports/authoring-remaining-asset-wave-20260920.json"
+  ],
+  "notes": [
+    "No plan, denominator, coverage, or generated coverage artifact was changed.",
+    "External filesystem open/read/write delivery remains deferred as required."
+  ]
+}

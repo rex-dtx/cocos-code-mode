@@ -60,7 +60,54 @@ async function resolvePrefab(ident: string): Promise<{ url: string, uuid: string
     return { url: resolvedUrl, uuid: resolvedUuid!, file: file as string };
 }
 
+function collectPrefabSummary(value: unknown): { rootNode: unknown, totalEntries: number, components: string[], references: string[] } {
+    const uuidPattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:@[A-Za-z0-9_-]+)?/gi;
+    const components = new Set<string>();
+    const references = new Set<string>();
+    let totalEntries = 0;
+    let rootNode: unknown = null;
+    const visit = (candidate: unknown, isRoot = false): void => {
+        if (candidate === null || typeof candidate !== 'object') {
+            if (typeof candidate === 'string') for (const match of candidate.match(uuidPattern) ?? []) references.add(match.split('@', 1)[0].toLowerCase());
+            return;
+        }
+        totalEntries += 1;
+        if (isRoot) rootNode = candidate;
+        for (const [key, child] of Object.entries(candidate)) {
+            if (key === '__type__' || key === '_type' || key === 'type') {
+                let type: unknown = child;
+                if (child && typeof child === 'object' && 'value' in child) type = child.value;
+                if (typeof type === 'string' && type) components.add(type);
+            }
+            visit(child);
+        }
+    };
+    visit(value, true);
+    return { rootNode, totalEntries, components: [...components].sort(), references: [...references].sort() };
+}
+
 export class PrefabJsonTools {
+
+    @utcpTool(
+        'prefabInspect',
+        'Inspect a bounded serialized .prefab asset and return its root record, entry count, component types, and UUID references.',
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, assetPath: { type: 'string' } },
+            anyOf: [{ required: ['reference'] }, { required: ['assetPath'] }],
+        },
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, url: { type: 'string' }, uuid: { type: 'string' }, rootNode: {}, totalEntries: { type: 'integer' }, components: { type: 'array' }, references: { type: 'array' } },
+            required: ['reference', 'url', 'uuid', 'rootNode', 'totalEntries', 'components', 'references'],
+        },
+        'GET', ['prefab', 'inspect', 'json', 'asset']
+    )
+    async prefabInspect(args: { reference?: IInstanceReference, assetPath?: string }): Promise<Record<string, unknown>> {
+        const loaded = await this.readPrefabJson(args);
+        const parsed = JSON.parse(loaded.content) as unknown;
+        return { reference: { id: loaded.uuid, type: 'cc.Prefab' }, url: loaded.url, uuid: loaded.uuid, ...collectPrefabSummary(parsed) };
+    }
 
     @utcpTool(
         'readPrefabJson',
