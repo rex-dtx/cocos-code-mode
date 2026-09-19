@@ -842,6 +842,67 @@ export const methods = {
         }
         return { nodeUuid: request.nodeUuid ?? root?.uuid ?? null, findings, total: findings.length, truncated: stack.length > 0 || findings.length >= maxItems };
     },
+    async animationClipAssign(request: { nodeUuid: string, clipUuid: string, clipName?: string }): Promise<Record<string, unknown>> {
+        if (typeof request?.nodeUuid !== 'string' || !request.nodeUuid) throw new Error('nodeUuid is required');
+        if (typeof request?.clipUuid !== 'string' || !request.clipUuid) throw new Error('clipUuid is required');
+        const node = await methods.findRuntimeNodeUuid(request.nodeUuid);
+        if (!node) throw new Error(`Animation node ${request.nodeUuid} not found`);
+        const animation: any = (Array.isArray(node.components) ? node.components : []).find((component: any) =>
+            ['Animation', 'cc.Animation'].includes(String(component?.constructor?.name ?? '')));
+        if (!animation) throw new Error('No cc.Animation component found');
+        let clip: any = (Array.isArray(animation.clips) ? animation.clips : []).find((candidate: any) => candidate?.uuid === request.clipUuid);
+        if (!clip) {
+            const assets = (globalThis as any).cc?.assetManager?.assets;
+            clip = typeof assets?.get === 'function' ? assets.get(request.clipUuid) : null;
+        }
+        if (!clip && typeof (globalThis as any).cc?.assetManager?.loadAny === 'function') {
+            clip = await new Promise((resolve, reject) => {
+                (globalThis as any).cc.assetManager.loadAny({ uuid: request.clipUuid }, (error: unknown, asset: unknown) => error ? reject(error) : resolve(asset));
+            });
+        }
+        if (!clip || typeof clip !== 'object') throw new Error(`AnimationClip ${request.clipUuid} could not be loaded`);
+        if (!Array.isArray(animation.clips)) animation.clips = [];
+        if (!animation.clips.some((candidate: any) => candidate?.uuid === request.clipUuid)) animation.clips.push(clip);
+        const clipName = typeof request.clipName === 'string' && request.clipName ? request.clipName : (clip.name ?? request.clipUuid);
+        const serialized = await (globalThis as any).Editor?.Message?.request?.('scene', 'query-component', animation.uuid).catch(() => null);
+        const clipsProperty = serialized?.value?.clips;
+        if (clipsProperty?.elementTypeData && animation.uuid) {
+            const entries = animation.clips.map((candidate: any) => {
+                const entry = JSON.parse(JSON.stringify(clipsProperty.elementTypeData));
+                if (entry?.value && typeof entry.value === 'object' && 'uuid' in entry.value) entry.value.uuid.value = candidate?.uuid ?? null;
+                else if (entry?.value && typeof entry.value === 'object') entry.value = { uuid: candidate?.uuid ?? null };
+                return entry;
+            });
+            await (globalThis as any).Editor.Message.request('scene', 'snapshot');
+            const applied = await (globalThis as any).Editor.Message.request('scene', 'set-property', { uuid: request.nodeUuid, path: '__comps__.0.clips', dump: { value: entries, type: clipsProperty.type } });
+            if (applied === false) throw new Error('Creator refused Animation clip assignment');
+        }
+        const readBack = (Array.isArray(animation.clips) ? animation.clips : []).find((candidate: any) => candidate?.uuid === request.clipUuid);
+        if (!readBack) throw new Error('Animation clip assignment read-back failed');
+        return { nodeUuid: request.nodeUuid, clipUuid: request.clipUuid, clipName, clips: animation.clips.map((candidate: any) => ({ uuid: candidate?.uuid ?? null, name: candidate?.name ?? null })), success: true };
+    },
+
+    async animationComponentsList(request: { nodeUuid?: string, recursive?: boolean } = {}): Promise<Record<string, unknown>> {
+        const root = request.nodeUuid ? await methods.findRuntimeNodeUuid(request.nodeUuid) : (globalThis as any).cc?.director?.getScene?.();
+        if (!root) throw new Error('Animation list target was not found');
+        const recursive = request.recursive !== false;
+        const animations: Record<string, unknown>[] = [];
+        const stack: any[] = [root];
+        const visited = new Set<any>();
+        while (stack.length) {
+            const node = stack.pop();
+            if (!node || visited.has(node)) continue;
+            visited.add(node);
+            for (const component of Array.isArray(node.components) ? node.components : []) {
+                const className = String(component?.constructor?.name ?? '');
+                if (!['Animation', 'cc.Animation'].includes(className)) continue;
+                const clips = Array.isArray(component.clips) ? component.clips.filter(Boolean).map((clip: any) => clip?.name ?? clip?.uuid ?? null).filter((name: unknown): name is string => typeof name === 'string') : [];
+                animations.push({ nodeUuid: node?.uuid ?? null, defaultClip: component?.defaultClip?.name ?? component?.defaultClip?.uuid ?? null, clips });
+            }
+            if (recursive) for (const child of node.children || []) stack.push(child);
+        }
+        return { animations };
+    },
 
     async animationCompatibilityAudit(request: { nodeUuid: string }): Promise<Record<string, unknown>> {
         const node = await methods.findRuntimeNodeUuid(request.nodeUuid);
