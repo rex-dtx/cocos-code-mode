@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "repair": {
+    "project": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+    "profile": "profiles/v2/packages/cc-bridge-3x.json",
+    "servedVersion": "2.0.0-dev.a73ec37",
+    "serverPort": 56396
+  },
+  "result": {
+    "creatorWindowResponsive": true,
+    "projectLog": "argument banner only",
+    "utcpListening": false,
+    "liveLifecycle": "unverified"
+  },
+  "decision": "Profile repair did not overcome Creator pre-extension activation stall. Keep runtime plan WIP; no live qualification claim."
+}
