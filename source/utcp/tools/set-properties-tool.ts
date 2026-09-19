@@ -56,7 +56,28 @@ export class SetPropertyTool {
             await this.setProperty(info, propertyPaths[i], values[i]);
         }
         await Editor.Message.request('scene', 'snapshot');
+        if (!assetInfo) {
+            const readBack = await ToolsUtils.inspectInstance(uuid, false);
+            if (!readBack?.props) throw new Error(`Property mutation read-back failed for ${uuid}.`);
+            for (let index = 0; index < propertyPaths.length; index++) {
+                const property = this.findPropertyInDump(readBack.props, propertyPaths[index]);
+                if (!property || !this.valuesEqual(property.value, this.normalizeValue(values[index], property))) {
+                    throw new Error(`Property mutation was not confirmed for ${uuid} at ${propertyPaths[index]}.`);
+                }
+            }
+        }
         return { success: true };
+    }
+
+    private valuesEqual(actual: unknown, expected: unknown): boolean {
+        if (actual === expected) return true;
+        if (actual === null || expected === null || actual === undefined || expected === undefined) return false;
+        if (typeof actual !== 'object' || typeof expected !== 'object') return false;
+        try {
+            return JSON.stringify(actual) === JSON.stringify(expected);
+        } catch {
+            return false;
+        }
     }
 
     private async setProperty({ uuid, type, props, assetInfo }: { uuid: string, type: string, props: { [key: string]: IPropertyValueType } | null, assetInfo: AssetInfo | null }, propertyPath: string, value: any): Promise<void> {
