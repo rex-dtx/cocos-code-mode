@@ -317,12 +317,21 @@
     },
     {
       "workflowId": "asset.cocos-mcp-get-all-preferences",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "getEditorPreference omitting key returns the complete bounded set of cc-bridge-3x Editor.Profile preferences with explicit nulls for unset keys.",
+      "routes": [
+        {
+          "tool": "getEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "tests/live/read-only-tools.test.js",
+        "reports/p0-baseline-ledger-20260908.json"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded to the cc-bridge-3x known preference keys; arbitrary third-party package profiles are not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -417,22 +426,40 @@
     },
     {
       "workflowId": "asset.cocos-mcp-get-prefab-list",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "assetQuery provides a bounded prefab asset listing with authoritative asset records and query filters.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Results are bounded by assetQuery limits and supported asset-db filters.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "asset.cocos-mcp-get-scene-list",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "assetQuery provides a bounded scene asset listing with authoritative asset records and query filters.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Results are bounded by assetQuery limits and supported asset-db filters.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -497,12 +524,21 @@
     },
     {
       "workflowId": "asset.cocos-mcp-query-asset-db-ready",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "assetDbQuery exposes the Creator asset-db ready probe, but the broader source workflow has no separately qualified readiness lifecycle evidence in this batch.",
+      "routes": [
+        {
+          "tool": "assetDbQuery",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/p0-baseline-ledger-20260908.json",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the direct ready probe is credited; broader asset-db lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -727,12 +763,21 @@
     },
     {
       "workflowId": "asset.funplay-get-editor-preference",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "getEditorPreference reads a bounded cc-bridge-3x Editor.Profile key, but does not accept an arbitrary package identifier from the source contract.",
+      "routes": [
+        {
+          "tool": "getEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "tests/live/read-only-tools.test.js",
+        "reports/p0-baseline-ledger-20260908.json"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Package scope is fixed to cc-bridge-3x and known preference keys.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -928,12 +973,21 @@
     },
     {
       "workflowId": "asset.funplay-set-editor-preference",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "setEditorPreference writes bounded cc-bridge-3x Editor.Profile settings with type validation, but does not provide arbitrary package scope or a persistence read-back in the returned result.",
+      "routes": [
+        {
+          "tool": "setEditorPreference",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "tests/live/ui-fallback.test.js",
+        "reports/p0-baseline-ledger-20260908.json"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Package scope is fixed to cc-bridge-3x and known preference keys.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -1008,12 +1062,22 @@
     },
     {
       "workflowId": "assets-import.cocos-mcp-validate-asset-references",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "assetMissingReferenceAudit provides bounded serialized missing-reference validation with source locations and recovery evidence, but does not establish every source-side validation mode.",
+      "routes": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -1649,12 +1713,22 @@
     },
     {
       "workflowId": "design-prefab.cocos-mcp-validate-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "prefabReferenceAudit validates nested prefab UUID references and reports typed missing references, but does not cover every source-side prefab validation rule.",
+      "routes": [
+        {
+          "tool": "prefabReferenceAudit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only nested-reference and missing-serialized-dependency validation is credited; broader prefab policy checks remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -3144,13 +3218,22 @@
     },
     {
       "workflowId": "prefab.cocos-mcp-create-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "nodeOperate supplies bounded scene-node to prefab creation evidence, but the source competitor operation has no frozen detailed contract for full normalization and output parity.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded node-to-prefab operation is credited; full source normalization/output parity remains unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -3174,12 +3257,22 @@
     },
     {
       "workflowId": "prefab.cocos-mcp-load-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "readPrefabJson provides the reviewed bounded load/read outcome for a prefab asset, including parsed JSON content and authoritative asset metadata.",
+      "routes": [
+        {
+          "tool": "readPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Load is bounded to serialized prefab JSON inspection; no scene instantiation or runtime behavior is claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -4108,12 +4201,22 @@
     },
     {
       "workflowId": "scene.cocos-mcp-find-node-by-name",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "findNodes provides the exact bounded name-based scene search outcome with stable node references, names, hierarchy paths, result counts and truncation state.",
+      "routes": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Name matching is bounded to the open scene/prefab tree and the configured result cap.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {

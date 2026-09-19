@@ -3,16 +3,16 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "d2c7932cbe42a1a123d863da75f78d320053d9503dafbb79628927401dcb892f",
+  "sourceInventoryHash": "5624ebf95b508206ed95ac63df32d0998a6885c739cca9555fd0dff0edb35a84",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "d2c7932cbe42a1a123d863da75f78d320053d9503dafbb79628927401dcb892f",
+    "docs/workflow-inventory.json": "5624ebf95b508206ed95ac63df32d0998a6885c739cca9555fd0dff0edb35a84",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "14ba8d0649781c10a3b22d4b14446d370d0ce98bf25b102ba86b0d35467f9e83",
-    "reports/workflow-coverage-report.json": "e653d0c2592ed0b64d2c662b5b334ca1011df34a6634cd684b9d99f5df7b00b6",
-    "reports/workflow-closure-backlog.json": "65cfd4b40bf43f4999e3ead18113f731d8435982f1780c13b355aaf45cf790c8"
+    "docs/workflow-implementation-evidence.json": "a5cacc7a012e636680c32d028bc829da19f7060b80259b9be626c91df5998487",
+    "reports/workflow-coverage-report.json": "c4ff032db6f4461f450e11880f645ad2213e0bebdb1010bdf4bec8a8dd8947e6",
+    "reports/workflow-closure-backlog.json": "6a33573cdf4d2e375c055954e1bdef828e85c970e831fb3a614c07b66e3340c2"
   },
   "status": "ready-for-authoring-implementation-reconciliation",
-  "requiredFor90": 84,
+  "requiredFor90": 79,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
@@ -77,16 +77,6 @@
       ]
     },
     {
-      "workflowId": "asset.cocos-mcp-get-all-preferences",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_all_preferences",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "asset.cocos-mcp-get-asset-dependencies",
       "domain": "asset",
       "state": "partial",
@@ -141,26 +131,6 @@
       ]
     },
     {
-      "workflowId": "asset.cocos-mcp-get-prefab-list",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_prefab_list",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "asset.cocos-mcp-get-scene-list",
-      "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_scene_list",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "asset.cocos-mcp-get-unused-assets",
       "domain": "asset",
       "state": "unreviewed",
@@ -183,11 +153,12 @@
     {
       "workflowId": "asset.cocos-mcp-query-asset-db-ready",
       "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "assetDbQuery exposes the Creator asset-db ready probe, but the broader source workflow has no separately qualified readiness lifecycle evidence in this batch.",
       "acceptance": "query_asset_db_ready",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the direct ready probe is credited; broader asset-db lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -235,11 +206,12 @@
     {
       "workflowId": "asset.funplay-get-editor-preference",
       "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "getEditorPreference reads a bounded cc-bridge-3x Editor.Profile key, but does not accept an arbitrary package identifier from the source contract.",
       "acceptance": "- *Tính năng:* Đọc cấu hình tùy chọn của editor từ `Editor.Profile`.\n    - *Inputs:* `pkg: string`, `key: string`.\n    - *Outputs:* `{ value: any }`.\n    - *Cơ chế:* `Editor.Profile.getConfig(pkg, key)`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Package scope is fixed to cc-bridge-3x and known preference keys.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -298,11 +270,12 @@
     {
       "workflowId": "asset.funplay-set-editor-preference",
       "domain": "asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "setEditorPreference writes bounded cc-bridge-3x Editor.Profile settings with type validation, but does not provide arbitrary package scope or a persistence read-back in the returned result.",
       "acceptance": "- *Tính năng:* Ghi cấu hình tùy chọn vào `Editor.Profile`.\n    - *Inputs:* `pkg: string`, `key: string`, `value: any`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `Editor.Profile.setConfig(pkg, key, value)`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Package scope is fixed to cc-bridge-3x and known preference keys.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -360,11 +333,12 @@
     {
       "workflowId": "assets-import.cocos-mcp-validate-asset-references",
       "domain": "assets-import",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "assetMissingReferenceAudit provides bounded serialized missing-reference validation with source locations and recovery evidence, but does not establish every source-side validation mode.",
       "acceptance": "validate_asset_references",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -551,11 +525,12 @@
     {
       "workflowId": "design-prefab.cocos-mcp-validate-prefab",
       "domain": "design-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "prefabReferenceAudit validates nested prefab UUID references and reports typed missing references, but does not cover every source-side prefab validation rule.",
       "acceptance": "validate_prefab",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only nested-reference and missing-serialized-dependency validation is credited; broader prefab policy checks remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -723,22 +698,12 @@
     {
       "workflowId": "prefab.cocos-mcp-create-prefab",
       "domain": "prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "nodeOperate supplies bounded scene-node to prefab creation evidence, but the source competitor operation has no frozen detailed contract for full normalization and output parity.",
       "acceptance": "create_prefab",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "prefab.cocos-mcp-load-prefab",
-      "domain": "prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "load_prefab",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded node-to-prefab operation is credited; full source normalization/output parity remains unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -835,16 +800,6 @@
       "acceptance": "execute_scene_script",
       "limitations": [
         "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.cocos-mcp-find-node-by-name",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "find_node_by_name",
-      "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
     },
