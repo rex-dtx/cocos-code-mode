@@ -2,6 +2,7 @@
   "schemaVersion": 2,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "implementationOverrideSource": "docs/workflow-implementation-overrides.json",
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-create",
@@ -3561,12 +3562,20 @@
     },
     {
       "workflowId": "scene.funplay-add-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Focused evidence confirms component type and UUID from node read-back after create-component.",
+      "routes": [
+        {
+          "tool": "nodeComponentAdd",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -3627,12 +3636,20 @@
     },
     {
       "workflowId": "scene.funplay-create-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Focused evidence confirms node creation UUID and query-node read-back.",
+      "routes": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -3649,12 +3666,20 @@
     },
     {
       "workflowId": "scene.funplay-delete-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Focused route performs remove-node and confirms absence by query-node before success.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -3756,22 +3781,38 @@
     },
     {
       "workflowId": "scene.funplay-open-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Focused evidence confirms scene open identity through query-current-scene read-back.",
+      "routes": [
+        {
+          "tool": "sceneOpen",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "scene.funplay-remove-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Focused evidence confirms component absence after remove-component.",
+      "routes": [
+        {
+          "tool": "nodeComponentRemove",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -3808,14 +3849,20 @@
     },
     {
       "workflowId": "scene.funplay-set-component-property",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Focused evidence confirms fresh property dump matches the requested value after set-property.",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/set-properties-tool.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {

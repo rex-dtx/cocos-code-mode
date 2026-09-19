@@ -21,6 +21,20 @@ function audit(root = path.resolve(__dirname, '..'), requireFrozen = false) {
     ...['runtime-session', 'runtime-input', 'runtime-capture', 'runtime-observation', 'compound-scene', 'mutation-workflow', 'long-job', 'golden-tracer'].map(id => `parent:${id}`),
   ]);
   const unique = (values, label) => { if (new Set(values).size !== values.length) fail(`duplicate ${label}`); };
+  const overrides = read('docs/workflow-implementation-overrides.json');
+  if (!Array.isArray(overrides.rows)) fail('implementation overrides must contain rows');
+  const overrideIds = overrides.rows.map(row => row.workflowId);
+  unique(overrideIds, 'implementation overrides');
+  const inventoryIds = new Set(inventory.rows.map(row => row.id));
+  const overrideStates = ['complete', 'test-pending', 'partial', 'missing', 'unsupported', 'external', 'unreviewed', 'excluded'];
+  for (const override of overrides.rows) {
+    if (!inventoryIds.has(override.workflowId)) fail(`unknown implementation override workflow: ${override.workflowId}`);
+    if (!overrideStates.includes(override.state) || typeof override.reason !== 'string' || !override.reason.trim()) fail(`invalid implementation override: ${override.workflowId}`);
+    if (!Array.isArray(override.routes) || !Array.isArray(override.evidenceArtifacts) || !Array.isArray(override.limitations)) fail(`invalid implementation override shape: ${override.workflowId}`);
+    if (override.state === 'complete' && (!override.routes.length || !override.evidenceArtifacts.length)) fail(`incomplete complete override: ${override.workflowId}`);
+    for (const route of override.routes) if (!route?.file || !fs.existsSync(path.join(root, route.file))) fail(`missing override route: ${override.workflowId}`);
+    for (const artifact of override.evidenceArtifacts) { const file = typeof artifact === 'string' ? artifact.split('#')[0] : artifact?.path; if (!file || !fs.existsSync(path.join(root, file))) fail(`missing override evidence: ${override.workflowId}`); }
+  }
   unique(inventory.rows.map(row => row.id), 'workflow IDs');
   unique(mapping.rows.map(row => row.sourceId), 'source mappings');
   unique(reviews.rows.map(row => row.sourceId), 'contract reviews');

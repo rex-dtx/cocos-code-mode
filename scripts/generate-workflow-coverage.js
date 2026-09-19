@@ -5,7 +5,9 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const ROOT = path.resolve(__dirname, '..');
 const INPUTS = ['reports/original-competitor-intake-20260917.json', 'reports/original-lane-requirements-20260917.json', 'docs/tool-portfolio-candidates.json', 'docs/workflow-mapping-decisions.json', 'docs/workflow-contract-reviews.json'];
+const IMPLEMENTATION_OVERRIDES = 'docs/workflow-implementation-overrides.json';
 const VERSION = 'ccb3x-creator-3.7.3-windows-v1-review';
+const IMPLEMENTATION_STATES = new Set(['complete', 'test-pending', 'partial', 'missing', 'unsupported', 'external', 'unreviewed', 'excluded']);
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 const slug = value => String(value).replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -13,6 +15,22 @@ function generate(root = ROOT) {
   const bytes = INPUTS.map(file => fs.readFileSync(path.join(root, file)));
   const [competitor, lanes, portfolio, proposals, reviews] = bytes.map(value => JSON.parse(value));
   const sourceHashes = Object.fromEntries(INPUTS.map((file, index) => [file, digest(bytes[index])]));
+  const overrides = JSON.parse(fs.readFileSync(path.join(root, IMPLEMENTATION_OVERRIDES), 'utf8'));
+  if (!Array.isArray(overrides.rows)) throw new Error('implementation overrides must contain rows');
+  const knownOverrideIds = new Set();
+  const validateOverride = (override, workflowIds) => {
+    if (!override || typeof override.workflowId !== 'string' || !workflowIds.has(override.workflowId)) throw new Error(`Unknown implementation override workflow ID: ${override?.workflowId}`);
+    if (knownOverrideIds.has(override.workflowId)) throw new Error(`Duplicate implementation override: ${override.workflowId}`);
+    knownOverrideIds.add(override.workflowId);
+    if (!IMPLEMENTATION_STATES.has(override.state) || typeof override.reason !== 'string' || !override.reason.trim()) throw new Error(`Invalid implementation override state/reason: ${override.workflowId}`);
+    if (!Array.isArray(override.routes) || !Array.isArray(override.evidenceArtifacts) || !Array.isArray(override.limitations)) throw new Error(`Invalid implementation override shape: ${override.workflowId}`);
+    if (override.state === 'complete' && (!override.routes.length || !override.evidenceArtifacts.length)) throw new Error(`Complete implementation override requires route and evidence: ${override.workflowId}`);
+    for (const route of override.routes) if (!route || typeof route.file !== 'string' || !fs.existsSync(path.join(root, route.file))) throw new Error(`Missing implementation override route: ${override.workflowId}`);
+    for (const artifact of override.evidenceArtifacts) {
+      const file = typeof artifact === 'string' ? artifact.split('#')[0] : artifact?.path;
+      if (!file || !fs.existsSync(path.join(root, file))) throw new Error(`Missing implementation override evidence: ${override.workflowId}`);
+    }
+  };
   const proposalById = new Map(proposals.rows.map(row => [row.sourceId, row]));
   const portfolioRows = [...portfolio.domains.flatMap(domain => domain.candidates.map(row => ({ ...row, domain: domain.domain }))), ...portfolio.reserveCandidates];
   const portfolioByName = new Map(portfolioRows.map(row => [row.name, row]));
@@ -162,6 +180,18 @@ function generate(root = ROOT) {
     });
   }
   const rows = [...workflows.values()].sort((a, b) => a.id.localeCompare(b.id));
+  const workflowIds = new Set(rows.map(row => row.id));
+  for (const override of overrides.rows) validateOverride(override, workflowIds);
+  const overridesById = new Map(overrides.rows.map(override => [override.workflowId, override]));
+  for (const row of rows) {
+    const override = overridesById.get(row.id);
+    if (!override) continue;
+    row.implementationState = override.state;
+    row.implementationReason = override.reason;
+    row.implementationRoute = override.routes;
+    row.evidenceArtifacts = override.evidenceArtifacts;
+    row.limitations = override.limitations;
+  }
   const included = rows.filter(row => row.denominatorDisposition === 'included');
   const unresolved = mappings.filter(row => row.status !== 'contract-reviewed');
   const confirmed = included.filter(row => row.implementationState === 'complete');
@@ -178,7 +208,7 @@ function generate(root = ROOT) {
   const output = {
     'docs/workflow-inventory.json': { ...common, status: reviewComplete ? 'frozen-v1' : 'review-required', qualificationProfile: basis.profile, inputHashes: sourceHashes, rows },
     'docs/workflow-source-mapping.json': { ...common, sourceCounts: { competitor: competitor.rows.length, lane: lanes.rows.length, parent: parent.length }, rows: mappings.sort((a, b) => a.sourceId.localeCompare(b.sourceId)) },
-    'docs/workflow-implementation-evidence.json': { ...common, rows: rows.map(row => ({ workflowId: row.id, state: row.implementationState, reason: row.implementationReason, routes: row.implementationRoute, evidenceArtifacts: row.evidenceArtifacts, limitations: row.limitations })) },
+    'docs/workflow-implementation-evidence.json': { ...common, implementationOverrideSource: IMPLEMENTATION_OVERRIDES, rows: rows.map(row => ({ workflowId: row.id, state: row.implementationState, reason: row.implementationReason, routes: row.implementationRoute, evidenceArtifacts: row.evidenceArtifacts, limitations: row.limitations })) },
     'reports/workflow-coverage-report.json': { ...common, status: reviewComplete ? 'measurable' : 'not-measurable', candidateDenominator: included.length, denominator: reviewComplete ? included.length : null, confirmedComplete: confirmed.length, implementationPercent: reviewComplete ? Number((confirmed.length * 100 / included.length).toFixed(2)) : null, targetPercent: 90, targetComplete: reviewComplete ? Math.ceil(included.length * 0.9) : null, deficitTo90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, unresolvedContracts: unresolved.length, byDomain, invalidatedClaims: ['137/181', '144/189', '27 workflows to closure'], reason: 'Prior generator merged different operations and inferred implementation from registration/qualification labels; these are not accepted coverage evidence.' },
     'reports/workflow-classification-review.json': { ...common, rows: mappings.filter(row => row.status !== 'contract-reviewed').map(row => ({ ...row, reviewReason: row.detailStatus === 'operation-contract-needed' ? 'Recover original operation inputs/outputs and context before equivalence review.' : 'Verify full outcome, not tool name or shared implementation.' })) },
     'reports/workflow-closure-backlog.json': { ...common, status: reviewComplete ? 'ready-for-implementation-reconciliation' : 'blocked-on-contract-review', requiredFor90: reviewComplete ? Math.max(0, Math.ceil(included.length * 0.9) - confirmed.length) : null, rows: rows.filter(row => row.reviewed && row.denominatorDisposition === 'included' && row.implementationState !== 'complete').map(row => ({ workflowId: row.id, state: row.implementationState, reason: row.implementationReason, acceptance: row.observableOutcome, limitations: row.limitations, dependencies: row.executionContext === 'game-view' ? ['qualified-game-view-transport'] : [] })) },
