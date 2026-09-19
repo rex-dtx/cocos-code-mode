@@ -3,6 +3,7 @@ import { ToolsUtils } from '../utils/tools-utils';
 import { ImporterManager } from '../utils/asset-importers';
 import { AssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { IInstanceReference, ISuccessIndicator } from '../schemas';
+import { ToolError } from '../tool-error';
 
 declare const Editor: any;
 
@@ -31,17 +32,17 @@ export class SetPropertyTool {
     async setInstanceProperties(params: { reference: IInstanceReference, propertyPaths: string[], values: any[] }): Promise<ISuccessIndicator> {
         let { reference: { id: uuid }, propertyPaths, values } = params;
 
-        if (!propertyPaths || !values) {
-            throw new Error(`Property paths and values are required.`);
+        if (!Array.isArray(propertyPaths) || !Array.isArray(values) || propertyPaths.length === 0 || values.length === 0) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Property paths and values are required.' });
         }
 
         if (propertyPaths.length !== values.length) {
-            throw new Error(`Property paths count (${propertyPaths.length}) does not match values count (${values.length}).`);
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Property paths count (${propertyPaths.length}) does not match values count (${values.length}).` });
         }
 
         let info = await ToolsUtils.inspectInstance(uuid, false);
         if (!info) {
-            throw new Error(`Target ${uuid} not found or not supported.`);
+            throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Target ${uuid} not found or not supported.`, details: { uuid } });
         }
 
         uuid = info.uuid;

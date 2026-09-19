@@ -115,3 +115,38 @@ describe('inspector property mutation postconditions', () => {
     );
   });
 });
+
+describe('scene inspection identity contracts', () => {
+  it('nodeGetTree returns authoritative component UUID and type', async () => {
+    global.Editor = { Message: { request: async (_module, message) => {
+      if (message === 'query-node-tree') return {
+        uuid: 'root', name: 'Root', components: [{ value: { uuid: { value: 'comp-1' }, __type__: { value: 'cc.Label' } } }], children: [],
+      };
+      if (message === 'query-current-scene') return null;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().nodeGetTree({ fields: ['components'] }), {
+      reference: { id: 'root', type: 'cc.Node' },
+      components: [{ reference: { id: 'comp-1', type: 'cc.Label' } }],
+      children: [],
+    });
+  });
+
+  it('nodeComponentsGet rejects a matched component missing authoritative type', async () => {
+    global.Editor = { Message: { request: async (_module, message) => {
+      if (message === 'query-node') return { __comps__: [{ value: { uuid: { value: 'comp-1' } } }] };
+      throw new Error(`unexpected ${message}`);
+    } } };
+    await assert.rejects(
+      new ComponentTools().nodeComponentsGet({ reference: { id: 'node' } }),
+      /lacks authoritative uuid\/type/,
+    );
+  });
+
+  it('inspectorSet rejects malformed property arrays with typed error', async () => {
+    await assert.rejects(
+      new SetPropertyTool().setInstanceProperties({ reference: { id: 'node' }, propertyPaths: [], values: [] }),
+      error => error.code === 'INVALID_ARGUMENT' && error.status === 400,
+    );
+  });
+});

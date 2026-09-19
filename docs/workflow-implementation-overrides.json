@@ -1,13 +1,37 @@
 {
   "schemaVersion": 1,
-  "source": "commit ef1849b; reports/authoring-scene-core-wave-20260919.json; tests/unit/scene-authoring-contracts.test.js",
+  "source": "commit ef1849b; reports/authoring-scene-core-wave-20260919.json; reports/authoring-scene-inspection-wave-20260920.json; tests/unit/scene-authoring-contracts.test.js",
   "rows": [
+    {
+      "workflowId": "scene.cocos-mcp-get-node-tree",
+      "state": "complete",
+      "reason": "Wave C evidence confirms nodeGetTree returns a bounded authoritative hierarchy with stable node references and authoritative component UUID/type identity.",
+      "routes": [{ "tool": "nodeGetTree", "file": "source/utcp/tools/scene-tools.ts" }],
+      "evidenceArtifacts": ["reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-scene-hierarchy",
+      "state": "complete",
+      "reason": "Wave C evidence confirms the exact hierarchy/tree outcome through nodeGetTree with stable node references and bounded traversal.",
+      "routes": [{ "tool": "nodeGetTree", "file": "source/utcp/tools/scene-tools.ts" }],
+      "evidenceArtifacts": ["reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-move-node",
+      "state": "complete",
+      "reason": "Wave C evidence confirms nodeOperate move requires authoritative parent read-back before success.",
+      "routes": [{ "tool": "nodeOperate", "file": "source/utcp/tools/scene-tools.ts" }],
+      "evidenceArtifacts": ["reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+    },
     {
       "workflowId": "scene.funplay-open-scene",
       "state": "complete",
       "reason": "Focused evidence confirms scene open identity through query-current-scene read-back.",
       "routes": [{ "tool": "sceneOpen", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
       "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
     },
     {
@@ -15,7 +39,7 @@
       "state": "complete",
       "reason": "Focused evidence confirms node creation UUID and query-node read-back.",
       "routes": [{ "tool": "nodeCreate", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
       "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
     },
     {
@@ -23,7 +47,7 @@
       "state": "complete",
       "reason": "Focused route performs remove-node and confirms absence by query-node before success.",
       "routes": [{ "tool": "nodeOperate", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
       "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
     },
     {
@@ -31,7 +55,7 @@
       "state": "complete",
       "reason": "Focused evidence confirms component type and UUID from node read-back after create-component.",
       "routes": [{ "tool": "nodeComponentAdd", "file": "source/utcp/tools/component-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
       "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
     },
     {
@@ -39,15 +63,15 @@
       "state": "complete",
       "reason": "Focused evidence confirms component absence after remove-component.",
       "routes": [{ "tool": "nodeComponentRemove", "file": "source/utcp/tools/component-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
       "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
     },
     {
       "workflowId": "scene.funplay-set-component-property",
       "state": "complete",
-      "reason": "Focused evidence confirms fresh property dump matches the requested value after set-property.",
+      "reason": "Wave C evidence confirms inspectorSet rejects malformed inputs and retains authoritative fresh property read-back after mutation.",
       "routes": [{ "tool": "inspectorSet", "file": "source/utcp/tools/set-properties-tool.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "tests/unit/scene-authoring-contracts.test.js"],
+      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
       "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
     }
   ]

@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 261,
+  "requiredFor90": 258,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -2578,36 +2578,6 @@
       "limitations": [
         "Use component reference with type/values output adapter.",
         "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-node-tree",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_node_tree",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-scene-hierarchy",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_scene_hierarchy",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-move-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "move_node",
-      "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
