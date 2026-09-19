@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "endpoint": "http://localhost:56396",
+  "identity": {
+    "instanceId": "70a4bcf9c0b21cf2da1ef17d7e542181",
+    "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+    "editorVersion": "3.7.3",
+    "servedCommit": "648ba36",
+    "servedDirty": true,
+    "currentSourceCommit": "a73ec37"
+  },
+  "preState": { "state": "stop", "sceneUuid": "", "enabled": false, "ready": true },
+  "witness": {
+    "start": { "status": 409, "code": "RUNTIME_STATE_TIMEOUT" },
+    "listAfterStart": { "status": 200, "sessions": [] }
+  },
+  "qualified": false,
+  "decision": "Do not claim live lifecycle qualification. The endpoint is stale relative to the current source, and cold-start start timed out with preview stopped. Unit lifecycle contracts remain passing."
+}
