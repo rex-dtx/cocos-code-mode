@@ -46,18 +46,28 @@ describe('final asset/import authoring wave', () => {
     }
   });
 
-  it('reads and writes bounded package preferences with authoritative read-back', async () => {
+  it('reads and writes bounded arbitrary package preferences with authoritative read-back', async () => {
     const previous = global.Editor;
     const values = new Map();
-    global.Editor = { Message: { request: async (service, method, pkg, key, value) => {
-      assert.equal(service, 'preferences');
-      assert.ok(['queryConfig', 'setConfig'].includes(method));
-      const id = `${pkg}:${key}`;
-      if (method === 'setConfig') { values.set(id, value); return true; }
-      return values.get(id);
-    } } };
+    global.Editor = {
+      Profile: {
+        async getConfig(pkg, key) { return values.get(`${pkg}:${key}`); },
+        async setConfig(pkg, key, value) { values.set(`${pkg}:${key}`, value); },
+      },
+      Message: { request: async (service, method, pkg, key, value) => {
+        assert.equal(service, 'preferences');
+        assert.ok(['queryConfig', 'setConfig'].includes(method));
+        const id = `${pkg}:${key}`;
+        if (method === 'setConfig') { values.set(id, value); return true; }
+        return values.get(id);
+      } },
+    };
     try {
       const tools = new PreferenceTools();
+      assert.deepEqual(await tools.getEditorPreference({ packageName: 'pkg.third-party', key: 'enabled/path' }), { packageName: 'pkg.third-party', key: 'enabled/path', value: null });
+      assert.deepEqual(await tools.setEditorPreference({ packageName: 'pkg.third-party', key: 'enabled/path', value: true }), { success: true, packageName: 'pkg.third-party', key: 'enabled/path', value: true });
+      await assert.rejects(() => tools.getEditorPreference({ packageName: 'pkg.third-party' }), /key is required/);
+      await assert.rejects(() => tools.setEditorPreference({ packageName: '../outside', key: 'x', value: true }), /bounded preference package/);
       assert.deepEqual(await tools.queryPreferencesConfig({ packageName: 'pkg.test', key: 'enabled' }), { value: null });
       assert.deepEqual(await tools.setPreferencesConfig({ packageName: 'pkg.test', key: 'enabled', value: true }), { updated: true, value: true });
     } finally {

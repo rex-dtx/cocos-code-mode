@@ -108,6 +108,62 @@ export class PrefabJsonTools {
         const parsed = JSON.parse(loaded.content) as unknown;
         return { reference: { id: loaded.uuid, type: 'cc.Prefab' }, url: loaded.url, uuid: loaded.uuid, ...collectPrefabSummary(parsed) };
     }
+    @utcpTool(
+        'prefabInfo',
+        'Get bounded authoritative information for a serialized .prefab asset, including its root record, entry count, component types, UUID references, and asset identity.',
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, assetPath: { type: 'string' } },
+            anyOf: [{ required: ['reference'] }, { required: ['assetPath'] }],
+        },
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, url: { type: 'string' }, uuid: { type: 'string' }, rootNode: {}, totalEntries: { type: 'integer' }, components: { type: 'array' }, references: { type: 'array' } },
+            required: ['reference', 'url', 'uuid', 'rootNode', 'totalEntries', 'components', 'references'],
+        },
+        'GET', ['prefab', 'info', 'inspect', 'asset']
+    )
+    async prefabInfo(args: { reference?: IInstanceReference, assetPath?: string }): Promise<Record<string, unknown>> {
+        const loaded = await this.readPrefabJson(args);
+        const parsed = JSON.parse(loaded.content) as unknown;
+        return { reference: { id: loaded.uuid, type: 'cc.Prefab' }, url: loaded.url, uuid: loaded.uuid, ...collectPrefabSummary(parsed) };
+    }
+
+    @utcpTool(
+        'prefabValidate',
+        'Validate a bounded serialized .prefab asset: JSON structure, asset type, UUID references, and imported dependency availability.',
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, assetPath: { type: 'string' }, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } },
+            anyOf: [{ required: ['reference'] }, { required: ['assetPath'] }],
+        },
+        {
+            type: 'object',
+            properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, url: { type: 'string' }, uuid: { type: 'string' }, references: { type: 'array' }, missingReferences: { type: 'array' }, issues: { type: 'array' }, totalEntries: { type: 'integer' } },
+            required: ['valid', 'reference', 'url', 'uuid', 'references', 'missingReferences', 'issues', 'totalEntries'],
+        },
+        'GET', ['prefab', 'validate', 'asset']
+    )
+    async prefabValidate(args: { reference?: IInstanceReference, assetPath?: string, maxReferences?: number }): Promise<Record<string, unknown>> {
+        const loaded = await this.readPrefabJson(args);
+        const parsed = JSON.parse(loaded.content) as unknown;
+        const summary = collectPrefabSummary(parsed);
+        const maxReferences = args.maxReferences === undefined ? 2000 : args.maxReferences;
+        if (!Number.isInteger(maxReferences) || maxReferences < 1 || maxReferences > 2000) throw new Error('maxReferences must be an integer from 1 to 2000.');
+        const references = summary.references.slice(0, maxReferences);
+        const rows = await Editor.Message.request('asset-db', 'query-assets', { pattern: 'db://assets/**' }).catch(() => [] as unknown);
+        const known = new Set<string>();
+        if (Array.isArray(rows)) {
+            for (const row of rows) {
+                if (!row || typeof row !== 'object' || !('uuid' in row)) continue;
+                const uuid = row.uuid;
+                if (typeof uuid === 'string') known.add(uuid.split('@', 1)[0].toLowerCase());
+            }
+        }
+        const missingReferences = references.filter((id) => !known.has(id.split('@', 1)[0].toLowerCase())).map((id) => ({ id }));
+        const issues = missingReferences.map((entry) => ({ code: 'MISSING_REFERENCE', id: entry.id }));
+        return { valid: missingReferences.length === 0, reference: { id: loaded.uuid, type: 'cc.Prefab' }, url: loaded.url, uuid: loaded.uuid, references, missingReferences, issues, totalEntries: summary.totalEntries };
+    }
 
     @utcpTool(
         'readPrefabJson',

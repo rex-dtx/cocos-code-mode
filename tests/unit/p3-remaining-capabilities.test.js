@@ -97,22 +97,25 @@ describe('remaining P3 capability contracts', () => {
     assert.deepEqual(calls, []);
   });
 
-  it('compares bounded skeleton metadata without claiming automatic retargeting', async () => {
+  it('compares bounded skeleton and clip metadata without claiming automatic retargeting', async () => {
     install(async (_service, message, id) => {
       if (message !== 'query-asset-info') throw new Error('unexpected request');
-      if (id === 'source') return asset('source', { joints: ['root', 'hip'], clips: ['idle'] });
-      if (id === 'target') return asset('target', { joints: ['root', 'hip'], clips: ['idle'] });
-      return asset(id, { joints: ['root'], clips: ['idle'], skeletonId: 'target-skeleton' });
+      if (id === 'source') return asset('source', { joints: ['root', 'hip'], clips: ['idle'], skeletonId: 'shared-skeleton' });
+      if (id === 'target') return asset('target', { joints: ['root', 'hip'], clips: ['idle'], skeletonId: 'shared-skeleton' });
+      return id === 'other' ? asset(id, { joints: ['root'], clips: ['idle'], skeletonId: 'target-skeleton' }) : asset(id, { joints: ['root', 'hip'], clips: ['idle'], skeletonId: 'shared-skeleton' });
     });
 
     const result = await new PortfolioValidationTools().animationRetargetValidate({
       sourceReference: { id: 'source', type: 'cc.FBX' },
       targetReference: { id: 'target', type: 'cc.FBX' },
+      clipReference: { id: 'clip', type: 'cc.AnimationClip' },
     });
     assert.equal(result.valid, true);
     assert.equal(result.automaticRetargeting, false);
     assert.deepEqual(result.source.joints, ['root', 'hip']);
     assert.deepEqual(result.target.joints, ['root', 'hip']);
+    assert.deepEqual(result.clip.clips, ['idle']);
+    assert.equal(result.clip.skeletonId, 'shared-skeleton');
 
     const mismatch = await new PortfolioValidationTools().animationRetargetValidate({
       sourceReference: { id: 'source' },

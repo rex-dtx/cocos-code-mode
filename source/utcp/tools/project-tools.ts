@@ -58,9 +58,10 @@ export class ProjectTools {
     }
 
     // via projectManage — kept for delegation. Gated by capability probe (see probeProjectSetConfigCapability).
-    // On 3.8: routes through IPC with (project, dotPath, value) and returns { success: true }.
+    // On 3.8: routes through IPC with (project, dotPath, value), then queries the
+    // complete project config and verifies the dotted path before reporting success.
     // On 3.7: IPC is not exposed -> typed UNSUPPORTED_EDITOR_API 422 with recovery; NO filesystem fallback.
-    async projectSetConfig(args: { path: string, value: unknown }): Promise<{ success: boolean }> {
+    async projectSetConfig(args: { path: string, value: unknown }): Promise<{ success: boolean, path: string, readBack: unknown }> {
         if (!args.path) throw new Error('projectSetConfig requires path');
         try {
             const ok = await Editor.Message.request('project', 'set-config', 'project', args.path, args.value);
@@ -80,7 +81,15 @@ export class ProjectTools {
             }
             throw e;
         }
-        return { success: true };
+        const config = await Editor.Message.request('project', 'query-config', 'project') as Record<string, unknown> | null | undefined;
+        if (!config || typeof config !== 'object') throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: 'Project settings write returned no readable configuration.' });
+        const readBack = args.path.split('.').reduce<unknown>((current, key) => (
+            current !== null && typeof current === 'object' ? (current as Record<string, unknown>)[key] : undefined
+        ), config);
+        if (JSON.stringify(readBack) !== JSON.stringify(args.value)) {
+            throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: `Project setting '${args.path}' did not match the requested value after write.`, details: { path: args.path, expected: args.value, actual: readBack } });
+        }
+        return { success: true, path: args.path, readBack };
     }
     @utcpTool(
         'projectSettingsValidate',

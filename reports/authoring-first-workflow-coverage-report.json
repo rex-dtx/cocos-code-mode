@@ -3,24 +3,24 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "a75754d936876ce499a82706c811645aa50059b9dfe49deb1e62b02c04e99924",
+  "sourceInventoryHash": "3a10a072fee3d662ba5b5f02d8fd7f05f2397689a0a680453c045d2fd7521aac",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "a75754d936876ce499a82706c811645aa50059b9dfe49deb1e62b02c04e99924",
+    "docs/workflow-inventory.json": "3a10a072fee3d662ba5b5f02d8fd7f05f2397689a0a680453c045d2fd7521aac",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "a81526207b88876fb03571489647233e9a41539f040338e55701449d23e6c46c",
-    "reports/workflow-coverage-report.json": "1e0374701cfeff318c4344370b941527446baca1b277d88784c30c98b7584607",
-    "reports/workflow-closure-backlog.json": "f8eb0448ab2a120c2504708a281cfffd8aed39d08fd0ed4bb9c6e7f9dc3df88e"
+    "docs/workflow-implementation-evidence.json": "95d7e8aa6334ae99e920a3676c90bb206301457e5302a7e8d1f14469f4a79535",
+    "reports/workflow-coverage-report.json": "c372a1b3b943aa7e8931e19da87c94b9b8054a2a12cd5da95f32bede2491d077",
+    "reports/workflow-closure-backlog.json": "bbf0e3405a136c36e214921d4783badc43b01215560ba6267f52ed222d01c1c1"
   },
   "status": "measurable",
   "totalSourceRows": 356,
   "includedAuthoringRows": 247,
   "deferredRows": 109,
   "denominator": 247,
-  "confirmedComplete": 195,
-  "implementationPercent": 78.95,
+  "confirmedComplete": 210,
+  "implementationPercent": 85.02,
   "targetPercent": 90,
   "targetComplete": 223,
-  "deficitTo90": 28,
+  "deficitTo90": 13,
   "byDomain": {
     "animation-graph": {
       "total": 6,
@@ -44,8 +44,8 @@
       "total": 46,
       "included": 46,
       "deferred": 0,
-      "complete": 42,
-      "implementationPercent": 91.3,
+      "complete": 44,
+      "implementationPercent": 95.65,
       "targetComplete": 42,
       "deficit": 0
     },
@@ -53,10 +53,10 @@
       "total": 11,
       "included": 10,
       "deferred": 1,
-      "complete": 8,
-      "implementationPercent": 80,
+      "complete": 10,
+      "implementationPercent": 100,
       "targetComplete": 9,
-      "deficit": 1
+      "deficit": 0
     },
     "audio": {
       "total": 5,
@@ -89,10 +89,10 @@
       "total": 33,
       "included": 33,
       "deferred": 0,
-      "complete": 19,
-      "implementationPercent": 57.58,
+      "complete": 23,
+      "implementationPercent": 69.7,
       "targetComplete": 30,
-      "deficit": 11
+      "deficit": 7
     },
     "diagnostics": {
       "total": 13,
@@ -161,10 +161,10 @@
       "total": 7,
       "included": 7,
       "deferred": 0,
-      "complete": 5,
-      "implementationPercent": 71.43,
+      "complete": 7,
+      "implementationPercent": 100,
       "targetComplete": 7,
-      "deficit": 2
+      "deficit": 0
     },
     "product": {
       "total": 20,
@@ -206,10 +206,10 @@
       "total": 72,
       "included": 71,
       "deferred": 1,
-      "complete": 52,
-      "implementationPercent": 73.24,
+      "complete": 57,
+      "implementationPercent": 80.28,
       "targetComplete": 64,
-      "deficit": 12
+      "deficit": 7
     },
     "skeletal-animation": {
       "total": 5,

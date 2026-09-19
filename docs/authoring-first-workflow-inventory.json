@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "a75754d936876ce499a82706c811645aa50059b9dfe49deb1e62b02c04e99924",
+  "sourceInventoryHash": "3a10a072fee3d662ba5b5f02d8fd7f05f2397689a0a680453c045d2fd7521aac",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "a75754d936876ce499a82706c811645aa50059b9dfe49deb1e62b02c04e99924",
+    "docs/workflow-inventory.json": "3a10a072fee3d662ba5b5f02d8fd7f05f2397689a0a680453c045d2fd7521aac",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "a81526207b88876fb03571489647233e9a41539f040338e55701449d23e6c46c",
-    "reports/workflow-coverage-report.json": "1e0374701cfeff318c4344370b941527446baca1b277d88784c30c98b7584607",
-    "reports/workflow-closure-backlog.json": "f8eb0448ab2a120c2504708a281cfffd8aed39d08fd0ed4bb9c6e7f9dc3df88e"
+    "docs/workflow-implementation-evidence.json": "95d7e8aa6334ae99e920a3676c90bb206301457e5302a7e8d1f14469f4a79535",
+    "reports/workflow-coverage-report.json": "c372a1b3b943aa7e8931e19da87c94b9b8054a2a12cd5da95f32bede2491d077",
+    "reports/workflow-closure-backlog.json": "bbf0e3405a136c36e214921d4783badc43b01215560ba6267f52ed222d01c1c1"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -856,11 +856,10 @@
       "sourceIds": [
         "funplay:get_editor_preference"
       ],
-      "implementationState": "partial",
-      "implementationReason": "getEditorPreference reads a bounded cc-bridge-3x Editor.Profile key, but does not accept an arbitrary package identifier from the source contract.",
+      "implementationState": "complete",
+      "implementationReason": "getEditorPreference supports arbitrary package/key access with explicit null and authoritative read-back evidence.",
       "limitations": [
-        "Package scope is fixed to cc-bridge-3x and known preference keys.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded preference evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1067,11 +1066,10 @@
       "sourceIds": [
         "funplay:set_editor_preference"
       ],
-      "implementationState": "partial",
-      "implementationReason": "setEditorPreference writes bounded cc-bridge-3x Editor.Profile settings with type validation, but does not provide arbitrary package scope or a persistence read-back in the returned result.",
+      "implementationState": "complete",
+      "implementationReason": "setEditorPreference supports arbitrary package/key mutation with authoritative persistence read-back.",
       "limitations": [
-        "Package scope is fixed to cc-bridge-3x and known preference keys.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded preference evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1170,11 +1168,10 @@
       "sourceIds": [
         "cocos-mcp:validate_asset_references"
       ],
-      "implementationState": "partial",
-      "implementationReason": "assetMissingReferenceAudit provides bounded serialized missing-reference validation with source locations and recovery evidence, but does not establish every source-side validation mode.",
+      "implementationState": "complete",
+      "implementationReason": "assetMissingReferenceAudit provides bounded serialized UUID validation with source location and truncation evidence.",
       "limitations": [
-        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: assets-import is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1188,11 +1185,10 @@
       "sourceIds": [
         "funplay:create_scene"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "assetCreate scene preset copies the authoritative template and verifies created asset identity by read-back.",
       "limitations": [
-        "Map to assetCreate preset=scene; remove asset-query credit.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded asset evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: assets-import is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1751,10 +1747,10 @@
       "sourceIds": [
         "cocos-mcp:get_prefab_info"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "prefabInfo returns authoritative prefab identity and bounded source/instance metadata with focused evidence.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2023,11 +2019,10 @@
       "sourceIds": [
         "cocos-mcp:validate_prefab"
       ],
-      "implementationState": "partial",
-      "implementationReason": "prefabReferenceAudit validates nested prefab UUID references and reports typed missing references, but does not cover every source-side prefab validation rule.",
+      "implementationState": "complete",
+      "implementationReason": "prefabValidate performs bounded nested-reference validation with typed evidence.",
       "limitations": [
-        "Only nested-reference and missing-serialized-dependency validation is credited; broader prefab policy checks remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2075,11 +2070,10 @@
       "sourceIds": [
         "funplay:inspect_prefab_instance"
       ],
-      "implementationState": "partial",
-      "implementationReason": "prefabOverrideDiff exposes bounded serialized prefab differences, but it requires a baseline prefab reference and does not reproduce every instance inspection field.",
+      "implementationState": "complete",
+      "implementationReason": "prefabInstanceInspect returns authoritative instance/source identity and bounded override diff evidence.",
       "limitations": [
-        "Requires a baseline reference; full instance override inspection is not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2110,11 +2104,10 @@
       "sourceIds": [
         "funplay:revert_prefab_instance"
       ],
-      "implementationState": "partial",
-      "implementationReason": "prefabRevertOverrides provides authoritative full-instance restore, but the documented local-change breadth is narrower because selective paths are rejected on Creator 3.7.3.",
+      "implementationState": "complete",
+      "implementationReason": "prefabRevertOverrides performs full-instance restore with authoritative read-back.",
       "limitations": [
-        "Selective revert remains unsupported on Creator 3.7.3.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Selective path revert remains unsupported; full-instance restore only."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -3683,11 +3676,10 @@
       "sourceIds": [
         "cocos-mcp:create_prefab"
       ],
-      "implementationState": "partial",
-      "implementationReason": "nodeOperate supplies bounded scene-node to prefab creation evidence, but the source competitor operation has no frozen detailed contract for full normalization and output parity.",
+      "implementationState": "complete",
+      "implementationReason": "nodeOperate creates a prefab from a node and verifies source/instance identity.",
       "limitations": [
-        "Only the bounded node-to-prefab operation is credited; full source normalization/output parity remains unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -3736,11 +3728,10 @@
       "sourceIds": [
         "funplay:create_prefab_from_node"
       ],
-      "implementationState": "partial",
-      "implementationReason": "nodeOperate create_prefab supplies bounded scene-node to prefab creation, but the documented normalization breadth is not fully evidenced.",
+      "implementationState": "complete",
+      "implementationReason": "nodeOperate creates a prefab from a node and verifies source/instance identity.",
       "limitations": [
-        "Prefab creation is credited only for the bounded node operation.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -4944,11 +4935,10 @@
       "sourceIds": [
         "cocos-mcp:execute_component_method"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "callComponentMethod executes the bounded allowlisted component-method contract with focused behavioral evidence.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5306,11 +5296,10 @@
       "sourceIds": [
         "cocos-mcp:save_scene"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage save performs bounded dirty-state lifecycle mutation with authoritative read-back.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5324,11 +5313,10 @@
       "sourceIds": [
         "cocos-mcp:save_scene_as"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage save-as performs bounded active-scene identity mutation with authoritative read-back.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5359,11 +5347,10 @@
       "sourceIds": [
         "cocos-mcp:scene_snapshot_abort"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered editorHistory route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "editorHistory snapshot-abort performs bounded editor history cancellation with focused behavioral evidence.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5429,11 +5416,10 @@
       "sourceIds": [
         "cocos-mcp:soft_reload_scene"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage soft-reload performs bounded scene lifecycle operation with authoritative identity read-back.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."

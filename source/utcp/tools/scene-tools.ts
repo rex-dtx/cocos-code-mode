@@ -8,6 +8,14 @@ import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
 const DEFAULT_LIST_LIMIT = 200;
 const MAX_LIST_LIMIT = 1000;
+const ALLOWED_COMPONENT_METHODS: Record<string, true> = {
+    onLoad: true, start: true, onEnable: true, onDisable: true, onDestroy: true,
+    resetInEditor: true, onFocusInEditor: true, onLostFocusInEditor: true,
+    unscheduleAllCallbacks: true,
+};
+const MAX_COMPONENT_METHOD_ARGS = 32;
+const MAX_COMPONENT_METHOD_RESULT_BYTES = 64 * 1024;
+const MAX_COMPONENT_METHOD_BYTES = 32 * 1024;
 
 function boundedListLimit(limit: number | undefined): number {
     return Math.min(Math.max(limit ?? DEFAULT_LIST_LIMIT, 1), MAX_LIST_LIMIT);
@@ -198,6 +206,20 @@ export class SceneTools {
         return { success: true, reference: { id: created.uuid, type: 'cc.SceneAsset' } };
     }
 
+    @utcpTool('nodeGetInfo', 'Read one open-scene node with authoritative editor dump.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object' }, 'GET', ['scene', 'node', 'info', 'inspect'])
+    async nodeGetInfo(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        return this.sceneInspectNode(args);
+    }
+
+    @utcpTool('queryComponents', 'List globally registered component classes with bounded filtering.', { type: 'object', properties: { includeInternal: { type: 'boolean' }, filter: { type: 'string' }, limit: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT } } }, { type: 'object', properties: { componentTypes: { type: 'array', items: { type: 'string' } }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['componentTypes', 'total', 'truncated'] }, 'GET', ['scene', 'component', 'query', 'types', 'inspect'])
+    async queryComponents(args: { includeInternal?: boolean, filter?: string, limit?: number } = {}): Promise<{ componentTypes: string[], total: number, truncated: boolean }> {
+        const raw = await Editor.Message.request('scene', 'query-components');
+        if (!Array.isArray(raw)) throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: 'Creator returned no component type list.' });
+        const filter = typeof args.filter === 'string' && args.filter ? args.filter.toLowerCase() : undefined;
+        const limit = boundedListLimit(args.limit);
+        const names = raw.flatMap((candidate: unknown) => componentCandidates(candidate)).filter((name, index, all) => all.indexOf(name) === index && (!filter || name.toLowerCase().includes(filter)));
+        return { componentTypes: names.slice(0, limit), total: names.length, truncated: names.length > limit };
+    }
     @utcpTool('sceneInspectNode', 'Inspect one open-scene node with authoritative editor dump.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object' }, 'GET', ['scene', 'inspect', 'node', 'info'])
     async sceneInspectNode(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
         if (!args.reference?.id) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'reference.id is required.' });
@@ -808,16 +830,38 @@ export class SceneTools {
     )
     async callComponentMethod(args: { reference: IInstanceReference, methodName: string, methodArgs?: any[] }): Promise<{ result: any }> {
         if (!args.reference || !args.reference.id) {
-            throw new Error('callComponentMethod requires reference.id (component uuid)');
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'callComponentMethod requires reference.id (component uuid)' });
         }
-        const result = await Editor.Message.request('scene', 'execute-component-method', {
-            uuid: args.reference.id,
-            name: args.methodName,
-            args: args.methodArgs || []
-        });
-        // The method may mutate scene state; snapshot so undo covers it
+        if (typeof args.methodName !== 'string' || !ALLOWED_COMPONENT_METHODS[args.methodName]) {
+            throw new ToolError({ code: 'METHOD_NOT_ALLOWED', status: 422, message: `Component method '${String(args.methodName)}' is not in the bounded allowlist.` });
+        }
+        const methodArgs = args.methodArgs ?? [];
+        if (!Array.isArray(methodArgs) || methodArgs.length > MAX_COMPONENT_METHOD_ARGS) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `methodArgs must contain at most ${MAX_COMPONENT_METHOD_ARGS} JSON values.` });
+        }
+        let encodedArgs: string;
+        try { encodedArgs = JSON.stringify(methodArgs); } catch (error) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'methodArgs must be JSON-serializable.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        if (Buffer.byteLength(encodedArgs, 'utf8') > MAX_COMPONENT_METHOD_BYTES) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `methodArgs must be at most ${MAX_COMPONENT_METHOD_BYTES} UTF-8 bytes.` });
+        }
+        const component = await Editor.Message.request('scene', 'query-component', args.reference.id);
+        if (!component || typeof component !== 'object') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Component ${args.reference.id} was not found.` });
+        const result = await Editor.Message.request('scene', 'execute-component-method', { uuid: args.reference.id, name: args.methodName, args: methodArgs });
         await Editor.Message.request('scene', 'snapshot');
-        return { result: result === undefined ? null : result };
+        let normalizedResult: unknown = result === undefined ? null : result;
+        try {
+            const encodedResult = JSON.stringify(normalizedResult);
+            if (Buffer.byteLength(encodedResult, 'utf8') > MAX_COMPONENT_METHOD_RESULT_BYTES) {
+                throw new ToolError({ code: 'RESULT_TOO_LARGE', status: 502, message: `Component method result exceeds ${MAX_COMPONENT_METHOD_RESULT_BYTES} UTF-8 bytes.` });
+            }
+            normalizedResult = JSON.parse(encodedResult);
+        } catch (error) {
+            if (error instanceof ToolError) throw error;
+            throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: 'Component method result was not JSON-serializable.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        return { result: normalizedResult };
     }
 
     @utcpTool(

@@ -256,3 +256,64 @@ describe('scene composite residual adapters', () => {
     assert.deepEqual(calls, ['save-scene', 'query-dirty', 'save-as-scene', 'query-current-scene']);
   });
 });
+
+describe('scene residual bounded contracts', () => {
+  it('nodeGetInfo and queryComponents return authoritative bounded data', async () => {
+    global.Editor = { Message: { request: async (_service, message, payload) => {
+      if (message === 'query-node') return { uuid: payload, __type__: { value: 'cc.Node' }, __comps__: [] };
+      if (message === 'query-components') return [{ name: 'cc.Node' }, { name: 'cc.Label' }, { name: 'GameController' }];
+      throw new Error(`unexpected ${message}`);
+    } } };
+    const tools = new SceneTools();
+    assert.equal((await tools.nodeGetInfo({ reference: { id: 'node-1' } })).uuid, 'node-1');
+    assert.deepEqual(await tools.queryComponents({ filter: 'cc.', limit: 1 }), { componentTypes: ['cc.Node'], total: 2, truncated: true });
+  });
+
+  it('callComponentMethod rejects non-allowlisted methods before IPC', async () => {
+    let calls = 0;
+    global.Editor = { Message: { request: async () => { calls += 1; return {}; } } };
+    await assert.rejects(new SceneTools().callComponentMethod({ reference: { id: 'component-1' }, methodName: 'arbitraryMethod' }), error => error.code === 'METHOD_NOT_ALLOWED' && error.status === 422);
+    assert.equal(calls, 0);
+  });
+
+  it('callComponentMethod verifies component, executes, snapshots, and normalizes undefined', async () => {
+    const calls = [];
+    global.Editor = { Message: { request: async (_service, message, payload) => {
+      calls.push(message);
+      if (message === 'query-component') return { uuid: payload, type: 'cc.Label' };
+      if (message === 'execute-component-method') return undefined;
+      if (message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().callComponentMethod({ reference: { id: 'component-1' }, methodName: 'unscheduleAllCallbacks' }), { result: null });
+    assert.deepEqual(calls, ['query-component', 'execute-component-method', 'snapshot']);
+  });
+});
+
+describe('scene lifecycle close and reload contracts', () => {
+  it('confirms close clears the current scene and reload preserves identity', async () => {
+    const calls = [];
+    let current = { uuid: 'scene-1' };
+    global.Editor = { Message: { request: async (_service, message) => {
+      calls.push(message);
+      if (message === 'query-current-scene') return current;
+      if (message === 'close-scene') { current = null; return true; }
+      if (message === 'soft-reload') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    const tools = new (requireDist('utcp/tools/editor-tools.js').EditorTools)();
+    assert.deepEqual(await tools.editorOperate({ operation: 'soft_reload' }), { success: true });
+    assert.deepEqual(await tools.editorOperate({ operation: 'close_scene_or_prefab' }), { success: true });
+    assert.deepEqual(calls, ['query-current-scene', 'soft-reload', 'query-current-scene', 'close-scene', 'query-current-scene']);
+  });
+});
+
+describe('scene history residual contracts', () => {
+  it('routes snapshot abort to the native transaction boundary', async () => {
+    const calls = [];
+    global.Editor = { Message: { request: async (_service, message) => { calls.push(message); return true; } } };
+    const tools = new (requireDist('utcp/tools/editor-tools.js').EditorTools)();
+    assert.deepEqual(await tools.editorHistory({ operation: 'abort' }), { success: true });
+    assert.deepEqual(calls, ['snapshot-abort']);
+  });
+});

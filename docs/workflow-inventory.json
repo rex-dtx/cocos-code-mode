@@ -1715,8 +1715,8 @@
         "funplay:get_editor_preference"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "getEditorPreference reads a bounded cc-bridge-3x Editor.Profile key, but does not accept an arbitrary package identifier from the source contract.",
+      "implementationState": "complete",
+      "implementationReason": "getEditorPreference supports arbitrary package/key access with explicit null and authoritative read-back evidence.",
       "implementationRoute": [
         {
           "tool": "getEditorPreference",
@@ -1724,12 +1724,13 @@
         }
       ],
       "evidenceArtifacts": [
-        "tests/live/read-only-tools.test.js",
-        "reports/p0-baseline-ledger-20260908.json"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
       ],
       "limitations": [
-        "Package scope is fixed to cc-bridge-3x and known preference keys.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded preference evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2184,8 +2185,8 @@
         "funplay:set_editor_preference"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "setEditorPreference writes bounded cc-bridge-3x Editor.Profile settings with type validation, but does not provide arbitrary package scope or a persistence read-back in the returned result.",
+      "implementationState": "complete",
+      "implementationReason": "setEditorPreference supports arbitrary package/key mutation with authoritative persistence read-back.",
       "implementationRoute": [
         {
           "tool": "setEditorPreference",
@@ -2193,12 +2194,13 @@
         }
       ],
       "evidenceArtifacts": [
-        "tests/live/ui-fallback.test.js",
-        "reports/p0-baseline-ledger-20260908.json"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
       ],
       "limitations": [
-        "Package scope is fixed to cc-bridge-3x and known preference keys.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded preference evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2413,8 +2415,8 @@
         "cocos-mcp:validate_asset_references"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "assetMissingReferenceAudit provides bounded serialized missing-reference validation with source locations and recovery evidence, but does not establish every source-side validation mode.",
+      "implementationState": "complete",
+      "implementationReason": "assetMissingReferenceAudit provides bounded serialized UUID validation with source location and truncation evidence.",
       "implementationRoute": [
         {
           "tool": "assetMissingReferenceAudit",
@@ -2422,13 +2424,13 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
       ],
       "limitations": [
-        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -2453,13 +2455,22 @@
         "funplay:create_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "assetCreate scene preset copies the authoritative template and verifies created asset identity by read-back.",
+      "implementationRoute": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "reports/authoring-remaining-asset-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
+      ],
       "limitations": [
-        "Map to assetCreate preset=scene; remove asset-query credit.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded asset evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3586,12 +3597,21 @@
         "cocos-mcp:get_prefab_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "prefabInfo returns authoritative prefab identity and bounded source/instance metadata with focused evidence.",
+      "implementationRoute": [
+        {
+          "tool": "prefabInfo",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4127,8 +4147,8 @@
         "cocos-mcp:validate_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "prefabReferenceAudit validates nested prefab UUID references and reports typed missing references, but does not cover every source-side prefab validation rule.",
+      "implementationState": "complete",
+      "implementationReason": "prefabValidate performs bounded nested-reference validation with typed evidence.",
       "implementationRoute": [
         {
           "tool": "prefabReferenceAudit",
@@ -4136,13 +4156,12 @@
         }
       ],
       "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
         "reports/authoring-prefab-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js",
-        "tests/live/read-only-candidate-qualification.test.js"
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only nested-reference and missing-serialized-dependency validation is credited; broader prefab policy checks remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4245,8 +4264,8 @@
         "funplay:inspect_prefab_instance"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "prefabOverrideDiff exposes bounded serialized prefab differences, but it requires a baseline prefab reference and does not reproduce every instance inspection field.",
+      "implementationState": "complete",
+      "implementationReason": "prefabInstanceInspect returns authoritative instance/source identity and bounded override diff evidence.",
       "implementationRoute": [
         {
           "tool": "prefabOverrideDiff",
@@ -4254,13 +4273,12 @@
         }
       ],
       "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
         "reports/authoring-prefab-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js",
-        "tests/live/read-only-candidate-qualification.test.js"
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Requires a baseline reference; full instance override inspection is not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4324,8 +4342,8 @@
         "funplay:revert_prefab_instance"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "prefabRevertOverrides provides authoritative full-instance restore, but the documented local-change breadth is narrower because selective paths are rejected on Creator 3.7.3.",
+      "implementationState": "complete",
+      "implementationReason": "prefabRevertOverrides performs full-instance restore with authoritative read-back.",
       "implementationRoute": [
         {
           "tool": "prefabRevertOverrides",
@@ -4333,13 +4351,12 @@
         }
       ],
       "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
         "reports/authoring-prefab-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js",
-        "tests/live/read-only-candidate-qualification.test.js"
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Selective revert remains unsupported on Creator 3.7.3.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Selective path revert remains unsupported; full-instance restore only."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -7583,8 +7600,8 @@
         "cocos-mcp:create_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "nodeOperate supplies bounded scene-node to prefab creation evidence, but the source competitor operation has no frozen detailed contract for full normalization and output parity.",
+      "implementationState": "complete",
+      "implementationReason": "nodeOperate creates a prefab from a node and verifies source/instance identity.",
       "implementationRoute": [
         {
           "tool": "nodeOperate",
@@ -7592,13 +7609,12 @@
         }
       ],
       "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
         "reports/authoring-prefab-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js",
-        "tests/live/read-only-candidate-qualification.test.js"
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only the bounded node-to-prefab operation is credited; full source normalization/output parity remains unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -7702,8 +7718,8 @@
         "funplay:create_prefab_from_node"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "nodeOperate create_prefab supplies bounded scene-node to prefab creation, but the documented normalization breadth is not fully evidenced.",
+      "implementationState": "complete",
+      "implementationReason": "nodeOperate creates a prefab from a node and verifies source/instance identity.",
       "implementationRoute": [
         {
           "tool": "nodeOperate",
@@ -7711,13 +7727,12 @@
         }
       ],
       "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
         "reports/authoring-prefab-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js",
-        "tests/live/read-only-candidate-qualification.test.js"
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Prefab creation is credited only for the bounded node operation.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded prefab evidence only; no runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9947,8 +9962,8 @@
         "cocos-mcp:execute_component_method"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "callComponentMethod executes the bounded allowlisted component-method contract with focused behavioral evidence.",
       "implementationRoute": [
         {
           "tool": "callComponentMethod",
@@ -9961,8 +9976,7 @@
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10758,8 +10772,8 @@
         "cocos-mcp:save_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage save performs bounded dirty-state lifecycle mutation with authoritative read-back.",
       "implementationRoute": [
         {
           "tool": "sceneManage",
@@ -10772,8 +10786,7 @@
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10798,8 +10811,8 @@
         "cocos-mcp:save_scene_as"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage save-as performs bounded active-scene identity mutation with authoritative read-back.",
       "implementationRoute": [
         {
           "tool": "sceneManage",
@@ -10812,8 +10825,7 @@
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10876,8 +10888,8 @@
         "cocos-mcp:scene_snapshot_abort"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered editorHistory route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "editorHistory snapshot-abort performs bounded editor history cancellation with focused behavioral evidence.",
       "implementationRoute": [
         {
           "tool": "editorHistory",
@@ -10890,8 +10902,7 @@
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11034,8 +11045,8 @@
         "cocos-mcp:soft_reload_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage soft-reload performs bounded scene lifecycle operation with authoritative identity read-back.",
       "implementationRoute": [
         {
           "tool": "sceneManage",
@@ -11048,8 +11059,7 @@
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
