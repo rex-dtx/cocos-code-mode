@@ -53,12 +53,22 @@ function findSceneTreeNode(root: SceneTreeNode, uuid: string): SceneTreeNode | n
 
 export class SceneTools {
 
-    /** @deprecated use sceneManage({ operation: 'open', reference }) — not registered, kept for delegation */
     async sceneOpen(args: { reference: IInstanceReference }): Promise<ISuccessIndicator> {
         if (!args.reference || !args.reference.id) {
-            throw new Error('sceneOpen requires reference.id (scene uuid)');
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'sceneOpen requires reference.id (scene uuid)' });
         }
         await Editor.Message.request('scene', 'open-scene', args.reference.id);
+        const current = await Editor.Message.request('scene', 'query-current-scene');
+        const currentId = typeof current === 'string' ? current : current?.uuid ?? current?.id;
+        if (currentId !== args.reference.id) {
+            throw new ToolError({
+                code: 'SCENE_OPEN_UNCONFIRMED',
+                status: 502,
+                message: `Creator did not confirm scene ${args.reference.id} as the active scene.`,
+                details: { requestedId: args.reference.id, currentId: currentId ?? null },
+                recovery: 'Query sceneGetInfo and retry with an available scene asset.',
+            });
+        }
         return { success: true };
     }
 
@@ -1022,11 +1032,22 @@ export class SceneTools {
         const result = await Editor.Message.request('scene', 'create-node', options);
         const newNodeUuid = Array.isArray(result) ? result[0] : result;
 
-        if (!newNodeUuid) {
-            throw new Error(`Failed to create node ${args.name}${args.assetReference ? ` from asset ${args.assetReference.id}` : ''}.`);
+        if (typeof newNodeUuid !== 'string' || !newNodeUuid) {
+            throw new ToolError({ code: 'NODE_CREATE_UNCONFIRMED', status: 502, message: `Creator did not return a UUID for node ${args.name}.` });
         }
 
         await Editor.Message.request('scene', 'snapshot');
+        const readBack = await Editor.Message.request('scene', 'query-node', newNodeUuid);
+        const readBackUuid = typeof readBack?.uuid === 'string' ? readBack.uuid : readBack?.uuid?.value;
+        if (!readBack || readBackUuid !== newNodeUuid) {
+            throw new ToolError({
+                code: 'NODE_CREATE_UNCONFIRMED',
+                status: 502,
+                message: `Creator did not confirm creation of node ${newNodeUuid}.`,
+                details: { requestedName: args.name, nodeUuid: newNodeUuid },
+                recovery: 'Query nodeGetTree and retry after the editor finishes the scene operation.',
+            });
+        }
 
         return { reference: { id: newNodeUuid, type: 'cc.Node' } };
     }
@@ -1056,8 +1077,7 @@ export class SceneTools {
             }
         }, "POST",  ['scene', 'node', 'remove', 'move', 'copy', 'delete', 'lock', 'unlock', 'prefab', 'apply', 'revert', 'unwrap', 'create', 'link', 'bind']
     )
-    async nodeOperate(args: { operation: string, reference: IInstanceReference, newParentReference?: IInstanceReference, newPrefabPath?: string, prefabAssetReference?: IInstanceReference, siblingIndex?: number, recursive?: boolean }):
-        Promise<{ success?: boolean, createdPrefabAssetReference?: IInstanceReference, updatedNodeReference?: IInstanceReference, copiedNodeReference?: IInstanceReference }> {
+    async nodeOperate(args: { operation: string, reference: IInstanceReference, newParentReference?: IInstanceReference, newPrefabPath?: string, prefabAssetReference?: IInstanceReference, siblingIndex?: number, recursive?: boolean }): Promise<{ success?: boolean, createdPrefabAssetReference?: IInstanceReference, updatedNodeReference?: IInstanceReference, copiedNodeReference?: IInstanceReference }> {
         if (await Editor.Message.request('scene', 'query-node', args.reference.id) === null) {
             throw new Error(`Target node ${args.reference.id} not found`);
         }
@@ -1079,7 +1099,15 @@ export class SceneTools {
                 }
 
                 await Editor.Message.request('scene', 'snapshot');
-                
+                const movedNode = await Editor.Message.request('scene', 'query-node', args.reference.id);
+                const movedParent = movedNode?.parent?.value?.uuid ?? movedNode?.parent?.uuid;
+                if (!movedNode || movedParent !== args.newParentReference.id) {
+                    throw new ToolError({
+                        code: 'NODE_MOVE_UNCONFIRMED', status: 502,
+                        message: `Creator did not confirm node ${args.reference.id} under parent ${args.newParentReference.id}.`,
+                        details: { nodeId: args.reference.id, requestedParentId: args.newParentReference.id, actualParentId: movedParent ?? null },
+                    });
+                }
                 return { success: true };
 
             case 'copy':
@@ -1104,7 +1132,21 @@ export class SceneTools {
                  }
 
                  await Editor.Message.request('scene', 'snapshot');
-                 
+                 const copiedNode = await Editor.Message.request('scene', 'query-node', newNodeId);
+                 const copiedNodeUuid = typeof copiedNode?.uuid === 'string' ? copiedNode.uuid : copiedNode?.uuid?.value;
+                 if (!copiedNode || copiedNodeUuid !== newNodeId) {
+                    throw new ToolError({ code: 'NODE_COPY_UNCONFIRMED', status: 502, message: `Creator did not confirm duplicated node ${newNodeId}.` });
+                 }
+                 if (args.newParentReference) {
+                    const copiedParent = copiedNode.parent?.value?.uuid ?? copiedNode.parent?.uuid;
+                    if (copiedParent !== args.newParentReference.id) {
+                        throw new ToolError({
+                            code: 'NODE_COPY_UNCONFIRMED', status: 502,
+                            message: `Creator did not confirm duplicated node ${newNodeId} under parent ${args.newParentReference.id}.`,
+                            details: { nodeId: newNodeId, requestedParentId: args.newParentReference.id, actualParentId: copiedParent ?? null },
+                        });
+                    }
+                 }
                  return { success: true, copiedNodeReference: { id: newNodeId, type: 'cc.Node' } };
 
             case 'delete':

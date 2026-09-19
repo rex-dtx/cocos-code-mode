@@ -94,66 +94,75 @@ export class ComponentTools {
         throw new Error(`Components of type ${args.componentType} not found on node ${args.reference.id}`);
     }
 
-    /** @deprecated use nodeComponentManage({ operation: 'remove', reference }) — not registered, kept for delegation */
     async nodeComponentRemove(args: { reference: IInstanceReference }): Promise<ISuccessIndicator> {
+        if (!args.reference?.id) throw new Error('nodeComponentRemove requires reference.id');
         try {
             const component = await Editor.Message.request('scene', 'query-component', args.reference.id);
             if (component === null || component === undefined) {
                 throw new Error(`Component ${args.reference.id} not found`);
             }
 
-            await Editor.Message.request('scene', 'remove-component', {
-                uuid: args.reference.id
-            });
-
+            await Editor.Message.request('scene', 'remove-component', { uuid: args.reference.id });
+            const remaining = await Editor.Message.request('scene', 'query-component', args.reference.id);
+            if (remaining !== null && remaining !== undefined) {
+                throw new Error(`Component ${args.reference.id} still exists after removal`);
+            }
             await Editor.Message.request('scene', 'snapshot');
-
             return { success: true };
-        } catch (error: any) {
-            throw new Error(`Failed to remove component ${args.reference.id}. Reason: ${error?.message || error}`);
+        } catch (error: unknown) {
+            throw new Error(`Failed to remove component ${args.reference.id}. Reason: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 
-    /** @deprecated use nodeComponentManage({ operation: 'add', reference, componentType }) — not registered, kept for delegation */
     async nodeComponentAdd(args: { reference: IInstanceReference, componentType: string }): Promise<{ reference: IInstanceReference }> {
+        if (!args.reference?.id || !args.componentType) throw new Error('nodeComponentAdd requires reference.id and componentType');
         const node = await Editor.Message.request('scene', 'query-node', args.reference.id);
-        if (!node) {
-            throw new Error(`Node ${args.reference.id} not found`);
+        if (!node) throw new Error(`Node ${args.reference.id} not found`);
+
+        const componentUuid = (component: unknown): string | undefined => {
+            if (!component || typeof component !== 'object') return undefined;
+            const row = component as Record<string, unknown>;
+            const value = row.value && typeof row.value === 'object' ? row.value as Record<string, unknown> : undefined;
+            const uuid = value?.uuid;
+            if (typeof uuid === 'string') return uuid;
+            if (uuid && typeof uuid === 'object' && typeof (uuid as Record<string, unknown>).value === 'string') return (uuid as Record<string, unknown>).value as string;
+            return typeof row.uuid === 'string' ? row.uuid : undefined;
+        };
+        const componentType = (component: unknown): string | undefined => {
+            if (!component || typeof component !== 'object') return undefined;
+            const row = component as Record<string, unknown>;
+            if (typeof row.type === 'string') return row.type;
+            const value = row.value && typeof row.value === 'object' ? row.value as Record<string, unknown> : undefined;
+            const declared = value?.__type__;
+            if (typeof declared === 'string') return declared;
+            if (declared && typeof declared === 'object' && typeof (declared as Record<string, unknown>).value === 'string') return (declared as Record<string, unknown>).value as string;
+            return typeof row.cid === 'string' ? row.cid : typeof value?.cid === 'string' ? value.cid : undefined;
+        };
+        const existingUuids = new Set<string>((node.__comps__ ?? []).map(componentUuid).filter((id: string | undefined): id is string => !!id));
+
+        await Editor.Message.request('scene', 'execute-scene-script', { name: packageJSON.name, method: 'startCatchLogging', args: [] });
+        let caughtLogs: string[] = [];
+        try {
+            await Editor.Message.request('scene', 'create-component', { uuid: args.reference.id, component: args.componentType });
+            caughtLogs = await Editor.Message.request('scene', 'execute-scene-script', { name: packageJSON.name, method: 'stopCatchLogging', args: [] }) ?? [];
+        } catch (error) {
+            await Editor.Message.request('scene', 'execute-scene-script', { name: packageJSON.name, method: 'stopCatchLogging', args: [] }).catch(() => undefined);
+            throw error;
         }
-
-        // Single extractor for both snapshots — the after-dump previously used a
-        // narrower chain than the before-dump, so a uuid-less ref could read as
-        // "new" and the call returned {id: undefined} as a success (docs §2).
-        const extractCompUuid = (c: any): string | undefined => c?.value?.uuid?.value ?? c?.value?.uuid ?? c?.uuid;
-        const beforeComponents = node.__comps__ ? node.__comps__.map(extractCompUuid) : [];
-        const existingUuids = new Set(beforeComponents);
-
-        await Editor.Message.request('scene', 'execute-scene-script',
-            { name: packageJSON.name, method: 'startCatchLogging', args: [] });
-
-        await Editor.Message.request('scene', 'create-component', {
-            uuid: args.reference.id,
-            component: args.componentType
-        });
 
         const nodeAfter = await Editor.Message.request('scene', 'query-node', args.reference.id);
-        if (!nodeAfter) {
-            throw new Error(`nodeComponentAdd: node ${args.reference.id} disappeared after create-component`);
-        }
-        const afterComponents: IInstanceReference[] = nodeAfter.__comps__ ?
-            nodeAfter.__comps__.map((c: any) => { return { id: extractCompUuid(c) ?? '', type: c.type } }) : [];
+        if (!nodeAfter) throw new Error(`nodeComponentAdd: node ${args.reference.id} disappeared after create-component`);
+        const newComponent = (nodeAfter.__comps__ ?? []).find((component: unknown) => {
+            const id = componentUuid(component);
+            return !!id && !existingUuids.has(id) && componentType(component) === args.componentType;
+        });
+        const newId = componentUuid(newComponent);
+        if (!newId) throw new Error(`Failed to add component. Captured logs: ${caughtLogs.join('\n')}`);
 
-        const caughtLogs: string[] = await Editor.Message.request('scene', 'execute-scene-script',
-            { name: packageJSON.name, method: 'stopCatchLogging', args: [] });
-
-        const newComponentRef = afterComponents.find((ref) => !!ref.id && !existingUuids.has(ref.id));
-
-        if (newComponentRef) {
-            await Editor.Message.request('scene', 'snapshot');
-
-            return { reference: { id: newComponentRef.id, type: newComponentRef.type } };
-        }
-
-        throw new Error("Failed to add component. Captured logs: " + caughtLogs.join('\n'));
+        await Editor.Message.request('scene', 'snapshot');
+        const verifiedNode = await Editor.Message.request('scene', 'query-node', args.reference.id);
+        const verified = (verifiedNode?.__comps__ ?? []).find((component: unknown) => componentUuid(component) === newId);
+        if (!verified) throw new Error(`Component ${newId} was not present after add read-back`);
+        return { reference: { id: newId, type: componentType(verified) ?? args.componentType } };
     }
 }

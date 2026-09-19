@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-19",
+  "scope": "editor-side scene/node/component authoring mutation postconditions",
+  "routes": [
+    "sceneManage open identity read-back",
+    "nodeCreate UUID read-back",
+    "nodeOperate move parent read-back",
+    "nodeOperate copy identity and parent read-back",
+    "nodeOperate delete absence read-back",
+    "nodeComponentAdd UUID/type read-back",
+    "nodeComponentRemove absence read-back",
+    "inspectorSet fresh property read-back"
+  ],
+  "verification": {
+    "typescriptBuild": "pass",
+    "focusedTests": "6/6 pass",
+    "testFile": "tests/unit/scene-authoring-contracts.test.js"
+  },
+  "qualificationBoundary": "Source and focused behavioral evidence only. Workflow complete promotion still requires reconciliation against the frozen authoring contract and current Creator 3.7.3 evidence policy."
+}
