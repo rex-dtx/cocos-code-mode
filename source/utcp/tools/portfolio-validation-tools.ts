@@ -354,7 +354,8 @@ export class PortfolioValidationTools {
         } catch (error) {
             try {
                 for (const key of attempted) {
-                    const result = await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `__comps__.${index}.${key}`, dump: previous[key] as any });
+                    const result = await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `__comps__.${index}.${key}`, dump: previous[key] as never });
+                    if (result === false) throw new Error(`set-property refused rollback ${key}`);
                 }
                 await Editor.Message.request('scene', 'snapshot');
                 const rollbackNode = await queryNode(args.reference.id);

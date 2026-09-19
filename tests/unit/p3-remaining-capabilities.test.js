@@ -161,6 +161,29 @@ describe('remaining P3 capability contracts', () => {
     assert.equal(result.verified, true);
     assert.deepEqual(calls.map((call) => call.message), ['query-node', 'set-property', 'snapshot', 'query-node']);
   });
+  it('rolls back skeletal fields after stale read-back and confirms restoration', async () => {
+    const node = {
+      uuid: 'skeletal-node',
+      __comps__: [{ type: 'cc.SkeletalAnimation', value: { uuid: { value: 'skeletal-component' }, playOnLoad: { value: false, type: 'Boolean' } } }],
+    };
+    let queryCount = 0;
+    install(async (_service, message, payload) => {
+      if (message === 'query-node') {
+        queryCount += 1;
+        if (queryCount === 2) return { uuid: 'skeletal-node', __comps__: [{ type: 'cc.SkeletalAnimation', value: { uuid: { value: 'skeletal-component' }, playOnLoad: { value: false, type: 'Boolean' } } }] };
+        return node;
+      }
+      if (message === 'set-property') { node.__comps__[0].value.playOnLoad = payload.dump; return true; }
+      if (message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    });
+    await assert.rejects(
+      () => new PortfolioValidationTools().skeletalAnimationConfigure({ reference: { id: 'skeletal-node' }, properties: { playOnLoad: true } }),
+      error => error.code === 'MUTATION_FAILED' && error.status === 502,
+    );
+    assert.equal(node.__comps__[0].value.playOnLoad.value, false);
+    assert.equal(queryCount, 3);
+  });
 
   it('rejects unsupported skeletal fields before scene mutation', async () => {
     const calls = [];

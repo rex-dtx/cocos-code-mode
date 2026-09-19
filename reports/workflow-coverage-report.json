@@ -5,11 +5,11 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 228,
-  "implementationPercent": 64.04,
+  "confirmedComplete": 233,
+  "implementationPercent": 65.45,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 93,
+  "deficitTo90": 88,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
@@ -116,9 +116,9 @@
     },
     "rendering-materials": {
       "total": 6,
-      "complete": 3,
+      "complete": 4,
       "unreviewed": 0,
-      "implementationPercent": 50
+      "implementationPercent": 66.67
     },
     "runtime-qa": {
       "total": 3,
@@ -134,15 +134,15 @@
     },
     "scene": {
       "total": 72,
-      "complete": 61,
+      "complete": 64,
       "unreviewed": 0,
-      "implementationPercent": 84.72
+      "implementationPercent": 88.89
     },
     "skeletal-animation": {
       "total": 5,
-      "complete": 2,
+      "complete": 3,
       "unreviewed": 0,
-      "implementationPercent": 40
+      "implementationPercent": 60
     },
     "terrain-model": {
       "total": 4,

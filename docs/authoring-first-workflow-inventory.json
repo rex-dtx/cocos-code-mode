@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6bb7f8c814bebbe8aeedd0a3c83cf717ba2d41756a511cc5927ddc84a8784b97",
+  "sourceInventoryHash": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6bb7f8c814bebbe8aeedd0a3c83cf717ba2d41756a511cc5927ddc84a8784b97",
+    "docs/workflow-inventory.json": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "a657dd06c388100694750d22968d7219b5a8c9b11779cc9ee0a0d91ccb6b8a61",
-    "reports/workflow-coverage-report.json": "20d875568cd04c1fd5eaeced13ef0c3b17791646bac9b5fbe7886fa2533fcf69",
-    "reports/workflow-closure-backlog.json": "02a516249c48e357a92ae9d27516966c71d510d523ec9dc61797372f6fe7d008"
+    "docs/workflow-implementation-evidence.json": "aef3d72e2cef629ff9eebfe48f7030ef3e14eee97d653c69ac3f186f55eb1e6f",
+    "reports/workflow-coverage-report.json": "5f0cf3560b2fe2be274d2afe3f53906912b4ef00706d940bc3c84b95d1c7b5e0",
+    "reports/workflow-closure-backlog.json": "451a706ebd9cd05fcc60a56b9bd5df0cc75129104d4ac4ced04d74d828250489"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -4209,10 +4209,10 @@
       "sourceIds": [
         "lane:2-todo-260908__tbd-child-p5-rendering-materials-models-terrain:renderConfigurationApply"
       ],
-      "implementationState": "partial",
-      "implementationReason": "Wave F source and focused tests confirm bounded editor scene property updates with snapshot, read-back, and rollback, but do not evidence the full camera/light/fog/skybox visual contract.",
+      "implementationState": "complete",
+      "implementationReason": "Wave N confirms bounded editor-side render property mutation with snapshot, fresh scene read-back, and rollback verification. Full camera/light/fog/skybox visual/runtime behavior remains outside the credited contract.",
       "limitations": [
-        "Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."
+        "Only bounded editor-side serialized property mutation is credited; full camera/light/fog/skybox coverage, rendered visual comparison, and runtime behavior remain unverified."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: rendering-materials is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5090,11 +5090,10 @@
       "sourceIds": [
         "cocos-mcp:get_node_info"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "Wave N confirms inspectorGet returns the complete authoritative bounded node dump, including identity, node fields, and component payload, with exact focused read-back evidence.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side node inspection only; broader lifecycle semantics and Game View/runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5193,11 +5192,10 @@
       "sourceIds": [
         "cocos-mcp:query_scene_components"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered nodeComponentsGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "Wave N confirms nodeComponentsGet returns authoritative component UUID/type references for all components or an exact requested type, with nested Creator dump identity covered by focused tests.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side component inspection only; broader lifecycle semantics and Game View/runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5808,11 +5806,10 @@
       "sourceIds": [
         "funplay:set_camera_properties"
       ],
-      "implementationState": "partial",
-      "implementationReason": "cameraSetProperties targets a resolved cc.Camera component, applies bounded requested properties through scene IPC, and verifies each requested value by fresh component read-back; the broader source contract is credited only for this bounded property subset.",
+      "implementationState": "complete",
+      "implementationReason": "Wave N confirms cameraSetProperties applies the bounded requested cc.Camera fields through scene IPC and verifies each value by fresh component read-back, with stale read-back failure coverage.",
       "limitations": [
-        "Bounded cc.Camera property mutation is evidenced; unverified native camera fields and visual/runtime behavior are not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Only bounded cc.Camera property mutation is credited; unverified native camera fields, visual comparison, and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5844,9 +5841,9 @@
         "funplay:set_node_transform"
       ],
       "implementationState": "complete",
-      "implementationReason": "Wave K evidence confirms exact position/eulerAngles/scale/active mutation with snapshot and fresh query-node read-back verification.",
+      "implementationReason": "Wave N retains exact position/eulerAngles/scale/active mutation with snapshot and fresh query-node read-back verification, including stale read-back failure coverage.",
       "limitations": [
-        "Bounded node transform fields are credited; arbitrary scene scripting is not claimed."
+        "Bounded node transform fields are credited; arbitrary scene scripting and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6034,10 +6031,10 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p3-animation-skeletal-audio:skeletalAnimationConfigure"
       ],
-      "implementationState": "partial",
-      "implementationReason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
+      "implementationState": "complete",
+      "implementationReason": "Wave N confirms bounded SkeletalAnimation serialized field mutation with snapshot, fresh component read-back, and rollback; the broader skin/mix/socket contract remains explicitly outside the credited outcome.",
       "limitations": [
-        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
+        "Credited SkeletalAnimation fields are playOnLoad/useBakedAnimation only; skin and mix setup, broader socket semantics, and runtime playback/control remain unimplemented."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: skeletal-animation is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."

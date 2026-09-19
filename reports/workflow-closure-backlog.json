@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 93,
+  "requiredFor90": 88,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
@@ -922,16 +922,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
-      "state": "partial",
-      "reason": "Wave F source and focused tests confirm bounded editor scene property updates with snapshot, read-back, and rollback, but do not evidence the full camera/light/fog/skybox visual contract.",
-      "acceptance": "Atomic camera/light/fog/skybox configuration with scene read-back. Prerequisites: `render-pipeline-schema`, `compound-scene-workflow`, `visual-harness`.\nAtomic camera/light/fog/skybox configuration with scene read-back.",
-      "limitations": [
-        "Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-diagnostics-collect",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -1242,28 +1232,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-get-node-info",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "get_node_info",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-query-scene-components",
-      "state": "partial",
-      "reason": "The registered nodeComponentsGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "query_scene_components",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.cocos-mcp-set-node-transform",
       "state": "partial",
       "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
@@ -1282,17 +1250,6 @@
       "limitations": [
         "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-set-camera-properties",
-      "state": "partial",
-      "reason": "cameraSetProperties targets a resolved cc.Camera component, applies bounded requested properties through scene IPC, and verifies each requested value by fresh component read-back; the broader source contract is credited only for this bounded property subset.",
-      "acceptance": "- *Tính năng:* Cấu hình các thuộc tính của Camera (clearFlags, projection, orthoHeight, fov).\n    - *Inputs:* `cameraUuid: string`, `properties: object`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property` trên component Camera.",
-      "limitations": [
-        "Bounded cc.Camera property mutation is evidenced; unverified native camera fields and visual/runtime behavior are not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -1337,16 +1294,6 @@
       "limitations": [
         "Mutate editor state with preflight, postcondition and recovery.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
-      "state": "partial",
-      "reason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
-      "acceptance": "Typed skin, mix and socket setup with component read-back. Prerequisites: `skeletal-extension-detection`, `mutation-workflow`.\nConfigure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
-      "limitations": [
-        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
       ],
       "dependencies": []
     },
