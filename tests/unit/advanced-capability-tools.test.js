@@ -77,7 +77,7 @@ describe('advanced capability tools', () => {
     const row = { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
     global.Editor = { Message: { request: async (service, message) => {
       if (service === 'asset-db' && message === 'query-asset-info') return row;
-      if (service === 'scene' && message === 'query-node') return { __prefab__: { value: { uuid: 'prefab-asset' } }, name: { value: 'Fixture' } };
+      if (service === 'scene' && message === 'query-node') return { uuid: 'instance', __prefab__: { value: { uuid: 'prefab-asset' } }, name: { value: 'Fixture' } };
       if (service === 'scene' && message === 'execute-scene-script') { fs.writeFileSync(file, '{"position":7}'); return null; }
       if (service === 'scene' && message === 'snapshot') return true;
       throw new Error(`unexpected ${service}:${message}`);
@@ -91,6 +91,33 @@ describe('advanced capability tools', () => {
     } finally {
       if (previous === undefined) delete global.Editor;
       else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it('instantiates prefab with linked identity and cleans failed read-back', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-instantiate-'));
+    const file = path.join(root, 'fixture.prefab');
+    fs.writeFileSync(file, '{}');
+    const previous = global.Editor;
+    let removed = false;
+    const row = { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
+    global.Editor = { Message: { request: async (service, message, argument) => {
+      if (service === 'asset-db' && message === 'query-asset-info') return row;
+      if (service === 'scene' && message === 'query-node-tree') return { uuid: 'root' };
+      if (service === 'scene' && message === 'create-node') return 'instance';
+      if (service === 'scene' && message === 'snapshot') return true;
+      if (service === 'scene' && message === 'query-node') return argument === 'instance' ? { uuid: 'instance', __prefab__: { value: { uuid: 'prefab-asset' } } } : { uuid: 'root' };
+      if (service === 'scene' && message === 'remove-node') { removed = true; return true; }
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const result = await new AdvancedCapabilityTools().prefabInstantiate({ reference: { id: 'prefab-asset', type: 'cc.Prefab' }, name: 'FixtureInstance' });
+      assert.equal(result.persisted, true);
+      assert.equal(result.reference.id, 'instance');
+      assert.equal(result.source.id, 'prefab-asset');
+      assert.equal(removed, false);
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
