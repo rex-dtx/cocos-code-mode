@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "d2c7932cbe42a1a123d863da75f78d320053d9503dafbb79628927401dcb892f",
+  "sourceInventoryHash": "5624ebf95b508206ed95ac63df32d0998a6885c739cca9555fd0dff0edb35a84",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "d2c7932cbe42a1a123d863da75f78d320053d9503dafbb79628927401dcb892f",
+    "docs/workflow-inventory.json": "5624ebf95b508206ed95ac63df32d0998a6885c739cca9555fd0dff0edb35a84",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "14ba8d0649781c10a3b22d4b14446d370d0ce98bf25b102ba86b0d35467f9e83",
-    "reports/workflow-coverage-report.json": "e653d0c2592ed0b64d2c662b5b334ca1011df34a6634cd684b9d99f5df7b00b6",
-    "reports/workflow-closure-backlog.json": "65cfd4b40bf43f4999e3ead18113f731d8435982f1780c13b355aaf45cf790c8"
+    "docs/workflow-implementation-evidence.json": "a5cacc7a012e636680c32d028bc829da19f7060b80259b9be626c91df5998487",
+    "reports/workflow-coverage-report.json": "c4ff032db6f4461f450e11880f645ad2213e0bebdb1010bdf4bec8a8dd8947e6",
+    "reports/workflow-closure-backlog.json": "6a33573cdf4d2e375c055954e1bdef828e85c970e831fb3a614c07b66e3340c2"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -419,10 +419,11 @@
       "sourceIds": [
         "cocos-mcp:get_all_preferences"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "getEditorPreference omitting key returns the complete bounded set of cc-bridge-3x Editor.Profile preferences with explicit nulls for unset keys.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded to the cc-bridge-3x known preference keys; arbitrary third-party package profiles are not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -525,10 +526,11 @@
       "sourceIds": [
         "cocos-mcp:get_prefab_list"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "assetQuery provides a bounded prefab asset listing with authoritative asset records and query filters.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Results are bounded by assetQuery limits and supported asset-db filters.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -542,10 +544,11 @@
       "sourceIds": [
         "cocos-mcp:get_scene_list"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "assetQuery provides a bounded scene asset listing with authoritative asset records and query filters.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Results are bounded by assetQuery limits and supported asset-db filters.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -629,10 +632,11 @@
       "sourceIds": [
         "cocos-mcp:query_asset_db_ready"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "assetDbQuery exposes the Creator asset-db ready probe, but the broader source workflow has no separately qualified readiness lifecycle evidence in this batch.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the direct ready probe is credited; broader asset-db lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -860,10 +864,11 @@
       "sourceIds": [
         "funplay:get_editor_preference"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "getEditorPreference reads a bounded cc-bridge-3x Editor.Profile key, but does not accept an arbitrary package identifier from the source contract.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Package scope is fixed to cc-bridge-3x and known preference keys.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1073,10 +1078,11 @@
       "sourceIds": [
         "funplay:set_editor_preference"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "setEditorPreference writes bounded cc-bridge-3x Editor.Profile settings with type validation, but does not provide arbitrary package scope or a persistence read-back in the returned result.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Package scope is fixed to cc-bridge-3x and known preference keys.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1177,10 +1183,11 @@
       "sourceIds": [
         "cocos-mcp:validate_asset_references"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "assetMissingReferenceAudit provides bounded serialized missing-reference validation with source locations and recovery evidence, but does not establish every source-side validation mode.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only bounded serialized UUID/reference scanning is credited; broader importer/runtime validation is not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: assets-import is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2033,10 +2040,11 @@
       "sourceIds": [
         "cocos-mcp:validate_prefab"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "prefabReferenceAudit validates nested prefab UUID references and reports typed missing references, but does not cover every source-side prefab validation rule.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only nested-reference and missing-serialized-dependency validation is credited; broader prefab policy checks remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -3699,11 +3707,11 @@
       "sourceIds": [
         "cocos-mcp:create_prefab"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "nodeOperate supplies bounded scene-node to prefab creation evidence, but the source competitor operation has no frozen detailed contract for full normalization and output parity.",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded node-to-prefab operation is credited; full source normalization/output parity remains unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -3734,10 +3742,11 @@
       "sourceIds": [
         "cocos-mcp:load_prefab"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "readPrefabJson provides the reviewed bounded load/read outcome for a prefab asset, including parsed JSON content and authoritative asset metadata.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Load is bounded to serialized prefab JSON inspection; no scene instantiation or runtime behavior is claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -4997,10 +5006,11 @@
       "sourceIds": [
         "cocos-mcp:find_node_by_name"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "findNodes provides the exact bounded name-based scene search outcome with stable node references, names, hierarchy paths, result counts and truncation state.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Name matching is bounded to the open scene/prefab tree and the configured result cap.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
