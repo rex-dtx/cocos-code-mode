@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "sourceCommit": "30e8b13",
+  "unitVerification": { "runtimeSessionTools": "14/14", "gameViewTransport": "2/2", "typescriptBuild": "pass" },
+  "liveVerification": { "endpoint": "http://localhost:56396", "tests": "skipped", "reason": "Creator lifecycle process exited / fetch failed", "directStateBeforeExit": { "sceneReady": false, "busyScene": true, "preview": "stop" } },
+  "contract": { "idempotentRunningStart": "unit-proven", "coldStart": "unproven", "stopReset": "unproven live" },
+  "coverage": { "complete": 54, "total": 356, "percent": 15.17 },
+  "decision": "No workflow promotion. Source fix is committed and unit-proven; Creator cold-start lifecycle remains unstable and live evidence is unavailable."
+}
