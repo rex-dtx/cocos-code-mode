@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "project": "G:\\_ws\\_helpers\\cc-3x-test",
+  "attempt": "removed temp/profiles/packages scene/hierarchy/assets entries and temp/scene/cache, restarted Creator 3.7.3",
+  "result": {
+    "processResponsive": true,
+    "utcpPort": 56396,
+    "listening": false,
+    "projectLog": "argument banner only",
+    "qualified": false
+  },
+  "decision": "Cache reset did not resolve pre-extension activation stall. No runtime lifecycle promotion."
+}
