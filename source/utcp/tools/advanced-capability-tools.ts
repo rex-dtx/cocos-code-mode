@@ -298,6 +298,35 @@ export class AdvancedCapabilityTools {
             throw new ToolError({ code: 'PREFAB_INSTANTIATE_FAILED', status: 502, message: 'Prefab instantiation did not return a verifiable node.', details: { cause: error instanceof Error ? error.message : String(error) } });
         }
     }
+    @utcpTool('prefabCreateFromNode', 'Create a linked prefab asset from a scene node through the verified Creator scene script and verify asset/node read-back.', { type: 'object', properties: { reference: InstanceReferenceSchema, assetPath: { type: 'string', pattern: '^db://assets/.+\\.prefab$' } }, required: ['reference', 'assetPath'] }, { type: 'object', properties: { reference: { type: 'object' }, asset: { type: 'object' }, persisted: { type: 'boolean' } }, required: ['reference', 'asset', 'persisted'] }, 'POST', ['prefab', 'create', 'node', 'asset'])
+    async prefabCreateFromNode(args: { reference: IInstanceReference, assetPath: string }): Promise<Record<string, unknown>> {
+        if (!/^db:\/\/assets\/.+\.prefab$/.test(args.assetPath) || args.assetPath.includes('..')) invalid('assetPath must be a db://assets .prefab path without traversal.');
+        const node = await Editor.Message.request('scene', 'query-node', args.reference.id) as unknown;
+        if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Node ${args.reference.id} was not found.` });
+        const created = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'createPrefabFromNode', args: [args.reference.id, args.assetPath] });
+        if (typeof created !== 'string' || !created) throw new ToolError({ code: 'PREFAB_CREATE_FAILED', status: 502, message: 'Creator did not return the created prefab asset identity.' });
+        const asset = await Editor.Message.request('asset-db', 'query-asset-info', created) as { uuid?: string, type?: string, url?: string } | null;
+        if (!asset || asset.uuid !== created || asset.type !== 'cc.Prefab') throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: 'Created prefab asset could not be verified.', details: { expectedUuid: created, actual: asset ?? null } });
+        await Editor.Message.request('scene', 'snapshot');
+        return { reference: { id: args.reference.id, type: args.reference.type ?? 'cc.Node' }, asset: { id: asset.uuid, type: asset.type, url: asset.url }, persisted: true };
+    }
+
+    @utcpTool('prefabUpdate', 'Apply all linked prefab instance overrides through Creator and verify source and instance read-back.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, operation: { type: 'string' }, persisted: { type: 'boolean' }, readBack: { type: 'object' }, sourceReadBack: { type: 'object' } }, required: ['reference', 'operation', 'persisted', 'readBack', 'sourceReadBack'] }, 'POST', ['prefab', 'update', 'apply'])
+    async prefabUpdate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        return this.prefabSceneOperation('apply', args.reference);
+    }
+
+    @utcpTool('prefabInstanceInspect', 'Inspect one scene node as a linked prefab instance and return bounded override metadata.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, isPrefabInstance: { type: 'boolean' }, prefabReference: { type: ['object', 'null'] }, overrides: { type: 'array' }, readBack: { type: 'object' } }, required: ['reference', 'isPrefabInstance', 'prefabReference', 'overrides', 'readBack'] }, 'GET', ['prefab', 'instance', 'inspect'])
+    async prefabInstanceInspect(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const readBack = await Editor.Message.request('scene', 'query-node', args.reference.id) as unknown;
+        if (!readBack) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Node ${args.reference.id} was not found.` });
+        const prefab = propertyValue(objectField(readBack, '__prefab__') ?? objectField(readBack, '_prefab')) as Record<string, unknown> | undefined;
+        const prefabInfo = prefab?.prefabStateInfo && typeof prefab.prefabStateInfo === 'object' ? prefab.prefabStateInfo as Record<string, unknown> : prefab;
+        const prefabId = prefabInfo?.assetUuid ?? prefabInfo?.uuid ?? objectField(prefabInfo?.asset, '_uuid') ?? objectField(prefabInfo?.asset, 'uuid');
+        const instance = prefab?.instance && typeof prefab.instance === 'object' ? prefab.instance as Record<string, unknown> : prefabInfo;
+        const overrides = Array.isArray(instance?.propertyOverrides) ? instance.propertyOverrides.slice(0, MAX_ITEMS) : [];
+        return { reference: args.reference, isPrefabInstance: typeof prefabId === 'string' && prefabId.length > 0, prefabReference: typeof prefabId === 'string' && prefabId ? { id: prefabId, type: 'cc.Prefab' } : null, overrides, readBack };
+    }
 
     private async prefabSceneOperation(operation: 'apply' | 'revert', reference: IInstanceReference): Promise<Record<string, unknown>> {
         try {

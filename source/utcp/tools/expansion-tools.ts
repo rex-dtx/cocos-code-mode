@@ -104,6 +104,70 @@ export class ExpansionTools {
             .map((component) => ({ node: { id: node.uuid, type: 'cc.Node' }, name: nodeName(node), type: componentType(component), properties: component.value ?? {} })));
         return { systems, count: systems.length };
     }
+    @utcpTool('particleConfigure', 'Configure bounded serialized particle module/curve fields with snapshot, read-back, and rollback; never claims runtime playback.', {
+        type: 'object', additionalProperties: false,
+        properties: {
+            reference: InstanceReferenceSchema,
+            properties: { type: 'object', additionalProperties: false, minProperties: 1, maxProperties: 16 },
+        },
+        required: ['reference', 'properties'],
+    }, {
+        type: 'object', additionalProperties: false,
+        properties: { reference: InstanceReferenceSchema, componentReference: InstanceReferenceSchema, properties: { type: 'object' }, changed: { type: 'array' }, verified: { type: 'boolean', const: true } },
+        required: ['reference', 'componentReference', 'properties', 'changed', 'verified'],
+    }, 'POST', ['particle', 'configure', 'scene'])
+    async particleConfigure(args: { reference: IInstanceReference, properties: Record<string, unknown> }): Promise<{ reference: IInstanceReference, componentReference: IInstanceReference, properties: Record<string, unknown>, changed: string[], verified: true }> {
+        if (!args?.reference?.id || typeof args.reference.id !== 'string') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'reference.id is required.' });
+        if (!args.properties || typeof args.properties !== 'object' || Array.isArray(args.properties)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'properties must be a non-empty object.' });
+        const keys = Object.keys(args.properties);
+        if (keys.length < 1 || keys.length > 16 || keys.some((key) => !/^[A-Za-z0-9_.]{1,256}$/.test(key))) throw new ToolError({ code: 'INVALID_PROPERTY', status: 400, message: 'Particle property paths must be 1 to 256 alphanumeric segments.' });
+        const node = await (Editor.Message.request('scene', 'query-node', args.reference.id) as unknown as Promise<NodeRecord | null>);
+        if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Scene node ${args.reference.id} was not found.` });
+        const components = node.__comps__ ?? [];
+        const index = components.findIndex((component) => /cc\.ParticleSystem(?:2D)?$/.test(componentType(component)));
+        if (index < 0) throw new ToolError({ code: 'UNSUPPORTED_COMPONENT', status: 422, message: `Node ${args.reference.id} has no serialized particle system component.` });
+        const component = components[index];
+        const values = component.value ?? {};
+        const readPath = (root: unknown, propertyPath: string): unknown => propertyPath.split('.').reduce((current: unknown, part: string) => {
+            if (!current || typeof current !== 'object' || !(part in (current as Record<string, unknown>))) return undefined;
+            const next = (current as Record<string, unknown>)[part];
+            return next && typeof next === 'object' && !Array.isArray(next) && 'value' in next ? (next as Record<string, unknown>).value : next;
+        }, root);
+        const originals: Record<string, unknown> = {};
+        for (const key of keys) {
+            const value = readPath(values, key);
+            if (value === undefined) throw new ToolError({ code: 'UNSUPPORTED_PROPERTY', status: 422, message: `Particle component does not expose serialized field ${key}.` });
+            originals[key] = cloneDump(value);
+        }
+        const componentId = referenceUuid(componentUuid(component));
+        const componentReference = { id: componentId ?? `${args.reference.id}:component:${index}`, type: componentType(component) || 'cc.ParticleSystem' };
+        const applied: string[] = [];
+        try {
+            for (const key of keys) {
+                const result = await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `__comps__.${index}.${key}`, dump: { value: args.properties[key] as never, type: 'Unknown' } });
+                if (result === false) throw new Error(`Creator refused ${key}`);
+                applied.push(key);
+            }
+            await Editor.Message.request('scene', 'snapshot');
+            const readBackNode = await (Editor.Message.request('scene', 'query-node', args.reference.id) as unknown as Promise<NodeRecord | null>);
+            const readBackValues = readBackNode?.__comps__?.[index]?.value ?? {};
+            const readBack: Record<string, unknown> = {};
+            for (const key of keys) {
+                const actual = readPath(readBackValues, key);
+                if (JSON.stringify(actual) !== JSON.stringify(args.properties[key])) throw new Error(`read-back mismatch for ${key}`);
+                readBack[key] = actual;
+            }
+            return { reference: { id: args.reference.id, type: args.reference.type ?? 'cc.Node' }, componentReference, properties: readBack, changed: keys, verified: true };
+        } catch (error) {
+            try {
+                for (const key of [...applied].reverse()) await Editor.Message.request('scene', 'set-property', { uuid: args.reference.id, path: `__comps__.${index}.${key}`, dump: { value: originals[key] as never, type: 'Unknown' } });
+                await Editor.Message.request('scene', 'snapshot');
+            } catch (rollbackError) {
+                throw new ToolError({ code: 'ROLLBACK_FAILED', status: 500, message: `Particle configuration failed and node ${args.reference.id} could not be restored.`, details: { cause: error instanceof Error ? error.message : String(error), rollback: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) } });
+            }
+            throw new ToolError({ code: 'MUTATION_FAILED', status: 502, message: `Particle configuration failed for node ${args.reference.id}.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+    }
     @utcpTool('terrainInspect', 'Inspect bounded Terrain components and their asset/effect configuration.', { type: 'object', properties: { reference: InstanceReferenceSchema } }, { type: 'object', properties: { terrains: { type: 'array' }, count: { type: 'integer' } }, required: ['terrains', 'count'] }, 'GET', ['terrain', 'inspect'])
     async terrainInspect(args: { reference?: IInstanceReference }): Promise<{ terrains: Array<Record<string, unknown>>, count: number }> {
         const nodes = await sceneNodes(args.reference?.id);

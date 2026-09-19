@@ -5,11 +5,11 @@
   "status": "measurable",
   "candidateDenominator": 356,
   "denominator": 356,
-  "confirmedComplete": 195,
-  "implementationPercent": 54.78,
+  "confirmedComplete": 208,
+  "implementationPercent": 58.43,
   "targetPercent": 90,
   "targetComplete": 321,
-  "deficitTo90": 126,
+  "deficitTo90": 113,
   "unresolvedContracts": 0,
   "byDomain": {
     "animation-graph": {
@@ -26,15 +26,15 @@
     },
     "asset": {
       "total": 46,
-      "complete": 38,
+      "complete": 42,
       "unreviewed": 0,
-      "implementationPercent": 82.61
+      "implementationPercent": 91.3
     },
     "assets-import": {
       "total": 11,
-      "complete": 5,
+      "complete": 8,
       "unreviewed": 0,
-      "implementationPercent": 45.45
+      "implementationPercent": 72.73
     },
     "audio": {
       "total": 5,
@@ -56,9 +56,9 @@
     },
     "design-prefab": {
       "total": 33,
-      "complete": 18,
+      "complete": 19,
       "unreviewed": 0,
-      "implementationPercent": 54.55
+      "implementationPercent": 57.58
     },
     "diagnostics": {
       "total": 13,
@@ -86,9 +86,9 @@
     },
     "particles": {
       "total": 4,
-      "complete": 3,
+      "complete": 4,
       "unreviewed": 0,
-      "implementationPercent": 75
+      "implementationPercent": 100
     },
     "physics-2d": {
       "total": 6,
@@ -134,9 +134,9 @@
     },
     "scene": {
       "total": 72,
-      "complete": 48,
+      "complete": 52,
       "unreviewed": 0,
-      "implementationPercent": 66.67
+      "implementationPercent": 72.22
     },
     "skeletal-animation": {
       "total": 5,

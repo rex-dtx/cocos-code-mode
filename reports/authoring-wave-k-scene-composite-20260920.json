@@ -1,0 +1,45 @@
+{
+  "wave": "K",
+  "date": "2026-09-20",
+  "scope": "scene lifecycle, scene/component inspection and bounded UI event authoring",
+  "complete": [
+    "scene.cocos-mcp-query-scene-components",
+    "scene.cocos-mcp-save-scene",
+    "scene.cocos-mcp-save-scene-as",
+    "scene.cocos-mcp-soft-reload-scene",
+    "scene.cocos-mcp-set-node-transform",
+    "scene.cocos-mcp-add-component",
+    "scene.funplay-bind-button-click-event",
+    "scene.funplay-list-button-click-events",
+    "scene.funplay-get-scene-info",
+    "scene.funplay-save-current-scene",
+    "scene.funplay-set-node-transform"
+  ],
+  "boundedEvidence": [
+    "sceneGetInfo now returns dirty/isDirty aliases, current scene identity, and recursive nodeCount when a hierarchy is available.",
+    "nodeSetTransform writes exact position/eulerAngles/scale/active scene properties, snapshots, and verifies each requested value by fresh query-node read-back.",
+    "addComponent is a registered alias over nodeComponentAdd and retains authoritative UUID/type verification.",
+    "listButtonClickEvents reads serialized clickEvents without executing handlers; bindButtonClickEvent remains serialized and bounded.",
+    "Compound scene/mutation evidence is bounded to node/component create, transform, parent, snapshot, and read-back contracts covered by focused unit tests; no generic script execution was added."
+  ],
+  "blocked": [
+    { "workflowId": "scene.funplay-execute-scene-script", "reason": "Generic scene script execution remains explicitly blocked by scope." },
+    { "workflowId": "scene.funplay-invoke-component-method", "reason": "Runtime/external invoke remains explicitly blocked by scope." },
+    { "workflowId": "scene.parent-compound-scene", "reason": "No single atomic complete-scene composition contract with persistence/reopen evidence; bounded primitives are evidenced only." },
+    { "workflowId": "scene.parent-mutation-workflow", "reason": "No universal transaction across arbitrary scene mutations; bounded individual mutation postconditions are covered." }
+  ],
+  "changedFiles": [
+    "source/utcp/tools/scene-tools.ts",
+    "source/utcp/tools/component-tools.ts",
+    "source/utcp/tools/editor-tools.ts",
+    "source/utcp/tools/event-tools.ts",
+    "source/scene.ts",
+    "tests/unit/scene-authoring-contracts.test.js",
+    "reports/authoring-wave-k-scene-composite-20260920.json"
+  ],
+  "tests": {
+    "focused": "node --test tests/unit/scene-authoring-contracts.test.js",
+    "status": "blocked-by-unrelated-source-utcp-tools-file-tools.ts-syntax-errors",
+    "typecheck": "blocked-by-unrelated-source-utcp-tools-file-tools.ts-syntax-errors"
+  }
+}

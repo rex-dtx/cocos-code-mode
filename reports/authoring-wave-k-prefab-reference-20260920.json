@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "Wave K bounded prefab/reference-image authoring residuals",
+  "implemented": [
+    { "workflow": "prefab create-from-node", "route": "prefabCreateFromNode", "file": "source/utcp/tools/advanced-capability-tools.ts", "behavior": "Creates a prefab from a verified scene node through the existing createPrefabFromNode scene script, validates returned cc.Prefab identity, and snapshots." },
+    { "workflow": "prefab update", "route": "prefabUpdate", "file": "source/utcp/tools/advanced-capability-tools.ts", "behavior": "Exact alias over the verified applyPrefabByNode route with linked-source and source read-back verification." },
+    { "workflow": "prefab inspect instance", "route": "prefabInstanceInspect", "file": "source/utcp/tools/advanced-capability-tools.ts", "behavior": "Reads a scene node, detects linked prefab identity, and returns bounded propertyOverrides metadata." },
+    { "workflow": "prefab full revert", "route": "prefabRestore/prefabRevertOverrides", "file": "source/utcp/tools/advanced-capability-tools.ts", "behavior": "Uses native full restore-prefab and rejects selective paths fail-closed." },
+    { "workflow": "reference image lifecycle", "route": "referenceImageManage inspect/list/set/clear", "file": "source/utcp/tools/advanced-capability-tools.ts", "behavior": "Retains the proven native IPC plus project-profile fallback; no speculative transform/native IPC was added." }
+  ],
+  "blocked": [
+    { "workflow": "design-prefab.cocos-mcp-get-prefab-info", "reason": "No distinct exact native get-prefab-info contract; bounded prefabInspect remains the supported serialized equivalent." },
+    { "workflow": "design-prefab.cocos-mcp-restore-prefab-node", "reason": "Creator exposes full restore only; selective/node-level restore is not proven." },
+    { "workflow": "design-prefab.cocos-mcp-set-reference-image-data", "reason": "No proven Creator 3.7.3 native/profile contract for reference-image data mutation." },
+    { "workflow": "design-prefab.cocos-mcp-set-reference-image-opacity", "reason": "No proven Creator 3.7.3 native/profile contract for opacity mutation." },
+    { "workflow": "design-prefab.cocos-mcp-set-reference-image-position", "reason": "No proven Creator 3.7.3 native/profile contract for position mutation." },
+    { "workflow": "design-prefab.cocos-mcp-set-reference-image-scale", "reason": "No proven Creator 3.7.3 native/profile contract for scale mutation." },
+    { "workflow": "design-prefab.cocos-mcp-switch-reference-image", "reason": "No proven exact switch operation beyond bounded set/clear lifecycle." },
+    { "workflow": "design-prefab.cocos-mcp-refresh-reference-image", "reason": "No proven exact refresh operation." },
+    { "workflow": "prefabRevertOverrides selective paths", "reason": "Creator 3.7.3 restore-prefab is full-instance only; UNSUPPORTED_SELECTIVE_REVERT (422)." }
+  ],
+  "tests": { "focused": "node --test tests/unit/advanced-capability-tools.test.js", "status": "pending main-agent TypeScript build and focused run" }
+}

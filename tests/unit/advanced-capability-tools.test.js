@@ -170,14 +170,45 @@ describe('advanced capability tools', () => {
       if (previous === undefined) delete global.Editor; else global.Editor = previous;
     }
   });
-
+  it('creates prefab from node, updates linked instance, and inspects overrides', async () => {
+    const previous = global.Editor;
+    const file = __filename;
+    const requests = [];
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      requests.push([service, message, payload]);
+      if (service === 'scene' && message === 'query-node' && payload === 'node') return { uuid: 'node', __prefab__: { value: { uuid: 'prefab-asset', instance: { propertyOverrides: [{ path: 'name', value: 'Changed' }] } } } };
+      if (service === 'scene' && message === 'execute-scene-script') return 'created-prefab';
+      if (service === 'asset-db' && message === 'query-asset-info') return { uuid: 'created-prefab', url: 'db://assets/created.prefab', type: 'cc.Prefab', file };
+      if (service === 'scene' && message === 'snapshot') return true;
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const created = await tools.prefabCreateFromNode({ reference: { id: 'node', type: 'cc.Node' }, assetPath: 'db://assets/created.prefab' });
+      assert.equal(created.persisted, true);
+      assert.equal(created.asset.id, 'created-prefab');
+      global.Editor.Message.request = async (service, message, payload) => {
+        if (service === 'scene' && message === 'query-node') return { uuid: 'node', __prefab__: { value: { uuid: 'prefab-asset' } } };
+        if (service === 'asset-db' && message === 'query-asset-info') return { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
+        if (service === 'scene' && message === 'execute-scene-script') return null;
+        if (service === 'scene' && message === 'snapshot') return true;
+        throw new Error(`unexpected ${service}:${message}`);
+      };
+      await assert.doesNotReject(() => tools.prefabUpdate({ reference: { id: 'node', type: 'cc.Node' } }));
+      const inspected = await tools.prefabInstanceInspect({ reference: { id: 'node', type: 'cc.Node' } });
+      assert.equal(inspected.isPrefabInstance, true);
+      assert.equal(inspected.prefabReference.id, 'prefab-asset');
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
+  });
 
 
   it('registers all bounded prefab, tilemap, UI, and ergonomics routes', () => {
     const names = new Set(ToolRegistry.getTools().map(({ tool }) => tool.name));
     for (const name of [
       'referenceImageManage', 'prefabOverrideDiff', 'prefabReferenceAudit', 'sceneReferenceValidate',
-      'prefabInstantiate', 'prefabApplyOverrides', 'prefabRevertOverrides', 'prefabRestore', 'tilemapInspect',
+      'prefabInstantiate', 'prefabCreateFromNode', 'prefabUpdate', 'prefabInstanceInspect', 'prefabApplyOverrides', 'prefabRevertOverrides', 'prefabRestore', 'tilemapInspect',
       'tilemapLayerEdit', 'tilemapObjectEdit', 'tilemapValidate', 'spriteAtlasConfigure',
       'uiResponsivePreview', 'previewResolutionSet', 'editorUndoTransactionProbe', 'broadcastObserve',
     ]) assert.ok(names.has(name), name);

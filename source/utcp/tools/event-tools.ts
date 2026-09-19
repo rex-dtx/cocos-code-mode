@@ -90,4 +90,19 @@ export class EventTools {
         if (typeof result?.handlerCount !== 'number' || result.handlerCount === 0) throw new Error(`bindButtonClickEvent: unexpected response ${JSON.stringify(result)}`);
         return { handlerCount: result.handlerCount };
     }
+    @utcpTool(
+        'listButtonClickEvents',
+        'List serialized cc.Button click-event bindings without executing handlers.',
+        { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] },
+        { type: 'array', items: { type: 'object', properties: { targetUuid: { type: ['string', 'null'] }, componentName: { type: ['string', 'null'] }, handler: { type: ['string', 'null'] }, customEventData: { type: 'string' } }, required: ['targetUuid', 'componentName', 'handler', 'customEventData'] } },
+        'GET', ['event', 'button', 'click', 'list', 'inspect']
+    )
+    async listButtonClickEvents(args: { reference: IInstanceReference }): Promise<Array<{ targetUuid: string | null, componentName: string | null, handler: string | null, customEventData: string }>> {
+        if (!args.reference?.id) throw new Error('listButtonClickEvents requires reference.id');
+        const result = await Editor.Message.request('scene', 'execute-scene-script', {
+            name: EVENT_PACKAGE, method: 'listButtonClickEvents', args: [args.reference.id],
+        });
+        if (!Array.isArray(result)) throw new Error(`listButtonClickEvents: unexpected response ${JSON.stringify(result)}`);
+        return result as Array<{ targetUuid: string | null, componentName: string | null, handler: string | null, customEventData: string }>;
+    }
 }
