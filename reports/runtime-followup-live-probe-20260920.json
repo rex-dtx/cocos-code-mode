@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "endpoint": "http://localhost:56396",
+  "buildInfo": { "commit": "648ba36", "dirty": true, "builtAt": "2026-09-19T15:06:12.113Z" },
+  "manual": { "responsive": true, "toolCountObserved": 216 },
+  "liveQualification": false,
+  "reason": "Endpoint is responsive but serves stale dirty build 648ba36 rather than current follow-up artifact a73ec37; runtime lifecycle route identity cannot be claimed on this artifact.",
+  "next": "Controlled Creator reload, verify build-info commit, then repeat lifecycle witness."
+}
