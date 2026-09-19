@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "bounded runtime session and Game View lifecycle unit verification",
+  "verification": {
+    "runtimeSessionTools": "14/14 pass",
+    "gameViewTransport": "2/2 pass",
+    "sessionHostAndSupervisor": "18/18 pass",
+    "combined": "34/34 pass"
+  },
+  "live": {
+    "attempted": false,
+    "reason": "supervised Creator lifecycle process was not running and UTCP live endpoint was unavailable",
+    "qualified": false
+  },
+  "claims": [
+    "Unit contracts prove bounded start/attach/observe/stop/reset semantics, session isolation, rebinding and renderer identity checks.",
+    "No live Creator/Game View qualification is claimed from skipped or unavailable runtime evidence."
+  ],
+  "next": "Reload one immutable Creator 3.7.3 artifact and repeat the lifecycle witness before promoting live runtime closure."
+}
