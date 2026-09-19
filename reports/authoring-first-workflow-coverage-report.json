@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
+  "denominatorHash": "1553a0485383b8952f8fda803247e00b1b9e7d59132cd0c676b446348607830d",
+  "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "sourceInventoryHash": "4115a17600efb0c4d1542a55d03c653fa6c3b2a58cf1eba06895b648da23a4a3",
+  "sourceHashes": {
+    "docs/workflow-inventory.json": "4115a17600efb0c4d1542a55d03c653fa6c3b2a58cf1eba06895b648da23a4a3",
+    "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
+    "docs/workflow-implementation-evidence.json": "741ccd6487f76ba430addcacdc026ff3f9d300f2bd9b6f542563220342aa161f",
+    "reports/workflow-coverage-report.json": "ee57f1c902cc3cf2daef27436432954bc0085e6755b1ba4d02c1d7e9ac35dfbc",
+    "reports/workflow-closure-backlog.json": "a677699808a6067f11997c26aed0c708c157cfdf755493d9244e648d1b0f24bd"
+  },
+  "status": "measurable",
+  "totalSourceRows": 356,
+  "includedAuthoringRows": 247,
+  "deferredRows": 109,
+  "denominator": 247,
+  "confirmedComplete": 41,
+  "implementationPercent": 16.6,
+  "targetPercent": 90,
+  "targetComplete": 223,
+  "deficitTo90": 182,
+  "byDomain": {
+    "animation-graph": {
+      "total": 6,
+      "included": 5,
+      "deferred": 1,
+      "complete": 3,
+      "implementationPercent": 60,
+      "targetComplete": 5,
+      "deficit": 2
+    },
+    "animation": {
+      "total": 7,
+      "included": 6,
+      "deferred": 1,
+      "complete": 0,
+      "implementationPercent": 0,
+      "targetComplete": 6,
+      "deficit": 6
+    },
+    "asset": {
+      "total": 46,
+      "included": 46,
+      "deferred": 0,
+      "complete": 0,
+      "implementationPercent": 0,
+      "targetComplete": 42,
+      "deficit": 42
+    },
+    "assets-import": {
+      "total": 11,
+      "included": 10,
+      "deferred": 1,
+      "complete": 5,
+      "implementationPercent": 50,
+      "targetComplete": 9,
+      "deficit": 4
+    },
+    "audio": {
+      "total": 5,
+      "included": 2,
+      "deferred": 3,
+      "complete": 2,
+      "implementationPercent": 100,
+      "targetComplete": 2,
+      "deficit": 0
+    },
+    "build-platform": {
+      "total": 7,
+      "included": 0,
+      "deferred": 7,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "build": {
+      "total": 10,
+      "included": 0,
+      "deferred": 10,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "design-prefab": {
+      "total": 33,
+      "included": 33,
+      "deferred": 0,
+      "complete": 6,
+      "implementationPercent": 18.18,
+      "targetComplete": 30,
+      "deficit": 24
+    },
+    "diagnostics": {
+      "total": 13,
+      "included": 0,
+      "deferred": 13,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "editor": {
+      "total": 37,
+      "included": 35,
+      "deferred": 2,
+      "complete": 0,
+      "implementationPercent": 0,
+      "targetComplete": 32,
+      "deficit": 32
+    },
+    "localization": {
+      "total": 4,
+      "included": 0,
+      "deferred": 4,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "other": {
+      "total": 10,
+      "included": 0,
+      "deferred": 10,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "particles": {
+      "total": 4,
+      "included": 3,
+      "deferred": 1,
+      "complete": 2,
+      "implementationPercent": 66.67,
+      "targetComplete": 3,
+      "deficit": 1
+    },
+    "physics-2d": {
+      "total": 6,
+      "included": 5,
+      "deferred": 1,
+      "complete": 4,
+      "implementationPercent": 80,
+      "targetComplete": 5,
+      "deficit": 1
+    },
+    "physics-3d": {
+      "total": 6,
+      "included": 5,
+      "deferred": 1,
+      "complete": 4,
+      "implementationPercent": 80,
+      "targetComplete": 5,
+      "deficit": 1
+    },
+    "prefab": {
+      "total": 7,
+      "included": 7,
+      "deferred": 0,
+      "complete": 0,
+      "implementationPercent": 0,
+      "targetComplete": 7,
+      "deficit": 7
+    },
+    "product": {
+      "total": 20,
+      "included": 0,
+      "deferred": 20,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "rendering-materials": {
+      "total": 6,
+      "included": 5,
+      "deferred": 1,
+      "complete": 3,
+      "implementationPercent": 60,
+      "targetComplete": 5,
+      "deficit": 2
+    },
+    "runtime-qa": {
+      "total": 3,
+      "included": 0,
+      "deferred": 3,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "runtime": {
+      "total": 26,
+      "included": 0,
+      "deferred": 26,
+      "complete": 0,
+      "implementationPercent": null,
+      "targetComplete": 0,
+      "deficit": 0
+    },
+    "scene": {
+      "total": 72,
+      "included": 71,
+      "deferred": 1,
+      "complete": 0,
+      "implementationPercent": 0,
+      "targetComplete": 64,
+      "deficit": 64
+    },
+    "skeletal-animation": {
+      "total": 5,
+      "included": 2,
+      "deferred": 3,
+      "complete": 2,
+      "implementationPercent": 100,
+      "targetComplete": 2,
+      "deficit": 0
+    },
+    "terrain-model": {
+      "total": 4,
+      "included": 4,
+      "deferred": 0,
+      "complete": 3,
+      "implementationPercent": 75,
+      "targetComplete": 4,
+      "deficit": 1
+    },
+    "tilemap-atlas": {
+      "total": 5,
+      "included": 5,
+      "deferred": 0,
+      "complete": 5,
+      "implementationPercent": 100,
+      "targetComplete": 5,
+      "deficit": 0
+    },
+    "ui-layout": {
+      "total": 3,
+      "included": 3,
+      "deferred": 0,
+      "complete": 2,
+      "implementationPercent": 66.67,
+      "targetComplete": 3,
+      "deficit": 1
+    }
+  },
+  "deferredReasonSummary": "Deferred rows remain fully traceable in the authoring inventory but are excluded from the authoring denominator and cannot receive complete credit."
+}
