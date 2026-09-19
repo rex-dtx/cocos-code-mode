@@ -3,28 +3,17 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "20baa90783fda9d602ddf7e698817451fdfad216ba2484203dcd49a1e8ce1c43",
+  "sourceInventoryHash": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "20baa90783fda9d602ddf7e698817451fdfad216ba2484203dcd49a1e8ce1c43",
+    "docs/workflow-inventory.json": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "f71f6c346744fc18ebfb0be4033714ff39adf78202a7a720a83765c8e007ed06",
-    "reports/workflow-coverage-report.json": "069b59fbb65fa33610c27dc6c47d86472359c0b7d8ae494c33d9101788c069a7",
-    "reports/workflow-closure-backlog.json": "437e789e2a821a2c3ea648e4bfc903a7396f6c1ece20c01f06e6ea1d6f5ea684"
+    "docs/workflow-implementation-evidence.json": "ad6f7d854b1f2feedc4fa30f70e41e81db1247f3d6bc40e7b73cf41d505bc130",
+    "reports/workflow-coverage-report.json": "9045ae4b5f0efe2f2a14c20ce5061698733ffe45919c60cd6ce455daab1e4d20",
+    "reports/workflow-closure-backlog.json": "b9735d000bf2dd3e7026f0838daeb4d323ffd51c35a14d642b1cb55e53828c3d"
   },
   "status": "ready-for-authoring-implementation-reconciliation",
-  "requiredFor90": 172,
+  "requiredFor90": 170,
   "rows": [
-    {
-      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
-      "domain": "animation-graph",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Persistent bounded graph mutations independent of panel selection state. Prerequisites: `animation-graph-write`.\nPersistent bounded graph mutations independent of panel selection state.",
-      "limitations": [
-        "Persistent bounded graph mutations independent of panel selection state.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
       "domain": "animation-graph",
@@ -62,27 +51,6 @@
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "paste_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "animation.funplay-add-animation-clip",
-      "domain": "animation",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Gán một asset AnimationClip vào component `cc.Animation` trên một node cụ thể.\n   - *Inputs:* `nodeUuid: string`, `clipUuid: string`, `clipName?: string`.\n   - *Outputs:* `{ success: boolean, clipName: string }`.\n   - *Cơ chế:* IPC `scene:execute-scene-script` gọi method thêm clip vào `cc.Animation`.",
-      "limitations": [
-        "Add component-clip route; do not credit metadata configuration.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "animation.funplay-list-animations",
-      "domain": "animation",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Liệt kê tất cả các component `cc.Animation` trong scene đang mở hoặc dưới một node chỉ định.\n   - *Inputs:* `nodeUuid?: string`, `recursive?: boolean`.\n   - *Outputs:* `{ animations: Array<{ nodeUuid, defaultClip, clips: string[] }> }`.\n   - *Cơ chế:* Duyệt cây scene trong context renderer, đọc component `cc.Animation`.",
       "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
@@ -2037,6 +2005,16 @@
       "limitations": [
         "Mutate editor state with preflight, postcondition and recovery.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ]
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
+      "domain": "skeletal-animation",
+      "state": "partial",
+      "reason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
+      "acceptance": "Typed skin, mix and socket setup with component read-back. Prerequisites: `skeletal-extension-detection`, `mutation-workflow`.\nConfigure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
+      "limitations": [
+        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
       ]
     },
     {

@@ -25,13 +25,20 @@
     },
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave E evidence confirms bounded add/remove/update node and transition mutations persist through asset-db save and serialized read-back.",
+      "routes": [
+        {
+          "tool": "animationGraphEdit",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "tests/unit/p3-remaining-capabilities.test.js"
+      ],
       "limitations": [
-        "Persistent bounded graph mutations independent of panel selection state.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Native Creator graph schema beyond bounded JSON nodes/transitions is not claimed; runtime graph preview/play remains deferred."
       ]
     },
     {
@@ -126,23 +133,46 @@
     },
     {
       "workflowId": "animation.funplay-add-animation-clip",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave E evidence confirms animationClipAssign validates the AnimationClip asset identity and returns authoritative scene mutation read-back.",
+      "routes": [
+        {
+          "tool": "animationClipAssign",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "animationClipAssign",
+          "file": "source/scene.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
       "limitations": [
-        "Add component-clip route; do not credit metadata configuration.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side clip assignment only; runtime play/preview remains deferred."
       ]
     },
     {
       "workflowId": "animation.funplay-list-animations",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave E evidence confirms animationComponentsList returns bounded cc.Animation component, assigned clip, and default clip identities through scene traversal.",
+      "routes": [
+        {
+          "tool": "animationComponentsList",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "animationComponentsList",
+          "file": "source/scene.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side component listing only; runtime play/preview remains deferred."
       ]
     },
     {
@@ -4032,21 +4062,35 @@
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
-      "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "state": "partial",
+      "reason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
       "routes": [
         {
           "tool": "skeletalAnimationConfigure",
           "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        },
+        {
+          "tool": "spineEditorConfigure",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSocketConfigure",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSocketConfigure",
+          "file": "source/scene.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/skeletalAnimationConfigure/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "reports/evidence/candidates/skeletalAnimationConfigure/creator-3.7.3-bc5f27f.json",
+        "reports/spine-asset-inspection-evidence-20260913.json",
+        "tests/unit/p3-remaining-capabilities.test.js",
+        "tests/unit/spine-scene-inspect.test.js"
       ],
       "limitations": [
-        "Configure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
       ]
     },
     {
@@ -4063,20 +4107,34 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Wave E evidence confirms typed SkeletalAnimation clip inspection and strengthened Spine asset/scene inspection with bounded metadata, sockets, and read-back evidence.",
       "routes": [
         {
           "tool": "skeletalAnimationInspect",
           "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineAssetInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSceneInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSceneInspect",
+          "file": "source/scene.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/skeletalAnimationInspect/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "reports/evidence/candidates/skeletalAnimationInspect/creator-3.7.3-bc5f27f.json",
+        "reports/spine-asset-inspection-evidence-20260913.json",
+        "tests/unit/animation-tools.test.js",
+        "tests/unit/spine-scene-inspect.test.js"
       ],
       "limitations": [
-        "Typed skins, tracks, sockets, animations and extension availability.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Spine binary asset inspection fails closed when Creator importer metadata is unavailable; runtime play/preview/control remains deferred."
       ]
     },
     {
@@ -4093,20 +4151,26 @@
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Wave E evidence confirms bounded skeletal clip validation plus Spine asset validation and typed validation outcomes.",
       "routes": [
         {
           "tool": "skeletalAnimationValidate",
           "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineAssetValidate",
+          "file": "source/utcp/tools/animation-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/skeletalAnimationValidate/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "reports/evidence/candidates/skeletalAnimationValidate/creator-3.7.3-bc5f27f.json",
+        "reports/spine-asset-inspection-evidence-20260913.json",
+        "tests/unit/animation-tools.test.js",
+        "tests/unit/spine-scene-inspect.test.js"
       ],
       "limitations": [
-        "Validate skeleton/atlas/textures, named animations, skins and runtime extension support.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Validation is bounded to serialized/importer metadata and does not claim runtime playback behavior."
       ]
     },
     {

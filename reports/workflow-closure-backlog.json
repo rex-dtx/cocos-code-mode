@@ -3,19 +3,8 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 257,
+  "requiredFor90": 255,
   "rows": [
-    {
-      "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Persistent bounded graph mutations independent of panel selection state. Prerequisites: `animation-graph-write`.\nPersistent bounded graph mutations independent of panel selection state.",
-      "limitations": [
-        "Persistent bounded graph mutations independent of panel selection state.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
       "state": "unreviewed",
@@ -63,27 +52,6 @@
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "paste_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "animation.funplay-add-animation-clip",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Gán một asset AnimationClip vào component `cc.Animation` trên một node cụ thể.\n   - *Inputs:* `nodeUuid: string`, `clipUuid: string`, `clipName?: string`.\n   - *Outputs:* `{ success: boolean, clipName: string }`.\n   - *Cơ chế:* IPC `scene:execute-scene-script` gọi method thêm clip vào `cc.Animation`.",
-      "limitations": [
-        "Add component-clip route; do not credit metadata configuration.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "animation.funplay-list-animations",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Liệt kê tất cả các component `cc.Animation` trong scene đang mở hoặc dưới một node chỉ định.\n   - *Inputs:* `nodeUuid?: string`, `recursive?: boolean`.\n   - *Outputs:* `{ animations: Array<{ nodeUuid, defaultClip, clips: string[] }> }`.\n   - *Cơ chế:* Duyệt cây scene trong context renderer, đọc component `cc.Animation`.",
       "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
@@ -3057,6 +3025,16 @@
       "limitations": [
         "Mutate editor state with preflight, postcondition and recovery.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
+      "state": "partial",
+      "reason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
+      "acceptance": "Typed skin, mix and socket setup with component read-back. Prerequisites: `skeletal-extension-detection`, `mutation-workflow`.\nConfigure bounded serialized playOnLoad/useBakedAnimation fields with component read-back and rollback; skin, mix, and socket setup remain unimplemented.",
+      "limitations": [
+        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
       ],
       "dependencies": []
     },

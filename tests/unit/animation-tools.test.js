@@ -125,6 +125,33 @@ describe('typed animation tools', () => {
       else global.Editor = previous;
     }
   });
+  it('assigns clips and lists animation components through editor scene routes', async () => {
+    const previous = global.Editor;
+    const calls = [];
+    global.Editor = {
+      Message: {
+        request: async (service, message, payload) => {
+          calls.push({ service, message, payload });
+          if (service === 'asset-db' && message === 'query-asset-info') return { uuid: 'clip', type: 'cc.AnimationClip', importer: 'animation-clip' };
+          if (message === 'execute-scene-script' && payload.method === 'animationClipAssign') return { success: true, clipName: 'idle', clips: [{ uuid: 'clip', name: 'idle' }] };
+          if (message === 'execute-scene-script' && payload.method === 'animationComponentsList') return { animations: [{ nodeUuid: 'node', defaultClip: 'idle', clips: ['idle'] }] };
+          throw new Error(`unexpected ${service}:${message}`);
+        },
+      },
+    };
+    try {
+      const tools = new AnimationTools();
+      const assigned = await tools.animationClipAssign({ nodeReference: { id: 'node' }, clipReference: { id: 'clip' } });
+      assert.equal(assigned.success, true);
+      assert.deepEqual(assigned.clipReference, { id: 'clip', type: 'cc.AnimationClip' });
+      const listed = await tools.animationComponentsList({ nodeReference: { id: 'node' } });
+      assert.deepEqual(listed.animations, [{ nodeUuid: 'node', defaultClip: 'idle', clips: ['idle'] }]);
+      assert.deepEqual(calls.map((call) => call.message), ['query-asset-info', 'execute-scene-script', 'execute-scene-script']);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+    }
+  });
 
   it('maps Creator runtime control failures to typed errors', async () => {
     const previous = global.Editor;

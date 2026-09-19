@@ -148,6 +148,60 @@ export class PortfolioValidationTools {
     }
     @utcpTool('animationGraphInspect', 'Inspect a bounded JSON animation graph.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, nodes: { type: 'array' }, transitions: { type: 'array' }, nodeCount: { type: 'integer' }, transitionCount: { type: 'integer' } }, required: ['reference', 'nodes', 'transitions', 'nodeCount', 'transitionCount'] }, 'GET', ['animation', 'graph', 'inspect'])
     async animationGraphInspect(args: { reference: IInstanceReference }) { const asset = await info(args.reference); if (typeof asset.file !== 'string') throw new ToolError({ code: 'SOURCE_UNAVAILABLE', status: 422, message: 'Asset source is unavailable.' }); const value: any = JSON.parse(await fs.readFile(asset.file, 'utf8')); const nodes = Array.isArray(value.nodes) ? value.nodes.slice(0, 256) : []; const transitions = Array.isArray(value.transitions) ? value.transitions.slice(0, 512) : []; return { reference: { id: String(asset.uuid ?? args.reference.id), type: String(asset.type ?? 'cc.JsonAsset') }, nodes, transitions, nodeCount: nodes.length, transitionCount: transitions.length }; }
+    @utcpTool('animationGraphEdit', 'Apply bounded persistent animation graph mutations and verify serialized read-back.', {
+        type: 'object', additionalProperties: false,
+        properties: {
+            reference: InstanceReferenceSchema,
+            operations: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { operation: { type: 'string', enum: ['add_node', 'remove_node', 'update_node', 'add_transition', 'remove_transition'] }, node: {}, nodeId: { type: 'string', maxLength: 256 }, transition: {}, transitionId: { type: 'string', maxLength: 256 } }, required: ['operation'] } },
+        },
+        required: ['reference', 'operations'],
+    }, { type: 'object', properties: { reference: InstanceReferenceSchema, changed: { type: 'array' }, verified: { type: 'boolean' }, graph: { type: 'object' } }, required: ['reference', 'changed', 'verified', 'graph'] }, 'POST', ['animation', 'graph', 'edit', 'configure', 'asset'])
+    async animationGraphEdit(args: { reference: IInstanceReference, operations: Array<{ operation: string, node?: unknown, nodeId?: string, transition?: unknown, transitionId?: string }> }) {
+        if (!args?.reference?.id || typeof args.reference.id !== 'string') invalid('reference.id is required.');
+        if (!Array.isArray(args.operations) || args.operations.length < 1 || args.operations.length > 32) invalid('operations must contain 1 to 32 items.');
+        const asset = await info(args.reference);
+        if (typeof asset.file !== 'string') throw new ToolError({ code: 'SOURCE_UNAVAILABLE', status: 422, message: 'Animation graph source is unavailable.' });
+        let value: Record<string, unknown>;
+        try { value = JSON.parse(await fs.readFile(asset.file, 'utf8')) as Record<string, unknown>; } catch (error) { throw new ToolError({ code: 'SOURCE_INVALID', status: 422, message: 'Animation graph source is not valid JSON.', details: { cause: error instanceof Error ? error.message : String(error) } }); }
+        const nodes = Array.isArray(value.nodes) ? [...value.nodes] : [];
+        const transitions = Array.isArray(value.transitions) ? [...value.transitions] : [];
+        const changed: string[] = [];
+        const idOf = (candidate: unknown): string | undefined => candidate && typeof candidate === 'object' && 'id' in candidate && typeof candidate.id === 'string' ? candidate.id : undefined;
+        for (const [index, operation] of args.operations.entries()) {
+            if (!operation || typeof operation.operation !== 'string') invalid(`operations[${index}].operation is required.`);
+            if (operation.operation === 'add_node') {
+                if (!operation.node || typeof operation.node !== 'object' || !idOf(operation.node)) invalid(`operations[${index}].node must be an object with id.`);
+                if (nodes.some((node) => idOf(node) === idOf(operation.node))) throw new ToolError({ code: 'DUPLICATE_NODE_ID', status: 409, message: `Node ${idOf(operation.node)} already exists.` });
+                nodes.push(operation.node); changed.push('nodes');
+            } else if (operation.operation === 'remove_node' || operation.operation === 'update_node') {
+                const nodeId = operation.nodeId ?? idOf(operation.node);
+                if (!nodeId) invalid(`operations[${index}].nodeId is required.`);
+                const nodeIndex = nodes.findIndex((node) => idOf(node) === nodeId);
+                if (nodeIndex < 0) throw new ToolError({ code: 'NODE_NOT_FOUND', status: 404, message: `Animation graph node ${nodeId} was not found.` });
+                if (operation.operation === 'remove_node') { nodes.splice(nodeIndex, 1); changed.push('nodes'); }
+                else { if (!operation.node || typeof operation.node !== 'object') invalid(`operations[${index}].node is required.`); nodes[nodeIndex] = operation.node; changed.push('nodes'); }
+            } else if (operation.operation === 'add_transition') {
+                if (!operation.transition || typeof operation.transition !== 'object') invalid(`operations[${index}].transition must be an object.`);
+                transitions.push(operation.transition); changed.push('transitions');
+            } else if (operation.operation === 'remove_transition') {
+                const transitionId = operation.transitionId ?? idOf(operation.transition);
+                if (!transitionId) invalid(`operations[${index}].transitionId is required.`);
+                const transitionIndex = transitions.findIndex((transition) => idOf(transition) === transitionId);
+                if (transitionIndex < 0) throw new ToolError({ code: 'TRANSITION_NOT_FOUND', status: 404, message: `Animation graph transition ${transitionId} was not found.` });
+                transitions.splice(transitionIndex, 1); changed.push('transitions');
+            } else invalid(`operations[${index}].operation is unsupported.`);
+        }
+        const next = { ...value, nodes, transitions };
+        const content = JSON.stringify(next, null, 2);
+        const saved = await Editor.Message.request('asset-db', 'save-asset', asset.url ?? args.reference.id, content);
+        if (!saved) throw new ToolError({ code: 'MUTATION_REFUSED', status: 422, message: 'Creator refused animation graph save.' });
+        await Editor.Message.request('asset-db', 'refresh-asset', asset.uuid ?? args.reference.id).catch(() => undefined);
+        const readBack = await info(args.reference);
+        if (typeof readBack.uuid !== 'string' || readBack.uuid !== (asset.uuid ?? args.reference.id)) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: 'Animation graph identity changed after edit.' });
+        const persisted = JSON.parse(await fs.readFile(asset.file, 'utf8')) as Record<string, unknown>;
+        const graph = { nodes: Array.isArray(persisted.nodes) ? persisted.nodes : [], transitions: Array.isArray(persisted.transitions) ? persisted.transitions : [] };
+        return { reference: assetReference(readBack, args.reference.id), changed: [...new Set(changed)], verified: true, graph };
+    }
     @utcpTool('animationGraphValidate', 'Validate animation graph identities and endpoints.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, issues: { type: 'array' }, nodeCount: { type: 'integer' }, transitionCount: { type: 'integer' } }, required: ['valid', 'issues', 'nodeCount', 'transitionCount'] }, 'GET', ['animation', 'graph', 'validate'])
     async animationGraphValidate(args: { reference: IInstanceReference }) { const graph: any = await this.animationGraphInspect(args); const ids = new Set<string>(); const issues: any[] = []; for (const [index, node] of graph.nodes.entries()) { if (!node || typeof node.id !== 'string' || !node.id) issues.push({ code: 'INVALID_NODE_ID', index }); else if (ids.has(node.id)) issues.push({ code: 'DUPLICATE_NODE_ID', id: node.id }); else ids.add(node.id); } for (const [index, edge] of graph.transitions.entries()) if (!edge || !ids.has(edge.from) || !ids.has(edge.to)) issues.push({ code: 'INVALID_TRANSITION', index }); return { valid: issues.length === 0, issues, nodeCount: graph.nodeCount, transitionCount: graph.transitionCount }; }
 

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "editor-side skeletal, Spine, animation clip, and animation graph authoring",
+  "implemented": [
+    "Existing bounded skeletalAnimationInspect and skeletalAnimationValidate routes cover clip identity validation.",
+    "Existing spineAssetInspect, spineAssetValidate, spineSceneInspect, spineEditorConfigure, and spineSocketConfigure routes cover bounded Spine inspection, validation, serialized editor configuration, socket persistence, and read-back/history snapshots.",
+    "animationClipAssign validates AnimationClip asset identity and delegates scene mutation with authoritative read-back.",
+    "animationComponentsList lists cc.Animation components and assigned clip/default identities through scene traversal.",
+    "animationGraphCreate, animationGraphInspect, and animationGraphValidate provide graph identity, serialized inspection, and endpoint validation.",
+    "animationGraphEdit applies bounded add/remove/update node and transition mutations through asset-db save plus serialized read-back."
+  ],
+  "routes": [
+    "animationClipAssign",
+    "animationComponentsList",
+    "animationGraphCreate",
+    "animationGraphInspect",
+    "animationGraphEdit",
+    "animationGraphValidate",
+    "skeletalAnimationInspect",
+    "skeletalAnimationValidate",
+    "skeletalAnimationConfigure",
+    "spineAssetInspect",
+    "spineAssetValidate",
+    "spineSceneInspect",
+    "spineEditorConfigure",
+    "spineSocketConfigure"
+  ],
+  "blocked": [
+    "Runtime play/preview/control remains deferred by scope.",
+    "Native Creator animation graph schema beyond bounded JSON nodes/transitions is not claimed.",
+    "Spine skin/mix runtime control remains outside authoring persistence scope."
+  ],
+  "tests": [
+    "tests/unit/animation-tools.test.js",
+    "tests/unit/p3-remaining-capabilities.test.js",
+    "tests/unit/spine-scene-inspect.test.js",
+    "npx tsc --pretty false"
+  ]
+}

@@ -2,6 +2,9 @@
 const { describe, it, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { requireDist, readSource } = require('../helpers/require-dist');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
 const { PortfolioValidationTools } = requireDist('utcp/tools/portfolio-validation-tools.js');
 
@@ -61,6 +64,27 @@ describe('remaining P3 capability contracts', () => {
       throw new Error('unexpected request');
     });
     await assert.rejects(() => tools.animationGraphCreate({ assetPath: 'db://assets/graphs/empty' }), (error) => error.code === 'CREATE_FAILED' && error.status === 502);
+  });
+  it('edits an animation graph through save and serialized read-back', async () => {
+    const file = path.join(os.tmpdir(), `animgraph-${process.pid}-${Date.now()}.json`);
+    fs.writeFileSync(file, JSON.stringify({ nodes: [{ id: 'idle' }], transitions: [] }));
+    const calls = [];
+    install(async (service, message, ...args) => {
+      calls.push({ service, message, args });
+      if (message === 'query-asset-info') return { uuid: 'graph', type: 'cc.AnimationGraph', url: 'db://assets/graphs/test.animgraph', file };
+      if (message === 'save-asset') { fs.writeFileSync(file, args[1]); return true; }
+      if (message === 'refresh-asset') return true;
+      throw new Error(`unexpected ${service}:${message}`);
+    });
+    try {
+      const result = await new PortfolioValidationTools().animationGraphEdit({ reference: { id: 'graph' }, operations: [{ operation: 'add_node', node: { id: 'run' } }, { operation: 'add_transition', transition: { id: 'idle-run', from: 'idle', to: 'run' } }] });
+      assert.equal(result.verified, true);
+      assert.deepEqual(result.graph.nodes, [{ id: 'idle' }, { id: 'run' }]);
+      assert.deepEqual(result.graph.transitions, [{ id: 'idle-run', from: 'idle', to: 'run' }]);
+      assert.deepEqual(calls.map((call) => call.message), ['query-asset-info', 'save-asset', 'refresh-asset', 'query-asset-info']);
+    } finally {
+      fs.rmSync(file, { force: true });
+    }
   });
 
   it('rejects unsafe terrain paths before asset creation', async () => {

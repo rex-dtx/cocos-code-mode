@@ -2,6 +2,7 @@ import { utcpTool } from '../decorators';
 import fs from 'fs-extra';
 import { InstanceReferenceSchema, IInstanceReference, ISuccessIndicator } from '../schemas';
 import { ToolError } from '../tool-error';
+import { ToolsUtils } from '../utils/tools-utils';
 import { SetPropertyTool } from './set-properties-tool';
 
 // Animation editing lives in the `scene` module (not only the animator panel).
@@ -1096,6 +1097,44 @@ export class AnimationTools {
         }
         return { ...result, nodeReference: { id: nodeId, type: 'cc.Node' } };
     }
+    @utcpTool(
+        'animationClipAssign',
+        'Assign a verified AnimationClip asset to a cc.Animation component with scene persistence read-back.',
+        { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, clipReference: InstanceReferenceSchema, clipName: { type: 'string', maxLength: 256 } }, required: ['nodeReference', 'clipReference'] },
+        { type: 'object', properties: { success: { type: 'boolean' }, nodeReference: InstanceReferenceSchema, clipReference: InstanceReferenceSchema, clipName: { type: 'string' }, clips: { type: 'array' } }, required: ['success', 'nodeReference', 'clipReference', 'clipName', 'clips'] },
+        'POST', ['animation', 'clip', 'assign', 'configure', 'scene']
+    )
+    async animationClipAssign(args: { nodeReference?: IInstanceReference, clipReference?: IInstanceReference, clipName?: string }): Promise<Record<string, unknown>> {
+        const nodeId = requireRef(args?.nodeReference, 'nodeReference');
+        const clipId = requireRef(args?.clipReference, 'clipReference');
+        const info = await Editor.Message.request('asset-db', 'query-asset-info', clipId) as Record<string, unknown> | null;
+        if (!info || (info.type !== 'cc.AnimationClip' && info.importer !== 'animation-clip')) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Reference ${clipId} is not an AnimationClip asset.` });
+        try {
+            const result = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'animationClipAssign', args: [{ nodeUuid: nodeId, clipUuid: clipId, clipName: args?.clipName }] }) as Record<string, unknown> | null;
+            if (!result || result.success !== true || typeof result.clipName !== 'string' || !Array.isArray(result.clips)) throw new Error('Creator returned no AnimationClip assignment read-back.');
+            return { ...result, nodeReference: { id: nodeId, type: args.nodeReference?.type ?? 'cc.Node' }, clipReference: { id: clipId, type: args.clipReference?.type ?? 'cc.AnimationClip' } };
+        } catch (error) {
+            throw new ToolError({ code: 'ANIMATION_CLIP_ASSIGN_FAILED', status: 502, message: 'Creator could not persist AnimationClip assignment.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Inspect the target node and AnimationClip asset before retrying.' });
+        }
+    }
+
+    @utcpTool(
+        'animationComponentsList',
+        'List cc.Animation components and assigned clip names in the open scene.',
+        { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, recursive: { type: 'boolean', default: true } } },
+        { type: 'object', properties: { animations: { type: 'array' } }, required: ['animations'] },
+        'GET', ['animation', 'component', 'list', 'clips', 'scene']
+    )
+    async animationComponentsList(args: { nodeReference?: IInstanceReference, recursive?: boolean } = {}): Promise<Record<string, unknown>> {
+        if (args.nodeReference) requireRef(args.nodeReference, 'nodeReference');
+        try {
+            const result = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'animationComponentsList', args: [{ nodeUuid: args.nodeReference?.id, recursive: args.recursive !== false }] }) as Record<string, unknown> | null;
+            if (!result || !Array.isArray(result.animations)) throw new Error('Creator returned malformed animation component list.');
+            return result;
+        } catch (error) {
+            throw new ToolError({ code: 'ANIMATION_COMPONENT_LIST_FAILED', status: 502, message: 'Creator could not list Animation components.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+    }
 
     @utcpTool(
         'animationCompatibilityAudit',
@@ -1217,7 +1256,21 @@ export class AnimationTools {
         if (fields.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'At least one Spine editor property is required.' });
         try {
             await new SetPropertyTool().setInstanceProperties({ reference: { id: componentId }, propertyPaths: fields.map(([path]) => path), values: fields.map(([, value]) => value) });
-            return { success: true, componentReference: { id: componentId, type: args.componentReference?.type ?? 'sp.Skeleton' }, changed: fields.map(([path]) => path) };
+            const readBack = await ToolsUtils.inspectInstance(componentId, false);
+            if (!readBack?.props) throw new Error('Spine property read-back was unavailable.');
+            const values: Record<string, unknown> = {};
+            for (const [path, expected] of fields) {
+                const parts = path.split('.');
+                let current: unknown = readBack.props;
+                for (const part of parts) {
+                    if (!current || typeof current !== 'object' || !(part in current)) throw new Error(`Spine property ${path} was missing in read-back.`);
+                    current = (current as Record<string, unknown>)[part];
+                    if (current && typeof current === 'object' && 'value' in current) current = (current as Record<string, unknown>).value;
+                }
+                if (JSON.stringify(current) !== JSON.stringify(expected)) throw new Error(`Spine property ${path} read-back mismatch.`);
+                values[path] = current;
+            }
+            return { success: true, componentReference: { id: componentId, type: args.componentReference?.type ?? 'sp.Skeleton' }, changed: fields.map(([path]) => path), properties: values, verified: true };
         } catch (error) {
             throw new ToolError({ code: 'SPINE_EDITOR_CONFIGURE_FAILED', status: 502, message: 'Creator could not persist Spine editor properties.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Use inspectorGet on the Skeleton component, then retry with supported property values.' });
         }
