@@ -3362,32 +3362,56 @@
     },
     {
       "workflowId": "scene.cocos-mcp-get-node-tree",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave C evidence confirms nodeGetTree returns a bounded authoritative hierarchy with stable node references and authoritative component UUID/type identity.",
+      "routes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "scene.cocos-mcp-get-scene-hierarchy",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave C evidence confirms the exact hierarchy/tree outcome through nodeGetTree with stable node references and bounded traversal.",
+      "routes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "scene.cocos-mcp-move-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave C evidence confirms nodeOperate move requires authoritative parent read-back before success.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ]
     },
     {
@@ -3572,6 +3596,7 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
@@ -3646,6 +3671,7 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
@@ -3676,6 +3702,7 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
@@ -3791,6 +3818,7 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
@@ -3809,6 +3837,7 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
@@ -3850,7 +3879,7 @@
     {
       "workflowId": "scene.funplay-set-component-property",
       "state": "complete",
-      "reason": "Focused evidence confirms fresh property dump matches the requested value after set-property.",
+      "reason": "Wave C evidence confirms inspectorSet rejects malformed inputs and retains authoritative fresh property read-back after mutation.",
       "routes": [
         {
           "tool": "inspectorSet",
@@ -3859,6 +3888,7 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [

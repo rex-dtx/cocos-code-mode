@@ -2,6 +2,16 @@ import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
 import { SuccessIndicatorSchema, ISuccessIndicator, InstanceReferenceSchema, IInstanceReference } from '../schemas';
 
+function field(value: unknown, key: string): unknown {
+    return value && typeof value === 'object' && key in value
+        ? (value as Record<string, unknown>)[key]
+        : undefined;
+}
+
+function nestedField(value: unknown, parent: string, key: string): unknown {
+    return field(field(value, parent), key);
+}
+
 export class ComponentTools {
 
     @utcpTool(
@@ -56,41 +66,37 @@ export class ComponentTools {
         { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema } }, required: ['references'] }, "GET",  ['scene', 'node', 'component', 'get', 'inspection']
     )
     async nodeComponentsGet(args: { reference: IInstanceReference, componentType?: string }): Promise<{ references: IInstanceReference[] }> {
+        if (!args.reference?.id) throw new Error('nodeComponentsGet requires reference.id');
         const node = await Editor.Message.request('scene', 'query-node', args.reference.id);
-        if (!node) {
-            throw new Error(`Node ${args.reference.id} not found`);
-        }
+        if (!node) throw new Error(`Node ${args.reference.id} not found`);
 
-        const components = node.__comps__ || [];
+        const components = Array.isArray(node.__comps__) ? node.__comps__ : [];
         const foundComponents: IInstanceReference[] = [];
         for (const comp of components) {
-            const value = comp.value as any;
-            const compUuid = value?.uuid?.value ?? value?.uuid;
-            // comp.type is absent on some dumps (notably user scripts); the dump's
-            // own __type__/cid carries the class name in that case. Without this
-            // the client gets type: undefined and cannot filter by class at all.
-            const compType = comp.type
-                ?? value?.__type__?.value ?? value?.__type__
-                ?? comp.cid ?? value?.cid;
+            const value = field(comp, 'value');
+            const uuidValue = field(value, 'uuid');
+            const nestedUuid = field(uuidValue, 'value');
+            const rawType = field(comp, 'type')
+                ?? nestedField(value, '__type__', 'value') ?? field(value, '__type__')
+                ?? field(comp, 'cid') ?? field(value, 'cid');
+            const compUuid = typeof uuidValue === 'string'
+                ? uuidValue
+                : typeof nestedUuid === 'string' ? nestedUuid : field(comp, 'uuid');
+            const declaredType = typeof rawType === 'string' ? rawType : undefined;
 
-            if (!args.componentType || (compType && compType.includes(args.componentType))) {
-                if (!compUuid) {
-                    throw new Error(`nodeComponentsGet: matched component on ${args.reference.id} carries no uuid — dump shape drift`);
+            if (!args.componentType || (declaredType && (
+                declaredType === args.componentType
+                || declaredType === `cc.${args.componentType}`
+                || declaredType.replace(/^cc\\./, '') === args.componentType.replace(/^cc\\./, '')
+            ))) {
+                if (typeof compUuid !== 'string' || !declaredType) {
+                    throw new Error(`nodeComponentsGet: component on ${args.reference.id} lacks authoritative uuid/type — dump shape drift`);
                 }
-                foundComponents.push({ id: compUuid, type: compType });
+                foundComponents.push({ id: compUuid, type: declaredType });
             }
         }
 
-        if (foundComponents.length > 0) {
-            return { references: foundComponents };
-        }
-
-        // A node with no components at all is a legitimate answer, not an error —
-        // only an unmatched explicit filter is worth throwing over.
-        if (!args.componentType) {
-            return { references: [] };
-        }
-
+        if (foundComponents.length > 0 || !args.componentType) return { references: foundComponents };
         throw new Error(`Components of type ${args.componentType} not found on node ${args.reference.id}`);
     }
 

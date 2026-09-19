@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
-  "denominatorHash": "c7eb9a84fc255813ff541505f8068afc4e91260d737331be14fea1a0aa8dc630",
+  "denominatorHash": "8443dd22b64482aca2d6fe2ea1ff3fcef90728a772d2967a45f68143b1f12ff8",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "e3f992fba3be7623dabbc747c24d7833cfd0367cada1ee17e996f5daac0cfd53",
+  "sourceInventoryHash": "cb89da8620f0d52773d159b24a63e03e51fe3076da3c5f2276498c2b9474debe",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "e3f992fba3be7623dabbc747c24d7833cfd0367cada1ee17e996f5daac0cfd53",
+    "docs/workflow-inventory.json": "cb89da8620f0d52773d159b24a63e03e51fe3076da3c5f2276498c2b9474debe",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "6e398885b3f24aef27e3f57fcc25342c2298140d82f02ac2d874de94914810f4",
-    "reports/workflow-coverage-report.json": "62b44f86ff55436b93a1825d335d5a1fd18cb3e21917e4bb57dc6b4bcd35d0c6",
-    "reports/workflow-closure-backlog.json": "bff4d7c09ba6944846657ced95a8dedf6e936c1733878d73ad2c3c9a9935d3db"
+    "docs/workflow-implementation-evidence.json": "54494ddd06c67c03abec2a78bbadd394f5518561af421d0dbf05d8f887bae52e",
+    "reports/workflow-coverage-report.json": "0e6dfa0bc114e815e67428aad7aaa275733c2722eef99023fba30bd2b33de0d3",
+    "reports/workflow-closure-backlog.json": "8fa9f183dee0a2b45a3dc8a16946450c6c3a52662a17a06d6270b6f1b5712ddb"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -69,8 +69,8 @@
   },
   "counts": {
     "total": 356,
-    "included": 241,
-    "deferred": 115
+    "included": 238,
+    "deferred": 118
   },
   "rows": [
     {
@@ -5146,13 +5146,13 @@
       "sourceIds": [
         "cocos-mcp:get_node_tree"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave C evidence confirms nodeGetTree returns a bounded authoritative hierarchy with stable node references and authoritative component UUID/type identity.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.cocos-mcp-get-scene-hierarchy",
@@ -5163,13 +5163,13 @@
       "sourceIds": [
         "cocos-mcp:get_scene_hierarchy"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave C evidence confirms the exact hierarchy/tree outcome through nodeGetTree with stable node references and bounded traversal.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.cocos-mcp-move-node",
@@ -5180,13 +5180,13 @@
       "sourceIds": [
         "cocos-mcp:move_node"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave C evidence confirms nodeOperate move requires authoritative parent read-back before success.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.cocos-mcp-open-scene",
@@ -5888,7 +5888,7 @@
         "funplay:set_component_property"
       ],
       "implementationState": "complete",
-      "implementationReason": "Focused evidence confirms fresh property dump matches the requested value after set-property.",
+      "implementationReason": "Wave C evidence confirms inspectorSet rejects malformed inputs and retains authoritative fresh property read-back after mutation.",
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],

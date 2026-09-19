@@ -1,0 +1,59 @@
+{
+  "wave": "C",
+  "date": "2026-09-20",
+  "implementedRoutes": [
+    {
+      "route": "nodeGetTree",
+      "file": "source/utcp/tools/scene-tools.ts",
+      "behavior": "Component references now require and return authoritative component UUID and class/type identity from Creator dumps; malformed component identity fails with INVALID_RESPONSE/502."
+    },
+    {
+      "route": "nodeComponentsGet",
+      "file": "source/utcp/tools/component-tools.ts",
+      "behavior": "Component listing now normalizes UUID/type fields across Creator dump variants, supports cc-prefixed exact matching, and rejects matched entries missing authoritative identity."
+    },
+    {
+      "route": "inspectorSet",
+      "file": "source/utcp/tools/set-properties-tool.ts",
+      "behavior": "Underlying property mutation facade now rejects empty/malformed arrays and missing targets with typed ToolError INVALID_ARGUMENT/TARGET_NOT_FOUND while retaining authoritative read-back mismatch detection."
+    }
+  ],
+  "existingRoutesVerified": [
+    "nodeGetPath",
+    "sceneHierarchyValidate",
+    "nodeCreate",
+    "nodeOperate move",
+    "nodeComponentAdd",
+    "nodeComponentRemove",
+    "sceneManage open/save/close"
+  ],
+  "blockedRoutes": [
+    {
+      "route": "node info / dedicated nodeGetInfo",
+      "reason": "No existing public route/schema with that exact name; inspectorGet is the existing authoritative property/identity route and no speculative alias was added."
+    },
+    {
+      "route": "dedicated component inspection / nodeComponentGet",
+      "reason": "No existing public route/schema with that exact name; nodeComponentsGet plus inspectorGet are the existing contracts."
+    },
+    {
+      "route": "scene save/close authoritative postcondition",
+      "reason": "sceneManage delegates to existing save-scene/close-scene messages but no exact current-scene/dirty read-back contract is available in the route; no speculative confirmation was added."
+    }
+  ],
+  "tests": {
+    "command": "node --test tests/unit/scene-authoring-contracts.test.js",
+    "passed": 9,
+    "failed": 0,
+    "added": [
+      "nodeGetTree authoritative component UUID/type",
+      "nodeComponentsGet missing identity failure",
+      "inspectorSet malformed property arrays typed failure"
+    ]
+  },
+  "typecheck": {
+    "command": "npx tsc --pretty false",
+    "passed": true
+  },
+  "buildNote": "npm run build -- --pretty false reached TypeScript compilation, then check-creator-load failed because the forwarded --pretty argument was interpreted as a package path; direct npx tsc passed."
+}

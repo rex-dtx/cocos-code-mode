@@ -860,8 +860,18 @@ export class SceneTools {
            if (want('active')) item.active = node.active;
            if (want('components')) {
                item.components = node.components ? node.components.map((c: any) => {
-                   const t = c?.type ?? c?.__type__ ?? c?.cid ?? c?.value?.__type__ ?? c?.value?.cid;
-                   return { reference: { id: c.value, type: t } };
+                   const id = componentUuid(c);
+                   const type = componentClassId(c);
+                   if (!id || !type) {
+                       throw new ToolError({
+                           code: 'INVALID_RESPONSE',
+                           status: 502,
+                           message: `nodeGetTree received a component without authoritative uuid/type on node ${node.uuid ?? 'unknown'}.`,
+                           details: { nodeUuid: node.uuid ?? null, component: c },
+                           recovery: 'Refresh the scene and retry; inspect the raw Creator node dump for schema drift.',
+                       });
+                   }
+                   return { reference: { id, type } };
                }) : [];
            }
            if (node.path && want('path')) item.path = node.path;
