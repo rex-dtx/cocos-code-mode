@@ -361,7 +361,7 @@
         },
         {
           "tool": "animationClipAssign",
-          "file": "source/scene.ts"
+          "file": "source/utcp/tools/animation-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -403,7 +403,7 @@
         },
         {
           "tool": "animationComponentsList",
-          "file": "source/scene.ts"
+          "file": "source/utcp/tools/animation-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -496,13 +496,22 @@
         "cocos-mcp:copy_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation copy is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -527,12 +536,22 @@
         "cocos-mcp:create_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetCreate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation create is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -557,13 +576,22 @@
         "cocos-mcp:delete_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation delete is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -588,12 +616,22 @@
         "cocos-mcp:export_asset_manifest"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetManifestExport route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation manifest is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetManifestExport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -618,12 +656,22 @@
         "cocos-mcp:find_asset_by_name"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -648,12 +696,22 @@
         "cocos-mcp:generate_available_url"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetGetAvailableUrl route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation url is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetGetAvailableUrl",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -708,13 +766,22 @@
         "cocos-mcp:get_asset_dependencies"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetFindReferences route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetFindReferences",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add dependency audit route or retain as missing.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -739,13 +806,22 @@
         "cocos-mcp:get_asset_details"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -770,13 +846,22 @@
         "cocos-mcp:get_asset_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -801,12 +886,22 @@
         "cocos-mcp:get_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -951,12 +1046,22 @@
         "cocos-mcp:import_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetImport route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation import is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -981,13 +1086,22 @@
         "cocos-mcp:move_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation move is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1072,12 +1186,22 @@
         "cocos-mcp:query_asset_path"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetGetAtPath route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation path is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetGetAtPath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1102,12 +1226,22 @@
         "cocos-mcp:query_asset_url"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetResolvePath route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation resolve is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1132,12 +1266,22 @@
         "cocos-mcp:query_asset_uuid"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetResolvePath route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation resolve is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1162,12 +1306,22 @@
         "cocos-mcp:query_nodes_by_asset_uuid"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current findNodesByAsset route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation reverse is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "findNodesByAsset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1222,13 +1376,22 @@
         "cocos-mcp:refresh_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation refresh is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1253,13 +1416,22 @@
         "cocos-mcp:reimport_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation reimport is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1284,13 +1456,22 @@
         "cocos-mcp:save_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1315,13 +1496,22 @@
         "cocos-mcp:save_asset_meta"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation save_meta is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1376,13 +1566,22 @@
         "funplay:delete_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation delete is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1407,12 +1606,22 @@
         "funplay:exists"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1498,13 +1707,22 @@
         "funplay:inspect_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to asset info/meta route; do not credit list query.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1529,13 +1747,22 @@
         "funplay:inspect_asset_dependencies"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetMissingReferenceAudit route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation audit is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add dependency audit route or retain as missing.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1560,12 +1787,22 @@
         "funplay:list_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetQuery route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation query is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1590,13 +1827,22 @@
         "funplay:list_prefabs"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetQuery route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation prefab query is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Use assetQuery with explicit cc.Prefab adapter or separate workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1621,13 +1867,22 @@
         "funplay:list_scenes"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetQuery route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation scene query is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Use assetQuery cc.SceneAsset adapter/separate workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1652,13 +1907,22 @@
         "funplay:open_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation open is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1683,13 +1947,22 @@
         "funplay:read_file"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetReadContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetReadContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add line/radius parameters or separate project-file-snippet workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1714,13 +1987,22 @@
         "funplay:refresh_assets"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation refresh is directly represented where applicable.",
+      "implementationRoute": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1835,13 +2117,22 @@
         "funplay:validate_asset_dependencies"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetMissingReferenceAudit route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add bounded audit route and missing list; no credit for assetFindReferences alone.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -1866,12 +2157,22 @@
         "funplay:write_file"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationRoute": [
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3164,13 +3465,21 @@
         "cocos-mcp:instantiate_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "prefabInstantiate performs the documented prefab instantiation with source, parent, created-node and linked-source identity read-back.",
+      "implementationRoute": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3645,12 +3954,21 @@
         "funplay:apply_prefab_instance"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "prefabApplyOverrides performs the documented apply operation with authoritative instance and source read-back.",
+      "implementationRoute": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3675,13 +3993,21 @@
         "funplay:create_prefab_instance"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "prefabInstantiate creates a linked prefab instance and verifies the created node and source identity.",
+      "implementationRoute": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3706,12 +4032,22 @@
         "funplay:inspect_prefab_instance"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "prefabOverrideDiff exposes bounded serialized prefab differences, but it requires a baseline prefab reference and does not reproduce every instance inspection field.",
+      "implementationRoute": [
+        {
+          "tool": "prefabOverrideDiff",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Requires a baseline reference; full instance override inspection is not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3736,13 +4072,21 @@
         "funplay:instantiate_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "prefabInstantiate implements bounded UUID-based prefab instantiation with authoritative scene read-back.",
+      "implementationRoute": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3767,12 +4111,22 @@
         "funplay:revert_prefab_instance"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "prefabRevertOverrides provides authoritative full-instance restore, but the documented local-change breadth is narrower because selective paths are rejected on Creator 3.7.3.",
+      "implementationRoute": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Selective revert remains unsupported on Creator 3.7.3.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3797,12 +4151,21 @@
         "funplay:validate_prefab_references"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "prefabReferenceAudit validates nested prefab references and returns typed missing-reference evidence.",
+      "implementationRoute": [
+        {
+          "tool": "prefabReferenceAudit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4031,8 +4394,8 @@
       "portfolioNames": [
         "referenceImageManage"
       ],
-      "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationState": "partial",
+      "implementationReason": "referenceImageManage provides the qualified profile-backed set/inspect/clear lifecycle; native transform operations remain unavailable.",
       "implementationRoute": [
         {
           "tool": "referenceImageManage",
@@ -4040,12 +4403,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json"
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
       ],
       "limitations": [
-        "Finite persistent reference-image lifecycle with transform read-back.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Native reference-image transform IPC is unavailable on Creator 3.7.3."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4072,8 +4434,8 @@
       "portfolioNames": [
         "sceneHierarchyValidate"
       ],
-      "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationState": "partial",
+      "implementationReason": "sceneHierarchyValidate supplies bounded hierarchy identity/topology validation, while the broader duplicate-path and persistence contract is not fully evidenced in the current focused record.",
       "implementationRoute": [
         {
           "tool": "sceneHierarchyValidate",
@@ -4081,12 +4443,13 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/live-20260912-2bd5970.json"
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Validate duplicate paths, invalid parenting and persistence invariants.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused route evidence covers bounded hierarchy validation; broader persistence invariants remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4114,7 +4477,7 @@
         "sceneReferenceValidate"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "sceneReferenceValidate exactly validates serialized scene references against the imported asset database with reopen-safe source evidence.",
       "implementationRoute": [
         {
           "tool": "sceneReferenceValidate",
@@ -4122,12 +4485,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/sceneReferenceValidate/creator-3.7.3-bc5f27f.json"
+        "reports/evidence/candidates/sceneReferenceValidate/creator-3.7.3-bc5f27f.json",
+        "tests/live/read-only-candidate-qualification.test.js"
       ],
       "limitations": [
-        "Validate serialized node/component/asset references after reopen.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4544,12 +4906,21 @@
         "cocos-mcp:align_camera_with_view"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4574,12 +4945,21 @@
         "cocos-mcp:align_view_with_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4604,12 +4984,22 @@
         "cocos-mcp:begin_undo_recording"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "implementationRoute": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4634,12 +5024,22 @@
         "cocos-mcp:cancel_undo_recording"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "implementationRoute": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4664,12 +5064,21 @@
         "cocos-mcp:change_gizmo_coordinate"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4694,12 +5103,21 @@
         "cocos-mcp:change_gizmo_pivot"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4724,12 +5142,21 @@
         "cocos-mcp:change_gizmo_tool"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4754,12 +5181,21 @@
         "cocos-mcp:change_view_mode_2d_3d"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4784,12 +5220,22 @@
         "cocos-mcp:end_undo_recording"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "implementationRoute": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4814,12 +5260,21 @@
         "cocos-mcp:focus_camera_on_nodes"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4874,12 +5329,21 @@
         "cocos-mcp:get_editor_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorEnvInfo route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4904,12 +5368,21 @@
         "cocos-mcp:get_scene_view_status"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4934,12 +5407,22 @@
         "cocos-mcp:listen_broadcast"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered broadcastObserve route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "implementationRoute": [
+        {
+          "tool": "broadcastObserve",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4964,12 +5447,21 @@
         "cocos-mcp:query_component_has_script"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorQuery route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorQuery",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -4994,12 +5486,21 @@
         "cocos-mcp:query_gizmo_coordinate"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5024,12 +5525,21 @@
         "cocos-mcp:query_gizmo_pivot"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5054,12 +5564,21 @@
         "cocos-mcp:query_gizmo_tool_name"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5084,12 +5603,21 @@
         "cocos-mcp:query_gizmo_view_mode"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5114,12 +5642,21 @@
         "cocos-mcp:query_grid_visible"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5144,12 +5681,21 @@
         "cocos-mcp:query_icon_gizmo_3d"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5174,12 +5720,21 @@
         "cocos-mcp:query_icon_gizmo_size"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5204,13 +5759,21 @@
         "cocos-mcp:query_scene_ready"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorQuery route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorQuery",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5235,12 +5798,21 @@
         "cocos-mcp:query_view_mode_2d_3d"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5265,12 +5837,22 @@
         "cocos-mcp:reset_scene_view"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered editorViewport route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5295,12 +5877,21 @@
         "cocos-mcp:set_grid_visible"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5325,12 +5916,21 @@
         "cocos-mcp:set_icon_gizmo_3d"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5355,12 +5955,21 @@
         "cocos-mcp:set_icon_gizmo_size"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5445,13 +6054,21 @@
         "funplay:get_editor_selection"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5476,12 +6093,21 @@
         "funplay:get_editor_state"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorState route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorState",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5506,12 +6132,21 @@
         "funplay:get_project_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorEnvInfo route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5536,13 +6171,21 @@
         "funplay:get_selection"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5597,13 +6240,21 @@
         "funplay:select_asset"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -5628,13 +6279,21 @@
         "funplay:set_selection"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "implementationRoute": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -6747,12 +7406,21 @@
         "cocos-mcp:duplicate_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "duplicatePrefab provides the exact bounded duplicate-prefab asset operation with new identity.",
+      "implementationRoute": [
+        {
+          "tool": "duplicatePrefab",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -6807,12 +7475,22 @@
         "funplay:create_prefab_from_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "nodeOperate create_prefab supplies bounded scene-node to prefab creation, but the documented normalization breadth is not fully evidenced.",
+      "implementationRoute": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Prefab creation is credited only for the bounded node operation.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -6837,12 +7515,21 @@
         "funplay:duplicate_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "duplicatePrefab performs a bounded prefab copy and returns the new asset identity/path.",
+      "implementationRoute": [
+        {
+          "tool": "duplicatePrefab",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -6867,12 +7554,21 @@
         "funplay:edit_prefab_json"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "editPrefabJson validates and persists JSON prefab edits, then refreshes the asset database.",
+      "implementationRoute": [
+        {
+          "tool": "editPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -6897,12 +7593,21 @@
         "funplay:inspect_prefab"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "readPrefabJson returns bounded parsed prefab JSON and metadata for serialized inspection.",
+      "implementationRoute": [
+        {
+          "tool": "readPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8715,12 +9420,21 @@
         "cocos-mcp:add_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeComponentManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8745,12 +9459,22 @@
         "cocos-mcp:attach_script"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered sceneScriptRepair route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "sceneScriptRepair",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8805,12 +9529,21 @@
         "cocos-mcp:create_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeCreate route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8835,13 +9568,22 @@
         "cocos-mcp:create_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered assetCreate route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8866,12 +9608,21 @@
         "cocos-mcp:delete_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeOperate route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8896,14 +9647,22 @@
         "cocos-mcp:detect_node_type"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8928,12 +9687,21 @@
         "cocos-mcp:duplicate_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeOperate route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -8958,12 +9726,22 @@
         "cocos-mcp:execute_component_method"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "callComponentMethod",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9049,12 +9827,21 @@
         "cocos-mcp:find_nodes"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered findNodes route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9079,12 +9866,21 @@
         "cocos-mcp:get_all_nodes"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeGetTree route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9109,12 +9905,21 @@
         "cocos-mcp:get_available_components"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeGetAvailableComponentTypes route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeGetAvailableComponentTypes",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9139,14 +9944,22 @@
         "cocos-mcp:get_component_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9171,12 +9984,21 @@
         "cocos-mcp:get_components"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeComponentsGet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9201,12 +10023,21 @@
         "cocos-mcp:get_current_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered sceneGetInfo route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9231,14 +10062,22 @@
         "cocos-mcp:get_node_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9377,12 +10216,21 @@
         "cocos-mcp:open_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered sceneManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9407,12 +10255,21 @@
         "cocos-mcp:query_scene_classes"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered listComponentClasses route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "listComponentClasses",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9437,12 +10294,22 @@
         "cocos-mcp:query_scene_components"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered nodeComponentsGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9467,12 +10334,21 @@
         "cocos-mcp:query_scene_dirty"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered sceneGetInfo route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9497,12 +10373,21 @@
         "cocos-mcp:remove_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeComponentManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9527,13 +10412,21 @@
         "cocos-mcp:reset_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9558,13 +10451,21 @@
         "cocos-mcp:reset_node_property"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9589,13 +10490,21 @@
         "cocos-mcp:reset_node_transform"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9620,12 +10529,22 @@
         "cocos-mcp:save_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9650,12 +10569,22 @@
         "cocos-mcp:save_scene_as"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9710,13 +10639,22 @@
         "cocos-mcp:scene_snapshot_abort"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered editorHistory route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9741,14 +10679,21 @@
         "cocos-mcp:set_component_property"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered inspectorSet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9773,14 +10718,21 @@
         "cocos-mcp:set_node_property"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered inspectorSet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9805,14 +10757,22 @@
         "cocos-mcp:set_node_transform"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9837,12 +10797,22 @@
         "cocos-mcp:soft_reload_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9871,8 +10841,8 @@
       "implementationReason": "Focused evidence confirms component type and UUID from node read-back after create-component.",
       "implementationRoute": [
         {
-          "tool": "nodeComponentAdd",
-          "file": "source/utcp/tools/component-tools.ts"
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -9937,14 +10907,21 @@
         "funplay:create_button"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered createButton route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "createButton",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Credit generic route only for node creation; add/retain specialized createButton contract.",
-        "Credit specialized createSprite for full contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10000,14 +10977,21 @@
         "funplay:create_canvas"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered createCanvas route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "createCanvas",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Credit generic route only for node creation; add/retain specialized createButton contract.",
-        "Credit specialized createSprite for full contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10032,12 +11016,21 @@
         "funplay:create_label"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered createLabel route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "createLabel",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10101,14 +11094,21 @@
         "funplay:create_sprite"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered createSprite route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "createSprite",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
       "limitations": [
-        "Credit generic route only for node creation; add/retain specialized createButton contract.",
-        "Credit specialized createSprite for full contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10203,12 +11203,21 @@
         "funplay:find_nodes"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered findNodes route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10233,12 +11242,22 @@
         "funplay:get_scene_info"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered sceneGetInfo route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10263,14 +11282,21 @@
         "funplay:inspect_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered inspectorGet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10295,14 +11321,22 @@
         "funplay:inspect_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10327,12 +11361,22 @@
         "funplay:invoke_component_method"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "callComponentMethod",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10419,12 +11463,21 @@
         "funplay:list_components"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeComponentsGet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10453,8 +11506,8 @@
       "implementationReason": "Focused evidence confirms scene open identity through query-current-scene read-back.",
       "implementationRoute": [
         {
-          "tool": "sceneOpen",
-          "file": "source/utcp/tools/scene-tools.ts"
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -10492,8 +11545,8 @@
       "implementationReason": "Focused evidence confirms component absence after remove-component.",
       "implementationRoute": [
         {
-          "tool": "nodeComponentRemove",
-          "file": "source/utcp/tools/component-tools.ts"
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -10527,13 +11580,21 @@
         "funplay:reset_component_property"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationRoute": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10558,12 +11619,22 @@
         "funplay:save_current_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10588,13 +11659,22 @@
         "funplay:set_camera_properties"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use inspectorSet with camera component path or add typed camera route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10624,7 +11704,7 @@
       "implementationRoute": [
         {
           "tool": "inspectorSet",
-          "file": "source/utcp/tools/set-properties-tool.ts"
+          "file": "source/utcp/tools/consolidated-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -10658,14 +11738,22 @@
         "funplay:set_node_transform"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -11048,7 +12136,7 @@
         },
         {
           "tool": "spineSocketConfigure",
-          "file": "source/scene.ts"
+          "file": "source/utcp/tools/animation-tools.ts"
         }
       ],
       "evidenceArtifacts": [
@@ -11136,7 +12224,7 @@
         },
         {
           "tool": "spineSceneInspect",
-          "file": "source/scene.ts"
+          "file": "source/utcp/tools/animation-tools.ts"
         }
       ],
       "evidenceArtifacts": [

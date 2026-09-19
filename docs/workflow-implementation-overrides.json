@@ -1,286 +1,3113 @@
 {
   "schemaVersion": 1,
-  "source": "commit ef1849b; reports/authoring-scene-core-wave-20260919.json; reports/authoring-scene-inspection-wave-20260920.json; tests/unit/scene-authoring-contracts.test.js",
+  "source": "commit 337f96d; baseline competitor reconciliation 2026-09-20",
   "rows": [
     {
       "workflowId": "scene.cocos-mcp-get-node-tree",
       "state": "complete",
       "reason": "Wave C evidence confirms nodeGetTree returns a bounded authoritative hierarchy with stable node references and authoritative component UUID/type identity.",
-      "routes": [{ "tool": "nodeGetTree", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.cocos-mcp-get-scene-hierarchy",
       "state": "complete",
       "reason": "Wave C evidence confirms the exact hierarchy/tree outcome through nodeGetTree with stable node references and bounded traversal.",
-      "routes": [{ "tool": "nodeGetTree", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.cocos-mcp-move-node",
       "state": "complete",
       "reason": "Wave C evidence confirms nodeOperate move requires authoritative parent read-back before success.",
-      "routes": [{ "tool": "nodeOperate", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.funplay-open-scene",
       "state": "complete",
       "reason": "Focused evidence confirms scene open identity through query-current-scene read-back.",
-      "routes": [{ "tool": "sceneOpen", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.funplay-create-node",
       "state": "complete",
       "reason": "Focused evidence confirms node creation UUID and query-node read-back.",
-      "routes": [{ "tool": "nodeCreate", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.funplay-delete-node",
       "state": "complete",
       "reason": "Focused route performs remove-node and confirms absence by query-node before success.",
-      "routes": [{ "tool": "nodeOperate", "file": "source/utcp/tools/scene-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.funplay-add-component",
       "state": "complete",
       "reason": "Focused evidence confirms component type and UUID from node read-back after create-component.",
-      "routes": [{ "tool": "nodeComponentAdd", "file": "source/utcp/tools/component-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.funplay-remove-component",
       "state": "complete",
       "reason": "Focused evidence confirms component absence after remove-component.",
-      "routes": [{ "tool": "nodeComponentRemove", "file": "source/utcp/tools/component-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "scene.funplay-set-component-property",
       "state": "complete",
       "reason": "Wave C evidence confirms inspectorSet rejects malformed inputs and retains authoritative fresh property read-back after mutation.",
-      "routes": [{ "tool": "inspectorSet", "file": "source/utcp/tools/set-properties-tool.ts" }],
-      "evidenceArtifacts": ["reports/authoring-scene-core-wave-20260919.json", "reports/authoring-scene-inspection-wave-20260920.json", "tests/unit/scene-authoring-contracts.test.js"],
-      "limitations": ["Focused source and unit evidence; no Game View/runtime credit."]
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused source and unit evidence; no Game View/runtime credit."
+      ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
       "state": "complete",
       "reason": "Wave D evidence confirms prefabApplyOverrides performs typed source and instance read-back with authoritative node and linked-source identity checks.",
-      "routes": [{ "tool": "prefabApplyOverrides", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-prefab-wave-20260920.json", "tests/unit/advanced-capability-tools.test.js", "tests/unit/prefab-apply-postcondition.test.js"],
-      "limitations": ["Focused prefab authoring evidence only; no runtime/Game View credit."]
+      "routes": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/unit/prefab-apply-postcondition.test.js"
+      ],
+      "limitations": [
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
+      ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
       "state": "complete",
       "reason": "Wave D evidence confirms prefabInstantiate validates source and parent identities, verifies created node and linked prefab identity, and cleans up failed disposable nodes.",
-      "routes": [{ "tool": "prefabInstantiate", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-prefab-wave-20260920.json", "tests/unit/advanced-capability-tools.test.js"],
-      "limitations": ["Focused prefab authoring evidence only; no runtime/Game View credit."]
+      "routes": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
+      ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
       "state": "complete",
       "reason": "Wave D evidence confirms prefabOverrideDiff validates both prefab references and returns stable source hashes with structural changes.",
-      "routes": [{ "tool": "prefabOverrideDiff", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-prefab-wave-20260920.json", "tests/unit/advanced-capability-tools.test.js"],
-      "limitations": ["Focused prefab authoring evidence only; no runtime/Game View credit."]
+      "routes": [
+        {
+          "tool": "prefabOverrideDiff",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
+      ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
       "state": "complete",
       "reason": "Wave D evidence confirms prefabReferenceAudit remains nested-reference validation with typed missing-reference evidence.",
-      "routes": [{ "tool": "prefabReferenceAudit", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-prefab-wave-20260920.json", "tests/unit/advanced-capability-tools.test.js"],
-      "limitations": ["Focused prefab authoring evidence only; no runtime/Game View credit."]
+      "routes": [
+        {
+          "tool": "prefabReferenceAudit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
+      ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
       "state": "partial",
       "reason": "Wave D evidence confirms authoritative full-instance restore, while Creator 3.7.3 explicitly rejects selective revert with UNSUPPORTED_SELECTIVE_REVERT.",
-      "routes": [{ "tool": "prefabRevertOverrides", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-prefab-wave-20260920.json", "tests/unit/advanced-capability-tools.test.js"],
-      "limitations": ["Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.", "Focused prefab authoring evidence only; no runtime/Game View credit."]
+      "routes": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
+      ]
     },
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
       "state": "complete",
       "reason": "Wave E evidence confirms bounded add/remove/update node and transition mutations persist through asset-db save and serialized read-back.",
-      "routes": [{ "tool": "animationGraphEdit", "file": "source/utcp/tools/portfolio-validation-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-skeletal-animation-wave-20260920.json", "tests/unit/p3-remaining-capabilities.test.js"],
-      "limitations": ["Native Creator graph schema beyond bounded JSON nodes/transitions is not claimed; runtime graph preview/play remains deferred."]
+      "routes": [
+        {
+          "tool": "animationGraphEdit",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "tests/unit/p3-remaining-capabilities.test.js"
+      ],
+      "limitations": [
+        "Native Creator graph schema beyond bounded JSON nodes/transitions is not claimed; runtime graph preview/play remains deferred."
+      ]
     },
     {
       "workflowId": "animation.funplay-add-animation-clip",
       "state": "complete",
       "reason": "Wave E evidence confirms animationClipAssign validates the AnimationClip asset identity and returns authoritative scene mutation read-back.",
-      "routes": [{ "tool": "animationClipAssign", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "animationClipAssign", "file": "source/scene.ts" }],
-      "evidenceArtifacts": ["reports/authoring-skeletal-animation-wave-20260920.json", "tests/unit/animation-tools.test.js"],
-      "limitations": ["Editor-side clip assignment only; runtime play/preview remains deferred."]
+      "routes": [
+        {
+          "tool": "animationClipAssign",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "animationClipAssign",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side clip assignment only; runtime play/preview remains deferred."
+      ]
     },
     {
       "workflowId": "animation.funplay-list-animations",
       "state": "complete",
       "reason": "Wave E evidence confirms animationComponentsList returns bounded cc.Animation component, assigned clip, and default clip identities through scene traversal.",
-      "routes": [{ "tool": "animationComponentsList", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "animationComponentsList", "file": "source/scene.ts" }],
-      "evidenceArtifacts": ["reports/authoring-skeletal-animation-wave-20260920.json", "tests/unit/animation-tools.test.js"],
-      "limitations": ["Editor-side component listing only; runtime play/preview remains deferred."]
+      "routes": [
+        {
+          "tool": "animationComponentsList",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "animationComponentsList",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side component listing only; runtime play/preview remains deferred."
+      ]
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-inspect",
       "state": "complete",
       "reason": "Wave E evidence confirms typed SkeletalAnimation clip inspection and strengthened Spine asset/scene inspection with bounded metadata, sockets, and read-back evidence.",
-      "routes": [{ "tool": "skeletalAnimationInspect", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "spineAssetInspect", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "spineSceneInspect", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "spineSceneInspect", "file": "source/scene.ts" }],
-      "evidenceArtifacts": ["reports/authoring-skeletal-animation-wave-20260920.json", "reports/evidence/candidates/skeletalAnimationInspect/creator-3.7.3-bc5f27f.json", "reports/spine-asset-inspection-evidence-20260913.json", "tests/unit/animation-tools.test.js", "tests/unit/spine-scene-inspect.test.js"],
-      "limitations": ["Spine binary asset inspection fails closed when Creator importer metadata is unavailable; runtime play/preview/control remains deferred."]
+      "routes": [
+        {
+          "tool": "skeletalAnimationInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineAssetInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSceneInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSceneInspect",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "reports/evidence/candidates/skeletalAnimationInspect/creator-3.7.3-bc5f27f.json",
+        "reports/spine-asset-inspection-evidence-20260913.json",
+        "tests/unit/animation-tools.test.js",
+        "tests/unit/spine-scene-inspect.test.js"
+      ],
+      "limitations": [
+        "Spine binary asset inspection fails closed when Creator importer metadata is unavailable; runtime play/preview/control remains deferred."
+      ]
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-validate",
       "state": "complete",
       "reason": "Wave E evidence confirms bounded skeletal clip validation plus Spine asset validation and typed validation outcomes.",
-      "routes": [{ "tool": "skeletalAnimationValidate", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "spineAssetValidate", "file": "source/utcp/tools/animation-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-skeletal-animation-wave-20260920.json", "reports/evidence/candidates/skeletalAnimationValidate/creator-3.7.3-bc5f27f.json", "reports/spine-asset-inspection-evidence-20260913.json", "tests/unit/animation-tools.test.js", "tests/unit/spine-scene-inspect.test.js"],
-      "limitations": ["Validation is bounded to serialized/importer metadata and does not claim runtime playback behavior."]
+      "routes": [
+        {
+          "tool": "skeletalAnimationValidate",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineAssetValidate",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "reports/evidence/candidates/skeletalAnimationValidate/creator-3.7.3-bc5f27f.json",
+        "reports/spine-asset-inspection-evidence-20260913.json",
+        "tests/unit/animation-tools.test.js",
+        "tests/unit/spine-scene-inspect.test.js"
+      ],
+      "limitations": [
+        "Validation is bounded to serialized/importer metadata and does not claim runtime playback behavior."
+      ]
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
       "state": "partial",
       "reason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
-      "routes": [{ "tool": "skeletalAnimationConfigure", "file": "source/utcp/tools/portfolio-validation-tools.ts" }, { "tool": "spineEditorConfigure", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "spineSocketConfigure", "file": "source/utcp/tools/animation-tools.ts" }, { "tool": "spineSocketConfigure", "file": "source/scene.ts" }],
-      "evidenceArtifacts": ["reports/authoring-skeletal-animation-wave-20260920.json", "reports/evidence/candidates/skeletalAnimationConfigure/creator-3.7.3-bc5f27f.json", "reports/spine-asset-inspection-evidence-20260913.json", "tests/unit/p3-remaining-capabilities.test.js", "tests/unit/spine-scene-inspect.test.js"],
-      "limitations": ["Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."]
+      "routes": [
+        {
+          "tool": "skeletalAnimationConfigure",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        },
+        {
+          "tool": "spineEditorConfigure",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSocketConfigure",
+          "file": "source/utcp/tools/animation-tools.ts"
+        },
+        {
+          "tool": "spineSocketConfigure",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-skeletal-animation-wave-20260920.json",
+        "reports/evidence/candidates/skeletalAnimationConfigure/creator-3.7.3-bc5f27f.json",
+        "reports/spine-asset-inspection-evidence-20260913.json",
+        "tests/unit/p3-remaining-capabilities.test.js",
+        "tests/unit/spine-scene-inspect.test.js"
+      ],
+      "limitations": [
+        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
+      ]
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-import",
       "state": "complete",
       "reason": "Wave F evidence confirms bounded batch import with per-item success/failure outcomes, authoritative asset-db read-back, missing-source rejection, and cleanup.",
-      "routes": [{ "tool": "assetBatchImport", "file": "source/utcp/tools/asset-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-asset-wave-20260920.json", "reports/evidence/candidates/assetBatchImport/creator-3.7.3-bc5f27f.json", "tests/unit/asset-batch-and-missing-audit.test.js"],
-      "limitations": ["Bounded editor-side asset import only; external filesystem delivery and runtime credit remain deferred."]
+      "routes": [
+        {
+          "tool": "assetBatchImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "reports/evidence/candidates/assetBatchImport/creator-3.7.3-bc5f27f.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
+      ],
+      "limitations": [
+        "Bounded editor-side asset import only; external filesystem delivery and runtime credit remain deferred."
+      ]
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-batch-operate",
       "state": "complete",
       "reason": "Wave F evidence confirms bounded batch operation outcomes continue after item failures and report success, failure, partial accounting, and authoritative read-back.",
-      "routes": [{ "tool": "assetBatchOperate", "file": "source/utcp/tools/asset-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-asset-wave-20260920.json", "reports/evidence/candidates/assetBatchOperate/creator-3.7.3-bc5f27f.json", "tests/unit/asset-batch-and-missing-audit.test.js"],
-      "limitations": ["Bounded editor-side asset operations only; external open-file delivery remains out of scope."]
+      "routes": [
+        {
+          "tool": "assetBatchOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "reports/evidence/candidates/assetBatchOperate/creator-3.7.3-bc5f27f.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js"
+      ],
+      "limitations": [
+        "Bounded editor-side asset operations only; external open-file delivery remains out of scope."
+      ]
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-missing-reference-audit",
       "state": "complete",
       "reason": "Wave F evidence confirms bounded serialized dependency scanning with explicit missing-reference, source-location, and recovery evidence.",
-      "routes": [{ "tool": "assetMissingReferenceAudit", "file": "source/utcp/tools/asset-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-asset-wave-20260920.json", "reports/evidence/candidates/assetMissingReferenceAudit/creator-3.7.3-bc5f27f.json", "tests/unit/asset-batch-and-missing-audit.test.js", "tests/unit/asset-contract-audit.test.js"],
-      "limitations": ["Bounded editor asset/reference audit; no runtime loading or external delivery credit."]
+      "routes": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "reports/evidence/candidates/assetMissingReferenceAudit/creator-3.7.3-bc5f27f.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/unit/asset-contract-audit.test.js"
+      ],
+      "limitations": [
+        "Bounded editor asset/reference audit; no runtime loading or external delivery credit."
+      ]
     },
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-material-edit",
       "state": "complete",
       "reason": "Wave F evidence confirms typed bounded material mutation through importer and native read-back, with explicit mismatch and rollback failure typing.",
-      "routes": [{ "tool": "materialEdit", "file": "source/utcp/tools/material-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-material-terrain-wave-20260920.json", "reports/evidence/candidates/materialEdit/creator-3.7.3-bc5f27f.json", "tests/unit/material-edit-contract.test.js", "tests/unit/material-terrain-authoring.test.js"],
-      "limitations": ["Rendered visual postcondition and runtime appearance remain unverified; editor/importer read-back only."]
+      "routes": [
+        {
+          "tool": "materialEdit",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-material-terrain-wave-20260920.json",
+        "reports/evidence/candidates/materialEdit/creator-3.7.3-bc5f27f.json",
+        "tests/unit/material-edit-contract.test.js",
+        "tests/unit/material-terrain-authoring.test.js"
+      ],
+      "limitations": [
+        "Rendered visual postcondition and runtime appearance remain unverified; editor/importer read-back only."
+      ]
     },
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
       "state": "partial",
       "reason": "Wave F source and focused tests confirm bounded editor scene property updates with snapshot, read-back, and rollback, but do not evidence the full camera/light/fog/skybox visual contract.",
-      "routes": [{ "tool": "renderConfigurationApply", "file": "source/utcp/tools/material-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-material-terrain-wave-20260920.json", "tests/unit/material-terrain-authoring.test.js"],
-      "limitations": ["Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."]
+      "routes": [
+        {
+          "tool": "renderConfigurationApply",
+          "file": "source/utcp/tools/material-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-material-terrain-wave-20260920.json",
+        "tests/unit/material-terrain-authoring.test.js"
+      ],
+      "limitations": [
+        "Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."
+      ]
     },
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-model-import-configure",
       "state": "complete",
       "reason": "Wave F evidence confirms typed model importer configuration, reimport, setting read-back, unsupported-setting rejection, and bounded output validation.",
-      "routes": [{ "tool": "modelImportConfigure", "file": "source/utcp/tools/portfolio-validation-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-material-terrain-wave-20260920.json", "reports/evidence/candidates/modelImportConfigure/creator-3.7.3-bc5f27f.json", "tests/unit/material-terrain-authoring.test.js", "tests/unit/p3-remaining-capabilities.test.js"],
-      "limitations": ["Importer metadata and bounded output evidence only; runtime model behavior remains deferred."]
+      "routes": [
+        {
+          "tool": "modelImportConfigure",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-material-terrain-wave-20260920.json",
+        "reports/evidence/candidates/modelImportConfigure/creator-3.7.3-bc5f27f.json",
+        "tests/unit/material-terrain-authoring.test.js",
+        "tests/unit/p3-remaining-capabilities.test.js"
+      ],
+      "limitations": [
+        "Importer metadata and bounded output evidence only; runtime model behavior remains deferred."
+      ]
     },
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-create",
       "state": "complete",
       "reason": "Wave F evidence confirms terrain asset/component creation, terrainInspect identity read-back, traversal rejection, and disposable cleanup.",
-      "routes": [{ "tool": "terrainCreate", "file": "source/utcp/tools/portfolio-validation-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-material-terrain-wave-20260920.json", "reports/evidence/candidates/terrainCreate/creator-3.7.3-bc5f27f.json", "tests/unit/material-terrain-authoring.test.js"],
-      "limitations": ["Editor-side terrain creation and read-back only; terrain height/layer editing remains unsupported and runtime visual credit is deferred."]
+      "routes": [
+        {
+          "tool": "terrainCreate",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-material-terrain-wave-20260920.json",
+        "reports/evidence/candidates/terrainCreate/creator-3.7.3-bc5f27f.json",
+        "tests/unit/material-terrain-authoring.test.js"
+      ],
+      "limitations": [
+        "Editor-side terrain creation and read-back only; terrain height/layer editing remains unsupported and runtime visual credit is deferred."
+      ]
     },
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
       "state": "unsupported",
       "reason": "Wave F evidence confirms Creator 3.7.3 has no supported persistent terrain height/layer write API and the route fails closed with UNSUPPORTED_EDITOR_API.",
-      "routes": [{ "tool": "terrainEdit", "file": "source/utcp/tools/portfolio-validation-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-material-terrain-wave-20260920.json", "tests/unit/material-terrain-authoring.test.js"],
-      "limitations": ["Terrain edit remains unsupported until a version-gated native write API is exposed; never claim persistence from the typed failure."]
+      "routes": [
+        {
+          "tool": "terrainEdit",
+          "file": "source/utcp/tools/portfolio-validation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-material-terrain-wave-20260920.json",
+        "tests/unit/material-terrain-authoring.test.js"
+      ],
+      "limitations": [
+        "Terrain edit remains unsupported until a version-gated native write API is exposed; never claim persistence from the typed failure."
+      ]
     },
     {
       "workflowId": "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-inspect",
       "state": "complete",
       "reason": "Wave F evidence confirms bounded terrain dimensions, layers, materials, and asset-reference inspection with typed output identity.",
-      "routes": [{ "tool": "terrainInspect", "file": "source/utcp/tools/expansion-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-material-terrain-wave-20260920.json", "reports/evidence/candidates/live-20260912-2bd5970.json", "tests/unit/material-terrain-authoring.test.js"],
-      "limitations": ["Editor-side terrain metadata inspection only; no terrain editing or runtime visual credit."]
+      "routes": [
+        {
+          "tool": "terrainInspect",
+          "file": "source/utcp/tools/expansion-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-material-terrain-wave-20260920.json",
+        "reports/evidence/candidates/live-20260912-2bd5970.json",
+        "tests/unit/material-terrain-authoring.test.js"
+      ],
+      "limitations": [
+        "Editor-side terrain metadata inspection only; no terrain editing or runtime visual credit."
+      ]
     },
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-apply",
       "state": "complete",
       "reason": "Wave F editor/UI evidence confirms bounded UI layout mutation with preflight snapshot, atomic property application, normalized read-back, and rollback on partial failure.",
-      "routes": [{ "tool": "uiLayoutApply", "file": "source/utcp/tools/ui-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-editor-ui-wave-20260920.json", "tests/unit/ui-layout-inspect.test.js", "tests/live/ui-fallback.test.js"],
-      "limitations": ["Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."]
+      "routes": [
+        {
+          "tool": "uiLayoutApply",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/unit/ui-layout-inspect.test.js",
+        "tests/live/ui-fallback.test.js"
+      ],
+      "limitations": [
+        "Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."
+      ]
     },
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-layout-inspect",
       "state": "complete",
       "reason": "Wave F editor/UI evidence confirms bounded hierarchy traversal, normalized UI constraints, transformed world rectangles, malformed-response rejection, and truncation accounting.",
-      "routes": [{ "tool": "uiLayoutInspect", "file": "source/utcp/tools/ui-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-editor-ui-wave-20260920.json", "tests/unit/ui-layout-inspect.test.js"],
-      "limitations": ["Editor-side scene geometry inspection only; no panel-click, runtime preview, or rendered visual credit."]
+      "routes": [
+        {
+          "tool": "uiLayoutInspect",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/unit/ui-layout-inspect.test.js"
+      ],
+      "limitations": [
+        "Editor-side scene geometry inspection only; no panel-click, runtime preview, or rendered visual credit."
+      ]
     },
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-scroll-view",
       "state": "complete",
       "reason": "Wave F editor/UI evidence confirms ScrollView creation verifies the root, viewport mask, and content hierarchy through component and hierarchy read-back.",
-      "routes": [{ "tool": "uiCreateScrollView", "file": "source/utcp/tools/ui-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-editor-ui-wave-20260920.json", "tests/live/ui-fallback.test.js"],
-      "limitations": ["Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."]
+      "routes": [
+        {
+          "tool": "uiCreateScrollView",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/ui-fallback.test.js"
+      ],
+      "limitations": [
+        "Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."
+      ]
     },
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-create-input-form",
       "state": "complete",
       "reason": "Wave F editor/UI evidence confirms labeled input-form hierarchy creation with verified controls, focus-order metadata, and hierarchy read-back.",
-      "routes": [{ "tool": "uiCreateInputForm", "file": "source/utcp/tools/ui-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-editor-ui-wave-20260920.json", "tests/live/ui-fallback.test.js"],
-      "limitations": ["Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."]
+      "routes": [
+        {
+          "tool": "uiCreateInputForm",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/ui-fallback.test.js"
+      ],
+      "limitations": [
+        "Parent-side TypeScript and merged focused verification only; no panel-click, runtime preview, or rendered visual credit."
+      ]
     },
     {
       "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-accessibility-audit",
       "state": "complete",
       "reason": "Wave F evidence confirms bounded inferred UI labels, roles, interactability, geometry, and safe-area outcomes with typed invalid/missing-root handling.",
-      "routes": [{ "tool": "uiAccessibilityAudit", "file": "source/utcp/tools/ui-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-editor-ui-wave-20260920.json", "reports/evidence/candidates/uiAccessibilityAudit/creator-3.7.3-bc5f27f.json"],
-      "limitations": ["Inference and editor geometry only; screen-reader runtime support and panel-click credit are not claimed."]
+      "routes": [
+        {
+          "tool": "uiAccessibilityAudit",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "reports/evidence/candidates/uiAccessibilityAudit/creator-3.7.3-bc5f27f.json"
+      ],
+      "limitations": [
+        "Inference and editor geometry only; screen-reader runtime support and panel-click credit are not claimed."
+      ]
     },
     {
       "workflowId": "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-ui-responsive-preview",
       "state": "complete",
       "reason": "Wave F evidence confirms deterministic world-rectangle projections at declared resolutions with bounded typed output.",
-      "routes": [{ "tool": "uiResponsivePreview", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
-      "evidenceArtifacts": ["reports/authoring-editor-ui-wave-20260920.json", "reports/evidence/candidates/uiResponsivePreview/creator-3.7.3-bc5f27f.json"],
-      "limitations": ["Read-only geometry projection, not rendered viewport comparison; no runtime preview or panel-click credit."]
+      "routes": [
+        {
+          "tool": "uiResponsivePreview",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "reports/evidence/candidates/uiResponsivePreview/creator-3.7.3-bc5f27f.json"
+      ],
+      "limitations": [
+        "Read-only geometry projection, not rendered viewport comparison; no runtime preview or panel-click credit."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-copy-asset",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation copy is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-create-asset",
+      "state": "complete",
+      "reason": "Current assetCreate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation create is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-delete-asset",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation delete is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-export-asset-manifest",
+      "state": "complete",
+      "reason": "Current assetManifestExport route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation manifest is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetManifestExport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-generate-available-url",
+      "state": "complete",
+      "reason": "Current assetGetAvailableUrl route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation url is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetGetAvailableUrl",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-import-asset",
+      "state": "complete",
+      "reason": "Current assetImport route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation import is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetImport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-move-asset",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation move is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-path",
+      "state": "complete",
+      "reason": "Current assetGetAtPath route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation path is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetGetAtPath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-url",
+      "state": "complete",
+      "reason": "Current assetResolvePath route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation resolve is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-asset-uuid",
+      "state": "complete",
+      "reason": "Current assetResolvePath route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation resolve is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-query-nodes-by-asset-uuid",
+      "state": "complete",
+      "reason": "Current findNodesByAsset route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation reverse is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "findNodesByAsset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-refresh-assets",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation refresh is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-reimport-asset",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation reimport is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-save-asset-meta",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation save_meta is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-delete-asset",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation delete is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-inspect-asset-dependencies",
+      "state": "complete",
+      "reason": "Current assetMissingReferenceAudit route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation audit is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-list-assets",
+      "state": "complete",
+      "reason": "Current assetQuery route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation query is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-list-prefabs",
+      "state": "complete",
+      "reason": "Current assetQuery route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation prefab query is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-list-scenes",
+      "state": "complete",
+      "reason": "Current assetQuery route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation scene query is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-open-asset",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation open is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-refresh-assets",
+      "state": "complete",
+      "reason": "Current assetOperate route provides the documented bounded authoring outcome with authoritative asset identity/read-back; operation refresh is directly represented where applicable.",
+      "routes": [
+        {
+          "tool": "assetOperate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit.",
+        "External filesystem delivery and runtime behavior are not claimed."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-find-asset-by-name",
+      "state": "partial",
+      "reason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-assets",
+      "state": "partial",
+      "reason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetQuery",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-dependencies",
+      "state": "partial",
+      "reason": "The registered assetFindReferences route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetFindReferences",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-details",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-get-asset-info",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-exists",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-inspect-asset",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetResolvePath",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-validate-asset-dependencies",
+      "state": "partial",
+      "reason": "The registered assetMissingReferenceAudit route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetMissingReferenceAudit",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-read-file",
+      "state": "partial",
+      "reason": "The registered assetReadContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetReadContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.funplay-write-file",
+      "state": "partial",
+      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-save-asset",
+      "state": "partial",
+      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "routes": [
+        {
+          "tool": "assetSaveContent",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-asset-wave-20260920.json",
+        "tests/unit/asset-batch-and-missing-audit.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-instantiate-prefab",
+      "state": "complete",
+      "reason": "prefabInstantiate performs the documented prefab instantiation with source, parent, created-node and linked-source identity read-back.",
+      "routes": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-create-prefab-instance",
+      "state": "complete",
+      "reason": "prefabInstantiate creates a linked prefab instance and verifies the created node and source identity.",
+      "routes": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-instantiate-prefab",
+      "state": "complete",
+      "reason": "prefabInstantiate implements bounded UUID-based prefab instantiation with authoritative scene read-back.",
+      "routes": [
+        {
+          "tool": "prefabInstantiate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-apply-prefab-instance",
+      "state": "complete",
+      "reason": "prefabApplyOverrides performs the documented apply operation with authoritative instance and source read-back.",
+      "routes": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-revert-prefab-instance",
+      "state": "partial",
+      "reason": "prefabRevertOverrides provides authoritative full-instance restore, but the documented local-change breadth is narrower because selective paths are rejected on Creator 3.7.3.",
+      "routes": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Selective revert remains unsupported on Creator 3.7.3.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-inspect-prefab-instance",
+      "state": "partial",
+      "reason": "prefabOverrideDiff exposes bounded serialized prefab differences, but it requires a baseline prefab reference and does not reproduce every instance inspection field.",
+      "routes": [
+        {
+          "tool": "prefabOverrideDiff",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Requires a baseline reference; full instance override inspection is not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.funplay-validate-prefab-references",
+      "state": "complete",
+      "reason": "prefabReferenceAudit validates nested prefab references and returns typed missing-reference evidence.",
+      "routes": [
+        {
+          "tool": "prefabReferenceAudit",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
+      "state": "partial",
+      "reason": "referenceImageManage provides the qualified profile-backed set/inspect/clear lifecycle; native transform operations remain unavailable.",
+      "routes": [
+        {
+          "tool": "referenceImageManage",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
+        "tests/live/reference-image-qualification.test.js"
+      ],
+      "limitations": [
+        "Native reference-image transform IPC is unavailable on Creator 3.7.3."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-reference-validate",
+      "state": "complete",
+      "reason": "sceneReferenceValidate exactly validates serialized scene references against the imported asset database with reopen-safe source evidence.",
+      "routes": [
+        {
+          "tool": "sceneReferenceValidate",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/evidence/candidates/sceneReferenceValidate/creator-3.7.3-bc5f27f.json",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
+      "state": "partial",
+      "reason": "sceneHierarchyValidate supplies bounded hierarchy identity/topology validation, while the broader duplicate-path and persistence contract is not fully evidenced in the current focused record.",
+      "routes": [
+        {
+          "tool": "sceneHierarchyValidate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Focused route evidence covers bounded hierarchy validation; broader persistence invariants remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-create-prefab-from-node",
+      "state": "partial",
+      "reason": "nodeOperate create_prefab supplies bounded scene-node to prefab creation, but the documented normalization breadth is not fully evidenced.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Prefab creation is credited only for the bounded node operation.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-duplicate-prefab",
+      "state": "complete",
+      "reason": "duplicatePrefab performs a bounded prefab copy and returns the new asset identity/path.",
+      "routes": [
+        {
+          "tool": "duplicatePrefab",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-edit-prefab-json",
+      "state": "complete",
+      "reason": "editPrefabJson validates and persists JSON prefab edits, then refreshes the asset database.",
+      "routes": [
+        {
+          "tool": "editPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "prefab.funplay-inspect-prefab",
+      "state": "complete",
+      "reason": "readPrefabJson returns bounded parsed prefab JSON and metadata for serialized inspection.",
+      "routes": [
+        {
+          "tool": "readPrefabJson",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "prefab.cocos-mcp-duplicate-prefab",
+      "state": "complete",
+      "reason": "duplicatePrefab provides the exact bounded duplicate-prefab asset operation with new identity.",
+      "routes": [
+        {
+          "tool": "duplicatePrefab",
+          "file": "source/utcp/tools/prefab-json-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/live/read-only-candidate-qualification.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-add-component",
+      "state": "complete",
+      "reason": "The registered nodeComponentManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-create-node",
+      "state": "complete",
+      "reason": "The registered nodeCreate route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-delete-node",
+      "state": "complete",
+      "reason": "The registered nodeOperate route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-duplicate-node",
+      "state": "complete",
+      "reason": "The registered nodeOperate route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-find-nodes",
+      "state": "complete",
+      "reason": "The registered findNodes route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-all-nodes",
+      "state": "complete",
+      "reason": "The registered nodeGetTree route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeGetTree",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-available-components",
+      "state": "complete",
+      "reason": "The registered nodeGetAvailableComponentTypes route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeGetAvailableComponentTypes",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-components",
+      "state": "complete",
+      "reason": "The registered nodeComponentsGet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-current-scene",
+      "state": "complete",
+      "reason": "The registered sceneGetInfo route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-open-scene",
+      "state": "complete",
+      "reason": "The registered sceneManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-query-scene-classes",
+      "state": "complete",
+      "reason": "The registered listComponentClasses route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "listComponentClasses",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-query-scene-dirty",
+      "state": "complete",
+      "reason": "The registered sceneGetInfo route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-remove-component",
+      "state": "complete",
+      "reason": "The registered nodeComponentManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeComponentManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-reset-component",
+      "state": "complete",
+      "reason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-reset-node-property",
+      "state": "complete",
+      "reason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-reset-node-transform",
+      "state": "complete",
+      "reason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-set-component-property",
+      "state": "complete",
+      "reason": "The registered inspectorSet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-set-node-property",
+      "state": "complete",
+      "reason": "The registered inspectorSet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-button",
+      "state": "complete",
+      "reason": "The registered createButton route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "createButton",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-canvas",
+      "state": "complete",
+      "reason": "The registered createCanvas route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "createCanvas",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-label",
+      "state": "complete",
+      "reason": "The registered createLabel route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "createLabel",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-create-sprite",
+      "state": "complete",
+      "reason": "The registered createSprite route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "createSprite",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-find-nodes",
+      "state": "complete",
+      "reason": "The registered findNodes route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "findNodes",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-inspect-component",
+      "state": "complete",
+      "reason": "The registered inspectorGet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-list-components",
+      "state": "complete",
+      "reason": "The registered nodeComponentsGet route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-reset-component-property",
+      "state": "complete",
+      "reason": "The registered nodeReset route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "routes": [
+        {
+          "tool": "nodeReset",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-attach-script",
+      "state": "partial",
+      "reason": "The registered sceneScriptRepair route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "sceneScriptRepair",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-create-scene",
+      "state": "partial",
+      "reason": "The registered assetCreate route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "assetCreate",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-detect-node-type",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-execute-component-method",
+      "state": "partial",
+      "reason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "callComponentMethod",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-component-info",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-get-node-info",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-query-scene-components",
+      "state": "partial",
+      "reason": "The registered nodeComponentsGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "nodeComponentsGet",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-save-scene",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-save-scene-as",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-scene-snapshot-abort",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-set-node-transform",
+      "state": "partial",
+      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.cocos-mcp-soft-reload-scene",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-get-scene-info",
+      "state": "partial",
+      "reason": "The registered sceneGetInfo route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "sceneGetInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-inspect-node",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorGet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-invoke-component-method",
+      "state": "partial",
+      "reason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "callComponentMethod",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-save-current-scene",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "sceneManage",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-set-camera-properties",
+      "state": "partial",
+      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "scene.funplay-set-node-transform",
+      "state": "partial",
+      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "routes": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-inspection-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-align-camera-with-view",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-align-view-with-node",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-gizmo-coordinate",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-gizmo-pivot",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-gizmo-tool",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-change-view-mode-2d-3d",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-focus-camera-on-nodes",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-get-scene-view-status",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-coordinate",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-pivot",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-tool-name",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-gizmo-view-mode",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-grid-visible",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-icon-gizmo-3d",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-icon-gizmo-size",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-view-mode-2d-3d",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-set-grid-visible",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-set-icon-gizmo-3d",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-set-icon-gizmo-size",
+      "state": "complete",
+      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-editor-selection",
+      "state": "complete",
+      "reason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-selection",
+      "state": "complete",
+      "reason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-select-asset",
+      "state": "complete",
+      "reason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-set-selection",
+      "state": "complete",
+      "reason": "The registered editorSelect route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorSelect",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-project-info",
+      "state": "complete",
+      "reason": "The registered editorEnvInfo route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-get-editor-info",
+      "state": "complete",
+      "reason": "The registered editorEnvInfo route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorEnvInfo",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.funplay-get-editor-state",
+      "state": "complete",
+      "reason": "The registered editorState route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorState",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-scene-ready",
+      "state": "complete",
+      "reason": "The registered editorQuery route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorQuery",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-query-component-has-script",
+      "state": "complete",
+      "reason": "The registered editorQuery route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "routes": [
+        {
+          "tool": "editorQuery",
+          "file": "source/utcp/tools/consolidated-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-begin-undo-recording",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "routes": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-end-undo-recording",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "routes": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-cancel-undo-recording",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "routes": [
+        {
+          "tool": "editorHistory",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-reset-scene-view",
+      "state": "partial",
+      "reason": "The registered editorViewport route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "routes": [
+        {
+          "tool": "editorViewport",
+          "file": "source/utcp/tools/editor-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-listen-broadcast",
+      "state": "partial",
+      "reason": "The registered broadcastObserve route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "routes": [
+        {
+          "tool": "broadcastObserve",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/editor-viewport-gizmo.test.js",
+        "tests/live/read-only-tools.test.js"
+      ],
+      "limitations": [
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
+      ]
     }
   ]
 }

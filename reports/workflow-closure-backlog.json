@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 251,
+  "requiredFor90": 169,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
@@ -78,64 +78,13 @@
       "dependencies": []
     },
     {
-      "workflowId": "asset.cocos-mcp-copy-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "copy_asset",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-create-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "create_asset",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-delete-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "delete_asset",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-export-asset-manifest",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "export_asset_manifest",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "asset.cocos-mcp-find-asset-by-name",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "find_asset_by_name",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-generate-available-url",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "generate_available_url",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -151,44 +100,45 @@
     },
     {
       "workflowId": "asset.cocos-mcp-get-asset-dependencies",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetFindReferences route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "get_asset_dependencies",
       "limitations": [
-        "Add dependency audit route or retain as missing.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "asset.cocos-mcp-get-asset-details",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "get_asset_details",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "asset.cocos-mcp-get-asset-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "get_asset_info",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "asset.cocos-mcp-get-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "get_assets",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -233,27 +183,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "asset.cocos-mcp-import-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "import_asset",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-move-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "move_asset",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "asset.cocos-mcp-open-asset-external",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -274,46 +203,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "asset.cocos-mcp-query-asset-path",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_asset_path",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-query-asset-url",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_asset_url",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-query-asset-uuid",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_asset_uuid",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-query-nodes-by-asset-uuid",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_nodes_by_asset_uuid",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "asset.cocos-mcp-query-preferences-config",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -324,46 +213,13 @@
       "dependencies": []
     },
     {
-      "workflowId": "asset.cocos-mcp-refresh-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "refresh_assets",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-reimport-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "reimport_asset",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "asset.cocos-mcp-save-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "save_asset",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-save-asset-meta",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "save_asset_meta",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -378,23 +234,13 @@
       "dependencies": []
     },
     {
-      "workflowId": "asset.funplay-delete-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Xóa một asset khỏi asset-db theo uuid, db url hoặc fspath.\n   - *Inputs:* `target: string` (uuid hoặc url).\n   - *Outputs:* `{ deleted: boolean, target: string }`.\n   - *Cơ chế:* `Editor.Message.request('asset-db', 'delete-asset', target)`.",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "asset.funplay-exists",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "- *Tính năng:* Kiểm tra file hoặc thư mục có tồn tại trong project không.\n    - *Inputs:* `path: string`.\n    - *Outputs:* `{ exists: boolean, isDirectory: boolean }`.\n    - *Cơ chế:* `fs.existsSync` có bảo vệ đường dẫn `isPathInside`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -421,88 +267,23 @@
     },
     {
       "workflowId": "asset.funplay-inspect-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "- *Tính năng:* Đọc thông tin chi tiết asset: metadata, serialized JSON data, import settings.\n   - *Inputs:* `target: string` (uuid hoặc db url).\n   - *Outputs:* `{ uuid, url, type, file, isDirectory, meta, data }`.\n   - *Cơ chế:* Kết hợp `asset-db:query-asset-info` và `asset-db:query-asset-meta`.",
       "limitations": [
-        "Map to asset info/meta route; do not credit list query.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-inspect-asset-dependencies",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Quét toàn bộ UUID dependencies được tham chiếu bên trong nội dung serialized của asset.\n   - *Inputs:* `target: string`, `limit?: number`.\n   - *Outputs:* `{ ok, referenceCount, dependencies: Array<{ uuid, url, type, exists }>, missing: Array<{ uuid, error }> }`.\n   - *Cơ chế:* Đọc file từ đĩa, parse JSON + regex quét UUID, kiểm tra tồn tại qua `asset-db:query-asset-info`.",
-      "limitations": [
-        "Add dependency audit route or retain as missing.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-list-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Truy vấn danh sách asset theo pattern glob hoặc ccType.\n   - *Inputs:* `pattern?: string`, `ccType?: string`, `limit?: number`.\n   - *Outputs:* `Array<{ uuid, url, type, isDirectory }>`.\n   - *Cơ chế:* `Editor.Message.request('asset-db', 'query-assets', { pattern, ccType })`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-list-prefabs",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Liệt kê tất cả asset prefab trong project.\n    - *Inputs:* `pattern?: string`.\n    - *Outputs:* `Array<{ uuid, url, name }>`.\n    - *Cơ chế:* Query `cc.Prefab` từ asset-db.",
-      "limitations": [
-        "Use assetQuery with explicit cc.Prefab adapter or separate workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-list-scenes",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Liệt kê tất cả các file scene (`.scene`) trong toàn bộ project.\n    - *Inputs:* `limit?: number`.\n    - *Outputs:* `Array<{ uuid, url, name, path }>`.\n    - *Cơ chế:* Filter `query-assets` với `ccType: 'cc.SceneAsset'`.",
-      "limitations": [
-        "Use assetQuery cc.SceneAsset adapter/separate workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-open-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Mở asset trong editor (mở script trong VS Code hoặc mở prefab/material panel).\n    - *Inputs:* `target: string` (uuid hoặc url).\n    - *Outputs:* `{ opened: boolean, target: string }`.\n    - *Cơ chế:* `Editor.Message.request('asset-db', 'open-asset', target)`.",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "asset.funplay-read-file",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetReadContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "- *Tính năng:* Đọc toàn bộ nội dung file văn bản từ project.\n    - *Inputs:* `path: string`.\n    - *Outputs:* `{ content: string, size: number }`.\n    - *Cơ chế:* `fs.readFileSync`.",
       "limitations": [
-        "Add line/radius parameters or separate project-file-snippet workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.funplay-refresh-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Kích hoạt asset-db quét lại file mới/sửa đổi.\n    - *Inputs:* `path?: string`.\n    - *Outputs:* `{ refreshed: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('asset-db', 'refresh-asset', path || 'db://assets')`.",
-      "limitations": [
-        "Map to assetOperate operation=open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -538,22 +319,23 @@
     },
     {
       "workflowId": "asset.funplay-validate-asset-dependencies",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetMissingReferenceAudit route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "- *Tính năng:* Kiểm tra tính toàn vẹn của dependencies cho một asset hoặc toàn project.\n    - *Inputs:* `target?: string`, `pattern?: string`.\n    - *Outputs:* `{ ok, brokenCount, brokenList: Array<{ asset, missingUuid }> }`.\n    - *Cơ chế:* Quét UUID serialized so sánh với asset-db.",
       "limitations": [
-        "Add bounded audit route and missing list; no credit for assetFindReferences alone.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "asset.funplay-write-file",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
       "acceptance": "- *Tính năng:* Ghi hoặc ghi đè nội dung file vào project (tự động kích hoạt refresh nếu nằm trong `assets/`).\n    - *Inputs:* `path: string`, `content: string`.\n    - *Outputs:* `{ written: boolean, bytes: number }`.\n    - *Cơ chế:* `fs.writeFileSync` kèm auto-refresh asset-db.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -784,17 +566,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "design-prefab.cocos-mcp-instantiate-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "instantiate_prefab",
-      "limitations": [
-        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "design-prefab.cocos-mcp-list-reference-images",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -945,64 +716,24 @@
       "dependencies": []
     },
     {
-      "workflowId": "design-prefab.funplay-apply-prefab-instance",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đẩy thay đổi từ node prefab instance trên scene ngược lại file `.prefab` gốc.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ applied: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'apply-prefab', nodeUuid)`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "design-prefab.funplay-create-prefab-instance",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tạo một instance của prefab vào scene có liên kết (link) hoàn chỉnh.\n    - *Inputs:* `prefabUuid: string`, `parentUuid?: string`.\n    - *Outputs:* `{ nodeUuid: string }`.\n    - *Cơ chế:* `scene:create-node` với tham số `assetUuid`.",
-      "limitations": [
-        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "design-prefab.funplay-inspect-prefab-instance",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "prefabOverrideDiff exposes bounded serialized prefab differences, but it requires a baseline prefab reference and does not reproduce every instance inspection field.",
       "acceptance": "- *Tính năng:* Kiểm tra một node trên scene có phải là instance của prefab không, và đang bị override những thuộc tính nào.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ isPrefabInstance: boolean, prefabUuid?: string, overrides?: any[] }`.\n    - *Cơ chế:* Đọc `node.__prefab__` và mảng `propertyOverrides`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "design-prefab.funplay-instantiate-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Nạp prefab vào scene bằng UUID asset.\n    - *Inputs:* `prefabUuid: string`.\n    - *Outputs:* `{ nodeUuid: string }`.\n    - *Cơ chế:* `scene:create-node` kèm `assetUuid`.",
-      "limitations": [
-        "Use/extend prefabInstantiate; do not credit generic asset workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Requires a baseline reference; full instance override inspection is not claimed.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "design-prefab.funplay-revert-prefab-instance",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "prefabRevertOverrides provides authoritative full-instance restore, but the documented local-change breadth is narrower because selective paths are rejected on Creator 3.7.3.",
       "acceptance": "- *Tính năng:* Hủy bỏ các thay đổi cục bộ, khôi phục node về đúng trạng thái của prefab gốc.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `{ reverted: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'revert-prefab', nodeUuid)`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "design-prefab.funplay-validate-prefab-references",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Kiểm tra các file `.prefab` xem có tham chiếu UUID nào bị gãy không.\n    - *Inputs:* `pattern?: string`.\n    - *Outputs:* `{ valid: boolean, brokenPrefabs: string[] }`.\n    - *Cơ chế:* Đọc file prefab đĩa và tra cứu UUID trên asset-db.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Selective revert remains unsupported on Creator 3.7.3.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -1014,6 +745,27 @@
       "limitations": [
         "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
         "Focused prefab authoring evidence only; no runtime/Game View credit."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
+      "state": "partial",
+      "reason": "referenceImageManage provides the qualified profile-backed set/inspect/clear lifecycle; native transform operations remain unavailable.",
+      "acceptance": "Profile-backed set/inspect/clear is live-scoped; native reference-image transform IPC is unavailable on Creator 3.7.3, so the original contract remains unqualified.\nFinite persistent reference-image lifecycle with transform read-back.",
+      "limitations": [
+        "Native reference-image transform IPC is unavailable on Creator 3.7.3."
+      ],
+      "dependencies": []
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
+      "state": "partial",
+      "reason": "sceneHierarchyValidate supplies bounded hierarchy identity/topology validation, while the broader duplicate-path and persistence contract is not fully evidenced in the current focused record.",
+      "acceptance": "Validate duplicate paths, invalid parenting and persistence invariants. Prerequisites: `scene-query-contract`.\nValidate duplicate paths, invalid parenting and persistence invariants.",
+      "limitations": [
+        "Focused route evidence covers bounded hierarchy validation; broader persistence invariants remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -1150,102 +902,35 @@
       "dependencies": []
     },
     {
-      "workflowId": "editor.cocos-mcp-align-camera-with-view",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "align_camera_with_view",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-align-view-with-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "align_view_with_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "editor.cocos-mcp-begin-undo-recording",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
       "acceptance": "begin_undo_recording",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "editor.cocos-mcp-cancel-undo-recording",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
       "acceptance": "cancel_undo_recording",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-change-gizmo-coordinate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "change_gizmo_coordinate",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-change-gizmo-pivot",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "change_gizmo_pivot",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-change-gizmo-tool",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "change_gizmo_tool",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-change-view-mode-2d-3d",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "change_view_mode_2d_3d",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "editor.cocos-mcp-end-undo-recording",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
       "acceptance": "end_undo_recording",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-focus-camera-on-nodes",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "focus_camera_on_nodes",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -1260,173 +945,24 @@
       "dependencies": []
     },
     {
-      "workflowId": "editor.cocos-mcp-get-editor-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_editor_info",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-get-scene-view-status",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_scene_view_status",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "editor.cocos-mcp-listen-broadcast",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered broadcastObserve route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
       "acceptance": "listen_broadcast",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-component-has-script",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_component_has_script",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-gizmo-coordinate",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_gizmo_coordinate",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-gizmo-pivot",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_gizmo_pivot",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-gizmo-tool-name",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_gizmo_tool_name",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-gizmo-view-mode",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_gizmo_view_mode",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-grid-visible",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_grid_visible",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-icon-gizmo-3d",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_icon_gizmo_3d",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-icon-gizmo-size",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_icon_gizmo_size",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-scene-ready",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_scene_ready",
-      "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-query-view-mode-2d-3d",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_view_mode_2d_3d",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "editor.cocos-mcp-reset-scene-view",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered editorViewport route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
       "acceptance": "reset_scene_view",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-set-grid-visible",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "set_grid_visible",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-set-icon-gizmo-3d",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "set_icon_gizmo_3d",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.cocos-mcp-set-icon-gizmo-size",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "set_icon_gizmo_size",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -1451,75 +987,11 @@
       "dependencies": []
     },
     {
-      "workflowId": "editor.funplay-get-editor-selection",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đọc danh sách các node và asset đang được bôi chọn (selected).\n    - *Inputs:* Không có.\n    - *Outputs:* `{ nodes: string[], assets: string[] }`.\n    - *Cơ chế:* `Editor.Selection.getSelected('node')` & `getSelected('asset')`.",
-      "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.funplay-get-editor-state",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Lấy snapshot tổng hợp nhanh: project info, server status, selection hiện tại và các cửa sổ hiển thị.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ projectPath, creatorVersion, activeScene, selectedNodes }`.\n    - *Cơ chế:* Tổng hợp nhiều IPC requests nhẹ.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.funplay-get-project-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Lấy thông tin cơ bản: đường dẫn, phiên bản Cocos, cấu hình MCP.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ name, path, version }`.\n    - *Cơ chế:* `Editor.Project.path` & `Editor.App.version`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.funplay-get-selection",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đọc gọn đối tượng đang chọn theo loại.\n    - *Inputs:* `type?: 'node'|'asset'`.\n    - *Outputs:* `string[]` (danh sách UUIDs).\n    - *Cơ chế:* `Editor.Selection.getSelected(type)`.",
-      "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "editor.funplay-list-editor-windows",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "- *Tính năng:* Liệt kê tất cả các cửa sổ Electron BrowserWindow đang mở của Cocos Creator kèm ID, tiêu đề và tọa độ bounds.\n    - *Inputs:* Không có.\n    - *Outputs:* `Array<{ id, title, bounds, isFocused, isVisible, kind }>`.\n    - *Cơ chế:* `BrowserWindow.getAllWindows()`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.funplay-select-asset",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Chọn (highlight) asset trong panel Assets của editor.\n    - *Inputs:* `target: string`.\n    - *Outputs:* `{ selected: boolean }`.\n    - *Cơ chế:* `Editor.Selection.select('asset', [uuid])`.",
-      "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "editor.funplay-set-selection",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Chọn hoặc bỏ chọn node/asset trong editor.\n     - *Inputs:* `type: 'node'|'asset'`, `uuids: string[]`, `mode?: 'set'|'add'|'clear'`.\n     - *Outputs:* `{ selectedCount: number }`.\n     - *Cơ chế:* `Editor.Selection.select(type, uuids)` hoặc `clear(type)`.",
-      "limitations": [
-        "Add aggregate query or compose two reads with stable output.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -1744,16 +1216,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "prefab.cocos-mcp-duplicate-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "duplicate_prefab",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "prefab.cocos-mcp-load-prefab",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -1765,41 +1227,12 @@
     },
     {
       "workflowId": "prefab.funplay-create-prefab-from-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "nodeOperate create_prefab supplies bounded scene-node to prefab creation, but the documented normalization breadth is not fully evidenced.",
       "acceptance": "- *Tính năng:* Tạo file prefab mới từ một node trên scene và chuẩn hóa hierarchy.\n    - *Inputs:* `nodeUuid: string`, `targetPath: string`.\n    - *Outputs:* `{ uuid: string, path: string }`.\n    - *Cơ chế:* `scene:create-prefab` hoặc serialize node và lưu qua `asset-db:create-asset`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "prefab.funplay-duplicate-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Nhân bản file prefab thành file mới với UUID độc lập (không copy meta cũ).\n    - *Inputs:* `sourcePath: string`, `targetPath: string`.\n    - *Outputs:* `{ newUuid: string, newPath: string }`.\n    - *Cơ chế:* Copy file JSON, tạo meta mới qua asset-db.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "prefab.funplay-edit-prefab-json",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Chỉnh sửa file `.prefab` trực tiếp trên đĩa theo JSON path hoặc search/replace.\n    - *Inputs:* `target: string`, `edits: Array<{ path, value }>`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* Đọc JSON, mutate object, ghi lại file và refresh asset-db.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "prefab.funplay-inspect-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đọc cấu trúc nội dung serialized của file `.prefab` trên đĩa.\n    - *Inputs:* `target: string`.\n    - *Outputs:* `{ rootNode, totalEntries, components, references }`.\n    - *Cơ chế:* Đọc và parse JSON file `.prefab`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Prefab creation is credited only for the bounded node operation.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -2351,22 +1784,13 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-add-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "add_component",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.cocos-mcp-attach-script",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered sceneScriptRepair route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "attach_script",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -2381,65 +1805,35 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-create-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "create_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.cocos-mcp-create-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered assetCreate route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "create_scene",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-delete-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "delete_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-detect-node-type",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "detect_node_type",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-duplicate-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "duplicate_node",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-execute-component-method",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "execute_component_method",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -2465,179 +1859,57 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-find-nodes",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "find_nodes",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-all-nodes",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_all_nodes",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-available-components",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_available_components",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.cocos-mcp-get-component-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "get_component_info",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-components",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_components",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-get-current-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_current_scene",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-get-node-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "get_node_info",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-open-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "open_scene",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-query-scene-classes",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_scene_classes",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-query-scene-components",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered nodeComponentsGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "query_scene_components",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-query-scene-dirty",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "query_scene_dirty",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-remove-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "remove_component",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-reset-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "reset_component",
-      "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-reset-node-property",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "reset_node_property",
-      "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-reset-node-transform",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "reset_node_transform",
-      "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-save-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "save_scene",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-save-scene-as",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "save_scene_as",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -2653,58 +1925,34 @@
     },
     {
       "workflowId": "scene.cocos-mcp-scene-snapshot-abort",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered editorHistory route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "scene_snapshot_abort",
       "limitations": [
-        "Implement or compose the distinct bounded target contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-set-component-property",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "set_component_property",
-      "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.cocos-mcp-set-node-property",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "set_node_property",
-      "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-set-node-transform",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "set_node_transform",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.cocos-mcp-soft-reload-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "soft_reload_scene",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -2715,18 +1963,6 @@
       "acceptance": "- *Tính năng:* Gắn một `cc.EventHandler` vào nút `cc.Button`, trỏ đến hàm của một component khác.\n    - *Inputs:* `buttonNodeUuid: string`, `targetNodeUuid: string`, `componentName: string`, `handler: string`, `customEventData?: string`.\n    - *Outputs:* `{ bound: boolean, totalEvents: number }`.\n    - *Cơ chế:* Thao tác mảng `clickEvents` của component `cc.Button` trong scene script.",
       "limitations": [
         "Add target reference or separate workflow; retain bounded current route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-create-button",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tạo node UI Button hoàn chỉnh (gồm node Button có UITransform + component Button + node con Label).\n     - *Inputs:* `name?: string`, `parentUuid?: string`, `text?: string`.\n     - *Outputs:* `{ buttonUuid: string, labelUuid: string }`.\n     - *Cơ chế:* Tạo hierarchy 2 tầng, gán `cc.Button`, `cc.Label`, `cc.UITransform`.",
-      "limitations": [
-        "Credit generic route only for node creation; add/retain specialized createButton contract.",
-        "Credit specialized createSprite for full contract.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -2743,40 +1979,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.funplay-create-canvas",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tạo node Canvas gốc chuẩn cho UI 2D nếu scene chưa có.\n     - *Inputs:* `name?: string`.\n     - *Outputs:* `{ canvasUuid: string }`.\n     - *Cơ chế:* Tạo node kèm `cc.Canvas` và `cc.UITransform`.",
-      "limitations": [
-        "Credit generic route only for node creation; add/retain specialized createButton contract.",
-        "Credit specialized createSprite for full contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-create-label",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tạo node Text Label.\n     - *Inputs:* `text: string`, `parentUuid?: string`, `fontSize?: number`.\n     - *Outputs:* `{ nodeUuid: string, labelUuid: string }`.\n     - *Cơ chế:* Tạo node kèm `cc.Label`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-create-sprite",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tạo node UI Sprite, có thể gán sẵn SpriteFrame asset UUID.\n     - *Inputs:* `parentUuid?: string`, `spriteFrameUuid?: string`.\n     - *Outputs:* `{ nodeUuid: string, spriteUuid: string }`.\n     - *Cơ chế:* Tạo node kèm `cc.Sprite`, set thuộc tính `spriteFrame`.",
-      "limitations": [
-        "Credit generic route only for node creation; add/retain specialized createButton contract.",
-        "Credit specialized createSprite for full contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.funplay-execute-scene-script",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -2788,56 +1990,35 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.funplay-find-nodes",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tìm kiếm node theo tên chính xác, đường dẫn phân cấp hoặc loại component gắn kèm.\n    - *Inputs:* `name?: string`, `pathPattern?: string`, `componentType?: string`.\n    - *Outputs:* `Array<{ uuid, name, path, components: string[] }>`.\n    - *Cơ chế:* Duyệt cây scene node in-memory và lọc kết quả.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.funplay-get-scene-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered sceneGetInfo route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "- *Tính năng:* Đọc thông tin tóm tắt của scene đang mở (tên, UUID, dirty state, bounds).\n    - *Inputs:* Không có.\n    - *Outputs:* `{ name, uuid, isDirty, nodeCount }`.\n    - *Cơ chế:* Kết hợp `query-current-scene` và `query-node-tree`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-inspect-component",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đọc toàn bộ dump thuộc tính của 1 component.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`.\n    - *Outputs:* `{ type, values: Record<string, any> }`.\n    - *Cơ chế:* `scene:query-component`.",
-      "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.funplay-inspect-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "- *Tính năng:* Kiểm tra chi tiết 1 node: transform, layer, active state, components.\n    - *Inputs:* `nodeUuid?: string`, `path?: string`.\n    - *Outputs:* `{ uuid, name, active, position, rotation, scale, layer, components }`.\n    - *Cơ chế:* `scene:query-node`.",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.funplay-invoke-component-method",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "- *Tính năng:* Gọi một method trên component ở runtime (phục vụ test hook).\n    - *Inputs:* `nodeUuid: string`, `component: string`, `method: string`, `args?: any[]`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* Chạy method qua context scene script.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
@@ -2864,56 +2045,35 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.funplay-list-components",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Liệt kê danh sách các component gắn trên 1 node.\n    - *Inputs:* `nodeUuid: string`.\n    - *Outputs:* `Array<{ uuid, type, cid, name }>`.\n    - *Cơ chế:* Đọc mảng `__comps__` từ node dump.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-reset-component-property",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Reset một thuộc tính component về giá trị mặc định theo dot path.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`, `path: string`.\n    - *Outputs:* `{ reset: boolean }`.\n    - *Cơ chế:* `scene:reset-property`.",
-      "limitations": [
-        "Map to nodeReset operation=property with component reference.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.funplay-save-current-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "- *Tính năng:* Lưu scene đang mở.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ saved: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'save-scene')`.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.funplay-set-camera-properties",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "- *Tính năng:* Cấu hình các thuộc tính của Camera (clearFlags, projection, orthoHeight, fov).\n    - *Inputs:* `cameraUuid: string`, `properties: object`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property` trên component Camera.",
       "limitations": [
-        "Use inspectorSet with camera component path or add typed camera route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
     {
       "workflowId": "scene.funplay-set-node-transform",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
       "acceptance": "- *Tính năng:* Cập nhật vị trí, góc xoay, tỉ lệ và trạng thái active của node.\n    - *Inputs:* `nodeUuid: string`, `position?: {x,y,z}`, `rotation?: {x,y,z}`, `scale?: {x,y,z}`, `active?: boolean`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* Gọi `scene:set-property` cho từng thuộc tính transform.",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },
