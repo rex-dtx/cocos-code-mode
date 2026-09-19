@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "editor-side prefab authoring contracts",
+  "implemented": [
+    "prefabOverrideDiff validates both references as prefab assets and returns stable source hashes and structural changes",
+    "prefabInstantiate validates source and parent identities, verifies created node identity and linked prefab asset identity, and cleans up failed disposable nodes",
+    "prefabApplyOverrides performs source and instance read-back with authoritative node and linked-source identity checks",
+    "prefabRevertOverrides supports full-instance restore with authoritative read-back",
+    "prefabReferenceAudit remains nested-reference validation with typed missing-reference evidence"
+  ],
+  "blocked": [
+    {
+      "route": "prefabRevertOverrides",
+      "code": "UNSUPPORTED_SELECTIVE_REVERT",
+      "status": 422,
+      "reason": "Creator 3.7.3 exposes full restore only; selective paths remain fail-closed"
+    },
+    "Creator 3.7.3 native selective revert and runtime/Game View operations are out of scope"
+  ],
+  "tests": [
+    "tests/unit/advanced-capability-tools.test.js",
+    "tests/unit/prefab-apply-postcondition.test.js",
+    "npx tsc --pretty false --noEmit"
+  ],
+  "cleanup": "Instantiation failure rollback removes the created node and verifies absence; successful fixtures remain disposable in tests."
+}

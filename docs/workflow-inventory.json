@@ -3798,13 +3798,21 @@
       "portfolioNames": [
         "prefabApplyOverrides"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Wave D evidence confirms prefabApplyOverrides performs typed source and instance read-back with authoritative node and linked-source identity checks.",
+      "implementationRoute": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/unit/prefab-apply-postcondition.test.js"
+      ],
       "limitations": [
-        "Apply a typed override set and verify source/instance result.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3832,7 +3840,7 @@
         "prefabInstantiate"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave D evidence confirms prefabInstantiate validates source and parent identities, verifies created node and linked prefab identity, and cleans up failed disposable nodes.",
       "implementationRoute": [
         {
           "tool": "prefabInstantiate",
@@ -3840,12 +3848,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/prefabInstantiate/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Instantiate and prove persistent prefab identity and overrides.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3873,7 +3880,7 @@
         "prefabOverrideDiff"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave D evidence confirms prefabOverrideDiff validates both prefab references and returns stable source hashes with structural changes.",
       "implementationRoute": [
         {
           "tool": "prefabOverrideDiff",
@@ -3881,12 +3888,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/prefabOverrideDiff/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Structural live-instance versus prefab-source override diff with stable identities.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3914,7 +3920,7 @@
         "prefabReferenceAudit"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave D evidence confirms prefabReferenceAudit remains nested-reference validation with typed missing-reference evidence.",
       "implementationRoute": [
         {
           "tool": "prefabReferenceAudit",
@@ -3922,12 +3928,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/prefabReferenceAudit/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Detect broken or ambiguous nested prefab and override references after reload.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -3954,13 +3959,21 @@
       "portfolioNames": [
         "prefabRevertOverrides"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "partial",
+      "implementationReason": "Wave D evidence confirms authoritative full-instance restore, while Creator 3.7.3 explicitly rejects selective revert with UNSUPPORTED_SELECTIVE_REVERT.",
+      "implementationRoute": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
       "limitations": [
-        "Revert selected overrides and verify restored values.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
