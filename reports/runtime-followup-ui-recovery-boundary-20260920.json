@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "attempts": [
+    "Default Creator UI process was responsive but exposed no CDP endpoint.",
+    "Managed browser launch was rejected because Creator was already running without reusable CDP.",
+    "Relaunch with --remote-debugging-port=9223 produced no reusable page target and the process exited."
+  ],
+  "dialogObserved": false,
+  "utcpActivated": false,
+  "qualified": false,
+  "decision": "No startup dialog or page target was reachable for automated dismissal. The Creator activation blocker remains before extension discovery."
+}
