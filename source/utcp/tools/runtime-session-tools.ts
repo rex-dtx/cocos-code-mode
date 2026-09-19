@@ -228,6 +228,11 @@ export class RuntimeSessionTools {
             if (args.operation === 'start' && (preview.platform !== 'gameView' || !preview.ready)) throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: 'Select Game View and wait for its renderer to load before starting.' });
             const targetId = session?.targetId ?? args.targetId ?? preview.sceneUuid;
             if (args.operation !== 'start' && preview.enabled && targetId && targetId !== preview.sceneUuid) throw new ToolError({ code: 'RUNTIME_TARGET_CHANGED', status: 409, message: 'The requested scene does not match the current preview.', details: { targetId, sceneUuid: preview.sceneUuid } });
+            if (args.operation === 'start' && preview.state !== 'stop' && preview.enabled) {
+                const state = await this.readState(args.targetId ?? preview.sceneUuid, deadline);
+                const attached = store.attach('game-view', state.sceneUuid);
+                return { success: true, operation: 'start', session: attached, state, preview, ready: true };
+            }
             if (args.operation === 'start') store.assertCapacity('game-view', preview.sceneUuid || undefined);
             if (!['start', 'stop'].includes(args.operation) && preview.state === 'stop') throw new ToolError({ code: 'RUNTIME_NOT_READY', status: 409, message: 'Start game-view preview before controlling playback.' });
             if (args.operation === 'step' && preview.state !== 'pause') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Pause game-view before stepping it.' });

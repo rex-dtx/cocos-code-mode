@@ -110,6 +110,14 @@ describe('bounded Creator game-view lifecycle', () => {
     assert.equal((await runtime.runtimeSessionManage({ operation: 'state' })).ready, false);
   });
 
+  it('reuses an already-running Game View without dispatching another start', async () => {
+    const control = installPreview('play');
+    const attached = await start();
+    assert.equal(attached.ready, true);
+    assert.equal(attached.session.targetId, 'actual-scene');
+    assert.deepEqual(control.commands, []);
+  });
+
   it('does not mistake scene metrics or a server URL for a running preview', async () => {
     const control = installPreview('play');
     await assert.rejects(tools.runtimeSessionLifecycle({ operation: 'attach', targetKind: 'game-view', targetId: 'caller-label' }), { code: 'RUNTIME_TARGET_CHANGED' });

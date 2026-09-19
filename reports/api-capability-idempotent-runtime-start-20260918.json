@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "sourceChange": "runtimeSessionLifecycle start reuses an authoritative already-running Game View without dispatching another start mutation",
+  "unitVerification": { "typescriptBuild": "pass", "runtimeAndTransportTests": "16/16 pass", "newRegression": "already-running start dispatches no lifecycle command" },
+  "liveEndpoint": "http://localhost:56396",
+  "liveVerification": { "buildLoaded": "648ba36-dirty", "firstStart": "RUNTIME_STATE_TIMEOUT", "secondStart": "RUNTIME_STATE_TIMEOUT", "postState": { "state": "stop", "enabled": false, "ready": false } },
+  "decision": "The idempotent already-running branch is implemented and unit-proven, but does not solve cold-start transport failure. Do not promote lifecycle coverage until live cold-start/start-stop succeeds.",
+  "qualified": false
+}
