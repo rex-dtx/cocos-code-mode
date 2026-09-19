@@ -1,8 +1,9 @@
 import packageJSON from '../../../package.json';
 import { utcpTool } from '../decorators';
 import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
-import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
+import type { IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { ToolError } from '../tool-error';
+import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
 const DEFAULT_LIST_LIMIT = 200;
@@ -28,6 +29,35 @@ function componentCandidates(componentType: any): string[] {
 
 function findComponentType(componentTypes: any[], requested: string): any | undefined {
     return componentTypes.find((candidate) => componentCandidates(candidate).includes(requested));
+}
+
+function unwrapSceneValue(value: unknown): unknown {
+    if (value && typeof value === 'object' && 'value' in value) return value.value;
+    return value;
+}
+
+function cameraComponentField(component: unknown, key: string): unknown {
+    if (!component || typeof component !== 'object') return undefined;
+    const row = component as Record<string, unknown>;
+    const value = row.value && typeof row.value === 'object' ? row.value as Record<string, unknown> : undefined;
+    return unwrapSceneValue(row[key] ?? value?.[key]);
+}
+
+function cameraComponentsFromNode(node: unknown): unknown[] {
+    if (!node || typeof node !== 'object') return [];
+    const row = node as Record<string, unknown>;
+    return Array.isArray(row.__comps__) ? row.__comps__ : Array.isArray(row.components) ? row.components : [];
+}
+
+function isCameraComponent(component: unknown): boolean {
+    const type = componentClassId(component);
+    return type === 'cc.Camera' || type === 'Camera';
+}
+
+function cameraReference(component: unknown): IInstanceReference {
+    const id = componentUuid(component);
+    if (!id) throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: 'Creator returned a camera component without an authoritative UUID.' });
+    return { id, type: 'cc.Camera' };
 }
 
 interface SceneTreeNode {
@@ -113,6 +143,136 @@ export class SceneTools {
         }
 
         return { bounds, dirty: !!dirty, currentScene };
+    }
+
+    @utcpTool(
+        'cameraCreate',
+        'Create a scene node with a cc.Camera component and verify both identities by read-back.',
+        {
+            type: 'object',
+            properties: {
+                name: { type: 'string', minLength: 1 },
+                is2D: { type: 'boolean' },
+                parentReference: InstanceReferenceSchema,
+            },
+        },
+        {
+            type: 'object',
+            properties: { nodeReference: InstanceReferenceSchema, cameraReference: InstanceReferenceSchema },
+            required: ['nodeReference', 'cameraReference'],
+        },
+        'POST', ['scene', 'camera', 'create', 'node']
+    )
+    async cameraCreate(args: { name?: string, is2D?: boolean, parentReference?: IInstanceReference }): Promise<{ nodeReference: IInstanceReference, cameraReference: IInstanceReference }> {
+        const nodeReference = await this.sceneCreateNode({ name: args.name ?? 'Camera', parentReference: args.parentReference });
+        try {
+            await Editor.Message.request('scene', 'create-component', { uuid: nodeReference.reference.id, component: 'cc.Camera' });
+            const node = await Editor.Message.request('scene', 'query-node', nodeReference.reference.id);
+            const camera = cameraComponentsFromNode(node).find((component) => isCameraComponent(component));
+            if (!camera) throw new ToolError({ code: 'CAMERA_CREATE_UNCONFIRMED', status: 502, message: 'Creator did not confirm cc.Camera creation.' });
+            const cameraReferenceValue = cameraReference(camera);
+            if (args.is2D !== undefined) {
+                const cameraIndex = cameraComponentsFromNode(node).findIndex((component) => component === camera);
+                const projectionPath = `__comps__.${cameraIndex}.projection`;
+                const projection = args.is2D ? 1 : 0;
+                const changed = await Editor.Message.request('scene', 'set-property', { uuid: nodeReference.reference.id, path: projectionPath, dump: { value: projection, type: 'Enum' } });
+                if (changed === false) throw new ToolError({ code: 'CAMERA_CREATE_UNCONFIRMED', status: 502, message: 'Creator rejected the requested camera projection.' });
+            }
+            await Editor.Message.request('scene', 'snapshot');
+            const verifiedNode = await Editor.Message.request('scene', 'query-node', nodeReference.reference.id);
+            const verifiedCamera = cameraComponentsFromNode(verifiedNode).find((component) => isCameraComponent(component));
+            if (!verifiedCamera || cameraReference(verifiedCamera).id !== cameraReferenceValue.id) throw new ToolError({ code: 'CAMERA_CREATE_UNCONFIRMED', status: 502, message: 'Creator did not confirm camera read-back.' });
+            return { nodeReference: nodeReference.reference, cameraReference: cameraReferenceValue };
+        } catch (error) {
+            await Editor.Message.request('scene', 'remove-node', { uuid: nodeReference.reference.id }).catch(() => undefined);
+            await Editor.Message.request('scene', 'snapshot').catch(() => undefined);
+            throw error;
+        }
+    }
+
+    @utcpTool(
+        'cameraList',
+        'List cc.Camera components in the open scene with bounded node traversal and authoritative component read-back.',
+        { type: 'object', properties: { maxResults: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } } },
+        { type: 'object', properties: { cameras: { type: 'array', items: { type: 'object' } }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['cameras', 'total', 'truncated'] },
+        'GET', ['scene', 'camera', 'list', 'query']
+    )
+    async cameraList(args: { maxResults?: number } = {}): Promise<{ cameras: Array<Record<string, unknown>>, total: number, truncated: boolean }> {
+        const tree = await Editor.Message.request('scene', 'query-node-tree');
+        if (!tree) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'No open scene hierarchy.' });
+        const limit = boundedListLimit(args.maxResults);
+        const cameras: Array<Record<string, unknown>> = [];
+        let total = 0;
+        const stack: unknown[] = [tree];
+        while (stack.length) {
+            const node = stack.pop();
+            if (!node || typeof node !== 'object') continue;
+            const row = node as Record<string, unknown>;
+            const nodeId = typeof row.uuid === 'string' ? row.uuid : undefined;
+            if (nodeId) {
+                const dump = await Editor.Message.request('scene', 'query-node', nodeId);
+                for (const component of cameraComponentsFromNode(dump).filter(isCameraComponent)) {
+                    total += 1;
+                    if (cameras.length >= limit) continue;
+                    cameras.push({
+                        nodeReference: { id: nodeId, type: 'cc.Node' },
+                        name: typeof row.name === 'string' ? row.name : unwrapSceneValue(row.name),
+                        cameraReference: cameraReference(component),
+                        priority: cameraComponentField(component, 'priority'),
+                        visibility: cameraComponentField(component, 'visibility'),
+                        projection: cameraComponentField(component, 'projection'),
+                    });
+                }
+            }
+            if (Array.isArray(row.children)) stack.push(...row.children);
+        }
+        return { cameras, total, truncated: total > limit };
+    }
+
+    @utcpTool(
+        'cameraSetProperties',
+        'Set bounded cc.Camera properties through scene IPC and verify each requested value by fresh component read-back.',
+        {
+            type: 'object',
+            properties: { reference: InstanceReferenceSchema, properties: { type: 'object', minProperties: 1 } },
+            required: ['reference', 'properties'],
+        },
+        { type: 'object', properties: { updated: { type: 'boolean', const: true }, reference: InstanceReferenceSchema }, required: ['updated', 'reference'] },
+        'POST', ['scene', 'camera', 'set', 'properties']
+    )
+    async cameraSetProperties(args: { reference: IInstanceReference, properties: Record<string, unknown> }): Promise<{ updated: true, reference: IInstanceReference }> {
+        if (!args.reference?.id || !args.properties || typeof args.properties !== 'object' || Array.isArray(args.properties) || Object.keys(args.properties).length === 0) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'cameraSetProperties requires a camera reference and non-empty properties.' });
+        }
+        const nodeTree = await Editor.Message.request('scene', 'query-node-tree');
+        if (!nodeTree) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'No open scene hierarchy.' });
+        const stack: unknown[] = [nodeTree];
+        let foundNode: Record<string, unknown> | undefined;
+        let foundComponent: unknown;
+        let componentIndex = -1;
+        while (stack.length && !foundNode) {
+            const node = stack.pop();
+            if (!node || typeof node !== 'object') continue;
+            const row = node as Record<string, unknown>;
+            const components = cameraComponentsFromNode(row);
+            const index = components.findIndex((component) => isCameraComponent(component) && componentUuid(component) === args.reference.id);
+            if (index >= 0) { foundNode = row; foundComponent = components[index]; componentIndex = index; break; }
+            if (Array.isArray(row.children)) stack.push(...row.children);
+        }
+        const nodeId = foundNode && typeof foundNode.uuid === 'string' ? foundNode.uuid : undefined;
+        if (!nodeId || !foundComponent || componentIndex < 0) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Camera ${args.reference.id} was not found in the open scene.` });
+        for (const [property, value] of Object.entries(args.properties)) {
+            const propertyValue = value as IPropertyValueType;
+            const changed = await Editor.Message.request('scene', 'set-property', { uuid: nodeId, path: `__comps__.${componentIndex}.${property}`, dump: { value: propertyValue, type: typeof value === 'number' ? 'Number' : typeof value === 'boolean' ? 'Boolean' : 'String' } });
+            if (changed === false) throw new ToolError({ code: 'CAMERA_PROPERTY_UPDATE_FAILED', status: 502, message: `Creator rejected camera property ${property}.` });
+        }
+        await Editor.Message.request('scene', 'snapshot');
+        const verifiedNode = await Editor.Message.request('scene', 'query-node', nodeId);
+        const verified = cameraComponentsFromNode(verifiedNode).find((component) => componentUuid(component) === args.reference.id && isCameraComponent(component));
+        if (!verified || Object.entries(args.properties).some(([property, value]) => JSON.stringify(cameraComponentField(verified, property)) !== JSON.stringify(value))) {
+            throw new ToolError({ code: 'CAMERA_PROPERTY_UPDATE_UNCONFIRMED', status: 502, message: 'Camera property mutation was not confirmed by read-back.' });
+        }
+        return { updated: true, reference: cameraReference(verified) };
     }
 
     @utcpTool(

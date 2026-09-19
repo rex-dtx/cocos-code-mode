@@ -851,9 +851,10 @@ export class AssetTools {
         return { references, assets, total, truncated };
     }
 
-    @utcpTool('assetQuery', 'Search asset database by glob, ccType, importer, extname or isBundle. At least one filter is required. Returns at most 200 results by default and 1,000 at most.', {
+    @utcpTool('assetQuery', 'Search asset database by name, glob, ccType, importer, extname or isBundle. At least one filter is required. Returns at most 200 results by default and 1,000 at most.', {
         type: 'object',
         properties: {
+            name: { type: 'string', minLength: 1, maxLength: 256 },
             pattern: { type: 'string' },
             ccType: { type: 'string' },
             importer: { type: 'string' },
@@ -862,6 +863,7 @@ export class AssetTools {
             limit: { type: 'number', minimum: 1, maximum: 1000, default: 200 },
         },
         anyOf: [
+            { required: ['name'] },
             { required: ['pattern'] },
             { required: ['ccType'] },
             { required: ['importer'] },
@@ -876,9 +878,10 @@ export class AssetTools {
             truncated: { type: 'boolean' },
         },
         required: ['assets', 'total', 'truncated'],
-    }, "GET", ['asset', 'query', 'search', 'find', 'filter', 'list', 'discover', 'bundle', 'spine', 'prefab'])
-    async assetQuery(args: { pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean, limit?: number }): Promise<{ assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean }> {
-        const opts: { pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean } = {};
+    }, "GET", ['asset', 'query', 'search', 'find', 'filter', 'list', 'discover', 'bundle', 'spine', 'prefab', 'name'])
+    async assetQuery(args: { name?: string, pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean, limit?: number }): Promise<{ assets: { uuid: string, name: string, url: string, type: string, importer?: string, isDirectory: boolean }[], total: number, truncated: boolean }> {
+        const opts: { name?: string, pattern?: string, ccType?: string, importer?: string, extname?: string, isBundle?: boolean } = {};
+        if (args.name) opts.name = args.name;
         if (args.pattern) opts.pattern = normalizePath(args.pattern);
         if (args.ccType) opts.ccType = args.ccType;
         if (args.importer) opts.importer = args.importer;
@@ -887,6 +890,7 @@ export class AssetTools {
         if (Object.keys(opts).length === 0) throw new Error('assetQuery requires at least one filter');
         const raw = await queryAssetsCompat(opts) as Array<{ uuid: string, name: string, url: string, type: string, importer?: string, isDirectory?: boolean, isBundle?: boolean }>;
         const filtered = raw.filter((asset) => {
+            if (opts.name && asset.name !== opts.name) return false;
             if (opts.ccType && asset.type !== opts.ccType) return false;
             if (opts.importer && asset.importer !== opts.importer) return false;
             if (opts.extname && extname(asset.url || asset.name || '') !== opts.extname) return false;
@@ -896,6 +900,59 @@ export class AssetTools {
         const limit = boundedPositive(args.limit, 200, 1000);
         const assets = filtered.slice(0, limit).map((asset) => ({ uuid: asset.uuid, name: asset.name, url: asset.url, type: asset.isDirectory ? 'folder' : asset.type, importer: asset.importer, isDirectory: !!asset.isDirectory }));
         return { assets, total: filtered.length, truncated: filtered.length > assets.length };
+    }
+
+    @utcpTool('assetInspect', 'Inspect authoritative asset identity, importer metadata, and bounded serialized data by UUID or db:// path.', {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            reference: InstanceReferenceSchema,
+            assetPath: { type: 'string', maxLength: MAX_MANIFEST_ASSET_PATH_LENGTH },
+            maxDataBytes: { type: 'integer', minimum: 1, maximum: 1048576, default: 524288 },
+        },
+        anyOf: [{ required: ['reference'] }, { required: ['assetPath'] }],
+    }, {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            uuid: { type: 'string' },
+            url: { type: 'string' },
+            type: { type: 'string' },
+            file: { type: 'string' },
+            isDirectory: { type: 'boolean' },
+            importer: { type: 'string' },
+            meta: {},
+            data: {},
+            dataBytes: { type: 'integer' },
+            dataTruncated: { type: 'boolean' },
+        },
+        required: ['uuid', 'url', 'type', 'file', 'isDirectory', 'meta', 'data', 'dataBytes', 'dataTruncated'],
+    }, 'GET', ['asset', 'inspect', 'details', 'info', 'metadata', 'data'])
+    async assetInspect(args: { reference?: IInstanceReference, assetPath?: string, maxDataBytes?: number }): Promise<Record<string, unknown>> {
+        const identifier = args.reference?.id || (args.assetPath ? normalizeBoundedAssetPath(args.assetPath, 'assetInspect') : '');
+        if (!identifier) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetInspect requires reference.id or assetPath.' });
+        const info = await readBackAsset(identifier, 'assetInspect');
+        const meta = await Editor.Message.request('asset-db', 'query-asset-meta', info.uuid).catch(() => null);
+        const rawData = await Editor.Message.request('asset-db', 'query-asset-data', info.uuid).catch(() => null);
+        const serializedData = JSON.stringify(rawData ?? null);
+        const maxDataBytes = typeof args.maxDataBytes === 'number' && Number.isInteger(args.maxDataBytes) && args.maxDataBytes > 0
+            ? Math.min(args.maxDataBytes, 1048576)
+            : 524288;
+        const dataBytes = Buffer.byteLength(serializedData, 'utf8');
+        const dataTruncated = dataBytes > maxDataBytes;
+        const data = dataTruncated ? serializedData.slice(0, maxDataBytes) : rawData;
+        return {
+            uuid: info.uuid,
+            url: typeof info.url === 'string' ? info.url : '',
+            type: typeof info.type === 'string' ? info.type : '',
+            file: typeof info.file === 'string' ? info.file : '',
+            isDirectory: info.isDirectory === true,
+            importer: typeof info.importer === 'string' ? info.importer : '',
+            meta: meta ?? null,
+            data,
+            dataBytes,
+            dataTruncated,
+        };
     }
 
     @utcpTool('assetCreate','Create an asset or folder at a db:// path from a Creator 3.7 preset.',{type:'object',properties:{assetPath:{type:'string'},preset:{type:'string',enum:['folder','material','effect','scene','prefab','typescript','animation-clip','render-texture','physics-material','animation-graph','animation-graph-variant','animation-mask','auto-atlas','effect-header','terrain']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}},nullable:true}},required:['assetPath','preset']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','create','new','preset','folder','typescript'])

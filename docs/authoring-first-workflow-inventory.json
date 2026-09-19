@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "5624ebf95b508206ed95ac63df32d0998a6885c739cca9555fd0dff0edb35a84",
+  "sourceInventoryHash": "b12203add338c8f96b0d13b9fcd1cad2a5de11ddb98947818ca101800e5df5d3",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "5624ebf95b508206ed95ac63df32d0998a6885c739cca9555fd0dff0edb35a84",
+    "docs/workflow-inventory.json": "b12203add338c8f96b0d13b9fcd1cad2a5de11ddb98947818ca101800e5df5d3",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "a5cacc7a012e636680c32d028bc829da19f7060b80259b9be626c91df5998487",
-    "reports/workflow-coverage-report.json": "c4ff032db6f4461f450e11880f645ad2213e0bebdb1010bdf4bec8a8dd8947e6",
-    "reports/workflow-closure-backlog.json": "6a33573cdf4d2e375c055954e1bdef828e85c970e831fb3a614c07b66e3340c2"
+    "docs/workflow-implementation-evidence.json": "3a066bbe8399d478139059cc7218bed56b9bbd4c2aaf068b337270d9bb1de691",
+    "reports/workflow-coverage-report.json": "8ee6c8e997edca7f10ae48acdaa08393a26f577643a3cd0b62383962c3b8b4f4",
+    "reports/workflow-closure-backlog.json": "60f22b335a40e8764b5f384a23f6ec88491729bed42d15f5cac0d6d5c0926077"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -383,11 +383,10 @@
       "sourceIds": [
         "cocos-mcp:find_asset_by_name"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact assetQuery name filtering is forwarded to Creator asset-db, then bounded authoritative records are filtered, capped, and returned with total/truncated accounting.",
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset search only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -437,11 +436,10 @@
       "sourceIds": [
         "cocos-mcp:get_asset_dependencies"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetFindReferences route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact bounded assetFindReferences exposes used-by or depends-on UUID identities with optional authoritative URL/type resolution and truncation accounting.",
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded dependency/reference query only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -455,11 +453,10 @@
       "sourceIds": [
         "cocos-mcp:get_asset_details"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact assetInspect reads authoritative asset identity, importer metadata, and bounded serialized data by UUID or db:// path with byte/truncation evidence.",
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset inspection only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -473,11 +470,10 @@
       "sourceIds": [
         "cocos-mcp:get_asset_info"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact assetInspect returns uuid, URL, type, file, directory flag, importer, metadata, serialized data, byte count, and truncation state.",
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset inspection only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -491,11 +487,10 @@
       "sourceIds": [
         "cocos-mcp:get_assets"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered assetQuery route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "implementationState": "complete",
+      "implementationReason": "Exact bounded assetQuery supports the documented asset database filters and authoritative asset records with deterministic cap and truncation reporting.",
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded asset query only; external filesystem delivery and runtime behavior are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1734,10 +1729,10 @@
       "sourceIds": [
         "cocos-mcp:add_reference_image"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage set adds one bounded reference-image record and verifies persistence through native scene IPC or the documented project-profile fallback.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded add/persistence lifecycle only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1751,10 +1746,10 @@
       "sourceIds": [
         "cocos-mcp:clear_all_reference_images"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "referenceImageManage clear removes the active scene record, while the bounded adapter does not expose a distinct native clear-all operation across every scene/profile record.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Only active-scene clear is credited; project-wide clear-all semantics are not claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1802,10 +1797,10 @@
       "sourceIds": [
         "cocos-mcp:list_reference_images"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage list returns bounded reference-image records from native scene IPC or project-profile read-back with persisted lifecycle state.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded list/read-back lifecycle only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1819,10 +1814,10 @@
       "sourceIds": [
         "cocos-mcp:query_current_reference_image"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage inspect returns the active reference-image identity and persistence status through native scene IPC or project-profile read-back.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded current-image identity/read-back only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1836,10 +1831,10 @@
       "sourceIds": [
         "cocos-mcp:query_reference_image_config"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "referenceImageManage inspect exposes bounded persisted image identity and path, but native transform/configuration fields are unavailable on Creator 3.7.3.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Transform/configuration fields are not available through native Creator IPC and are not credited."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -1870,10 +1865,10 @@
       "sourceIds": [
         "cocos-mcp:remove_reference_image"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "referenceImageManage clear removes the bounded active reference-image record and verifies absence through native scene IPC or project-profile read-back.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded remove/persistence lifecycle only; native transform/configuration operations remain unsupported on Creator 3.7.3."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -3813,9 +3808,9 @@
         "funplay:inspect_prefab"
       ],
       "implementationState": "complete",
-      "implementationReason": "readPrefabJson returns bounded parsed prefab JSON and metadata for serialized inspection.",
+      "implementationReason": "prefabInspect reads the bounded serialized .prefab asset and returns the exact contract summary: root record, total entries, component type markers, normalized UUID references, and authoritative asset identity.",
       "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Editor-side bounded serialized prefab inspection only; no scene instantiation or Game View/runtime behavior is claimed."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -4831,10 +4826,10 @@
       "sourceIds": [
         "cocos-mcp:add_component"
       ],
-      "implementationState": "complete",
-      "implementationReason": "The registered nodeComponentManage route matches the documented editor authoring operation and returns the corresponding bounded identity/property outcome.",
+      "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5526,11 +5521,10 @@
       "sourceIds": [
         "funplay:create_camera"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "cameraCreate creates a scene node, adds cc.Camera, applies the optional 2D projection, and verifies node/component identity after snapshot read-back.",
       "limitations": [
-        "Add camera-specific create route; do not merge with primitive creation.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded camera creation only; no Game View/runtime visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5753,11 +5747,10 @@
       "sourceIds": [
         "funplay:list_cameras"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "cameraList traverses the open scene, reads authoritative cc.Camera components, returns stable node/component identities and bounded camera fields with total/truncated accounting.",
       "limitations": [
-        "Add bounded camera query route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded camera listing only; no Game View/runtime visual credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5858,9 +5851,9 @@
         "funplay:set_camera_properties"
       ],
       "implementationState": "partial",
-      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationReason": "cameraSetProperties targets a resolved cc.Camera component, applies bounded requested properties through scene IPC, and verifies each requested value by fresh component read-back; the broader source contract is credited only for this bounded property subset.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
+        "Bounded cc.Camera property mutation is evidenced; unverified native camera fields and visual/runtime behavior are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
@@ -5892,11 +5885,12 @@
       "sourceIds": [
         "funplay:set_node_transform"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "unreviewed",
+      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Use component reference with type/values output adapter.",
+        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
+        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."

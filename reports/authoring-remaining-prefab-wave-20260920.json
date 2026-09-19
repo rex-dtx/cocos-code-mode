@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "remaining design-prefab and prefab authoring contracts",
+  "implemented": [
+    {
+      "route": "prefabInspect",
+      "file": "source/utcp/tools/prefab-json-tools.ts",
+      "behavior": "Reads a bounded prefab JSON asset and returns stable asset identity, root record, object-entry count, discovered component type markers, and normalized UUID references."
+    },
+    {
+      "route": "readPrefabJson",
+      "file": "source/utcp/tools/prefab-json-tools.ts",
+      "behavior": "Existing exact bounded serialized prefab load/read route; validates JSON, asset type, source size, and source metadata."
+    },
+    {
+      "route": "prefabInstantiate",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Existing exact create-instance route validates prefab source and parent, verifies linked node identity, and rolls back failed disposable instances."
+    },
+    {
+      "route": "prefabApplyOverrides",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Existing exact update/apply route verifies linked instance and source read-back hashes."
+    },
+    {
+      "route": "prefabRevertOverrides",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Existing exact full restore route verifies linked identity and source read-back; selective paths fail closed."
+    },
+    {
+      "route": "prefabReferenceAudit",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Existing bounded prefab validation route scans serialized UUID references, reports nested prefab references and missing dependencies."
+    },
+    {
+      "route": "sceneReferenceValidate",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Existing bounded scene serialized-reference validation route reopens source and reports missing UUID dependencies."
+    },
+    {
+      "route": "sceneHierarchyValidate",
+      "file": "source/utcp/tools/scene-tools.ts",
+      "behavior": "Existing bounded hierarchy validation route checks node identity, duplicate paths/UUIDs, cycles/repeated objects, and parent topology."
+    },
+    {
+      "route": "referenceImageManage inspect/list/set/clear",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Reference-image lifecycle supports native inspect/list when exposed and profile-backed persistent list/inspect/set/clear fallback with bounded records and read-back."
+    }
+  ],
+  "blocked": [
+    {
+      "workflow": "design-prefab.cocos-mcp-get-prefab-info",
+      "reason": "No exact native get-prefab-info contract; prefabInspect is the bounded serialized equivalent and no speculative alias was added."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-restore-prefab-node",
+      "reason": "Creator exposes full restore only through restore-prefab; no distinct node-level native route was found."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-set-reference-image-data",
+      "reason": "Native reference-image transform/configuration IPC is unavailable on Creator 3.7.3."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-set-reference-image-opacity",
+      "reason": "Native reference-image transform/configuration IPC is unavailable on Creator 3.7.3."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-set-reference-image-position",
+      "reason": "Native reference-image transform/configuration IPC is unavailable on Creator 3.7.3."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-set-reference-image-scale",
+      "reason": "Native reference-image transform/configuration IPC is unavailable on Creator 3.7.3."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-refresh-reference-image",
+      "reason": "No exact refresh IPC or profile operation is exposed; no speculative wrapper was added."
+    },
+    {
+      "workflow": "design-prefab.cocos-mcp-switch-reference-image",
+      "reason": "No exact switch IPC or profile operation is exposed; no speculative wrapper was added."
+    },
+    {
+      "workflow": "prefabRevertOverrides selective paths",
+      "code": "UNSUPPORTED_SELECTIVE_REVERT",
+      "status": 422,
+      "reason": "Creator 3.7.3 restore-prefab supports full-instance restoration only."
+    }
+  ],
+  "tests": {
+    "focused": "npx tsc --pretty false && node --test tests/unit/advanced-capability-tools.test.js tests/unit/prefab-apply-postcondition.test.js",
+    "passed": 10,
+    "failed": 0,
+    "added": ["prefabInspect serialized structure summary"]
+  }
+}
