@@ -6,6 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { requireDist } = require('../helpers/require-dist');
 const { AdvancedCapabilityTools } = requireDist('utcp/tools/advanced-capability-tools.js');
+const { PrefabJsonTools } = requireDist('utcp/tools/prefab-json-tools.js');
 const { ToolRegistry } = requireDist('utcp/decorators.js');
 
 describe('advanced capability tools', () => {
@@ -202,11 +203,36 @@ describe('advanced capability tools', () => {
       if (previous === undefined) delete global.Editor; else global.Editor = previous;
     }
   });
+  it('returns prefab info and validates serialized dependencies with read-back', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-validate-'));
+    const file = path.join(root, 'fixture.prefab');
+    fs.writeFileSync(file, JSON.stringify({ __type__: 'cc.Node', child: { __type__: 'cc.Sprite', asset: '11111111-1111-1111-1111-111111111111@sub' } }));
+    const previous = global.Editor;
+    const row = { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
+    global.Editor = { Message: { request: async (service, message) => {
+      if (service === 'asset-db' && message === 'query-asset-info') return row;
+      if (service === 'asset-db' && message === 'query-assets') return [row];
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const tools = new PrefabJsonTools();
+      const info = await tools.prefabInfo({ reference: { id: 'prefab-asset', type: 'cc.Prefab' } });
+      assert.equal(info.totalEntries, 2);
+      const validation = await tools.prefabValidate({ reference: { id: 'prefab-asset', type: 'cc.Prefab' } });
+      assert.equal(validation.valid, false);
+      assert.deepEqual(validation.missingReferences, [{ id: '11111111-1111-1111-1111-111111111111' }]);
+      assert.equal(validation.issues[0].code, 'MISSING_REFERENCE');
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
 
 
   it('registers all bounded prefab, tilemap, UI, and ergonomics routes', () => {
     const names = new Set(ToolRegistry.getTools().map(({ tool }) => tool.name));
     for (const name of [
+      'prefabInfo', 'prefabValidate',
       'referenceImageManage', 'prefabOverrideDiff', 'prefabReferenceAudit', 'sceneReferenceValidate',
       'prefabInstantiate', 'prefabCreateFromNode', 'prefabUpdate', 'prefabInstanceInspect', 'prefabApplyOverrides', 'prefabRevertOverrides', 'prefabRestore', 'tilemapInspect',
       'tilemapLayerEdit', 'tilemapObjectEdit', 'tilemapValidate', 'spriteAtlasConfigure',

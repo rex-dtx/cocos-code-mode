@@ -14,22 +14,22 @@ function requireText(value: unknown, name: string, max = 256): string {
 }
 
 export class P4ContractTools {
-    @utcpTool('physics2dConfigure', 'Configure 2D physics project settings only when Creator exposes a verified project settings writer.', {
+    @utcpTool('physics2dConfigure', 'Configure 2D physics project settings only when Creator exposes a verified project settings writer, then query and verify the persisted value.', {
         type: 'object', additionalProperties: false,
         properties: { path: { type: 'string', minLength: 1, maxLength: 256 }, value: {} },
         required: ['path', 'value'],
-    }, { type: 'object', properties: { success: { type: 'boolean' } }, required: ['success'] }, 'POST', ['physics', '2d', 'configure'])
-    async physics2dConfigure(args: { path?: string, value?: unknown }): Promise<{ success: boolean }> {
+    }, { type: 'object', properties: { success: { type: 'boolean' }, path: { type: 'string' }, readBack: {} }, required: ['success', 'path', 'readBack'] }, 'POST', ['physics', '2d', 'configure'])
+    async physics2dConfigure(args: { path?: string, value?: unknown }): Promise<{ success: boolean, path: string, readBack: unknown }> {
         const path = requireText(args?.path, 'path');
         return projectTools.projectSetConfig({ path, value: args?.value });
     }
 
-    @utcpTool('physics3dConfigure', 'Configure 3D physics project settings only when Creator exposes a verified project settings writer.', {
+    @utcpTool('physics3dConfigure', 'Configure 3D physics project settings only when Creator exposes a verified project settings writer, then query and verify the persisted value.', {
         type: 'object', additionalProperties: false,
         properties: { path: { type: 'string', minLength: 1, maxLength: 256 }, value: {} },
         required: ['path', 'value'],
-    }, { type: 'object', properties: { success: { type: 'boolean' } }, required: ['success'] }, 'POST', ['physics', '3d', 'configure'])
-    async physics3dConfigure(args: { path?: string, value?: unknown }): Promise<{ success: boolean }> {
+    }, { type: 'object', properties: { success: { type: 'boolean' }, path: { type: 'string' }, readBack: {} }, required: ['success', 'path', 'readBack'] }, 'POST', ['physics', '3d', 'configure'])
+    async physics3dConfigure(args: { path?: string, value?: unknown }): Promise<{ success: boolean, path: string, readBack: unknown }> {
         const path = requireText(args?.path, 'path');
         return projectTools.projectSetConfig({ path, value: args?.value });
     }

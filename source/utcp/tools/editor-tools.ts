@@ -423,8 +423,21 @@ export class EditorTools {
                 if (currentId && currentId !== uuid) throw new ToolError({ code: 'SCENE_SAVE_AS_UNCONFIRMED', status: 502, message: `Creator did not activate saved scene ${uuid}.` });
                 return { success: true, reference: { id: uuid, type: 'cc.SceneAsset' } };
             }
-            case 'close_scene_or_prefab': await Editor.Message.request('scene', 'close-scene'); return { success: true };
-            case 'soft_reload': await Editor.Message.request('scene', 'soft-reload'); return { success: true };
+            case 'close_scene_or_prefab': {
+                await Editor.Message.request('scene', 'close-scene');
+                const current = await Editor.Message.request('scene', 'query-current-scene').catch(() => null);
+                if (current !== null && current !== undefined && current !== '') throw new ToolError({ code: 'SCENE_CLOSE_UNCONFIRMED', status: 502, message: 'Creator still reports an active scene after close.' });
+                return { success: true };
+            }
+            case 'soft_reload': {
+                const before = await Editor.Message.request('scene', 'query-current-scene').catch(() => undefined);
+                const beforeId = typeof before === 'string' ? before : before && typeof before === 'object' && 'uuid' in before && typeof before.uuid === 'string' ? before.uuid : undefined;
+                await Editor.Message.request('scene', 'soft-reload');
+                const after = await Editor.Message.request('scene', 'query-current-scene').catch(() => undefined);
+                const afterId = typeof after === 'string' ? after : after && typeof after === 'object' && 'uuid' in after && typeof after.uuid === 'string' ? after.uuid : undefined;
+                if (beforeId && afterId && beforeId !== afterId) throw new ToolError({ code: 'SCENE_RELOAD_UNCONFIRMED', status: 502, message: 'Soft reload activated a different scene.' });
+                return { success: true };
+            }
             case 'play_preview': await Editor.Message.request('scene', 'editor-preview-set-play', true); return { success: true };
             case 'pause': await Editor.Message.request('scene', 'editor-preview-call-method', 'pause', true); return { success: true };
             case 'step': await Editor.Message.request('scene', 'editor-preview-call-method', 'step'); return { success: true };

@@ -110,22 +110,39 @@ describe('projectManage gated 3.8 support (plan 2-todo-260831)', () => {
   });
 
   // ── 3.8 success path (mocked IPC) ─────────────────────────────
-  it('projectSetConfig on 3.8 succeeds via IPC with (project, dotPath, value) shape', async () => {
+  it('projectSetConfig on 3.8 succeeds via IPC and verifies query-config read-back', async () => {
     const calls = [];
+    const config = { physics: { gravity: { x: 0, y: -9.8, z: 0 } } };
     const restore = installEditor(async (module_, message, scope, dotPath, value) => {
       calls.push({ module_, message, scope, dotPath, value });
       assert.equal(module_, 'project');
-      assert.equal(message, 'set-config');
+      if (message === 'set-config') {
+        assert.equal(scope, 'project');
+        assert.equal(dotPath, 'physics.gravity');
+        assert.deepEqual(value, config.physics.gravity);
+        return true;
+      }
+      assert.equal(message, 'query-config');
       assert.equal(scope, 'project');
-      assert.equal(dotPath, 'physics.gravity');
-      assert.deepEqual(value, { x: 0, y: -9.8, z: 0 });
-      return true;
+      return config;
     });
     try {
       const tools = new ProjectTools();
-      const res = await tools.projectSetConfig({ path: 'physics.gravity', value: { x: 0, y: -9.8, z: 0 } });
-      assert.deepEqual(res, { success: true });
-      assert.equal(calls.length, 1);
+      const res = await tools.projectSetConfig({ path: 'physics.gravity', value: config.physics.gravity });
+      assert.deepEqual(res, { success: true, path: 'physics.gravity', readBack: config.physics.gravity });
+      assert.deepEqual(calls.map(call => call.message), ['set-config', 'query-config']);
+    } finally { restore(); }
+  });
+  it('projectSetConfig rejects a successful IPC write with mismatched read-back', async () => {
+    const restore = installEditor(async (_module, message) => {
+      if (message === 'set-config') return true;
+      return { physics: { gravity: { x: 0, y: -1, z: 0 } } };
+    });
+    try {
+      await assert.rejects(
+        () => new ProjectTools().projectSetConfig({ path: 'physics.gravity', value: { x: 0, y: -9.8, z: 0 } }),
+        (err) => err.code === 'READBACK_MISMATCH' && err.status === 502,
+      );
     } finally { restore(); }
   });
 

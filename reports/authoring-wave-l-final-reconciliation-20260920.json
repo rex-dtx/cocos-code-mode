@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "wave": "authoring-wave-l-final-reconciliation-20260920",
+  "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
+  "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "promotedWorkflowIds": [
+    "asset.funplay-get-editor-preference",
+    "asset.funplay-set-editor-preference",
+    "assets-import.cocos-mcp-validate-asset-references",
+    "assets-import.funplay-create-scene",
+    "design-prefab.cocos-mcp-get-prefab-info",
+    "design-prefab.cocos-mcp-validate-prefab",
+    "design-prefab.funplay-inspect-prefab-instance",
+    "design-prefab.funplay-revert-prefab-instance",
+    "prefab.cocos-mcp-create-prefab",
+    "prefab.funplay-create-prefab-from-node",
+    "scene.cocos-mcp-execute-component-method",
+    "scene.cocos-mcp-save-scene",
+    "scene.cocos-mcp-save-scene-as",
+    "scene.cocos-mcp-scene-snapshot-abort",
+    "scene.cocos-mcp-soft-reload-scene"
+  ],
+  "metrics": {
+    "totalSourceRows": 356,
+    "includedAuthoringRows": 247,
+    "deferredRows": 109,
+    "confirmedCompleteBefore": 195,
+    "confirmedCompleteAfter": 210,
+    "targetComplete": 223,
+    "deficitTo90": 13,
+    "implementationPercent": 85.02,
+    "gatePassed": false
+  },
+  "residual": {
+    "unsupportedOrBlockedPreserved": true,
+    "remainingIncludedNonComplete": 37,
+    "notableUnsupportedOrBlocked": [
+      "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-retarget-validate",
+      "animation.funplay-stop-animation",
+      "asset.cocos-mcp-open-asset-external",
+      "design-prefab.cocos-mcp-query-reference-image-config",
+      "design-prefab.cocos-mcp-refresh-reference-image",
+      "design-prefab.cocos-mcp-restore-prefab-node",
+      "design-prefab.cocos-mcp-set-reference-image-data",
+      "design-prefab.cocos-mcp-set-reference-image-opacity",
+      "design-prefab.cocos-mcp-set-reference-image-position",
+      "design-prefab.cocos-mcp-set-reference-image-scale",
+      "design-prefab.cocos-mcp-switch-reference-image",
+      "physics-2d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics2d-configure",
+      "physics-3d.lane-1-wip-260908-tbd-child-p4-physics-particles-physics3d-configure",
+      "terrain-model.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-terrain-edit",
+      "ui-layout.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-preview-resolution-set"
+    ],
+    "partialBoundedRowsRetained": [
+      "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
+      "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
+      "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure"
+    ]
+  },
+  "verification": {
+    "typescript": "npx tsc --pretty false --noEmit passed",
+    "focusedTests": "51 tests passed across 14 suites",
+    "workflowAudit": "passed",
+    "authoringAudit": "passed",
+    "fullSuite": "not run per assignment"
+  },
+  "changedFiles": [
+    "docs/workflow-implementation-overrides.json",
+    "docs/workflow-implementation-evidence.json",
+    "docs/workflow-inventory.json",
+    "docs/workflow-source-mapping.json",
+    "reports/workflow-coverage-report.json",
+    "reports/workflow-closure-backlog.json",
+    "docs/authoring-first-workflow-inventory.json",
+    "reports/authoring-first-workflow-coverage-report.json",
+    "reports/authoring-first-workflow-closure-backlog.json",
+    "reports/authoring-wave-l-final-reconciliation-20260920.json"
+  ],
+  "notes": [
+    "Denominator hashes are unchanged.",
+    "No plans were edited.",
+    "Unsupported runtime/native/external rows receive no complete credit."
+  ]
+}

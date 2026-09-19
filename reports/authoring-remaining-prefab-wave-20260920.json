@@ -4,6 +4,26 @@
   "scope": "remaining design-prefab and prefab authoring contracts",
   "implemented": [
     {
+      "route": "prefabInfo",
+      "file": "source/utcp/tools/prefab-json-tools.ts",
+      "behavior": "Reads a bounded serialized prefab and returns authoritative asset identity, root record, entry count, component markers, and normalized UUID references."
+    },
+    {
+      "route": "prefabValidate",
+      "file": "source/utcp/tools/prefab-json-tools.ts",
+      "behavior": "Validates bounded prefab JSON and imported UUID dependencies with typed missing-reference issues and source identity read-back."
+    },
+    {
+      "route": "prefabInstanceInspect",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Reads one scene node's linked prefab identity and bounded property overrides directly from __prefab__ read-back."
+    },
+    {
+      "route": "prefabCreateFromNode",
+      "file": "source/utcp/tools/advanced-capability-tools.ts",
+      "behavior": "Creates a prefab from a scene node through the verified Creator script and verifies created asset identity and persistence."
+    },
+    {
       "route": "prefabInspect",
       "file": "source/utcp/tools/prefab-json-tools.ts",
       "behavior": "Reads a bounded prefab JSON asset and returns stable asset identity, root record, object-entry count, discovered component type markers, and normalized UUID references."
