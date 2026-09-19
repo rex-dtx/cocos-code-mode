@@ -3,24 +3,24 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6bb7f8c814bebbe8aeedd0a3c83cf717ba2d41756a511cc5927ddc84a8784b97",
+  "sourceInventoryHash": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6bb7f8c814bebbe8aeedd0a3c83cf717ba2d41756a511cc5927ddc84a8784b97",
+    "docs/workflow-inventory.json": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "a657dd06c388100694750d22968d7219b5a8c9b11779cc9ee0a0d91ccb6b8a61",
-    "reports/workflow-coverage-report.json": "20d875568cd04c1fd5eaeced13ef0c3b17791646bac9b5fbe7886fa2533fcf69",
-    "reports/workflow-closure-backlog.json": "02a516249c48e357a92ae9d27516966c71d510d523ec9dc61797372f6fe7d008"
+    "docs/workflow-implementation-evidence.json": "aef3d72e2cef629ff9eebfe48f7030ef3e14eee97d653c69ac3f186f55eb1e6f",
+    "reports/workflow-coverage-report.json": "5f0cf3560b2fe2be274d2afe3f53906912b4ef00706d940bc3c84b95d1c7b5e0",
+    "reports/workflow-closure-backlog.json": "451a706ebd9cd05fcc60a56b9bd5df0cc75129104d4ac4ced04d74d828250489"
   },
   "status": "measurable",
   "totalSourceRows": 356,
   "includedAuthoringRows": 247,
   "deferredRows": 109,
   "denominator": 247,
-  "confirmedComplete": 215,
-  "implementationPercent": 87.04,
+  "confirmedComplete": 220,
+  "implementationPercent": 89.07,
   "targetPercent": 90,
   "targetComplete": 223,
-  "deficitTo90": 8,
+  "deficitTo90": 3,
   "byDomain": {
     "animation-graph": {
       "total": 6,
@@ -179,10 +179,10 @@
       "total": 6,
       "included": 5,
       "deferred": 1,
-      "complete": 3,
-      "implementationPercent": 60,
+      "complete": 4,
+      "implementationPercent": 80,
       "targetComplete": 5,
-      "deficit": 2
+      "deficit": 1
     },
     "runtime-qa": {
       "total": 3,
@@ -206,19 +206,19 @@
       "total": 72,
       "included": 71,
       "deferred": 1,
-      "complete": 61,
-      "implementationPercent": 85.92,
+      "complete": 64,
+      "implementationPercent": 90.14,
       "targetComplete": 64,
-      "deficit": 3
+      "deficit": 0
     },
     "skeletal-animation": {
       "total": 5,
       "included": 2,
       "deferred": 3,
-      "complete": 1,
-      "implementationPercent": 50,
+      "complete": 2,
+      "implementationPercent": 100,
       "targetComplete": 2,
-      "deficit": 1
+      "deficit": 0
     },
     "terrain-model": {
       "total": 4,

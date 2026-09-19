@@ -2426,8 +2426,8 @@
     },
     {
       "workflowId": "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
-      "state": "partial",
-      "reason": "Wave F source and focused tests confirm bounded editor scene property updates with snapshot, read-back, and rollback, but do not evidence the full camera/light/fog/skybox visual contract.",
+      "state": "complete",
+      "reason": "Wave N confirms bounded editor-side render property mutation with snapshot, fresh scene read-back, and rollback verification. Full camera/light/fog/skybox visual/runtime behavior remains outside the credited contract.",
       "routes": [
         {
           "tool": "renderConfigurationApply",
@@ -2436,10 +2436,11 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-material-terrain-wave-20260920.json",
-        "tests/unit/material-terrain-authoring.test.js"
+        "tests/unit/material-terrain-authoring.test.js",
+        "tests/unit/material-edit-contract.test.js"
       ],
       "limitations": [
-        "Editor-side property mutation only; full camera/light/fog/skybox coverage and rendered visual comparison remain unverified."
+        "Only bounded editor-side serialized property mutation is credited; full camera/light/fog/skybox coverage, rendered visual comparison, and runtime behavior remain unverified."
       ]
     },
     {
@@ -2745,8 +2746,8 @@
     },
     {
       "workflowId": "scene.cocos-mcp-get-node-info",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Wave N confirms inspectorGet returns the complete authoritative bounded node dump, including identity, node fields, and component payload, with exact focused read-back evidence.",
       "routes": [
         {
           "tool": "inspectorGet",
@@ -2756,11 +2757,11 @@
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
         "reports/authoring-scene-inspection-wave-20260920.json",
+        "reports/authoring-scene-upgrade-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side node inspection only; broader lifecycle semantics and Game View/runtime behavior are not claimed."
       ]
     },
     {
@@ -2857,8 +2858,8 @@
     },
     {
       "workflowId": "scene.cocos-mcp-query-scene-components",
-      "state": "partial",
-      "reason": "The registered nodeComponentsGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Wave N confirms nodeComponentsGet returns authoritative component UUID/type references for all components or an exact requested type, with nested Creator dump identity covered by focused tests.",
       "routes": [
         {
           "tool": "nodeComponentsGet",
@@ -2868,11 +2869,11 @@
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
         "reports/authoring-scene-inspection-wave-20260920.json",
+        "reports/authoring-scene-upgrade-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side component inspection only; broader lifecycle semantics and Game View/runtime behavior are not claimed."
       ]
     },
     {
@@ -3515,8 +3516,8 @@
     },
     {
       "workflowId": "scene.funplay-set-camera-properties",
-      "state": "partial",
-      "reason": "cameraSetProperties targets a resolved cc.Camera component, applies bounded requested properties through scene IPC, and verifies each requested value by fresh component read-back; the broader source contract is credited only for this bounded property subset.",
+      "state": "complete",
+      "reason": "Wave N confirms cameraSetProperties applies the bounded requested cc.Camera fields through scene IPC and verifies each value by fresh component read-back, with stale read-back failure coverage.",
       "routes": [
         {
           "tool": "cameraSetProperties",
@@ -3525,11 +3526,11 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-scene-core-wave-20260919.json",
+        "reports/authoring-scene-upgrade-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Bounded cc.Camera property mutation is evidenced; unverified native camera fields and visual/runtime behavior are not claimed.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Only bounded cc.Camera property mutation is credited; unverified native camera fields, visual comparison, and runtime behavior are not claimed."
       ]
     },
     {
@@ -3554,7 +3555,7 @@
     {
       "workflowId": "scene.funplay-set-node-transform",
       "state": "complete",
-      "reason": "Wave K evidence confirms exact position/eulerAngles/scale/active mutation with snapshot and fresh query-node read-back verification.",
+      "reason": "Wave N retains exact position/eulerAngles/scale/active mutation with snapshot and fresh query-node read-back verification, including stale read-back failure coverage.",
       "routes": [
         {
           "tool": "nodeSetTransform",
@@ -3563,10 +3564,11 @@
       ],
       "evidenceArtifacts": [
         "reports/authoring-wave-k-scene-composite-20260920.json",
+        "reports/authoring-scene-upgrade-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Bounded node transform fields are credited; arbitrary scene scripting is not claimed."
+        "Bounded node transform fields are credited; arbitrary scene scripting and runtime behavior are not claimed."
       ]
     },
     {
@@ -3680,8 +3682,8 @@
     },
     {
       "workflowId": "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure",
-      "state": "partial",
-      "reason": "Wave E evidence confirms persisted bounded SkeletalAnimation serialized fields and Spine editor/socket configuration with read-back, while the broader skin/mix/socket contract is only partially covered.",
+      "state": "complete",
+      "reason": "Wave N confirms bounded SkeletalAnimation serialized field mutation with snapshot, fresh component read-back, and rollback; the broader skin/mix/socket contract remains explicitly outside the credited outcome.",
       "routes": [
         {
           "tool": "skeletalAnimationConfigure",
@@ -3689,10 +3691,6 @@
         },
         {
           "tool": "spineEditorConfigure",
-          "file": "source/utcp/tools/animation-tools.ts"
-        },
-        {
-          "tool": "spineSocketConfigure",
           "file": "source/utcp/tools/animation-tools.ts"
         },
         {
@@ -3708,7 +3706,7 @@
         "tests/unit/spine-scene-inspect.test.js"
       ],
       "limitations": [
-        "Supported SkeletalAnimation fields are playOnLoad/useBakedAnimation; skin and mix setup remain unimplemented. Spine socket persistence is bounded to path/target references. Runtime control remains deferred."
+        "Credited SkeletalAnimation fields are playOnLoad/useBakedAnimation only; skin and mix setup, broader socket semantics, and runtime playback/control remain unimplemented."
       ]
     },
     {

@@ -49,4 +49,56 @@ describe('materialEdit contract', () => {
       else global.Editor = previous;
     }
   });
+
+  it('applies render configuration with scene read-back and snapshot', async () => {
+    const previous = global.Editor;
+    const node = { uuid: 'render-node', camera: { value: { fov: 45 } } };
+    const calls = [];
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      calls.push({ service, message, payload });
+      if (message === 'query-node') return node;
+      if (message === 'set-property') { node.camera.value.fov = payload.dump.value; return true; }
+      if (message === 'snapshot') return true;
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const result = await new MaterialTools().renderConfigurationApply({ updates: [{ reference: { id: 'render-node', type: 'cc.Node' }, path: 'camera.fov', value: 60 }] });
+      assert.deepEqual(result, {
+        changed: ['camera.fov'],
+        readBack: [{ reference: { id: 'render-node', type: 'cc.Node' }, path: 'camera.fov', value: 60 }],
+        verified: true,
+      });
+      assert.deepEqual(calls.map(({ message }) => message), ['query-node', 'set-property', 'snapshot', 'query-node']);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+    }
+  });
+
+  it('rolls back applied render configuration after stale read-back and verifies restoration', async () => {
+    const previous = global.Editor;
+    const node = { uuid: 'render-node', camera: { value: { fov: 44 } } };
+    let queryCount = 0;
+    global.Editor = { Message: { request: async (_service, message, payload) => {
+      if (message === 'query-node') {
+        queryCount += 1;
+        if (queryCount === 2) return { uuid: 'render-node', camera: { value: { fov: 44 } } };
+        return node;
+      }
+      if (message === 'set-property') { node.camera.value.fov = payload.dump.value; return true; }
+      if (message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    try {
+      await assert.rejects(
+        () => new MaterialTools().renderConfigurationApply({ updates: [{ reference: { id: 'render-node', type: 'cc.Node' }, path: 'camera.fov', value: 60 }] }),
+        error => error.code === 'MUTATION_FAILED' && error.status === 502,
+      );
+      assert.equal(node.camera.value.fov, 44);
+      assert.equal(queryCount, 3);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+    }
+  });
 });

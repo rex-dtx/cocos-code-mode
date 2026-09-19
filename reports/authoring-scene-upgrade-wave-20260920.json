@@ -1,0 +1,55 @@
+{
+  "wave": "scene-upgrade",
+  "date": "2026-09-20",
+  "scope": "Existing editor-side scene routes with complete bounded contracts and authoritative read-back.",
+  "promotable": [
+    {
+      "workflow": "scene.cocos-mcp-get-node-info",
+      "route": "nodeGetInfo",
+      "file": "source/utcp/tools/scene-tools.ts",
+      "evidence": "Returns the complete authoritative query-node dump, including identity, node fields, and component payload; focused test asserts exact payload read-back."
+    },
+    {
+      "workflow": "scene.cocos-mcp-query-scene-components",
+      "route": "nodeComponentsGet",
+      "file": "source/utcp/tools/component-tools.ts",
+      "evidence": "Returns authoritative component UUID/type references for all components or an exact requested type; focused tests cover nested Creator dump identity and filtered/unfiltered outcomes."
+    },
+    {
+      "workflow": "scene.funplay-get-scene-info",
+      "route": "sceneGetInfo",
+      "file": "source/utcp/tools/scene-tools.ts",
+      "evidence": "Existing focused test confirms bounds, dirty/isDirty aliases, current scene identity, and hierarchy node count."
+    },
+    {
+      "workflow": "scene.funplay-set-node-transform",
+      "route": "nodeSetTransform",
+      "file": "source/utcp/tools/scene-tools.ts",
+      "evidence": "Existing focused test confirms exact position/eulerAngles/scale/active paths and new negative test confirms stale fresh read-back fails closed."
+    },
+    {
+      "workflow": "scene.funplay-set-camera-properties",
+      "route": "cameraSetProperties",
+      "file": "source/utcp/tools/scene-tools.ts",
+      "evidence": "Existing focused test confirms successful property read-back and new negative test confirms stale fresh component read-back fails closed."
+    }
+  ],
+  "alreadyComplete": [
+    "scene.cocos-mcp-get-current-scene",
+    "scene.cocos-mcp-query-scene-dirty",
+    "scene.cocos-mcp-close-scene",
+    "scene.funplay-save-current-scene"
+  ],
+  "blocked": [
+    "No native/runtime/Game View behavior was claimed; these promotions are bounded editor-side contracts only."
+  ],
+  "tests": {
+    "command": "node --test tests/unit/scene-authoring-contracts.test.js",
+    "passed": 26,
+    "failed": 0
+  },
+  "typecheck": {
+    "command": "npx tsc --pretty false",
+    "passed": true
+  }
+}

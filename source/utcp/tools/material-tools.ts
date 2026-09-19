@@ -25,6 +25,11 @@ function propertyAtPath(value: unknown, path: string): unknown {
 function jsonEqual(left: unknown, right: unknown): boolean {
     return JSON.stringify(left) === JSON.stringify(right);
 }
+function cloneValue<T>(value: T): T {
+    if (value === undefined) return value;
+    return JSON.parse(JSON.stringify(value)) as T;
+}
+
 
 async function queryMaterial(id: string): Promise<unknown> {
     try {
@@ -321,7 +326,7 @@ export class MaterialTools {
             if (!update?.reference?.id || typeof update.reference.id !== 'string' || typeof update.path !== 'string' || !/^[A-Za-z0-9_.]{1,256}$/.test(update.path)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `updates[${index}] has an invalid reference or property path.` });
             const node = await Editor.Message.request('scene', 'query-node', update.reference.id) as unknown as Record<string, unknown> | null;
             if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Render configuration target ${update.reference.id} was not found.` });
-            originals.push({ update, original: propertyAtPath(node, update.path) });
+            originals.push({ update, original: cloneValue(propertyAtPath(node, update.path)) });
         }
         const applied: typeof originals = [];
         try {
@@ -346,6 +351,11 @@ export class MaterialTools {
                     if (result === false) throw new Error(`Creator refused rollback ${entry.update.path}`);
                 }
                 await Editor.Message.request('scene', 'snapshot');
+                for (const entry of applied) {
+                    const node = await Editor.Message.request('scene', 'query-node', entry.update.reference.id) as unknown as Record<string, unknown> | null;
+                    const restored = node ? propertyAtPath(node, entry.update.path) : undefined;
+                    if (!jsonEqual(restored, entry.original)) throw new Error(`rollback read-back mismatch for ${entry.update.path}`);
+                }
             } catch (rollbackError) {
                 throw new ToolError({ code: 'ROLLBACK_FAILED', status: 500, message: 'renderConfigurationApply failed and could not restore scene properties.', details: { cause: error instanceof Error ? error.message : String(error), rollbackCause: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) } });
             }

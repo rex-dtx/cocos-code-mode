@@ -317,3 +317,67 @@ describe('scene history residual contracts', () => {
     assert.deepEqual(calls, ['snapshot-abort']);
   });
 });
+describe('scene upgrade read-back contracts', () => {
+  it('nodeGetInfo returns the complete authoritative node dump, not only identity', async () => {
+    global.Editor = { Message: { request: async (_service, message, id) => {
+      if (message === 'query-node') return {
+        uuid: id,
+        name: 'Player',
+        active: { value: true, type: 'Boolean' },
+        position: { value: { x: 1, y: 2, z: 3 } },
+        __comps__: [{ value: { uuid: { value: 'label-1' }, __type__: { value: 'cc.Label' } } }],
+      };
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().nodeGetInfo({ reference: { id: 'node-1' } }), {
+      uuid: 'node-1',
+      name: 'Player',
+      active: { value: true, type: 'Boolean' },
+      position: { value: { x: 1, y: 2, z: 3 } },
+      __comps__: [{ value: { uuid: { value: 'label-1' }, __type__: { value: 'cc.Label' } } }],
+    });
+  });
+
+  it('nodeComponentsGet returns authoritative component references for the requested node', async () => {
+    global.Editor = { Message: { request: async (_service, message) => {
+      if (message === 'query-node') return {
+        __comps__: [
+          { value: { uuid: { value: 'label-1' }, __type__: { value: 'cc.Label' } } },
+          { uuid: 'script-1', type: 'GameController' },
+        ],
+      };
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new ComponentTools().nodeComponentsGet({ reference: { id: 'node-1' }, componentType: 'cc.Label' }), {
+      references: [{ id: 'label-1', type: 'cc.Label' }],
+    });
+    assert.deepEqual(await new ComponentTools().nodeComponentsGet({ reference: { id: 'node-1' } }), {
+      references: [{ id: 'label-1', type: 'cc.Label' }, { id: 'script-1', type: 'GameController' }],
+    });
+  });
+
+  it('nodeSetTransform rejects accepted writes when fresh read-back is stale', async () => {
+    global.Editor = { Message: { request: async (_service, message) => {
+      if (message === 'query-node') return { uuid: 'node-1', position: { value: { x: 1, y: 2, z: 3 } } };
+      if (message === 'set-property' || message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    await assert.rejects(
+      new SceneTools().nodeSetTransform({ reference: { id: 'node-1' }, position: { x: 8, y: 9, z: 10 } }),
+      error => error.code === 'NODE_TRANSFORM_UPDATE_UNCONFIRMED' && error.status === 502,
+    );
+  });
+
+  it('cameraSetProperties rejects accepted writes when fresh component read-back is stale', async () => {
+    global.Editor = { Message: { request: async (_service, message) => {
+      if (message === 'query-node-tree') return { uuid: 'root', children: [{ uuid: 'node-1', children: [], __comps__: [{ type: 'cc.Camera', value: { uuid: { value: 'camera-1' }, fov: { value: 45 } } }] }] };
+      if (message === 'query-node') return { uuid: 'node-1', __comps__: [{ type: 'cc.Camera', value: { uuid: { value: 'camera-1' }, fov: { value: 45 } } }] };
+      if (message === 'set-property' || message === 'snapshot') return true;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    await assert.rejects(
+      new SceneTools().cameraSetProperties({ reference: { id: 'camera-1' }, properties: { fov: 60 } }),
+      error => error.code === 'CAMERA_PROPERTY_UPDATE_UNCONFIRMED' && error.status === 502,
+    );
+  });
+});
