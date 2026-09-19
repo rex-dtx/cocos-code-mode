@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
+  "sourceInventoryHash": "e744a7acb91821654f3872025ae504ca7143a82f943162d0f89cb31cd505d2e1",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
+    "docs/workflow-inventory.json": "e744a7acb91821654f3872025ae504ca7143a82f943162d0f89cb31cd505d2e1",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "aef3d72e2cef629ff9eebfe48f7030ef3e14eee97d653c69ac3f186f55eb1e6f",
-    "reports/workflow-coverage-report.json": "5f0cf3560b2fe2be274d2afe3f53906912b4ef00706d940bc3c84b95d1c7b5e0",
-    "reports/workflow-closure-backlog.json": "451a706ebd9cd05fcc60a56b9bd5df0cc75129104d4ac4ced04d74d828250489"
+    "docs/workflow-implementation-evidence.json": "d842e3493882e2717b825957bef4039b0a6ee90fe748c90bedd7e2de62bb0b4e",
+    "reports/workflow-coverage-report.json": "5e5a52870377692523ba7875455bb65965c0c688772d9e1853eedcad9fa97c1d",
+    "reports/workflow-closure-backlog.json": "6746ae5f0cec52f961486898cd54712d6e590fd28ce262e7d2b98450ff0d2c57"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -5396,11 +5396,11 @@
       "sourceIds": [
         "cocos-mcp:set_node_transform"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "Focused final-three evidence confirms nodeSetTransform writes exact bounded transform fields, snapshots, and requires fresh query-node read-back before success.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Only bounded position, Euler rotation, scale, and active fields are covered; arbitrary transform or lifecycle semantics are not inferred.",
+        "Rollback of a partially applied transform batch is not claimed by this route."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5891,11 +5891,11 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:assetUsageAnalyze"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused final-three evidence confirms project-wide serialized asset reachability analysis with graph-v4 roots, candidates, bounds, completeness, and dynamic-load caveat.",
       "limitations": [
-        "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Static graph proof covers serialized UUID references only; dynamic runtime addressables, resources.load, and computed string paths remain outside proof.",
+        "Completeness is false when the graph is truncated or serialized source files are excluded/unavailable."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -6013,11 +6013,12 @@
       "sourceIds": [
         "parent:mutation-workflow"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused final-three evidence confirms bounded parent mutation postcondition checking and UI layout partial-failure rollback behavior.",
       "limitations": [
-        "Mutate editor state with preflight, postcondition and recovery.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "This is bounded per-operation evidence, not a universal transaction spanning arbitrary scene mutations.",
+        "nodeOperate move reports postcondition failure but does not claim automatic parent rollback.",
+        "Only the tested uiLayoutApply partial-failure path claims rollback; other mutation families have their own contracts."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."

@@ -3086,22 +3086,21 @@
     },
     {
       "workflowId": "scene.cocos-mcp-set-node-transform",
-      "state": "partial",
-      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Focused final-three evidence confirms nodeSetTransform writes exact bounded transform fields, snapshots, and requires fresh query-node read-back before success.",
       "routes": [
         {
-          "tool": "inspectorSet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
+          "tool": "nodeSetTransform",
+          "file": "source/utcp/tools/scene-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
-        "tests/unit/scene-authoring-contracts.test.js"
+        "reports/authoring-final-three-gate-20260920.json",
+        "tests/unit/authoring-final-three-gate.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Only bounded position, Euler rotation, scale, and active fields are covered; arbitrary transform or lifecycle semantics are not inferred.",
+        "Rollback of a partially applied transform batch is not claimed by this route."
       ]
     },
     {
@@ -3877,6 +3876,49 @@
       ],
       "limitations": [
         "Read-only geometry projection, not rendered viewport comparison; no runtime preview or panel-click credit."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
+      "state": "complete",
+      "reason": "Focused final-three evidence confirms project-wide serialized asset reachability analysis with graph-v4 roots, candidates, bounds, completeness, and dynamic-load caveat.",
+      "routes": [
+        {
+          "tool": "assetUsageAnalyze",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-three-gate-20260920.json",
+        "tests/unit/authoring-final-three-gate.test.js"
+      ],
+      "limitations": [
+        "Static graph proof covers serialized UUID references only; dynamic runtime addressables, resources.load, and computed string paths remain outside proof.",
+        "Completeness is false when the graph is truncated or serialized source files are excluded/unavailable."
+      ]
+    },
+    {
+      "workflowId": "scene.parent-mutation-workflow",
+      "state": "complete",
+      "reason": "Focused final-three evidence confirms bounded parent mutation postcondition checking and UI layout partial-failure rollback behavior.",
+      "routes": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        },
+        {
+          "tool": "uiLayoutApply",
+          "file": "source/utcp/tools/ui-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-three-gate-20260920.json",
+        "tests/unit/authoring-final-three-gate.test.js"
+      ],
+      "limitations": [
+        "This is bounded per-operation evidence, not a universal transaction spanning arbitrary scene mutations.",
+        "nodeOperate move reports postcondition failure but does not claim automatic parent rollback.",
+        "Only the tested uiLayoutApply partial-failure path claims rollback; other mutation families have their own contracts."
       ]
     }
   ]
