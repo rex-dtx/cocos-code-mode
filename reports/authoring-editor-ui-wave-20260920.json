@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "editor and UI authoring routes recovered from interrupted Wave F worker",
+  "changedFiles": [
+    "source/utcp/editor-control-contracts.ts",
+    "source/utcp/tools/editor-tools.ts",
+    "source/utcp/tools/ui-tools.ts"
+  ],
+  "routes": [
+    "editor state/control contracts",
+    "editor selection/state helpers",
+    "UI compound ScrollView authoring with hierarchy/component read-back",
+    "UI layout validation and authoring helpers"
+  ],
+  "verification": {
+    "typescriptBuild": "pass",
+    "mergedWaveTests": "26/26 pass"
+  },
+  "limitations": [
+    "The editor/UI worker was interrupted before producing its own report.",
+    "Only committed after parent-side build and merged focused verification; exact workflow promotion remains evidence reconciliation work.",
+    "No panel-click-only or runtime preview credit."
+  ]
+}

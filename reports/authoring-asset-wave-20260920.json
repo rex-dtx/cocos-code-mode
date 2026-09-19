@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "editor-side asset authoring contracts",
+  "implemented": [
+    "assetQuery lists bounded asset records with pattern/type/importer/extension/bundle filters",
+    "assetGetAtPath and assetResolvePath resolve authoritative db:// URL, filesystem path, UUID, type, sub-asset and existence identity",
+    "assetFindReferences covers used_by and depends_on dependency routes with bounded optional URL/type resolution",
+    "assetCreate and assetImport now require authoritative query-asset-info UUID/type read-back before returning references",
+    "assetOperate move/copy/open/refresh/reimport/save_meta now returns authoritative read-back; delete verifies absence",
+    "assetBatchImport and assetBatchOperate preserve bounded per-item outcomes and partial-failure accounting",
+    "assetManifestExport, assetCatalogManifest, assetUsageAnalyze, and assetMissingReferenceAudit provide bounded deterministic manifests, hashes, dependency/reference evidence, and explicit exclusions"
+  ],
+  "routes": [
+    "assetQuery",
+    "assetGetAtPath",
+    "assetResolvePath",
+    "assetFindReferences",
+    "assetGetAvailableUrl",
+    "assetCreate",
+    "assetImport",
+    "assetOperate",
+    "assetBatchImport",
+    "assetBatchOperate",
+    "assetManifestExport",
+    "assetCatalogManifest",
+    "assetUsageAnalyze",
+    "assetMissingReferenceAudit"
+  ],
+  "observableContracts": [
+    "mutation routes do not return a provisional UUID when Creator read-back is absent or malformed",
+    "delete reports ASSET_READBACK_FAILED if the target remains present",
+    "batch routes continue after item failures and report succeeded, failed, partial, and bounded item errors",
+    "manifest and graph routes cap asset/file/reference work and report exclusions/truncation instead of silently dropping evidence"
+  ],
+  "tests": [
+    "tests/unit/asset-batch-and-missing-audit.test.js (5/5 pass)",
+    "tests/unit/asset-contract-audit.test.js (3/3 pass)",
+    "npx tsc --pretty false --noEmit (asset-tools.ts introduced no diagnostics; existing diagnostics remain in material-tools.ts)"
+  ],
+  "blockers": [
+    "External filesystem/open-file contracts remain out of scope; assetImport accepts an existing source path only.",
+    "Project-wide TypeScript build is blocked by concurrent diagnostics in source/utcp/tools/material-tools.ts; asset-tools.ts emits no diagnostics."
+  ],
+  "cleanup": "No generated coverage or plan files changed; batch outcomes remain bounded and operation read-back failures are explicit."
+}

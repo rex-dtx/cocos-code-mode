@@ -215,55 +215,58 @@ export class EditorTools {
     )
     async editorSelect(args: { operation: string, selectionType?: string, references?: IInstanceReference[] }):
         Promise<{ success: boolean, selected?: string[], lastSelected?: string, lastSelectedType?: string }> {
+        if (!args || typeof args.operation !== 'string') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'editorSelect requires a supported operation.' });
         const type = args.selectionType === 'asset' ? 'asset' : 'node';
-        const uuids = (args.references || []).map((r: IInstanceReference) => r.id).filter((id: string) => !!id);
-
-        switch (args.operation) {
-            case 'select': {
-                if (uuids.length === 0) {
-                    throw new Error('references required for select');
-                }
-                Editor.Selection.select(type, uuids.length === 1 ? uuids[0] : uuids);
-                return { success: true, selected: Editor.Selection.getSelected(type) };
+        if (args.selectionType !== undefined && args.selectionType !== 'node' && args.selectionType !== 'asset') {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'selectionType must be node or asset.' });
+        }
+        const references = args.references ?? [];
+        if (!Array.isArray(references) || references.some((reference) => !reference || typeof reference.id !== 'string' || reference.id.trim().length === 0)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain non-empty ids.' });
+        }
+        const uuids = references.map((reference) => reference.id);
+        const selected = (): string[] => {
+            const value = Editor.Selection.getSelected(type);
+            if (!Array.isArray(value) || value.some((id: unknown) => typeof id !== 'string')) throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: `Creator returned malformed ${type} selection read-back.` });
+            return value;
+        };
+        try {
+            switch (args.operation) {
+                case 'select':
+                    if (uuids.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references required for select' });
+                    Editor.Selection.select(type, uuids.length === 1 ? uuids[0] : uuids);
+                    break;
+                case 'unselect':
+                    if (uuids.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references required for unselect' });
+                    Editor.Selection.unselect(type, uuids.length === 1 ? uuids[0] : uuids);
+                    break;
+                case 'clear':
+                    Editor.Selection.clear(type);
+                    break;
+                case 'select_all':
+                    if (type !== 'node') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'select_all only supports selectionType "node"' });
+                    await Editor.Message.request('scene', 'select-all-nodes');
+                    break;
+                case 'hover':
+                    if (uuids.length > 1) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'hover accepts zero or one reference.' });
+                    (Editor.Selection as unknown as { hover: (kind: string, id?: string) => void }).hover(type, uuids[0]);
+                    break;
+                case 'update':
+                    if (uuids.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references required for update' });
+                    (Editor.Selection as unknown as { update: (kind: string, ids: string[]) => void }).update(type, uuids);
+                    break;
+                case 'query':
+                    break;
+                default:
+                    throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `Unknown selection operation: ${args.operation}` });
             }
-            case 'unselect': {
-                if (uuids.length === 0) {
-                    throw new Error('references required for unselect');
-                }
-                Editor.Selection.unselect(type, uuids.length === 1 ? uuids[0] : uuids);
-                return { success: true, selected: Editor.Selection.getSelected(type) };
-            }
-            case 'clear':
-                Editor.Selection.clear(type);
-                return { success: true, selected: [] };
-            case 'select_all':
-                if (type !== 'node') {
-                    throw new Error('select_all only supports selectionType "node"');
-                }
-                await Editor.Message.request('scene', 'select-all-nodes');
-                return { success: true, selected: Editor.Selection.getSelected('node') };
-            case 'hover': {
-                // 3.7: hover(type, uuid?) — uuid omitted/null = hover-out, emits selection:hover
-                const uuid = uuids.length ? uuids[0] : undefined;
-                (Editor.Selection as any).hover(type, uuid);
-                return { success: true, selected: Editor.Selection.getSelected(type) };
-            }
-            case 'update': {
-                if (uuids.length === 0) {
-                    throw new Error('references required for update');
-                }
-                (Editor.Selection as any).update(type, uuids);
-                return { success: true, selected: Editor.Selection.getSelected(type) };
-            }
-            case 'query':
-                return {
-                    success: true,
-                    selected: Editor.Selection.getSelected(type),
-                    lastSelected: Editor.Selection.getLastSelected(type) || undefined,
-                    lastSelectedType: (Editor.Selection as any).getLastSelectedType?.() || undefined
-                };
-            default:
-                throw new Error(`Unknown selection operation: ${args.operation}`);
+            const current = selected();
+            const last = Editor.Selection.getLastSelected(type);
+            const lastType = (Editor.Selection as unknown as { getLastSelectedType?: () => unknown }).getLastSelectedType?.();
+            return { success: true, selected: current, ...(typeof last === 'string' && last ? { lastSelected: last } : {}), ...(typeof lastType === 'string' && lastType ? { lastSelectedType: lastType } : {}) };
+        } catch (error: unknown) {
+            if (error instanceof ToolError) throw error;
+            throw new ToolError({ code: 'EDITOR_SELECTION_FAILED', status: 502, message: 'Creator selection operation failed.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Retry after the editor scene is ready.' });
         }
     }
 

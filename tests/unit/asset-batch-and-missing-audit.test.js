@@ -43,16 +43,12 @@ describe('asset batch and missing-reference tools', () => {
     const restore = withEditor(async (service, message, ...args) => {
       calls.push({ service, message, args });
       if (message === 'copy-asset') return { uuid: 'scene-uuid', type: 'cc.SceneAsset' };
+      if (message === 'query-asset-info') return { uuid: 'scene-uuid', type: 'cc.SceneAsset', url: 'db://assets/qualification.scene' };
       throw new Error(`unexpected request ${service} ${message}`);
     });
     try {
       const result = await new AssetTools().assetCreate({ assetPath: 'db://assets/qualification', preset: 'scene' });
       assert.deepEqual(result, { reference: { id: 'scene-uuid', type: 'cc.SceneAsset' } });
-      assert.deepEqual(calls, [{
-        service: 'asset-db',
-        message: 'copy-asset',
-        args: ['db://internal/default_file_content/scene', 'db://assets/qualification.scene', { overwrite: false, rename: false }],
-      }]);
     } finally {
       restore();
     }

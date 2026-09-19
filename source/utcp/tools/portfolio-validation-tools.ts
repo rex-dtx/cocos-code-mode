@@ -426,6 +426,42 @@ export class PortfolioValidationTools {
         }
     }
 
-    @utcpTool('modelImportConfigure', 'Configure one typed model importer property.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, path: { type: 'string' }, value: {} }, required: ['reference', 'path', 'value'] }, { type: 'object' }, 'POST', ['model', 'import', 'configure'])
-    async modelImportConfigure(args: any) { const asset = await info(args.reference); if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' }); return new AssetTools().assetImportSettingsSet(args); }
+    @utcpTool('terrainEdit', 'Edit bounded Terrain serialized height/layer data when Creator exposes a supported terrain write API; otherwise fail closed.', {
+        type: 'object', additionalProperties: false,
+        properties: { reference: InstanceReferenceSchema, path: { type: 'string', minLength: 1, maxLength: 128, pattern: '^(height|layers)(?:\\.[A-Za-z0-9_]+)*$' }, value: {}, },
+        required: ['reference', 'path', 'value'],
+    }, { type: 'object', properties: { reference: InstanceReferenceSchema, path: { type: 'string' }, changed: { type: 'boolean' }, readBack: {}, verified: { type: 'boolean' } }, required: ['reference', 'path', 'changed', 'readBack', 'verified'] }, 'POST', ['terrain', 'edit', 'configure'])
+    async terrainEdit(args: { reference: IInstanceReference, path: string, value: unknown }): Promise<Record<string, unknown>> {
+        if (!args?.reference?.id || typeof args.reference.id !== 'string' || typeof args.path !== 'string' || !/^(height|layers)(?:\\.[A-Za-z0-9_]+)*$/.test(args.path)) invalid('terrainEdit requires a supported height or layers path and reference.');
+        throw new ToolError({ code: 'UNSUPPORTED_EDITOR_API', status: 422, message: 'Creator 3.7.3 does not expose a supported persistent Terrain height/layer write API.', details: { reference: args.reference, path: args.path }, recovery: 'Use terrainCreate/terrainInspect for editor-side terrain authoring, or provide a Creator version exposing a terrain write API.' });
+    }
+
+    @utcpTool('modelImportConfigure', 'Configure one typed model importer property with reimport and read-back.', {
+        type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, path: { type: 'string', minLength: 1, maxLength: 128, pattern: '^[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*$' }, value: {} }, required: ['reference', 'path', 'value']
+    }, { type: 'object', properties: { changed: { type: 'boolean' }, path: { type: 'string' }, previous: {}, readBack: {}, result: { type: 'object' } }, required: ['changed', 'path', 'previous', 'readBack', 'result'] }, 'POST', ['model', 'import', 'configure', 'reimport'])
+    async modelImportConfigure(args: { reference: IInstanceReference, path: string, value: unknown }) {
+        const asset = await info(args.reference);
+        if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' });
+        return new AssetTools().assetImportSettingsSet(args);
+    }
+
+    @utcpTool('modelImportInspect', 'Inspect typed model importer settings and output metadata.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: InstanceReferenceSchema, importer: { type: 'string' }, settings: { type: 'object' }, schema: { type: 'object' }, outputs: { type: 'array' } }, required: ['reference', 'importer', 'settings', 'schema', 'outputs'] }, 'GET', ['model', 'import', 'inspect'])
+    async modelImportInspect(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const asset = await info(args.reference);
+        if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' });
+        const result = await new AssetTools().assetImportSettingsGet({ reference: args.reference });
+        const subAssets = asset.subAssets && typeof asset.subAssets === 'object' ? Object.values(asset.subAssets as Record<string, unknown>) : [];
+        return { reference: result.reference, importer: result.importer, settings: result.settings, schema: result.schema, outputs: subAssets.slice(0, 128) };
+    }
+
+    @utcpTool('modelImportValidate', 'Validate typed model importer settings and imported mesh/skeleton/LOD outputs.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, importer: { type: 'string' }, issues: { type: 'array' }, outputs: { type: 'array' } }, required: ['valid', 'reference', 'importer', 'issues', 'outputs'] }, 'GET', ['model', 'import', 'validate'])
+    async modelImportValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.modelImportInspect(args);
+        const outputs = Array.isArray(inspected.outputs) ? inspected.outputs : [];
+        const issues: Array<Record<string, unknown>> = [];
+        if (!outputs.length) issues.push({ code: 'OUTPUTS_UNAVAILABLE', message: 'No imported model sub-assets were exposed by asset-db.' });
+        const settings = inspected.settings;
+        if (!settings || typeof settings !== 'object') issues.push({ code: 'SETTINGS_UNAVAILABLE' });
+        return { valid: issues.length === 0, reference: inspected.reference, importer: inspected.importer, issues, outputs };
+    }
 }

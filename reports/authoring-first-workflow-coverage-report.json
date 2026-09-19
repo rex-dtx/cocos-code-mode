@@ -3,24 +3,24 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
+  "sourceInventoryHash": "5c2f91c45f5d92fe26213d3dc50d42ebb12c89d248078d4295f9681cd87b3fef",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6606e532bdda2c7669427194afc1aef18a9b7a6756ff3f9ac1065c9c019ee8ac",
+    "docs/workflow-inventory.json": "5c2f91c45f5d92fe26213d3dc50d42ebb12c89d248078d4295f9681cd87b3fef",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "ad6f7d854b1f2feedc4fa30f70e41e81db1247f3d6bc40e7b73cf41d505bc130",
-    "reports/workflow-coverage-report.json": "9045ae4b5f0efe2f2a14c20ce5061698733ffe45919c60cd6ce455daab1e4d20",
-    "reports/workflow-closure-backlog.json": "b9735d000bf2dd3e7026f0838daeb4d323ffd51c35a14d642b1cb55e53828c3d"
+    "docs/workflow-implementation-evidence.json": "1827b6bca21fd5ac6bfad3407faf3001044a4bfcbf5416888e8e5e26e727642c",
+    "reports/workflow-coverage-report.json": "86ab8a3e114a01b8a0094da0e21f42ff1954c4dbca251dcb1547d9988af360d2",
+    "reports/workflow-closure-backlog.json": "1f03127218bbdbd185ccfbced4c4171ac0ce2d0024568f6635b7d6334a1ee596"
   },
   "status": "measurable",
   "totalSourceRows": 356,
   "includedAuthoringRows": 247,
   "deferredRows": 109,
   "denominator": 247,
-  "confirmedComplete": 53,
-  "implementationPercent": 21.46,
+  "confirmedComplete": 57,
+  "implementationPercent": 23.08,
   "targetPercent": 90,
   "targetComplete": 223,
-  "deficitTo90": 170,
+  "deficitTo90": 166,
   "byDomain": {
     "animation-graph": {
       "total": 6,
@@ -206,10 +206,10 @@
       "total": 72,
       "included": 71,
       "deferred": 1,
-      "complete": 9,
-      "implementationPercent": 12.68,
+      "complete": 13,
+      "implementationPercent": 18.31,
       "targetComplete": 64,
-      "deficit": 55
+      "deficit": 51
     },
     "skeletal-animation": {
       "total": 5,
