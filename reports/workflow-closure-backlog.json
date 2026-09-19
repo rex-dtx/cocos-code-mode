@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 258,
+  "requiredFor90": 257,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -1039,24 +1039,13 @@
       "dependencies": []
     },
     {
-      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Typed source read-back and hashes are implemented, but live apply returned `Failed to apply prefab` on the writable fixture; unqualified.\nApply a typed override set and verify source/instance result.",
-      "limitations": [
-        "Apply a typed override set and verify source/instance result.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "Wave D evidence confirms authoritative full-instance restore, while Creator 3.7.3 explicitly rejects selective revert with UNSUPPORTED_SELECTIVE_REVERT.",
       "acceptance": "Full restore delegates to Creator; selective paths are explicitly rejected with `UNSUPPORTED_SELECTIVE_REVERT` on Creator 3.7.3.\nRevert selected overrides and verify restored values.",
       "limitations": [
-        "Revert selected overrides and verify restored values.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "dependencies": []
     },

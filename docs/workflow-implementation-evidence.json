@@ -1381,19 +1381,27 @@
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Wave D evidence confirms prefabApplyOverrides performs typed source and instance read-back with authoritative node and linked-source identity checks.",
+      "routes": [
+        {
+          "tool": "prefabApplyOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js",
+        "tests/unit/prefab-apply-postcondition.test.js"
+      ],
       "limitations": [
-        "Apply a typed override set and verify source/instance result.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Wave D evidence confirms prefabInstantiate validates source and parent identities, verifies created node and linked prefab identity, and cleans up failed disposable nodes.",
       "routes": [
         {
           "tool": "prefabInstantiate",
@@ -1401,18 +1409,17 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/prefabInstantiate/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Instantiate and prove persistent prefab identity and overrides.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-override-diff",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Wave D evidence confirms prefabOverrideDiff validates both prefab references and returns stable source hashes with structural changes.",
       "routes": [
         {
           "tool": "prefabOverrideDiff",
@@ -1420,18 +1427,17 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/prefabOverrideDiff/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Structural live-instance versus prefab-source override diff with stable identities.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-reference-audit",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Wave D evidence confirms prefabReferenceAudit remains nested-reference validation with typed missing-reference evidence.",
       "routes": [
         {
           "tool": "prefabReferenceAudit",
@@ -1439,23 +1445,30 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/prefabReferenceAudit/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Detect broken or ambiguous nested prefab and override references after reload.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "partial",
+      "reason": "Wave D evidence confirms authoritative full-instance restore, while Creator 3.7.3 explicitly rejects selective revert with UNSUPPORTED_SELECTIVE_REVERT.",
+      "routes": [
+        {
+          "tool": "prefabRevertOverrides",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
       "limitations": [
-        "Revert selected overrides and verify restored values.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ]
     },
     {
