@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "project": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+  "installedArtifact": {
+    "version": "2.0.0-dev.a73ec37",
+    "commit": "a73ec37",
+    "dirty": false,
+    "linked": false
+  },
+  "creator": {
+    "version": "3.7.3",
+    "mainProcessResponsive": true,
+    "windowTitle": "Cocos Creator 3.7.3",
+    "utcpPort": 56396,
+    "utcpListening": false,
+    "waitedSeconds": 240
+  },
+  "projectLog": "Only the Creator argument banner was emitted; no extension activation or UTCP startup line appeared.",
+  "qualified": false,
+  "decision": "Immutable artifact identity is correct on disk, but Creator stalls before extension activation. Runtime lifecycle cannot be live-qualified until the editor reaches extension load/UTCP startup."
+}
