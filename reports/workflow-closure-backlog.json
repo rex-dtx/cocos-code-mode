@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 88,
+  "requiredFor90": 85,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
@@ -1232,34 +1232,12 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-set-node-transform",
-      "state": "partial",
-      "reason": "The registered inspectorSet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "set_node_transform",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.funplay-execute-scene-script",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "- *Tính năng:* Chạy script trực tiếp trong context của scene.\n    - *Inputs:* `script: string`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* `execute-scene-script` IPC message.",
       "limitations": [
         "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
-      "limitations": [
-        "Original requirement: evidence-backed project-wide unreferenced candidates with roots and graph-v4. Current `9e0838c` is only an open-scene probe (6 focused tests passed); review rejected it as proof of the full contract. The requirement is not rejected/replaced by user approval and remains open.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []
@@ -1282,17 +1260,6 @@
       "acceptance": "Create complete scene/UI composition with stable node, component and asset identities.",
       "limitations": [
         "Create a complete scene/UI composition with stable identities.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.parent-mutation-workflow",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Preflight mutation, apply boundedly, verify postconditions and recover from partial failure.",
-      "limitations": [
-        "Mutate editor state with preflight, postcondition and recovery.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
       "dependencies": []

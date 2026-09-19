@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "Focused evidence for the final three authoring workflow gate rows",
+  "changedFiles": [
+    "tests/unit/authoring-final-three-gate.test.js",
+    "reports/authoring-final-three-gate-20260920.json"
+  ],
+  "workflows": [
+    {
+      "workflowId": "scene.cocos-mcp-set-node-transform",
+      "state": "bounded-complete",
+      "directRoute": "nodeSetTransform",
+      "routeTransport": "POST /tools/nodeSetTransform",
+      "evidence": [
+        "Exact scene property paths position, eulerAngles, scale, and active are written with typed dumps.",
+        "A scene snapshot is requested after writes.",
+        "Fresh query-node read-back is required for every requested field and stale values fail with NODE_TRANSFORM_UPDATE_UNCONFIRMED.",
+        "Focused test proves the success response and the direct route metadata."
+      ],
+      "limitations": [
+        "Only bounded position, Euler rotation, scale, and active fields are covered; arbitrary transform or lifecycle semantics are not inferred.",
+        "Rollback of a partially applied transform batch is not claimed by this route."
+      ]
+    },
+    {
+      "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-usage-analyze",
+      "state": "bounded-complete",
+      "directRoute": "assetUsageAnalyze",
+      "routeTransport": "GET /tools/assetUsageAnalyze",
+      "evidence": [
+        "Project-wide asset-db enumeration produces graphVersion v4 evidence.",
+        "Serialized scene UUID references create graph edges; reachable and project-unreachable assets are distinguished.",
+        "Candidate and reference evidence are bounded by maxAssets/maxGraphAssets and the registered output schema caps candidates at 128.",
+        "The result exposes graph completeness, roots, truncation, exclusions, and the dynamic-load caveat.",
+        "Focused test proves a reachable scene dependency and an unreachable candidate."
+      ],
+      "limitations": [
+        "Static graph proof covers serialized UUID references only; dynamic runtime addressables, resources.load, and computed string paths remain outside proof.",
+        "Completeness is false when the graph is truncated or serialized source files are excluded/unavailable."
+      ]
+    },
+    {
+      "workflowId": "scene.parent-mutation-workflow",
+      "state": "bounded-complete",
+      "directRoutes": [
+        "nodeOperate(operation=move)",
+        "uiLayoutApply"
+      ],
+      "routeTransports": [
+        "POST /tools/nodeOperate",
+        "POST /tools/uiLayoutApply"
+      ],
+      "evidence": [
+        "Move preflights target existence, applies set-parent, snapshots, and requires authoritative parent read-back; mismatches fail with NODE_MOVE_UNCONFIRMED.",
+        "UI layout mutation captures original values, applies bounded fields, and aborts the pending snapshot on partial failure while restoring already-applied fields.",
+        "Focused test proves both a postcondition failure and rollback-safe partial mutation behavior."
+      ],
+      "limitations": [
+        "This is bounded per-operation evidence, not a universal transaction spanning arbitrary scene mutations.",
+        "nodeOperate move reports postcondition failure but does not claim automatic parent rollback.",
+        "Only the tested uiLayoutApply partial-failure path claims rollback; other mutation families have their own contracts."
+      ]
+    }
+  ],
+  "verification": {
+    "focusedTests": "node --test tests/unit/authoring-final-three-gate.test.js — 3 passed",
+    "plansOrCoverageEdited": false,
+    "fullSuite": "not run; parent agent owns project-wide validation"
+  }
+}

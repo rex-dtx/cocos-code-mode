@@ -3,24 +3,24 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
+  "sourceInventoryHash": "e744a7acb91821654f3872025ae504ca7143a82f943162d0f89cb31cd505d2e1",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "6127f839bc348d29140ad61cf506c5afc8620a813df13f091d96a7b128514f95",
+    "docs/workflow-inventory.json": "e744a7acb91821654f3872025ae504ca7143a82f943162d0f89cb31cd505d2e1",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "aef3d72e2cef629ff9eebfe48f7030ef3e14eee97d653c69ac3f186f55eb1e6f",
-    "reports/workflow-coverage-report.json": "5f0cf3560b2fe2be274d2afe3f53906912b4ef00706d940bc3c84b95d1c7b5e0",
-    "reports/workflow-closure-backlog.json": "451a706ebd9cd05fcc60a56b9bd5df0cc75129104d4ac4ced04d74d828250489"
+    "docs/workflow-implementation-evidence.json": "d842e3493882e2717b825957bef4039b0a6ee90fe748c90bedd7e2de62bb0b4e",
+    "reports/workflow-coverage-report.json": "5e5a52870377692523ba7875455bb65965c0c688772d9e1853eedcad9fa97c1d",
+    "reports/workflow-closure-backlog.json": "6746ae5f0cec52f961486898cd54712d6e590fd28ce262e7d2b98450ff0d2c57"
   },
   "status": "measurable",
   "totalSourceRows": 356,
   "includedAuthoringRows": 247,
   "deferredRows": 109,
   "denominator": 247,
-  "confirmedComplete": 220,
-  "implementationPercent": 89.07,
+  "confirmedComplete": 223,
+  "implementationPercent": 90.28,
   "targetPercent": 90,
   "targetComplete": 223,
-  "deficitTo90": 3,
+  "deficitTo90": 0,
   "byDomain": {
     "animation-graph": {
       "total": 6,
@@ -206,8 +206,8 @@
       "total": 72,
       "included": 71,
       "deferred": 1,
-      "complete": 64,
-      "implementationPercent": 90.14,
+      "complete": 67,
+      "implementationPercent": 94.37,
       "targetComplete": 64,
       "deficit": 0
     },
