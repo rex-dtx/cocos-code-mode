@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "bounded editor-side asset/import authoring contracts",
+  "implemented": [
+    {"workflowId":"asset.cocos-mcp-query-asset-db-ready","route":"assetDbQuery","evidence":"Existing assetDbQuery ready operation forwards asset-db/query-ready with bounded schema and focused registry coverage."},
+    {"workflowId":"asset.cocos-mcp-query-preferences-config","route":"queryPreferencesConfig","evidence":"New bounded package/key preferences IPC route returns explicit null for unset values."},
+    {"workflowId":"asset.cocos-mcp-set-preferences-config","route":"setPreferencesConfig","evidence":"New bounded package/key preferences IPC mutation performs authoritative queryConfig read-back and reports updated."},
+    {"workflowId":"asset.cocos-mcp-save-asset","route":"assetSaveContent","evidence":"Existing save-asset route requires authoritative asset read-back before and after mutation."},
+    {"workflowId":"asset.funplay-exists","route":"projectFileExists","evidence":"Existing project-root guarded file/directory existence route returns exists and isDirectory."},
+    {"workflowId":"asset.funplay-get-file-snippet","route":"projectFileSnippet","evidence":"New bounded line/radius snippet route enforces project-root path safety and finite file size."},
+    {"workflowId":"asset.funplay-inspect-asset","route":"assetInspect","evidence":"Existing authoritative identity, metadata, serialized data and byte/truncation read-back."},
+    {"workflowId":"asset.funplay-validate-asset-dependencies","route":"assetMissingReferenceAudit","evidence":"Existing bounded serialized UUID audit with source line evidence; source paths now enforce project root."},
+    {"workflowId":"asset.cocos-mcp-get-unused-assets","route":"assetUsageAnalyze","evidence":"Existing graph-v4 project reachability analysis reports project-unreachable candidates; serialized source paths now enforce project root."},
+    {"workflowId":"scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export","route":"assetManifestExport","evidence":"Existing deterministic bounded manifest with hashes/dependencies/exclusions; source paths now enforce project root."},
+    {"workflowId":"assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get","route":"assetImportSettingsGet","evidence":"Existing typed importer settings normalization and source identity."},
+    {"workflowId":"assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set","route":"assetImportSettingsSet","evidence":"Existing typed mutation, reimport, read-back verification and rollback."},
+    {"workflowId":"assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure","route":"assetCompressionConfigure","evidence":"Existing platform preset validation, metadata persistence, reimport, source/output hashes; source path safety enforced."}
+  ],
+  "blocked": [
+    {"workflowId":"asset.cocos-mcp-open-asset-external","reason":"Explicitly excluded: no OS external open or file delivery."},
+    {"workflowId":"asset.cocos-mcp-get-log-file-info","reason":"No exact bounded editor-side asset contract or authoritative route."},
+    {"workflowId":"asset.funplay-replace-in-file","reason":"Existing projectReplaceInFile is broader than the requested source equivalence and was not expanded in this wave."},
+    {"workflowId":"asset.funplay-search-files","reason":"Existing projectSearchFiles covers project search, but no separate source-compatible directory-filter contract was added."}
+  ],
+  "changedFiles": [
+    "source/utcp/tools/asset-tools.ts",
+    "source/utcp/tools/file-tools.ts",
+    "source/utcp/tools/preference-tools.ts",
+    "tests/unit/asset-final-wave.test.js",
+    "reports/authoring-final-asset-import-wave-20260920.json"
+  ],
+  "tests": [
+    "npx tsc --pretty false --noEmit (pass)",
+    "npx tsc --pretty false (pass)",
+    "focused asset/import suites: 31/31 pass",
+    "tests/unit/asset-final-wave.test.js: 2/2 pass"
+  ],
+  "notes": [
+    "No plans, denominator hashes, coverage files, or generated coverage artifacts changed.",
+    "All direct filesystem asset evidence paths added in this wave are project-root guarded.",
+    "No OS external open behavior was added."
+  ]
+}

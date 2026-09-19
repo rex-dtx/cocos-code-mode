@@ -88,4 +88,39 @@ export class PreferenceTools {
         await Editor.Profile.setConfig(packageJSON.name, args.key, args.value);
         return { success: true, key: args.key, value: args.value };
     }
+
+    @utcpTool(
+        'queryPreferencesConfig',
+        'Read a bounded package/key preference config through Creator preferences IPC.',
+        {
+            type: 'object',
+            properties: { packageName: { type: 'string', minLength: 1, maxLength: 128 }, key: { type: 'string', minLength: 1, maxLength: 256 } },
+            required: ['packageName', 'key'],
+        },
+        { type: 'object', properties: { value: {} }, required: ['value'] },
+        'GET', ['preference', 'preferences', 'config', 'package', 'read']
+    )
+    async queryPreferencesConfig(args: { packageName: string, key: string }): Promise<{ value: unknown }> {
+        if (!/^[A-Za-z0-9._-]{1,128}$/.test(args.packageName) || !/^[A-Za-z0-9._/-]{1,256}$/.test(args.key)) throw new Error('packageName and key must be bounded preference identifiers.');
+        const value = await Editor.Message.request('preferences', 'queryConfig', args.packageName, args.key);
+        return { value: value === undefined ? null : value };
+    }
+
+    @utcpTool(
+        'setPreferencesConfig',
+        'Write a bounded package/key preference config and return the authoritative preference read-back.',
+        {
+            type: 'object',
+            properties: { packageName: { type: 'string', minLength: 1, maxLength: 128 }, key: { type: 'string', minLength: 1, maxLength: 256 }, value: {} },
+            required: ['packageName', 'key', 'value'],
+        },
+        { type: 'object', properties: { updated: { type: 'boolean' }, value: {} }, required: ['updated', 'value'] },
+        'POST', ['preference', 'preferences', 'config', 'package', 'write']
+    )
+    async setPreferencesConfig(args: { packageName: string, key: string, value: unknown }): Promise<{ updated: boolean, value: unknown }> {
+        if (!/^[A-Za-z0-9._-]{1,128}$/.test(args.packageName) || !/^[A-Za-z0-9._/-]{1,256}$/.test(args.key)) throw new Error('packageName and key must be bounded preference identifiers.');
+        await Editor.Message.request('preferences', 'setConfig', args.packageName, args.key, args.value);
+        const readBack = await Editor.Message.request('preferences', 'queryConfig', args.packageName, args.key);
+        return { updated: JSON.stringify(readBack) === JSON.stringify(args.value), value: readBack === undefined ? null : readBack };
+    }
 }

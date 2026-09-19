@@ -185,3 +185,27 @@ describe('typed animation tools', () => {
     }
   });
 });
+
+describe('animation editor clipboard adapters', () => {
+  it('maps copy, cut, and paste to native scene routes with identity read-back', async () => {
+    const calls = [];
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      calls.push([service, message, payload]);
+      if (message === 'copy-node') return ['copy-1'];
+      if (message === 'cut-node' || message === 'snapshot') return true;
+      if (message === 'paste-node') return ['paste-1'];
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const tools = new AnimationTools();
+      assert.deepEqual(await tools.animationCopyNode({ references: [{ id: 'node-1' }] }), { success: true, references: [{ id: 'copy-1', type: 'cc.Node' }] });
+      assert.deepEqual(await tools.animationCutNode({ references: [{ id: 'node-1' }] }), { success: true, references: [{ id: 'node-1', type: 'cc.Node' }] });
+      assert.deepEqual(await tools.animationPasteNode({ references: [{ id: 'copy-1' }], targetReference: { id: 'root' } }), { success: true, references: [{ id: 'paste-1', type: 'cc.Node' }] });
+      assert.deepEqual(calls.map((call) => call[1]), ['copy-node', 'cut-node', 'snapshot', 'paste-node', 'snapshot']);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+    }
+  });
+});

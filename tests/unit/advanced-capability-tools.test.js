@@ -149,6 +149,27 @@ describe('advanced capability tools', () => {
       (error) => error.code === 'UNSUPPORTED_SELECTIVE_REVERT' && error.status === 422,
     );
   });
+  it('restores a prefab instance through native full restore and reads back identity', async () => {
+    const previous = global.Editor;
+    const requests = [];
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      requests.push([service, message, payload]);
+      if (service === 'scene' && message === 'query-node') return { uuid: 'instance', __prefab__: { value: { uuid: 'prefab-asset' } } };
+      if (service === 'asset-db' && message === 'query-asset-info') return { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file: __filename };
+      if (service === 'scene' && message === 'restore-prefab') return true;
+      if (service === 'scene' && message === 'snapshot') return true;
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const result = await new AdvancedCapabilityTools().prefabRestore({ reference: { id: 'instance', type: 'cc.Node' } });
+      assert.equal(result.operation, 'revert');
+      assert.equal(result.persisted, true);
+      assert.ok(requests.some(([, message]) => message === 'restore-prefab'));
+      assert.deepEqual(result.reference, { id: 'instance', type: 'cc.Node' });
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
+  });
 
 
 
@@ -156,7 +177,7 @@ describe('advanced capability tools', () => {
     const names = new Set(ToolRegistry.getTools().map(({ tool }) => tool.name));
     for (const name of [
       'referenceImageManage', 'prefabOverrideDiff', 'prefabReferenceAudit', 'sceneReferenceValidate',
-      'prefabInstantiate', 'prefabApplyOverrides', 'prefabRevertOverrides', 'tilemapInspect',
+      'prefabInstantiate', 'prefabApplyOverrides', 'prefabRevertOverrides', 'prefabRestore', 'tilemapInspect',
       'tilemapLayerEdit', 'tilemapObjectEdit', 'tilemapValidate', 'spriteAtlasConfigure',
       'uiResponsivePreview', 'previewResolutionSet', 'editorUndoTransactionProbe', 'broadcastObserve',
     ]) assert.ok(names.has(name), name);

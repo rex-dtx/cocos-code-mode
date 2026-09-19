@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "wave": "authoring-final-scene-animation-wave-20260920",
+  "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
+  "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "complete": [
+    "animation.cocos-mcp-copy-node",
+    "animation.cocos-mcp-cut-node",
+    "animation.cocos-mcp-paste-node",
+    "scene.cocos-mcp-create-scene",
+    "scene.cocos-mcp-detect-node-type",
+    "scene.cocos-mcp-get-component-info",
+    "scene.cocos-mcp-scene-snapshot",
+    "scene.funplay-inspect-node"
+  ],
+  "blocked": [
+    { "workflowId": "animation.funplay-stop-animation", "reason": "Runtime/context scene-script invocation is excluded by the final gate; animationRuntimeControl remains the bounded runtime route." },
+    { "workflowId": "scene.cocos-mcp-save-scene", "reason": "Existing lifecycle route is owned by editor-helper wave; no overlapping editor-tools mutation." },
+    { "workflowId": "scene.cocos-mcp-save-scene-as", "reason": "Existing lifecycle route is owned by editor-helper wave; no overlapping editor-tools mutation." },
+    { "workflowId": "scene.cocos-mcp-query-scene-components", "reason": "Existing nodeGetAvailableComponentTypes is present; exact residual reconciliation is owned by component/editor helper scope." },
+    { "workflowId": "scene.cocos-mcp-soft-reload-scene", "reason": "Existing lifecycle route is owned by editor-helper wave; no overlapping editor-tools mutation." },
+    { "workflowId": "scene.funplay-get-scene-info", "reason": "Existing sceneGetInfo route is bounded but does not expose the source's exact nodeCount shape." }
+  ],
+  "changedFiles": [
+    "source/utcp/tools/scene-tools.ts",
+    "source/utcp/tools/animation-tools.ts",
+    "source/utcp/tools/scene-snapshot-tools.ts",
+    "tests/unit/scene-authoring-contracts.test.js",
+    "tests/unit/animation-tools.test.js"
+  ],
+  "proof": {
+    "syntax": "node TypeScript transpile check passed for all three changed source files",
+    "build": "blocked by pre-existing concurrent syntax errors in source/utcp/tools/asset-tools.ts outside this wave"
+  }
+}

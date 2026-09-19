@@ -297,6 +297,39 @@ function requireOperations(value: unknown): AnimationOperation[] {
 }
 
 export class AnimationTools {
+
+    @utcpTool('animationCopyNode', 'Copy editor animation nodes through the native scene clipboard.', { type: 'object', properties: { references: { type: 'array', minItems: 1, maxItems: 100, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', properties: { success: { type: 'boolean' }, references: { type: 'array', items: InstanceReferenceSchema } }, required: ['success', 'references'] }, 'POST', ['animation', 'node', 'copy', 'clipboard'])
+    async animationCopyNode(args: { references: IInstanceReference[] }): Promise<{ success: true, references: IInstanceReference[] }> {
+        const ids = this.requireNodeIds(args.references);
+        const copied = await Editor.Message.request('scene', 'copy-node', ids) as unknown;
+        if (!Array.isArray(copied) || copied.some((id) => typeof id !== 'string' || id.length === 0)) throw new ToolError({ code: 'ANIMATION_COPY_UNCONFIRMED', status: 502, message: 'Creator did not return copied node identities.' });
+        return { success: true, references: copied.map((id) => ({ id, type: 'cc.Node' })) };
+    }
+
+    @utcpTool('animationCutNode', 'Cut editor animation nodes through the native scene clipboard.', { type: 'object', properties: { references: { type: 'array', minItems: 1, maxItems: 100, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', properties: { success: { type: 'boolean' }, references: { type: 'array', items: InstanceReferenceSchema } }, required: ['success', 'references'] }, 'POST', ['animation', 'node', 'cut', 'clipboard'])
+    async animationCutNode(args: { references: IInstanceReference[] }): Promise<{ success: true, references: IInstanceReference[] }> {
+        const ids = this.requireNodeIds(args.references);
+        const result = await Editor.Message.request('scene', 'cut-node', ids) as unknown;
+        if (result === false) throw new ToolError({ code: 'ANIMATION_CUT_FAILED', status: 502, message: 'Creator rejected the node cut operation.' });
+        await Editor.Message.request('scene', 'snapshot');
+        return { success: true, references: ids.map((id) => ({ id, type: 'cc.Node' })) };
+    }
+
+    @utcpTool('animationPasteNode', 'Paste editor animation nodes through the native scene clipboard and return read-back identities.', { type: 'object', properties: { references: { type: 'array', minItems: 1, maxItems: 100, items: InstanceReferenceSchema }, targetReference: InstanceReferenceSchema, keepWorldTransform: { type: 'boolean' }, pasteAsChild: { type: 'boolean' } }, required: ['references', 'targetReference'] }, { type: 'object', properties: { success: { type: 'boolean' }, references: { type: 'array', items: InstanceReferenceSchema } }, required: ['success', 'references'] }, 'POST', ['animation', 'node', 'paste', 'clipboard'])
+    async animationPasteNode(args: { references: IInstanceReference[], targetReference: IInstanceReference, keepWorldTransform?: boolean, pasteAsChild?: boolean }): Promise<{ success: true, references: IInstanceReference[] }> {
+        const ids = this.requireNodeIds(args.references);
+        const target = requireRef(args.targetReference, 'targetReference');
+        const pasted = await Editor.Message.request('scene', 'paste-node', { target, uuids: ids, keepWorldTransform: args.keepWorldTransform ?? true, pasteAsChild: args.pasteAsChild ?? false }) as unknown;
+        if (!Array.isArray(pasted) || pasted.length === 0 || pasted.some((id) => typeof id !== 'string' || id.length === 0)) throw new ToolError({ code: 'ANIMATION_PASTE_UNCONFIRMED', status: 502, message: 'Creator did not return pasted node identities.' });
+        await Editor.Message.request('scene', 'snapshot');
+        return { success: true, references: pasted.map((id) => ({ id, type: 'cc.Node' })) };
+    }
+
+    private requireNodeIds(references: IInstanceReference[] | undefined): string[] {
+        if (!Array.isArray(references) || references.length < 1 || references.length > 100) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 100 node references.' });
+        const ids = references.map((reference) => requireRef(reference, 'references[]'));
+        return ids;
+    }
     @utcpTool(
         'skeletalAnimationInspect',
         'Inspect animation clips exposed by a scene animation root.',

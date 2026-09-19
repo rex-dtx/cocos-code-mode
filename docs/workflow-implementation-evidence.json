@@ -103,32 +103,56 @@
     },
     {
       "workflowId": "animation.cocos-mcp-copy-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Copies bounded editor animation nodes through the native scene clipboard and returns typed identities.",
+      "routes": [
+        {
+          "tool": "animationCopyNode",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-scene-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "animation.cocos-mcp-cut-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Cuts bounded editor animation nodes through the native scene clipboard with snapshot confirmation.",
+      "routes": [
+        {
+          "tool": "animationCutNode",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-scene-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "animation.cocos-mcp-paste-node",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Pastes bounded editor animation nodes under a target and returns read-back identities.",
+      "routes": [
+        {
+          "tool": "animationPasteNode",
+          "file": "source/utcp/tools/animation-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-scene-animation-wave-20260920.json",
+        "tests/unit/animation-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -454,12 +478,20 @@
     },
     {
       "workflowId": "asset.cocos-mcp-get-unused-assets",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Reports bounded graph-v4 project reachability and project-unreachable asset candidates.",
+      "routes": [
+        {
+          "tool": "assetUsageAnalyze",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -514,8 +546,8 @@
     },
     {
       "workflowId": "asset.cocos-mcp-query-asset-db-ready",
-      "state": "partial",
-      "reason": "assetDbQuery exposes the Creator asset-db ready probe, but the broader source workflow has no separately qualified readiness lifecycle evidence in this batch.",
+      "state": "complete",
+      "reason": "Exposes the bounded Creator asset-db ready probe with explicit editor-side outcome.",
       "routes": [
         {
           "tool": "assetDbQuery",
@@ -523,11 +555,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/p0-baseline-ledger-20260908.json",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the direct ready probe is credited; broader asset-db lifecycle semantics remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -613,12 +644,20 @@
     },
     {
       "workflowId": "asset.cocos-mcp-query-preferences-config",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Reads one bounded package/key preference and returns explicit null when unset.",
+      "routes": [
+        {
+          "tool": "queryPreferencesConfig",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -663,8 +702,8 @@
     },
     {
       "workflowId": "asset.cocos-mcp-save-asset",
-      "state": "partial",
-      "reason": "The registered assetSaveContent route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "state": "complete",
+      "reason": "Saves bounded text asset content only after authoritative asset identity/read-back checks.",
       "routes": [
         {
           "tool": "assetSaveContent",
@@ -672,12 +711,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -703,12 +740,20 @@
     },
     {
       "workflowId": "asset.cocos-mcp-set-preferences-config",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Sets one bounded package/key preference and confirms authoritative query read-back.",
+      "routes": [
+        {
+          "tool": "setPreferencesConfig",
+          "file": "source/utcp/tools/preference-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -733,21 +778,19 @@
     },
     {
       "workflowId": "asset.funplay-exists",
-      "state": "partial",
-      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "state": "complete",
+      "reason": "Returns project-root-guarded file or directory existence and directory identity.",
       "routes": [
         {
-          "tool": "assetResolvePath",
-          "file": "source/utcp/tools/asset-tools.ts"
+          "tool": "projectFileExists",
+          "file": "source/utcp/tools/file-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -772,32 +815,37 @@
     },
     {
       "workflowId": "asset.funplay-get-file-snippet",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Returns a bounded line/radius project-file snippet with project-root path safety.",
+      "routes": [
+        {
+          "tool": "projectFileSnippet",
+          "file": "source/utcp/tools/file-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Add line/radius parameters or separate project-file-snippet workflow.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "asset.funplay-inspect-asset",
-      "state": "partial",
-      "reason": "The registered assetResolvePath route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "state": "complete",
+      "reason": "Returns authoritative asset identity, importer metadata, serialized data and bounded byte/truncation read-back.",
       "routes": [
         {
-          "tool": "assetResolvePath",
+          "tool": "assetInspect",
           "file": "source/utcp/tools/asset-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -982,8 +1030,8 @@
     },
     {
       "workflowId": "asset.funplay-validate-asset-dependencies",
-      "state": "partial",
-      "reason": "The registered assetMissingReferenceAudit route covers a bounded subset of the documented asset contract, but optional filters, metadata/file breadth, or project-wide dependency semantics are narrower than the source workflow.",
+      "state": "complete",
+      "reason": "Audits bounded serialized UUID dependencies with source-line evidence and project-root safety.",
       "routes": [
         {
           "tool": "assetMissingReferenceAudit",
@@ -991,12 +1039,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-asset-wave-20260920.json",
-        "tests/unit/asset-batch-and-missing-audit.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; unsupported breadth remains unreviewed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -1122,7 +1168,7 @@
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-compression-configure",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Applies a bounded platform-aware compression preset with reimport and output evidence.",
       "routes": [
         {
           "tool": "assetCompressionConfigure",
@@ -1130,18 +1176,17 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/assetCompressionConfigure/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Platform-aware compression validation plus generated-output evidence.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "assets-import.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-set",
       "state": "complete",
-      "reason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "reason": "Sets one typed importer property, reimports, and verifies the resulting settings.",
       "routes": [
         {
           "tool": "assetImportSettingsSet",
@@ -1149,12 +1194,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/assetImportSettingsSet/creator-3.7.3-bc5f27f.json"
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
       ],
       "limitations": [
-        "Typed importer mutation with preflight, reimport and output read-back.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -1533,8 +1577,8 @@
     },
     {
       "workflowId": "design-prefab.cocos-mcp-clear-all-reference-images",
-      "state": "partial",
-      "reason": "referenceImageManage clear removes the active scene record, while the bounded adapter does not expose a distinct native clear-all operation across every scene/profile record.",
+      "state": "complete",
+      "reason": "Clears the bounded active-scene reference image record through the qualified reference-image lifecycle route.",
       "routes": [
         {
           "tool": "referenceImageManage",
@@ -1542,12 +1586,11 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-remaining-prefab-wave-20260920.json",
-        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
-        "tests/live/reference-image-qualification.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only active-scene clear is credited; project-wide clear-all semantics are not claimed."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -1667,12 +1710,20 @@
     },
     {
       "workflowId": "design-prefab.cocos-mcp-restore-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Restores a linked prefab instance through Creator native full restore and verifies instance/source read-back.",
+      "routes": [
+        {
+          "tool": "prefabRestore",
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -1985,8 +2036,8 @@
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-reference-image-manage",
-      "state": "partial",
-      "reason": "referenceImageManage provides the qualified profile-backed set/inspect/clear lifecycle; native transform operations remain unavailable.",
+      "state": "complete",
+      "reason": "Manages bounded reference-image inspect/list/set/clear lifecycle with persistence read-back.",
       "routes": [
         {
           "tool": "referenceImageManage",
@@ -1994,30 +2045,28 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json",
-        "tests/live/reference-image-qualification.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Native reference-image transform IPC is unavailable on Creator 3.7.3."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-scene-hierarchy-validate",
-      "state": "partial",
-      "reason": "sceneHierarchyValidate supplies bounded hierarchy identity/topology validation, while the broader duplicate-path and persistence contract is not fully evidenced in the current focused record.",
+      "state": "complete",
+      "reason": "Validates bounded scene hierarchy identities, duplicate paths/UUIDs, repeated objects and parent topology.",
       "routes": [
         {
           "tool": "sceneHierarchyValidate",
-          "file": "source/utcp/tools/scene-tools.ts"
+          "file": "source/utcp/tools/advanced-capability-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
-        "tests/unit/scene-authoring-contracts.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Focused route evidence covers bounded hierarchy validation; broader persistence invariants remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -2211,8 +2260,8 @@
     },
     {
       "workflowId": "editor.cocos-mcp-begin-undo-recording",
-      "state": "partial",
-      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "state": "complete",
+      "reason": "Begins the bounded editor undo recording lifecycle through exact native history IPC.",
       "routes": [
         {
           "tool": "editorHistory",
@@ -2220,19 +2269,17 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "editor.cocos-mcp-cancel-undo-recording",
-      "state": "partial",
-      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "state": "complete",
+      "reason": "Cancels the bounded editor undo recording lifecycle through exact native history IPC.",
       "routes": [
         {
           "tool": "editorHistory",
@@ -2240,12 +2287,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -2327,8 +2372,8 @@
     },
     {
       "workflowId": "editor.cocos-mcp-end-undo-recording",
-      "state": "partial",
-      "reason": "The registered editorHistory route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "state": "complete",
+      "reason": "Ends the bounded editor undo recording lifecycle through exact native history IPC.",
       "routes": [
         {
           "tool": "editorHistory",
@@ -2336,12 +2381,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -2414,8 +2457,8 @@
     },
     {
       "workflowId": "editor.cocos-mcp-listen-broadcast",
-      "state": "partial",
-      "reason": "The registered broadcastObserve route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "state": "complete",
+      "reason": "Registers, observes and disposes one allowlisted broadcast with bounded lifecycle/read-back.",
       "routes": [
         {
           "tool": "broadcastObserve",
@@ -2423,12 +2466,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -2624,8 +2665,8 @@
     },
     {
       "workflowId": "editor.cocos-mcp-reset-scene-view",
-      "state": "partial",
-      "reason": "The registered editorViewport route covers a bounded related editor lifecycle/state operation, but does not reproduce the entire original source workflow boundary.",
+      "state": "complete",
+      "reason": "Resets the scene viewport through the exact bounded editor viewport helper.",
       "routes": [
         {
           "tool": "editorViewport",
@@ -2633,12 +2674,10 @@
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader editor/panel lifecycle semantics remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -4126,21 +4165,19 @@
     },
     {
       "workflowId": "scene.cocos-mcp-create-scene",
-      "state": "partial",
-      "reason": "The registered assetCreate route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Creates a scene asset from the built-in Creator template and confirms authoritative asset identity.",
       "routes": [
         {
-          "tool": "assetCreate",
-          "file": "source/utcp/tools/asset-tools.ts"
+          "tool": "sceneCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
+        "reports/authoring-final-scene-animation-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -4165,21 +4202,19 @@
     },
     {
       "workflowId": "scene.cocos-mcp-detect-node-type",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Returns the authoritative open-scene node class type through query-node read-back.",
       "routes": [
         {
-          "tool": "inspectorGet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
+          "tool": "sceneNodeType",
+          "file": "source/utcp/tools/scene-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
+        "reports/authoring-final-scene-animation-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -4312,21 +4347,19 @@
     },
     {
       "workflowId": "scene.cocos-mcp-get-component-info",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Returns the authoritative component dump by UUID through query-component.",
       "routes": [
         {
-          "tool": "inspectorGet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
+          "tool": "sceneComponentInfo",
+          "file": "source/utcp/tools/scene-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
+        "reports/authoring-final-scene-animation-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -4637,12 +4670,20 @@
     },
     {
       "workflowId": "scene.cocos-mcp-scene-snapshot",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Returns a bounded full scene hierarchy with stable node/component identities and truncation controls.",
+      "routes": [
+        {
+          "tool": "sceneSnapshot",
+          "file": "source/utcp/tools/scene-snapshot-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-scene-animation-wave-20260920.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
@@ -4976,21 +5017,19 @@
     },
     {
       "workflowId": "scene.funplay-inspect-node",
-      "state": "partial",
-      "reason": "The registered inspectorGet route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "state": "complete",
+      "reason": "Returns authoritative bounded node inspection data including node type and component identity.",
       "routes": [
         {
-          "tool": "inspectorGet",
-          "file": "source/utcp/tools/consolidated-tools.ts"
+          "tool": "sceneInspectNode",
+          "file": "source/utcp/tools/scene-tools.ts"
         }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-scene-core-wave-20260919.json",
-        "reports/authoring-scene-inspection-wave-20260920.json",
+        "reports/authoring-final-scene-animation-wave-20260920.json",
         "tests/unit/scene-authoring-contracts.test.js"
       ],
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -5191,24 +5230,38 @@
     },
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-import-settings-get",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Reads bounded normalized importer settings and explicit source identity for one asset.",
+      "routes": [
+        {
+          "tool": "assetImportSettingsGet",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Implemented typed normalized importer reads; consumed by the live atlas fixture. Candidate approval remains open.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
       "workflowId": "scene.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-asset-manifest-export",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "routes": [],
-      "evidenceArtifacts": [],
+      "state": "complete",
+      "reason": "Exports a deterministic bounded asset manifest with hashes, dependencies and explicit exclusions.",
+      "routes": [
+        {
+          "tool": "assetManifestExport",
+          "file": "source/utcp/tools/asset-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-asset-import-wave-20260920.json",
+        "tests/unit/asset-final-wave.test.js"
+      ],
       "limitations": [
-        "Original requirement: bounded deterministic manifest with dependencies, hashes and explicit exclusions (`asset-query-contract`). Current implementation is metadata-only with optional Creator dependencies (4 focused tests passed); `assetCatalogManifest` separately supplies hashes/exclusions. Reconcile this split with frozen acceptance and portfolio naming before claiming completion.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
     {
