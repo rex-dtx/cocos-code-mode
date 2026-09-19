@@ -53,7 +53,7 @@ const fileHash = (root, file) => digest(fs.readFileSync(path.join(root, file)));
 const writeJson = (root, file, value) => fs.writeFileSync(path.join(root, file), `${JSON.stringify(value, null, 2)}\n`);
 
 function classify(row) {
-  const text = [row.domain, row.title, row.observableOutcome, ...(row.limitations || [])].join('\n');
+  const text = [row.domain, row.executionContext, row.title, row.observableOutcome].join('\n');
   const runtimeMatch = EXPLICIT_RUNTIME.find(pattern => pattern.test(text));
   if (!AUTHORING_DOMAINS.has(row.domain)) {
     return { disposition: 'deferred', reason: `Deferred from authoring denominator: domain ${row.domain} is runtime, delivery, diagnostics, build, localization, product, or other non-authoring scope.` };
@@ -67,16 +67,18 @@ function classify(row) {
   return { disposition: 'included', reason: `Included authoring contract: ${row.domain} is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite.` };
 }
 
-function makeBasis(sourceHashes, rows) {
+function makeBasis(rows) {
   return {
     profile: { creator: '3.7.3', os: 'windows-x64', profile: 'authoring-first', artifactClass: 'local-operator' },
     parentFullDenominatorHash: PARENT_FULL_DENOMINATOR_HASH,
-    sourceHashes,
     classifications: rows.map(row => ({
       id: row.id,
+      domain: row.domain,
+      executionContext: row.executionContext,
+      title: row.title,
+      observableOutcome: row.observableOutcome,
       disposition: row.authoringDisposition,
       reason: row.authoringReason,
-      implementationState: row.implementationState,
     })),
   };
 }
@@ -104,7 +106,7 @@ function generate(root = ROOT) {
     };
   }).sort((a, b) => a.id.localeCompare(b.id));
   if (new Set(rows.map(row => row.id)).size !== rows.length) throw new Error('duplicate workflow IDs in source inventory');
-  const basis = makeBasis(sourceHashes, rows);
+  const basis = makeBasis(rows);
   const denominatorHash = digest(stableJson(basis));
   const included = rows.filter(row => row.authoringDisposition === 'included');
   const deferred = rows.filter(row => row.authoringDisposition === 'deferred');
@@ -189,7 +191,7 @@ function generate(root = ROOT) {
   };
 }
 
-module.exports = { generate, classify, digest, INPUTS, OUTPUTS, PARENT_FULL_DENOMINATOR_HASH };
+module.exports = { generate, classify, makeBasis, digest, INPUTS, OUTPUTS, PARENT_FULL_DENOMINATOR_HASH };
 if (require.main === module) {
   try { console.log(JSON.stringify(generate(), null, 2)); }
   catch (error) { console.error(error.message); process.exitCode = 1; }

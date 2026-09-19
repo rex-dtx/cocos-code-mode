@@ -3,7 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { classify, digest, INPUTS, OUTPUTS, PARENT_FULL_DENOMINATOR_HASH } = require('./generate-authoring-coverage');
+const { classify, makeBasis, digest, INPUTS, OUTPUTS, PARENT_FULL_DENOMINATOR_HASH } = require('./generate-authoring-coverage');
 
 const ROOT = path.resolve(__dirname, '..');
 const fail = message => { throw new Error(message); };
@@ -52,12 +52,7 @@ function audit(root = ROOT) {
   const actualBacklog = (backlog.rows || []).map(row => row.workflowId).sort();
   if (stableJson(expectedBacklog) !== stableJson(actualBacklog)) fail('closure backlog mismatch');
   if (backlog.requiredFor90 !== Math.max(0, target - complete.length)) fail('backlog deficit mismatch');
-  const basis = {
-    profile: { creator: '3.7.3', os: 'windows-x64', profile: 'authoring-first', artifactClass: 'local-operator' },
-    parentFullDenominatorHash: PARENT_FULL_DENOMINATOR_HASH,
-    sourceHashes,
-    classifications: rows.map(row => ({ id: row.id, disposition: row.authoringDisposition, reason: row.authoringReason, implementationState: row.implementationState })),
-  };
+  const basis = makeBasis(rows);
   const expectedHash = digest(stableJson(basis));
   if (authoring.denominatorHash !== expectedHash || coverage.denominatorHash !== expectedHash || backlog.denominatorHash !== expectedHash) fail('authoring denominator hash mismatch');
   const metrics = { total: rows.length, included: included.length, deferred: deferred.length, complete: complete.length, targetComplete: target, deficit: Math.max(0, target - complete.length), implementationPercent: percent, denominatorHash: expectedHash };

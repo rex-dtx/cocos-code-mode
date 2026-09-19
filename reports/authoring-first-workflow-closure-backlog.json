@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
-  "denominatorHash": "8443dd22b64482aca2d6fe2ea1ff3fcef90728a772d2967a45f68143b1f12ff8",
+  "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "cb89da8620f0d52773d159b24a63e03e51fe3076da3c5f2276498c2b9474debe",
+  "sourceInventoryHash": "20baa90783fda9d602ddf7e698817451fdfad216ba2484203dcd49a1e8ce1c43",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "cb89da8620f0d52773d159b24a63e03e51fe3076da3c5f2276498c2b9474debe",
+    "docs/workflow-inventory.json": "20baa90783fda9d602ddf7e698817451fdfad216ba2484203dcd49a1e8ce1c43",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "54494ddd06c67c03abec2a78bbadd394f5518561af421d0dbf05d8f887bae52e",
-    "reports/workflow-coverage-report.json": "0e6dfa0bc114e815e67428aad7aaa275733c2722eef99023fba30bd2b33de0d3",
-    "reports/workflow-closure-backlog.json": "8fa9f183dee0a2b45a3dc8a16946450c6c3a52662a17a06d6270b6f1b5712ddb"
+    "docs/workflow-implementation-evidence.json": "f71f6c346744fc18ebfb0be4033714ff39adf78202a7a720a83765c8e007ed06",
+    "reports/workflow-coverage-report.json": "069b59fbb65fa33610c27dc6c47d86472359c0b7d8ae494c33d9101788c069a7",
+    "reports/workflow-closure-backlog.json": "437e789e2a821a2c3ea648e4bfc903a7396f6c1ece20c01f06e6ea1d6f5ea684"
   },
   "status": "ready-for-authoring-implementation-reconciliation",
-  "requiredFor90": 174,
+  "requiredFor90": 172,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -882,25 +882,14 @@
       ]
     },
     {
-      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-apply-overrides",
-      "domain": "design-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "Typed source read-back and hashes are implemented, but live apply returned `Failed to apply prefab` on the writable fixture; unqualified.\nApply a typed override set and verify source/instance result.",
-      "limitations": [
-        "Apply a typed override set and verify source/instance result.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
       "domain": "design-prefab",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
+      "state": "partial",
+      "reason": "Wave D evidence confirms authoritative full-instance restore, while Creator 3.7.3 explicitly rejects selective revert with UNSUPPORTED_SELECTIVE_REVERT.",
       "acceptance": "Full restore delegates to Creator; selective paths are explicitly rejected with `UNSUPPORTED_SELECTIVE_REVERT` on Creator 3.7.3.\nRevert selected overrides and verify restored values.",
       "limitations": [
-        "Revert selected overrides and verify restored values.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ]
     },
     {
