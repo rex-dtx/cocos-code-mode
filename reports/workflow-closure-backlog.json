@@ -3,7 +3,7 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "ready-for-implementation-reconciliation",
-  "requiredFor90": 98,
+  "requiredFor90": 93,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-preview",
@@ -42,16 +42,6 @@
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
       "acceptance": "- *Tính năng:* Dừng phát animation trên node.\n   - *Inputs:* `nodeUuid: string`.\n   - *Outputs:* `{ stopped: boolean }`.\n   - *Cơ chế:* Gọi `animationComponent.stop()` trong context scene.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "asset.cocos-mcp-get-log-file-info",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "get_log_file_info",
       "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ],
@@ -1241,16 +1231,6 @@
       "dependencies": []
     },
     {
-      "workflowId": "scene.cocos-mcp-close-scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "close_scene",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
       "workflowId": "scene.cocos-mcp-execute-scene-script",
       "state": "unreviewed",
       "reason": "accepted contract identity; implementation route and evidence not yet bound",
@@ -1302,39 +1282,6 @@
       "limitations": [
         "Credit only if contract is narrowed to reviewed/safe execution; otherwise exclude source parity.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-get-scene-info",
-      "state": "partial",
-      "reason": "The registered sceneGetInfo route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "- *Tính năng:* Đọc thông tin tóm tắt của scene đang mở (tên, UUID, dirty state, bounds).\n    - *Inputs:* Không có.\n    - *Outputs:* `{ name, uuid, isDirty, nodeCount }`.\n    - *Cơ chế:* Kết hợp `query-current-scene` và `query-node-tree`.",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-invoke-component-method",
-      "state": "partial",
-      "reason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "- *Tính năng:* Gọi một method trên component ở runtime (phục vụ test hook).\n    - *Inputs:* `nodeUuid: string`, `component: string`, `method: string`, `args?: any[]`.\n    - *Outputs:* `{ result: any }`.\n    - *Cơ chế:* Chạy method qua context scene script.",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ],
-      "dependencies": []
-    },
-    {
-      "workflowId": "scene.funplay-save-current-scene",
-      "state": "partial",
-      "reason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
-      "acceptance": "- *Tính năng:* Lưu scene đang mở.\n    - *Inputs:* Không có.\n    - *Outputs:* `{ saved: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'save-scene')`.",
-      "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "dependencies": []
     },

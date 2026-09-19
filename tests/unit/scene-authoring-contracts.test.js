@@ -224,7 +224,7 @@ describe('scene composite residual adapters', () => {
       if (message === 'query-node-tree') return { uuid: 'root', children: [{ uuid: 'child', children: [] }] };
       throw new Error(`unexpected ${message}`);
     } } };
-    assert.deepEqual(await new SceneTools().sceneGetInfo(), { bounds: { x: 0, y: 0, width: 10, height: 20 }, dirty: true, isDirty: true, nodeCount: 2, currentScene: { uuid: 'scene-1', name: 'Main' } });
+    assert.deepEqual(await new SceneTools().sceneGetInfo(), { bounds: { x: 0, y: 0, width: 10, height: 20 }, name: 'Main', uuid: 'scene-1', dirty: true, isDirty: true, nodeCount: 2, currentScene: { uuid: 'scene-1', name: 'Main' } });
   });
 
   it('nodeSetTransform applies exact paths and confirms read-back', async () => {
@@ -251,7 +251,7 @@ describe('scene composite residual adapters', () => {
       return true;
     } } };
     const tools = new (requireDist('utcp/tools/editor-tools.js').EditorTools)();
-    assert.deepEqual(await tools.editorOperate({ operation: 'save_scene_or_prefab' }), { success: true });
+    assert.deepEqual(await tools.editorOperate({ operation: 'save_scene_or_prefab' }), { success: true, saved: true });
     assert.deepEqual(await tools.editorOperate({ operation: 'save_as' }), { success: true, reference: { id: 'scene-2', type: 'cc.SceneAsset' } });
     assert.deepEqual(calls, ['save-scene', 'query-dirty', 'save-as-scene', 'query-current-scene']);
   });

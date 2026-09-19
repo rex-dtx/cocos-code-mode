@@ -405,13 +405,13 @@ export class EditorTools {
     }
 
     /** @deprecated use sceneManage({ operation }) — not registered, kept for delegation */
-    async editorOperate(args: { operation: string }): Promise<ISuccessIndicator & { reference?: IInstanceReference }> {
+    async editorOperate(args: { operation: string }): Promise<ISuccessIndicator & { saved?: boolean, reference?: IInstanceReference }> {
         switch (args.operation) {
             case 'save_scene_or_prefab': {
                 await Editor.Message.request('scene', 'save-scene');
                 const dirty = await Editor.Message.request('scene', 'query-dirty').catch(() => undefined);
                 if (dirty === true) throw new ToolError({ code: 'SCENE_SAVE_UNCONFIRMED', status: 502, message: 'Creator reported the scene remains dirty after save.' });
-                return { success: true };
+                return { success: true, saved: true };
             }
             case 'save_as': {
                 const uuid = await Editor.Message.request('scene', 'save-as-scene');
@@ -539,6 +539,64 @@ export class EditorTools {
             console[level](text);
         }
         return { success: true, level, message };
+    }
+
+    @utcpTool(
+        'editorGetLogFileInfo',
+        'Get bounded metadata for the fixed project log file without exposing an absolute path or opening an external application.',
+        { type: 'object', properties: {} },
+        {
+            type: 'object',
+            properties: {
+                path: { type: 'string' },
+                exists: { type: 'boolean' },
+                isFile: { type: 'boolean' },
+                sizeBytes: { type: 'number' },
+                modifiedAt: { type: ['string', 'null'] },
+            },
+            required: ['path', 'exists', 'isFile', 'sizeBytes', 'modifiedAt'],
+        },
+        'GET', ['editor', 'logs', 'file', 'info']
+    )
+    editorGetLogFileInfo(): { path: string, exists: boolean, isFile: boolean, sizeBytes: number, modifiedAt: string | null } {
+        const relativePath = path.join('temp', 'logs', 'project.log');
+        const project = Reflect.get(Editor, 'Project');
+        const projectPath = project && typeof project === 'object' ? Reflect.get(project, 'path') : undefined;
+        if (typeof projectPath !== 'string' || !projectPath || projectPath.length > 4096 || /[\u0000\r\n]/.test(projectPath)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Editor project path is unavailable.' });
+        }
+        const root = path.resolve(projectPath);
+        const logPath = path.resolve(root, relativePath);
+        const relative = path.relative(root, logPath);
+        if (relative.startsWith('..') || path.isAbsolute(relative)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Project log path must remain inside the project.' });
+        }
+        let rootReal: string;
+        try {
+            rootReal = fs.realpathSync(root);
+        } catch (error) {
+            throw new ToolError({ code: 'LOG_UNAVAILABLE', status: 503, message: 'Cannot resolve the project root for log inspection.', details: { cause: error instanceof Error ? error.message : String(error) } });
+        }
+        if (!fs.existsSync(logPath)) return { path: relativePath.replace(/\\/g, '/'), exists: false, isFile: false, sizeBytes: 0, modifiedAt: null };
+        let realLogPath: string;
+        let stat: fs.Stats;
+        try {
+            realLogPath = fs.realpathSync(logPath);
+            const realRelative = path.relative(rootReal, realLogPath);
+            if (realRelative.startsWith('..') || path.isAbsolute(realRelative)) {
+                throw new Error('Project log resolves outside the project root.');
+            }
+            stat = fs.statSync(logPath);
+        } catch (error) {
+            throw new ToolError({ code: 'LOG_UNAVAILABLE', status: 503, message: 'Cannot inspect the project log safely.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Check temp/logs/project.log availability and permissions, then retry.' });
+        }
+        return {
+            path: relativePath.replace(/\\/g, '/'),
+            exists: true,
+            isFile: stat.isFile(),
+            sizeBytes: stat.isFile() ? stat.size : 0,
+            modifiedAt: stat.isFile() ? stat.mtime.toISOString() : null,
+        };
     }
 
     @utcpTool(

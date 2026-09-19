@@ -76,6 +76,34 @@ describe('editorGetLogs bounded search', () => {
 
 });
 
+describe('editorGetLogFileInfo', () => {
+  it('returns fixed project-relative metadata without exposing the absolute root', (t) => {
+    const project = withProjectLog(t, sampleLog);
+    const result = new EditorTools().editorGetLogFileInfo();
+    assert.deepEqual(result.path, 'temp/logs/project.log');
+    assert.equal(result.exists, true);
+    assert.equal(result.isFile, true);
+    assert.equal(result.sizeBytes, Buffer.byteLength(sampleLog, 'utf8'));
+    assert.match(result.modifiedAt, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(JSON.stringify(result).includes(project), false);
+  });
+
+  it('reports a missing project log without failing the metadata query', (t) => {
+    withProjectLog(t);
+    assert.deepEqual(new EditorTools().editorGetLogFileInfo(), {
+      path: 'temp/logs/project.log', exists: false, isFile: false, sizeBytes: 0, modifiedAt: null,
+    });
+  });
+
+  it('rejects an unavailable project root', (t) => {
+    const previousEditor = global.Editor;
+    global.Editor = { Project: { path: '' } };
+    t.after(() => { global.Editor = previousEditor; });
+    assert.throws(() => new EditorTools().editorGetLogFileInfo(), invalid);
+  });
+});
+ 
+
 describe('editorLog', () => {
   let previousDebugEnabled;
   beforeEach(() => {

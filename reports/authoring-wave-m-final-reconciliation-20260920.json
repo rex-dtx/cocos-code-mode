@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "wave": "authoring-wave-m-final-native-gap-reconciliation-20260920",
+  "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
+  "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
+  "promotedWorkflowIds": [
+    "asset.cocos-mcp-get-log-file-info",
+    "design-prefab.cocos-mcp-add-reference-image",
+    "design-prefab.cocos-mcp-clear-all-reference-images",
+    "design-prefab.cocos-mcp-get-prefab-info",
+    "design-prefab.cocos-mcp-list-reference-images",
+    "design-prefab.cocos-mcp-query-current-reference-image",
+    "design-prefab.cocos-mcp-remove-reference-image",
+    "design-prefab.cocos-mcp-restore-prefab",
+    "scene.cocos-mcp-close-scene",
+    "scene.funplay-get-scene-info",
+    "scene.funplay-invoke-component-method",
+    "scene.funplay-save-current-scene"
+  ],
+  "alreadyPromotedAndRetained": [
+    "asset.cocos-mcp-get-all-preferences",
+    "asset.cocos-mcp-query-preferences-config",
+    "asset.cocos-mcp-set-preferences-config",
+    "asset.funplay-get-editor-preference",
+    "asset.funplay-set-editor-preference",
+    "assets-import.cocos-mcp-validate-asset-references",
+    "design-prefab.cocos-mcp-validate-prefab",
+    "design-prefab.funplay-inspect-prefab-instance",
+    "design-prefab.funplay-revert-prefab-instance",
+    "scene.cocos-mcp-execute-component-method",
+    "scene.cocos-mcp-get-current-scene",
+    "scene.cocos-mcp-query-scene-dirty",
+    "scene.cocos-mcp-save-scene",
+    "scene.cocos-mcp-save-scene-as",
+    "scene.cocos-mcp-soft-reload-scene"
+  ],
+  "metrics": {
+    "totalSourceRows": 356,
+    "includedAuthoringRows": 247,
+    "deferredRows": 109,
+    "confirmedCompleteBefore": 210,
+    "confirmedCompleteAfter": 215,
+    "targetComplete": 223,
+    "deficitTo90": 8,
+    "implementationPercent": 87.04,
+    "gatePassed": false
+  },
+  "residual": {
+    "unsupportedOrBlockedPreserved": true,
+    "runtimeExternalAndSelectiveRestoreBlocked": true,
+    "remainingIncludedNonComplete": 32,
+    "notableBlocked": [
+      "asset.cocos-mcp-open-asset-external",
+      "design-prefab.cocos-mcp-query-reference-image-config",
+      "design-prefab.cocos-mcp-refresh-reference-image",
+      "design-prefab.cocos-mcp-restore-prefab-node",
+      "design-prefab.cocos-mcp-set-reference-image-data",
+      "design-prefab.cocos-mcp-set-reference-image-opacity",
+      "design-prefab.cocos-mcp-set-reference-image-position",
+      "design-prefab.cocos-mcp-set-reference-image-scale",
+      "design-prefab.cocos-mcp-switch-reference-image",
+      "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides",
+      "scene.cocos-mcp-attach-script",
+      "scene.cocos-mcp-execute-scene-script"
+    ],
+    "partialBoundedRowsRetained": [
+      "design-prefab.funplay-set-prefab-property",
+      "rendering-materials.lane-2-todo-260908-tbd-child-p5-rendering-materials-models-terrain-render-configuration-apply",
+      "skeletal-animation.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-skeletal-animation-configure"
+    ]
+  },
+  "verification": {
+    "typescript": "npx tsc --pretty false --noEmit passed",
+    "focusedTests": "50 tests passed across 15 suites",
+    "workflowAudit": "passed",
+    "authoringAudit": "passed",
+    "fullSuite": "not run per assignment",
+    "plansOrCoverageEdited": false,
+    "denominatorHashesUnchanged": true
+  },
+  "changedFiles": [
+    "source/utcp/tools/editor-tools.ts",
+    "source/utcp/tools/scene-tools.ts",
+    "tests/unit/advanced-capability-tools.test.js",
+    "tests/unit/editor-log.test.js",
+    "tests/unit/scene-authoring-contracts.test.js",
+    "docs/workflow-implementation-overrides.json",
+    "docs/workflow-implementation-evidence.json",
+    "docs/workflow-inventory.json",
+    "docs/authoring-first-workflow-inventory.json",
+    "reports/workflow-coverage-report.json",
+    "reports/workflow-closure-backlog.json",
+    "reports/authoring-first-workflow-coverage-report.json",
+    "reports/authoring-first-workflow-closure-backlog.json",
+    "reports/authoring-final-prefab-reference-contracts-20260920.json",
+    "reports/authoring-wave-m-final-reconciliation-20260920.json"
+  ]
+}

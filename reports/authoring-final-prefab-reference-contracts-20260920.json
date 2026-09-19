@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "Exact native/profile-supported reference-image lifecycle and prefab revert/info residuals",
+  "changedFiles": [
+    "tests/unit/advanced-capability-tools.test.js",
+    "reports/authoring-final-prefab-reference-contracts-20260920.json"
+  ],
+  "completeWorkflowIds": [
+    "design-prefab.cocos-mcp-add-reference-image",
+    "design-prefab.cocos-mcp-clear-all-reference-images",
+    "design-prefab.cocos-mcp-get-prefab-info",
+    "design-prefab.cocos-mcp-list-reference-images",
+    "design-prefab.cocos-mcp-query-current-reference-image",
+    "design-prefab.cocos-mcp-remove-reference-image",
+    "design-prefab.cocos-mcp-restore-prefab"
+  ],
+  "completeRoutes": {
+    "referenceImageManage": {
+      "operations": ["set", "inspect", "list", "clear"],
+      "proof": [
+        "native scene IPC round-trip is tested with set/query/list/clear messages",
+        "project-profile fallback is tested with active-scene read-back and asset resolution",
+        "missing asset resolution remains typed TARGET_NOT_FOUND"
+      ],
+      "boundary": "Only persisted image identity/path lifecycle is credited; transform/configuration is not inferred."
+    },
+    "prefabInfo": {
+      "proof": [
+        "serialized cc.Prefab identity and bounded summary are covered by focused unit evidence",
+        "prefab validation and missing serialized dependency read-back remain covered"
+      ],
+      "boundary": "This is the authoritative serialized prefab-info equivalent; no speculative native alias is added."
+    },
+    "prefabRestore": {
+      "proof": [
+        "native scene restore-prefab is invoked",
+        "linked prefab identity and instance/source read-back are required"
+      ],
+      "boundary": "Full-instance restore only."
+    }
+  },
+  "blockedWorkflowIds": [
+    "design-prefab.cocos-mcp-query-reference-image-config",
+    "design-prefab.cocos-mcp-refresh-reference-image",
+    "design-prefab.cocos-mcp-restore-prefab-node",
+    "design-prefab.cocos-mcp-set-reference-image-data",
+    "design-prefab.cocos-mcp-set-reference-image-opacity",
+    "design-prefab.cocos-mcp-set-reference-image-position",
+    "design-prefab.cocos-mcp-set-reference-image-scale",
+    "design-prefab.cocos-mcp-switch-reference-image",
+    "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-revert-overrides selective paths"
+  ],
+  "blockedReasons": {
+    "referenceImageConfiguration": "Creator 3.7.3 exposes no proven native/profile contract for transform, scale, opacity, refresh, switch, or arbitrary reference-image data fields.",
+    "prefabNodeRestore": "Creator exposes full restore-prefab only; no distinct node-selective native route is proven.",
+    "selectiveRevert": "prefabRevertOverrides rejects paths with UNSUPPORTED_SELECTIVE_REVERT (422) and delegates only full restore."
+  },
+  "verification": {
+    "focusedTests": "node --test tests/unit/advanced-capability-tools.test.js — 14 passed",
+    "plansOrCoverageEdited": false,
+    "fullSuite": "not run; parent agent owns project-wide validation"
+  }
+}

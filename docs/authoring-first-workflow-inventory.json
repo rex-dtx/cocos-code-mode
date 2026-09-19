@@ -3,13 +3,13 @@
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "3a10a072fee3d662ba5b5f02d8fd7f05f2397689a0a680453c045d2fd7521aac",
+  "sourceInventoryHash": "6bb7f8c814bebbe8aeedd0a3c83cf717ba2d41756a511cc5927ddc84a8784b97",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "3a10a072fee3d662ba5b5f02d8fd7f05f2397689a0a680453c045d2fd7521aac",
+    "docs/workflow-inventory.json": "6bb7f8c814bebbe8aeedd0a3c83cf717ba2d41756a511cc5927ddc84a8784b97",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "95d7e8aa6334ae99e920a3676c90bb206301457e5302a7e8d1f14469f4a79535",
-    "reports/workflow-coverage-report.json": "c372a1b3b943aa7e8931e19da87c94b9b8054a2a12cd5da95f32bede2491d077",
-    "reports/workflow-closure-backlog.json": "bbf0e3405a136c36e214921d4783badc43b01215560ba6267f52ed222d01c1c1"
+    "docs/workflow-implementation-evidence.json": "a657dd06c388100694750d22968d7219b5a8c9b11779cc9ee0a0d91ccb6b8a61",
+    "reports/workflow-coverage-report.json": "20d875568cd04c1fd5eaeced13ef0c3b17791646bac9b5fbe7886fa2533fcf69",
+    "reports/workflow-closure-backlog.json": "02a516249c48e357a92ae9d27516966c71d510d523ec9dc61797372f6fe7d008"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -504,10 +504,10 @@
       "sourceIds": [
         "cocos-mcp:get_log_file_info"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "editorGetLogFileInfo returns bounded project-relative log metadata with lexical and realpath containment; external opening is not claimed.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: asset is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -4833,10 +4833,10 @@
       "sourceIds": [
         "cocos-mcp:close_scene"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage close delegates the bounded close-scene editor operation and verifies the active-scene absence/read-back contract.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5621,11 +5621,10 @@
       "sourceIds": [
         "funplay:get_scene_info"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneGetInfo route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneGetInfo returns the bounded scene summary contract with top-level name/uuid aliases, dirty state, bounds, and node count.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5673,11 +5672,10 @@
       "sourceIds": [
         "funplay:invoke_component_method"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered callComponentMethod route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "callComponentMethod executes the bounded allowlisted component-method contract with JSON argument/result bounds and focused behavioral evidence.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5793,11 +5791,10 @@
       "sourceIds": [
         "funplay:save_current_scene"
       ],
-      "implementationState": "partial",
-      "implementationReason": "The registered sceneManage route covers the bounded editor subset of this workflow, but the source contract includes additional fields, lifecycle semantics, or broader execution behavior not fully matched by current evidence.",
+      "implementationState": "complete",
+      "implementationReason": "sceneManage save returns saved:true after bounded dirty-state lifecycle mutation and authoritative query-dirty read-back.",
       "limitations": [
-        "Only the bounded route subset is credited; broader contract details remain unverified.",
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Bounded editor-side route with authoritative lifecycle/read-back evidence; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
