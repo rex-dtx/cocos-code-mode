@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
-  "denominatorHash": "8443dd22b64482aca2d6fe2ea1ff3fcef90728a772d2967a45f68143b1f12ff8",
+  "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "cb89da8620f0d52773d159b24a63e03e51fe3076da3c5f2276498c2b9474debe",
+  "sourceInventoryHash": "20baa90783fda9d602ddf7e698817451fdfad216ba2484203dcd49a1e8ce1c43",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "cb89da8620f0d52773d159b24a63e03e51fe3076da3c5f2276498c2b9474debe",
+    "docs/workflow-inventory.json": "20baa90783fda9d602ddf7e698817451fdfad216ba2484203dcd49a1e8ce1c43",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "54494ddd06c67c03abec2a78bbadd394f5518561af421d0dbf05d8f887bae52e",
-    "reports/workflow-coverage-report.json": "0e6dfa0bc114e815e67428aad7aaa275733c2722eef99023fba30bd2b33de0d3",
-    "reports/workflow-closure-backlog.json": "8fa9f183dee0a2b45a3dc8a16946450c6c3a52662a17a06d6270b6f1b5712ddb"
+    "docs/workflow-implementation-evidence.json": "f71f6c346744fc18ebfb0be4033714ff39adf78202a7a720a83765c8e007ed06",
+    "reports/workflow-coverage-report.json": "069b59fbb65fa33610c27dc6c47d86472359c0b7d8ae494c33d9101788c069a7",
+    "reports/workflow-closure-backlog.json": "437e789e2a821a2c3ea648e4bfc903a7396f6c1ece20c01f06e6ea1d6f5ea684"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -69,8 +69,8 @@
   },
   "counts": {
     "total": 356,
-    "included": 238,
-    "deferred": 118
+    "included": 247,
+    "deferred": 109
   },
   "rows": [
     {
@@ -2150,11 +2150,10 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabApplyOverrides"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Wave D evidence confirms prefabApplyOverrides performs typed source and instance read-back with authoritative node and linked-source identity checks.",
       "limitations": [
-        "Apply a typed override set and verify source/instance result.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2169,11 +2168,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabInstantiate"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave D evidence confirms prefabInstantiate validates source and parent identities, verifies created node and linked prefab identity, and cleans up failed disposable nodes.",
       "limitations": [
-        "Instantiate and prove persistent prefab identity and overrides.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2188,11 +2185,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabOverrideDiff"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave D evidence confirms prefabOverrideDiff validates both prefab references and returns stable source hashes with structural changes.",
       "limitations": [
-        "Structural live-instance versus prefab-source override diff with stable identities.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2207,11 +2202,9 @@
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabReferenceAudit"
       ],
       "implementationState": "complete",
-      "implementationReason": "qualified portfolio state + unique direct route + current Creator 3.7.3 evidence",
+      "implementationReason": "Wave D evidence confirms prefabReferenceAudit remains nested-reference validation with typed missing-reference evidence.",
       "limitations": [
-        "Detect broken or ambiguous nested prefab and override references after reload.",
-        "Historical qualified label alone is not complete-contract evidence.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -2225,11 +2218,11 @@
       "sourceIds": [
         "lane:1-wip-260908__tbd-child-p2-ui-prefab-tilemap-assets:prefabRevertOverrides"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "partial",
+      "implementationReason": "Wave D evidence confirms authoritative full-instance restore, while Creator 3.7.3 explicitly rejects selective revert with UNSUPPORTED_SELECTIVE_REVERT.",
       "limitations": [
-        "Revert selected overrides and verify restored values.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Full-instance restore is evidenced; selective override revert remains unsupported on Creator 3.7.3.",
+        "Focused prefab authoring evidence only; no runtime/Game View credit."
       ],
       "authoringDisposition": "included",
       "authoringReason": "Included authoring contract: design-prefab is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
@@ -5151,8 +5144,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.cocos-mcp-get-scene-hierarchy",
@@ -5168,8 +5161,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.cocos-mcp-move-node",
@@ -5185,8 +5178,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.cocos-mcp-open-scene",
@@ -5484,8 +5477,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.funplay-bind-button-click-event",
@@ -5592,8 +5585,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.funplay-create-sprite",
@@ -5628,8 +5621,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.funplay-execute-scene-script",
@@ -5805,8 +5798,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.funplay-remove-component",
@@ -5822,8 +5815,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.funplay-reset-component-property",
@@ -5892,8 +5885,8 @@
       "limitations": [
         "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "deferred",
-      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
+      "authoringDisposition": "included",
+      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
     },
     {
       "id": "scene.funplay-set-node-transform",
