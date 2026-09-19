@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-18",
+  "rootCause": "runtimeSessionLifecycle(start) always dispatches preview start even when actual Game View is already running; repeated start can transition or stall before postcondition and return RUNTIME_STATE_TIMEOUT.",
+  "currentSourceBehavior": { "unitTests": "15/15 pass", "liveTest": "skipped because recovered Creator endpoint exited before health check", "sourcePatchApplied": false },
+  "requiredFix": "Make start idempotent: when readPreviewState shows a ready running Game View, attach/reuse its authoritative scene identity without dispatching another start mutation; retain existing fail-closed renderer checks.",
+  "decision": "Do not claim stabilization or coverage promotion until source patch is implemented, rebuilt/reloaded, and the live start/attach/stop/reset scenario passes.",
+  "qualified": false
+}
