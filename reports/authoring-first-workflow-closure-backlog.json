@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
-  "denominatorHash": "1553a0485383b8952f8fda803247e00b1b9e7d59132cd0c676b446348607830d",
+  "denominatorHash": "c7eb9a84fc255813ff541505f8068afc4e91260d737331be14fea1a0aa8dc630",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "4115a17600efb0c4d1542a55d03c653fa6c3b2a58cf1eba06895b648da23a4a3",
+  "sourceInventoryHash": "e3f992fba3be7623dabbc747c24d7833cfd0367cada1ee17e996f5daac0cfd53",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "4115a17600efb0c4d1542a55d03c653fa6c3b2a58cf1eba06895b648da23a4a3",
+    "docs/workflow-inventory.json": "e3f992fba3be7623dabbc747c24d7833cfd0367cada1ee17e996f5daac0cfd53",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "741ccd6487f76ba430addcacdc026ff3f9d300f2bd9b6f542563220342aa161f",
-    "reports/workflow-coverage-report.json": "ee57f1c902cc3cf2daef27436432954bc0085e6755b1ba4d02c1d7e9ac35dfbc",
-    "reports/workflow-closure-backlog.json": "a677699808a6067f11997c26aed0c708c157cfdf755493d9244e648d1b0f24bd"
+    "docs/workflow-implementation-evidence.json": "6e398885b3f24aef27e3f57fcc25342c2298140d82f02ac2d874de94914810f4",
+    "reports/workflow-coverage-report.json": "62b44f86ff55436b93a1825d335d5a1fd18cb3e21917e4bb57dc6b4bcd35d0c6",
+    "reports/workflow-closure-backlog.json": "bff4d7c09ba6944846657ced95a8dedf6e936c1733878d73ad2c3c9a9935d3db"
   },
   "status": "ready-for-authoring-implementation-reconciliation",
-  "requiredFor90": 182,
+  "requiredFor90": 176,
   "rows": [
     {
       "workflowId": "animation-graph.lane-1-wip-260908-tbd-child-p3-animation-skeletal-audio-animation-graph-edit",
@@ -1773,16 +1773,6 @@
       ]
     },
     {
-      "workflowId": "scene.funplay-add-component",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Gắn thêm component vào node theo tên class.\n    - *Inputs:* `nodeUuid: string`, `component: string`.\n    - *Outputs:* `{ componentId: string }`.\n    - *Cơ chế:* `scene:create-component`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "scene.funplay-bind-button-click-event",
       "domain": "scene",
       "state": "unreviewed",
@@ -1839,16 +1829,6 @@
       ]
     },
     {
-      "workflowId": "scene.funplay-create-node",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Tạo node mới dưới scene root hoặc dưới một parent node chỉ định.\n    - *Inputs:* `name: string`, `parentUuid?: string`, `parentPath?: string`.\n    - *Outputs:* `{ nodeUuid: string, name: string }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'create-node', { name, parent })`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "scene.funplay-create-sprite",
       "domain": "scene",
       "state": "unreviewed",
@@ -1857,16 +1837,6 @@
       "limitations": [
         "Credit generic route only for node creation; add/retain specialized createButton contract.",
         "Credit specialized createSprite for full contract.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.funplay-delete-node",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Xóa node theo path, uuid hoặc tên.\n    - *Inputs:* `nodeUuid?: string`, `path?: string`.\n    - *Outputs:* `{ deleted: boolean }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'remove-node', { uuid })`.",
-      "limitations": [
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
     },
@@ -1968,26 +1938,6 @@
       ]
     },
     {
-      "workflowId": "scene.funplay-open-scene",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Mở scene asset vào viewport editor.\n    - *Inputs:* `uuid?: string`, `url?: string`, `path?: string`.\n    - *Outputs:* `{ opened: boolean, sceneUuid: string }`.\n    - *Cơ chế:* `Editor.Message.request('scene', 'open-scene', uuid)`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.funplay-remove-component",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Gỡ bỏ component khỏi node theo uuid hoặc index.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`.\n    - *Outputs:* `{ removed: boolean }`.\n    - *Cơ chế:* `scene:remove-component`.",
-      "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
       "workflowId": "scene.funplay-reset-component-property",
       "domain": "scene",
       "state": "unreviewed",
@@ -2016,18 +1966,6 @@
       "acceptance": "- *Tính năng:* Cấu hình các thuộc tính của Camera (clearFlags, projection, orthoHeight, fov).\n    - *Inputs:* `cameraUuid: string`, `properties: object`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property` trên component Camera.",
       "limitations": [
         "Use inspectorSet with camera component path or add typed camera route.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
-      ]
-    },
-    {
-      "workflowId": "scene.funplay-set-component-property",
-      "domain": "scene",
-      "state": "unreviewed",
-      "reason": "accepted contract identity; implementation route and evidence not yet bound",
-      "acceptance": "- *Tính năng:* Đặt giá trị thuộc tính component theo JSON value.\n    - *Inputs:* `nodeUuid: string`, `componentUuid: string`, `path: string`, `value: any`.\n    - *Outputs:* `{ updated: boolean }`.\n    - *Cơ chế:* `scene:set-property`.",
-      "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
         "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
       ]
     },

@@ -9791,12 +9791,20 @@
         "funplay:add_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms component type and UUID from node read-back after create-component.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentAdd",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -9977,12 +9985,20 @@
         "funplay:create_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms node creation UUID and query-node read-back.",
+      "implementationRoute": [
+        {
+          "tool": "nodeCreate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10039,12 +10055,20 @@
         "funplay:delete_node"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Focused route performs remove-node and confirms absence by query-node before success.",
+      "implementationRoute": [
+        {
+          "tool": "nodeOperate",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10346,12 +10370,20 @@
         "funplay:open_scene"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms scene open identity through query-current-scene read-back.",
+      "implementationRoute": [
+        {
+          "tool": "sceneOpen",
+          "file": "source/utcp/tools/scene-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10376,12 +10408,20 @@
         "funplay:remove_component"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms component absence after remove-component.",
+      "implementationRoute": [
+        {
+          "tool": "nodeComponentRemove",
+          "file": "source/utcp/tools/component-tools.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",
@@ -10498,14 +10538,20 @@
         "funplay:set_component_property"
       ],
       "portfolioNames": [],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
-      "implementationRoute": [],
-      "evidenceArtifacts": [],
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms fresh property dump matches the requested value after set-property.",
+      "implementationRoute": [
+        {
+          "tool": "inspectorSet",
+          "file": "source/utcp/tools/set-properties-tool.ts"
+        }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-scene-core-wave-20260919.json",
+        "tests/unit/scene-authoring-contracts.test.js"
+      ],
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
       "reviewed": true,
       "contractReviewStatus": "accepted",

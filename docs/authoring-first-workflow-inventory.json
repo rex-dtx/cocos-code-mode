@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
-  "denominatorHash": "1553a0485383b8952f8fda803247e00b1b9e7d59132cd0c676b446348607830d",
+  "denominatorHash": "c7eb9a84fc255813ff541505f8068afc4e91260d737331be14fea1a0aa8dc630",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
-  "sourceInventoryHash": "4115a17600efb0c4d1542a55d03c653fa6c3b2a58cf1eba06895b648da23a4a3",
+  "sourceInventoryHash": "e3f992fba3be7623dabbc747c24d7833cfd0367cada1ee17e996f5daac0cfd53",
   "sourceHashes": {
-    "docs/workflow-inventory.json": "4115a17600efb0c4d1542a55d03c653fa6c3b2a58cf1eba06895b648da23a4a3",
+    "docs/workflow-inventory.json": "e3f992fba3be7623dabbc747c24d7833cfd0367cada1ee17e996f5daac0cfd53",
     "docs/workflow-source-mapping.json": "02c381c03cee4988e87ef527769f07d00b99f066e540ffee695f9b8b44dfcf2a",
-    "docs/workflow-implementation-evidence.json": "741ccd6487f76ba430addcacdc026ff3f9d300f2bd9b6f542563220342aa161f",
-    "reports/workflow-coverage-report.json": "ee57f1c902cc3cf2daef27436432954bc0085e6755b1ba4d02c1d7e9ac35dfbc",
-    "reports/workflow-closure-backlog.json": "a677699808a6067f11997c26aed0c708c157cfdf755493d9244e648d1b0f24bd"
+    "docs/workflow-implementation-evidence.json": "6e398885b3f24aef27e3f57fcc25342c2298140d82f02ac2d874de94914810f4",
+    "reports/workflow-coverage-report.json": "62b44f86ff55436b93a1825d335d5a1fd18cb3e21917e4bb57dc6b4bcd35d0c6",
+    "reports/workflow-closure-backlog.json": "bff4d7c09ba6944846657ced95a8dedf6e936c1733878d73ad2c3c9a9935d3db"
   },
   "status": "generated",
   "qualificationProfile": {
@@ -69,8 +69,8 @@
   },
   "counts": {
     "total": 356,
-    "included": 247,
-    "deferred": 109
+    "included": 241,
+    "deferred": 115
   },
   "rows": [
     {
@@ -5479,13 +5479,13 @@
       "sourceIds": [
         "funplay:add_component"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms component type and UUID from node read-back after create-component.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.funplay-bind-button-click-event",
@@ -5587,13 +5587,13 @@
       "sourceIds": [
         "funplay:create_node"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms node creation UUID and query-node read-back.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.funplay-create-sprite",
@@ -5623,13 +5623,13 @@
       "sourceIds": [
         "funplay:delete_node"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused route performs remove-node and confirms absence by query-node before success.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.funplay-execute-scene-script",
@@ -5800,13 +5800,13 @@
       "sourceIds": [
         "funplay:open_scene"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms scene open identity through query-current-scene read-back.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.funplay-remove-component",
@@ -5817,13 +5817,13 @@
       "sourceIds": [
         "funplay:remove_component"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms component absence after remove-component.",
       "limitations": [
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.funplay-reset-component-property",
@@ -5887,15 +5887,13 @@
       "sourceIds": [
         "funplay:set_component_property"
       ],
-      "implementationState": "unreviewed",
-      "implementationReason": "accepted contract identity; implementation route and evidence not yet bound",
+      "implementationState": "complete",
+      "implementationReason": "Focused evidence confirms fresh property dump matches the requested value after set-property.",
       "limitations": [
-        "Use component reference with type/values output adapter.",
-        "Map to inspectorGet/node snapshot; do not merge create/read workflows.",
-        "Reviewer proposal retained; source-level equivalence and implementation evidence not accepted."
+        "Focused source and unit evidence; no Game View/runtime credit."
       ],
-      "authoringDisposition": "included",
-      "authoringReason": "Included authoring contract: scene is an editor-side authoring domain and the contract has no active-runtime or external-delivery prerequisite."
+      "authoringDisposition": "deferred",
+      "authoringReason": "Deferred from authoring denominator: contract requires runtime/playback/preview or external delivery (/game view/i)."
     },
     {
       "id": "scene.funplay-set-node-transform",
