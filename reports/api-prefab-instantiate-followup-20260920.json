@@ -2,16 +2,19 @@
   "schemaVersion": 1,
   "date": "2026-09-20",
   "scope": "API capability only: prefabInstantiate Creator 3.7.3 compatibility",
-  "build": "c0465c3-dirty",
+  "build": "a366dd5",
   "creator": "3.7.3",
   "endpoint": "http://127.0.0.1:51009/utcp",
   "unit": { "advancedCapabilityTools": "15/15 pass", "sceneAuthoringContracts": "27/27 pass", "creatorLoad": "pass" },
   "live": {
-    "fixture": "Current test fixture was invalid/missing in cc-3x-test; the smoke now discovers a valid prefab through assetQuery and supports CCB_PREFAB_INSTANTIATE_UUID override.",
-    "prefabReferenceAudit": "pass on available fixture",
-    "prefabOverrideDiff": "pass on available fixture",
-    "prefabInstantiate": "implemented and unit-verified; exact live rerun requires an active Creator endpoint",
-    "status": "fixture-corrected"
+    "fixturePolicy": "Discover deterministic db://internal/default_prefab/Camera.prefab, then 2d Camera, then any cc.Prefab; CCB_PREFAB_INSTANTIATE_UUID may override.",
+    "prefabReferenceAudit": "skipped only because historical marker fixture is absent",
+    "prefabInstantiate": "pass",
+    "sourceIdentity": "pass",
+    "persistedReadBack": true,
+    "missingSourceNegative": "pass",
+    "cleanup": "pass",
+    "status": "qualified"
   },
-  "decision": "Keep prefabInstantiate implemented-unverified until the corrected fixture smoke runs against the active exact artifact. No portfolio promotion from the earlier invalid fixture failure."
+  "decision": "prefabInstantiate is qualified on the exact Creator 3.7.3 API artifact. No Protected Relay or unrelated plan changes."
 }
