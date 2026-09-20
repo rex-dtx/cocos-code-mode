@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "source": "https://download.cocos.com/CocosCreator/v3.7.3/CocosCreator-v3.7.3-win-042810.zip",
+  "packageBytes": 942000477,
+  "installation": "C:/Users/hry/AppData/Local/Temp/creator-373-official",
+  "userDataDir": "C:/Users/hry/AppData/Local/Temp/creator-373-official-profile",
+  "project": "G:/_ws/_helpers/cc-minimal-empty",
+  "result": {
+    "officialPackage": true,
+    "rendererBootstrap": true,
+    "projectInitialization": false,
+    "assetDbReady": false,
+    "extensionActivation": false,
+    "utcpListening": false,
+    "processExit": 1
+  },
+  "decision": "A freshly downloaded official Creator 3.7.3 archive with an isolated clean Chromium profile reproduces the pre-project stall. Local installation corruption is excluded; the blocker is specific to running Creator 3.7.3 in the current workstation environment."
+}
