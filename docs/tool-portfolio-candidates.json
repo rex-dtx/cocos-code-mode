@@ -78,6 +78,7 @@
           "positiveTestID": "candidate.uiSafeAreaInspect.positive.v1",
           "negativeTestID": "candidate.uiSafeAreaInspect.negative.v1",
           "fixtureID": "fixture.candidate.uiSafeAreaInspect.v1",
+          "qualificationEvidence": "tests/live/ui-safe-area-inspect.test.js",
           "evidenceArtifact": "reports/evidence/candidates/uiSafeAreaInspect/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
@@ -114,6 +115,7 @@
           "positiveTestID": "candidate.uiVirtualListCreate.positive.v1",
           "negativeTestID": "candidate.uiVirtualListCreate.negative.v1",
           "fixtureID": "fixture.candidate.uiVirtualListCreate.v1",
+          "qualificationEvidence": "tests/live/portfolio-completion-qualification.test.js",
           "evidenceArtifact": "reports/evidence/candidates/uiVirtualListCreate/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         },
@@ -387,7 +389,7 @@
         },
         {
           "name": "assetBundleValidate",
-          "state": "qualified",
+          "state": "implemented-unverified",
           "contractDelta": "Validate bundle metadata and actual runtime load/release behavior.",
           "route": "asset-db plus runtime session",
           "prerequisites": [
@@ -416,6 +418,7 @@
           "positiveTestID": "candidate.assetSceneUsageAudit.positive.v1",
           "negativeTestID": "candidate.assetSceneUsageAudit.negative.v1",
           "fixtureID": "fixture.candidate.assetSceneUsageAudit.v1",
+          "qualificationEvidence": "tests/live/portfolio-completion-qualification.test.js",
           "evidenceArtifact": "reports/evidence/candidates/assetSceneUsageAudit/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P2"
         }
@@ -816,6 +819,7 @@
           "positiveTestID": "candidate.physics2dQuery.positive.v1",
           "negativeTestID": "candidate.physics2dQuery.negative.v1",
           "fixtureID": "fixture.candidate.physics2dQuery.v1",
+          "qualificationEvidence": "tests/live/validation-graph-qualification.test.js#GRAPH-V01",
           "evidenceArtifact": "reports/evidence/candidates/physics2dQuery/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P4"
         },
@@ -930,6 +934,7 @@
           "positiveTestID": "candidate.physics3dQuery.positive.v1",
           "negativeTestID": "candidate.physics3dQuery.negative.v1",
           "fixtureID": "fixture.candidate.physics3dQuery.v1",
+          "qualificationEvidence": "tests/live/validation-graph-qualification.test.js#GRAPH-V01",
           "evidenceArtifact": "reports/evidence/candidates/physics3dQuery/<creator>-<artifact-sha>.json",
           "proposedExecutionPhase": "P4"
         },
