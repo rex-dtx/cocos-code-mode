@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "experiments": [
+    {
+      "name": "extension-disabled",
+      "project": "G:\\_ws\\_helpers\\cc-3x-test",
+      "ccBridgeDiscovered": false,
+      "result": "same renderer-window bootstrap stall; no project initialization or Asset DB ready"
+    },
+    {
+      "name": "generated-state-reset",
+      "tempRenamed": true,
+      "libraryRenamed": true,
+      "result": "fresh temp/library creation still stalled after renderer ask-win; no Asset DB or UTCP"
+    }
+  ],
+  "qualified": false,
+  "decision": "CC Bridge activation and project-generated state are not the cause. Creator 3.7.3 installation/runtime stalls before project initialization for the isolated project."
+}
