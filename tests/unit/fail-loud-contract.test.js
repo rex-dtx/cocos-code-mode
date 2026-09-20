@@ -79,13 +79,22 @@ describe('fail-loud audit (docs §2) regressions', () => {
     assert.match(readSource('source/utcp/tools/event-tools.ts'), /bindButtonClickEvent: unexpected response/);
   });
 
-  it('component type lookup carries the §1 fallback into findNodes, node tree and add', () => {
+  it('component identity lookup carries the §1 fallback and fails loud', async () => {
     const scene = readSource('source/utcp/tools/scene-tools.ts');
     assert.match(scene, /c\?\.type \?\? c\?\.__type__ \?\? c\?\.cid/);
-    const comp = readSource('source/utcp/tools/component-tools.ts');
-    assert.match(comp, /extractCompUuid/);
-    assert.match(comp, /carries no uuid/);
-    assert.match(comp, /!!ref\.id &&/);
+    const { ComponentTools } = requireDist('utcp/tools/component-tools.js');
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message) => {
+      if (service === 'scene' && message === 'query-node') return { __comps__: [{ value: { uuid: { value: 42 } } }, { type: 'cc.Sprite' }] };
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const tools = new ComponentTools();
+      await assert.rejects(() => tools.nodeComponentsGet({ reference: { id: 'node' } }), /lacks authoritative uuid/);
+      await assert.rejects(() => tools.nodeComponentsGet({ reference: { id: 'node' }, componentType: 'cc.Sprite' }), /lacks authoritative uuid/);
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
   });
 
   it('inspectorGet names unknown fields; ui helpers no longer swallow text/sprite writes', () => {
