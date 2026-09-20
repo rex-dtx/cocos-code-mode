@@ -153,6 +153,30 @@ describe('remaining P3 capability contracts', () => {
       fs.rmSync(skeletonFile, { force: true });
     }
   });
+  it('reads imported gltf-skeleton JSON through the library map when Creator leaves file empty', async () => {
+    const skeletonFile = path.join(os.tmpdir(), `ccb-skeleton-lib-${process.pid}-${Date.now()}.json`);
+    fs.writeFileSync(skeletonFile, JSON.stringify({ __type__: 'cc.Skeleton', _joints: ['Armature/boneA', 'Armature/boneA/boneB'] }));
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      return {
+        uuid: id,
+        type: 'cc.Asset',
+        importer: 'gltf',
+        // Creator 3.7 reports file:'' for imported sub-assets and exposes the emitted JSON
+        // through the library extension map instead.
+        subAssets: { skeleton: { importer: 'gltf-skeleton', type: 'cc.Skeleton', file: '', library: { '.json': skeletonFile }, uuid: `${id}@skeleton` } },
+      };
+    });
+    try {
+      const result = await new PortfolioValidationTools().animationRetargetValidate({ sourceReference: { id: 'source' }, targetReference: { id: 'target' } });
+      assert.deepEqual(result.source.joints, ['Armature/boneA', 'Armature/boneA/boneB']);
+      assert.deepEqual(result.target.joints, ['Armature/boneA', 'Armature/boneA/boneB']);
+      assert.equal(result.valid, true);
+      assert.equal(result.automaticRetargeting, false);
+    } finally {
+      fs.rmSync(skeletonFile, { force: true });
+    }
+  });
   it('lists bounded imported model outputs with stable subasset identities', async () => {
     install(async (_service, message, id) => {
       if (message !== 'query-asset-info') throw new Error('unexpected request');
