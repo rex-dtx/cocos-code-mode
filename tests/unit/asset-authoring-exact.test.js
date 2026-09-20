@@ -63,9 +63,26 @@ describe('exact asset authoring adapters', () => {
     } finally { restore(); }
   });
 
-  it('registers the exact query and inspection contracts', () => {
+  it('opens an asset by authoritative UUID and returns read-back identity', async () => {
+    const calls = [];
+    const restore = install(async (service, message, value) => {
+      calls.push([service, message, value]);
+      if (message === 'query-url') return 'db://assets/Hero.prefab';
+      if (message === 'open-asset') return true;
+      if (message === 'query-asset-info') return { uuid: 'asset-id', url: 'db://assets/Hero.prefab', type: 'cc.Prefab' };
+      throw new Error(`Unexpected ${service}.${message}`);
+    });
+    try {
+      const result = await new AssetTools().assetOpen({ reference: { id: 'asset-id', type: 'cc.Prefab' } });
+      assert.deepEqual(result.reference, { id: 'asset-id', type: 'cc.Prefab' });
+      assert.ok(calls.some(([, message, value]) => message === 'open-asset' && value === 'asset-id'));
+    } finally { restore(); }
+  });
+
+  it('registers the exact query, inspection, and open contracts', () => {
     const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
     assert.ok(names.includes('assetQuery'));
     assert.ok(names.includes('assetInspect'));
+    assert.ok(names.includes('assetOpen'));
   });
 });

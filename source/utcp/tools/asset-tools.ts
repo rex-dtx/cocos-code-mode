@@ -1022,6 +1022,11 @@ export class AssetTools {
         invalidateAfterWrite();
         return { reference: { id: readBack.uuid, type: readBack.type || assetInfo.type || 'cc.Asset' } };
     }
+    @utcpTool('assetOpen', 'Open one imported asset in Creator by authoritative UUID and return bounded asset identity read-back.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, 'POST', ['asset', 'open', 'editor', 'external'])
+    async assetOpen(args: { reference: IInstanceReference }): Promise<{ reference: IInstanceReference }> {
+        return await this.assetOperate({ operation: 'open', reference: args.reference });
+    }
+
     @utcpTool('assetOperate', 'Move/copy/delete/open/refresh/reimport asset, or save_meta (read meta via assetDbQuery meta first).', {
         type: 'object',
         properties: {
