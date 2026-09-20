@@ -78,11 +78,18 @@ async function readSkeletonJointNames(asset: any): Promise<string[]> {
     const subAssets = asset?.subAssets && typeof asset.subAssets === 'object' ? Object.values(asset.subAssets) : [];
     for (const subAsset of subAssets as any[]) {
         if (subAsset?.importer !== 'gltf-skeleton' && !/skeleton/i.test(String(subAsset?.type ?? subAsset?.url ?? subAsset?.file ?? ''))) continue;
-        if (typeof subAsset?.file !== 'string') continue;
+        // Creator 3.7 reports an empty `file` for imported sub-assets; the emitted library
+        // JSON is exposed through the `library` extension map instead (verified live on
+        // 3.7.3 with an imported glTF skin).
+        const libraryFile = subAsset?.library && typeof subAsset.library === 'object'
+            ? subAsset.library['.json'] ?? Object.values(subAsset.library).find((entry) => typeof entry === 'string')
+            : undefined;
+        const file = typeof subAsset?.file === 'string' && subAsset.file ? subAsset.file : libraryFile;
+        if (typeof file !== 'string' || !file) continue;
         try {
-            const stat = await fs.stat(subAsset.file);
+            const stat = await fs.stat(file);
             if (stat.size > MAX_SKELETON_METADATA_BYTES) continue;
-            const parsed = JSON.parse(await fs.readFile(subAsset.file, 'utf8'));
+            const parsed = JSON.parse(await fs.readFile(file, 'utf8'));
             const joints = metadataNames(parsed, ['_joints', 'joints', 'jointNames', 'bones', 'boneNames']);
             if (joints.length) return joints;
         } catch {
