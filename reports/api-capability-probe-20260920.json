@@ -13,7 +13,10 @@
   },
   "probes": [
     {
-      "rows": ["physics2dConfigure", "physics3dConfigure"],
+      "rows": [
+        "physics2dConfigure",
+        "physics3dConfigure"
+      ],
       "prerequisite": "project-settings-write",
       "readSide": "project/query-config returns the physics block (gravity, allowSleep, sleepThreshold, autoSimulation, fixedTimeStep, maxSubSteps, defaultMaterial), so project settings are readable",
       "writeProbe": "Editor.Message.request('project','set-config','project','physics.gravity',<current value>)",
@@ -22,7 +25,9 @@
       "verdict": "unsupported"
     },
     {
-      "rows": ["particleConfigure"],
+      "rows": [
+        "particleConfigure"
+      ],
       "prerequisite": "particle-schema",
       "schemaProbe": "cc.js.getClassByName('cc.ParticleSystem') resolves and the component exposes the serialized modules (_colorOverLifetimeModule, _shapeModule, _sizeOvertimeModule, _velocityOvertimeModule, _forceOvertimeModule, _limitVelocityOvertimeModule, _rotationOvertimeModule, _textureAnimationModule, _noiseModule, _trailModule) plus scalars (_capacity, _simulationSpace, _prewarm, _renderCulling, _cullingMode)",
       "writeProbe": "scene/set-property at __comps__.<i>.<key> for _capacity, _simulationSpace, _prewarm, _renderCulling, _cullingMode, _isSimulating",
@@ -30,25 +35,42 @@
       "verdict": "unsupported"
     },
     {
-      "rows": ["lightBakeManage"],
+      "rows": [
+        "lightBakeManage"
+      ],
       "prerequisite": "light-bake-job-api",
       "writeProbe": "scene messages bake, bake-lightmap, lightmap-bake, bake-scene, generate-lightmap",
       "result": "every candidate returns 'Message does not exist'; the scene package declares no bake/lightmap message",
       "verdict": "unsupported"
     },
     {
-      "rows": ["terrainEdit"],
+      "rows": [
+        "terrainEdit"
+      ],
       "prerequisite": "terrain-write-api",
       "writeProbe": "cc.Terrain / cc.internal.Terrain in the scene context",
       "result": "the class does not exist on Creator 3.7.3, so no terrain component and no write API can be addressed",
       "verdict": "unsupported"
     },
     {
-      "rows": ["localizationInspect", "localizationTableEdit"],
+      "rows": [
+        "localizationInspect",
+        "localizationTableEdit"
+      ],
       "prerequisite": "localization-package-api",
       "writeProbe": "Editor.Package.getPackages plus localization-manager messages and the db://localization-editor/l10n seam",
       "result": "no localization editor package is present; the localization-manager messages and the runtime l10n module do not resolve",
       "verdict": "unsupported-in-this-project"
+    },
+    {
+      "rows": [
+        "renderConfigurationApply"
+      ],
+      "prerequisite": "render-pipeline-schema (write path present, read-back channel absent)",
+      "writePath": "scene/set-property with the scene uuid and path _globals.<group>.<field> returns true (the convention already used by source/utcp/tools/set-properties-tool.ts for cc.SceneGlobals)",
+      "readProbe": "scene/query-node returns _globals.<group>.value.<field> as a metadata descriptor without a value for float properties such as fog.fogDensity and fog.fogStart, and scene/query-render-pipeline returns the scene render-pipeline asset reference instead of the globals; the candidate messages query-scene-globals, query-globals, dump-scene-globals, query-settings and query-scene-setting all return Message does not exist",
+      "result": "the write path is reachable, but no available channel returns the globals values, so the contract postcondition (atomic configuration with scene read-back) cannot be verified on Creator 3.7.3",
+      "verdict": "unsupported-read-back"
     }
   ],
   "poolImpact": {
