@@ -1156,7 +1156,8 @@
         },
         {
           "name": "renderDiagnosticsCollect",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Target-identified frame/render sampling with bounded results.",
           "route": "runtime render diagnostics",
           "prerequisites": [
@@ -1333,7 +1334,8 @@
         },
         {
           "name": "localizationPreview",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Switch locale with acknowledged runtime restart and visual/read-back evidence.",
           "route": "runtime localization adapter",
           "prerequisites": [
