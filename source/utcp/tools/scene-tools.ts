@@ -418,6 +418,56 @@ export class SceneTools {
         };
     }
 
+    @utcpTool('spriteFrameUsageInspect', 'Inspect bounded scene nodes referencing one SpriteFrame asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, nodes: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'nodes', 'total', 'truncated'] }, 'GET', ['scene', 'sprite', 'frame', 'usage', 'inspect'])
+    async spriteFrameUsageInspect(args: { reference: IInstanceReference, limit?: number }): Promise<Record<string, unknown>> {
+        const result = await this.findNodesByAsset(args);
+        return { reference: args.reference, nodes: result.references, total: result.total, truncated: result.truncated };
+    }
+    @utcpTool('spriteFrameUsageBatchInspect', 'Inspect scene usage for a bounded batch of SpriteFrame assets with per-item errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 64, items: InstanceReferenceSchema }, limitPerFrame: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['scene', 'sprite', 'frame', 'usage', 'batch'])
+    async spriteFrameUsageBatchInspect(args: { references: IInstanceReference[], limitPerFrame?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 64) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 64 items.' });
+        const limit = boundedListLimit(args.limitPerFrame);
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.spriteFrameUsageInspect({ reference, limit }) });
+            } catch (error) {
+                items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        const truncated = items.some((item) => item.ok === true && (item.result as Record<string, unknown>)?.truncated === true);
+        return { items, succeeded, failed: items.length - succeeded, truncated };
+    }
+
+
+    @utcpTool('imageSceneUsageInspect', 'Inspect scene usage for an imported image and its bounded SpriteFrame sub-assets.', { type: 'object', additionalProperties: false, properties: { imageReference: InstanceReferenceSchema, maxFrames: { type: 'integer', minimum: 1, maximum: 256, default: 128 }, limitPerAsset: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['imageReference'] }, { type: 'object', additionalProperties: false, properties: { imageReference: InstanceReferenceSchema, direct: { type: 'object' }, spriteFrames: { type: 'array' }, totalSpriteFrames: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['imageReference', 'direct', 'spriteFrames', 'totalSpriteFrames', 'truncated'] }, 'GET', ['scene', 'image', 'sprite', 'usage', 'inspect'])
+    async imageSceneUsageInspect(args: { imageReference: IInstanceReference, maxFrames?: number, limitPerAsset?: number }): Promise<Record<string, unknown>> {
+        const imageId = args.imageReference?.id;
+        if (!imageId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'imageReference.id is required.' });
+        const maxFrames = args.maxFrames ?? 128;
+        if (!Number.isInteger(maxFrames) || maxFrames < 1 || maxFrames > 256) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxFrames must be an integer from 1 to 256.' });
+        const limit = boundedListLimit(args.limitPerAsset);
+        const info = await Editor.Message.request('asset-db', 'query-asset-info', imageId) as any;
+        if (!info || (!['image', 'texture'].includes(String(info.importer ?? '')) && !['cc.ImageAsset', 'cc.Texture2D'].includes(String(info.type ?? '')))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${imageId} is not an imported image.` });
+        const frameReferences = Object.values(info.subAssets ?? {}).filter((frame: any) => frame?.importer === 'sprite-frame' || frame?.type === 'cc.SpriteFrame').slice(0, maxFrames).map((frame: any) => ({ id: frame.uuid, type: frame.type ?? 'cc.SpriteFrame' }));
+        const direct = await this.findNodesByAsset({ reference: args.imageReference, limit });
+        const spriteFrames = [];
+        for (const reference of frameReferences) spriteFrames.push(await this.spriteFrameUsageInspect({ reference, limit }));
+        return { imageReference: { id: info.uuid ?? imageId, type: info.type ?? args.imageReference.type ?? 'cc.ImageAsset' }, direct: { nodes: direct.references, total: direct.total, truncated: direct.truncated }, spriteFrames, totalSpriteFrames: Object.values(info.subAssets ?? {}).filter((frame: any) => frame?.importer === 'sprite-frame' || frame?.type === 'cc.SpriteFrame').length, truncated: direct.truncated || frameReferences.length >= maxFrames || spriteFrames.some((entry) => entry.truncated === true) };
+    }
+    @utcpTool('imageSceneUsageBatchInspect', 'Inspect scene usage for a bounded batch of imported image assets with per-item errors.', { type: 'object', additionalProperties: false, properties: { imageReferences: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, maxFrames: { type: 'integer', minimum: 1, maximum: 256, default: 128 }, limitPerAsset: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['imageReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['scene', 'image', 'sprite', 'usage', 'batch'])
+    async imageSceneUsageBatchInspect(args: { imageReferences: IInstanceReference[], maxFrames?: number, limitPerAsset?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.imageReferences) || args.imageReferences.length < 1 || args.imageReferences.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'imageReferences must contain 1 to 32 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, imageReference] of args.imageReferences.entries()) {
+            try { items.push({ index, ok: true, result: await this.imageSceneUsageInspect({ imageReference, maxFrames: args.maxFrames, limitPerAsset: args.limitPerAsset }) }); }
+            catch (error) { items.push({ index, ok: false, imageReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: items.some((item) => item.ok === true && (item.result as Record<string, unknown>)?.truncated === true) };
+    }
+
     @utcpTool(
         'findNodesWithMissingAssets',
         'Find nodes with missing/broken asset references. QA/health check for scene integrity.',
@@ -715,6 +765,132 @@ export class SceneTools {
         return { findings: findings.slice(0, limit), total: findings.length, truncated: findings.length > limit };
     }
 
+    @utcpTool('sceneScriptHealthBatchScan', 'Scan bounded scene roots for missing custom script classes with per-root outcomes.', { type: 'object', additionalProperties: false, properties: { nodeReferences: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, limitPerRoot: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['nodeReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['scene', 'script', 'health', 'batch', 'scan'])
+    async sceneScriptHealthBatchScan(args: { nodeReferences: IInstanceReference[], limitPerRoot?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.nodeReferences) || args.nodeReferences.length < 1 || args.nodeReferences.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeReferences must contain 1 to 32 items.' });
+        const limit = boundedListLimit(args.limitPerRoot);
+        const componentTypes = await Editor.Message.request('scene', 'query-components');
+        if (!Array.isArray(componentTypes)) throw new ToolError({ code: 'SCRIPT_HEALTH_QUERY_FAILED', status: 502, message: 'Creator did not return registered component types.' });
+        const registered = new Set(componentTypes.flatMap((candidate: unknown) => componentCandidates(candidate)));
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, nodeReference] of args.nodeReferences.entries()) {
+            try {
+                const tree = await Editor.Message.request('scene', 'query-node-tree', nodeReference.id) as any;
+                if (!tree) throw new Error(`Node ${nodeReference.id} was not found.`);
+                const findings: Array<Record<string, unknown>> = [];
+                const stack: Array<{ node: any, path: string }> = [{ node: tree, path: typeof tree.name === 'string' ? tree.name : '' }];
+                while (stack.length) {
+                    const { node, path: nodePath } = stack.pop()!;
+                    for (const component of node.components || node.__comps__ || []) {
+                        const classId = componentClassId(component);
+                        if (!classId || classId.startsWith('cc.') || registered.has(classId)) continue;
+                        findings.push({ nodeReference: { id: node.uuid, type: 'cc.Node' }, nodePath, componentReference: componentUuid(component) ? { id: componentUuid(component)!, type: 'cc.Component' } : null, classId });
+                    }
+                    for (const child of [...(node.children || [])].reverse()) stack.push({ node: child, path: nodePath ? `${nodePath}/${child.name || ''}` : child.name || '' });
+                }
+                items.push({ index, ok: true, nodeReference, findings: findings.slice(0, limit), total: findings.length, truncated: findings.length > limit });
+            } catch (error) {
+                items.push({ index, ok: false, nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: items.some((item) => item.truncated === true) };
+    }
+
+    @utcpTool('sceneScriptUsageInspect', 'Inspect bounded script component usage across the open scene with optional class filtering.', { type: 'object', additionalProperties: false, properties: { classId: { type: 'string', maxLength: 256 }, limit: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: [] }, { type: 'object', additionalProperties: false, properties: { usages: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['usages', 'total', 'truncated'] }, 'GET', ['scene', 'script', 'usage', 'inspect'])
+    async sceneScriptUsageInspect(args: { classId?: string, limit?: number } = {}): Promise<Record<string, unknown>> {
+        const tree = await Editor.Message.request('scene', 'query-node-tree');
+        if (!tree) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'No open scene or prefab hierarchy.' });
+        if (args.classId !== undefined && (!args.classId || args.classId.length > 256)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'classId must be a bounded non-empty string.' });
+        const limit = boundedListLimit(args.limit);
+        const usages: Array<Record<string, unknown>> = [];
+        const stack: Array<{ node: any, path: string }> = [{ node: tree, path: typeof tree.name === 'string' ? tree.name : '' }];
+        while (stack.length) {
+            const { node, path: nodePath } = stack.pop()!;
+            for (const component of node.components || node.__comps__ || []) {
+                const classId = componentClassId(component);
+                const componentId = componentUuid(component);
+                if (!classId || classId.startsWith('cc.') || (args.classId && classId !== args.classId)) continue;
+                usages.push({ nodeReference: { id: node.uuid, type: 'cc.Node' }, nodePath, componentReference: componentId ? { id: componentId, type: classId } : null, classId });
+            }
+            for (const child of [...(node.children || [])].reverse()) stack.push({ node: child, path: nodePath ? `${nodePath}/${child.name || ''}` : child.name || '' });
+        }
+        return { usages: usages.slice(0, limit), total: usages.length, truncated: usages.length > limit };
+    }
+
+    @utcpTool('scriptAssetSceneUsageInspect', 'Resolve an imported script class and inspect its bounded usage across the open scene.', { type: 'object', additionalProperties: false, properties: { scriptReference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['scriptReference'] }, { type: 'object', additionalProperties: false, properties: { scriptReference: InstanceReferenceSchema, classId: { type: 'string' }, usages: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['scriptReference', 'classId', 'usages', 'total', 'truncated'] }, 'GET', ['scene', 'script', 'asset', 'usage', 'inspect'])
+    async scriptAssetSceneUsageInspect(args: { scriptReference: IInstanceReference, limit?: number }): Promise<Record<string, unknown>> {
+        const scriptId = args.scriptReference?.id;
+        if (!scriptId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'scriptReference.id is required.' });
+        const classId = await Editor.Message.request('scene', 'query-script-cid', scriptId).catch(() => null);
+        if (typeof classId !== 'string' || !classId) throw new ToolError({ code: 'SCRIPT_METADATA_UNAVAILABLE', status: 422, message: `Creator did not expose a class ID for script ${scriptId}.` });
+        const usage = await this.sceneScriptUsageInspect({ classId, limit: args.limit });
+        return { scriptReference: { id: scriptId, type: args.scriptReference.type ?? 'cc.Script' }, classId, usages: usage.usages, total: usage.total, truncated: usage.truncated };
+    }
+    @utcpTool('scriptAssetSceneUsageBatchInspect', 'Inspect bounded scene usage for multiple imported script assets with per-script errors.', { type: 'object', additionalProperties: false, properties: { scriptReferences: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, limitPerScript: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['scriptReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' }, partial: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated', 'partial'] }, 'GET', ['scene', 'script', 'asset', 'usage', 'batch', 'inspect'])
+    async scriptAssetSceneUsageBatchInspect(args: { scriptReferences: IInstanceReference[], limitPerScript?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.scriptReferences) || args.scriptReferences.length < 1 || args.scriptReferences.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'scriptReferences must contain 1 to 32 items.' });
+        const limit = boundedListLimit(args.limitPerScript);
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, scriptReference] of args.scriptReferences.entries()) {
+            try {
+                items.push({ index, ok: true, scriptReference, result: await this.scriptAssetSceneUsageInspect({ scriptReference, limit }) });
+            } catch (error) {
+                items.push({ index, ok: false, scriptReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        const truncated = items.some((item) => item.ok === true && (item.result as Record<string, unknown>)?.truncated === true);
+        return { items, succeeded, failed: items.length - succeeded, truncated, partial: succeeded > 0 && succeeded < items.length };
+    }
+
+
+    @utcpTool('sceneScriptUsageSummary', 'Summarize bounded custom script usage by class across the open scene.', { type: 'object', additionalProperties: false, properties: { maxClasses: { type: 'integer', minimum: 1, maximum: 256, default: 64 }, maxNodesPerClass: { type: 'integer', minimum: 1, maximum: 256, default: 32 } }, required: [] }, { type: 'object', additionalProperties: false, properties: { classes: { type: 'array' }, totalClasses: { type: 'integer' }, totalUsages: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['classes', 'totalClasses', 'totalUsages', 'truncated'] }, 'GET', ['scene', 'script', 'usage', 'summary'])
+    async sceneScriptUsageSummary(args: { maxClasses?: number, maxNodesPerClass?: number } = {}): Promise<Record<string, unknown>> {
+        const maxClasses = args.maxClasses ?? 64;
+        const maxNodesPerClass = args.maxNodesPerClass ?? 32;
+        if (!Number.isInteger(maxClasses) || maxClasses < 1 || maxClasses > 256) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxClasses must be an integer from 1 to 256.' });
+        if (!Number.isInteger(maxNodesPerClass) || maxNodesPerClass < 1 || maxNodesPerClass > 256) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxNodesPerClass must be an integer from 1 to 256.' });
+        const usage = await this.sceneScriptUsageInspect({ limit: MAX_LIST_LIMIT });
+        const groups = new Map<string, Array<Record<string, unknown>>>();
+        for (const row of usage.usages as Array<Record<string, unknown>>) {
+            const classId = row.classId;
+            if (typeof classId !== 'string') continue;
+            const group = groups.get(classId) ?? [];
+            group.push(row);
+            groups.set(classId, group);
+        }
+        const all = [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
+        const classes = all.slice(0, maxClasses).map(([classId, rows]) => ({ classId, count: rows.length, nodes: rows.slice(0, maxNodesPerClass).map((row) => ({ nodeReference: row.nodeReference, nodePath: row.nodePath, componentReference: row.componentReference })), truncated: rows.length > maxNodesPerClass }));
+        return { classes, totalClasses: all.length, totalUsages: usage.total, truncated: usage.truncated === true || all.length > classes.length || classes.some((entry) => entry.truncated) };
+    }
+
+    @utcpTool('sceneScriptComponentInspect', 'Inspect one custom scene script component with class identity and authoritative serialized dump.', { type: 'object', additionalProperties: false, properties: { componentReference: InstanceReferenceSchema }, required: ['componentReference'] }, { type: 'object', additionalProperties: false, properties: { componentReference: InstanceReferenceSchema, classId: { type: 'string' }, dump: { type: 'object' } }, required: ['componentReference', 'classId', 'dump'] }, 'GET', ['scene', 'script', 'component', 'inspect'])
+    async sceneScriptComponentInspect(args: { componentReference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const componentId = args.componentReference?.id;
+        if (!componentId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'sceneScriptComponentInspect requires componentReference.id.' });
+        const dump = await Editor.Message.request('scene', 'query-component', componentId) as any;
+        if (!dump || typeof dump !== 'object') throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Script component ${componentId} was not found.` });
+        const classId = componentClassId(dump);
+        if (!classId || classId.startsWith('cc.')) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Component ${componentId} is not a custom script component.` });
+        return { componentReference: { id: componentId, type: classId }, classId, dump };
+    }
+
+    @utcpTool('sceneScriptComponentBatchInspect', 'Inspect a bounded batch of custom scene script components with per-item errors.', { type: 'object', additionalProperties: false, properties: { componentReferences: { type: 'array', minItems: 1, maxItems: 64, items: InstanceReferenceSchema } }, required: ['componentReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['scene', 'script', 'component', 'batch', 'inspect'])
+    async sceneScriptComponentBatchInspect(args: { componentReferences: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.componentReferences) || args.componentReferences.length < 1 || args.componentReferences.length > 64) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'componentReferences must contain 1 to 64 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, componentReference] of args.componentReferences.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.sceneScriptComponentInspect({ componentReference }) });
+            } catch (error) {
+                items.push({ index, ok: false, componentReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: false };
+    }
+
     @utcpTool(
         'sceneScriptRepair',
         'Replace one missing or invalid script component after verifying the target and replacement class. Uses editor undo snapshot and verifies the new component.',
@@ -776,6 +952,95 @@ export class SceneTools {
         await Editor.Message.request('scene', 'snapshot');
         return { success: true, removedComponent: oldUuid, createdComponent: { id: componentUuid(created)!, type: replacement } };
     }
+    @utcpTool('sceneScriptRepairBatch', 'Repair bounded missing script components with per-item replacement verification.', { type: 'object', additionalProperties: false, properties: { items: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, componentReference: InstanceReferenceSchema, expectedClassId: { type: 'string', maxLength: 256 }, replacementClassId: { type: 'string', maxLength: 256 }, scriptReference: InstanceReferenceSchema }, required: ['nodeReference'] } } }, required: ['items'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'partial'] }, 'POST', ['scene', 'script', 'batch', 'repair'])
+    async sceneScriptRepairBatch(args: { items: Array<{ nodeReference: IInstanceReference, componentReference?: IInstanceReference, expectedClassId?: string, replacementClassId?: string, scriptReference?: IInstanceReference }> }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'items must contain 1 to 32 repair requests.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, item] of args.items.entries()) {
+            try { outcomes.push({ index, ok: true, result: await this.sceneScriptRepair(item) }); }
+            catch (error) { outcomes.push({ index, ok: false, nodeReference: item?.nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+    @utcpTool(
+        'sceneScriptAttach',
+        'Attach one registered project script to a scene node with typed preflight and authoritative read-back.',
+        { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, scriptReference: InstanceReferenceSchema }, required: ['nodeReference', 'scriptReference'] },
+        { type: 'object', additionalProperties: false, properties: { success: { type: 'boolean', const: true }, nodeReference: InstanceReferenceSchema, scriptReference: InstanceReferenceSchema, componentReference: InstanceReferenceSchema }, required: ['success', 'nodeReference', 'scriptReference', 'componentReference'] },
+        'POST', ['scene', 'script', 'attach', 'component']
+    )
+    async sceneScriptAttach(args: { nodeReference: IInstanceReference, scriptReference: IInstanceReference }): Promise<{ success: true, nodeReference: IInstanceReference, scriptReference: IInstanceReference, componentReference: IInstanceReference }> {
+        const nodeUuid = args.nodeReference?.id;
+        const scriptUuid = args.scriptReference?.id;
+        if (!nodeUuid || !scriptUuid) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'sceneScriptAttach requires nodeReference.id and scriptReference.id.' });
+        const node = await Editor.Message.request('scene', 'query-node', nodeUuid) as any;
+        if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Scene node ${nodeUuid} was not found.` });
+        const classId = await Editor.Message.request('scene', 'query-script-cid', scriptUuid);
+        if (typeof classId !== 'string' || !classId) throw new ToolError({ code: 'SCRIPT_METADATA_UNAVAILABLE', status: 422, message: `Creator did not expose a class ID for script ${scriptUuid}.` });
+        const available = await Editor.Message.request('scene', 'query-components');
+        if (!Array.isArray(available) || !findComponentType(available, classId)) throw new ToolError({ code: 'SCRIPT_NOT_REGISTERED', status: 422, message: `Script class '${classId}' is not registered in Creator.` });
+        if ((node.__comps__ || []).some((component: unknown) => componentClassId(component) === classId)) throw new ToolError({ code: 'SCRIPT_ALREADY_ATTACHED', status: 409, message: `Script class '${classId}' is already attached to node ${nodeUuid}.` });
+        await Editor.Message.request('scene', 'create-component', { uuid: nodeUuid, component: classId });
+        const after = await Editor.Message.request('scene', 'query-node', nodeUuid) as any;
+        const created = (after?.__comps__ || []).find((component: unknown) => componentClassId(component) === classId);
+        const createdUuid = componentUuid(created);
+        if (!created || !createdUuid) throw new ToolError({ code: 'SCRIPT_ATTACH_UNCONFIRMED', status: 502, message: `Creator did not return the attached script component for node ${nodeUuid}.` });
+        await Editor.Message.request('scene', 'snapshot');
+        return { success: true, nodeReference: { id: nodeUuid, type: args.nodeReference.type ?? 'cc.Node' }, scriptReference: { id: scriptUuid, type: args.scriptReference.type ?? 'cc.Script' }, componentReference: { id: createdUuid, type: classId } };
+    }
+    @utcpTool('sceneScriptBatchAttach', 'Attach one registered script to a bounded set of scene nodes with per-item read-back outcomes.', { type: 'object', additionalProperties: false, properties: { nodeReferences: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, scriptReference: InstanceReferenceSchema }, required: ['nodeReferences', 'scriptReference'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'partial'] }, 'POST', ['scene', 'script', 'batch', 'attach'])
+    async sceneScriptBatchAttach(args: { nodeReferences: IInstanceReference[], scriptReference: IInstanceReference }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.nodeReferences) || args.nodeReferences.length < 1 || args.nodeReferences.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeReferences must contain 1 to 32 items.' });
+        if (!args.scriptReference?.id) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'scriptReference.id is required.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, nodeReference] of args.nodeReferences.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.sceneScriptAttach({ nodeReference, scriptReference: args.scriptReference }) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('sceneScriptDetach', 'Detach one script component from a scene node with preflight, absence read-back, and undo snapshot.', { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, componentReference: InstanceReferenceSchema, scriptClassId: { type: 'string' } }, required: ['nodeReference'], anyOf: [{ required: ['componentReference'] }, { required: ['scriptClassId'] }] }, { type: 'object', additionalProperties: false, properties: { success: { type: 'boolean', const: true }, nodeReference: InstanceReferenceSchema, removedComponent: InstanceReferenceSchema }, required: ['success', 'nodeReference', 'removedComponent'] }, 'POST', ['scene', 'script', 'detach', 'component'])
+    async sceneScriptDetach(args: { nodeReference: IInstanceReference, componentReference?: IInstanceReference, scriptClassId?: string }): Promise<{ success: true, nodeReference: IInstanceReference, removedComponent: IInstanceReference }> {
+        const nodeId = args.nodeReference?.id;
+        if (!nodeId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'sceneScriptDetach requires nodeReference.id.' });
+        const node = await Editor.Message.request('scene', 'query-node', nodeId) as any;
+        if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Scene node ${nodeId} was not found.` });
+        const target = (node.__comps__ || []).find((component: unknown) => {
+            const uuid = componentUuid(component);
+            const classId = componentClassId(component);
+            return (args.componentReference?.id && uuid === args.componentReference.id) || (!args.componentReference?.id && args.scriptClassId && classId === args.scriptClassId);
+        });
+        const componentId = componentUuid(target);
+        const classId = componentClassId(target);
+        if (!target || !componentId || !classId) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Script component was not found on node ${nodeId}.` });
+        await Editor.Message.request('scene', 'remove-component', { uuid: componentId });
+        const after = await Editor.Message.request('scene', 'query-node', nodeId) as any;
+        if ((after?.__comps__ || []).some((component: unknown) => componentUuid(component) === componentId)) throw new ToolError({ code: 'SCRIPT_DETACH_UNCONFIRMED', status: 502, message: `Creator did not remove script component ${componentId}.` });
+        await Editor.Message.request('scene', 'snapshot');
+        return { success: true, nodeReference: { id: nodeId, type: args.nodeReference.type ?? 'cc.Node' }, removedComponent: { id: componentId, type: classId } };
+    }
+    @utcpTool('sceneScriptBatchDetach', 'Detach bounded script components from scene nodes with per-item absence read-back outcomes.', { type: 'object', additionalProperties: false, properties: { items: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, componentReference: InstanceReferenceSchema, scriptClassId: { type: 'string', maxLength: 256 } }, required: ['nodeReference'], anyOf: [{ required: ['componentReference'] }, { required: ['scriptClassId'] }] } } }, required: ['items'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'partial'] }, 'POST', ['scene', 'script', 'batch', 'detach'])
+    async sceneScriptBatchDetach(args: { items: Array<{ nodeReference: IInstanceReference, componentReference?: IInstanceReference, scriptClassId?: string }> }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'items must contain 1 to 32 detach requests.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, item] of args.items.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.sceneScriptDetach(item) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, nodeReference: item?.nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+
 
     @utcpTool(
         'nodeReset',

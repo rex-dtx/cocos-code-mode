@@ -7,6 +7,7 @@ const path = require('path');
 const { requireDist } = require('../helpers/require-dist');
 
 const { AnimationTools } = requireDist('utcp/tools/animation-tools.js');
+const { ToolRegistry } = requireDist('utcp/decorators.js');
 
 let previousEditor;
 let tempFile;
@@ -64,6 +65,60 @@ describe('Spine asset inspection', () => {
     assert.equal(result.linkedAssets.length, 1);
     assert.deepEqual(result.skins, [{ name: 'default', slotCount: 1, slots: [{ name: 'weapon', attachmentCount: 1, attachments: [{ name: 'sword', type: 'region', path: 'sword', x: 2, y: 3, rotation: 15, scaleX: null, scaleY: null, width: 32, height: 64, vertexCount: null, triangleCount: null }], truncated: false }], truncated: false }]);
     assert.deepEqual(result.sockets, [{ name: 'weaponSocket', bone: 'hand' }]);
+  });
+  it('returns a focused bounded Spine atlas inventory', async () => {
+    tempFile = path.join(os.tmpdir(), `ccb-spine-atlas-${Date.now()}.json`);
+    tempAtlas = path.join(os.tmpdir(), `ccb-spine-atlas-${Date.now()}.atlas`);
+    fs.writeFileSync(tempFile, JSON.stringify({ bones: [{ name: 'root' }], animations: {} }));
+    fs.writeFileSync(tempAtlas, 'hero.png\nsize: 32,32\n\nbody\n  size: 16, 16\n');
+    previousEditor = global.Editor;
+    global.Editor = { Message: { request: async () => ({ uuid: 'spine-atlas', type: 'sp.SkeletonData', importer: 'spine-data', file: tempFile, subAssets: { atlas: { uuid: 'atlas', type: 'sp.SpineAtlas', file: tempAtlas } } }) } };
+    const result = await new AnimationTools().spineAtlasInspect({ reference: { id: 'spine-atlas' }, maxItems: 10 });
+    assert.equal(result.totalPages, 1);
+    assert.equal(result.totalRegions, 1);
+    assert.equal(result.truncated, false);
+  });
+  it('returns focused Spine skin and attachment metadata', async () => {
+    tempFile = path.join(os.tmpdir(), `ccb-spine-attachments-${Date.now()}.json`);
+    fs.writeFileSync(tempFile, JSON.stringify({ bones: [{ name: 'root' }], skins: { default: { body: { hero: { type: 'region', path: 'hero' } } } }, animations: {} }));
+    previousEditor = global.Editor;
+    global.Editor = { Message: { request: async () => ({ uuid: 'spine-attachments', type: 'sp.SkeletonData', importer: 'spine-data', file: tempFile, subAssets: {} }) } };
+    const result = await new AnimationTools().spineAttachmentInspect({ reference: { id: 'spine-attachments' } });
+    assert.equal(result.totalSkins, 1);
+    assert.equal(result.skins[0].slots[0].attachments[0].name, 'hero');
+  });
+  it('registers bounded Spine socket inspection', () => {
+    const source = fs.readFileSync(path.resolve(__dirname, '../../source/utcp/tools/animation-tools.ts'), 'utf8');
+    assert.match(source, /'spineSocketInspect'/);
+    assert.match(source, /target bone paths/);
+  });
+  it('registers bounded Spine event inspection', () => {
+    const source = fs.readFileSync(path.resolve(__dirname, '../../source/utcp/tools/animation-tools.ts'), 'utf8');
+    assert.match(source, /'spineEventInspect'/);
+    assert.match(source, /totalUsages/);
+  });
+  it('registers Spine event validation', () => {
+    const source = fs.readFileSync(path.resolve(__dirname, '../../source/utcp/tools/animation-tools.ts'), 'utf8');
+    assert.match(source, /'spineEventValidate'/);
+    assert.match(source, /ANIMATION_EVENT_UNDEFINED/);
+  });
+  it('registers bounded Spine skeleton inspection', () => {
+    const source = fs.readFileSync(path.resolve(__dirname, '../../source/utcp/tools/animation-tools.ts'), 'utf8');
+    assert.match(source, /'spineSkeletonInspect'/);
+    assert.match(source, /linkedAssets/);
+    assert.match(source, /constraintCount/);
+  });
+  it('registers Spine skeleton inspection route', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineSkeletonInspect'));
+  });
+  it('registers Spine asset batch validation', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineAssetBatchValidate'));
+  });
+  it('registers Spine asset batch inspection', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineAssetBatchInspect'));
   });
 
   it('reports broken bone, attachment, event, and atlas relationships with bounded issues', async () => {

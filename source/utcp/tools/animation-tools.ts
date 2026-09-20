@@ -455,6 +455,107 @@ export class AnimationTools {
         };
     }
 
+    @utcpTool('spineAssetBatchInspect', 'Inspect a bounded batch of Spine assets with per-item bounded metadata and errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 16, items: InstanceReferenceSchema }, maxAnimations: { type: 'integer', minimum: 1, maximum: 200, default: 100 }, maxEvents: { type: 'integer', minimum: 1, maximum: 500, default: 200 }, maxItems: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['animation', 'spine', 'asset', 'batch', 'inspect'])
+    async spineAssetBatchInspect(args: { references: IInstanceReference[], maxAnimations?: number, maxEvents?: number, maxItems?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 16) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 16 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.spineAssetInspect({ reference, maxAnimations: args.maxAnimations, maxEvents: args.maxEvents, maxSlots: args.maxItems, maxTracks: args.maxItems }) });
+            } catch (error) {
+                items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        const truncated = items.some((item) => item.ok === true && ((item.result as Record<string, unknown>)?.truncatedAnimations === true || (item.result as Record<string, unknown>)?.truncatedEvents === true));
+        return { items, succeeded, failed: items.length - succeeded, truncated };
+    }
+
+    @utcpTool('spineSkeletonInspect', 'Inspect bounded Spine skeleton identity, bones, slots, constraints, linked assets, and atlas references.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxItems: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, skeleton: { type: 'object' }, bones: { type: 'array' }, slots: { type: 'array' }, constraints: { type: 'object' }, linkedAssets: { type: 'array' }, atlases: { type: 'array' }, counts: { type: 'object' }, truncated: { type: 'boolean' } }, required: ['reference', 'skeleton', 'bones', 'slots', 'constraints', 'linkedAssets', 'atlases', 'counts', 'truncated'] }, 'GET', ['animation', 'spine', 'skeleton', 'bones', 'slots', 'inspect'])
+    async spineSkeletonInspect(args: { reference: IInstanceReference, maxItems?: number }): Promise<Record<string, unknown>> {
+        const maxItems = args.maxItems ?? 200;
+        if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 1000) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxItems must be an integer from 1 to 1000.' });
+        const report = await this.spineAssetInspect({ reference: args.reference, maxAnimations: 1, maxEvents: 1, maxSlots: maxItems, maxTracks: 1 });
+        const bones = Array.isArray(report.bones) ? report.bones : [];
+        const slots = Array.isArray(report.slots) ? report.slots : [];
+        const linkedAssets = Array.isArray(report.linkedAssets) ? report.linkedAssets : [];
+        const atlases = Array.isArray(report.atlases) ? report.atlases : [];
+        const constraints = report.constraints && typeof report.constraints === 'object' ? report.constraints as Record<string, unknown> : {};
+        const constraintCount = Object.values(constraints).reduce<number>((total, value) => total + (Array.isArray(value) ? value.length : 0), 0);
+        const truncated = bones.length >= maxItems || slots.length >= maxItems || linkedAssets.length >= maxItems || atlases.length >= maxItems;
+        return { reference: report.reference, skeleton: report.skeleton, bones, slots, constraints, linkedAssets, atlases, counts: { bones: bones.length, slots: slots.length, constraints: constraintCount, linkedAssets: linkedAssets.length, atlases: atlases.length }, truncated };
+    }
+
+    @utcpTool('spineAtlasInspect', 'Inspect bounded linked Spine atlas pages and regions for one SkeletonData asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxItems: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, atlases: { type: 'array' }, totalPages: { type: 'integer' }, totalRegions: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'atlases', 'totalPages', 'totalRegions', 'truncated'] }, 'GET', ['animation', 'spine', 'atlas', 'inspect'])
+    async spineAtlasInspect(args: { reference: IInstanceReference, maxItems?: number }): Promise<Record<string, unknown>> {
+        const maxItems = args.maxItems ?? 200;
+        if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 1000) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxItems must be an integer from 1 to 1000.' });
+        const report = await this.spineAssetInspect({ reference: args.reference, maxAnimations: 1, maxEvents: 1, maxSlots: maxItems, maxTracks: 1 });
+        const atlases = Array.isArray(report.atlases) ? report.atlases : [];
+        const totalPages = atlases.reduce((total: number, atlas: any) => total + (Array.isArray(atlas?.pages) ? atlas.pages.length : 0), 0);
+        const totalRegions = atlases.reduce((total: number, atlas: any) => total + (Array.isArray(atlas?.regions) ? atlas.regions.length : 0), 0);
+        const truncated = atlases.some((atlas: any) => atlas?.truncated === true) || totalPages >= maxItems || totalRegions >= maxItems;
+        return { reference: report.reference, atlases, totalPages, totalRegions, truncated };
+    }
+
+    @utcpTool('spineAttachmentInspect', 'Inspect bounded Spine skins, slots, and attachment metadata for one SkeletonData asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxItems: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, skins: { type: 'array' }, totalSkins: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'skins', 'totalSkins', 'truncated'] }, 'GET', ['animation', 'spine', 'skin', 'slot', 'attachment', 'inspect'])
+    async spineAttachmentInspect(args: { reference: IInstanceReference, maxItems?: number }): Promise<Record<string, unknown>> {
+        const maxItems = args.maxItems ?? 200;
+        if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 1000) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxItems must be an integer from 1 to 1000.' });
+        const report = await this.spineAssetInspect({ reference: args.reference, maxAnimations: 1, maxEvents: 1, maxSlots: maxItems, maxTracks: 1 });
+        const attachments = report.attachments && typeof report.attachments === 'object' ? report.attachments as Record<string, unknown> : {};
+        return { reference: report.reference, skins: Array.isArray(attachments.skins) ? attachments.skins : [], totalSkins: typeof attachments.totalSkins === 'number' ? attachments.totalSkins : 0, truncated: attachments.truncated === true };
+    }
+
+    @utcpTool('spineSocketInspect', 'Inspect bounded Spine socket declarations and target bone paths for one SkeletonData asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxItems: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, sockets: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'sockets', 'total', 'truncated'] }, 'GET', ['animation', 'spine', 'socket', 'inspect'])
+    async spineSocketInspect(args: { reference: IInstanceReference, maxItems?: number }): Promise<Record<string, unknown>> {
+        const maxItems = args.maxItems ?? 200;
+        if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 1000) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxItems must be an integer from 1 to 1000.' });
+        const report = await this.spineAssetInspect({ reference: args.reference, maxAnimations: 1, maxEvents: 1, maxSlots: maxItems, maxTracks: 1 });
+        const sockets = Array.isArray(report.sockets) ? report.sockets.slice(0, maxItems) : [];
+        const total = Array.isArray(report.sockets) ? report.sockets.length : 0;
+        return { reference: report.reference, sockets, total, truncated: total > sockets.length };
+    }
+
+    @utcpTool('spineEventInspect', 'Inspect bounded Spine event definitions and animation event usages.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxItems: { type: 'integer', minimum: 1, maximum: 500, default: 200 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, definitions: { type: 'array' }, usages: { type: 'array' }, totalDefinitions: { type: 'integer' }, totalUsages: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'definitions', 'usages', 'totalDefinitions', 'totalUsages', 'truncated'] }, 'GET', ['animation', 'spine', 'event', 'inspect'])
+    async spineEventInspect(args: { reference: IInstanceReference, maxItems?: number }): Promise<Record<string, unknown>> {
+        const maxItems = args.maxItems ?? 200;
+        if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 500) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxItems must be an integer from 1 to 500.' });
+        const report = await this.spineAssetInspect({ reference: args.reference, maxAnimations: 200, maxEvents: maxItems, maxSlots: 1, maxTracks: 200 });
+        const definitions = Array.isArray(report.events) ? report.events.slice(0, maxItems) : [];
+        const allUsages = (Array.isArray(report.animations) ? report.animations : []).flatMap((animation: any) => (Array.isArray(animation?.events) ? animation.events.map((event: any) => ({ animation: animation.name ?? null, ...event })) : []));
+        const usages = allUsages.slice(0, maxItems);
+        return { reference: report.reference, definitions, usages, totalDefinitions: typeof report.totalEvents === 'number' ? report.totalEvents : definitions.length, totalUsages: allUsages.length, truncated: report.truncatedEvents === true || allUsages.length > usages.length };
+    }
+
+    @utcpTool('spineEventValidate', 'Validate bounded Spine event definitions and animation event usages.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, definitions: { type: 'integer' }, usages: { type: 'integer' }, issues: { type: 'array' } }, required: ['valid', 'reference', 'definitions', 'usages', 'issues'] }, 'GET', ['animation', 'spine', 'event', 'validate'])
+    async spineEventValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.spineEventInspect({ reference: args.reference, maxItems: 500 });
+        const definitions = inspected.definitions as Array<Record<string, unknown>>;
+        const usages = inspected.usages as Array<Record<string, unknown>>;
+        const names = new Set(definitions.map((event) => event.name).filter((name): name is string => typeof name === 'string'));
+        const issues = usages.filter((usage) => typeof usage.name === 'string' && !names.has(usage.name)).map((usage) => ({ code: 'ANIMATION_EVENT_UNDEFINED', animation: usage.animation ?? null, name: usage.name }));
+        return { valid: issues.length === 0, reference: inspected.reference, definitions: definitions.length, usages: usages.length, issues };
+    }
+
+    @utcpTool('spineAssetBatchValidate', 'Validate a bounded batch of Spine assets with per-item relationship issues and errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, maxIssues: { type: 'integer', minimum: 1, maximum: 500, default: 100 } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, invalid: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'invalid', 'partial'] }, 'GET', ['animation', 'spine', 'asset', 'batch', 'validate'])
+    async spineAssetBatchValidate(args: { references: IInstanceReference[], maxIssues?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const maxIssues = args.maxIssues ?? 100;
+        if (!Number.isInteger(maxIssues) || maxIssues < 1 || maxIssues > 500) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxIssues must be an integer from 1 to 500.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.spineAssetValidate({ reference, maxIssues }) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const invalid = outcomes.filter((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.valid === false).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, invalid, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
     @utcpTool(
         'spineAssetValidate',
         'Validate bounded Spine source relationships between bones, slots, attachments, events, sockets, constraints, and atlas regions.',
@@ -675,6 +776,75 @@ export class AnimationTools {
         }
         return result;
     }
+    @utcpTool('spineAssetSceneUsageInspect', 'Inspect scene nodes referencing one Spine SkeletonData asset and return bounded live Skeleton read-back.', { type: 'object', additionalProperties: false, properties: { assetReference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: 32, default: 16 }, maxItemsPerNode: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['assetReference'] }, { type: 'object', additionalProperties: false, properties: { assetReference: InstanceReferenceSchema, nodes: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['assetReference', 'nodes', 'total', 'truncated'] }, 'GET', ['animation', 'spine', 'asset', 'scene', 'usage'])
+    async spineAssetSceneUsageInspect(args: { assetReference: IInstanceReference, limit?: number, maxItemsPerNode?: number }): Promise<Record<string, unknown>> {
+        const assetId = requireRef(args?.assetReference, 'assetReference');
+        const limit = args.limit ?? 16;
+        if (!Number.isInteger(limit) || limit < 1 || limit > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'limit must be an integer from 1 to 32.' });
+        const nodeIds = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', assetId);
+        if (!Array.isArray(nodeIds)) throw new ToolError({ code: 'SPINE_SCENE_INSPECTION_FAILED', status: 502, message: 'Creator did not return Spine asset scene usages.' });
+        const nodes: Array<Record<string, unknown>> = [];
+        for (const nodeId of nodeIds.slice(0, limit)) {
+            if (typeof nodeId !== 'string' || !nodeId) continue;
+            try {
+                nodes.push({ nodeReference: { id: nodeId, type: 'cc.Node' }, ok: true, inspection: await this.spineSceneInspect({ nodeReference: { id: nodeId, type: 'cc.Node' }, maxItems: args.maxItemsPerNode }) });
+            } catch (error) {
+                nodes.push({ nodeReference: { id: nodeId, type: 'cc.Node' }, ok: false, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        return { assetReference: { id: assetId, type: args.assetReference.type ?? 'sp.SkeletonData' }, nodes, total: nodeIds.length, truncated: nodeIds.length > nodes.length || nodes.some((node) => (node.inspection as Record<string, unknown>)?.truncated === true) };
+    }
+    @utcpTool('spineAssetSceneUsageReport', 'Return a bounded per-node Spine asset scene usage report with explicit live/read-back status.', { type: 'object', additionalProperties: false, properties: { assetReference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: 32, default: 16 } }, required: ['assetReference'] }, { type: 'object', additionalProperties: false, properties: { assetReference: InstanceReferenceSchema, entries: { type: 'array' }, total: { type: 'integer' }, liveCount: { type: 'integer' }, failedCount: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['assetReference', 'entries', 'total', 'liveCount', 'failedCount', 'truncated'] }, 'GET', ['animation', 'spine', 'asset', 'scene', 'report'])
+    async spineAssetSceneUsageReport(args: { assetReference: IInstanceReference, limit?: number }): Promise<Record<string, unknown>> {
+        const inspected = await this.spineAssetSceneUsageInspect({ assetReference: args.assetReference, limit: args.limit });
+        const entries = inspected.nodes as Array<Record<string, unknown>>;
+        const liveCount = entries.filter((entry) => entry.ok === true).length;
+        return { assetReference: inspected.assetReference, entries, total: inspected.total, liveCount, failedCount: entries.length - liveCount, truncated: inspected.truncated };
+    }
+    @utcpTool('spineAssetSceneUsageBatchReport', 'Return bounded scene usage reports for multiple Spine SkeletonData assets with per-asset failures.', { type: 'object', additionalProperties: false, properties: { assetReferences: { type: 'array', minItems: 1, maxItems: 16, items: InstanceReferenceSchema }, limitPerAsset: { type: 'integer', minimum: 1, maximum: 32, default: 16 } }, required: ['assetReferences'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, liveCount: { type: 'integer' }, truncated: { type: 'boolean' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'liveCount', 'truncated', 'partial'] }, 'GET', ['animation', 'spine', 'asset', 'scene', 'usage', 'batch', 'report'])
+    async spineAssetSceneUsageBatchReport(args: { assetReferences: IInstanceReference[], limitPerAsset?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.assetReferences) || args.assetReferences.length < 1 || args.assetReferences.length > 16) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'assetReferences must contain 1 to 16 items.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, assetReference] of args.assetReferences.entries()) {
+            try {
+                outcomes.push({ index, assetReference, ok: true, report: await this.spineAssetSceneUsageReport({ assetReference, limit: args.limitPerAsset }) });
+            } catch (error) {
+                outcomes.push({ index, assetReference, ok: false, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const liveCount = outcomes.reduce((total, outcome) => total + (outcome.ok === true && typeof (outcome.report as Record<string, unknown>)?.liveCount === 'number' ? (outcome.report as Record<string, unknown>).liveCount as number : 0), 0);
+        const truncated = outcomes.some((outcome) => outcome.ok === true && (outcome.report as Record<string, unknown>)?.truncated === true);
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, liveCount, truncated, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('spineAssetSceneUsageValidate', 'Validate that all bounded scene usages of one Spine asset expose live Skeleton components.', { type: 'object', additionalProperties: false, properties: { assetReference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: 32, default: 16 } }, required: ['assetReference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, assetReference: InstanceReferenceSchema, checked: { type: 'integer' }, issues: { type: 'array' } }, required: ['valid', 'assetReference', 'checked', 'issues'] }, 'GET', ['animation', 'spine', 'asset', 'scene', 'validate'])
+    async spineAssetSceneUsageValidate(args: { assetReference: IInstanceReference, limit?: number }): Promise<Record<string, unknown>> {
+        const inspected = await this.spineAssetSceneUsageInspect({ assetReference: args.assetReference, limit: args.limit });
+        const issues: Array<Record<string, unknown>> = [];
+        for (const node of inspected.nodes as Array<Record<string, unknown>>) {
+            if (node.ok !== true) issues.push({ code: 'SPINE_SCENE_USAGE_UNAVAILABLE', nodeReference: node.nodeReference });
+            else if (!Array.isArray((node.inspection as Record<string, unknown>)?.findings) || ((node.inspection as Record<string, unknown>)?.findings as unknown[]).length === 0) issues.push({ code: 'SPINE_COMPONENT_NOT_FOUND', nodeReference: node.nodeReference });
+        }
+        return { valid: issues.length === 0, assetReference: inspected.assetReference, checked: (inspected.nodes as unknown[]).length, issues };
+    }
+
+    @utcpTool('spineSceneBatchInspect', 'Inspect live Spine components for a bounded set of scene roots with per-item errors.', { type: 'object', additionalProperties: false, properties: { nodeReferences: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, maxItems: { type: 'integer', minimum: 1, maximum: 1000, default: 200 } }, required: ['nodeReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['animation', 'spine', 'scene', 'batch', 'inspect'])
+    async spineSceneBatchInspect(args: { nodeReferences: IInstanceReference[], maxItems?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.nodeReferences) || args.nodeReferences.length < 1 || args.nodeReferences.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeReferences must contain 1 to 32 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, nodeReference] of args.nodeReferences.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.spineSceneInspect({ nodeReference, maxItems: args.maxItems }) });
+            } catch (error) {
+                items.push({ index, ok: false, nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        const truncated = items.some((item) => item.ok === true && (item.result as Record<string, unknown>)?.truncated === true);
+        return { items, succeeded, failed: items.length - succeeded, truncated };
+    }
+
 
     @utcpTool(
         'skeletalAnimationValidate',
@@ -1245,6 +1415,73 @@ export class AnimationTools {
             return { ...result, nodeReference: { id: nodeId, type: 'cc.Node' }, operation };
         } catch (error) {
             throw new ToolError({ code: 'SPINE_RUNTIME_CONTROL_FAILED', status: 502, message: `Creator could not complete Spine operation '${operation}'.`, details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Run animationCatalogInspect and animationCompatibilityAudit before retrying.' });
+        }
+    }
+    @utcpTool('spineRuntimeBatchControl', 'Apply bounded Spine runtime controls across multiple scene nodes with per-node live read-back outcomes.', { type: 'object', additionalProperties: false, properties: { items: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, operation: { type: 'string', enum: ['inspect', 'set_skin', 'set_attachment', 'queue_animation', 'clear_track', 'clear_tracks', 'set_time_scale', 'set_mix'] }, skinName: { type: 'string', maxLength: 256 }, slotName: { type: 'string', maxLength: 256 }, attachmentName: { type: ['string', 'null'], maxLength: 256 }, clipName: { type: 'string', maxLength: 256 }, trackIndex: { type: 'integer', minimum: 0, maximum: 31 }, loop: { type: 'boolean' }, delay: { type: 'number', minimum: 0, maximum: 86400 }, timeScale: { type: 'number', minimum: 0, maximum: 100 }, fromAnimation: { type: 'string', maxLength: 256 }, toAnimation: { type: 'string', maxLength: 256 }, duration: { type: 'number', minimum: 0, maximum: 60 } }, required: ['nodeReference', 'operation'] } } }, required: ['items'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'partial'] }, 'POST', ['animation', 'spine', 'runtime', 'batch', 'control'])
+    async spineRuntimeBatchControl(args: { items: Array<{ nodeReference: IInstanceReference, operation: string, skinName?: string, slotName?: string, attachmentName?: string | null, clipName?: string, trackIndex?: number, loop?: boolean, delay?: number, timeScale?: number, fromAnimation?: string, toAnimation?: string, duration?: number }> }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'items must contain 1 to 32 Spine runtime requests.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, item] of args.items.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.spineRuntimeControl(item) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, nodeReference: item?.nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+
+    @utcpTool(
+        'skeletalAnimationConfigure',
+        'Persist bounded SkeletalAnimation playOnLoad and useBakedAnimation fields with component read-back and rollback.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                componentReference: InstanceReferenceSchema,
+                playOnLoad: { type: 'boolean' },
+                useBakedAnimation: { type: 'boolean' },
+            },
+            required: ['componentReference'],
+        },
+        { type: 'object', properties: { success: { type: 'boolean' }, componentReference: InstanceReferenceSchema, changed: { type: 'array' }, properties: { type: 'object' }, verified: { type: 'boolean' } }, required: ['success', 'componentReference', 'changed', 'properties', 'verified'] },
+        'POST', ['animation', 'skeletal', 'configure', 'properties']
+    )
+    async skeletalAnimationConfigure(args: { componentReference?: IInstanceReference, playOnLoad?: boolean, useBakedAnimation?: boolean }): Promise<Record<string, unknown>> {
+        const componentId = requireRef(args?.componentReference, 'componentReference');
+        const fields: Array<[string, boolean]> = ([
+            ['playOnLoad', args.playOnLoad],
+            ['useBakedAnimation', args.useBakedAnimation],
+        ] as Array<[string, boolean | undefined]>).filter((entry): entry is [string, boolean] => entry[1] !== undefined);
+        if (fields.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'At least one SkeletalAnimation property is required.' });
+        const before = await ToolsUtils.inspectInstance(componentId, false);
+        const previous: Record<string, unknown> = {};
+        for (const [path] of fields) {
+            const value = before?.props?.[path];
+            previous[path] = value && typeof value === 'object' && 'value' in value ? (value as unknown as Record<string, unknown>).value : value;
+        }
+        try {
+            await new SetPropertyTool().setInstanceProperties({ reference: { id: componentId }, propertyPaths: fields.map(([path]) => path), values: fields.map(([, value]) => value) });
+            const readBack = await ToolsUtils.inspectInstance(componentId, false);
+            if (!readBack?.props) throw new Error('SkeletalAnimation property read-back was unavailable.');
+            const values: Record<string, unknown> = {};
+            for (const [path, expected] of fields) {
+                const raw = readBack.props[path];
+                const actual = raw && typeof raw === 'object' && 'value' in raw ? (raw as unknown as Record<string, unknown>).value : raw;
+                if (actual !== expected) throw new Error(`SkeletalAnimation property ${path} read-back mismatch.`);
+                values[path] = actual;
+            }
+            return { success: true, componentReference: { id: componentId, type: args.componentReference?.type ?? 'cc.SkeletalAnimation' }, changed: fields.map(([path]) => path), properties: values, verified: true };
+        } catch (error) {
+            try {
+                const restorePaths = Object.keys(previous);
+                await new SetPropertyTool().setInstanceProperties({ reference: { id: componentId }, propertyPaths: restorePaths, values: restorePaths.map((path) => previous[path]) });
+            } catch {
+                // Preserve the original failure; rollback status belongs in the typed error details.
+            }
+            throw new ToolError({ code: 'SKELETAL_ANIMATION_CONFIGURE_FAILED', status: 502, message: 'Creator could not persist SkeletalAnimation properties.', details: { cause: error instanceof Error ? error.message : String(error), restored: true }, recovery: 'Inspect the SkeletalAnimation component and retry with supported serialized fields.' });
         }
     }
 

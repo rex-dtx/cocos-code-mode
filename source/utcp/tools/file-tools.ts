@@ -211,7 +211,7 @@ export class FileTools {
         return { exists: true, isDirectory: fs.statSync(filePath).isDirectory() };
     }
 
-    @utcpTool('projectListDirectory', 'List bounded entries in a project-relative directory.', { type: 'object', properties: { dirPath: { type: 'string' }, limit: { type: 'number' } } }, { type: 'object', properties: { entries: { type: 'array' }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['entries', 'total', 'truncated'] }, 'GET', ['file', 'list', 'directory', 'project'])
+    @utcpTool('projectListDirectory', 'List bounded entries in a project-relative directory.', { type: 'object', properties: { dirPath: { type: 'string' }, limit: { type: 'integer', minimum: 1, maximum: MAX_DIRECTORY_ENTRIES } } }, { type: 'object', properties: { entries: { type: 'array' }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['entries', 'total', 'truncated'] }, 'GET', ['file', 'list', 'directory', 'project'])
     async projectListDirectory(args: { dirPath?: string, limit?: number }): Promise<{ entries: { name: string, type: 'file' | 'directory', size?: number }[], total: number, truncated: boolean }> {
         const directory = resolveSafePath(projectRoot(), args.dirPath ?? '.');
         if (!fs.existsSync(directory) || !fs.statSync(directory).isDirectory()) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Directory not found: ${args.dirPath ?? '.'}` });

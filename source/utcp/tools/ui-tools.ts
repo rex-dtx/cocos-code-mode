@@ -291,6 +291,118 @@ export class UiTools {
             throw new ToolError({ code: 'POSTCONDITION_FAILED', status: 502, message: `createSprite configuration was not confirmed for ${reference.id}${rollback ? `; rollback failed: ${rollback}` : '; created node was rolled back'}.`, details: { createdNodeId: reference.id, spriteFrameUuid: args.spriteFrameUuid, cause: error instanceof Error ? error.message : String(error) }, recovery: rollback ? `Delete node ${reference.id} manually before retrying.` : 'Verify the SpriteFrame UUID and retry.' });
         }
     }
+    @utcpTool('spriteFrameAssign', 'Assign or clear a SpriteFrame on an existing Sprite node with authoritative read-back.', { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, spriteFrameReference: InstanceReferenceSchema }, required: ['nodeReference'] }, { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, spriteFrameReference: { type: ['object', 'null'] }, changed: { type: 'boolean' } }, required: ['nodeReference', 'spriteFrameReference', 'changed'] }, 'POST', ['ui', 'sprite', 'frame', 'assign', 'image'])
+    async spriteFrameAssign(args: { nodeReference: IInstanceReference, spriteFrameReference?: IInstanceReference }): Promise<{ nodeReference: IInstanceReference, spriteFrameReference: IInstanceReference | null, changed: boolean }> {
+        const nodeId = args.nodeReference?.id;
+        if (!nodeId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'spriteFrameAssign requires nodeReference.id.' });
+        const componentPath = await this.componentPath(nodeId, 'cc.Sprite');
+        const before = await this.queryNodeDump(nodeId);
+        const spriteBefore = before?.__comps__?.find((component) => component.type === 'cc.Sprite')?.value;
+        const previous = spriteBefore && 'spriteFrame' in spriteBefore ? this.unwrapValue(spriteBefore.spriteFrame) : null;
+        const requestedId = args.spriteFrameReference?.id ?? null;
+        const previousId = previous && typeof previous === 'object' && 'uuid' in previous && typeof previous.uuid === 'string' ? previous.uuid : null;
+        if (previousId === requestedId) return { nodeReference: { id: nodeId, type: args.nodeReference.type ?? 'cc.Node' }, spriteFrameReference: requestedId ? { id: requestedId, type: args.spriteFrameReference?.type ?? 'cc.SpriteFrame' } : null, changed: false };
+        const accepted = await Editor.Message.request('scene', 'set-property', { uuid: nodeId, path: `${componentPath}.spriteFrame`, dump: { value: requestedId ? { uuid: requestedId } : null, type: 'cc.SpriteFrame' } });
+        if (accepted === false) throw new ToolError({ code: 'MUTATION_REFUSED', status: 422, message: 'Creator refused SpriteFrame assignment.' });
+        const after = await this.queryNodeDump(nodeId);
+        const spriteAfter = after?.__comps__?.find((component) => component.type === 'cc.Sprite')?.value;
+        const readBack = spriteAfter && 'spriteFrame' in spriteAfter ? this.unwrapValue(spriteAfter.spriteFrame) : null;
+        const readBackId = readBack && typeof readBack === 'object' && 'uuid' in readBack && typeof readBack.uuid === 'string' ? readBack.uuid : null;
+        if (readBackId !== requestedId) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: 'SpriteFrame assignment did not match Creator read-back.' });
+        await Editor.Message.request('scene', 'snapshot');
+        return { nodeReference: { id: nodeId, type: args.nodeReference.type ?? 'cc.Node' }, spriteFrameReference: requestedId ? { id: requestedId, type: args.spriteFrameReference?.type ?? 'cc.SpriteFrame' } : null, changed: true };
+    }
+
+    @utcpTool('spriteFrameBatchAssign', 'Assign or clear SpriteFrames on a bounded set of live Sprite nodes with per-item read-back outcomes.', { type: 'object', additionalProperties: false, properties: { items: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, spriteFrameReference: InstanceReferenceSchema }, required: ['nodeReference'] } } }, required: ['items'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'partial'] }, 'POST', ['ui', 'sprite', 'frame', 'batch', 'assign'])
+    async spriteFrameBatchAssign(args: { items: Array<{ nodeReference: IInstanceReference, spriteFrameReference?: IInstanceReference }> }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'items must contain 1 to 32 assignments.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, item] of args.items.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.spriteFrameAssign(item) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, nodeReference: item?.nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('spriteInspect', 'Inspect bounded live Sprite components under one scene node with SpriteFrame and visual property read-back.', { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema }, required: ['nodeReference'] }, { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, spriteReference: InstanceReferenceSchema, spriteFrameReference: { type: ['object', 'null'] }, color: {}, sizeMode: {}, trim: {}, type: { type: 'string' } }, required: ['nodeReference', 'spriteReference', 'spriteFrameReference', 'color', 'sizeMode', 'trim', 'type'] }, 'GET', ['ui', 'sprite', 'image', 'inspect'])
+    async spriteInspect(args: { nodeReference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const nodeId = args.nodeReference?.id;
+        if (!nodeId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'spriteInspect requires nodeReference.id.' });
+        const node = await this.queryNodeDump(nodeId);
+        const sprite = node?.__comps__?.find((component) => component.type === 'cc.Sprite');
+        if (!sprite) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Node ${nodeId} does not contain cc.Sprite.` });
+        const value = sprite.value ?? {};
+        const frame = 'spriteFrame' in value ? this.unwrapValue(value.spriteFrame) : null;
+        const frameId = frame && typeof frame === 'object' && 'uuid' in frame && typeof frame.uuid === 'string' ? frame.uuid : null;
+        const field = (name: string): unknown => name in value ? this.unwrapValue(value[name]) : null;
+        const spriteUuidValue = sprite.value?.uuid;
+        const spriteId = typeof spriteUuidValue === 'string' ? spriteUuidValue : spriteUuidValue && typeof spriteUuidValue === 'object' && typeof spriteUuidValue.value === 'string' ? spriteUuidValue.value : null;
+        if (typeof spriteId !== 'string' || !spriteId) throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: `Creator returned cc.Sprite without an authoritative UUID.` });
+        return { nodeReference: { id: nodeId, type: args.nodeReference.type ?? 'cc.Node' }, spriteReference: { id: spriteId, type: 'cc.Sprite' }, spriteFrameReference: frameId ? { id: frameId, type: 'cc.SpriteFrame' } : null, color: field('color'), sizeMode: field('sizeMode'), trim: field('trim'), type: 'cc.Sprite' };
+    }
+    @utcpTool('spriteConfigure', 'Configure bounded live Sprite visual properties with authoritative component read-back.', { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, sizeMode: { type: 'integer', minimum: 0, maximum: 3 }, trim: { type: 'boolean' }, color: { type: 'object', additionalProperties: false, properties: { r: { type: 'integer', minimum: 0, maximum: 255 }, g: { type: 'integer', minimum: 0, maximum: 255 }, b: { type: 'integer', minimum: 0, maximum: 255 }, a: { type: 'integer', minimum: 0, maximum: 255 } }, required: ['r', 'g', 'b', 'a'] } }, required: ['nodeReference'] }, { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, spriteReference: InstanceReferenceSchema, changed: { type: 'array' }, properties: { type: 'object' }, verified: { type: 'boolean' } }, required: ['nodeReference', 'spriteReference', 'changed', 'properties', 'verified'] }, 'POST', ['ui', 'sprite', 'configure', 'color', 'size', 'trim'])
+    async spriteConfigure(args: { nodeReference: IInstanceReference, sizeMode?: number, trim?: boolean, color?: { r: number, g: number, b: number, a: number } }): Promise<Record<string, unknown>> {
+        const nodeId = args.nodeReference?.id;
+        if (!nodeId) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'spriteConfigure requires nodeReference.id.' });
+        if (args.sizeMode !== undefined && (!Number.isInteger(args.sizeMode) || args.sizeMode < 0 || args.sizeMode > 3)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'sizeMode must be an integer from 0 to 3.' });
+        if (args.trim !== undefined && typeof args.trim !== 'boolean') throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'trim must be boolean.' });
+        if (args.color !== undefined && !['r', 'g', 'b', 'a'].every((key) => Number.isInteger(args.color?.[key as keyof typeof args.color]) && (args.color?.[key as keyof typeof args.color] as number) >= 0 && (args.color?.[key as keyof typeof args.color] as number) <= 255)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'color channels must be integers from 0 to 255.' });
+        const fields: Array<{ name: string, value: number | boolean | { r: number, g: number, b: number, a: number }, type: string }> = [];
+        if (args.sizeMode !== undefined) fields.push({ name: 'sizeMode', value: args.sizeMode, type: 'cc.Enum' });
+        if (args.trim !== undefined) fields.push({ name: 'trim', value: args.trim, type: 'cc.Boolean' });
+        if (args.color !== undefined) fields.push({ name: 'color', value: args.color, type: 'cc.Color' });
+        if (fields.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'At least one Sprite property is required.' });
+        const componentPath = await this.componentPath(nodeId, 'cc.Sprite');
+        const before = await this.queryNodeDump(nodeId);
+        const spriteBefore = before?.__comps__?.find((component) => component.type === 'cc.Sprite')?.value;
+        if (!spriteBefore) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Node ${nodeId} does not contain cc.Sprite.` });
+        const previous = new Map<string, IProperty['value']>(fields.map((field) => [field.name, this.unwrapValue(spriteBefore[field.name]) as IProperty['value']]));
+        try {
+            for (const field of fields) {
+                const accepted = await Editor.Message.request('scene', 'set-property', { uuid: nodeId, path: `${componentPath}.${field.name}`, dump: { value: field.value, type: field.type } });
+                if (accepted === false) throw new Error(`Creator refused Sprite property ${field.name}.`);
+            }
+            const inspected = await this.spriteInspect({ nodeReference: args.nodeReference });
+            for (const field of fields) if (JSON.stringify(inspected[field.name]) !== JSON.stringify(field.value)) throw new Error(`Sprite property ${field.name} read-back mismatch.`);
+            await Editor.Message.request('scene', 'snapshot');
+            return { nodeReference: inspected.nodeReference, spriteReference: inspected.spriteReference, changed: fields.map((field) => field.name), properties: Object.fromEntries(fields.map((field) => [field.name, field.value])), verified: true };
+        } catch (error) {
+            for (const field of fields) await Editor.Message.request('scene', 'set-property', { uuid: nodeId, path: `${componentPath}.${field.name}`, dump: { value: previous.get(field.name), type: field.type } }).catch(() => undefined);
+            throw new ToolError({ code: 'SPRITE_CONFIGURE_FAILED', status: 502, message: 'Creator could not persist Sprite properties.', details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Inspect the Sprite node and retry with supported sizeMode, trim, or color values.' });
+        }
+    }
+
+    @utcpTool('spriteBatchConfigure', 'Configure bounded Sprite nodes with per-item authoritative read-back outcomes.', { type: 'object', additionalProperties: false, properties: { items: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { nodeReference: InstanceReferenceSchema, sizeMode: { type: 'integer', minimum: 0, maximum: 3 }, trim: { type: 'boolean' }, color: { type: 'object' } }, required: ['nodeReference'] } } }, required: ['items'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'partial'] }, 'POST', ['ui', 'sprite', 'batch', 'configure'])
+    async spriteBatchConfigure(args: { items: Array<{ nodeReference: IInstanceReference, sizeMode?: number, trim?: boolean, color?: { r: number, g: number, b: number, a: number } }> }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'items must contain 1 to 32 Sprite configurations.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, item] of args.items.entries()) {
+            try { outcomes.push({ index, ok: true, result: await this.spriteConfigure(item) }); }
+            catch (error) { outcomes.push({ index, ok: false, nodeReference: item?.nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+    @utcpTool('spriteBatchInspect', 'Inspect a bounded batch of live Sprite nodes with SpriteFrame and visual read-back.', { type: 'object', additionalProperties: false, properties: { nodeReferences: { type: 'array', minItems: 1, maxItems: 64, items: InstanceReferenceSchema } }, required: ['nodeReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['ui', 'sprite', 'image', 'batch', 'inspect'])
+    async spriteBatchInspect(args: { nodeReferences: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.nodeReferences) || args.nodeReferences.length < 1 || args.nodeReferences.length > 64) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'nodeReferences must contain 1 to 64 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, nodeReference] of args.nodeReferences.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.spriteInspect({ nodeReference }) });
+            } catch (error) {
+                items.push({ index, ok: false, nodeReference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: false };
+    }
+
+
     @utcpTool(
         'uiLayoutReport',
         'Return a bounded, read-only live 2D UI layout report with optional ephemeral overlay.',

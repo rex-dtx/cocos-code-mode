@@ -132,6 +132,68 @@ describe('remaining P3 capability contracts', () => {
       (error) => error.code === 'UNSUPPORTED_METADATA' && error.status === 422,
     );
   });
+  it('reads imported gltf-skeleton subasset JSON when model metadata exposes the file', async () => {
+    const skeletonFile = path.join(os.tmpdir(), `ccb-skeleton-${process.pid}-${Date.now()}.json`);
+    fs.writeFileSync(skeletonFile, JSON.stringify({ __type__: 'cc.Skeleton', _joints: ['root', 'hip', 'hand'] }));
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      return {
+        uuid: id,
+        type: 'cc.FBX',
+        importer: 'fbx',
+        subAssets: { skeleton: { importer: 'gltf-skeleton', file: skeletonFile, uuid: `${id}@skeleton` } },
+      };
+    });
+    try {
+      const result = await new PortfolioValidationTools().animationRetargetValidate({ sourceReference: { id: 'source' }, targetReference: { id: 'target' } });
+      assert.deepEqual(result.source.joints, ['root', 'hip', 'hand']);
+      assert.deepEqual(result.target.joints, ['root', 'hip', 'hand']);
+      assert.equal(result.valid, true);
+    } finally {
+      fs.rmSync(skeletonFile, { force: true });
+    }
+  });
+  it('lists bounded imported model outputs with stable subasset identities', async () => {
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      return { uuid: id, type: 'cc.FBX', importer: 'fbx', subAssets: { mesh: { uuid: `${id}@mesh`, importer: 'gltf-mesh', type: 'cc.Mesh', name: 'Body' }, skeleton: { uuid: `${id}@skeleton`, importer: 'gltf-skeleton', type: 'cc.Skeleton', name: 'Rig' } } };
+    });
+    const result = await new PortfolioValidationTools().modelImportOutputsInspect({ reference: { id: 'model' }, maxOutputs: 1 });
+    assert.equal(result.total, 2);
+    assert.equal(result.truncated, true);
+    assert.deepEqual(result.outputs[0], { uuid: 'model@mesh', url: null, type: 'cc.Mesh', importer: 'gltf-mesh', name: 'Body', userData: null });
+  });
+  it('validates imported model skeleton joint uniqueness', async () => {
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      return { uuid: id, type: 'cc.FBX', importer: 'fbx', meta: { userData: { joints: ['root', 'hip', 'hand'], skeletonId: 'rig' } } };
+    });
+    const result = await new PortfolioValidationTools().modelSkeletonValidate({ reference: { id: 'model' } });
+    assert.equal(result.valid, true);
+    assert.equal(result.jointCount, 3);
+    assert.equal(result.skeletonId, 'rig');
+  });
+
+  it('inspects imported model animation clips with bounded metadata', async () => {
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      return { uuid: id, type: 'cc.FBX', importer: 'fbx', meta: { userData: { animationImportSettings: [{ name: 'idle' }, { name: 'run' }], skeletonId: 'rig' } } };
+    });
+    const result = await new PortfolioValidationTools().modelAnimationInspect({ reference: { id: 'model' }, maxClips: 1 });
+    assert.deepEqual(result.clips, ['idle']);
+    assert.equal(result.totalClips, 2);
+    assert.equal(result.truncated, true);
+  });
+
+  it('validates imported model animation clip names', async () => {
+    install(async (_service, message, id) => {
+      if (message !== 'query-asset-info') throw new Error('unexpected request');
+      return { uuid: id, type: 'cc.FBX', importer: 'fbx', meta: { userData: { clips: ['idle', 'run'], skeletonId: 'rig' } } };
+    });
+    const result = await new PortfolioValidationTools().modelAnimationValidate({ reference: { id: 'model' } });
+    assert.equal(result.valid, true);
+    assert.equal(result.clipCount, 2);
+  });
 
   it('configures only serialized skeletal fields and verifies read-back', async () => {
     const calls = [];
