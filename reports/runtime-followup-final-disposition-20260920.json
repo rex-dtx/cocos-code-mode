@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "unitLifecycle": "34/34 pass",
+  "liveQualification": false,
+  "environmentBlocker": "Creator 3.7.3 project initialization stalls before Asset DB and extension discovery across production, isolated, minimal, fresh-profile, cache-reset, software-rendering, alternate-flags, and extension-disabled experiments.",
+  "differential": "Creator 3.8.8 initializes the same minimal-project class successfully; Creator 3.7.3 does not.",
+  "authoringPlan": { "complete": 223, "denominator": 247, "percent": 90.28, "gate": true },
+  "runtimePlan": { "gate": false, "status": "environment-blocked-wip" },
+  "decision": "Retain runtime plan WIP. Do not archive or claim live lifecycle/session presence until a functioning Creator 3.7.3 installation reaches UTCP startup."
+}
