@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "API capability only: prefabInstantiate Creator 3.7.3 compatibility",
+  "build": "c0465c3-dirty",
+  "creator": "3.7.3",
+  "endpoint": "http://127.0.0.1:51009/utcp",
+  "unit": { "advancedCapabilityTools": "14/14 pass", "creatorLoad": "pass" },
+  "live": {
+    "prefabReferenceAudit": "pass",
+    "prefabOverrideDiff": "pass",
+    "prefabInstantiate": "failed READBACK_MISMATCH after create-node",
+    "failure": "Creator 3.7.3 query-node read-back did not expose the linked prefab identity under the bounded serialized fields; cleanup path executed.",
+    "status": 502
+  },
+  "decision": "Keep prefabInstantiate implemented-unverified. Do not promote coverage or portfolio state from this failed live witness. No protected relay or unrelated plan changes."
+}

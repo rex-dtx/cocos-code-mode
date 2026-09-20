@@ -144,6 +144,30 @@ describe('advanced capability tools', () => {
     }
   });
 
+  it('accepts Creator 3.7 query-node prefab identity fields', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-3x7-'));
+    const file = path.join(root, 'fixture.prefab');
+    fs.writeFileSync(file, '{}');
+    const previous = global.Editor;
+    const row = { uuid: 'prefab-3x7', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
+    global.Editor = { Message: { request: async (service, message) => {
+      if (service === 'asset-db' && message === 'query-asset-info') return row;
+      if (service === 'scene' && message === 'query-node-tree') return { uuid: 'scene-root' };
+      if (service === 'scene' && message === 'create-node') return 'instance-3x7';
+      if (service === 'scene' && message === 'snapshot') return true;
+      if (service === 'scene' && message === 'query-node') return { uuid: { value: 'instance-3x7' }, prefab: { assetUuid: { value: 'prefab-3x7' } }, name: { value: 'Instance' } };
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const result = await new AdvancedCapabilityTools().prefabInstantiate({ reference: { id: row.uuid, type: 'cc.Prefab' } });
+      assert.equal(result.persisted, true);
+      assert.deepEqual(result.reference, { id: 'instance-3x7', type: 'cc.Node' });
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('round-trips the native reference-image lifecycle without claiming unsupported configuration', async () => {
     const previous = global.Editor;
     const requests = [];
