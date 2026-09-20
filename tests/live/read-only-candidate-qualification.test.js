@@ -128,14 +128,17 @@ describe('live: read-only candidate qualification witnesses', () => {
   it('instantiates a typed prefab with stable source and scene read-back', async (t) => {
     if (skipIfDown(t)) return;
     const name = '__ccb3x_candidate_prefab__';
+    const inventory = await getJson('/tools/assetQuery?importer=prefab&limit=50');
+    if (inventory.status !== 200 || !Array.isArray(inventory.body?.assets) || inventory.body.assets.length === 0) { t.skip('No prefab asset fixture is available in the active project'); return; }
+    const fixture = process.env.CCB_PREFAB_INSTANTIATE_UUID || inventory.body.assets[0].uuid;
     try {
       const created = await postTool('prefabInstantiate', {
-        reference: { id: 'f8befe54-5f06-4454-b61b-eb99915fc8f8', type: 'cc.Prefab' },
+        reference: { id: fixture, type: 'cc.Prefab' },
         name,
       });
       assert.equal(created.status, 200, JSON.stringify(created.body));
       assert.equal(created.body.persisted, true);
-      assert.equal(created.body.source.id, 'f8befe54-5f06-4454-b61b-eb99915fc8f8');
+      assert.equal(created.body.source.id, fixture);
       assert.equal(created.body.readBack.name.value, name);
       const missing = await postTool('prefabInstantiate', {
         reference: { id: '__missing_prefab__', type: 'cc.Prefab' },
