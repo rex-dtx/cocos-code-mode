@@ -1748,10 +1748,7 @@
       "state": "complete",
       "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
       "routes": [
-        {
-          "tool": "editorViewport",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
+        { "tool": "editorViewport", "file": "source/utcp/tools/editor-tools.ts" }
       ],
       "evidenceArtifacts": [
         "reports/authoring-editor-ui-wave-20260920.json",
@@ -1763,59 +1760,18 @@
       ]
     },
     {
-      "workflowId": "editor.cocos-mcp-change-view-mode-2d-3d",
-      "state": "complete",
-      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
+      "state": "test-pending",
+      "reason": "Current Creator 3.7.3 live witness fails READBACK_MISMATCH after create-node because linked prefab identity is absent from the bounded query-node shape; retain implementation-unverified status.",
       "routes": [
-        {
-          "tool": "editorViewport",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
+        { "tool": "prefabInstantiate", "file": "source/utcp/tools/advanced-capability-tools.ts" }
       ],
       "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
+        "reports/api-prefab-instantiate-followup-20260920.json",
+        "tests/live/read-only-candidate-qualification.test.js"
       ],
       "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-end-undo-recording",
-      "state": "complete",
-      "reason": "Ends the bounded editor undo recording lifecycle through exact native history IPC.",
-      "routes": [
-        {
-          "tool": "editorHistory",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "evidenceArtifacts": [
-        "reports/authoring-final-prefab-editor-wave-20260920.json",
-        "tests/unit/advanced-capability-tools.test.js"
-      ],
-      "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
-      ]
-    },
-    {
-      "workflowId": "editor.cocos-mcp-focus-camera-on-nodes",
-      "state": "complete",
-      "reason": "The registered editorViewport route exposes the documented editor operation/state with the same bounded observable outcome; focused editor evidence covers the route family.",
-      "routes": [
-        {
-          "tool": "editorViewport",
-          "file": "source/utcp/tools/editor-tools.ts"
-        }
-      ],
-      "evidenceArtifacts": [
-        "reports/authoring-editor-ui-wave-20260920.json",
-        "tests/live/editor-viewport-gizmo.test.js",
-        "tests/live/read-only-tools.test.js"
-      ],
-      "limitations": [
-        "Editor-side bounded evidence only; no Game View/runtime credit."
+        "Creator 3.7.3 live persistence/read-back is not qualified; cleanup executes on failed verification."
       ]
     },
     {
@@ -3936,7 +3892,6 @@
       "limitations": [
         "Bounded editor/UI compositions only; arbitrary scene scripting, runtime preview and panel-click credit are not claimed."
       ]
-    },
-***
+    }
   ]
 }

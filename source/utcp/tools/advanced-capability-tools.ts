@@ -27,13 +27,29 @@ function objectField(value: unknown, key: string): unknown {
     return value && typeof value === 'object' && key in value ? value[key as keyof typeof value] : undefined;
 }
 function nodeIdentity(node: unknown): string | undefined {
-    const value = objectField(node, 'uuid') ?? objectField(node, 'id') ?? objectField(objectField(node, 'value'), 'uuid') ?? objectField(objectField(node, 'value'), 'id');
-    return typeof value === 'string' && value ? value : undefined;
+    const raw = objectField(node, 'uuid') ?? objectField(node, 'id') ?? objectField(objectField(node, 'value'), 'uuid') ?? objectField(objectField(node, 'value'), 'id');
+    const value = propertyValue(raw);
+    if (typeof value === 'string' && value) return value;
+    // Creator 3.7 query-node may serialize the node UUID as a scalar value.
+    const scalar = objectField(node, 'value');
+    return typeof scalar === 'string' && scalar ? scalar : undefined;
 }
+
 function prefabAssetId(node: unknown): string | undefined {
-    const prefab = propertyValue(node && typeof node === 'object' ? objectField(node, '__prefab__') ?? objectField(node, '_prefab') : undefined);
-    const value = objectField(objectField(prefab, 'prefabStateInfo'), 'assetUuid') ?? objectField(prefab, 'assetUuid') ?? objectField(prefab, 'uuid') ?? objectField(objectField(prefab, 'asset'), '_uuid') ?? objectField(objectField(prefab, 'asset'), 'uuid');
-    return typeof value === 'string' && value ? value : undefined;
+    const rawPrefab = node && typeof node === 'object'
+        ? objectField(node, '__prefab__') ?? objectField(node, '_prefab') ?? objectField(node, 'prefab')
+        : undefined;
+    const prefab = propertyValue(rawPrefab);
+    const value = objectField(objectField(prefab, 'prefabStateInfo'), 'assetUuid')
+        ?? objectField(prefab, 'assetUuid')
+        ?? objectField(prefab, 'uuid')
+        ?? objectField(prefab, 'assetUuid')
+        ?? objectField(objectField(prefab, 'asset'), '_uuid')
+        ?? objectField(objectField(prefab, 'asset'), 'uuid');
+    const normalized = propertyValue(value);
+    if (typeof normalized === 'string' && normalized) return normalized;
+    const root = objectField(prefab, 'root') ?? objectField(prefab, 'rootUuid');
+    return typeof root === 'string' && root ? root : undefined;
 }
 function assertNodeIdentity(expected: string, node: unknown, operation: string): void {
     if (!node || nodeIdentity(node) !== expected) throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: `${operation} prefab read-back identity did not match ${expected}.`, details: { expected, actual: nodeIdentity(node) ?? null } });
