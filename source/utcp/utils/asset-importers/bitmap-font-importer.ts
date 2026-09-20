@@ -2,11 +2,12 @@ import { BaseAssetImporter } from './base-importer';
 import { IAssetInfo } from '@cocos/creator-types/editor/packages/asset-db/@types/public';
 import { IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 
-// Creator 3.7.3 publishes the bitmap-font importer settings under the asset meta userData:
-// `fontSize` (integer, drives the glyph rasterisation), `textureUuid` (the atlas the importer
-// emitted, read-only from the bridge's perspective) and `_fntConfig` (the parsed .fnt
-// dictionary, which the importer owns and recomputes on reimport). Only the first is a
-// settable contract, so the other two are surfaced read-only instead of as silent no-ops.
+// Creator 3.7.3 publishes the bitmap-font importer fields under the asset meta userData, but
+// every one of them is derived: the importer parses the .fnt file into `_fntConfig`, writes
+// `fontSize` from that parsed config and emits `textureUuid` for the atlas it generated.
+// Writing `fontSize` through save-asset-meta is accepted and then overwritten on reimport
+// (live on 3.7.3: set 22, reimport, read back 20), so the honest contract is a typed,
+// read-only audit and setProperty refuses every path.
 export class BitmapFontImporter extends BaseAssetImporter {
     name = 'bitmap-font';
 
@@ -24,6 +25,7 @@ export class BitmapFontImporter extends BaseAssetImporter {
                 value: Number.isInteger(fontSize) ? fontSize : 0,
                 type: 'Integer',
                 displayName: 'Font Size',
+                readonly: true,
             },
             textureUuid: {
                 value: typeof textureUuid === 'string' ? textureUuid : '',
@@ -43,16 +45,11 @@ export class BitmapFontImporter extends BaseAssetImporter {
     }
 
     async setProperty(assetInfo: IAssetInfo, path: string, value: unknown): Promise<boolean> {
-        // The importer derives the atlas and the glyph dictionary on reimport; only the
-        // rasterisation size is an input, so every other path is a typed refusal.
-        if (path !== 'fontSize') return false;
-        if (!Number.isInteger(value) || (value as number) < 1 || (value as number) > 512) return false;
-
-        const meta = await Editor.Message.request('asset-db', 'query-asset-meta', assetInfo.uuid);
-        if (!meta || typeof meta !== 'object' || !meta.userData) return false;
-
-        meta.userData = { ...meta.userData, fontSize: value };
-        await Editor.Message.request('asset-db', 'save-asset-meta', assetInfo.uuid, JSON.stringify(meta));
-        return true;
+        // Every bitmap-font field is derived from the .fnt source, so there is no writable
+        // input; the caller gets a typed refusal instead of a silently reverted write.
+        void assetInfo;
+        void path;
+        void value;
+        return false;
     }
 }

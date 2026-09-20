@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "bitmapFontImportSettingsAudit",
+  "creator": "3.7.3",
+  "buildCommit": "f7f790d",
+  "artifact": "extensions/cc-bridge-3x dist (clean build of f7f790d)",
+  "positiveWitness": {
+    "test": "tests/live/asset-import-settings-qualification.test.js",
+    "iterations": 1,
+    "result": "assetImportSettingsGet served a copied .fnt asset with importer bitmap-font and published the derived fontSize, textureUuid and glyphCount through the generic typed importer schema"
+  },
+  "negativeWitness": {
+    "test": "tests/live/asset-import-settings-qualification.test.js",
+    "iterations": 1,
+    "result": "no published field is a write target: a fontSize write was accepted by save-asset-meta and then reverted on reimport (requested 22, read back 20, 502 READBACK_MISMATCH), and a textureUuid write was refused; the settings stayed at the original value"
+  },
+  "persistence": "notApplicable - the bitmap-font importer derives every published field from the .fnt source",
+  "cleanup": "the copied .fnt asset was deleted through assetOperate in the finally block",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64516",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": false
+  },
+  "qualified": true
+}
