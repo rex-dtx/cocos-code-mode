@@ -1406,6 +1406,26 @@ export class AnimationTools {
     }
 
     @utcpTool(
+        'animationStop',
+        'Stop the cc.Animation, SkeletalAnimation, Spine, or DragonBones component on one editor scene node and return authoritative component state read-back.',
+        {
+            type: 'object',
+            additionalProperties: false,
+            properties: { nodeReference: InstanceReferenceSchema },
+            required: ['nodeReference']
+        },
+        {
+            type: 'object',
+            properties: { nodeReference: InstanceReferenceSchema, operation: { type: 'string' }, animation: {}, spine: {}, dragonBones: {} },
+            required: ['nodeReference', 'operation']
+        },
+        'POST', ['animation', 'stop', 'editor', 'state']
+    )
+    async animationStop(args: { nodeReference?: IInstanceReference }): Promise<Record<string, unknown>> {
+        return await this.animationRuntimeControl({ nodeReference: args.nodeReference, operation: 'stop' });
+    }
+
+    @utcpTool(
         'animationRuntimeControl',
         'Fully control Animation playback/state and Spine or DragonBones cache mode with live read-back.',
         {
