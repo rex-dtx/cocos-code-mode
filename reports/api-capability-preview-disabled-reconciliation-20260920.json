@@ -53,8 +53,26 @@
   "verification": {
     "unit": "597/597 pass, 0 fail",
     "build": "CREATOR_LOAD_OK",
-    "portfolioAudit": "ok",
+    "portfolioAudit": "ok — approved 68, potential 87, registered 321, baseline 86",
     "auditUnitTest": "2/2 pass",
-    "live": "not performed — requires deploying dist into the project extension plus a manual Creator extension reload"
+    "deploy": "npm run package produced cc-bridge-3x-v200-260920-224034.zip (version 2.0.0-dev.ca37c04); extracted over G:/_ws/cc-fws/cc30-new-all-in-one/extensions/cc-bridge-3x and reloaded in Creator. Pre-deploy install backed up to .ccb-install-backup-20260920-224124 (dist + package.json).",
+    "live": {
+      "artifact": { "version": "2.0.0-dev.ca37c04", "commit": "ca37c04", "dirty": false, "toolCount": 321 },
+      "endpoint": "http://localhost:64516",
+      "gatedCalls": [
+        { "call": "runtimeSessionLifecycle start game-view", "status": 422, "code": "PREVIEW_FEATURE_DISABLED", "elapsedMs": 170, "previousOn14152bf": "30055ms RUNTIME_STATE_TIMEOUT" },
+        { "call": "runtimePreviewControl start", "status": 422, "code": "PREVIEW_FEATURE_DISABLED", "elapsedMs": 16 },
+        { "call": "runtimePreviewControl pause", "status": 422, "code": "PREVIEW_FEATURE_DISABLED", "elapsedMs": 15 },
+        { "call": "runtimePreviewControl step", "status": 422, "code": "PREVIEW_FEATURE_DISABLED", "elapsedMs": 16 },
+        { "call": "runtimePreviewControl stop", "status": 422, "code": "PREVIEW_FEATURE_DISABLED", "elapsedMs": 16 }
+      ],
+      "availableCalls": [
+        { "call": "runtimeSessionLifecycle list", "status": 200 },
+        { "call": "runtimePreviewControl state", "status": 200 }
+      ],
+      "previewAfterGatedCalls": { "state": "stop", "enabled": false, "ready": true, "platform": "gameView" },
+      "editorAfterGatedCalls": { "sceneReady": true, "busyScene": false },
+      "disclosure": "Both live tool descriptions state that preview lifecycle control is disabled."
+    }
   }
 }
