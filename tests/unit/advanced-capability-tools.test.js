@@ -128,6 +128,25 @@ describe('advanced capability tools', () => {
       assert.equal(bad.valid, false);
       assert.deepEqual(bad.gidIssues, [{ gid: 5, layer: 'Ground' }]);
       assert.deepEqual(bad.dimensionIssues, [{ layer: 'Ground', width: 3, height: 2, mapWidth: 2, mapHeight: 2 }]);
+
+      // A flipped tile carries Tiled rotation flags in the gid's high bits; the masked
+      // gid must stay inside the tileset range and the map must remain valid.
+      const flippedFile = path.join(root, 'flipped.tmx');
+      fs.writeFileSync(flippedFile, [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<map orientation="orthogonal" width="2" height="2" tilewidth="32" tileheight="32">',
+        '  <tileset firstgid="1" name="Tiles" tilecount="2"/>',
+        '  <layer id="1" name="Ground" width="2" height="2"><data encoding="csv">1,3221225474,0,0</data></layer>',
+        '</map>',
+      ].join('\n'));
+      global.Editor.Message.request = async (service, message, identifier) => {
+        if (message === 'query-asset-info') return { uuid: identifier, url: `db://assets/${identifier}.tmx`, type: 'cc.TiledMapAsset', file: flippedFile };
+        if (message === 'query-assets') return [];
+        throw new Error(`unexpected asset-db message ${message}`);
+      };
+      const flipped = await tools.tilemapValidate({ reference: { id: 'flipped' } });
+      assert.deepEqual(flipped.gidIssues, []);
+      assert.equal(flipped.valid, true);
     } finally {
       if (previous === undefined) delete global.Editor;
       else global.Editor = previous;
