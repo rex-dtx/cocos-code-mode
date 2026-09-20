@@ -57,6 +57,9 @@ function assertNodeIdentity(expected: string, node: unknown, operation: string):
 function assertPrefabAsset(row: AssetRow, operation: string): void {
     if (row.type !== 'cc.Prefab' && row.importer !== 'prefab' && !row.url.toLowerCase().endsWith('.prefab')) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `${operation} requires a .prefab asset, got ${row.url}.` });
 }
+function assertSceneAsset(row: AssetRow, operation: string): void {
+    if (row.type !== 'cc.SceneAsset' && row.importer !== 'scene' && !row.url.toLowerCase().endsWith('.scene')) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `${operation} requires a .scene asset, got ${row.url}.` });
+}
 function flattenValues(value: unknown, output: string[] = []): string[] {
     if (typeof value === 'string') { for (const id of value.match(UUID_RE) ?? []) output.push(baseUuid(id)); return output; }
     if (Array.isArray(value)) { for (const item of value) flattenValues(item, output); return output; }
@@ -434,7 +437,7 @@ export class AdvancedCapabilityTools {
             throw new ToolError({ code: 'PREFAB_OVERRIDE_OPERATION_FAILED', status: 502, message: `${operation} prefab overrides failed or could not be read back.`, details: { cause: error instanceof Error ? error.message : String(error) } });
         }
     }
-    @utcpTool('prefabReferenceAudit', 'Audit nested prefab UUID references and missing serialized dependencies after reload-safe source read.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, nestedPrefabs: { type: 'array' }, missingReferences: { type: 'array' }, source: { type: 'object' } }, required: ['valid', 'nestedPrefabs', 'missingReferences', 'source'] }, 'GET', ['prefab', 'reference', 'audit', 'nested'])
+    @utcpTool('prefabReferenceAudit', 'Audit nested prefab UUID references and missing serialized dependencies after reload-safe source read.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, nestedPrefabs: { type: 'array' }, missingReferences: { type: 'array' }, totalReferences: { type: 'integer' }, truncated: { type: 'boolean' }, source: { type: 'object' } }, required: ['valid', 'nestedPrefabs', 'missingReferences', 'totalReferences', 'truncated', 'source'] }, 'GET', ['prefab', 'reference', 'audit', 'nested'])
     async prefabReferenceAudit(args: { reference: IInstanceReference, maxReferences?: number }): Promise<Record<string, unknown>> {
         const maxReferences = bounded(args.maxReferences, 2000, 2000);
         const row = await resolveAsset(args.reference);
@@ -442,14 +445,22 @@ export class AdvancedCapabilityTools {
         const source = await readAsset(row);
         const assets = await queryAssets();
         const known = new Set(assets.map((asset) => baseUuid(asset.uuid)));
-        const ids = refs(source.content).slice(0, maxReferences);
+        const allReferences = refs(source.content);
+        const ids = allReferences.slice(0, maxReferences);
         const nestedPrefabs = assets.filter((asset) => ids.includes(baseUuid(asset.uuid)) && asset.url.endsWith('.prefab')).map((asset) => ({ uuid: asset.uuid, url: asset.url }));
         const missingReferences = ids.filter((id) => !known.has(id)).map((id) => ({ id }));
-        return { valid: missingReferences.length === 0, nestedPrefabs, missingReferences, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reloaded: true } };
+        return { valid: missingReferences.length === 0, nestedPrefabs, missingReferences, totalReferences: allReferences.length, truncated: allReferences.length > ids.length, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reloaded: true } };
     }
-    @utcpTool('sceneReferenceValidate', 'Validate serialized UUID references in a scene asset against the imported asset database.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, references: { type: 'array' }, missingReferences: { type: 'array' }, source: { type: 'object' } }, required: ['valid', 'references', 'missingReferences', 'source'] }, 'GET', ['scene', 'reference', 'validate', 'serialized'])
+    @utcpTool('sceneReferenceValidate', 'Validate serialized UUID references in a scene asset against the imported asset database.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, references: { type: 'array' }, missingReferences: { type: 'array' }, totalReferences: { type: 'integer' }, truncated: { type: 'boolean' }, source: { type: 'object' } }, required: ['valid', 'references', 'missingReferences', 'totalReferences', 'truncated', 'source'] }, 'GET', ['scene', 'reference', 'validate', 'serialized'])
     async sceneReferenceValidate(args: { reference: IInstanceReference, maxReferences?: number }): Promise<Record<string, unknown>> {
-        const row = await resolveAsset(args.reference); const source = await readAsset(row); const known = new Set((await queryAssets()).map((asset) => baseUuid(asset.uuid))); const references = refs(source.content).slice(0, bounded(args.maxReferences, 2000, 2000)); const missingReferences = references.filter((id) => !known.has(id)); return { valid: missingReferences.length === 0, references, missingReferences, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reopened: true } };
+        const row = await resolveAsset(args.reference);
+        assertSceneAsset(row, 'sceneReferenceValidate');
+        const source = await readAsset(row);
+        const known = new Set((await queryAssets()).map((asset) => baseUuid(asset.uuid)));
+        const allReferences = refs(source.content);
+        const references = allReferences.slice(0, bounded(args.maxReferences, 2000, 2000));
+        const missingReferences = references.filter((id) => !known.has(id));
+        return { valid: missingReferences.length === 0, references, missingReferences, totalReferences: allReferences.length, truncated: allReferences.length > references.length, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reopened: true } };
     }
 
     @utcpTool('prefabApplyOverrides', 'Apply prefab overrides through the scene IPC and verify typed source and instance read-back.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, operation: { type: 'string' }, persisted: { type: 'boolean' }, readBack: { type: 'object' }, sourceReadBack: { type: 'object' } }, required: ['reference', 'operation', 'persisted', 'readBack', 'sourceReadBack'] }, 'POST', ['prefab', 'apply', 'overrides'])
