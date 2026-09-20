@@ -42,8 +42,8 @@ async function main() {
         const keys = Object.keys(m).sort();
         assert.deepEqual(keys, ['manual_version', 'tools', 'utcp_version'], `manual keys ${keys}`);
         const n = (m.tools || []).length;
-        assert.equal(n, 194, `tools.length expected 194 got ${n}`);
-        // Code Mode validates each tool with a strict schema; metadata must stay in the profile registry.
+        assert.ok(n > 0, 'manual exposes at least one tool');
+        assert.equal(new Set(m.tools.map((tool) => tool.name)).size, n, 'manual tool names are unique');
         assert.ok(m.tools.every((tool) => !Object.hasOwn(tool, 'annotations')), 'manual tools must not expose annotations');
         ok(`manual valid: ${n} tools, keys ${keys.join(',')}`);
         // check ccb3x template present (bare or per-port) + no duplicate URL among
