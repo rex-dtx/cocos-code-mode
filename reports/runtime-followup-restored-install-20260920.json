@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "installation": "C:/ProgramData/cocos/editors/Creator/3.7.3-repaired",
+  "repair": ["vk_swiftshader_icd.json", "vk_swiftshader.dll", "vulkan-1.dll", "v8_context_snapshot.bin", "version", "snapshot_blob.bin", "swiftshader/*"],
+  "project": "G:/_ws/_helpers/cc-minimal-empty",
+  "result": {
+    "processExit": 1,
+    "rendererBootstrap": true,
+    "assetDbReady": false,
+    "projectInitialization": false,
+    "utcpListening": false
+  },
+  "observed": ["Electron proxy initialization", "renderer ask-win", "GPU cache access denied"],
+  "decision": "Restoring the missing outer Electron runtime files did not reach project initialization or Asset DB. The native 3.7.3 live gate remains blocked."
+}
