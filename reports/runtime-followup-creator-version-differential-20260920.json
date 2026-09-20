@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "fixture": "G:\\_ws\\_helpers\\cc-minimal-empty / G:\\_ws\\_helpers\\cc-minimal-388",
+  "creator373": {
+    "rendererBootstrap": true,
+    "assetDbReady": false,
+    "projectInitialization": false,
+    "utcp": false
+  },
+  "creator388": {
+    "rendererBootstrap": true,
+    "assetDbReady": true,
+    "projectInitialization": true,
+    "mainWindowReady": true,
+    "utcp": "not configured in minimal fixture"
+  },
+  "conclusion": "The failure is Creator 3.7.3 installation/runtime-specific, not project content or CC Bridge activation. Creator 3.8.8 initializes the same class of minimal project successfully."
+}
