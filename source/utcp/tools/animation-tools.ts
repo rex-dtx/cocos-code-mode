@@ -1434,58 +1434,6 @@ export class AnimationTools {
 
 
     @utcpTool(
-        'skeletalAnimationConfigure',
-        'Persist bounded SkeletalAnimation playOnLoad and useBakedAnimation fields with component read-back and rollback.',
-        {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-                componentReference: InstanceReferenceSchema,
-                playOnLoad: { type: 'boolean' },
-                useBakedAnimation: { type: 'boolean' },
-            },
-            required: ['componentReference'],
-        },
-        { type: 'object', properties: { success: { type: 'boolean' }, componentReference: InstanceReferenceSchema, changed: { type: 'array' }, properties: { type: 'object' }, verified: { type: 'boolean' } }, required: ['success', 'componentReference', 'changed', 'properties', 'verified'] },
-        'POST', ['animation', 'skeletal', 'configure', 'properties']
-    )
-    async skeletalAnimationConfigure(args: { componentReference?: IInstanceReference, playOnLoad?: boolean, useBakedAnimation?: boolean }): Promise<Record<string, unknown>> {
-        const componentId = requireRef(args?.componentReference, 'componentReference');
-        const fields: Array<[string, boolean]> = ([
-            ['playOnLoad', args.playOnLoad],
-            ['useBakedAnimation', args.useBakedAnimation],
-        ] as Array<[string, boolean | undefined]>).filter((entry): entry is [string, boolean] => entry[1] !== undefined);
-        if (fields.length === 0) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'At least one SkeletalAnimation property is required.' });
-        const before = await ToolsUtils.inspectInstance(componentId, false);
-        const previous: Record<string, unknown> = {};
-        for (const [path] of fields) {
-            const value = before?.props?.[path];
-            previous[path] = value && typeof value === 'object' && 'value' in value ? (value as unknown as Record<string, unknown>).value : value;
-        }
-        try {
-            await new SetPropertyTool().setInstanceProperties({ reference: { id: componentId }, propertyPaths: fields.map(([path]) => path), values: fields.map(([, value]) => value) });
-            const readBack = await ToolsUtils.inspectInstance(componentId, false);
-            if (!readBack?.props) throw new Error('SkeletalAnimation property read-back was unavailable.');
-            const values: Record<string, unknown> = {};
-            for (const [path, expected] of fields) {
-                const raw = readBack.props[path];
-                const actual = raw && typeof raw === 'object' && 'value' in raw ? (raw as unknown as Record<string, unknown>).value : raw;
-                if (actual !== expected) throw new Error(`SkeletalAnimation property ${path} read-back mismatch.`);
-                values[path] = actual;
-            }
-            return { success: true, componentReference: { id: componentId, type: args.componentReference?.type ?? 'cc.SkeletalAnimation' }, changed: fields.map(([path]) => path), properties: values, verified: true };
-        } catch (error) {
-            try {
-                const restorePaths = Object.keys(previous);
-                await new SetPropertyTool().setInstanceProperties({ reference: { id: componentId }, propertyPaths: restorePaths, values: restorePaths.map((path) => previous[path]) });
-            } catch {
-                // Preserve the original failure; rollback status belongs in the typed error details.
-            }
-            throw new ToolError({ code: 'SKELETAL_ANIMATION_CONFIGURE_FAILED', status: 502, message: 'Creator could not persist SkeletalAnimation properties.', details: { cause: error instanceof Error ? error.message : String(error), restored: true }, recovery: 'Inspect the SkeletalAnimation component and retry with supported serialized fields.' });
-        }
-    }
-
-    @utcpTool(
         'spineEditorConfigure',
         'Persist bounded Spine Skeleton editor properties with typed semantic field names and Creator read-back.',
         {
