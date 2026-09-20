@@ -3920,6 +3920,23 @@
         "nodeOperate move reports postcondition failure but does not claim automatic parent rollback.",
         "Only the tested uiLayoutApply partial-failure path claims rollback; other mutation families have their own contracts."
       ]
-    }
+    },
+    {
+      "workflowId": "scene.parent-compound-scene",
+      "state": "complete",
+      "reason": "Bounded compound UI authoring routes create complete ScrollView and input-form compositions with stable node/component identities, hierarchy read-back, snapshots and rollback-safe failure handling.",
+      "routes": [
+        { "tool": "uiCreateScrollView", "file": "source/utcp/tools/ui-tools.ts" },
+        { "tool": "uiCreateInputForm", "file": "source/utcp/tools/ui-tools.ts" }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-editor-ui-wave-20260920.json",
+        "tests/live/ui-fallback.test.js"
+      ],
+      "limitations": [
+        "Bounded editor/UI compositions only; arbitrary scene scripting, runtime preview and panel-click credit are not claimed."
+      ]
+    },
+***
   ]
 }
