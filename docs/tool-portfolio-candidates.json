@@ -1919,7 +1919,8 @@
     },
     {
       "name": "bitmapFontImportSettingsAudit",
-      "state": "implemented-unverified",
+      "state": "qualified",
+      "qualificationEvidence": "tests/live/asset-import-settings-qualification.test.js",
       "contractDelta": "Typed bitmap-font import settings audit over the 28+ imported assets in the active project: normalized font size, padding, spacing and glyph texture references with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
       "domain": "assets-import",
       "proposedExecutionPhase": "P2",
@@ -1939,7 +1940,8 @@
     },
     {
       "name": "bitmapFontImportSettingsConfigure",
-      "state": "implemented-unverified",
+      "state": "rejected",
+      "rejectionReason": "Unsupported on Creator 3.7.3: every bitmap-font importer field is derived from the .fnt source, so there is no writable setting; a fontSize write through save-asset-meta is reverted on reimport (live witness: requested 22, read back 20). Probed 2026-09-20.",
       "contractDelta": "Typed bounded bitmap-font import settings mutation over font size, padding, spacing and glyph texture references with preflight validation, reimport, read-back and rollback.",
       "domain": "assets-import",
       "proposedExecutionPhase": "P2",
