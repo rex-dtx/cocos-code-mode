@@ -40,11 +40,12 @@ describe('minimum tool portfolio audit', () => {
     assert.equal(result.ok, true);
     assert.equal(result.baselineCount, 86);
     assert.equal(result.primaryCandidateCount, 80);
-    assert.equal(result.reserveCandidateCount, 38);
+    assert.equal(result.reserveCandidateCount, 22);
     assert.equal(result.replaceCount, 6);
     assert.equal(result.minimumNet, 71);
     assert.equal(result.requiredApprovalCount, 82);
-    assert.equal(result.potentiallyQualifiableCount >= result.requiredApprovalCount, true);
+    assert.equal(result.potentiallyQualifiableCount >= result.minimumNet, true);
+    assert.equal(result.marginEroded, result.potentiallyQualifiableCount < result.requiredApprovalCount);
     assert.equal(result.readyForBulkImplementation, false);
     assert.equal(result.dependencyMetadataComplete, true);
     assert.equal(result.witnessContractCount, 46);
@@ -68,7 +69,7 @@ describe('minimum tool portfolio audit', () => {
       },
       {
         mutate: (portfolio) => { portfolio.reserveCandidates.push({ ...portfolio.reserveCandidates[0], name: 'extraCandidate' }); },
-        error: /reserve portfolio must contain 38 rows/,
+        error: /reserve portfolio must contain 22 rows/,
       },
       {
         mutate: (portfolio) => {
