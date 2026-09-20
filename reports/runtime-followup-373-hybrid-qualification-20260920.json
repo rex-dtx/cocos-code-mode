@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "target": "Creator 3.7.3",
+  "compatibilityRepair": {
+    "base": "official Creator 3.7.3 package",
+    "fallback": "copied official Creator 3.7.4 resources/resources/3d/engine-native into isolated 3.7.3 tree",
+    "sourceIdentity": "3.7.3 app.asar and executable retained"
+  },
+  "project": "G:/_ws/_helpers/cc-3x-test",
+  "startup": {
+    "assetDbReady": true,
+    "mainWindowReady": true,
+    "ccBridgeEnabled": true,
+    "utcpListening": true,
+    "utcpUrl": "http://127.0.0.1:51009/utcp",
+    "packageEnabled": "cc-bridge-3x@2.0.0"
+  },
+  "sessionLifecycle": {
+    "discovery": "passed",
+    "binding": "passed",
+    "activeHeartbeat": "passed",
+    "transport": "http-helper",
+    "instanceId": "9057eb93428e0c94cec0a92ac1444dd5"
+  },
+  "utcpProbe": {
+    "status": 200,
+    "responseBytes": 272475,
+    "toolListPresent": true
+  },
+  "decision": "Target Creator 3.7.3 live gate passes in an isolated compatibility-repaired tree. Preserve the fallback as a diagnostic/reproducible installation artifact; do not alter the repository package identity."
+}
