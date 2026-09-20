@@ -136,7 +136,11 @@ export const methods = {
             if (after?._prefab?.asset?._uuid !== assetId) throw new Error('Prefab identity changed during apply');
             const instance = after?._prefab?.instance;
             if (!instance) throw new Error('Prefab instance disappeared during apply');
-            const reservedRootPaths: Record<string, true> = { _name: true, _lpos: true, _lrot: true, _euler: true };
+            // Creator keeps these instance-root overrides on the instance after a successful
+            // apply, so their presence is not evidence of a failed flush. `_lscale` behaves
+            // exactly like the other transform fields (verified live on 3.7.3: `_lscale`
+            // survives apply while a non-transform override such as `_active` is flushed).
+            const reservedRootPaths: Record<string, true> = { _name: true, _lpos: true, _lrot: true, _euler: true, _lscale: true };
             for (const key of ['propertyOverrides', 'mountedChildren', 'mountedComponents', 'removedComponents']) {
                 const remaining: unknown = instance[key];
                 if (!Array.isArray(remaining)) throw new Error(`Prefab apply returned invalid ${key}`);
