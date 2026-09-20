@@ -3940,6 +3940,20 @@
       ]
     },
     {
+      "workflowId": "animation.funplay-stop-animation",
+      "state": "complete",
+      "reason": "animationStop is a bounded alias over animationRuntimeControl stop and returns authoritative Animation state read-back on a disposable Creator 3.7.3 AnimationClip fixture.",
+      "routes": [{ "tool": "animationStop", "file": "source/utcp/tools/animation-tools.ts" }],
+      "evidenceArtifacts": [
+        "tests/unit/animation-tools.test.js",
+        "tests/unit/animation-runtime-control.test.js",
+        "tests/live/animation-editor-workflow.test.js"
+      ],
+      "limitations": [
+        "Editor-side Animation stop/read-back only; runtime Game View playback and audio/Spine event semantics are not claimed."
+      ]
+    },
+    {
       "workflowId": "design-prefab.cocos-mcp-refresh-reference-image",
       "state": "complete",
       "reason": "referenceImageManage refresh reads the persisted active reference-image record and fails typed TARGET_NOT_FOUND when none exists.",

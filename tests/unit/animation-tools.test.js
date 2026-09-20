@@ -8,7 +8,26 @@ const { ToolRegistry } = requireDist('utcp/decorators.js');
 describe('typed animation tools', () => {
   it('registers clip authoring, analysis, runtime control, and cache routes', () => {
     const names = new Set(ToolRegistry.getTools().map(({ tool }) => tool.name));
-    for (const name of ['animationClipConfigure', 'animationTrackEdit', 'animationKeyframeEdit', 'animationEventEdit', 'animationAuxCurveEdit', 'animationUsageAnalyze', 'animationCatalogInspect', 'animationCompatibilityAudit', 'animationBatchControl', 'spineRuntimeControl', 'spineEditorConfigure', 'spineSocketConfigure', 'animationRuntimeControl']) {
+    for (const name of ['animationClipConfigure', 'animationTrackEdit', 'animationKeyframeEdit', 'animationEventEdit', 'animationAuxCurveEdit', 'animationUsageAnalyze', 'animationCatalogInspect', 'animationCompatibilityAudit', 'animationBatchControl', 'spineRuntimeControl', 'spineEditorConfigure', 'spineSocketConfigure', 'animationRuntimeControl', 'animationStop']) {
+    }
+  });
+
+  it('routes animationStop through bounded stop control and preserves read-back', async () => {
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      assert.equal(service, 'scene');
+      assert.equal(message, 'execute-scene-script');
+      assert.equal(payload.method, 'animationRuntimeControl');
+      assert.equal(payload.args[0].operation, 'stop');
+      return { animation: { playing: false, states: [] } };
+    } } };
+    try {
+      const result = await new AnimationTools().animationStop({ nodeReference: { id: 'node', type: 'cc.Node' } });
+      assert.equal(result.operation, 'stop');
+      assert.equal(result.nodeReference.id, 'node');
+      assert.equal(result.animation.playing, false);
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
     }
   });
   it('returns per-node batch outcomes without aborting on one runtime failure', async () => {
