@@ -240,16 +240,21 @@ function diffValues(before: any, after: any, pathValue = '', output: Array<Recor
 
 export class AdvancedCapabilityTools {
     @utcpTool('referenceImageManage', 'Manage a bounded reference image record in the active scene and verify persistence through scene read-back.', {
-        type: 'object', additionalProperties: false, properties: { operation: { type: 'string', enum: ['inspect', 'list', 'set', 'clear'] }, reference: InstanceReferenceSchema, imagePath: { type: 'string', maxLength: 2048 } }, required: ['operation']
+        type: 'object', additionalProperties: false, properties: { operation: { type: 'string', enum: ['inspect', 'list', 'set', 'switch', 'refresh', 'clear'] }, reference: InstanceReferenceSchema, imagePath: { type: 'string', maxLength: 2048 } }, required: ['operation']
     }, { type: 'object', additionalProperties: false, properties: { operation: { type: 'string' }, supported: { type: 'boolean' }, persisted: { type: 'boolean' }, reference: { type: 'object' }, imagePath: { type: ['string', 'null'] }, images: { type: 'array' } }, required: ['operation', 'supported', 'persisted'] }, 'POST', ['reference', 'image', 'manage', 'list', 'scene'])
-    async referenceImageManage(args: { operation: 'inspect' | 'list' | 'set' | 'clear', reference?: IInstanceReference, imagePath?: string }): Promise<Record<string, unknown>> {
-        if (args.operation === 'set' && (!args.imagePath || args.imagePath.length > 2048)) invalid('imagePath is required for set and must be bounded.');
-        const request = args.operation === 'inspect' ? 'query-reference-image' : args.operation === 'list' ? 'list-reference-images' : args.operation === 'set' ? 'set-reference-image' : 'clear-reference-image';
+    async referenceImageManage(args: { operation: 'inspect' | 'list' | 'set' | 'switch' | 'refresh' | 'clear', reference?: IInstanceReference, imagePath?: string }): Promise<Record<string, unknown>> {
+        const writesImage = args.operation === 'set' || args.operation === 'switch';
+        if (writesImage && (!args.imagePath || args.imagePath.length > 2048)) invalid('imagePath is required for set/switch and must be bounded.');
+        if (args.operation === 'refresh' && args.imagePath) invalid('refresh uses the persisted image and does not accept imagePath.');
+        const nativeOperation = args.operation === 'switch' ? 'set' : args.operation === 'refresh' ? 'inspect' : args.operation;
+        const request = nativeOperation === 'inspect' ? 'query-reference-image' : nativeOperation === 'list' ? 'list-reference-images' : nativeOperation === 'set' ? 'set-reference-image' : 'clear-reference-image';
         try {
-            const payload = args.operation === 'set' ? { path: args.imagePath, uuid: args.reference?.id } : args.reference?.id;
+            const payload = nativeOperation === 'set' ? { path: args.imagePath, uuid: args.reference?.id } : args.reference?.id;
             const result = await Editor.Message.request('scene', request, payload);
-            return { operation: args.operation, supported: true, persisted: args.operation === 'inspect' || args.operation === 'list' || result !== false, imagePath: args.imagePath ?? null, reference: args.reference ?? null, images: args.operation === 'list' ? (Array.isArray(result) ? result : []) : undefined, result: result ?? null };
+            if (args.operation === 'refresh' && !result) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'No persisted reference image is available to refresh.' });
+            return { operation: args.operation, supported: true, persisted: nativeOperation === 'inspect' || nativeOperation === 'list' || result !== false, imagePath: args.imagePath ?? (result && typeof result === 'object' && 'path' in result ? result.path : null), reference: args.reference ?? (result && typeof result === 'object' && 'id' in result ? { id: result.id, type: 'cc.ImageAsset' } : null), images: nativeOperation === 'list' ? (Array.isArray(result) ? result : []) : undefined, result: result ?? null };
         } catch (error) {
+            if (error instanceof ToolError) throw error;
             const profile = (Editor as { Profile?: { getProject?: (...args: unknown[]) => Promise<unknown>, setProject?: (...args: unknown[]) => Promise<unknown> } }).Profile;
             if (!profile || typeof profile.getProject !== 'function' || typeof profile.setProject !== 'function') throw new ToolError({ code: 'UNSUPPORTED_SCENE_IPC', status: 422, message: `Creator does not expose ${request} or project reference-image storage.`, details: { cause: error instanceof Error ? error.message : String(error) }, recovery: 'Use a Creator version exposing reference-image scene IPC or project profile storage.' });
             const current = await Editor.Message.request('scene', 'query-current-scene').catch(() => null) as unknown;
@@ -257,10 +262,11 @@ export class AdvancedCapabilityTools {
             if (args.operation !== 'list' && !sceneId) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'No active scene is available for reference-image storage.' });
             const stored = await profile.getProject('cc-bridge-3x', 'referenceImages', 'project').catch(() => ({})) as Record<string, unknown> | null;
             const records = stored && typeof stored === 'object' && !Array.isArray(stored) ? { ...stored } : {};
-            if (args.operation === 'set') { const asset = await resolveAsset(undefined, args.imagePath); records[sceneId as string] = { id: asset.uuid, url: asset.url, file: asset.file ?? null }; await profile.setProject('cc-bridge-3x', 'referenceImages', records, 'project'); }
+            if (writesImage) { const asset = await resolveAsset(undefined, args.imagePath); records[sceneId as string] = { id: asset.uuid, url: asset.url, file: asset.file ?? null }; await profile.setProject('cc-bridge-3x', 'referenceImages', records, 'project'); }
             else if (args.operation === 'clear') { delete records[sceneId as string]; await profile.setProject('cc-bridge-3x', 'referenceImages', records, 'project'); }
             const readBack = await profile.getProject('cc-bridge-3x', 'referenceImages', 'project').catch(() => ({})) as Record<string, unknown> | null;
             const record = sceneId && readBack && typeof readBack === 'object' ? readBack[sceneId] : null;
+            if (args.operation === 'refresh' && !record) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'No persisted reference image is available to refresh.' });
             const images = Object.entries(readBack && typeof readBack === 'object' && !Array.isArray(readBack) ? readBack : {}).map(([id, value]) => ({ id, value }));
             return { operation: args.operation, supported: true, persisted: args.operation === 'list' || (args.operation === 'clear' ? record === undefined : !!record), imagePath: record && typeof record === 'object' && 'url' in record ? record.url : args.imagePath ?? null, reference: record && typeof record === 'object' && 'id' in record ? { id: record.id, type: 'cc.ImageAsset' } : null, images, storage: 'project-profile', nativeIpc: false };
         }

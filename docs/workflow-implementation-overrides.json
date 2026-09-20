@@ -3938,6 +3938,22 @@
       "limitations": [
         "Selective path revert remains unsupported and fails closed with UNSUPPORTED_SELECTIVE_REVERT."
       ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-refresh-reference-image",
+      "state": "complete",
+      "reason": "referenceImageManage refresh reads the persisted active reference-image record and fails typed TARGET_NOT_FOUND when none exists.",
+      "routes": [{ "tool": "referenceImageManage", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
+      "evidenceArtifacts": ["reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json", "tests/unit/advanced-capability-tools.test.js", "tests/live/reference-image-qualification.test.js"],
+      "limitations": ["Refresh verifies persisted identity/path; native texture byte reload or transform refresh is not claimed."]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-switch-reference-image",
+      "state": "complete",
+      "reason": "referenceImageManage switch atomically replaces the bounded scene/project image record through the proven set route and verifies persisted identity/path.",
+      "routes": [{ "tool": "referenceImageManage", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
+      "evidenceArtifacts": ["reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json", "tests/unit/advanced-capability-tools.test.js", "tests/live/reference-image-qualification.test.js"],
+      "limitations": ["Switch covers active image identity/path only; opacity, position, scale and native transform configuration remain unsupported."]
     }
   ]
 }
