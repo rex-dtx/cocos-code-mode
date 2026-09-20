@@ -44,12 +44,10 @@ export class BitmapFontImporter extends BaseAssetImporter {
         };
     }
 
-    async setProperty(assetInfo: IAssetInfo, path: string, value: unknown): Promise<boolean> {
-        // Every bitmap-font field is derived from the .fnt source, so there is no writable
-        // input; the caller gets a typed refusal instead of a silently reverted write.
-        void assetInfo;
-        void path;
-        void value;
+    async setProperty(_assetInfo: IAssetInfo, _path: string, _value: unknown): Promise<boolean> {
+        // Nothing to write: every bitmap-font field is derived from the .fnt source, and
+        // assetImportSettingsSet already refuses these paths as read-only from the schema,
+        // so this refusal is the belt-and-braces path for a direct call.
         return false;
     }
 }
