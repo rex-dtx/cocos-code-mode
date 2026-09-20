@@ -1781,7 +1781,7 @@
     },
     {
       "name": "prefabApplyOverrides",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Apply a typed override set and verify source/instance result.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
@@ -1797,11 +1797,12 @@
       "positiveTestID": "candidate.prefabApplyOverrides.positive.v1",
       "negativeTestID": "candidate.prefabApplyOverrides.negative.v1",
       "fixtureID": "fixture.candidate.prefabApplyOverrides.v1",
-      "evidenceArtifact": "reports/evidence/candidates/prefabApplyOverrides/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/prefabApplyOverrides/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02"
     },
     {
       "name": "prefabRevertOverrides",
-      "state": "implemented-unverified",
+      "state": "qualified",
       "contractDelta": "Revert selected overrides and verify restored values.",
       "domain": "design-prefab",
       "proposedExecutionPhase": "P2",
@@ -1817,7 +1818,8 @@
       "positiveTestID": "candidate.prefabRevertOverrides.positive.v1",
       "negativeTestID": "candidate.prefabRevertOverrides.negative.v1",
       "fixtureID": "fixture.candidate.prefabRevertOverrides.v1",
-      "evidenceArtifact": "reports/evidence/candidates/prefabRevertOverrides/<creator>-<artifact-sha>.json"
+      "evidenceArtifact": "reports/evidence/candidates/prefabRevertOverrides/<creator>-<artifact-sha>.json",
+      "qualificationEvidence": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02"
     },
     {
       "name": "buildTaskWait",

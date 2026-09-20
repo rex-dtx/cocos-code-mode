@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "prefabRevertOverrides",
+  "creator": "3.7.3",
+  "buildCommit": "f32ef7d",
+  "artifact": "extensions/cc-bridge-3x dist (clean build of f32ef7d)",
+  "positiveWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02",
+    "iterations": 5,
+    "result": "applied an instance-only transform override to a linked prefab instance and confirmed the node returned to the prefab source value after the full-instance restore"
+  },
+  "negativeWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02",
+    "iterations": 5,
+    "result": "selective paths are rejected with 422 UNSUPPORTED_SELECTIVE_REVERT and an unknown instance fails closed with 404 TARGET_NOT_FOUND"
+  },
+  "persistence": "scene read-back of the restored node transform and the prefab source identity after Creator restore-prefab",
+  "cleanup": "instance and clone removed from the scene, owned prefab asset deleted through assetOperate, and the scene snapshot before ending each iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64516",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": false
+  },
+  "qualified": true
+}

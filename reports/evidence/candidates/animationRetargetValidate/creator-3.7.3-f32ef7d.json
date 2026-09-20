@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "animationRetargetValidate",
+  "creator": "3.7.3",
+  "buildCommit": "f32ef7d",
+  "artifact": "extensions/cc-bridge-3x dist (clean build of f32ef7d)",
+  "positiveWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V03",
+    "iterations": 5,
+    "result": "imported two skinned glTF fixtures (2 and 3 joints) and confirmed an identical skeleton validates, a larger target reports TARGET_JOINTS_EXTRA and a smaller target reports TARGET_JOINTS_MISSING, always with automaticRetargeting false"
+  },
+  "negativeWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V03",
+    "iterations": 5,
+    "result": "an unknown target reference fails closed with 404 TARGET_NOT_FOUND, and a model without skeleton metadata fails closed with 422 UNSUPPORTED_METADATA"
+  },
+  "persistence": "notApplicable - read-only comparison over imported skeleton metadata",
+  "cleanup": "both imported glTF fixtures and their temp files removed in the finally block on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64516",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": false
+  },
+  "qualified": true
+}
