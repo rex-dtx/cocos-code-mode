@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "launch": {
+    "project": "G:\\_ws\\_helpers\\cc-3x-test",
+    "userDataDir": "C:\\Users\\hry\\AppData\\Local\\Temp\\ccb3x-creator-profile",
+    "flags": ["--enable-logging", "--v=1", "--can-show-upgrade-dialog=false"]
+  },
+  "nativeTrace": [
+    "Electron proxy/cache initialization completed.",
+    "Renderer ask-win messages were emitted.",
+    "No package-discovery, extension activation, project initialization, or UTCP startup messages followed."
+  ],
+  "utcpListening": false,
+  "qualified": false,
+  "decision": "Fresh Electron profile excludes corrupted Chromium profile state. The stall persists between renderer window bootstrap and Creator project/package initialization."
+}
