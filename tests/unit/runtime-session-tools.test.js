@@ -4,6 +4,7 @@ const { describe, it, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { requireDist } = require('../helpers/require-dist');
 const { RuntimeSessionTools } = requireDist('utcp/tools/runtime-session-tools.js');
+const { GAME_VIEW_PREVIEW_DISABLED } = requireDist('utcp/tools/runtime-session-tools.js');
 const { RuntimeTools } = requireDist('utcp/tools/runtime-tools.js');
 const transport = requireDist('utcp/utils/game-view-transport.js');
 const originalInspect = transport.inspectGameViewRuntime;
@@ -68,7 +69,7 @@ async function start() {
   return tools.runtimeSessionLifecycle({ operation: 'start', targetKind: 'game-view', timeoutMs: 100 });
 }
 
-describe('bounded Creator game-view lifecycle', () => {
+describe('bounded Creator game-view lifecycle', { skip: GAME_VIEW_PREVIEW_DISABLED ? 'game-view preview is disabled (GAME_VIEW_PREVIEW_DISABLED); behavior is retained for re-enable' : false }, () => {
   it('rejects an unloaded browser platform without queuing a native start', async () => {
     const control = installPreview();
     control.platform = 'browser';
@@ -218,5 +219,38 @@ it('confirms stop when the host tears down before the next renderer read', async
     assert.equal(control.preview.state, 'play');
     await assert.rejects(tools.runtimeStateObserve({ sessionId: session.sessionId }), { code: 'SESSION_NOT_FOUND' });
     await assert.rejects(tools.runtimeSessionLifecycle({ operation: 'start', targetKind: 'browser-preview' }), { code: 'UNSUPPORTED_RUNTIME_TRANSPORT' });
+  });
+});
+
+describe('game-view preview feature gate', { skip: GAME_VIEW_PREVIEW_DISABLED ? false : 'preview feature is enabled' }, () => {
+  const gated = new RuntimeSessionTools();
+
+  it('fails closed for every preview mutation without touching the host transport', async () => {
+    let dispatched = 0;
+    transport.dispatchGameViewLifecycle = async () => { dispatched++; };
+    transport.inspectGameViewRuntime = async () => { throw new Error('host transport must not be reached'); };
+    for (const operation of ['start', 'stop', 'pause', 'resume', 'step']) {
+      await assert.rejects(gated.previewControl({ operation }), { code: 'PREVIEW_FEATURE_DISABLED', status: 422 });
+    }
+    assert.equal(dispatched, 0);
+  });
+
+  it('gates the public runtime tools that delegate to preview control', async () => {
+    await assert.rejects(gated.runtimeSessionLifecycle({ operation: 'start', targetKind: 'game-view' }), { code: 'PREVIEW_FEATURE_DISABLED', status: 422 });
+    await assert.rejects(new RuntimeTools().runtimeSessionManage({ operation: 'start' }), { code: 'PREVIEW_FEATURE_DISABLED', status: 422 });
+  });
+
+  it('keeps read-only preview state and local handle operations available', async () => {
+    transport.inspectGameViewRuntime = async () => ({ platform: 'gameView', enabled: false, ready: true, loaded: false, failed: false, running: false, paused: null, timeScale: null, frameCount: null, sceneUuid: '', webContentsId: null });
+    const state = await gated.previewControl({ operation: 'state' });
+    assert.equal(state.success, true);
+    assert.equal(state.preview.state, 'stop');
+    assert.equal(state.ready, false);
+    const listed = await gated.runtimeSessionLifecycle({ operation: 'list' });
+    assert.deepEqual(listed.sessions, []);
+  });
+
+  it('still rejects unsupported target kinds before the gate', async () => {
+    await assert.rejects(gated.previewControl({ operation: 'start', targetKind: 'browser-preview' }), { code: 'UNSUPPORTED_RUNTIME_TRANSPORT', status: 422 });
   });
 });

@@ -30,6 +30,20 @@ type LifecycleArgs = {
 
 const store = new RuntimeSessionStore();
 const RUNTIME_STATE_TIMEOUT_MS = 60_000;
+// Creator's Game View preview is an experimental editor feature the product does not
+// support. Preview lifecycle control is gated from this single boundary so start /
+// stop / pause / resume / step fail closed; read-only preview state inspection stays
+// available. Set to false to re-enable the feature.
+export const GAME_VIEW_PREVIEW_DISABLED = true;
+
+function previewDisabledError(): ToolError {
+    return new ToolError({
+        code: 'PREVIEW_FEATURE_DISABLED',
+        status: 422,
+        message: 'Creator game-view preview is an experimental editor feature this bridge does not support; preview lifecycle control is disabled.',
+        recovery: 'Use editor-authoring routes (scene, prefab, UI, asset tools) instead. Preview control stays disabled until the feature is explicitly re-enabled.',
+    });
+}
 let previewMutationPending = false;
 
 async function withRuntimeStateTimeout<T>(promise: Promise<T>, deadline = Date.now() + RUNTIME_STATE_TIMEOUT_MS): Promise<T> {
@@ -49,7 +63,7 @@ async function withRuntimeStateTimeout<T>(promise: Promise<T>, deadline = Date.n
 export class RuntimeSessionTools {
     @utcpTool(
         'runtimeSessionLifecycle',
-        'Start, attach, inspect, stop, release local handles and list bounded Creator 3.7.3 game-view sessions. Browser and simulator transports are unsupported.',
+        'Attach, inspect, release local handles and list bounded Creator 3.7.3 game-view sessions. Game-view preview lifecycle control (start/stop) is disabled because Creator preview is an experimental editor feature this bridge does not support; browser and simulator transports are unsupported.',
         {
             type: 'object',
             properties: {
@@ -212,6 +226,7 @@ export class RuntimeSessionTools {
             return { success: true, operation: 'state', preview, state, ready: !!state };
         }
         let unsettledRequest: Promise<unknown> | undefined;
+        if (GAME_VIEW_PREVIEW_DISABLED) throw previewDisabledError();
         if (previewMutationPending) throw new ToolError({ code: 'RUNTIME_CONTROL_BUSY', status: 409, message: 'A preview lifecycle operation is already pending.' });
         previewMutationPending = true;
         try {

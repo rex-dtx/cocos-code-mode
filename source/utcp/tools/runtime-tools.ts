@@ -76,7 +76,7 @@ export class RuntimeTools {
     }
     @utcpTool(
         'runtimePreviewControl',
-        'Control bounded Creator 3.7.3 game-view lifecycle with native read-back. Start returns actual session/scene identity; stop verifies termination. Browser and simulator transports are unsupported.',
+        'Bounded Creator 3.7.3 game-view preview control. Lifecycle mutations are disabled because Creator preview is an experimental editor feature this bridge does not support; only operation=state remains available. Browser and simulator transports are unsupported.',
         {
             type: 'object',
             properties: {
