@@ -92,9 +92,9 @@ describe('live: typed asset importer settings', () => {
       assert.equal(Number.isInteger(before.body.settings.glyphCount), true);
       assert.equal(typeof before.body.settings.textureUuid, 'string');
 
-      // Every bitmap-font field is derived from the .fnt source, so a write must never
-      // persist: the corrected artifact refuses it as read-only, and the earlier artifact
-      // accepted save-asset-meta and then reverted the value on reimport.
+      // The .fnt source is authoritative. A direct meta write may appear temporarily,
+      // but a later importer reparse overwrites it from the source file; no field is a
+      // durable settings write target.
       const attempted = await postTool('assetImportSettingsSet', { reference, path: 'fontSize', value: original + 2 });
       assert.ok([400, 422, 502].includes(attempted.status), JSON.stringify(attempted.body));
       const after = await getJson(`/tools/assetImportSettingsGet?reference%5Bid%5D=${encodeURIComponent(reference.id)}`);
