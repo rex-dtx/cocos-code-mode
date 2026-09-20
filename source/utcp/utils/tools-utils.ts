@@ -295,3 +295,15 @@ export class ToolsUtils {
     }
         */
 }
+
+/**
+ * Creator's published typings declare `scene/restore-prefab` as `ResetComponentOptions`,
+ * but the 3.7.3 scene handler takes the node UUID as its positional argument: an object
+ * payload returns `false` without reverting the instance (verified live on 3.7.3 — the
+ * same node reports `false` and keeps its override with an object, then `true` and reverts
+ * with the uuid string). The cast records that the typings are wrong.
+ */
+export async function restorePrefabNode(nodeUuid: string): Promise<boolean> {
+    const request = Editor.Message.request as unknown as (service: 'scene', message: 'restore-prefab', uuid: string) => Promise<boolean>;
+    return request('scene', 'restore-prefab', nodeUuid);
+}

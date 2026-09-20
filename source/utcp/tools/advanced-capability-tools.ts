@@ -5,6 +5,7 @@ import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
 import { ToolError } from '../tool-error';
 import { AssetTools } from './asset-tools';
+import { restorePrefabNode } from '../utils/tools-utils';
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:@[A-Za-z0-9_-]+)?/gi;
 const SERIALIZED_LIMIT = 5 * 1024 * 1024;
 const MAX_ITEMS = 128;
@@ -433,7 +434,12 @@ export class AdvancedCapabilityTools {
         const prefab = propertyValue(objectField(readBack, '__prefab__') ?? objectField(readBack, '_prefab')) as Record<string, unknown> | undefined;
         const prefabInfo = prefab?.prefabStateInfo && typeof prefab.prefabStateInfo === 'object' ? prefab.prefabStateInfo as Record<string, unknown> : prefab;
         const prefabId = prefabInfo?.assetUuid ?? prefabInfo?.uuid ?? objectField(prefabInfo?.asset, '_uuid') ?? objectField(prefabInfo?.asset, 'uuid');
-        const instance = prefab?.instance && typeof prefab.instance === 'object' ? prefab.instance as Record<string, unknown> : prefabInfo;
+        const instanceDescriptor = prefab?.instance;
+        // Creator 3.7 serializes `__prefab__.instance` as a property descriptor ({value,type,...}),
+        // so the override arrays only exist on the unwrapped value.
+        const instance = instanceDescriptor && typeof instanceDescriptor === 'object'
+            ? (('value' in instanceDescriptor) && ('type' in instanceDescriptor) ? propertyValue(instanceDescriptor) : instanceDescriptor) as Record<string, unknown>
+            : prefabInfo;
         const overrides = Array.isArray(instance?.propertyOverrides) ? instance.propertyOverrides.slice(0, MAX_ITEMS) : [];
         return { reference: args.reference, isPrefabInstance: typeof prefabId === 'string' && prefabId.length > 0, prefabReference: typeof prefabId === 'string' && prefabId ? { id: prefabId, type: 'cc.Prefab' } : null, overrides, readBack };
     }
@@ -453,7 +459,7 @@ export class AdvancedCapabilityTools {
                 if (result !== null && result !== undefined) throw new Error(String(result));
                 await new Promise((resolve) => setTimeout(resolve, 50));
             } else {
-                result = await Editor.Message.request('scene', 'restore-prefab', { uuid: reference.id });
+                result = await restorePrefabNode(reference.id);
                 if (result !== true) throw new Error(`restore-prefab returned ${JSON.stringify(result ?? null)}`);
             }
             await Editor.Message.request('scene', 'snapshot');

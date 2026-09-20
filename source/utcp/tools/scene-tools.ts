@@ -3,7 +3,7 @@ import { utcpTool } from '../decorators';
 import { ISceneTreeItem, SceneTreeItemSchema, Base64ImageSchema, IBase64Image, InstanceReferenceSchema, IInstanceReference, ISuccessIndicator, SuccessIndicatorSchema } from '../schemas';
 import type { IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@types/public';
 import { ToolError } from '../tool-error';
-import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES } from '../utils/tools-utils';
+import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES, restorePrefabNode } from '../utils/tools-utils';
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
 const DEFAULT_LIST_LIMIT = 200;
@@ -1777,7 +1777,7 @@ export class SceneTools {
             case 'revert_prefab':
                 // restore-prefab is result: boolean — a false/undefined return means the node
                 // was NOT reverted; reporting it as opaque data is a docs §2 silent failure.
-                const revertSuccess = await Editor.Message.request('scene', 'restore-prefab', { uuid: args.reference.id });
+                const revertSuccess = await restorePrefabNode(args.reference.id);
                 if (revertSuccess !== true) {
                     throw new Error(`revert_prefab failed: restore-prefab returned ${JSON.stringify(revertSuccess ?? null)} for ${args.reference.id}`);
                 }

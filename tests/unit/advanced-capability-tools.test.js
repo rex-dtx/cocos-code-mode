@@ -435,6 +435,9 @@ describe('advanced capability tools', () => {
       assert.equal(result.operation, 'revert');
       assert.equal(result.persisted, true);
       assert.ok(requests.some(([, message]) => message === 'restore-prefab'));
+      // Creator 3.7 only reverts when the node UUID arrives as the positional argument.
+      const restoreCall = requests.find(([, message]) => message === 'restore-prefab');
+      assert.equal(restoreCall[2], 'instance');
       assert.deepEqual(result.reference, { id: 'instance', type: 'cc.Node' });
     } finally {
       if (previous === undefined) delete global.Editor; else global.Editor = previous;
@@ -458,7 +461,8 @@ describe('advanced capability tools', () => {
       assert.equal(created.persisted, true);
       assert.equal(created.asset.id, 'created-prefab');
       global.Editor.Message.request = async (service, message, payload) => {
-        if (service === 'scene' && message === 'query-node') return { uuid: 'node', __prefab__: { value: { uuid: 'prefab-asset' } } };
+        // Creator 3.7 serializes __prefab__.instance as a property descriptor.
+        if (service === 'scene' && message === 'query-node') return { uuid: 'node', __prefab__: { uuid: 'prefab-asset', instance: { value: { propertyOverrides: [{ propertyPath: ['_lscale'], value: { x: 2, y: 2, z: 2 } }] }, type: 'cc.PrefabInfo' } } };
         if (service === 'asset-db' && message === 'query-asset-info') return { uuid: 'prefab-asset', url: 'db://assets/fixture.prefab', type: 'cc.Prefab', file };
         if (service === 'scene' && message === 'execute-scene-script') return null;
         if (service === 'scene' && message === 'snapshot') return true;
@@ -468,6 +472,8 @@ describe('advanced capability tools', () => {
       const inspected = await tools.prefabInstanceInspect({ reference: { id: 'node', type: 'cc.Node' } });
       assert.equal(inspected.isPrefabInstance, true);
       assert.equal(inspected.prefabReference.id, 'prefab-asset');
+      assert.equal(inspected.overrides.length, 1);
+      assert.deepEqual(inspected.overrides[0].propertyPath, ['_lscale']);
     } finally {
       if (previous === undefined) delete global.Editor; else global.Editor = previous;
     }
