@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "API-availability probes for the seven non-runtime probe-required portfolio rows",
+  "creator": "3.7.3",
+  "artifact": "extensions/cc-bridge-3x dist, clean build of f32ef7d",
+  "method": "executeJavascript probes against the live editor/scene contexts plus the @cocos/creator-types message declarations shipped with Creator 3.7.3",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64516",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": false
+  },
+  "probes": [
+    {
+      "rows": ["physics2dConfigure", "physics3dConfigure"],
+      "prerequisite": "project-settings-write",
+      "readSide": "project/query-config returns the physics block (gravity, allowSleep, sleepThreshold, autoSimulation, fixedTimeStep, maxSubSteps, defaultMaterial), so project settings are readable",
+      "writeProbe": "Editor.Message.request('project','set-config','project','physics.gravity',<current value>)",
+      "result": "Message does not exist: project - set-config",
+      "note": "The @cocos/creator-types message declaration lists set-config, but the 3.7.3 editor does not register it; source/utcp/tools/project-tools.ts already fails closed on exactly this call",
+      "verdict": "unsupported"
+    },
+    {
+      "rows": ["particleConfigure"],
+      "prerequisite": "particle-schema",
+      "schemaProbe": "cc.js.getClassByName('cc.ParticleSystem') resolves and the component exposes the serialized modules (_colorOverLifetimeModule, _shapeModule, _sizeOvertimeModule, _velocityOvertimeModule, _forceOvertimeModule, _limitVelocityOvertimeModule, _rotationOvertimeModule, _textureAnimationModule, _noiseModule, _trailModule) plus scalars (_capacity, _simulationSpace, _prewarm, _renderCulling, _cullingMode)",
+      "writeProbe": "scene/set-property at __comps__.<i>.<key> for _capacity, _simulationSpace, _prewarm, _renderCulling, _cullingMode, _isSimulating",
+      "result": "every call returns true, but no value survives into the next query-node dump (_simulationSpace stayed 1, _prewarm stayed false, _capacity stayed 100, _isSimulating disappeared), so particleConfigure fails its own read-back with 502 MUTATION_FAILED and rolls the component back",
+      "verdict": "unsupported"
+    },
+    {
+      "rows": ["lightBakeManage"],
+      "prerequisite": "light-bake-job-api",
+      "writeProbe": "scene messages bake, bake-lightmap, lightmap-bake, bake-scene, generate-lightmap",
+      "result": "every candidate returns 'Message does not exist'; the scene package declares no bake/lightmap message",
+      "verdict": "unsupported"
+    },
+    {
+      "rows": ["terrainEdit"],
+      "prerequisite": "terrain-write-api",
+      "writeProbe": "cc.Terrain / cc.internal.Terrain in the scene context",
+      "result": "the class does not exist on Creator 3.7.3, so no terrain component and no write API can be addressed",
+      "verdict": "unsupported"
+    },
+    {
+      "rows": ["localizationInspect", "localizationTableEdit"],
+      "prerequisite": "localization-package-api",
+      "writeProbe": "Editor.Package.getPackages plus localization-manager messages and the db://localization-editor/l10n seam",
+      "result": "no localization editor package is present; the localization-manager messages and the runtime l10n module do not resolve",
+      "verdict": "unsupported-in-this-project"
+    }
+  ],
+  "poolImpact": {
+    "potentiallyQualifiableCountBefore": 86,
+    "rowsProbed": 7,
+    "potentiallyQualifiableCountIfRejected": 79,
+    "requiredApprovalCount": 82,
+    "gateWouldFail": true,
+    "note": "the seven probed rows are the entire non-runtime probe-required pool, so rejecting them follows the evidence but breaks the frozen potentiallyQualifiableCount >= requiredApprovalCount gate"
+  },
+  "outcome": "no row was reclassified by this probe; the ledger keeps all seven conservative and the pool decision is surfaced to the owner"
+}
