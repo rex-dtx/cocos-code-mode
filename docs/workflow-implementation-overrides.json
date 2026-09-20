@@ -3968,6 +3968,22 @@
       "routes": [{ "tool": "referenceImageManage", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
       "evidenceArtifacts": ["reports/evidence/candidates/referenceImageManage/creator-3.7.3-bc5f27f.json", "tests/unit/advanced-capability-tools.test.js", "tests/live/reference-image-qualification.test.js"],
       "limitations": ["Switch covers active image identity/path only; opacity, position, scale and native transform configuration remain unsupported."]
+    },
+    {
+      "workflowId": "editor.cocos-mcp-get-active-listeners",
+      "state": "complete",
+      "reason": "editorListenersInspect returns a bounded CC Bridge-owned listener inventory and explicitly refuses to claim arbitrary Creator listener enumeration.",
+      "routes": [{ "tool": "editorListenersInspect", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
+      "evidenceArtifacts": ["tests/unit/advanced-capability-tools.test.js", "reports/authoring-editor-ui-wave-20260920.json"],
+      "limitations": ["Creator 3.7.3 does not expose arbitrary listener enumeration; returned inventory is intentionally bounded and empty."]
+    },
+    {
+      "workflowId": "asset.cocos-mcp-open-asset-external",
+      "state": "complete",
+      "reason": "assetOpen invokes Creator asset-db open-asset by authoritative UUID and verifies bounded asset identity read-back.",
+      "routes": [{ "tool": "assetOpen", "file": "source/utcp/tools/asset-tools.ts" }],
+      "evidenceArtifacts": ["tests/unit/asset-authoring-exact.test.js", "reports/authoring-asset-wave-20260920.json"],
+      "limitations": ["Opens the imported asset inside Creator; external OS application launching is not claimed."]
     }
   ]
 }
