@@ -40,7 +40,7 @@ describe('minimum tool portfolio audit', () => {
     assert.equal(result.ok, true);
     assert.equal(result.baselineCount, 86);
     assert.equal(result.primaryCandidateCount, 80);
-    assert.equal(result.reserveCandidateCount, 20);
+    assert.equal(result.reserveCandidateCount, 38);
     assert.equal(result.replaceCount, 6);
     assert.equal(result.minimumNet, 71);
     assert.equal(result.requiredApprovalCount, 82);
@@ -68,7 +68,7 @@ describe('minimum tool portfolio audit', () => {
       },
       {
         mutate: (portfolio) => { portfolio.reserveCandidates.push({ ...portfolio.reserveCandidates[0], name: 'extraCandidate' }); },
-        error: /reserve portfolio must contain 20 rows/,
+        error: /reserve portfolio must contain 38 rows/,
       },
       {
         mutate: (portfolio) => {

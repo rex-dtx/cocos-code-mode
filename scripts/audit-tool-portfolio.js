@@ -12,7 +12,7 @@ const WITNESS_CONTRACTS_PATH = path.join(ROOT, 'docs', 'qualification-witness-co
 const FROZEN_BASELINE_COUNT = 86;
 const FROZEN_MINIMUM_RELEASE_COUNT = 157;
 const FROZEN_PRIMARY_COUNT = 80;
-const FROZEN_RESERVE_COUNT = 20;
+const FROZEN_RESERVE_COUNT = 38;
 const FROZEN_REQUIRED_APPROVAL_COUNT = 82;
 // Frozen cc-3x7 baseline: the 86 tools registered at the capability-qualification
 // baseline commit. Portfolio candidates must not overlap these names; every later

@@ -497,7 +497,8 @@
         },
         {
           "name": "animationGraphPreview",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Run graph and observe transitions/events in a named runtime session.",
           "route": "runtime session",
           "prerequisites": [
@@ -572,7 +573,8 @@
         },
         {
           "name": "skeletalAnimationPlay",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Bounded play/queue/stop contract on a named runtime target.",
           "route": "runtime skeletal adapter",
           "prerequisites": [
@@ -589,7 +591,8 @@
         },
         {
           "name": "skeletalAnimationEvents",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Bounded ordered event observation tied to one playback session.",
           "route": "runtime event adapter",
           "prerequisites": [
@@ -665,7 +668,8 @@
         },
         {
           "name": "audioPlaybackControl",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Play, pause, stop and seek on a named runtime source with state confirmation.",
           "route": "runtime audio adapter",
           "prerequisites": [
@@ -682,7 +686,8 @@
         },
         {
           "name": "audioPlaybackObserve",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: requires a runtime-session transport; the Creator game-view preview lane fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Bounded playback progress/state observation with activation errors.",
           "route": "runtime audio adapter",
           "prerequisites": [
@@ -739,7 +744,8 @@
         },
         {
           "name": "physics2dConfigure",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported on Creator 3.7.3: project/set-config does not exist, so project settings have no write path. Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Backend-aware settings and collision matrix mutation with read-back.",
           "route": "version-gated project settings",
           "prerequisites": [
@@ -854,7 +860,8 @@
         },
         {
           "name": "physics3dConfigure",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported on Creator 3.7.3: project/set-config does not exist, so project settings have no write path. Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Backend-aware settings mutation with version/platform read-back.",
           "route": "version-gated project settings",
           "prerequisites": [
@@ -967,7 +974,8 @@
         },
         {
           "name": "particleConfigure",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported on Creator 3.7.3: scene/set-property accepts ParticleSystem field writes but persists none, so the route fails its own read-back and rolls back (502 MUTATION_FAILED). Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Typed module/curve mutation with persistent read-back, not panel scraping.",
           "route": "component metadata adapter",
           "prerequisites": [
@@ -1165,7 +1173,8 @@
         },
         {
           "name": "lightBakeManage",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported on Creator 3.7.3: no scene bake/lightmap message exists, so there is no finite bake-job lifecycle. Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Finite bake job lifecycle and output asset verification.",
           "route": "version-gated bake API",
           "prerequisites": [
@@ -1227,7 +1236,8 @@
         },
         {
           "name": "terrainEdit",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported on Creator 3.7.3: cc.Terrain does not exist, so no terrain component or write API can be addressed. Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Persistent bounded height/layer mutation through a supported API.",
           "route": "version-gated terrain API",
           "prerequisites": [
@@ -1270,7 +1280,8 @@
       "candidates": [
         {
           "name": "localizationInspect",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported in the probed project on Creator 3.7.3: no localization editor package is installed and db://localization-editor/l10n does not resolve. Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Discover enabled package, locales, compiled tables and resource mappings.",
           "route": "localization package adapter",
           "prerequisites": [
@@ -1287,7 +1298,8 @@
         },
         {
           "name": "localizationTableEdit",
-          "state": "probe-required",
+          "state": "rejected",
+          "rejectionReason": "Unsupported in the probed project on Creator 3.7.3: no localization editor package is installed and db://localization-editor/l10n does not resolve. Probed reports/api-capability-probe-20260920.json.",
           "contractDelta": "Typed persistent table mutation through documented package API.",
           "route": "localization package adapter",
           "prerequisites": [
@@ -1900,6 +1912,384 @@
       "fixtureID": "fixture.candidate.projectSettingsValidate.v1",
       "evidenceArtifact": "reports/evidence/candidates/projectSettingsValidate/<creator>-<artifact-sha>.json",
       "qualificationEvidence": "tests/live/read-only-candidate-qualification.test.js#PROJECT-SETTINGS-V01"
+    },
+    {
+      "name": "audioClipImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed audio-clip import settings audit over the 76+ imported assets in the active project: normalized compression codec, load type and quality per platform with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.audioClipImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.audioClipImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.audioClipImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/audioClipImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "audioClipImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded audio-clip import settings mutation over compression codec, load type and quality per platform with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.audioClipImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.audioClipImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.audioClipImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/audioClipImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "animationClipImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed animation-clip import settings audit over the 6+ imported assets in the active project: normalized sample rate, wrap mode and curve resampling with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.animationClipImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.animationClipImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.animationClipImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/animationClipImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "animationClipImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded animation-clip import settings mutation over sample rate, wrap mode and curve resampling with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.animationClipImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.animationClipImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.animationClipImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/animationClipImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "bitmapFontImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed bitmap-font import settings audit over the 28+ imported assets in the active project: normalized font size, padding, spacing and glyph texture references with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.bitmapFontImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.bitmapFontImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.bitmapFontImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/bitmapFontImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "bitmapFontImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded bitmap-font import settings mutation over font size, padding, spacing and glyph texture references with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.bitmapFontImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.bitmapFontImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.bitmapFontImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/bitmapFontImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "ttfFontImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed ttf-font import settings audit over the 6+ imported assets in the active project: normalized font size, rendering mode and cache mode with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.ttfFontImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.ttfFontImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.ttfFontImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/ttfFontImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "ttfFontImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded ttf-font import settings mutation over font size, rendering mode and cache mode with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.ttfFontImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.ttfFontImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.ttfFontImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/ttfFontImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "videoClipImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed video-clip import settings audit over the 1+ imported assets in the active project: normalized transcode container and codec selection with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.videoClipImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.videoClipImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.videoClipImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/videoClipImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "videoClipImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded video-clip import settings mutation over transcode container and codec selection with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.videoClipImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.videoClipImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.videoClipImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/videoClipImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "textAssetImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed text import settings audit over the 7+ imported assets in the active project: normalized text encoding and import handling with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.textAssetImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.textAssetImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.textAssetImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/textAssetImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "textAssetImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded text import settings mutation over text encoding and import handling with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.textAssetImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.textAssetImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.textAssetImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/textAssetImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "jsonAssetImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed json import settings audit over the 23+ imported assets in the active project: normalized json import handling and asset type mapping with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.jsonAssetImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.jsonAssetImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.jsonAssetImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/jsonAssetImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "jsonAssetImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded json import settings mutation over json import handling and asset type mapping with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.jsonAssetImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.jsonAssetImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.jsonAssetImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/jsonAssetImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "effectAssetImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed effect import settings audit over the 52+ imported assets in the active project: normalized compile targets, macros and pass compatibility with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.effectAssetImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.effectAssetImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.effectAssetImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/effectAssetImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "effectAssetImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded effect import settings mutation over compile targets, macros and pass compatibility with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.effectAssetImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.effectAssetImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.effectAssetImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/effectAssetImportSettingsConfigure/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "terrainAssetImportSettingsAudit",
+      "state": "candidate",
+      "contractDelta": "Typed terrain import settings audit over the 2+ imported assets in the active project: normalized terrain asset dimensions, layers and height data references with platform compatibility issues and documented limits, without claiming decode or runtime behaviour.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings reader",
+      "prerequisites": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-query-contract"
+      ],
+      "positiveTestID": "candidate.terrainAssetImportSettingsAudit.positive.v1",
+      "negativeTestID": "candidate.terrainAssetImportSettingsAudit.negative.v1",
+      "fixtureID": "fixture.candidate.terrainAssetImportSettingsAudit.v1",
+      "evidenceArtifact": "reports/evidence/candidates/terrainAssetImportSettingsAudit/<creator>-<artifact-sha>.json"
+    },
+    {
+      "name": "terrainAssetImportSettingsConfigure",
+      "state": "candidate",
+      "contractDelta": "Typed bounded terrain import settings mutation over terrain asset dimensions, layers and height data references with preflight validation, reimport, read-back and rollback.",
+      "domain": "assets-import",
+      "proposedExecutionPhase": "P2",
+      "route": "asset-db importer settings writer plus reimport",
+      "prerequisites": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "witnessContractIds": [
+        "importer-schema",
+        "asset-reimport",
+        "mutation-workflow"
+      ],
+      "positiveTestID": "candidate.terrainAssetImportSettingsConfigure.positive.v1",
+      "negativeTestID": "candidate.terrainAssetImportSettingsConfigure.negative.v1",
+      "fixtureID": "fixture.candidate.terrainAssetImportSettingsConfigure.v1",
+      "evidenceArtifact": "reports/evidence/candidates/terrainAssetImportSettingsConfigure/<creator>-<artifact-sha>.json"
     }
   ]
 }
