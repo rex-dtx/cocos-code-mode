@@ -131,6 +131,20 @@ describe('scene inspection identity contracts', () => {
       children: [],
     });
   });
+  it('nodeGetTree accepts Creator 3.7 scalar component UUID dumps', async () => {
+    global.Editor = { Message: { request: async (_module, message) => {
+      if (message === 'query-node-tree') return {
+        uuid: 'root', name: 'Root', components: [{ type: 'cc.DirectionalLight', value: 'component-3x7' }], children: [],
+      };
+      if (message === 'query-current-scene') return null;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().nodeGetTree({ fields: ['components'] }), {
+      reference: { id: 'root', type: 'cc.Node' },
+      components: [{ reference: { id: 'component-3x7', type: 'cc.DirectionalLight' } }],
+      children: [],
+    });
+  });
 
   it('nodeComponentsGet rejects a matched component missing authoritative type', async () => {
     global.Editor = { Message: { request: async (_module, message) => {

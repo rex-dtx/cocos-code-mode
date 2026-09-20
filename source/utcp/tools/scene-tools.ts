@@ -22,7 +22,12 @@ function boundedListLimit(limit: number | undefined): number {
 }
 
 function componentUuid(component: any): string | undefined {
-    return component?.value?.uuid?.value ?? component?.value?.uuid ?? component?.uuid;
+    const nested = component?.value?.uuid?.value ?? component?.value?.uuid ?? component?.uuid;
+    if (typeof nested === 'string' && nested) return nested;
+    // Creator 3.7 query-node-tree serializes some native components as
+    // { type, value: '<component-uuid>', extends } instead of a nested
+    // value.uuid wrapper. Preserve the authoritative scalar UUID.
+    return typeof component?.value === 'string' && component.value ? component.value : undefined;
 }
 
 function componentClassId(component: any): string | undefined {
