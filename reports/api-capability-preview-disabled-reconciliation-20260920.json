@@ -1,0 +1,60 @@
+{
+  "reconciliation": "game-view preview owner-disable",
+  "date": "2026-09-20",
+  "decision": "Owner: Creator's Game View preview is an experimental editor feature and this bridge does not support it.",
+  "implementation": {
+    "commit": "c0459fd",
+    "flag": "GAME_VIEW_PREVIEW_DISABLED (source/utcp/tools/runtime-session-tools.ts)",
+    "singleBoundary": "RuntimeSessionTools.previewControl mutation branch",
+    "gatedOperations": [
+      "runtimeSessionLifecycle:start",
+      "runtimeSessionLifecycle:stop",
+      "runtimePreviewControl:start",
+      "runtimePreviewControl:stop",
+      "runtimePreviewControl:pause",
+      "runtimePreviewControl:resume",
+      "runtimePreviewControl:step"
+    ],
+    "error": { "code": "PREVIEW_FEATURE_DISABLED", "status": 422, "reachesHostTransport": false },
+    "stillAvailable": ["operation=state", "reset", "list", "attach (only when the owner starts the preview manually in Creator)"],
+    "unitCoverage": "tests/unit/runtime-session-tools.test.js — lifecycle suite auto-skips while the flag is set; a gate suite asserts fail-closed with zero host dispatch"
+  },
+  "ledger": {
+    "file": "docs/tool-portfolio-candidates.json",
+    "rows": [
+      { "name": "runtimeSessionLifecycle", "bucket": "primary", "domain": "runtime-qa", "from": "qualified", "to": "rejected" },
+      { "name": "runtimeStateObserve", "bucket": "primary", "domain": "runtime-qa", "from": "qualified", "to": "rejected" },
+      { "name": "runtimeScenarioRun", "bucket": "primary", "domain": "runtime-qa", "from": "qualified", "to": "rejected" },
+      { "name": "runtimeScenarioAssert", "bucket": "primary", "domain": "runtime-qa", "from": "qualified", "to": "rejected" },
+      { "name": "particlePlayback", "bucket": "primary", "domain": "particles", "from": "qualified", "to": "rejected" },
+      { "name": "previewSessionInspect", "bucket": "reserve", "domain": "runtime-qa", "from": "qualified", "to": "rejected" },
+      { "name": "runtimeWaitForState", "bucket": "reserve", "domain": "runtime-qa", "from": "qualified", "to": "rejected" }
+    ],
+    "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
+    "auditBefore": { "approvedCount": 75, "potentiallyQualifiableCount": 94 },
+    "auditAfter": { "approvedCount": 68, "potentiallyQualifiableCount": 87 },
+    "unchanged": {
+      "baselineCount": 86,
+      "registeredToolCount": 321,
+      "primaryCandidateCount": 80,
+      "reserveCandidateCount": 20,
+      "replaceCount": 6,
+      "requiredApprovalCount": 82
+    },
+    "note": "The route count is unchanged because preview control is gated, not removed; only the non-counting state changed."
+  },
+  "notAffected": [
+    { "tool": "runtimeScreenshotAssert", "reason": "Captures an Electron editor window through editorPanelCapture/captureEditorScreenshot; takes no session id." },
+    { "tool": "runtimeInputDispatch", "reason": "Sends key/pointer events to the active Electron window through sendInputEvent; takes no session id." }
+  ],
+  "gateImpact": "The 2026-09-16 statement 'Count gate is complete — f1d74be reaches 86 + 71 = 157' no longer holds: seven counted rows are owner-disabled. The >=157 qualified-tool, competitor-union parity and >=90% workflow gates stay open.",
+  "deferredLane": "Priority-selection D1 (Game View runtime foundation) and D2 (runtime gameplay waves) are closed as owner-disabled rather than merely deferred. Re-enabling requires flipping GAME_VIEW_PREVIEW_DISABLED and re-marking the seven ledger rows.",
+  "relatedEvidence": "reports/api-capability-runtime-d1-blocked-20260920.json records the pre-disable blocker: start never enabled the preview and hit the 30s deadline with typed 409 RUNTIME_STATE_TIMEOUT on artifact 14152bf.",
+  "verification": {
+    "unit": "597/597 pass, 0 fail",
+    "build": "CREATOR_LOAD_OK",
+    "portfolioAudit": "ok",
+    "auditUnitTest": "2/2 pass",
+    "live": "not performed — requires deploying dist into the project extension plus a manual Creator extension reload"
+  }
+}
