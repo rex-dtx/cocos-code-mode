@@ -91,6 +91,49 @@ describe('advanced capability tools', () => {
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
+  it('validates TMX gid ranges and layer dimensions alongside UUID references', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-tmx-validate-'));
+    const goodFile = path.join(root, 'good.tmx');
+    const badFile = path.join(root, 'bad.tmx');
+    fs.writeFileSync(goodFile, [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<map orientation="orthogonal" width="2" height="2" tilewidth="32" tileheight="32">',
+      '  <tileset firstgid="1" name="Tiles" tilecount="2"/>',
+      '  <layer id="1" name="Ground" width="2" height="2"><data encoding="csv">1,2,0,0</data></layer>',
+      '</map>',
+    ].join('\n'));
+    fs.writeFileSync(badFile, [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<map orientation="orthogonal" width="2" height="2" tilewidth="32" tileheight="32">',
+      '  <tileset firstgid="1" name="Tiles" tilecount="1"/>',
+      '  <layer id="1" name="Ground" width="3" height="2"><data encoding="csv">1,5,0,0,0,0</data></layer>',
+      '</map>',
+    ].join('\n'));
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message, identifier) => {
+      if (service !== 'asset-db') throw new Error(`unexpected ${service}:${message}`);
+      if (message === 'query-asset-info') return { uuid: identifier, url: `db://assets/${identifier}.tmx`, type: 'cc.TiledMapAsset', file: identifier === 'good' ? goodFile : badFile };
+      if (message === 'query-assets') return [];
+      throw new Error(`unexpected asset-db message ${message}`);
+    } } };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const good = await tools.tilemapValidate({ reference: { id: 'good' } });
+      assert.equal(good.valid, true);
+      assert.deepEqual(good.gidIssues, []);
+      assert.deepEqual(good.dimensionIssues, []);
+      assert.equal(good.gidRangeVerified, true);
+
+      const bad = await tools.tilemapValidate({ reference: { id: 'bad' } });
+      assert.equal(bad.valid, false);
+      assert.deepEqual(bad.gidIssues, [{ gid: 5, layer: 'Ground' }]);
+      assert.deepEqual(bad.dimensionIssues, [{ layer: 'Ground', width: 3, height: 2, mapWidth: 2, mapHeight: 2 }]);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('returns prefab source hashes after a successful override apply', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-apply-'));
     const file = path.join(root, 'fixture.prefab');
