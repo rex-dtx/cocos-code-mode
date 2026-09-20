@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "Creator 3.7.3 runtime activation gate",
+  "experiments": [
+    { "project": "cc30-new-all-in-one", "extension": "immutable a73ec37", "result": "renderer bootstrap only; no project/package/UTCP initialization" },
+    { "project": "cc-3x-test", "extension": "disabled", "result": "same pre-project stall" },
+    { "project": "cc-3x-test", "extension": "restored", "result": "same pre-project stall" },
+    { "project": "cc-3x-test", "state": "temp+library reset", "result": "same pre-project stall" },
+    { "project": "cc-minimal-empty", "profile": "fresh", "result": "same renderer-only stall" },
+    { "installation": "3.7.3-repaired", "result": "process exits code 3 before readiness" }
+  ],
+  "unitLifecycle": "34/34 pass",
+  "liveQualification": false,
+  "conclusion": "Runtime live gate is environment-blocked at Creator project initialization before extension discovery. No source-level runtime fix is justified without native Creator startup diagnostics or a functioning Creator installation."
+}
