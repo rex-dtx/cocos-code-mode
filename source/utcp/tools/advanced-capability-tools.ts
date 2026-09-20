@@ -198,6 +198,37 @@ function tilemapGidRanges(content: string): Array<{ firstGid: number, tileCount:
     return ranges;
 }
 
+function tilemapExternalTilesets(content: string): Array<{ source: string, firstGid: number }> {
+    const external: Array<{ source: string, firstGid: number }> = [];
+    for (const match of content.matchAll(/<tileset\b[^>]*\/?>/gi)) {
+        const source = xmlAttribute(match[0], 'source');
+        if (!source) continue;
+        external.push({ source: decodeXml(source), firstGid: xmlNumber(match[0], 'firstgid', 1) });
+    }
+    return external;
+}
+
+async function tilemapExternalRanges(row: AssetRow, content: string, ranges: Array<{ firstGid: number, tileCount: number }>): Promise<string[]> {
+    const unverified: string[] = [];
+    const baseDir = typeof row.file === 'string' ? path.dirname(row.file) : '';
+    for (const tileset of tilemapExternalTilesets(content).slice(0, 32)) {
+        if (!baseDir) { unverified.push(tileset.source); continue; }
+        try {
+            const resolved = path.resolve(baseDir, tileset.source);
+            const relative = path.relative(baseDir, resolved);
+            if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) { unverified.push(tileset.source); continue; }
+            const stat = await fs.stat(resolved);
+            if (!stat.isFile() || stat.size > SERIALIZED_LIMIT) { unverified.push(tileset.source); continue; }
+            const externalRange = tilemapGidRanges(await fs.readFile(resolved, 'utf8'))[0];
+            if (!externalRange) { unverified.push(tileset.source); continue; }
+            ranges.push({ firstGid: tileset.firstGid, tileCount: externalRange.tileCount });
+        } catch {
+            unverified.push(tileset.source);
+        }
+    }
+    return unverified;
+}
+
 function tilemapDimensionIssues(content: string): Array<Record<string, unknown>> {
     const mapTag = content.match(XML_TAG_RE('map'))?.[0] ?? '';
     const mapWidth = xmlNumber(mapTag, 'width');
@@ -501,7 +532,7 @@ export class AdvancedCapabilityTools {
     async tilemapLayerEdit(args: { reference: IInstanceReference, path: string, value: unknown }): Promise<Record<string, unknown>> { return this.tilemapSourceEdit(args); }
     @utcpTool('tilemapObjectEdit', 'Edit one imported TMX object attribute and verify source/reimport read-back.', { type: 'object', properties: { reference: InstanceReferenceSchema, path: { type: 'string', pattern: '^objects\\.' }, value: {} }, required: ['reference', 'path', 'value'] }, { type: 'object', properties: { reference: { type: 'object' }, path: { type: 'string' }, changed: { type: 'boolean' }, previous: {}, readBack: {}, persisted: { type: 'boolean' }, source: { type: 'object' } }, required: ['reference', 'path', 'changed', 'readBack', 'persisted', 'source'] }, 'POST', ['tilemap', 'object', 'edit'])
     async tilemapObjectEdit(args: { reference: IInstanceReference, path: string, value: unknown }): Promise<Record<string, unknown>> { return this.tilemapSourceEdit(args); }
-    @utcpTool('tilemapValidate', 'Validate imported TMX tilemap UUID references, layer dimensions, and tile gid ranges.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, valid: { type: 'boolean' }, missingReferences: { type: 'array' }, gidIssues: { type: 'array' }, dimensionIssues: { type: 'array' }, gidRangeVerified: { type: 'boolean' }, checkedNodes: { type: 'integer' }, source: { type: 'object' } }, required: ['reference', 'valid', 'missingReferences', 'gidIssues', 'dimensionIssues', 'gidRangeVerified', 'checkedNodes', 'source'] }, 'GET', ['tilemap', 'validate', 'references', 'gids', 'dimensions'])
+    @utcpTool('tilemapValidate', 'Validate imported TMX tilemap UUID references, layer dimensions, and tile gid ranges (inline and external tilesets).', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, valid: { type: 'boolean' }, missingReferences: { type: 'array' }, gidIssues: { type: 'array' }, dimensionIssues: { type: 'array' }, gidRangeVerified: { type: 'boolean' }, unverifiedTilesets: { type: 'array' }, checkedNodes: { type: 'integer' }, source: { type: 'object' } }, required: ['reference', 'valid', 'missingReferences', 'gidIssues', 'dimensionIssues', 'gidRangeVerified', 'unverifiedTilesets', 'checkedNodes', 'source'] }, 'GET', ['tilemap', 'validate', 'references', 'gids', 'dimensions'])
     async tilemapValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
         const row = await resolveAsset(args.reference);
         if (!/\.tmx$/i.test(row.url)) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Tilemap validation requires an imported .tmx asset, got ${row.url}.` });
@@ -510,12 +541,13 @@ export class AdvancedCapabilityTools {
         const references = refs(source.content);
         const missingReferences = references.filter((id) => !known.has(id)).map((id) => ({ id }));
         const inventory = tilemapInventory(source.content, MAX_ITEMS);
-        const gids = tilemapDataGids(source.content);
         const ranges = tilemapGidRanges(source.content);
+        const unverifiedTilesets = await tilemapExternalRanges(row, source.content, ranges);
+        const gids = tilemapDataGids(source.content);
         const gidIssues = ranges.length === 0 ? [] : gids.filter(({ gid }) => !ranges.some((range) => gid >= range.firstGid && gid < range.firstGid + range.tileCount)).map(({ gid, layer }) => ({ gid, layer }));
         const dimensionIssues = tilemapDimensionIssues(source.content);
         const valid = missingReferences.length === 0 && gidIssues.length === 0 && dimensionIssues.length === 0;
-        return { reference: { id: row.uuid, type: row.type ?? 'cc.TiledMapAsset' }, valid, missingReferences, gidIssues, dimensionIssues, gidRangeVerified: ranges.length > 0, checkedNodes: inventory.layers.length + inventory.objectGroups.length, source: { url: row.url, sha256: source.hash, references } };
+        return { reference: { id: row.uuid, type: row.type ?? 'cc.TiledMapAsset' }, valid, missingReferences, gidIssues, dimensionIssues, gidRangeVerified: ranges.length > 0 && unverifiedTilesets.length === 0, unverifiedTilesets, checkedNodes: inventory.layers.length + inventory.objectGroups.length, source: { url: row.url, sha256: source.hash, references } };
     }
 
     @utcpTool('spriteAtlasConfigure', 'Configure a bounded sprite atlas importer setting and verify generated library output.', { type: 'object', properties: { reference: InstanceReferenceSchema, presetId: { type: 'string', minLength: 1, maxLength: 128 }, maxWidth: { type: 'integer', minimum: 1, maximum: 8192 }, maxHeight: { type: 'integer', minimum: 1, maximum: 8192 } }, required: ['reference', 'presetId'] }, { type: 'object', properties: { reference: { type: 'object' }, changed: { type: 'boolean' }, generatedOutputs: { type: 'array' }, sourceSha256: { type: 'string' }, persisted: { type: 'boolean' } }, required: ['reference', 'changed', 'generatedOutputs', 'sourceSha256', 'persisted'] }, 'POST', ['sprite', 'atlas', 'configure'])
