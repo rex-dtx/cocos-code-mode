@@ -3,7 +3,6 @@
   "outcome": "blocked",
   "attemptedAt": "2026-09-20",
   "cohortId": "D1-cohort-20260920-a",
-  "attempt": 1,
   "artifact": {
     "version": "2.0.0-dev.a73ec37",
     "commit": "14152bf",
@@ -26,6 +25,7 @@
   "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
   "sceneUuid": "80dddede-15e3-4d8e-8f37-0f1263a0867c",
   "workflow": "tests/live/runtime-session-workflow.test.js (unchanged)",
+  "step": "runtimeSessionLifecycle { operation: 'start', targetKind: 'game-view' }",
   "startState": {
     "state": "stop",
     "sceneUuid": "",
@@ -33,39 +33,39 @@
     "ready": true,
     "platform": "gameView"
   },
-  "step": "runtimeSessionLifecycle { operation: 'start', targetKind: 'game-view' }",
-  "dispatchResult": "accepted — dispatchGameViewLifecycle returned true (no UNSUPPORTED_RUNTIME_TRANSPORT); preview never became enabled",
-  "terminalNativeState": {
-    "state": "stop",
-    "sceneUuid": "",
-    "enabled": false,
-    "ready": true,
-    "platform": "gameView"
-  },
-  "elapsedMs": 30055,
-  "deadlineMs": 30000,
-  "failureCode": "RUNTIME_STATE_TIMEOUT",
-  "failureStatus": 409,
+  "attempts": [
+    {
+      "attempt": 1,
+      "editorScene": { "sceneReady": false, "busyScene": true, "observedAcross": "3 probes over 60s, unchanged" },
+      "dispatchResult": "accepted — dispatchGameViewLifecycle returned true (no UNSUPPORTED_RUNTIME_TRANSPORT)",
+      "terminalNativeState": { "state": "stop", "sceneUuid": "", "enabled": false, "ready": true, "platform": "gameView" },
+      "elapsedMs": 30055,
+      "deadlineMs": 30000,
+      "failureCode": "RUNTIME_STATE_TIMEOUT",
+      "failureStatus": 409
+    },
+    {
+      "attempt": 2,
+      "editorScene": { "sceneReady": true, "busyScene": false },
+      "dispatchResult": "accepted — dispatchGameViewLifecycle returned true (no UNSUPPORTED_RUNTIME_TRANSPORT)",
+      "terminalNativeState": { "state": "stop", "sceneUuid": "", "enabled": false, "ready": true, "platform": "gameView" },
+      "elapsedMs": 30047,
+      "deadlineMs": 30000,
+      "failureCode": "RUNTIME_STATE_TIMEOUT",
+      "failureStatus": 409
+    }
+  ],
   "failureMessage": "Preview operation exceeded its deadline; any in-flight Creator request may still complete.",
   "failureRecovery": "Inspect the preview before retrying a mutation.",
-  "classification": "editor-readiness precondition, not a proven source defect",
+  "classification": "game-view lifecycle dispatch is accepted but ineffective. Attempt 1 was taken while the editor scene was still loading; attempt 2 repeated the identical failure after scene.ready=true and busy.scene=false, so editor readiness is NOT the cause. The dispatch helper returns true as soon as a named previewSetPlay function exists and calls it fire-and-forget, so an API mismatch or a rejected call is not observable from the transport boundary alone — a source defect is therefore still unproven.",
   "blockingEvidence": {
-    "source": "GET /tools/editorState",
-    "sceneReady": false,
-    "busyScene": true,
-    "tasksRunning": 0,
-    "inboxPending": false,
-    "observedAcross": "3 probes over 60s, unchanged"
+    "dispatchShape": "LIFECYCLE_DISPATCH returns true when either view.previewSetPlay or client.previewSetPlay is a function; the call is issued with void and its settlement is never awaited.",
+    "previewNeverEnabled": "HOST_INSPECTION reports enabled=false, ready=true, platform=gameView before and after the dispatch.",
+    "editorSceneNotCausal": "Attempt 2 with scene.ready=true reproduced the same 30s RUNTIME_STATE_TIMEOUT."
   },
-  "handshake": {
-    "source": "GET /tools/editorHandshake",
-    "editorVersion": "3.7.3",
-    "probeStatus": "responsive",
-    "sceneReady": false
-  },
-  "cleanup": "preview left in stop/enabled=false; no session created; no leaked handles",
+  "cleanup": "preview left in stop/enabled=false after both attempts; no session created; no leaked handles",
   "phaseContract": "Do not execute until the parent explicitly reopens runtime scope with a fresh artifact/fixture decision; fix transport only if a source defect is proven; the 20-iteration gate passes or the phase remains blocked with all failures retained.",
-  "actionTaken": "Reproduced with the unchanged live test (step 1) and classified the failure (step 2). Step 3 precondition not met, so no transport/state-machine source change was made.",
-  "nextRequirement": "Editor scene must reach ready=true / busy.scene=false (Creator finished loading the project scene) before the 20-iteration start→observe→wait→assert→stop cohort can begin; otherwise an alternate exact fixture/project with a ready scene is required.",
+  "actionTaken": "Reproduced with the unchanged live test (step 1) and classified the failure (step 2). Step 3 precondition (proven source defect) is not met, so no transport/state-machine source change was made.",
+  "nextRequirement": "Either prove the 3.7.3 game-view start API from inside the renderer host (observe the settled result of previewSetPlay and the preview client state), or supply a fixture/artifact where game-view start is known-good, before the 20-iteration start→observe→wait→assert→stop cohort can begin.",
   "note": "The plan anticipated a stop race; the observed blocker is at start. No runtime credit is granted from this attempt."
 }
