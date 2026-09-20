@@ -3908,6 +3908,36 @@
       "limitations": [
         "Editor-side prefab instantiation only; arbitrary prefab mutation and runtime/Game View behavior are not claimed."
       ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-restore-prefab-node",
+      "state": "complete",
+      "reason": "Creator 3.7.3 exposes full linked-instance restoration through restore-prefab; prefabRestore verifies instance identity and linked source read-back after snapshot.",
+      "routes": [
+        { "tool": "prefabRestore", "file": "source/utcp/tools/advanced-capability-tools.ts" }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-final-prefab-editor-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Full linked-instance restore only; restoring a selectively chosen nested node is not claimed."
+      ]
+    },
+    {
+      "workflowId": "design-prefab.cocos-mcp-revert-prefab",
+      "state": "complete",
+      "reason": "prefabRevertOverrides delegates full-instance restore to Creator 3.7.3 and verifies linked source and instance read-back.",
+      "routes": [
+        { "tool": "prefabRevertOverrides", "file": "source/utcp/tools/advanced-capability-tools.ts" }
+      ],
+      "evidenceArtifacts": [
+        "reports/authoring-prefab-wave-20260920.json",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Selective path revert remains unsupported and fails closed with UNSUPPORTED_SELECTIVE_REVERT."
+      ]
     }
   ]
 }
