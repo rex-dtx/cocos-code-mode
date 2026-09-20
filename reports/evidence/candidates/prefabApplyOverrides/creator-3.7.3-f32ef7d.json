@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "prefabApplyOverrides",
+  "creator": "3.7.3",
+  "buildCommit": "f32ef7d",
+  "artifact": "extensions/cc-bridge-3x dist (clean build of f32ef7d)",
+  "positiveWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02",
+    "iterations": 5,
+    "result": "built an owned prefab asset inside db://assets from a primitive node, applied a non-transform instance override, and confirmed the prefab source hash changed and the instance no longer carried a pending override"
+  },
+  "negativeWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02",
+    "iterations": 5,
+    "result": "an unknown instance reference fails closed with 404 TARGET_NOT_FOUND"
+  },
+  "persistence": "prefab source sha256 before/after plus a second instantiated instance of the same prefab observing the flushed value",
+  "cleanup": "instance and clone removed from the scene, owned prefab asset deleted through assetOperate, and the scene snapshot before ending each iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64516",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": false
+  },
+  "qualified": true
+}

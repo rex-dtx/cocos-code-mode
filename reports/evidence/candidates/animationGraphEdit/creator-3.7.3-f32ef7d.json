@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "animationGraphEdit",
+  "creator": "3.7.3",
+  "buildCommit": "f32ef7d",
+  "artifact": "extensions/cc-bridge-3x dist (clean build of f32ef7d)",
+  "positiveWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V01",
+    "iterations": 5,
+    "result": "created a native .animgraph through animationGraphCreate, applied add_node/add_transition through animationGraphEdit, and confirmed the persisted graph through the returned read-back and an independent animationGraphInspect"
+  },
+  "negativeWitness": {
+    "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V01",
+    "iterations": 5,
+    "result": "duplicate node id 409 DUPLICATE_NODE_ID, unknown node 404 NODE_NOT_FOUND and a 33-operation batch 400 maxItems - and the persisted graph still held 2 nodes and 1 transition afterwards"
+  },
+  "persistence": "asset-db save-asset followed by a re-read of the serialized asset and an independent animationGraphInspect on the same identity",
+  "cleanup": "created graph deleted through assetOperate in the finally block on every iteration",
+  "environment": {
+    "platform": "windows-x64",
+    "endpoint": "http://localhost:64516",
+    "project": "G:/_ws/cc-fws/cc30-new-all-in-one",
+    "artifactDirty": false
+  },
+  "qualified": true
+}

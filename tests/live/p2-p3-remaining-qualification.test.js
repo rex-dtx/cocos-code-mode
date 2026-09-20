@@ -1,7 +1,69 @@
 'use strict';
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const { getJson, postTool, repeatTestcase, healthCheck } = require('../helpers/utcp-client');
+
+const IDENTITY_MATRIX = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+// Minimal skinned glTF 2.0 with an embedded buffer. Variant content is driven only by the
+// joint names, which is what animationRetargetValidate compares.
+function buildSkinnedGltf(jointNames) {
+  const jointCount = jointNames.length;
+  const parts = [];
+  let offset = 0;
+  const add = (typedArray) => {
+    const bytes = Buffer.from(typedArray.buffer, typedArray.byteOffset, typedArray.byteLength);
+    const start = offset;
+    parts.push(bytes);
+    offset += bytes.length;
+    const padded = (offset + 3) & ~3;
+    if (padded > offset) { parts.push(Buffer.alloc(padded - offset)); offset = padded; }
+    return start;
+  };
+  const positionOffset = add(Float32Array.from([0, 0, 0, 1, 0, 0, 0, 1, 0]));
+  const jointsOffset = add(new Uint8Array(12));
+  const weightsOffset = add(Float32Array.from([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]));
+  const indicesOffset = add(Uint16Array.from([0, 1, 2]));
+  const inverseBind = new Float32Array(jointCount * 16);
+  for (let joint = 0; joint < jointCount; joint++) inverseBind.set(IDENTITY_MATRIX, joint * 16);
+  const ibmOffset = add(inverseBind);
+  const buffer = Buffer.concat(parts);
+
+  const nodes = [{ name: 'Armature', children: [1] }];
+  const skeletonJoints = [];
+  jointNames.forEach((name, index) => {
+    skeletonJoints.push(index + 1);
+    nodes.push({ name, ...(index + 1 < jointCount ? { children: [index + 2] } : {}), translation: [0, 1, 0] });
+  });
+  nodes.push({ name: 'Mesh', mesh: 0, skin: 0 });
+
+  return {
+    asset: { version: '2.0', generator: 'ccb3x-retarget-witness' },
+    scene: 0,
+    scenes: [{ nodes: [0, jointCount + 1] }],
+    nodes,
+    skins: [{ joints: skeletonJoints, inverseBindMatrices: 0, skeleton: skeletonJoints[0] }],
+    meshes: [{ primitives: [{ attributes: { POSITION: 1, JOINTS_0: 2, WEIGHTS_0: 3 }, indices: 4 }] }],
+    accessors: [
+      { bufferView: 4, componentType: 5126, count: jointCount, type: 'MAT4' },
+      { bufferView: 0, componentType: 5126, count: 3, type: 'VEC3', min: [0, 0, 0], max: [1, 1, 0] },
+      { bufferView: 1, componentType: 5121, count: 3, type: 'VEC4' },
+      { bufferView: 2, componentType: 5126, count: 3, type: 'VEC4' },
+      { bufferView: 3, componentType: 5123, count: 3, type: 'SCALAR' },
+    ],
+    bufferViews: [
+      { buffer: 0, byteOffset: positionOffset, byteLength: 36 },
+      { buffer: 0, byteOffset: jointsOffset, byteLength: 12 },
+      { buffer: 0, byteOffset: weightsOffset, byteLength: 48 },
+      { buffer: 0, byteOffset: indicesOffset, byteLength: 6 },
+      { buffer: 0, byteOffset: ibmOffset, byteLength: jointCount * 64 },
+    ],
+    buffers: [{ byteLength: buffer.length, uri: `data:application/octet-stream;base64,${buffer.toString('base64')}` }],
+  };
+}
 
 // Live witnesses for the P2/P3 rows that were implemented and unit-tested but had no
 // exact-artifact qualification evidence. Fixtures are created inside db://assets and
@@ -201,28 +263,53 @@ describe('live: P2/P3 remaining candidate qualification witnesses', () => {
 
   it('compares skeleton and clip metadata for retarget inputs', async (t) => {
     if (skipIfDown(t)) return;
-    await repeatTestcase('P23-V03', async () => {
-      const models = await getJson('/tools/assetQuery?importer=model&limit=20');
-      const assets = Array.isArray(models.body?.assets) ? models.body.assets : [];
-      if (models.status !== 200 || assets.length < 2) {
-        return { status: 'SKIP', reason: 'Active project has fewer than two imported model assets with skeleton metadata.' };
-      }
-      const [source, target] = assets;
-      const result = await postTool('animationRetargetValidate', {
-        sourceReference: { id: source.uuid },
-        targetReference: { id: target.uuid },
+    await repeatTestcase('P23-V03', async ({ iteration }) => {
+      const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-retarget-'));
+      const labelA = `__ccb3x_retarget_a_${process.pid}_${iteration}__`;
+      const labelB = `__ccb3x_retarget_b_${process.pid}_${iteration}__`;
+      const fileA = path.join(root, `${labelA}.gltf`);
+      const fileB = path.join(root, `${labelB}.gltf`);
+      fs.writeFileSync(fileA, JSON.stringify(buildSkinnedGltf(['boneA', 'boneB'])), 'utf8');
+      fs.writeFileSync(fileB, JSON.stringify(buildSkinnedGltf(['boneA', 'boneB', 'boneC'])), 'utf8');
+      const imported = await postTool('assetBatchImport', {
+        items: [
+          { sourceFilesystemPath: fileA, targetAssetPath: `db://assets/${labelA}.gltf` },
+          { sourceFilesystemPath: fileB, targetAssetPath: `db://assets/${labelB}.gltf` },
+        ],
       });
-      assert.equal(result.status, 200, JSON.stringify(result.body));
-      assert.equal(result.body.automaticRetargeting, false);
-      assert.equal(result.body.source.jointCount > 0, true);
-      assert.equal(result.body.target.jointCount > 0, true);
-      assert.equal(Array.isArray(result.body.issues), true);
+      assert.equal(imported.status, 200, JSON.stringify(imported.body));
+      const [twoJoint, threeJoint] = (imported.body.outcomes ?? []).map((outcome) => outcome.reference);
+      assert.equal(typeof twoJoint?.id, 'string');
+      assert.equal(typeof threeJoint?.id, 'string');
+      const query = (source, target) => `/tools/animationRetargetValidate?sourceReference%5Bid%5D=${encodeURIComponent(source)}&targetReference%5Bid%5D=${encodeURIComponent(target)}`;
+      try {
+        // Identical skeletons are compatible and never claim automatic retargeting.
+        const identical = await getJson(query(twoJoint.id, twoJoint.id));
+        assert.equal(identical.status, 200, JSON.stringify(identical.body));
+        assert.equal(identical.body.valid, true);
+        assert.equal(identical.body.automaticRetargeting, false);
+        assert.equal(identical.body.source.jointCount > 0, true);
+        assert.equal(identical.body.source.jointCount, identical.body.target.jointCount);
 
-      const unsupported = await postTool('animationRetargetValidate', {
-        sourceReference: { id: source.uuid },
-        targetReference: { id: '__missing_model__' },
-      });
-      assert.ok([404, 422].includes(unsupported.status), JSON.stringify(unsupported.body));
+        // A smaller source loses joints; a larger target adds them.
+        const extra = await getJson(query(twoJoint.id, threeJoint.id));
+        assert.equal(extra.status, 200, JSON.stringify(extra.body));
+        assert.equal(extra.body.valid, false);
+        assert.deepEqual(extra.body.issues.map((issue) => issue.code), ['TARGET_JOINTS_EXTRA']);
+
+        const missing = await getJson(query(threeJoint.id, twoJoint.id));
+        assert.equal(missing.status, 200, JSON.stringify(missing.body));
+        assert.equal(missing.body.valid, false);
+        assert.deepEqual(missing.body.issues.map((issue) => issue.code), ['TARGET_JOINTS_MISSING']);
+
+        // An unknown reference fails closed before any comparison.
+        const unknown = await getJson(query(twoJoint.id, '__missing_model__'));
+        assert.equal(unknown.status, 404, JSON.stringify(unknown.body));
+        assert.equal(unknown.body.code, 'TARGET_NOT_FOUND');
+      } finally {
+        for (const reference of [twoJoint, threeJoint]) await postTool('assetOperate', { operation: 'delete', reference });
+        fs.rmSync(root, { recursive: true, force: true });
+      }
     });
   });
 });
