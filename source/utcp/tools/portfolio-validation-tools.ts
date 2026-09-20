@@ -72,15 +72,35 @@ function metadataNames(value: unknown, keys: string[]): string[] {
     return [];
 }
 
-function animationMetadata(asset: any): { joints: string[], clips: string[], skeletonId?: string } {
+const MAX_SKELETON_METADATA_BYTES = 5 * 1024 * 1024;
+
+async function readSkeletonJointNames(asset: any): Promise<string[]> {
+    const subAssets = asset?.subAssets && typeof asset.subAssets === 'object' ? Object.values(asset.subAssets) : [];
+    for (const subAsset of subAssets as any[]) {
+        if (subAsset?.importer !== 'gltf-skeleton' && !/skeleton/i.test(String(subAsset?.type ?? subAsset?.url ?? subAsset?.file ?? ''))) continue;
+        if (typeof subAsset?.file !== 'string') continue;
+        try {
+            const stat = await fs.stat(subAsset.file);
+            if (stat.size > MAX_SKELETON_METADATA_BYTES) continue;
+            const parsed = JSON.parse(await fs.readFile(subAsset.file, 'utf8'));
+            const joints = metadataNames(parsed, ['_joints', 'joints', 'jointNames', 'bones', 'boneNames']);
+            if (joints.length) return joints;
+        } catch {
+            // Importer output may be unavailable while Creator is still reimporting.
+        }
+    }
+    return [];
+}
+
+async function animationMetadata(asset: any): Promise<{ joints: string[], clips: string[], skeletonId?: string }> {
     const userData = asset?.meta?.userData;
     const candidates = [asset?.skeleton, asset?.skeletonData, userData?.skeleton, userData, asset];
     let joints: string[] = [];
     let clips: string[] = [];
     let skeletonId: string | undefined;
     for (const candidate of candidates) {
-        if (!joints.length) joints = metadataNames(candidate, ['joints', 'jointNames', 'bones', 'boneNames']);
-        if (!clips.length) clips = metadataNames(candidate, ['clips', 'clipNames', 'animations', 'animationNames']);
+        if (!joints.length) joints = metadataNames(candidate, ['_joints', 'joints', 'jointNames', 'bones', 'boneNames']);
+        if (!clips.length) clips = metadataNames(candidate, ['clips', 'clipNames', 'animations', 'animationNames', 'animationImportSettings']);
         if (!skeletonId && candidate && typeof candidate === 'object') {
             for (const key of ['skeletonId', 'skeletonUuid', 'skeletonUUID']) {
                 if (typeof (candidate as any)[key] === 'string' && (candidate as any)[key]) {
@@ -88,8 +108,13 @@ function animationMetadata(asset: any): { joints: string[], clips: string[], ske
                     break;
                 }
             }
+            if (!skeletonId) {
+                const skeletons = (candidate as any).assetFinder?.skeletons;
+                if (Array.isArray(skeletons) && typeof skeletons[0] === 'string' && skeletons[0]) skeletonId = skeletons[0];
+            }
         }
     }
+    if (!joints.length) joints = await readSkeletonJointNames(asset);
     return { joints, clips, ...(skeletonId ? { skeletonId } : {}) };
 }
 
@@ -265,10 +290,10 @@ export class PortfolioValidationTools {
         if (!args?.sourceReference?.id || !args?.targetReference?.id) invalid('sourceReference and targetReference are required.');
         const sourceInfo = await info(args.sourceReference);
         const targetInfo = await info(args.targetReference);
-        const source = animationMetadata(sourceInfo);
-        const target = animationMetadata(targetInfo);
+        const source = await animationMetadata(sourceInfo);
+        const target = await animationMetadata(targetInfo);
         const clipInfo = args.clipReference ? await info(args.clipReference) : undefined;
-        const clip = clipInfo ? animationMetadata(clipInfo) : undefined;
+        const clip = clipInfo ? await animationMetadata(clipInfo) : undefined;
         if (!source.joints.length || !target.joints.length) {
             throw new ToolError({
                 code: 'UNSUPPORTED_METADATA',
@@ -465,4 +490,65 @@ export class PortfolioValidationTools {
         if (!settings || typeof settings !== 'object') issues.push({ code: 'SETTINGS_UNAVAILABLE' });
         return { valid: issues.length === 0, reference: inspected.reference, importer: inspected.importer, issues, outputs };
     }
+    @utcpTool('modelImportOutputsInspect', 'Inspect bounded imported model mesh, skeleton, animation, and scene outputs with stable identities.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxOutputs: { type: 'integer', minimum: 1, maximum: 128, default: 64 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, outputs: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'outputs', 'total', 'truncated'] }, 'GET', ['model', 'import', 'outputs', 'skeleton', 'animation'])
+    async modelImportOutputsInspect(args: { reference: IInstanceReference, maxOutputs?: number }): Promise<Record<string, unknown>> {
+        const asset = await info(args.reference);
+        if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' });
+        const maxOutputs = args.maxOutputs ?? 64;
+        if (!Number.isInteger(maxOutputs) || maxOutputs < 1 || maxOutputs > 128) invalid('maxOutputs must be an integer from 1 to 128.');
+        const raw = asset.subAssets && typeof asset.subAssets === 'object' ? Object.values(asset.subAssets as Record<string, any>) : [];
+        const outputs = raw.slice(0, maxOutputs).map((output: any) => ({ uuid: output.uuid ?? null, url: output.url ?? null, type: output.type ?? null, importer: output.importer ?? null, name: output.name ?? null, userData: output.userData ?? null }));
+        return { reference: assetReference(asset, args.reference.id), outputs, total: raw.length, truncated: raw.length > outputs.length };
+    }
+
+    @utcpTool('modelSkeletonInspect', 'Inspect bounded model skeleton joint paths and skeleton identity from imported model metadata.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxJoints: { type: 'integer', minimum: 1, maximum: 256, default: 128 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, skeletonId: { type: ['string', 'null'] }, joints: { type: 'array' }, totalJoints: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'skeletonId', 'joints', 'totalJoints', 'truncated'] }, 'GET', ['model', 'skeleton', 'joints', 'inspect'])
+    async modelSkeletonInspect(args: { reference: IInstanceReference, maxJoints?: number }): Promise<Record<string, unknown>> {
+        const asset = await info(args.reference);
+        if (!/fbx|gltf|model/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model asset.' });
+        const maxJoints = args.maxJoints ?? 128;
+        if (!Number.isInteger(maxJoints) || maxJoints < 1 || maxJoints > 256) invalid('maxJoints must be an integer from 1 to 256.');
+        const metadata = await animationMetadata(asset);
+        if (!metadata.joints.length) throw new ToolError({ code: 'UNSUPPORTED_METADATA', status: 422, message: `Model ${args.reference.id} exposes no imported skeleton joint metadata.` });
+        return { reference: assetReference(asset, args.reference.id), skeletonId: metadata.skeletonId ?? null, joints: metadata.joints.slice(0, maxJoints), totalJoints: metadata.joints.length, truncated: metadata.joints.length > maxJoints };
+    }
+
+    @utcpTool('modelSkeletonValidate', 'Validate bounded imported model skeleton identity and joint uniqueness.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, skeletonId: { type: ['string', 'null'] }, jointCount: { type: 'integer' }, issues: { type: 'array' } }, required: ['valid', 'reference', 'skeletonId', 'jointCount', 'issues'] }, 'GET', ['model', 'skeleton', 'validate', 'joints'])
+    async modelSkeletonValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.modelSkeletonInspect({ reference: args.reference, maxJoints: 256 });
+        const joints = inspected.joints as string[];
+        const issues: Array<Record<string, unknown>> = [];
+        const seen = new Set<string>();
+        for (const [index, joint] of joints.entries()) {
+            if (!joint) issues.push({ code: 'EMPTY_JOINT_PATH', index });
+            else if (seen.has(joint)) issues.push({ code: 'DUPLICATE_JOINT_PATH', index, joint });
+            else seen.add(joint);
+        }
+        return { valid: issues.length === 0, reference: inspected.reference, skeletonId: inspected.skeletonId, jointCount: inspected.totalJoints, issues };
+    }
+
+    @utcpTool('modelAnimationInspect', 'Inspect bounded imported model animation clip metadata and skeleton identity.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxClips: { type: 'integer', minimum: 1, maximum: 256, default: 128 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, skeletonId: { type: ['string', 'null'] }, clips: { type: 'array' }, totalClips: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'skeletonId', 'clips', 'totalClips', 'truncated'] }, 'GET', ['model', 'animation', 'clips', 'inspect'])
+    async modelAnimationInspect(args: { reference: IInstanceReference, maxClips?: number }): Promise<Record<string, unknown>> {
+        const asset = await info(args.reference);
+        if (!/fbx|gltf|model|animation/i.test(String(asset.importer ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: 'Reference is not a model or imported model animation asset.' });
+        const maxClips = args.maxClips ?? 128;
+        if (!Number.isInteger(maxClips) || maxClips < 1 || maxClips > 256) invalid('maxClips must be an integer from 1 to 256.');
+        const metadata = await animationMetadata(asset);
+        return { reference: assetReference(asset, args.reference.id), skeletonId: metadata.skeletonId ?? null, clips: metadata.clips.slice(0, maxClips), totalClips: metadata.clips.length, truncated: metadata.clips.length > maxClips };
+    }
+
+    @utcpTool('modelAnimationValidate', 'Validate bounded imported model animation clip names and skeleton identity.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, skeletonId: { type: ['string', 'null'] }, clipCount: { type: 'integer' }, issues: { type: 'array' } }, required: ['valid', 'reference', 'skeletonId', 'clipCount', 'issues'] }, 'GET', ['model', 'animation', 'validate', 'clips'])
+    async modelAnimationValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.modelAnimationInspect({ reference: args.reference, maxClips: 256 });
+        const clips = inspected.clips as string[];
+        const issues: Array<Record<string, unknown>> = [];
+        const seen = new Set<string>();
+        for (const [index, clip] of clips.entries()) {
+            if (!clip) issues.push({ code: 'EMPTY_CLIP_NAME', index });
+            else if (seen.has(clip)) issues.push({ code: 'DUPLICATE_CLIP_NAME', index, clip });
+            else seen.add(clip);
+        }
+        if (!clips.length) issues.push({ code: 'CLIP_METADATA_UNAVAILABLE' });
+        return { valid: issues.length === 0, reference: inspected.reference, skeletonId: inspected.skeletonId, clipCount: inspected.totalClips, issues };
+    }
+
 }

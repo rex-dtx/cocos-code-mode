@@ -62,6 +62,40 @@ describe('Spine scene inspection', () => {
     assert.deepEqual(finding.required.slice(0, 6), ['node', 'component', 'defaultAnimation', 'animation', 'timeScale', 'loop']);
     assert.deepEqual(tool.outputs.required, ['nodeUuid', 'findings', 'total', 'truncated']);
   });
+  it('registers Spine scene batch inspection', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineSceneBatchInspect'));
+  });
+  it('registers Spine asset to scene usage linkage', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineAssetSceneUsageInspect'));
+  });
+  it('registers Spine asset scene usage validation', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineAssetSceneUsageValidate'));
+  });
+  it('registers Spine asset scene usage report', () => {
+    const names = ToolRegistry.getTools().map(({ tool }) => tool.name);
+    assert.ok(names.includes('spineAssetSceneUsageReport'));
+  });
+  it('reports bounded Spine asset usage batches without aborting on one failure', async () => {
+    const tools = new AnimationTools();
+    const calls = [];
+    tools.spineAssetSceneUsageReport = async ({ assetReference, limit }) => {
+      calls.push({ id: assetReference.id, limit });
+      if (assetReference.id === 'broken') throw new Error('usage unavailable');
+      return { assetReference, entries: [], total: 2, liveCount: 2, failedCount: 0, truncated: assetReference.id === 'truncated' };
+    };
+    const result = await tools.spineAssetSceneUsageBatchReport({ assetReferences: [{ id: 'ok' }, { id: 'broken' }, { id: 'truncated' }], limitPerAsset: 4 });
+    assert.equal(result.succeeded, 2);
+    assert.equal(result.failed, 1);
+    assert.equal(result.liveCount, 4);
+    assert.equal(result.partial, true);
+    assert.equal(result.truncated, true);
+    assert.equal(result.outcomes[1].ok, false);
+    assert.equal(result.outcomes[1].error.message, 'usage unavailable');
+    assert.deepEqual(calls, [{ id: 'ok', limit: 4 }, { id: 'broken', limit: 4 }, { id: 'truncated', limit: 4 }]);
+  });
   it('returns bounded runtime animation tracks from a live Skeleton component', async () => {
     const previousCc = global.cc;
     class Skeleton {}

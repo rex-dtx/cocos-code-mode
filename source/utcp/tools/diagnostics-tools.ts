@@ -1,4 +1,5 @@
 import { utcpTool } from '../decorators';
+import { ToolError } from '../tool-error';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs-extra';
@@ -141,6 +142,53 @@ export class DiagnosticsTools {
             const failure = createTscFailureDiagnostic(output, readCommandErrorField(err, 'message'), tsconfig);
             return { ok: false, errorCount: failure.length, diagnostics: failure };
         }
+    }
+
+    @utcpTool(
+        'scriptDiagnosticsBatch',
+        'Run bounded TypeScript diagnostics across multiple project tsconfig paths with per-project outcomes.',
+        {
+            type: 'object', additionalProperties: false,
+            properties: { tsconfigPaths: { type: 'array', minItems: 1, maxItems: 16, items: { type: 'string', maxLength: 512 } } },
+            required: ['tsconfigPaths'],
+        },
+        { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, hasErrors: { type: 'boolean' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'hasErrors', 'partial'] },
+        'POST', ['diagnostics', 'typescript', 'compile', 'batch', 'script']
+    )
+    async scriptDiagnosticsBatch(args: { tsconfigPaths: string[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.tsconfigPaths) || args.tsconfigPaths.length < 1 || args.tsconfigPaths.length > 16 || args.tsconfigPaths.some((path) => typeof path !== 'string' || !path.trim() || path.length > 512)) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'tsconfigPaths must contain 1 to 16 non-empty paths of at most 512 characters.' });
+        }
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, tsconfigPath] of args.tsconfigPaths.entries()) {
+            try {
+                outcomes.push({ index, tsconfigPath, ok: true, result: await this.runScriptDiagnostics({ tsconfigPath }) });
+            } catch (error) {
+                outcomes.push({ index, tsconfigPath, ok: false, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const hasErrors = outcomes.some((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.ok === false);
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, hasErrors, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool(
+        'scriptDiagnosticContextBatch',
+        'Run bounded TypeScript diagnostics with source snippets across multiple project tsconfig paths.',
+        { type: 'object', additionalProperties: false, properties: { tsconfigPaths: { type: 'array', minItems: 1, maxItems: 16, items: { type: 'string', maxLength: 512 } }, contextLines: { type: 'integer', minimum: 0, maximum: 20, default: 3 }, limit: { type: 'integer', minimum: 1, maximum: 50, default: 10 }, verbose: { type: 'boolean', default: false } }, required: ['tsconfigPaths'] },
+        { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, hasErrors: { type: 'boolean' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'hasErrors', 'partial'] },
+        'POST', ['diagnostics', 'typescript', 'compile', 'batch', 'snippet', 'context']
+    )
+    async scriptDiagnosticContextBatch(args: { tsconfigPaths: string[], contextLines?: number, limit?: number, verbose?: boolean }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.tsconfigPaths) || args.tsconfigPaths.length < 1 || args.tsconfigPaths.length > 16 || args.tsconfigPaths.some((path) => typeof path !== 'string' || !path.trim() || path.length > 512)) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'tsconfigPaths must contain 1 to 16 non-empty paths of at most 512 characters.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, tsconfigPath] of args.tsconfigPaths.entries()) {
+            try { outcomes.push({ index, tsconfigPath, ok: true, result: await this.getScriptDiagnosticContext({ tsconfigPath, contextLines: args.contextLines, limit: args.limit, verbose: args.verbose }) }); }
+            catch (error) { outcomes.push({ index, tsconfigPath, ok: false, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const hasErrors = outcomes.some((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.ok === false);
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, hasErrors, partial: succeeded > 0 && succeeded < outcomes.length };
     }
 
     @utcpTool(

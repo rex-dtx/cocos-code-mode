@@ -12,4 +12,12 @@ describe('TypeScript diagnostics failures', () => {
     assert.equal(diagnostic.code, 'TSCCMD');
     assert.equal(diagnostic.message, 'npx tsc exited with code 1');
   });
+  it('registers bounded script diagnostics batch', () => {
+    const { ToolRegistry } = requireDist('utcp/decorators.js');
+    assert.ok(ToolRegistry.getTools().some(({ tool }) => tool.name === 'scriptDiagnosticsBatch'));
+  });
+  it('registers bounded diagnostic context batch', () => {
+    const { ToolRegistry } = requireDist('utcp/decorators.js');
+    assert.ok(ToolRegistry.getTools().some(({ tool }) => tool.name === 'scriptDiagnosticContextBatch'));
+  });
 });

@@ -51,6 +51,14 @@ describe('typed animation tools', () => {
       else global.Editor = previous;
     }
   });
+  it('registers serialized skeletal animation configuration', () => {
+    const names = new Set(ToolRegistry.getTools().map(({ tool }) => tool.name));
+    assert.ok(names.has('skeletalAnimationConfigure'));
+  });
+  it('registers Spine runtime batch control', () => {
+    const names = new Set(ToolRegistry.getTools().map(({ tool }) => tool.name));
+    assert.ok(names.has('spineRuntimeBatchControl'));
+  });
 
   it('maps typed clip and track edits to native animation operations', async () => {
     const requests = [];

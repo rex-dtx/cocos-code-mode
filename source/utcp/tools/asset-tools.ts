@@ -967,6 +967,278 @@ export class AssetTools {
         };
     }
 
+    @utcpTool('scriptAssetInspect', 'Inspect one imported TypeScript or JavaScript asset with stable class identity, source size, and bounded dependency references.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxDependencies: { type: 'integer', minimum: 1, maximum: 128, default: 64 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, className: { type: ['string', 'null'] }, classId: { type: ['string', 'null'] }, url: { type: 'string' }, importer: { type: 'string' }, bytes: { type: 'integer' }, dependencies: { type: 'array' }, totalDependencies: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'className', 'classId', 'url', 'importer', 'bytes', 'dependencies', 'totalDependencies', 'truncated'] }, 'GET', ['script', 'asset', 'typescript', 'javascript', 'inspect'])
+    async scriptAssetInspect(args: { reference: IInstanceReference, maxDependencies?: number }): Promise<Record<string, unknown>> {
+        const info = await readBackAsset(args.reference.id, 'scriptAssetInspect');
+        if (!['typescript', 'javascript'].includes(String(info.importer ?? '')) && !/\.(?:ts|js)$/i.test(String(info.url ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${args.reference.id} is not an imported script.` });
+        const maxDependencies = args.maxDependencies ?? 64;
+        if (!Number.isInteger(maxDependencies) || maxDependencies < 1 || maxDependencies > 128) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxDependencies must be an integer from 1 to 128.' });
+        const [className, classId, dependencies] = await Promise.all([
+            Editor.Message.request('scene', 'query-script-name', info.uuid).catch(() => null),
+            Editor.Message.request('scene', 'query-script-cid', info.uuid).catch(() => null),
+            Editor.Message.request('asset-db', 'query-asset-dependencies', info.uuid).catch(() => []),
+        ]);
+        const rows = Array.isArray(dependencies) ? dependencies.filter((value): value is string => typeof value === 'string') : [];
+        let bytes = 0;
+        if (typeof info.file === 'string' && info.file) bytes = (await fs.stat(info.file).catch(() => null))?.size ?? 0;
+        return { reference: { id: info.uuid, type: info.type || 'cc.Script' }, className: typeof className === 'string' ? className : null, classId: typeof classId === 'string' ? classId : null, url: info.url || '', importer: info.importer || '', bytes, dependencies: rows.slice(0, maxDependencies), totalDependencies: rows.length, truncated: rows.length > maxDependencies };
+    }
+    @utcpTool('scriptAssetValidate', 'Validate imported script class identity and bounded dependency metadata.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, issues: { type: 'array' }, className: { type: ['string', 'null'] }, classId: { type: ['string', 'null'] } }, required: ['valid', 'reference', 'issues', 'className', 'classId'] }, 'GET', ['script', 'asset', 'validate', 'class'])
+    async scriptAssetValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.scriptAssetInspect({ reference: args.reference, maxDependencies: 128 });
+        const issues: Array<Record<string, unknown>> = [];
+        if (!inspected.className) issues.push({ code: 'SCRIPT_NAME_UNAVAILABLE' });
+        if (!inspected.classId) issues.push({ code: 'SCRIPT_CLASS_ID_UNAVAILABLE' });
+        return { valid: issues.length === 0, reference: inspected.reference, issues, className: inspected.className, classId: inspected.classId };
+    }
+    @utcpTool('scriptDependencyImpactInspect', 'Inspect bounded script dependencies and reverse users with optional asset identity read-back.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: 1000, default: 200 }, resolveAssets: { type: 'boolean', default: true } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, dependencies: { type: 'object' }, users: { type: 'object' } }, required: ['reference', 'dependencies', 'users'] }, 'GET', ['script', 'dependency', 'impact', 'usage'])
+    async scriptDependencyImpactInspect(args: { reference: IInstanceReference, limit?: number, resolveAssets?: boolean }): Promise<Record<string, unknown>> {
+        await this.scriptAssetInspect({ reference: args.reference, maxDependencies: 1 });
+        const [dependencies, users] = await Promise.all([
+            this.assetFindReferences({ direction: 'depends_on', reference: args.reference, assetKind: 'all', resolveUrls: args.resolveAssets !== false, limit: args.limit }),
+            this.assetFindReferences({ direction: 'used_by', reference: args.reference, assetKind: 'all', resolveUrls: args.resolveAssets !== false, limit: args.limit }),
+        ]);
+        return { reference: args.reference, dependencies, users };
+    }
+
+
+
+    @utcpTool('scriptDependencyImpactBatchInspect', 'Inspect bounded dependency and reverse-user impact for multiple imported scripts.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, limit: { type: 'integer', minimum: 1, maximum: 1000, default: 200 }, resolveAssets: { type: 'boolean', default: true } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['script', 'dependency', 'impact', 'batch'])
+    async scriptDependencyImpactBatchInspect(args: { references: IInstanceReference[], limit?: number, resolveAssets?: boolean }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.scriptDependencyImpactInspect({ reference, limit: args.limit, resolveAssets: args.resolveAssets }) });
+            } catch (error) {
+                items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        const truncated = items.some((item) => item.ok === true && (((item.result as any)?.dependencies?.truncated === true) || ((item.result as any)?.users?.truncated === true)));
+        return { items, succeeded, failed: items.length - succeeded, truncated };
+    }
+
+    @utcpTool('spriteFrameInspect', 'Inspect a SpriteFrame sub-asset and its source image identity with bounded importer metadata.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, sourceReference: InstanceReferenceSchema, url: { type: 'string' }, importer: { type: 'string' }, metadata: {} }, required: ['reference', 'sourceReference', 'url', 'importer', 'metadata'] }, 'GET', ['sprite', 'frame', 'image', 'inspect'])
+    async spriteFrameInspect(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const info = await readBackAsset(args.reference.id, 'spriteFrameInspect');
+        if (info.importer !== 'sprite-frame' && info.type !== 'cc.SpriteFrame' && !args.reference.id.includes('@')) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${args.reference.id} is not a SpriteFrame sub-asset.` });
+        const sourceId = args.reference.id.includes('@') ? args.reference.id.slice(0, args.reference.id.indexOf('@')) : info.uuid;
+        const source = await readBackAsset(sourceId, 'spriteFrameInspect.source');
+        const meta = await Editor.Message.request('asset-db', 'query-asset-meta', source.uuid).catch(() => null);
+        return { reference: { id: info.uuid, type: info.type || 'cc.SpriteFrame' }, sourceReference: { id: source.uuid, type: source.type || 'cc.ImageAsset' }, url: info.url || '', importer: info.importer || 'sprite-frame', metadata: meta?.subMetas ?? meta?.userData ?? meta ?? null };
+    }
+    @utcpTool('spriteFrameGeometryInspect', 'Inspect bounded SpriteFrame geometry metadata normalized from Creator importer sub-meta records.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, sourceReference: InstanceReferenceSchema, url: { type: 'string' }, geometry: { type: 'object' }, metadataAvailable: { type: 'boolean' } }, required: ['reference', 'sourceReference', 'url', 'geometry', 'metadataAvailable'] }, 'GET', ['sprite', 'frame', 'geometry', 'inspect'])
+    async spriteFrameGeometryInspect(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.spriteFrameInspect(args);
+        const metadata = inspected.metadata && typeof inspected.metadata === 'object' ? inspected.metadata as Record<string, unknown> : {};
+        const source = metadata.frame && typeof metadata.frame === 'object' ? metadata.frame as Record<string, unknown> : metadata;
+        const userData = source.userData && typeof source.userData === 'object' ? source.userData as Record<string, unknown> : source;
+        const number = (key: string): number | null => typeof userData[key] === 'number' && Number.isFinite(userData[key]) ? userData[key] as number : null;
+        const boolean = (key: string): boolean | null => typeof userData[key] === 'boolean' ? userData[key] as boolean : null;
+        const geometry = { rect: { x: number('x'), y: number('y'), width: number('width'), height: number('height') }, originalSize: { width: number('originalWidth') ?? number('width'), height: number('originalHeight') ?? number('height') }, offset: { x: number('offsetX'), y: number('offsetY') }, borders: { left: number('borderLeft'), right: number('borderRight'), top: number('borderTop'), bottom: number('borderBottom') }, rotated: boolean('rotated'), trimmed: boolean('trimmed') };
+        return { reference: inspected.reference, sourceReference: inspected.sourceReference, url: inspected.url, geometry, metadataAvailable: Object.keys(userData).length > 0 };
+    }
+
+    @utcpTool('spriteFrameValidate', 'Validate SpriteFrame source identity and importer metadata without mutating the asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, sourceReference: InstanceReferenceSchema, issues: { type: 'array' } }, required: ['valid', 'reference', 'sourceReference', 'issues'] }, 'GET', ['sprite', 'frame', 'validate', 'image'])
+    async spriteFrameValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.spriteFrameInspect(args);
+        const issues: Array<Record<string, unknown>> = [];
+        if (!inspected.url) issues.push({ code: 'SPRITE_FRAME_URL_UNAVAILABLE' });
+        if (!inspected.metadata) issues.push({ code: 'SPRITE_FRAME_METADATA_UNAVAILABLE' });
+        return { valid: issues.length === 0, reference: inspected.reference, sourceReference: inspected.sourceReference, issues };
+    }
+
+
+    @utcpTool('imageAssetInspect', 'Inspect one imported image asset with typed importer settings and SpriteFrame sub-assets.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, maxFrames: { type: 'integer', minimum: 1, maximum: 256, default: 128 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, importer: { type: 'string' }, settings: { type: 'object' }, schema: { type: 'object' }, spriteFrames: { type: 'array' }, totalSpriteFrames: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'importer', 'settings', 'schema', 'spriteFrames', 'totalSpriteFrames', 'truncated'] }, 'GET', ['asset', 'image', 'texture', 'sprite', 'inspect'])
+    async imageAssetInspect(args: { reference: IInstanceReference, maxFrames?: number }): Promise<Record<string, unknown>> {
+        const info = await readBackAsset(args.reference.id, 'imageAssetInspect');
+        if (!['image', 'texture'].includes(String(info.importer ?? '')) && !['cc.ImageAsset', 'cc.Texture2D'].includes(String(info.type ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${args.reference.id} is not an imported image.` });
+        const maxFrames = args.maxFrames ?? 128;
+        if (!Number.isInteger(maxFrames) || maxFrames < 1 || maxFrames > 256) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxFrames must be an integer from 1 to 256.' });
+        const imported = await this.assetImportSettingsGet({ reference: args.reference });
+        const frames = Object.values(info.subAssets ?? {}).filter((frame: any) => frame?.importer === 'sprite-frame' || frame?.type === 'cc.SpriteFrame');
+        return { reference: imported.reference, importer: imported.importer, settings: imported.settings, schema: imported.schema, spriteFrames: frames.slice(0, maxFrames).map((frame: any) => ({ id: frame.uuid, type: frame.type ?? 'cc.SpriteFrame', url: frame.url ?? null, name: frame.name ?? null })), totalSpriteFrames: frames.length, truncated: frames.length > maxFrames };
+    }
+    @utcpTool('imageSourceMetadataInspect', 'Inspect bounded source-file image dimensions, format, alpha, orientation, and density metadata.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, source: { type: 'object' }, width: { type: ['integer', 'null'] }, height: { type: ['integer', 'null'] }, format: { type: ['string', 'null'] }, space: { type: ['string', 'null'] }, channels: { type: ['integer', 'null'] }, hasAlpha: { type: ['boolean', 'null'] }, orientation: { type: ['integer', 'null'] }, density: { type: ['number', 'null'] }, pages: { type: ['integer', 'null'] } }, required: ['reference', 'source', 'width', 'height', 'format', 'space', 'channels', 'hasAlpha', 'orientation', 'density', 'pages'] }, 'GET', ['asset', 'image', 'source', 'metadata', 'dimensions'])
+    async imageSourceMetadataInspect(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const info = await readBackAsset(args.reference.id, 'imageSourceMetadataInspect');
+        if (!['image', 'texture'].includes(String(info.importer ?? '')) && !['cc.ImageAsset', 'cc.Texture2D'].includes(String(info.type ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${args.reference.id} is not an imported image.` });
+        if (typeof info.file !== 'string' || !info.file) throw new ToolError({ code: 'SOURCE_UNAVAILABLE', status: 422, message: `Image source is unavailable for ${args.reference.id}.` });
+        const filePath = enforceProjectFilePath(info.file, 'imageSourceMetadataInspect');
+        if (!await fs.pathExists(filePath)) throw new ToolError({ code: 'SOURCE_UNAVAILABLE', status: 422, message: `Image source is unavailable for ${args.reference.id}.` });
+        let metadata: any;
+        try { metadata = await require('sharp')(filePath).metadata(); }
+        catch (error) { throw new ToolError({ code: 'IMAGE_METADATA_FAILED', status: 502, message: 'Image source metadata could not be decoded.', details: { cause: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        const finite = (value: unknown): number | null => typeof value === 'number' && Number.isFinite(value) ? value : null;
+        return { reference: { id: info.uuid, type: info.type || 'cc.ImageAsset' }, source: { url: info.url || null, bytes: (await fs.stat(filePath)).size }, width: Number.isInteger(metadata.width) ? metadata.width : null, height: Number.isInteger(metadata.height) ? metadata.height : null, format: typeof metadata.format === 'string' ? metadata.format : null, space: typeof metadata.space === 'string' ? metadata.space : null, channels: Number.isInteger(metadata.channels) ? metadata.channels : null, hasAlpha: typeof metadata.hasAlpha === 'boolean' ? metadata.hasAlpha : null, orientation: Number.isInteger(metadata.orientation) ? metadata.orientation : null, density: finite(metadata.density), pages: Number.isInteger(metadata.pages) ? metadata.pages : null };
+    }
+    @utcpTool('imageSourceMetadataValidate', 'Validate bounded source-file image metadata against optional dimensions, format, alpha, orientation, density, and page constraints.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, width: { type: 'integer', minimum: 1 }, height: { type: 'integer', minimum: 1 }, formats: { type: 'array', minItems: 1, maxItems: 16, items: { type: 'string', maxLength: 32 } }, hasAlpha: { type: 'boolean' }, orientation: { type: 'integer', minimum: 1, maximum: 8 }, minDensity: { type: 'number', minimum: 0 }, maxDensity: { type: 'number', minimum: 0 }, pages: { type: 'integer', minimum: 1 } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, metadata: { type: 'object' }, issues: { type: 'array' } }, required: ['valid', 'reference', 'metadata', 'issues'] }, 'GET', ['asset', 'image', 'source', 'metadata', 'validate'])
+    async imageSourceMetadataValidate(args: { reference: IInstanceReference, width?: number, height?: number, formats?: string[], hasAlpha?: boolean, orientation?: number, minDensity?: number, maxDensity?: number, pages?: number }): Promise<Record<string, unknown>> {
+        if (args.minDensity !== undefined && args.maxDensity !== undefined && args.minDensity > args.maxDensity) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'minDensity must not exceed maxDensity.' });
+        if (args.formats !== undefined && (!Array.isArray(args.formats) || args.formats.length < 1 || args.formats.length > 16 || args.formats.some((format) => typeof format !== 'string' || !format.trim() || format.length > 32))) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'formats must contain 1 to 16 non-empty strings of at most 32 characters.' });
+        const metadata = await this.imageSourceMetadataInspect({ reference: args.reference });
+        const issues: Array<Record<string, unknown>> = [];
+        if (args.width !== undefined && metadata.width !== args.width) issues.push({ code: 'IMAGE_WIDTH_MISMATCH', expected: args.width, actual: metadata.width });
+        if (args.height !== undefined && metadata.height !== args.height) issues.push({ code: 'IMAGE_HEIGHT_MISMATCH', expected: args.height, actual: metadata.height });
+        if (args.formats !== undefined && (typeof metadata.format !== 'string' || !args.formats.includes(metadata.format))) issues.push({ code: 'IMAGE_FORMAT_MISMATCH', expected: args.formats, actual: metadata.format });
+        if (args.hasAlpha !== undefined && metadata.hasAlpha !== args.hasAlpha) issues.push({ code: 'IMAGE_ALPHA_MISMATCH', expected: args.hasAlpha, actual: metadata.hasAlpha });
+        if (args.orientation !== undefined && metadata.orientation !== args.orientation) issues.push({ code: 'IMAGE_ORIENTATION_MISMATCH', expected: args.orientation, actual: metadata.orientation });
+        if (args.minDensity !== undefined && (typeof metadata.density !== 'number' || metadata.density < args.minDensity)) issues.push({ code: 'IMAGE_DENSITY_BELOW_MINIMUM', expected: args.minDensity, actual: metadata.density });
+        if (args.maxDensity !== undefined && (typeof metadata.density !== 'number' || metadata.density > args.maxDensity)) issues.push({ code: 'IMAGE_DENSITY_ABOVE_MAXIMUM', expected: args.maxDensity, actual: metadata.density });
+        if (args.pages !== undefined && metadata.pages !== args.pages) issues.push({ code: 'IMAGE_PAGE_COUNT_MISMATCH', expected: args.pages, actual: metadata.pages });
+        return { valid: issues.length === 0, reference: metadata.reference, metadata, issues };
+    }
+    @utcpTool('imageSourceMetadataBatchValidate', 'Validate bounded source-file image metadata for multiple imported images with per-item constraints and errors.', { type: 'object', additionalProperties: false, properties: { items: { type: 'array', minItems: 1, maxItems: 32, items: { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, width: { type: 'integer', minimum: 1 }, height: { type: 'integer', minimum: 1 }, formats: { type: 'array', minItems: 1, maxItems: 16, items: { type: 'string', maxLength: 32 } }, hasAlpha: { type: 'boolean' }, orientation: { type: 'integer', minimum: 1, maximum: 8 }, minDensity: { type: 'number', minimum: 0 }, maxDensity: { type: 'number', minimum: 0 }, pages: { type: 'integer', minimum: 1 } }, required: ['reference'] } } }, required: ['items'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, invalid: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'invalid', 'partial'] }, 'GET', ['asset', 'image', 'source', 'metadata', 'batch', 'validate'])
+    async imageSourceMetadataBatchValidate(args: { items: Array<{ reference: IInstanceReference, width?: number, height?: number, formats?: string[], hasAlpha?: boolean, orientation?: number, minDensity?: number, maxDensity?: number, pages?: number }> }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.items) || args.items.length < 1 || args.items.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'items must contain 1 to 32 image metadata validation requests.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, item] of args.items.entries()) {
+            try { outcomes.push({ index, ok: true, result: await this.imageSourceMetadataValidate(item) }); }
+            catch (error) { outcomes.push({ index, ok: false, reference: item.reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const invalid = outcomes.filter((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.valid === false).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, invalid, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('imageSourceMetadataBatchInspect', 'Inspect source-file metadata for a bounded batch of imported images with per-item errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' } }, required: ['items', 'succeeded', 'failed'] }, 'GET', ['asset', 'image', 'source', 'metadata', 'batch'])
+    async imageSourceMetadataBatchInspect(args: { references: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try { items.push({ index, ok: true, result: await this.imageSourceMetadataInspect({ reference }) }); }
+            catch (error) { items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } }); }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded };
+    }
+
+    @utcpTool('imageAssetValidate', 'Validate imported image settings and SpriteFrame outputs without mutating the asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, issues: { type: 'array' }, spriteFrameCount: { type: 'integer' } }, required: ['valid', 'reference', 'issues', 'spriteFrameCount'] }, 'GET', ['asset', 'image', 'texture', 'validate'])
+    async imageAssetValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.imageAssetInspect({ reference: args.reference, maxFrames: 256 });
+        const issues: Array<Record<string, unknown>> = [];
+        if (!inspected.schema || typeof inspected.schema !== 'object') issues.push({ code: 'IMAGE_IMPORTER_SCHEMA_UNAVAILABLE' });
+        return { valid: issues.length === 0, reference: inspected.reference, issues, spriteFrameCount: inspected.totalSpriteFrames };
+    }
+    @utcpTool('imageDependencyImpactInspect', 'Inspect bounded image dependencies, reverse users, and SpriteFrame outputs with optional asset identity read-back.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: 1000, default: 200 }, maxFrames: { type: 'integer', minimum: 1, maximum: 256, default: 128 }, resolveAssets: { type: 'boolean', default: true } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, spriteFrames: { type: 'array' }, totalSpriteFrames: { type: 'integer' }, dependencies: { type: 'object' }, users: { type: 'object' } }, required: ['reference', 'spriteFrames', 'totalSpriteFrames', 'dependencies', 'users'] }, 'GET', ['asset', 'image', 'texture', 'dependency', 'impact'])
+    async imageDependencyImpactInspect(args: { reference: IInstanceReference, limit?: number, maxFrames?: number, resolveAssets?: boolean }): Promise<Record<string, unknown>> {
+        const image = await this.imageAssetInspect({ reference: args.reference, maxFrames: args.maxFrames });
+        const [dependencies, users] = await Promise.all([
+            this.assetFindReferences({ direction: 'depends_on', reference: args.reference, assetKind: 'all', resolveUrls: args.resolveAssets !== false, limit: args.limit }),
+            this.assetFindReferences({ direction: 'used_by', reference: args.reference, assetKind: 'all', resolveUrls: args.resolveAssets !== false, limit: args.limit }),
+        ]);
+        return { reference: image.reference, spriteFrames: image.spriteFrames, totalSpriteFrames: image.totalSpriteFrames, dependencies, users };
+    }
+
+    @utcpTool('scriptDependencyImpactValidate', 'Validate bounded script dependency and reverse-user query result shapes.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { valid: { type: 'boolean' }, reference: InstanceReferenceSchema, issues: { type: 'array' } }, required: ['valid', 'reference', 'issues'] }, 'GET', ['script', 'dependency', 'impact', 'validate'])
+    async scriptDependencyImpactValidate(args: { reference: IInstanceReference }): Promise<Record<string, unknown>> {
+        const inspected = await this.scriptDependencyImpactInspect({ reference: args.reference, limit: 1000, resolveAssets: true });
+        const issues: Array<Record<string, unknown>> = [];
+        for (const direction of ['dependencies', 'users']) {
+            const result = inspected[direction] as Record<string, unknown>;
+            if (!result || !Array.isArray(result.references) || typeof result.total !== 'number' || typeof result.truncated !== 'boolean') issues.push({ code: 'IMPACT_RESULT_MALFORMED', direction });
+        }
+        return { valid: issues.length === 0, reference: args.reference, issues };
+    }
+
+
+    @utcpTool('imageAssetBatchValidate', 'Validate a bounded batch of imported images with per-item importer and SpriteFrame outcomes.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, invalid: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'invalid', 'partial'] }, 'GET', ['asset', 'image', 'texture', 'batch', 'validate'])
+    async imageAssetBatchValidate(args: { references: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.imageAssetValidate({ reference }) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const invalid = outcomes.filter((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.valid === false).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, invalid, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('spriteFrameBatchValidate', 'Validate a bounded batch of SpriteFrame source identities and importer metadata.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 64, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, invalid: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'invalid', 'partial'] }, 'GET', ['asset', 'sprite', 'frame', 'batch', 'validate'])
+    async spriteFrameBatchValidate(args: { references: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 64) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 64 items.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.spriteFrameValidate({ reference }) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const invalid = outcomes.filter((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.valid === false).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, invalid, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
+    @utcpTool('spriteFrameBatchInspect', 'Inspect a bounded batch of SpriteFrame sub-assets with source identity and per-item errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 64, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['asset', 'sprite', 'frame', 'batch', 'inspect'])
+    async spriteFrameBatchInspect(args: { references: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 64) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 64 items.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.spriteFrameInspect({ reference }) });
+            } catch (error) {
+                items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message : String(error) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: false };
+    }
+
+    @utcpTool('imageAssetBatchInspect', 'Inspect a bounded batch of imported image assets with SpriteFrame inventories and per-item errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, maxFrames: { type: 'integer', minimum: 1, maximum: 256, default: 128 } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['asset', 'image', 'texture', 'batch', 'inspect'])
+    async imageAssetBatchInspect(args: { references: IInstanceReference[], maxFrames?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const maxFrames = args.maxFrames ?? 128;
+        if (!Number.isInteger(maxFrames) || maxFrames < 1 || maxFrames > 256) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxFrames must be an integer from 1 to 256.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.imageAssetInspect({ reference, maxFrames }) });
+            } catch (error) {
+                items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: false };
+    }
+    @utcpTool('scriptAssetBatchInspect', 'Inspect a bounded batch of imported scripts with class identity and dependency summaries.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, maxDependencies: { type: 'integer', minimum: 1, maximum: 128, default: 64 } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['script', 'asset', 'batch', 'inspect'])
+    async scriptAssetBatchInspect(args: { references: IInstanceReference[], maxDependencies?: number }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const maxDependencies = args.maxDependencies ?? 64;
+        if (!Number.isInteger(maxDependencies) || maxDependencies < 1 || maxDependencies > 128) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxDependencies must be an integer from 1 to 128.' });
+        const items: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                items.push({ index, ok: true, result: await this.scriptAssetInspect({ reference, maxDependencies }) });
+            } catch (error) {
+                items.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = items.filter((item) => item.ok === true).length;
+        return { items, succeeded, failed: items.length - succeeded, truncated: false };
+    }
+
+    @utcpTool('scriptAssetBatchValidate', 'Validate a bounded batch of imported script class identities and dependency metadata.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { outcomes: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, invalid: { type: 'integer' }, partial: { type: 'boolean' } }, required: ['outcomes', 'succeeded', 'failed', 'invalid', 'partial'] }, 'GET', ['script', 'asset', 'batch', 'validate'])
+    async scriptAssetBatchValidate(args: { references: IInstanceReference[] }): Promise<Record<string, unknown>> {
+        if (!Array.isArray(args?.references) || args.references.length < 1 || args.references.length > 32) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'references must contain 1 to 32 items.' });
+        const outcomes: Array<Record<string, unknown>> = [];
+        for (const [index, reference] of args.references.entries()) {
+            try {
+                outcomes.push({ index, ok: true, result: await this.scriptAssetValidate({ reference }) });
+            } catch (error) {
+                outcomes.push({ index, ok: false, reference, error: { message: error instanceof Error ? error.message.slice(0, 512) : String(error).slice(0, 512) } });
+            }
+        }
+        const succeeded = outcomes.filter((outcome) => outcome.ok === true).length;
+        const invalid = outcomes.filter((outcome) => outcome.ok === true && (outcome.result as Record<string, unknown>)?.valid === false).length;
+        return { outcomes, succeeded, failed: outcomes.length - succeeded, invalid, partial: succeeded > 0 && succeeded < outcomes.length };
+    }
+
     @utcpTool('assetCreate','Create an asset or folder at a db:// path from a Creator 3.7 preset.',{type:'object',properties:{assetPath:{type:'string'},preset:{type:'string',enum:['folder','material','effect','scene','prefab','typescript','animation-clip','render-texture','physics-material','animation-graph','animation-graph-variant','animation-mask','auto-atlas','effect-header','terrain']},options:{type:'object',properties:{overwrite:{type:'boolean'},rename:{type:'boolean'}},nullable:true}},required:['assetPath','preset']},{type:'object',properties:{reference:InstanceReferenceSchema},required:['reference']},"POST",['asset','create','new','preset','folder','typescript'])
     async assetCreate(args:{assetPath:string;preset:string;options?:{overwrite?:boolean,rename?:boolean}}):Promise<{reference:IInstanceReference}> {
         let targetPath = normalizePath(args.assetPath);
