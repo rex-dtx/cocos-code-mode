@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-09-10",
+  "updated": "2026-09-20",
   "qualificationTarget": {
     "creator": "3.7.3",
     "os": "windows-x64",
@@ -463,7 +463,7 @@
         },
         {
           "name": "animationGraphEdit",
-          "state": "probe-required",
+          "state": "implemented-unverified",
           "contractDelta": "Persistent bounded graph mutations independent of panel selection state.",
           "route": "non-panel IPC or versioned serializer",
           "prerequisites": [
@@ -1564,7 +1564,8 @@
     },
     {
       "name": "previewResolutionSet",
-      "state": "probe-required",
+      "state": "rejected",
+      "rejectionReason": "Rejected on Creator 3.7.3: preview set-resolution IPC does not exist; the registered route fails closed with UNSUPPORTED_PREVIEW_IPC. Consistent with the 2026-09-20 owner-disable of the preview lane.",
       "contractDelta": "Set and read back target resolution through proven IPC.",
       "domain": "ui-layout",
       "proposedExecutionPhase": "P2",
