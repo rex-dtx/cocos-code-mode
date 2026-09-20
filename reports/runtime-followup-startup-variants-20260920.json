@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "creatorVersion": "3.7.3",
+  "project": "G:\\_ws\\cc-minimal-empty",
+  "variants": [
+    { "name": "software-rendering", "flags": ["--disable-gpu", "--disable-gpu-compositing"], "result": "renderer ask-win only; no Asset DB/UTCP" },
+    { "name": "alternate-flags", "flags": ["--no-sandbox", "--disable-dev-shm-usage", "--disable-features=SpareRendererForSitePerProcess"], "result": "renderer ask-win only; no Asset DB/UTCP" }
+  ],
+  "commonBoundary": "Both variants reach Electron renderer bootstrap and stop before Creator project/package initialization.",
+  "qualified": false,
+  "decision": "Startup flags do not change the Creator 3.7.3 failure boundary; no source/runtime qualification claim."
+}
