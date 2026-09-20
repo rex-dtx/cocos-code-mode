@@ -170,13 +170,15 @@ function tilemapDataGids(content: string): Array<{ gid: number, layer: string }>
             const body = dataMatch[1] ?? '';
             if (/<tile\b/i.test(body)) {
                 for (const tile of body.matchAll(/<tile\b[^>]*\/?>/gi)) {
-                    const gid = xmlNumber(tile[0], 'gid', 0);
+                    // Tiled packs flip/rotation flags into the gid's high bits, so mask them
+                    // before the range check or a flipped valid tile looks out of range.
+                    const gid = xmlNumber(tile[0], 'gid', 0) & 0x1FFFFFFF;
                     if (gid !== 0) gids.push({ gid, layer: layerName });
                 }
             } else {
                 for (const token of body.split(/[,\s]+/)) {
                     if (!token.trim()) continue;
-                    const gid = Number(token);
+                    const gid = Number(token) & 0x1FFFFFFF;
                     if (Number.isInteger(gid) && gid !== 0) gids.push({ gid, layer: layerName });
                 }
             }
