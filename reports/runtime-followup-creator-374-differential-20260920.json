@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "fixture": "G:/_ws/_helpers/cc-minimal-empty",
+  "versions": {
+    "3.7.3": {
+      "source": "official CocosCreator-v3.7.3-win-042810.zip",
+      "rendererBootstrap": true,
+      "assetDbReady": false,
+      "projectInitialization": false,
+      "utcpListening": false,
+      "processExit": 1
+    },
+    "3.7.4": {
+      "source": "official CocosCreator-v3.7.4-win-081414.zip",
+      "rendererBootstrap": true,
+      "assetDbReady": true,
+      "projectInitialization": true,
+      "processAlive": true,
+      "assetImportEvidence": true
+    }
+  },
+  "windowsApplicationEvents": "No matching Application Error or Windows Error Reporting event for Creator 3.7.3 in the inspected window.",
+  "conclusion": "The workstation can initialize the minimal project on official Creator 3.7.4 but not official Creator 3.7.3. This confirms a target-version native/runtime differential; 3.7.4 is diagnostic only and cannot satisfy the Creator 3.7.3 qualification gate."
+}
