@@ -130,7 +130,11 @@ describe('live: read-only candidate qualification witnesses', () => {
     const name = '__ccb3x_candidate_prefab__';
     const inventory = await getJson('/tools/assetQuery?importer=prefab&limit=50');
     if (inventory.status !== 200 || !Array.isArray(inventory.body?.assets) || inventory.body.assets.length === 0) { t.skip('No prefab asset fixture is available in the active project'); return; }
-    const fixture = process.env.CCB_PREFAB_INSTANTIATE_UUID || inventory.body.assets[0].uuid;
+    const preferred = inventory.body.assets.find((asset) => asset.url === 'db://internal/default_prefab/Camera.prefab')
+      ?? inventory.body.assets.find((asset) => asset.url === 'db://internal/default_prefab/2d/Camera.prefab')
+      ?? inventory.body.assets.find((asset) => asset.type === 'cc.Prefab');
+    const fixture = process.env.CCB_PREFAB_INSTANTIATE_UUID || preferred?.uuid;
+    assert.equal(typeof fixture, 'string', 'discovered prefab fixture uuid');
     try {
       const created = await postTool('prefabInstantiate', {
         reference: { id: fixture, type: 'cc.Prefab' },

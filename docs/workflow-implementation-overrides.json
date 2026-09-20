@@ -3892,6 +3892,22 @@
       "limitations": [
         "Bounded editor/UI compositions only; arbitrary scene scripting, runtime preview and panel-click credit are not claimed."
       ]
+    },
+    {
+      "workflowId": "design-prefab.lane-1-wip-260908-tbd-child-p2-ui-prefab-tilemap-assets-prefab-instantiate",
+      "state": "complete",
+      "reason": "Exact Creator 3.7.3 evidence instantiates a deterministic current cc.Prefab fixture with source identity, linked node read-back, snapshot persistence, typed missing-source rejection and cleanup.",
+      "routes": [
+        { "tool": "prefabInstantiate", "file": "source/utcp/tools/advanced-capability-tools.ts" }
+      ],
+      "evidenceArtifacts": [
+        "reports/api-prefab-instantiate-followup-20260920.json",
+        "tests/live/read-only-candidate-qualification.test.js",
+        "tests/unit/advanced-capability-tools.test.js"
+      ],
+      "limitations": [
+        "Editor-side prefab instantiation only; arbitrary prefab mutation and runtime/Game View behavior are not claimed."
+      ]
     }
   ]
 }
