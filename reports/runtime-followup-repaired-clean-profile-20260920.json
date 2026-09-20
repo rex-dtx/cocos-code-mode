@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "installation": "C:/ProgramData/cocos/editors/Creator/3.7.3-repaired",
+  "runtimeFilesRestored": true,
+  "userDataDir": "C:/Users/hry/AppData/Local/Temp/ccb3x-373-repaired-clean",
+  "competingCreatorProcessesStopped": true,
+  "project": "G:/_ws/_helpers/cc-minimal-empty",
+  "result": {
+    "rendererBootstrap": true,
+    "projectInitialization": false,
+    "assetDbReady": false,
+    "extensionActivation": false,
+    "utcpListening": false,
+    "processExit": 1
+  },
+  "decision": "A restored installation with an isolated clean Chromium profile and no competing Creator process still stalls before project initialization. GPU cache contention is not the blocker."
+}
