@@ -12,7 +12,7 @@
   "negativeWitness": {
     "test": "tests/live/asset-import-settings-qualification.test.js",
     "iterations": 1,
-    "result": "no published field is a write target: a fontSize write was accepted by save-asset-meta and then reverted on reimport (requested 22, read back 20, 502 READBACK_MISMATCH), and a textureUuid write was refused; the settings stayed at the original value"
+    "result": "assetImportSettingsSet is not a durable settings path: a direct meta write may appear temporarily, but a later source reparse overwrites the value from the .fnt file; textureUuid is importer-owned and refused"
   },
   "persistence": "notApplicable - the bitmap-font importer derives every published field from the .fnt source",
   "cleanup": "the copied .fnt asset was deleted through assetOperate in the finally block",

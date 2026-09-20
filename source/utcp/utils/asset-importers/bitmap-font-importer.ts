@@ -5,9 +5,7 @@ import { IPropertyValueType } from '@cocos/creator-types/editor/packages/scene/@
 // Creator 3.7.3 publishes the bitmap-font importer fields under the asset meta userData, but
 // every one of them is derived: the importer parses the .fnt file into `_fntConfig`, writes
 // `fontSize` from that parsed config and emits `textureUuid` for the atlas it generated.
-// Writing `fontSize` through save-asset-meta is accepted and then overwritten on reimport
-// (live on 3.7.3: set 22, reimport, read back 20), so the honest contract is a typed,
-// read-only audit and setProperty refuses every path.
+// Writing `fontSize` through save-asset-meta can change the current meta snapshot, but it is not an importer setting: a later source reparse overwrites it from the .fnt file (live on 3.7.3: file size 77 -> meta 77, meta write 999 -> 999 temporarily, file size 88 -> meta 88). The honest contract is a typed, read-only audit and setProperty refuses every path.
 export class BitmapFontImporter extends BaseAssetImporter {
     name = 'bitmap-font';
 
