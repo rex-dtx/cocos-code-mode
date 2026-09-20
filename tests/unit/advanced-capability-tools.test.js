@@ -134,6 +134,68 @@ describe('advanced capability tools', () => {
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
+  it('rejects non-scene assets and reports reference truncation for scenes', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-scene-ref-'));
+    const sceneFile = path.join(root, 'level.scene');
+    const prefabFile = path.join(root, 'thing.prefab');
+    const uuidA = '11111111-1111-1111-1111-111111111111';
+    const uuidB = '22222222-2222-2222-2222-222222222222';
+    fs.writeFileSync(sceneFile, JSON.stringify({ refs: [uuidA, uuidB, '33333333-3333-3333-3333-333333333333'] }));
+    fs.writeFileSync(prefabFile, '{}');
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message, identifier) => {
+      if (service !== 'asset-db') throw new Error(`unexpected ${service}:${message}`);
+      if (message === 'query-asset-info') {
+        if (identifier === 'level') return { uuid: 'level', url: 'db://assets/level.scene', type: 'cc.SceneAsset', file: sceneFile };
+        return { uuid: identifier, url: `db://assets/${identifier}.prefab`, type: 'cc.Prefab', file: prefabFile };
+      }
+      if (message === 'query-assets') return [{ uuid: uuidA, url: 'db://assets/a.png' }, { uuid: uuidB, url: 'db://assets/b.png' }];
+      throw new Error(`unexpected asset-db message ${message}`);
+    } } };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const result = await tools.sceneReferenceValidate({ reference: { id: 'level' }, maxReferences: 2 });
+      assert.equal(result.totalReferences, 3);
+      assert.equal(result.truncated, true);
+      assert.deepEqual(result.references, [uuidA, uuidB]);
+      assert.deepEqual(result.missingReferences, []);
+      await assert.rejects(() => tools.sceneReferenceValidate({ reference: { id: 'thing' } }), (error) => error.code === 'TYPE_MISMATCH' && error.status === 422);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it('reports prefab reference audit truncation and nested prefabs', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-ref-'));
+    const file = path.join(root, 'root.prefab');
+    const nestedUuid = '44444444-4444-4444-4444-444444444444';
+    const missingUuid = '99999999-9999-9999-9999-999999999999';
+    fs.writeFileSync(file, JSON.stringify({ nested: nestedUuid, broken: missingUuid }));
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message, identifier) => {
+      if (service !== 'asset-db') throw new Error(`unexpected ${service}:${message}`);
+      if (message === 'query-asset-info') return { uuid: 'root', url: 'db://assets/root.prefab', type: 'cc.Prefab', file };
+      if (message === 'query-assets') return [{ uuid: nestedUuid, url: 'db://assets/nested.prefab' }];
+      throw new Error(`unexpected asset-db message ${message}`);
+    } } };
+    try {
+      const result = await new AdvancedCapabilityTools().prefabReferenceAudit({ reference: { id: 'root' }, maxReferences: 1 });
+      assert.equal(result.totalReferences, 2);
+      assert.equal(result.truncated, true);
+      assert.deepEqual(result.missingReferences, []);
+      const full = await new AdvancedCapabilityTools().prefabReferenceAudit({ reference: { id: 'root' } });
+      assert.equal(full.totalReferences, 2);
+      assert.equal(full.truncated, false);
+      assert.deepEqual(full.nestedPrefabs, [{ uuid: nestedUuid, url: 'db://assets/nested.prefab' }]);
+      assert.deepEqual(full.missingReferences, [{ id: missingUuid }]);
+      assert.equal(full.valid, false);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('returns prefab source hashes after a successful override apply', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-apply-'));
     const file = path.join(root, 'fixture.prefab');
