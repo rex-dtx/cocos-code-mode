@@ -463,7 +463,7 @@
         },
         {
           "name": "animationGraphEdit",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Persistent bounded graph mutations independent of panel selection state.",
           "route": "non-panel IPC or versioned serializer",
           "prerequisites": [
@@ -476,6 +476,7 @@
           "negativeTestID": "candidate.animationGraphEdit.negative.v1",
           "fixtureID": "fixture.candidate.animationGraphEdit.v1",
           "evidenceArtifact": "reports/evidence/candidates/animationGraphEdit/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/p2-p3-remaining-qualification.test.js#P23-V01",
           "proposedExecutionPhase": "P3"
         },
         {
@@ -515,7 +516,7 @@
         },
         {
           "name": "animationRetargetValidate",
-          "state": "implemented-unverified",
+          "state": "qualified",
           "contractDelta": "Check bounded skeleton, joint and clip compatibility without claiming automatic retargeting; fail closed when metadata is unavailable.",
           "route": "model and clip metadata validator",
           "prerequisites": [
@@ -528,6 +529,7 @@
           "negativeTestID": "candidate.animationRetargetValidate.negative.v1",
           "fixtureID": "fixture.candidate.animationRetargetValidate.v1",
           "evidenceArtifact": "reports/evidence/candidates/animationRetargetValidate/<creator>-<artifact-sha>.json",
+          "qualificationEvidence": "tests/live/p2-p3-remaining-qualification.test.js#P23-V03",
           "proposedExecutionPhase": "P3"
         }
       ]
