@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-20",
+  "scope": "CCB3x API capability expansion only",
+  "coverage": { "authoring": "223/247", "percent": 90.28, "deficit": 0, "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6" },
+  "qualifiedRecent": ["assetOpen", "editorListenersInspect", "animationStop", "prefabInstantiate", "prefabRestore", "prefabRevertOverrides", "referenceImageManage.switch", "referenceImageManage.refresh"],
+  "remainingApiBlockers": [
+    { "workflow": "animationRetargetValidate", "reason": "Creator 3.7.3 model fixtures expose no skeleton joint metadata", "status": "implemented-unverified" },
+    { "workflow": "physics2dConfigure/physics3dConfigure", "reason": "Creator 3.7.3 project settings writer is unavailable", "status": "unsupported" },
+    { "workflow": "reference-image opacity/position/scale", "reason": "Native reference-image transform/configuration IPC unavailable", "status": "unsupported" },
+    { "workflow": "prefabInstantiate historical marker fixture", "reason": "Hard-coded marker asset absent; corrected smoke discovers valid prefab fixtures", "status": "fixture-corrected" }
+  ],
+  "outOfScope": ["Protected Relay", "release activation", "session lifecycle", "unrelated plan workstreams"],
+  "decision": "Keep API capability scope active for future feasible authoring waves; preserve fail-closed behavior for unsupported Creator 3.7.3 routes."
+}
