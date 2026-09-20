@@ -134,6 +134,47 @@ describe('advanced capability tools', () => {
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
+  it('resolves external .tsx tileset ranges and flags unresolvable ones', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-tmx-ext-'));
+    const tmx = path.join(root, 'map.tmx');
+    const tsx = path.join(root, 'tiles.tsx');
+    fs.writeFileSync(tsx, '<?xml version="1.0"?><tileset tilecount="2" tilewidth="32" tileheight="32"><tile id="0"/></tileset>');
+    const writeMap = (gids) => fs.writeFileSync(tmx, [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<map orientation="orthogonal" width="2" height="2" tilewidth="32" tileheight="32">',
+      '  <tileset firstgid="1" source="tiles.tsx"/>',
+      `  <layer id="1" name="Ground" width="2" height="2"><data encoding="csv">${gids}</data></layer>`,
+      '</map>',
+    ].join('\n'));
+    writeMap('1,2,0,0');
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message, identifier) => {
+      if (service !== 'asset-db') throw new Error(`unexpected ${service}:${message}`);
+      if (message === 'query-asset-info') return { uuid: identifier, url: 'db://assets/map.tmx', type: 'cc.TiledMapAsset', file: tmx };
+      if (message === 'query-assets') return [];
+      throw new Error(`unexpected asset-db message ${message}`);
+    } } };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const inRange = await tools.tilemapValidate({ reference: { id: 'map' } });
+      assert.deepEqual(inRange.gidIssues, []);
+      assert.deepEqual(inRange.unverifiedTilesets, []);
+      assert.equal(inRange.gidRangeVerified, true);
+
+      writeMap('1,5,0,0');
+      const outOfRange = await tools.tilemapValidate({ reference: { id: 'map' } });
+      assert.deepEqual(outOfRange.gidIssues, [{ gid: 5, layer: 'Ground' }]);
+
+      fs.rmSync(tsx, { force: true });
+      const unresolvable = await tools.tilemapValidate({ reference: { id: 'map' } });
+      assert.deepEqual(unresolvable.unverifiedTilesets, ['tiles.tsx']);
+      assert.equal(unresolvable.gidRangeVerified, false);
+    } finally {
+      if (previous === undefined) delete global.Editor;
+      else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('rejects non-scene assets and reports reference truncation for scenes', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-scene-ref-'));
     const sceneFile = path.join(root, 'level.scene');
