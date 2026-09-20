@@ -197,6 +197,31 @@ describe('advanced capability tools', () => {
     }
   });
 
+  it('switches and refreshes the bounded reference-image lifecycle', async () => {
+    const previous = global.Editor;
+    let current = null;
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      if (service !== 'scene') throw new Error(`unexpected ${service}:${message}`);
+      if (message === 'set-reference-image') { current = { id: payload.uuid ?? 'image-asset', path: payload.path }; return true; }
+      if (message === 'query-reference-image') return current;
+      if (message === 'clear-reference-image') { current = null; return true; }
+      throw new Error(`unexpected scene message ${message}`);
+    } } };
+    try {
+      const tools = new AdvancedCapabilityTools();
+      const switched = await tools.referenceImageManage({ operation: 'switch', imagePath: 'db://assets/reference-2.png', reference: { id: 'image-2', type: 'cc.ImageAsset' } });
+      assert.equal(switched.persisted, true);
+      assert.equal(switched.imagePath, 'db://assets/reference-2.png');
+      const refreshed = await tools.referenceImageManage({ operation: 'refresh' });
+      assert.equal(refreshed.persisted, true);
+      assert.equal(refreshed.imagePath, 'db://assets/reference-2.png');
+      await tools.referenceImageManage({ operation: 'clear' });
+      await assert.rejects(() => tools.referenceImageManage({ operation: 'refresh' }), error => error.code === 'TARGET_NOT_FOUND');
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
+  });
+
   it('uses only the qualified project-profile fallback for persistent reference-image lifecycle', async () => {
     const previous = global.Editor;
     const profile = {};
