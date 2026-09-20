@@ -984,7 +984,8 @@
         },
         {
           "name": "particlePlayback",
-          "state": "qualified",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Play, stop, clear and completion observation in a named runtime session.",
           "route": "runtime particle adapter",
           "prerequisites": [
@@ -1344,7 +1345,8 @@
       "candidates": [
         {
           "name": "runtimeSessionLifecycle",
-          "state": "qualified",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Attach, identify, stop and reset finite game-view/browser/simulator sessions.",
           "route": "runtime session foundation",
           "prerequisites": [
@@ -1363,7 +1365,8 @@
         },
         {
           "name": "runtimeStateObserve",
-          "state": "qualified",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Bounded allow-listed observations tied to session identity and target kind.",
           "route": "runtime session foundation",
           "prerequisites": [
@@ -1381,7 +1384,8 @@
         },
         {
           "name": "runtimeScenarioRun",
-          "state": "qualified",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Execute finite named steps only; no code string or general method dispatch.",
           "route": "scenario compiler to typed primitives",
           "prerequisites": [
@@ -1399,7 +1403,8 @@
         },
         {
           "name": "runtimeScenarioAssert",
-          "state": "qualified",
+          "state": "rejected",
+          "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
           "contractDelta": "Independent state/image/event assertions rather than request echo.",
           "route": "runtime observation adapter",
           "prerequisites": [
@@ -1539,7 +1544,8 @@
     },
     {
       "name": "previewSessionInspect",
-      "state": "qualified",
+      "state": "rejected",
+      "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
       "contractDelta": "Read target kind, URL, mode, readiness and stale-session state.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
@@ -1614,7 +1620,8 @@
     },
     {
       "name": "runtimeWaitForState",
-      "state": "qualified",
+      "state": "rejected",
+      "rejectionReason": "Owner-disabled 2026-09-20: Creator game-view preview is an experimental editor feature; route fails closed (PREVIEW_FEATURE_DISABLED) until the flag is re-enabled.",
       "contractDelta": "Bounded condition wait without raw event subscription.",
       "domain": "runtime-qa",
       "proposedExecutionPhase": "P1",
