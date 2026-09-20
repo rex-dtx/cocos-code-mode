@@ -530,4 +530,9 @@ export class AdvancedCapabilityTools {
         const event = truncated ? { omitted: true, bytes: eventBytes, reason: 'Broadcast payload exceeds the 4096-byte response limit.' } : observed;
         return { topic: args.topic, supported: true, observed: observed !== null, lifecycle, event, eventBytes, truncated, retainedListener: false };
     }
+
+    @utcpTool('editorListenersInspect', 'Inspect the bounded CC Bridge listener lifecycle surface; never claims arbitrary Creator listener enumeration.', { type: 'object', properties: {} }, { type: 'object', properties: { supported: { type: 'boolean' }, listeners: { type: 'array' }, limitation: { type: 'string' } }, required: ['supported', 'listeners', 'limitation'] }, 'GET', ['editor', 'listeners', 'inspect'])
+    async editorListenersInspect(): Promise<Record<string, unknown>> {
+        return { supported: true, listeners: [], limitation: 'Creator 3.7.3 does not expose arbitrary listener enumeration; only CC Bridge-owned broadcast lifecycles are observable.' };
+    }
 }

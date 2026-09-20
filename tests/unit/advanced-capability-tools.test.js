@@ -260,6 +260,13 @@ describe('advanced capability tools', () => {
     }
   });
 
+  it('returns bounded CC Bridge listener inspection without inventing arbitrary listeners', async () => {
+    const result = await new AdvancedCapabilityTools().editorListenersInspect();
+    assert.equal(result.supported, true);
+    assert.deepEqual(result.listeners, []);
+    assert.match(result.limitation, /arbitrary listener enumeration/);
+  });
+
   it('rejects selective prefab revert when Creator exposes only full restore', async () => {
     await assert.rejects(
       () => new AdvancedCapabilityTools().prefabRevertOverrides({ reference: { id: 'instance', type: 'cc.Node' }, paths: ['position'] }),
