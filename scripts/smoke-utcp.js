@@ -49,7 +49,7 @@ async function main() {
         assert.ok(m.tools.every((tool) => !Object.hasOwn(tool, 'annotations')), 'manual tools must not expose annotations');
         ok(`manual valid: 86 tools, keys ${keys.join(',')}`);
         // check ccp3x template present (bare or per-port) + no duplicate URL among
-        // new-format ccb* names — dup URL is what caused double tool registration.
+        // new-format ccp* names — dup URL is what caused double tool registration.
         // Legacy names are purged by ConfigManager on read, so they never appear here.
         try {
             const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
@@ -59,9 +59,9 @@ async function main() {
             const names = templates.map(t => t.name);
             const has3x = names.some(n => /^ccp3x(_\d+)?$/.test(n));
             assert.ok(has3x, `ccp3x template present, found ${names.join(',')}`);
-            const isCcb = (n) => /^ccb[23]x(_\d+)?$/.test(n);
-            const urls = templates.filter(t => isCcb(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
-            assert.equal(new Set(urls).size, urls.length, `ccb* dup URL, got ${urls.join(',')}`);
+            const isCcp = (n) => /^ccb[23]x(_\d+)?$/.test(n);
+            const urls = templates.filter(t => isCcp(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
+            assert.equal(new Set(urls).size, urls.length, `ccp* dup URL, got ${urls.join(',')}`);
             ok('config has ccp3x template, no dup URL');
         } catch (e) { skipped('config ccp3x check', e.message); }
     } catch (e) { bad('manual', e.message); }

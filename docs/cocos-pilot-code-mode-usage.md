@@ -14,9 +14,9 @@ Cocos Pilot is the Cocos Creator 3.x extension. It serves a UTCP manual from the
 
 `ccbe` maintains `ccbr` (`~/.utcp_config.json`) automatically. Each `ccbe` publishes one stable `ccbi:ccp3x_<actual-port>` entry; there is no `ccp3x` bare latest pointer (C1 in `architecture-identity.md`). Legacy `ccp3x` discovery entries migrate to the port in their URL, not to whichever editor answers first. Do not register two templates for the same endpoint. A template name must match its URL port; ambiguous endpoints sharing a namespace are not selected.
 
-## 1. Configure the MCP bridge (`mcp` → `cmm` → `ccbr`)
+## 1. Configure MCP (`mcp` → `cmm` → `ccbr`)
 
-Add `cmm` (`@utcp/code-mode-mcp`) to the AI client. `cocos-pilot` is the **MCP server key** (client-facing name for the `cmm` adapter); `@utcp/code-mode-mcp` remains the adapter package that implements the bridge. `UTCP_CONFIG_FILE` points to `ccbr`.
+Add `cmm` (`@utcp/code-mode-mcp`) to the AI client. `cocos-pilot` is the **MCP server key** (client-facing name for the `cmm` adapter); `@utcp/code-mode-mcp` remains the adapter package that implements the adapter. `UTCP_CONFIG_FILE` points to `ccbr`.
 
 ```json
 {

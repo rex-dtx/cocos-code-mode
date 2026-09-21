@@ -63,7 +63,7 @@ Tên khác nhau **không** đồng nghĩa thiếu chức năng — v3 gom 10 con
 | `propertyArrayElement` (remove/move phần tử array) | `nodeSetProperty` toàn array (read-modify-write) | ⚠️ không atomic |
 | `assetDbQuery` (databases/busy/mtime/data/db_info/meta/ready) | `assetResolve mount_info` + `assetQuery meta` | ⚠️ Lane C intake: 3x cover 7 IPC ops (missing-asset được bảo vệ qua `isMessageNotExposed`); 2x thiếu busy/mtime/raw data |
 | `materialQuery` (effects/effect/material/serialized/render_pipeline/physics_material) | `assetReadContent` file `.mtl` | ❌ Lane C intake: 3x cover 6 IPC ops (facade + registry 3.7.3); 2.4 không có effect/render-pipeline API |
-| `buildManage` (5 ops) | — | ❌ 2.4 Build panel không expose qua bridge |
+| `buildManage` (5 ops) | — | ❌ 2.4 Build panel không expose qua Cocos Pilot |
 | `editorQuery has_script` | — | ⚠️ Lane C intake: 3x kiểm tra component class có script hay không qua `scene/query-component-has-script`; 2x chưa có message tương đương |
 | `cocos-graph` (offline structural oracle) | — | ❌ v3 có bộ chỉ mục cấu trúc offline T0/T1 (`.cocos-graph/<namespace>/<bundle>/graph.json`, composite handles `{file, nodeUuid}`, writer locking, staleness tracking); 2.4 chưa có |
 

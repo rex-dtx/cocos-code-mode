@@ -22,7 +22,7 @@ describe('live: manual & server — migrated from scripts/smoke-utcp.js', () => 
     assert.equal(r.body.tools.length, 86, `tools.length expected 86 got ${r.body.tools.length}`);
   });
 
-  it('config has ccp3x template, no duplicate ccb* URL', async (t) => {
+  it('config has ccp3x template, no duplicate ccp* URL', async (t) => {
     if (skipIfDown(t)) return;
     const cfgPath = process.env.UTCP_CONFIG_FILE || path.join(os.homedir(), '.utcp_config.json');
     const raw = fs.readFileSync(cfgPath, 'utf8');
@@ -30,9 +30,9 @@ describe('live: manual & server — migrated from scripts/smoke-utcp.js', () => 
     const names = (cfg.manual_call_templates || []).map(x => x.name);
     const has3x = names.some(n => /^ccp3x(_\d+)?$/.test(n));
     assert.ok(has3x, `ccp3x template present, found ${names.join(',')}`);
-    const isCcb = (n) => /^ccb[23]x(_\d+)?$/.test(n);
-    const urls = (cfg.manual_call_templates || []).filter(x => isCcb(x.name)).map(x => (x.url || '').replace(/\/utcp\/?$/, ''));
-    assert.equal(new Set(urls).size, urls.length, `ccb* duplicate URL: ${urls.join(',')}`);
+    const isCcp = (n) => /^ccb[23]x(_\d+)?$/.test(n);
+    const urls = (cfg.manual_call_templates || []).filter(x => isCcp(x.name)).map(x => (x.url || '').replace(/\/utcp\/?$/, ''));
+    assert.equal(new Set(urls).size, urls.length, `ccp* duplicate URL: ${urls.join(',')}`);
   });
 
   it('GET /build-info has commit/branch', async (t) => {

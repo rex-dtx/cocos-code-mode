@@ -80,7 +80,7 @@ const CLEAN = `const sc=cc.director.getScene();const M="__suite_tmp__";for(const
 
   // ── B. Injected globals ─────────────────────────────
   await test('B globals', 'B1 editor Editor.Project.path', E('return typeof Editor.Project.path === "string" && Editor.Project.path.length > 0'), 'ok', r => r === true);
-  await test('B globals', 'B2 editor Editor.Message bridge', E('const s = await Editor.Message.request("scene","query-current-scene"); return !!s'), 'ok', r => r === true);
+  await test('B globals', 'B2 editor Editor.Message', E('const s = await Editor.Message.request("scene","query-current-scene"); return !!s'), 'ok', r => r === true);
   await test('B globals', 'B3 editor fs/path/os', E('return typeof fs.readFileSync === "function" && typeof path.join === "function" && typeof os.homedir === "function"'), 'ok', r => r === true);
   await test('B globals', 'B4 editor require', E('return typeof require === "function"'), 'ok', r => r === true);
   await test('B globals', 'B5 scene cc', S('return typeof cc === "object" && cc !== null'), 'ok', r => r === true);

@@ -5,7 +5,7 @@ import packageJSON from '../../../package.json';
 // Editor preference tools — read/write persistent config via Editor.Profile.
 // Scoped to the cocos-pilot-3x extension's own profile keys. This is NOT project
 // settings (that lives in projectManage get/set); these are editor-side
-// persistence of bridge behavior (port, tool profile, envelope).
+// persistence of pilot behavior (port, tool profile, envelope).
 
 const KNOWN_KEYS: Record<string, string> = {
     serverPort: 'number — UTCP HTTP server port (0 = auto)',

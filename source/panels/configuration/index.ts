@@ -21,8 +21,8 @@ module.exports = Editor.Panel.define({
         // UTCP Config
         utcpConfigPathInput: '#utcp-config-path',
         utcpConfigPathSaveBtn: '#save-utcp-path-btn',
-        bridgeList: '#bridge-container',
-        addBridgeBtn: '#add-bridge-btn',
+        pilotList: '#pilot-container',
+        addPilotBtn: '#add-pilot-btn',
         newTemplateJson: '#new-template-json',
     },
 
@@ -43,7 +43,7 @@ module.exports = Editor.Panel.define({
             }
 
             this.updateMcpCodeBlock();
-            this.fetchBridgeList();
+            this.fetchPilotList();
         },
 
         async saveSettings() {
@@ -52,7 +52,7 @@ module.exports = Editor.Panel.define({
                 const configManager = getConfigManager();
                 await configManager.setConfigPath(newPath);
                 this.updateMcpCodeBlock();
-                this.fetchBridgeList(); // Reload templates from new path
+                this.fetchPilotList(); // Reload templates from new path
                 console.log('Saved UTCP Config Path:', newPath);
             }
         },
@@ -87,10 +87,10 @@ module.exports = Editor.Panel.define({
             codeEl.textContent = JSON.stringify(config, null, 2);
         },
 
-        fetchBridgeList() {
-            const container = this.$.bridgeList as HTMLElement;
+        fetchPilotList() {
+            const container = this.$.pilotList as HTMLElement;
             if (!container) {
-                console.warn('Bridge Config Container not found');
+                console.warn('Pilot Config Container not found');
                 return;
             }
 
@@ -116,12 +116,12 @@ module.exports = Editor.Panel.define({
                     const headerText = `${t.name} (${t.call_template_type})`;
 
                     html += `
-                    <ui-section class="bridge-item-section" data-name="${t.name}">
+                    <ui-section class="pilot-item-section" data-name="${t.name}">
                         <div slot="header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding-right: 10px;">
                             <ui-label>${headerText}</ui-label>
                             ${delBtn}
                         </div>
-                        <div class="bridge-item-content">
+                        <div class="pilot-item-content">
                              <ui-code language="json" readonly id="code-${t.name}"></ui-code>
                         </div>
                     </ui-section>
@@ -137,7 +137,7 @@ module.exports = Editor.Panel.define({
             }
         },
 
-        addBridgeTemplate() {
+        addPilotTemplate() {
             const input = this.$.newTemplateJson as any;
             if (!input) return;
             const content = input.value.trim();
@@ -165,14 +165,14 @@ module.exports = Editor.Panel.define({
                 (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates = templates;
                 configManager.writeConfig(config);
                 input.value = '';
-                this.fetchBridgeList();
+                this.fetchPilotList();
 
             } catch (e: any) {
                 alert('Invalid JSON: ' + e.message);
             }
         },
 
-        removeBridge(name: string) {
+        removePilotTemplate(name: string) {
             if (/^(ccp3x(_\d+)?|ccp2x(_\d+)?)$/.test(name)) return;
             if (!confirm(`Remove template ${name}?`)) return;
 
@@ -181,7 +181,7 @@ module.exports = Editor.Panel.define({
             if (config.manual_call_templates) {
                 config.manual_call_templates = config.manual_call_templates.filter((t: any) => t.name !== name);
                 configManager.writeConfig(config);
-                this.fetchBridgeList();
+                this.fetchPilotList();
             }
         },
     },
@@ -195,19 +195,19 @@ module.exports = Editor.Panel.define({
         const savePath = this.$.utcpConfigPathSaveBtn as HTMLElement;
         if (savePath) savePath.addEventListener('click', () => this.saveSettings());
 
-        const addBtn = this.$.addBridgeBtn as HTMLElement;
-        if (addBtn) addBtn.addEventListener('click', () => this.addBridgeTemplate());
+        const addBtn = this.$.addPilotBtn as HTMLElement;
+        if (addBtn) addBtn.addEventListener('click', () => this.addPilotTemplate());
 
-        const list = this.$.bridgeList as HTMLElement;
+        const list = this.$.pilotList as HTMLElement;
         if (list) {
             list.addEventListener('click', (e: any) => {
                 // Handle delete clicks
                 const btn = e.target.closest('.remove-btn');
                 if (btn) {
-                    // In new structure, btn is inside .bridge-item-content inside ui-section
-                    const section = btn.closest('.bridge-item-section');
+                    // In new structure, btn is inside .pilot-item-content inside ui-section
+                    const section = btn.closest('.pilot-item-section');
                     if (section && section.dataset.name) {
-                        this.removeBridge(section.dataset.name);
+                        this.removePilotTemplate(section.dataset.name);
                     }
                 }
             });

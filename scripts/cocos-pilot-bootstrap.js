@@ -15,7 +15,7 @@ const PERPORT_2X = /^ccp2x_\d+$/;
 // Max age before a cached entry that has not been re-probed live is marked stale.
 // Mirrors runbook §3 readiness: age_ms = now - fetchedAt; is_stale = age_ms > threshold.
 // Threshold env-overridable for tests. 24h matches plan P0 "without successful probe".
-const STALE_AFTER_MS = Number(process.env.COCOS_PILOT_CACHE_MAX_AGE_MS ?? process.env.CC_BRIDGE_CACHE_MAX_AGE_MS) || 24 * 60 * 60 * 1000;
+const STALE_AFTER_MS = Number(process.env.COCOS_PILOT_CACHE_MAX_AGE_MS) || 24 * 60 * 60 * 1000;
 
 function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } }
 

@@ -43,7 +43,7 @@ describe('live: executeJavascript — core capabilities (A-M)', () => {
   // ── B. Injected globals ────────────────────────
   describe('B injected globals', () => {
     it('B1 editor Editor.Project.path', async (t) => { if (skip(t)) return; const r = await exec('editor', 'return typeof Editor.Project.path === "string" && Editor.Project.path.length > 0'); assert.equal(r.ok, true); assert.equal(resVal(r.body), true); });
-    it('B2 editor Editor.Message bridge', async (t) => { if (skip(t)) return; const r = await exec('editor', 'const s = await Editor.Message.request("scene","query-current-scene"); return !!s'); assert.equal(r.ok, true); assert.equal(resVal(r.body), true); });
+    it('B2 editor Editor.Message', async (t) => { if (skip(t)) return; const r = await exec('editor', 'const s = await Editor.Message.request("scene","query-current-scene"); return !!s'); assert.equal(r.ok, true); assert.equal(resVal(r.body), true); });
     it('B3 editor fs/path/os', async (t) => { if (skip(t)) return; const r = await exec('editor', 'return typeof fs.readFileSync === "function" && typeof path.join === "function" && typeof os.homedir === "function"'); assert.equal(r.ok, true); assert.equal(resVal(r.body), true); });
     it('B4 editor require', async (t) => { if (skip(t)) return; const r = await exec('editor', 'return typeof require === "function"'); assert.equal(r.ok, true); assert.equal(resVal(r.body), true); });
     it('B5 scene cc', async (t) => { if (skip(t)) return; const r = await exec('scene', 'return typeof cc === "object" && cc !== null'); assert.equal(r.ok, true); assert.equal(resVal(r.body), true); });

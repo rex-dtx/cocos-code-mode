@@ -86,9 +86,9 @@ try {
     fidelity,
     performanceMs: Object.fromEntries(Object.entries(timings).map(([name, values]) => [name, { p50: percentile(values, 0.5), p95: percentile(values, 0.95), samples: values.length }])),
     workflow: {
-      baselineBridgeCalls: 1,
-      graphBridgeCalls: 0,
-      bridgeCallReductionPct: 100,
+      baselinePilotCalls: 1,
+      graphPilotCalls: 0,
+      pilotCallReductionPct: 100,
       baselineResponseBytes: liveBytes,
       graphResponseBytes: graphBytes,
       responseReductionPct: 100 * (1 - graphBytes / liveBytes),
