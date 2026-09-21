@@ -89,10 +89,11 @@ type Size = { width: number, height: number };
 type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alphaKeys: Array<{ alpha: number, time: number }>, mode: number }
 
 /**
- * Cocos Editor Tools — 46 tools (36 standalone + 10 consolidated)
- * Legacy inspector/scene/editor/build + preview/program/project shims removed in 2.0.x — use consolidated entry points.
+ * CC Bridge 3x — 322 tools (Creator 3.7.3) via ccb3x.<tool>() — see docs/tool-catalog.md for full catalog with status (stable/experimental/pending/disabled/deprecated) and groups.
  */
 declare namespace cc_bridge_3x {
+    /** Preview start scene (editor profile profiles/v2/packages/preview.json general.start_scene). get: read current preview start scene and resolve db:// URL. set: filesystem-backed experimental — validates scene asset, writes profile with snapshot/rollback and verifies read-back. Use for preview launch target. */
+    function previewStartSceneManage(args: { operation: "get" } | { operation: "set", sceneUuid: string }): { sceneUuid: string, url: string, file: string, previous?: string, _experimental?: string };
     /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSet, which replaces the whole array and loses object references. */
     function propertyArrayElement(args: {
         operation: "remove" | "move",
