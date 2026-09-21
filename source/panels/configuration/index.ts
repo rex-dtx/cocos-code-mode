@@ -1,3 +1,4 @@
+import type { RegistryTemplate } from '../../utcp/config-transaction';
 import packageJSON from '../../../package.json';
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
@@ -138,13 +139,13 @@ module.exports = Editor.Panel.define({
         },
 
         addPilotTemplate() {
-            const input = this.$.newTemplateJson as any;
+            const input = this.$.newTemplateJson as unknown as { value: string } | undefined;
             if (!input) return;
             const content = input.value.trim();
             if (!content) return;
 
             try {
-                let newTpl = JSON.parse(content);
+                const newTpl: RegistryTemplate = JSON.parse(content) as RegistryTemplate;
                 // Validate with @utcp/sdk or simple schema
                 if (!newTpl.name || !newTpl.call_template_type) {
                     alert('Invalid template. Must have name and call_template_type.');
@@ -161,14 +162,14 @@ module.exports = Editor.Panel.define({
                     return;
                 }
 
-                templates.push(newTpl as Record<string, unknown>);
-                (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates = templates;
+                templates.push(newTpl);
+                config.manual_call_templates = templates;
                 configManager.writeConfig(config);
                 input.value = '';
                 this.fetchPilotList();
 
-            } catch (e: any) {
-                alert('Invalid JSON: ' + e.message);
+            } catch (e: unknown) {
+                alert('Invalid JSON: ' + (e instanceof Error ? e.message : String(e)));
             }
         },
 
@@ -179,7 +180,7 @@ module.exports = Editor.Panel.define({
             const configManager = getConfigManager();
             const config = configManager.readConfig();
             if (config.manual_call_templates) {
-                config.manual_call_templates = config.manual_call_templates.filter((t: any) => t.name !== name);
+                config.manual_call_templates = config.manual_call_templates.filter((t) => t.name !== name);
                 configManager.writeConfig(config);
                 this.fetchPilotList();
             }

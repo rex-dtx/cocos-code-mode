@@ -2,7 +2,7 @@ import { promises as fs, readFileSync } from 'fs';
 import { dirname } from 'path';
 import { randomBytes } from 'crypto';
 
-interface RegistryTemplate { name: string; url?: string; [key: string]: unknown }
+export interface RegistryTemplate { name: string; url?: string; [key: string]: unknown }
 export interface Registry { manual_call_templates: RegistryTemplate[]; variables?: Record<string, string>; [key: string]: unknown }
 
 function isRegistry(value: unknown): value is Registry {

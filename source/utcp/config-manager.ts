@@ -25,6 +25,12 @@ export class UtcpConfigManager {
         this.configPath = path;
     }
     readConfig(): Registry { return readRegistry(this.getConfigPath()); }
+    writeConfig(config: Registry): void {
+        void mutateRegistry(this.getConfigPath(), (next) => {
+            next.manual_call_templates = config.manual_call_templates;
+            if ('variables' in config) next.variables = config.variables as Record<string, string>;
+        }).catch((e) => { console.warn('[ccp][config] writeConfig failed', e); });
+    }
     mutateConfig(mutator: (config: Registry) => void): Promise<boolean> {
         return mutateRegistry(this.getConfigPath(), mutator);
     }
