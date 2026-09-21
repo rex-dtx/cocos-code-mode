@@ -7,7 +7,8 @@
   "editor": ">=3.7.0",
   "scripts": {
     "preinstall": "node ./scripts/preinstall.js",
-    "build": "node ./scripts/generate-build-info.js && npx tsc && node scripts/check-creator-load.js",
+    "build": "node ./scripts/check-package-scripts.js && node ./scripts/generate-build-info.js && npx tsc && node scripts/check-creator-load.js",
+    "gen:catalog": "node ./scripts/generate-tool-catalog.js",
     "package": "npm run build && node ./scripts/package.js",
     "link:project": "node ./scripts/link-project-extension.js",
     "link:plans": "python ../../../_devtools/cfg-n-scripts/notes/08_System/mount_project_plans.py --here",
