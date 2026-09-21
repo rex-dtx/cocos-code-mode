@@ -49,6 +49,18 @@ If it still fails, report the error and call `editorGetLogs`; do not retry in a 
    `inspectorGet` node `Canvas` → `position`. Design 1280x720 fitHeight → Canvas tai `(640,360)`,
    `orthographicSize` = `designHeight/2` (=360). Design resolution: `projectManage get` → `general.designResolution`.
 
+## Tool catalog (bacd213, 321 tools) — status per tool
+
+Live catalog: `docs/tool-catalog.md` (generated 2026-09-21, bacd213). Summary:
+
+- **stable 273** — baseline/expansion (219) + portfolio qualified (54 live; +1 `bitmapFontImportSettingsAudit` gộp vào `assetImporterAudit`): dùng trực tiếp, smoke 10/10 pass. Groups: animation/asset/audio/build/editor/image/material/model/node/particle/physics2d/physics3d/prefab/runtime/scene/script/spine/sprite/terrain/tilemap/ui. Batch ưu tiên: `sceneBatchGet`, `assetBatchQuery`, `nodeBatchSet`.
+- **experimental 2** — `assetBundleValidate`, `localizationValidate` (implemented-unverified) — code có, thiếu live witness, pending verify.
+- **pending 3** — `renderConfigurationApply` (_globals read-back thiếu trên 3.7.3, chờ 3.8), `previewSessionStart`/`Stop` (preview-lifecycle disabled). Gọi vẫn 422 cho tới khi 3.8/fixture.
+- **disabled 23** — `audioPlaybackControl/Observe`, `particleConfigure/Playback`, `physics2d/3dConfigure`, `previewResolutionSet/SessionInspect`, `animationGraphPreview`, `skeletalAnimationPlay/Events`, `lightBakeManage`, `terrainEdit`, `localizationInspect/TableEdit/Preview`, `runtimeSessionLifecycle/StateObserve/ScenarioRun/Assert/WaitForState`, `renderDiagnosticsCollect`, `bitmapFontImportSettingsConfigure`. Probe đã chứng minh unsupported / owner-disable (`reports/api-capability-probe-20260920.json`, `api-capability-preview-disabled-reconciliation-20260920.json`) — typed 422, không retry loop.
+- **deprecated 6** — `prefabVariantCreate`, `tilemapCreate`, `tweenSequenceCreate/Inspect/Control/Validate` — không register live, cần redesign (lane R4 trong HOLD `openspec/changes/api-capability-resume` + `plans/3-hold-260921__tbd-api-capability-resume`).
+
+Khi tool trả 422 `UNSUPPORTED_EDITOR_API` / `PREVIEW_FEATURE_DISABLED`, không gọi lại — đọc `editorGetLogs` và chờ 3.8/fixture như HOLD plan.
+
 ## Manual names
 
 - `ccb3x` (+ `ccb3x_<port>` khi mo nhieu Editor Cocos 3.7 cung luc; `ccb3x` la latest, per-port cho target cu the). `ccb2x`/`ccb2x_<port>` — Creator 2.4 (nhanh `cc-2x`). Goi `ccb3x.nodeGetTree(...)` (latest) hoac `ccb3x_49650.nodeGetTree(...)` (per-editor). Cong hien thoi: manual ten truc tiep `ccb3x`/`ccb2x`, khong con hyphen/underscore alias.
