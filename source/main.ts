@@ -120,7 +120,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
 };
 
 export async function load() {
-    console.log('===========Loaded cc-bridge-3x===========');
+    console.log('===========Loaded cocos-pilot-3x===========');
     console.log(`[${packageJSON.name}] build ${formatBuildInfo()}`);
 
     // Initialize config manager
@@ -148,7 +148,7 @@ export async function load() {
         console.log(
             `[${packageJSON.name}] Ready: UTCP server listening at ${url}\n` +
             `[${packageJSON.name}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-            `[${packageJSON.name}] New AI sessions discover ccb3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
+            `[${packageJSON.name}] New AI sessions discover ccp3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
         );
     } catch (err) {
         console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);

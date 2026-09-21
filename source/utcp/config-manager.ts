@@ -8,10 +8,9 @@ import packageJSON from '../../package.json';
 
 export class UtcpConfigManager {
     private static instance: UtcpConfigManager;
-    private static readonly CANON = 'ccb3x';
-    private static readonly LEGACY = new Set(['cc-bridge-3x', 'cc3x7', 'ccb-3x', 'ccb_3x']);
+    private static readonly CANON = 'ccp3x';
+    private static readonly LEGACY_OLD = new Set(['cc-bridge-3x', 'cc-bridge-2x', 'cc-bridge', 'ccb3x', 'ccb2x', 'ccb-3x', 'ccb_3x', 'cc3x7', 'cc2x4']);
     private configPath: string = '';
-
     private constructor() {}
 
     static getInstance(): UtcpConfigManager {
@@ -44,20 +43,17 @@ export class UtcpConfigManager {
         console.log(`[UtcpConfigManager] Config path updated to: ${path}`);
     }
 
-    readConfig(): any {
+    readConfig(): Record<string, unknown> & { manual_call_templates?: Array<Record<string, unknown>> } {
         const path = this.getConfigPath();
         if (path && existsSync(path)) {
             try {
                 const content = readFileSync(path, 'utf-8');
-                const parsed = JSON.parse(content);
-                // Strict cutover: legacy names are no longer supported. If the
-                // file still carries any, purge them now so they can never cause
-                // a duplicate URL / double tool registration again.
+                const parsed = JSON.parse(content) as Record<string, unknown>;
                 if (this.purgeLegacyIfNeeded(parsed)) {
                     this.writeConfig(parsed);
-                    console.log('[UtcpConfigManager] Purged legacy cc-bridge templates (cutover to ccb3x/ccb2x only)');
+                    console.log('[UtcpConfigManager] Purged legacy templates (cutover to ccp3x/ccp2x only)');
                 }
-                return parsed;
+                return parsed as Record<string, unknown> & { manual_call_templates?: Array<Record<string, unknown>> };
             } catch (e) {
                 console.error('[UtcpConfigManager] Failed to parse UTCP config:', e);
                 return { manual_call_templates: [] };
@@ -67,23 +63,27 @@ export class UtcpConfigManager {
     }
 
     /**
-     * Returns true if any legacy entry was removed. The caller must persist
-     * the config when true.
+     * Returns true if any legacy entry was removed. Hard cut 2.1.0: ccb* is now legacy.
      */
-    private purgeLegacyIfNeeded(config: any): boolean {
-        if (!Array.isArray(config.manual_call_templates)) return false;
-        const before = config.manual_call_templates.length;
-        const VALID = /^ccb[23]x(_\d+)?$/;
-        config.manual_call_templates = config.manual_call_templates.filter((t: any) => {
-            const name: string = t.name || '';
-            // Keep non-ccb entries (other MCP servers) and valid ccb* names.
-            if (!name.startsWith('ccb') && !name.startsWith('cc-bridge') && name !== 'cc3x7' && name !== 'cc2x4') return true;
-            return VALID.test(name);
+    private purgeLegacyIfNeeded(config: Record<string, unknown>): boolean {
+        const raw = (config as { manual_call_templates?: unknown }).manual_call_templates;
+        if (!Array.isArray(raw)) return false;
+        const list = raw as Array<Record<string, unknown>>;
+        const before = list.length;
+        const VALID = /^ccp[23]x(_\d+)?$/;
+        const filtered = list.filter((t) => {
+            const name = typeof t['name'] === 'string' ? (t['name'] as string) : '';
+            if (UtcpConfigManager.LEGACY_OLD.has(name)) return false;
+            if (name.startsWith('ccb') || name.startsWith('cc-bridge') || name === 'cc3x7' || name === 'cc2x4') return false;
+            if (name === 'ccp3x' || name === 'ccp2x' || name.startsWith('ccp3x_') || name.startsWith('ccp2x_')) return VALID.test(name);
+            if (name.startsWith('ccp') || name.startsWith('cocos-pilot')) return VALID.test(name);
+            return true;
         });
-        return config.manual_call_templates.length !== before;
+        (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates = filtered;
+        return filtered.length !== before;
     }
 
-    writeConfig(config: any): void {
+    writeConfig(config: Record<string, unknown>): void {
         const path = this.getConfigPath();
         if (!path) {
             console.error('[UtcpConfigManager] Config path is not set');
@@ -102,7 +102,7 @@ export class UtcpConfigManager {
         return m ? Number(m[1]) : 0;
     }
 
-    private makeTemplate(name: string, port: number): any {
+    private makeTemplate(name: string, port: number): Record<string, unknown> {
         return {
             name,
             call_template_type: 'http',
@@ -113,14 +113,10 @@ export class UtcpConfigManager {
     }
 
     /**
-     * Multi-editor rendezvous. The config file is shared between every running
-     * editor and every Claude terminal, so each editor gets its own entry keyed
-     * by port: `ccb3x_<port>`. The bare canonical name `ccb3x` is a "latest"
-     * pointer kept for backward compat with `ccb3x.*` prompts.
+     * Multi-editor rendezvous. Each editor gets its own entry keyed by port: `ccp3x_<port>`.
+     * Hard cut 2.1.0: no ccb* alias, only ccp3x.
      *
-     * Invariant: no two entries share a URL — that is what caused the double
-     * tool registration. When this editor becomes active it claims the bare
-     * `ccb3x` name and demotes the previous latest to `ccb3x_<itsPort>`.
+     * Invariant: no two entries share a URL.
      */
     async ensureCocosEditorTemplate(port: number): Promise<boolean> {
         if (!port || port <= 0) {
@@ -129,39 +125,37 @@ export class UtcpConfigManager {
         }
 
         const config = this.readConfig();
-        const list: any[] = Array.isArray(config.manual_call_templates) ? config.manual_call_templates : [];
+        const list = Array.isArray(config.manual_call_templates) ? config.manual_call_templates as Array<Record<string, unknown>> : [];
         const before = JSON.stringify(list);
 
         const CANON = UtcpConfigManager.CANON;
-        const LEGACY = UtcpConfigManager.LEGACY;
 
-        // Keep non-cc-bridge-3x entries untouched (other MCP servers, the 2x
-        // generation, user-added templates, etc.).
-        const is3xFamily = (t: any) =>
-            LEGACY.has(t.name) ||
-            t.name === CANON ||
-            (typeof t.name === 'string' && t.name.startsWith(`${CANON}_`));
+        const is3xFamily = (t: Record<string, unknown>): boolean =>
+            UtcpConfigManager.LEGACY_OLD.has(typeof t['name'] === 'string' ? (t['name'] as string) : '') ||
+            t['name'] === CANON ||
+            (typeof t['name'] === 'string' && (t['name'] as string).startsWith(`${CANON}_`));
 
         const others = list.filter((t) => !is3xFamily(t));
         const family = list.filter((t) => is3xFamily(t));
 
-        const rebuilt: any[] = [];
+        const rebuilt: Array<Record<string, unknown>> = [];
         for (const t of family) {
-            if (LEGACY.has(t.name)) continue; // drop legacy names
-            const tPort = this.portOf(t.url);
-            if (t.name === CANON) {
-                if (tPort === port) continue; // it's me restarting; rewrite below
-                rebuilt.push(this.makeTemplate(`${CANON}_${tPort}`, tPort)); // demote previous latest
-            } else if (t.name === `${CANON}_${port}` || tPort === port) {
-                continue; // stale/duplicate entry for my own port
+            if (UtcpConfigManager.LEGACY_OLD.has(typeof t['name'] === 'string' ? (t['name'] as string) : '')) continue;
+            const tPort = this.portOf(typeof t['url'] === 'string' ? (t['url'] as string) : '');
+            const tName = typeof t['name'] === 'string' ? (t['name'] as string) : '';
+            if (tName === CANON) {
+                if (tPort === port) continue;
+                rebuilt.push(this.makeTemplate(`${CANON}_${tPort}`, tPort));
+            } else if (tName === `${CANON}_${port}` || tPort === port) {
+                continue;
             } else {
-                rebuilt.push(t); // another live editor
+                rebuilt.push(t);
             }
         }
-        rebuilt.push(this.makeTemplate(CANON, port)); // claim the latest pointer
+        rebuilt.push(this.makeTemplate(CANON, port));
 
-        config.manual_call_templates = [...others, ...rebuilt];
-        const changed = JSON.stringify(config.manual_call_templates) !== before;
+        (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates = [...others, ...rebuilt];
+        const changed = JSON.stringify((config as { manual_call_templates: unknown }).manual_call_templates) !== before;
         if (changed) {
             this.writeConfig(config);
             console.log(`[UtcpConfigManager] ${CANON} -> ${port} (latest); other editors kept as ${CANON}_<port>`);
@@ -170,36 +164,33 @@ export class UtcpConfigManager {
     }
 
     /**
-     * Called on editor unload: drop this editor's entries. If it held the bare
-     * `ccb3x` latest pointer, promote a remaining per-port editor so `ccb3x.*`
-     * keeps resolving instead of pointing at a dead server.
+     * Called on editor unload: drop this editor's entries.
      */
     async removeCocosEditorTemplate(port: number): Promise<boolean> {
         if (!port || port <= 0) return false;
 
         const config = this.readConfig();
         if (!Array.isArray(config.manual_call_templates)) return false;
-        const list: any[] = config.manual_call_templates;
+        const list = config.manual_call_templates as Array<Record<string, unknown>>;
         const before = JSON.stringify(list);
 
         const CANON = UtcpConfigManager.CANON;
 
-        // Drop my per-port entry.
-        config.manual_call_templates = list.filter((t: any) => t.name !== `${CANON}_${port}`);
+        (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates = list.filter((t) => t['name'] !== `${CANON}_${port}`);
 
-        // If I was the latest, remove the bare pointer and promote a survivor.
-        const bareIdx = config.manual_call_templates.findIndex((t: any) => t.name === CANON);
-        if (bareIdx !== -1 && this.portOf(config.manual_call_templates[bareIdx].url) === port) {
-            config.manual_call_templates.splice(bareIdx, 1);
-            const nextIdx = config.manual_call_templates.findIndex(
-                (t: any) => typeof t.name === 'string' && t.name.startsWith(`${CANON}_`)
+        const arr = (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates;
+        const bareIdx = arr.findIndex((t) => t['name'] === CANON);
+        if (bareIdx !== -1 && this.portOf(typeof arr[bareIdx]['url'] === 'string' ? (arr[bareIdx]['url'] as string) : '') === port) {
+            arr.splice(bareIdx, 1);
+            const nextIdx = arr.findIndex(
+                (t) => typeof t['name'] === 'string' && (t['name'] as string).startsWith(`${CANON}_`)
             );
             if (nextIdx !== -1) {
-                config.manual_call_templates[nextIdx].name = CANON; // promote a survivor
+                arr[nextIdx]['name'] = CANON;
             }
         }
 
-        const changed = JSON.stringify(config.manual_call_templates) !== before;
+        const changed = JSON.stringify((config as { manual_call_templates: unknown }).manual_call_templates) !== before;
         if (changed) this.writeConfig(config);
         return changed;
     }

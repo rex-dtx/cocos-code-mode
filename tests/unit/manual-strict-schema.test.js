@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { readSource, requireDist } = require('../helpers/require-dist');
 
-// Plan 1-wip-260831__tbd-ccb3x-manual-schema-compatibility
+// Plan 1-wip-260831__tbd-ccp3x-manual-schema-compatibility
 // Code Mode validates each tool with a strict schema: any extra per-tool key
 // (notably `annotations`) fails registration for EVERY tool, not just itself.
 // Profile metadata must stay in ToolProfileRegistry, never in the UTCP manual.
@@ -75,8 +75,8 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.equal(labels.some((l) => /reload/i.test(l)), false, 'menu must not contain Reload Extension');
   });
 
-  it('ccb3x bootstrap has strict dedup (no duplicate template/URL)', () => {
-    const src = fs.readFileSync(path.resolve(__dirname, '..', '..', 'scripts', 'cc-bridge-bootstrap.js'), 'utf8');
+  it('ccp3x bootstrap has strict dedup (no duplicate template/URL)', () => {
+    const src = fs.readFileSync(path.resolve(__dirname, '..', '..', 'scripts', 'cocos-pilot-bootstrap.js'), 'utf8');
     assert.match(src, /byUrl\.get\(base\)/, 'bootstrap must dedup by URL');
     // Consolidated bootstrap keeps the same invariant (dedup by URL, canonical
     // wins for same base) but phrases the comment as buildCache liveness.
@@ -86,7 +86,7 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
       true,
       'bootstrap must prefer bare canonical / live probe over stale alias'
     );
-    assert.match(src, /CANON_3X = 'ccb3x'/, 'bootstrap must use strict ccb3x canonical');
+    assert.match(src, /CANON_3X = 'ccp3x'/, 'bootstrap must use strict ccp3x canonical');
     assert.equal(/m\.name === canon/.test(src) || /cacheKeyFor/.test(src), true, 'bootstrap must prefer canonical name for same URL');
   });
 });

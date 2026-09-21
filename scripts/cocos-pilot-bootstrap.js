@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-// cc-bridge-bootstrap — SessionStart hook: fetch live cc-bridge manuals from
-// ~/.utcp_config.json and cache tool metadata to .claude/cc-bridge-cache.json.
+// cocos-pilot-bootstrap — SessionStart hook: fetch live cocos-pilot manuals from
+// ~/.utcp_config.json and cache tool metadata to .claude/cocos-pilot-cache.json.
 // It never registers manuals in the Code Mode MCP process; agents do that per session.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const http = require('http');
 
-const CANON_3X = 'ccb3x';
-const CANON_2X = 'ccb2x';
-const PERPORT_3X = /^ccb3x_\d+$/;
-const PERPORT_2X = /^ccb2x_\d+$/;
+const CANON_3X = 'ccp3x';
+const CANON_2X = 'ccp2x';
+const PERPORT_3X = /^ccp3x_\d+$/;
+const PERPORT_2X = /^ccp2x_\d+$/;
 
 // Max age before a cached entry that has not been re-probed live is marked stale.
 // Mirrors runbook §3 readiness: age_ms = now - fetchedAt; is_stale = age_ms > threshold.
@@ -67,7 +67,7 @@ function cacheKeyFor(m) {
 
 /**
  * Pure core: merge prior disk cache with this run's probes.
- * - Per-manual independence: ccb3x and ccb2x (and per-port keys) are decided separately.
+ * - Per-manual independence: ccp3x and ccp2x (and per-port keys) are decided separately.
  * - Live probe → write authoritative entry with fetchedAt/age_ms:0.
  * - Dead probe + prior authoritative entry → retain prior, update age_ms + stale marker, never clobber count.
  * - Dead probe + no prior → tombstone (authoritative:false), never an authoritative 0 entry.
@@ -207,7 +207,7 @@ async function main() {
 
   const projectRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   const claudeDir = path.join(projectRoot, '.claude');
-  const cachePath = path.join(claudeDir, 'cc-bridge-cache.json');
+  const cachePath = path.join(claudeDir, 'cocos-pilot-cache.json');
   const priorCache = readJson(cachePath);
   const now = new Date();
 
@@ -231,7 +231,7 @@ async function main() {
     .filter((v) => v.authoritative !== false && v.live !== false)
     .reduce((s, v) => s + (v.toolCount || 0), 0);
   const staleNote = Object.values(cache.manuals).some((v) => v.stale) ? ' (stale)' : '';
-  console.log(`[cc-bridge-bootstrap] cached ${names} (${liveTotal} live tools) → .claude/cc-bridge-cache.json${staleNote}`);
+  console.log(`[cocos-pilot-bootstrap] cached ${names} (${liveTotal} live tools) → .claude/cocos-pilot-cache.json${staleNote}`);
 }
 
 // Test seam: pure helpers + core. main() path stays fs/http-coupled as before.

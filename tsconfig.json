@@ -10,6 +10,6 @@
     },
     "exclude": [
         "cocos-engine",
-        "cc-bridge-3x.d.ts"
+        "cocos-pilot-3x.d.ts"
     ]
 }

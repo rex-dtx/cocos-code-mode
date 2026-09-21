@@ -1,7 +1,7 @@
 // Instance reference should newer be kept in memory
 // Agent-facing tool surface for Cocos Creator 3.7.x.
-// Manual: cc-bridge-3x (UTCP, hyphen). JS: cc_bridge_3x (underscore).
-// Short: ccb3x (compat: ccb-3x / ccb_3x). Recommended: ccb3x.
+// Manual: cocos-pilot-3x (UTCP, hyphen). JS: cocos_pilot_3x (underscore).
+// Short: ccp3x (compat: ccp-3x / ccp_3x). Recommended: ccp3x.
 // STATIC hand-written. See source/utcp/tools/*.ts for impl.
 
 type InstanceReference = { id: string; type: string };
@@ -56,7 +56,7 @@ type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alph
  * Cocos Editor Tools — 46 tools (36 standalone + 10 consolidated)
  * Legacy inspector/scene/editor/build + preview/program/project shims removed in 2.0.x — use consolidated entry points.
  */
-declare namespace cc_bridge_3x {
+declare namespace cocos_pilot_3x {
     /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSet, which replaces the whole array and loses object references. */
     function propertyArrayElement(args: {
         operation: "remove" | "move",
@@ -311,6 +311,6 @@ declare namespace cc_bridge_3x {
     function buildManage(args: { operation: "panel_open" | "tasks_info" | "get_task" | "trigger" | "control", panel?: string, taskId?: string, options?: any, control?: "break" | "remove" | "recompile" }): any;
 }
 
-// Aliases: ccb3x is recommended short (no hyphen/underscore). ccb_3x / ccb-3x kept for compat.
-import ccb3x = cc_bridge_3x;
-import ccb_3x = cc_bridge_3x;
+// Aliases: ccp3x is recommended short (no hyphen/underscore). ccp_3x / ccp-3x kept for compat.
+import ccp3x = cocos_pilot_3x;
+import ccp_3x = cocos_pilot_3x;

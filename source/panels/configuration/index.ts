@@ -74,7 +74,7 @@ module.exports = Editor.Panel.define({
 
             const config = {
                 "mcpServers": {
-                    "cc-bridge": {
+                    "cocos-pilot": {
                         "command": "npx",
                         "args": ["-y", "@utcp/code-mode-mcp"],
                         "env": {
@@ -106,7 +106,7 @@ module.exports = Editor.Panel.define({
             } else {
                 let html = '';
                 templates.forEach((t: any) => {
-                const isCocos = /^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(t.name);
+                const isCocos = /^(ccp3x(_\d+)?|ccp2x(_\d+)?)$/.test(t.name);
                     const delBtn = isCocos
                         ? `` // No delete for Cocos
                         : `<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove Template">
@@ -153,14 +153,16 @@ module.exports = Editor.Panel.define({
 
                 const configManager = getConfigManager();
                 const config = configManager.readConfig();
+                const templates = config.manual_call_templates ?? [];
 
                 // Check duplicates
-                if (config.manual_call_templates.find((t: any) => t.name === newTpl.name)) {
+                if (templates.find((t) => (t['name'] as string) === newTpl.name)) {
                     alert(`Template ${newTpl.name} already exists.`);
                     return;
                 }
 
-                config.manual_call_templates.push(newTpl);
+                templates.push(newTpl as Record<string, unknown>);
+                (config as { manual_call_templates: Array<Record<string, unknown>> }).manual_call_templates = templates;
                 configManager.writeConfig(config);
                 input.value = '';
                 this.fetchBridgeList();
@@ -171,7 +173,7 @@ module.exports = Editor.Panel.define({
         },
 
         removeBridge(name: string) {
-            if (/^(ccb3x(_\d+)?|ccb2x(_\d+)?)$/.test(name)) return;
+            if (/^(ccp3x(_\d+)?|ccp2x(_\d+)?)$/.test(name)) return;
             if (!confirm(`Remove template ${name}?`)) return;
 
             const configManager = getConfigManager();

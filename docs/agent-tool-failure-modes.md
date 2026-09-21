@@ -99,7 +99,7 @@ Chưa audit hết. Pattern cần soi trong `source/utcp/tools/`:
 - tool trả `{success:true}` mà không kiểm tra kết quả thật
 
 <!-- §2-audited -->
-**Đã audit 2026-09-04** (`feat/ccb3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`):
+**Đã audit 2026-09-04** (`feat/ccp3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`):
 quét toàn bộ `source/utcp/tools/` theo 4 mẫu trên. Kết quả: 0 `catch {}` rỗng còn lại
 (best-effort/probe gắn comment chủ ý); false-success bịt ở `set-property`,
 `restore-prefab`, `move-array-element`, `add-task`, `animation-operation`,
@@ -197,7 +197,7 @@ Suite này unblock việc khác: port fix sang branch mới → chạy suite tha
 Ước lượng ~200 LOC, không framework, không fixture. Chạy sau mỗi lần restart editor.
 
 <!-- §5-built -->
-**Đã dựng 2026-09-04** (`feat/ccb3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`): cả 2 tầng
+**Đã dựng 2026-09-04** (`feat/ccp3x-fail-loud-smoke`, `plans/260904-fail-loud-smoke/`): cả 2 tầng
 trên nằm trong `scripts/smoke-utcp.js` (tier manual + tier fail-loud typed-body) kèm stale-build
 assert `/build-info` vs `git rev-parse --short HEAD`; guard chạy CI:
 `tests/unit/fail-loud-contract.test.js`.
@@ -245,7 +245,7 @@ Hai lỗi runtime 2026-09-01 cho thấy fail-loud chỉ là nửa contract:
 | `projectManage({ operation: 'set' })` | Creator 3.7 không có `project/set-config` | stack + message dài | chỉnh `settings/v2/packages/*.json`; chỉ dùng IPC write trên Creator 3.8 sau live verify |
 | `nodeGetTree` | Node UUID không thuộc scene đang mở (hoặc trong prefab đóng) | generic 500 "Node tree not found for ..." | `TARGET_NOT_FOUND` (404): kiểm tra `sceneGetInfo`, chuyển scene qua `sceneOpen`, hoặc đọc offline qua `readPrefabJson` / `cocos-graph navigate` |
 | `nodeGetTree` | Truyền nhầm composite handle (`file#uuid`) từ cache | 500 không tìm thấy | `COMPOSITE_HANDLE_NOT_SUPPORTED` (400): tách `file` và truyền bare engine UUID |
-Agent không nên parse stack trace hay suy luận từ English message. CC Bridge trả lỗi domain có shape ổn định:
+Agent không nên parse stack trace hay suy luận từ English message. Cocos Pilot trả lỗi domain có shape ổn định:
 
 ```json
 {

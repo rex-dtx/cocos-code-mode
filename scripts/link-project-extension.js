@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const extensionName = 'cc-bridge-3x';
+const extensionName = 'cocos-pilot-3x';
 const repositoryRoot = path.resolve(__dirname, '..');
 
 function backupPathFor(destination) {
@@ -48,7 +48,7 @@ function usage() {
   return [
     'Usage: npm run link:project -- <path-to-cocos-project> [--replace]',
     '',
-    '--replace  Rename an existing cc-bridge-3x directory to a timestamped backup before linking.',
+    '--replace  Rename an existing cocos-pilot-3x directory to a timestamped backup before linking.',
   ].join('\n');
 }
 
