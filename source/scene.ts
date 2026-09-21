@@ -45,18 +45,32 @@ function _writeSceneLog(level: 'log' | 'warn' | 'error', data: unknown[]): void 
     } catch {}
 }
 
-function getSceneExecuteGlobals(): Record<string, any> {
+function getSceneExecuteGlobals(): Record<string, unknown> {
     // Inject scene-renderer globals explicitly — new Function has no closure access.
     // `cc`/`cce`/`document` are reliably present in the editor scene; `require` is
     // guarded because fs may be unavailable in some scene sub-contexts.
-    // `sp` is the Spine namespace (sp.Skeleton) — not on cc, must be injected.
-    const g = globalThis as any;
+    // `sp` is the Spine namespace (sp.Skeleton) — global in editor, not on cc.
+    // If the Spine module hasn't loaded, synthesize sp.Skeleton so `sp.Skeleton`
+    // and `instanceof sp.Skeleton` don't throw (Right-hand side of 'instanceof' is not an object).
+    const g = globalThis as Record<string, unknown>;
+    const ccNs = g['cc'] as Record<string, unknown> | undefined;
+    const jsNs = ccNs?.['js'] as { getClassByName?: (n: string) => unknown } | undefined;
+    let spNs = (g['sp'] as Record<string, unknown> | undefined) ?? (ccNs?.['sp'] as Record<string, unknown> | undefined);
+    const skel = jsNs?.getClassByName?.('sp.Skeleton') ?? jsNs?.getClassByName?.('cc.Skeleton') ?? undefined;
+    if (!spNs || typeof spNs['Skeleton'] !== 'function') {
+        if (typeof skel === 'function') {
+            spNs = { ...(spNs ?? {}), Skeleton: skel } as Record<string, unknown>;
+        } else {
+            const dummyCtor = function DummySkeleton(): void {};
+            spNs = { ...(spNs ?? {}), Skeleton: dummyCtor } as Record<string, unknown>;
+        }
+    }
     return {
-        cc: g['cc'],
+        cc: ccNs,
         cce: g['cce'],
-        sp: g['sp'] ?? g.cc?.['sp'] ?? undefined,
-        document,
-        require: typeof require === 'function' ? require : undefined,
+        sp: spNs,
+        document: g['document'],
+        require: typeof g['require'] === 'function' ? g['require'] : undefined,
     };
 }
 
