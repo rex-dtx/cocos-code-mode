@@ -34,3 +34,5 @@ plans/
 
 # Cocos scene graph offline cache
 .cocos-graph/
+*.imported-backup-*/
+docs/architecture-identity.md
