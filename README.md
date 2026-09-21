@@ -252,7 +252,7 @@ Register the class by importing it in `utcp-server.ts`. Tools are served automat
 
 ## UTCP Call Templates Configuration
 
-The extension provides a **Configuration** panel in the **Cocos Pilot 3x** menu. It shows the current server port, the path to the UTCP config file, and lets you manage additional UTCP call templates for the Code Mode MCP bridge.
+The extension provides a **Configuration** panel in the **Cocos Pilot 3x** menu. It shows the current server port, the path to the UTCP config file, and lets you manage additional UTCP call templates for the Code Mode MCP.
 
 You can find Call Template structures in [UTCP documentation](https://www.utcp.io/protocols):
 - [MCP Call Template](https://utcp.io/protocols/mcp#call-template-structure)
@@ -282,7 +282,7 @@ See [Cocos Pilot with Code Mode MCP](docs/cocos-pilot-code-mode-usage.md) for co
 
 ## Code Mode MCP Integration
 
-Cocos Pilot exposes its Cocos Creator tools through a UTCP manual. The [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) registers that manual for an AI client. Configure the bridge, then have the agent call `register_manual` and verify with `list_tools`.
+Cocos Pilot exposes its Cocos Creator tools through a UTCP manual. The [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) registers that manual for an AI client. Configure Cocos Pilot, then have the agent call `register_manual` and verify with `list_tools`.
 
 ### MCP Server Config
 
