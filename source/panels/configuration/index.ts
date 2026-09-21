@@ -74,7 +74,7 @@ module.exports = Editor.Panel.define({
 
             const config = {
                 "mcpServers": {
-                    "cocos-pilot": {
+                    "cc-pilot": {
                         "command": "npx",
                         "args": ["-y", "@utcp/code-mode-mcp"],
                         "env": {

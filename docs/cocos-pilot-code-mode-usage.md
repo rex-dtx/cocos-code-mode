@@ -21,7 +21,7 @@ Add `cmm` (`@utcp/code-mode-mcp`) to the AI client. `cocos-pilot` is the **MCP s
 ```json
 {
   "mcpServers": {
-    "cocos-pilot": {
+    "cc-pilot": {
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
       "env": {

@@ -289,7 +289,7 @@ Cocos Pilot exposes its Cocos Creator tools through a UTCP manual. The [Code Mod
 ```json
 {
   "mcpServers": {
-    "cocos-pilot": {
+    "cc-pilot": {
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
       "env": {
@@ -306,10 +306,10 @@ To register Code Mode MCP for a Claude Code agent, open your project and run:
 
 Linux/MacOS:
 ``` bash
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- cocos-pilot npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- cc-pilot npx @utcp/code-mode-mcp
 ```
 
 Windows:
 ``` powershell
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- cocos-pilot cmd /c npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- cc-pilot cmd /c npx @utcp/code-mode-mcp
 ```

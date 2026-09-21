@@ -12,9 +12,9 @@
 | 4 | `ccbr` | Cocos Pilot Registry | `~/.utcp_config.json` + lock `<config>.ccp-lock` + `CCP3X_OWNER_<port>` | `ccbr entry ccp3x_49650 owner=abc123` | Atomic read-modify-write + fsync + rename |
 | 5 | `ccbt` | Cocos Pilot Toolset | 321 tools trong `cocos-pilot-3x.d.ts` + `docs/tool-catalog.md` | `ccbt:321 (273 stable / 2 exp / 3 pending / 23 disabled)` | Theo `docs/tool-catalog.md` header |
 | 6 | `cm` | Code Mode | Paradigm — gọi tool bằng TS trong `call_tool_chain`, không phải MCP tool rời | `cm:js sandbox call_tool_chain` | Khái niệm, không phải process |
-| 7 | `cmm` | Code Mode MCP | Adapter generic `@utcp/code-mode-mcp` chạy như MCP server | `cmm key=cocos-pilot pkg=@utcp/code-mode-mcp` | `mcpServers.cocos-pilot.args = ["@utcp/code-mode-mcp"]` |
+| 7 | `cmm` | Code Mode MCP | Adapter generic `@utcp/code-mode-mcp` chạy như MCP server | `cmm key=cc-pilot pkg=@utcp/code-mode-mcp` | `mcpServers.cc-pilot.args = ["@utcp/code-mode-mcp"]` |
 | 8 | `utcp` | UTCP | Protocol HTTP `GET/POST /utcp` + `@utcpTool` schema | `utcp manual http://localhost:49650/utcp` | Khai báo bằng `@utcpTool` trong `source/utcp/tools/*` |
-| 9 | `mcp` | MCP | Protocol stdio giữa Agent ↔ `cmm` | `mcpServers.cocos-pilot` (key do client đặt) | Không phải product, là transport |
+| 9 | `mcp` | MCP | Protocol stdio giữa Agent ↔ `cmm` | `mcpServers.cc-pilot` (key do client đặt) | Không phải product, là transport |
 | 10 | `exs` | Express Server | `express@4.21.2` bên trong `ccbe` | `exs:49650` | Chi tiết nội bộ của `ccbe`, chỉ dùng trong log |
 | 11 | `bd` | Binding | Tuple `ccbi + projectPath + iid` sau `editorHandshake` | `bd:ccp3x_49650#abc123 project=G:/proj/my-game` | `projectMatches:true && probe.status:responsive` mới mutate |
 | 12 | `prs` | Presence | `scripts/session-presence/*` + `editorSessionHeartbeat` | `prs:Active 5s session=uuid` | Advisory, không phải lock |
@@ -86,7 +86,7 @@ Nguồn: `docs/cocos-pilot-code-mode-usage.md:99-179`.
 ## 4) Quy tắc đặt tên trong plan/spec/code
 
 - Trong plan/spec: viết `ccbi:ccp3x_49650.editorHandshake()` không phải `ccb.handshake()`. Viết `cmm.register(ccbi)` không phải `ccb register`.
-- Trong config: `mcpServers.cocos-pilot` là **MCP server key** (do client đặt) trỏ tới `cmm` package `@utcp/code-mode-mcp`; `ccbr` path qua `UTCP_CONFIG_FILE`.
+- Trong config: `mcpServers.cc-pilot` là **MCP server key** (do client đặt) trỏ tới `cmm` package `@utcp/code-mode-mcp`; `ccbr` path qua `UTCP_CONFIG_FILE`.
 - Trong doc/skill: khi nói code artifact dùng `ccbe`; khi nói runtime instance dùng `ccbi:ccp3x_<port>`; khi nói tập tool dùng `ccbt`.
 - Không hardcode `port`; lấy từ `ccbr` hoặc panel Status. Không dùng bare `ccp3x`/`ccp2x` để chọn latest.
 - Khi log: prefix `cce`/`ccbe`/`ccbi`/`ccbr`/`cmm`/`bd`/`prs` để greppable.
@@ -117,7 +117,7 @@ const tree = await ccp3x_49650.nodeGetTree({ maxDepth: 2, fields: ['name','activ
 // mcp (key) → cmm (adapter) → ccbr (registry)
 {
   "mcpServers": {
-    "cocos-pilot": {
+    "cc-pilot": {
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
       "env": { "UTCP_CONFIG_FILE": "~/.utcp_config.json" }
