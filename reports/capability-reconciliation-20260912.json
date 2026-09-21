@@ -10,7 +10,7 @@
   },
   "compiledBuild": {
     "commit": "52bede2",
-    "branch": "feat/ccb3x-api-capability-expansion",
+    "branch": "feat/ccp3x-api-capability-expansion",
     "dirty": true,
     "builtAt": "2026-09-12T08:43:19.561Z"
   },
@@ -98,7 +98,7 @@
     "lastObservedManualBuild": {
       "version": "2.0.0",
       "commit": "52bede2",
-      "branch": "feat/ccb3x-api-capability-expansion",
+      "branch": "feat/ccp3x-api-capability-expansion",
       "dirty": true,
       "builtAt": "2026-09-12T08:43:19.561Z"
     },
@@ -1407,14 +1407,14 @@
   "resolvedReloadIncident": {
     "action": "Restore Creator extension/server; then load rebuilt main and scene modules, refresh manual, and execute positive/negative geometry and build task witnesses.",
     "observed": "Editor.Package.disable/enable returned; project.log shows disable at 15:21:42 and UTCP Server stopped at 15:21:46, no corresponding enable. Ports49650/49651/49652 unreachable; Creator process remains running.",
-    "recovery": "CC Bridge 3x > Restart Server if menu is available, otherwise enable extension in Extension Manager or restart Creator with user-controlled save."
+    "recovery": "Cocos Pilot 3x > Restart Server if menu is available, otherwise enable extension in Extension Manager or restart Creator with user-controlled save."
   },
   "reloadRecovery": {
     "method": "await Package.disable; evict only extension dist require-cache keys; await Package.enable from deferred callback",
     "verifiedBuild": {
       "version": "2.0.0",
       "commit": "52bede2",
-      "branch": "feat/ccb3x-api-capability-expansion",
+      "branch": "feat/ccp3x-api-capability-expansion",
       "dirty": true,
       "builtAt": "2026-09-12T08:43:19.561Z"
     },

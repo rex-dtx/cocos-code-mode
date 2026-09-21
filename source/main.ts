@@ -2,10 +2,10 @@ import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
 import { closeArtifactServers } from './utcp/tools/artifact-server-tools';
 import { getConfigManager } from './utcp/config-manager';
-import { formatBuildInfo, getBuildInfo } from './build-info';
+import { formatBuildInfo } from './build-info';
 import { exec } from 'child_process';
 import { homedir } from 'os';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { cancelEditorAsk } from './utcp/editor-ask';
 import { cancelEditorPrompt, getEditorPrompt, respondEditorPrompt } from './utcp/editor-prompt';
@@ -14,6 +14,52 @@ import { inspectExtensionStatus } from './extension-status';
 
 let utcpServer: UtcpServerManager | null = null;
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
+let lifecycle: Promise<unknown> = Promise.resolve();
+const registryPaths = new WeakMap<UtcpServerManager, string>();
+
+function runLifecycle<T>(operation: () => Promise<T>): Promise<T> {
+    const result = lifecycle.then(operation);
+    lifecycle = result.catch(() => {});
+    return result;
+}
+
+async function stopPublishedServer(server: UtcpServerManager): Promise<void> {
+    const { port, instanceId } = server;
+    try {
+        await server.stop();
+    } finally {
+        if (port > 0) await getConfigManager().removeCocosEditorTemplate(port, instanceId, registryPaths.get(server));
+    }
+}
+
+async function startPublishedServer(port: number, debugLogging: boolean): Promise<number> {
+    const config = getConfigManager();
+    const preferred = port === 0 ? await config.getLastAutoPort() : port;
+    const attempts = preferred && port === 0 ? [preferred, 0] : [preferred];
+    let lastError: unknown;
+    for (const candidate of attempts) {
+        const server = new UtcpServerManager();
+        server.setDebugEnabled(debugLogging);
+        try {
+            const actualPort = await server.start(candidate);
+            registryPaths.set(server, config.getConfigPath());
+            await config.updatePort(actualPort, server.instanceId);
+            if (port === 0) await config.setLastAutoPort(actualPort);
+            utcpServer = server;
+            return actualPort;
+        } catch (error) {
+            lastError = error;
+            try { await stopPublishedServer(server); }
+            catch (cleanupError) {
+                console.error('[cx3][api] Failed to clean up unpublished UTCP Server:', cleanupError);
+                throw cleanupError;
+            }
+            if (!(port === 0 && candidate === preferred && preferred > 0
+                && error instanceof Error && 'code' in error && error.code === 'EADDRINUSE')) throw error;
+        }
+    }
+    throw lastError;
+}
 
 
 export const methods: { [key: string]: (...any: any) => any } = {
@@ -47,40 +93,64 @@ export const methods: { [key: string]: (...any: any) => any } = {
     openPanel() {
         Editor.Panel.open(packageJSON.name + '.configuration');
     },
+    async getExtensionSettings() {
+        const config = getConfigManager();
+        return { fixedPort: await config.getCurrentPort(), configPath: config.getConfigPath() };
+    },
+    async saveExtensionSettings(input: unknown) {
+        if (!input || typeof input !== 'object' || Array.isArray(input)
+            || Object.keys(input).some(key => key !== 'fixedPort' && key !== 'configPath')
+            || !('fixedPort' in input) || typeof input.fixedPort !== 'number' || !Number.isInteger(input.fixedPort)
+            || input.fixedPort < 0 || input.fixedPort > 65535
+            || !('configPath' in input) || typeof input.configPath !== 'string' || !isAbsolute(input.configPath)
+            || /[\0\r\n]/.test(input.configPath) || input.configPath.length > 4096) {
+            throw new Error('Settings require fixedPort (0–65535) and an absolute configPath.');
+        }
+        const { fixedPort, configPath } = input;
+        return runLifecycle(async () => {
+            const config = getConfigManager();
+            await config.setConfiguredPort(fixedPort);
+            await config.setConfigPath(configPath);
+            const previous = utcpServer;
+            const debug = previous?.getDebugEnabled() ?? false;
+            cancelEditorAsk();
+            cancelEditorPrompt();
+            utcpServer = null;
+            if (previous) await stopPublishedServer(previous);
+            await startPublishedServer(fixedPort, debug);
+            return { fixedPort, configPath };
+        });
+    },
 
     openPreviewPanel() {
         Editor.Panel.open(packageJSON.name + '.preview');
     },
 
-    async showInfo() {
-        // ponytail: alias kept for compat, menu no longer exposes it — delegates to show-build-info
-        return (methods as any).showBuildInfo();
-    },
 
     async restartServer(newPort?: number) {
-        cancelEditorAsk();
-        cancelEditorPrompt();
-        if (!utcpServer) {
-            console.warn(`[${packageJSON.name}] UTCP Server is not running.`);
-            return;
-        }
-        if (typeof newPort !== 'number' || !newPort) {
-            newPort = await getConfigManager().getCurrentPort().catch(() => 0);
-        }
-
-        const previousServer = utcpServer;
-        try {
-            await previousServer.stop();
-            const nextServer = new UtcpServerManager();
-            nextServer.setDebugEnabled(previousServer.getDebugEnabled());
-            const actualPort = await nextServer.start(newPort);
-            utcpServer = nextServer;
-            await getConfigManager().updatePort(actualPort);
-            console.log(`[${packageJSON.name}] UTCP Server restarted on port ${actualPort}`);
-        } catch (err) {
+        return runLifecycle(async () => {
+            const configManager = getConfigManager();
+            const port = newPort === undefined ? await configManager.getCurrentPort() : newPort;
+            if (!Number.isInteger(port) || port < 0 || port > 65535) {
+                throw new RangeError('Port must be an integer between 0 and 65535 (0 = auto).');
+            }
+            if (newPort !== undefined) await configManager.setConfiguredPort(port);
+            cancelEditorAsk();
+            cancelEditorPrompt();
+            const previousServer = utcpServer;
+            const debugLogging = previousServer?.getDebugEnabled()
+                ?? (await Editor.Profile.getConfig(packageJSON.name, 'debugLogging') === true);
             utcpServer = null;
-            console.error(`[${packageJSON.name}] Failed to restart UTCP Server:`, err);
-        }
+            try {
+                if (previousServer) await stopPublishedServer(previousServer);
+                const actualPort = await startPublishedServer(port, debugLogging);
+                console.log(`[cx3][api] UTCP Server restarted on port ${actualPort}`);
+                return actualPort;
+            } catch (err) {
+                console.error('[cx3][api] Failed to restart UTCP Server:', err);
+                throw err;
+            }
+        });
     },
     toggleDebugLogging() {
         return runLifecycle(async () => {
@@ -101,32 +171,23 @@ export const methods: { [key: string]: (...any: any) => any } = {
         const method = applied ? 'startCatchAll' : 'stopCatchAll';
         Editor.Message.request('scene', 'execute-scene-script',
             { name: packageJSON.name, method, args: [] })
-            .catch((err: any) => console.warn(`[${packageJSON.name}] Scene console capture not toggled: ${err?.message || err}`));
-        console.info(`[${packageJSON.name}] Verbose interaction logging ${applied ? 'ON' : 'OFF'}`);
+            .catch((err: any) => console.warn(`[cx3][scene] Scene console capture not toggled: ${err?.message || err}`));
+        console.info(`[cx3][lifecycle] Verbose interaction logging ${applied ? 'ON' : 'OFF'}`);
         return { enabled: applied };
     },
 
-    async toggleDebug() {
-        const current = utcpServer?.getDebugEnabled() ?? Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
-        return (methods as any).setDebugLogging(!current);
-    },
 
     // The folder may not exist until debug logging is first enabled.
     openDebugFolder() {
-        try {
-            mkdirSync(DEBUG_LOG_DIR, { recursive: true });
-        } catch (err: unknown) {
-            console.error(`[${packageJSON.name}] Failed to create debug folder:`, err instanceof Error ? err.message : String(err));
-            return;
-        }
+        mkdirSync(DEBUG_LOG_DIR, { recursive: true });
         // ponytail: cross-platform open — works on Windows/macOS/Linux
         const cmd = process.platform === 'win32'
             ? `start "" "${DEBUG_LOG_DIR}"`
             : process.platform === 'darwin'
                 ? `open "${DEBUG_LOG_DIR}"`
                 : `xdg-open "${DEBUG_LOG_DIR}"`;
-        exec(cmd, (err) => {
-            if (err) console.error(`[${packageJSON.name}] Failed to open debug folder:`, err.message);
+        return new Promise<void>((resolve, reject) => {
+            exec(cmd, err => err ? reject(err) : resolve());
         });
     },
 
@@ -134,93 +195,53 @@ export const methods: { [key: string]: (...any: any) => any } = {
         try {
             const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
             files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
-            console.log(`[${packageJSON.name}] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
-        } catch (err: any) {
-            // ENOENT means the folder never existed — nothing to clear.
-            if (err?.code !== 'ENOENT') {
-                console.error(`[${packageJSON.name}] Failed to clear debug logs:`, err?.message || err);
-            }
+            console.log(`[cx3][lifecycle] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
+        } catch (err: unknown) {
+            if (!(err instanceof Error) || !('code' in err) || err.code !== 'ENOENT') throw err;
         }
     },
 
-    async showBuildInfo() {
-        const b = getBuildInfo();
-        const cm = getConfigManager();
-        // ponytail: merged Server Info + About — single log has port/config/url + build info (same as 2x)
-        const port = await cm.getCurrentPort().catch(() => 0);
-        const configPath = cm.getConfigPath();
-        const isRunning = Boolean(port && utcpServer);
-        const statusIcon = isRunning ? '🟢' : '🔴';
-        const statusUrl = isRunning ? `http://localhost:${port}/utcp` : 'Server not running';
-        const commitStr = `${b.commit}${b.dirty ? '-dirty' : ''}`;
-        const versionTag = `v${b.version}@${commitStr}`;
-
-        const lines = [
-            `[${packageJSON.name}] ${statusIcon} ${statusUrl} (${versionTag})`,
-            `  Build info:`,
-            `    Port:     ${port || '(not running)'}`,
-            `    Config:   ${configPath}`,
-            `    Branch:   ${b.branch}`,
-            `    Built at: ${b.builtAt}`,
-        ];
-        console.log(lines.join('\n'));
-    }
 };
 
 export async function load() {
-    console.log('===========Loaded cocos-pilot-3x===========');
-    console.log(`[${packageJSON.name}] build ${formatBuildInfo()}`);
+    return runLifecycle(async () => {
+        console.log('[cx3][lifecycle] Loaded');
+        console.log(`[cx3][lifecycle] build ${formatBuildInfo()}`);
 
-    // Initialize config manager
-    const configManager = getConfigManager();
-    await configManager.initialize();
+        const configManager = getConfigManager();
+        await configManager.initialize();
+        const debugLogging = await Editor.Profile.getConfig(packageJSON.name, 'debugLogging') === true;
+        const profileConfig = await configManager.getToolProfileConfig();
+        const profile = profileConfig.profile;
+        if (profile !== 'core' && profile !== 'full' && profile !== 'custom') throw new Error('Invalid tool profile.');
+        setServerProfile(profile, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
 
-    // Load and apply tool profile config
-    const persistedDebugLogging = await Editor.Profile.getConfig(packageJSON.name, 'debugLogging');
-    const debugLogging = persistedDebugLogging === true;
-    const profileConfig = await configManager.getToolProfileConfig();
-    setServerProfile(profileConfig.profile as any, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
-
-    utcpServer = new UtcpServerManager();
-
-    let wasConfiguredPort = true;
-    // Load port from profile, default to 0 (random free port) if not set
-    let port = await Editor.Profile.getConfig(packageJSON.name, 'serverPort');
-    if (typeof port !== 'number') {
-        port = 0;
-        wasConfiguredPort = false;
-    }
-    utcpServer.setDebugEnabled(debugLogging);
-
-    try {
-        const actualPort = await utcpServer.start(port);
-        const url = `http://localhost:${actualPort}/utcp`;
-        await configManager.updatePort(actualPort);
-        console.log(
-            `[${packageJSON.name}] Ready: UTCP server listening at ${url}\n` +
-            `[${packageJSON.name}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-            `[${packageJSON.name}] New AI sessions discover ccp3x automatically; reconnect an existing Code Mode MCP session to refresh it.`
-        );
-    } catch (err) {
-        console.error(`[${packageJSON.name}] Failed to start UTCP Server:`, err);
-    }
-
-    if (!wasConfiguredPort) {
-        Editor.Panel.open(packageJSON.name);
-    }
+        try {
+            const port = await configManager.getCurrentPort();
+            const actualPort = await startPublishedServer(port, debugLogging);
+            const url = `http://localhost:${actualPort}/utcp`;
+            console.log(
+                `[cx3][lifecycle] Ready: UTCP server listening at ${url}\n` +
+                `[cx3][config] Code Mode config updated: ${configManager.getConfigPath()}\n` +
+                `[cx3][lifecycle] New AI sessions discover ccp3x_${actualPort}; reconnect an existing Code Mode MCP session to refresh it.`
+            );
+        } catch (err) {
+            console.error('[cx3][api] Failed to start UTCP Server:', err);
+        }
+    });
 }
 
-export function unload() {
-    cancelEditorAsk();
-    cancelEditorPrompt();
-    disposeEditorControl();
-    closeArtifactServers();
-    if (utcpServer) {
-        console.log(`[${packageJSON.name}] Stopping UTCP Server...`);
-        const port = (utcpServer as any).port ?? 0;
-        utcpServer.stop();
+export async function unload() {
+    return runLifecycle(async () => {
+        cancelEditorAsk();
+        cancelEditorPrompt();
+        disposeEditorControl();
+        await closeArtifactServers();
+        const server = utcpServer;
         utcpServer = null;
-        // Best-effort: don't block unload on config I/O.
-        getConfigManager().removeCocosEditorTemplate(port).catch(() => {});
-    }
+        if (server) {
+            console.log('[cx3][lifecycle] Stopping UTCP Server...');
+            await stopPublishedServer(server);
+        }
+    });
 }

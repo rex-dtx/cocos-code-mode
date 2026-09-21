@@ -4,7 +4,7 @@
   "project": "G:/_ws/_helpers/cc-3x-test",
   "endpoint": "http://localhost:51009",
   "buildCommit": "bc5f27f",
-  "fixture": { "path": "db://assets/__ccb3x_prefab_qualification__.prefab", "uuid": "d6edf7cb-3a40-4a98-8071-2de3e562f201", "createdFrom": "QualificationCanvas/QualificationSprite" },
+  "fixture": { "path": "db://assets/__ccp3x_prefab_qualification__.prefab", "uuid": "d6edf7cb-3a40-4a98-8071-2de3e562f201", "createdFrom": "QualificationCanvas/QualificationSprite" },
   "probe": { "prefabReferenceAudit": { "valid": false, "missingReferences": ["20835ba4-6145-4fbc-a58a-051ce700aa3e"] }, "prefabOverrideDiffSelf": { "equal": true, "changes": [] }, "prefabInstantiate": "not run in test because fixture env variable is not honored by instantiate case" },
   "decision": "Do not promote prefabReferenceAudit, prefabOverrideDiff, or prefabInstantiate. The disposable prefab contains an unresolved sprite-frame dependency and the existing test hard-codes a different fixture UUID for instantiate. Remove fixture after review or retain only as diagnostic evidence.",
   "qualified": false

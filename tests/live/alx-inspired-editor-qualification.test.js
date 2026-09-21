@@ -12,7 +12,7 @@ describe('live: ALX-inspired editor ergonomics', () => {
     await repeatTestcase('EDITOR-ERGONOMICS-01', async () => {
       const fixture = await postTool('executeJavascript', {
         context: 'scene',
-        code: `const { director, Node, UITransform }=require('cc');const sc=director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};const old=canvas.getChildByName('__ccb3x_ergonomics__');if(old){old.removeFromParent();old.destroy();}const root=new Node('__ccb3x_ergonomics__');canvas.addChild(root);const ids=[];for(const [i,x] of [0,100,260].entries()){const n=new Node('item'+i);n.parent=root;n.setPosition(x,0,0);const ui=n.addComponent(UITransform);ui.setContentSize(20+i*10,10);ids.push(n.uuid);}return {root:root.uuid,ids};`,
+        code: `const { director, Node, UITransform }=require('cc');const sc=director.getScene();const canvas=sc.getChildByName('Canvas');if(!canvas)return {skip:true};const old=canvas.getChildByName('__ccp3x_ergonomics__');if(old){old.removeFromParent();old.destroy();}const root=new Node('__ccp3x_ergonomics__');canvas.addChild(root);const ids=[];for(const [i,x] of [0,100,260].entries()){const n=new Node('item'+i);n.parent=root;n.setPosition(x,0,0);const ui=n.addComponent(UITransform);ui.setContentSize(20+i*10,10);ids.push(n.uuid);}return {root:root.uuid,ids};`,
       });
       assert.equal(fixture.ok, true, JSON.stringify(fixture.body));
       if (fixture.body.result?.skip) return { status: 'SKIP', reason: 'active scene has no Canvas' };

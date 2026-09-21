@@ -32,11 +32,11 @@ export function readRegistry(path: string): Registry {
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// All CCB writers use the same lock. Never steal a lock based on elapsed time:
+// All Cocos Pilot writers use the same lock. Never steal a lock based on elapsed time:
 // a suspended but live editor can resume and overwrite a newer transaction.
 export async function mutateRegistry(path: string, mutate: (config: Registry) => void): Promise<boolean> {
     await fs.mkdir(dirname(path), { recursive: true });
-    const lock = `${path}.ccb-lock`;
+    const lock = `${path}.ccp-lock`;
     const deadline = Date.now() + 5000;
     for (;;) {
         try { await fs.mkdir(lock); break; }

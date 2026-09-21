@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 function makeArtifact() {
-  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-artifact-server-'));
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-artifact-server-'));
   projects.push(project);
   const relativePath = 'build/web-desktop';
   const artifact = path.join(project, relativePath);

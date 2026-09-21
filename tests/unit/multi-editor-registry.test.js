@@ -12,12 +12,12 @@ const { UtcpClientConfigSerializer } = require('@utcp/sdk');
 require('@utcp/http');
 
 it('concurrent processes preserve all editor endpoints and ownership; late cleanup cannot remove a replacement', async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-registry-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-registry-'));
   const configPath = path.join(dir, 'config.json');
   const modulePath = path.resolve(__dirname, '../../dist/utcp/config-manager.js');
   const other = { name: 'other', call_template_type: 'http', url: 'http://localhost:3000/utcp', http_method: 'GET' };
   fs.writeFileSync(configPath, JSON.stringify({ variables: { USER_VALUE: 'keep' }, manual_call_templates: [other,
-    { ...other, name: 'ccb3x', url: 'http://localhost:42000/utcp' },
+    { ...other, name: 'ccp3x', url: 'http://localhost:42000/utcp' },
   ] }));
   const invalidReads = [];
   const reader = setInterval(() => {
@@ -36,7 +36,7 @@ it('concurrent processes preserve all editor endpoints and ownership; late clean
     fs.writeFileSync(barrier, 'go');
     await Promise.all(workers);
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    assert.deepEqual(config.manual_call_templates.map(t => t.name).sort(), ['other', ...Array.from({ length: 9 }, (_, i) => `ccb3x_${42000 + i}`)].sort());
+    assert.deepEqual(config.manual_call_templates.map(t => t.name).sort(), ['other', ...Array.from({ length: 9 }, (_, i) => `ccp3x_${42000 + i}`)].sort());
     assert.equal(config.variables.USER_VALUE, 'keep');
     new UtcpClientConfigSerializer().validateDict(config);
     assert.deepEqual(invalidReads, [], 'readers must never see a partial registry');
@@ -52,11 +52,11 @@ it('concurrent processes preserve all editor endpoints and ownership; late clean
       assert.equal(await manager.removeCocosEditorTemplate(42001, oldId, configPath), false);
       await manager.setConfigPath(configPath);
       assert.equal(await manager.removeCocosEditorTemplate(42001, oldId), false);
-      assert.ok(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42001'));
+      assert.ok(manager.readConfig().manual_call_templates.some(t => t.name === 'ccp3x_42001'));
       await manager.removeCocosEditorTemplate(42001, newId);
-      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42001'), false);
-      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x_42002'), false, 'a later publication prunes definitively closed endpoints');
-      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccb3x'), false);
+      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccp3x_42001'), false);
+      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccp3x_42002'), false, 'a later publication prunes definitively closed endpoints');
+      assert.equal(manager.readConfig().manual_call_templates.some(t => t.name === 'ccp3x'), false);
     } finally { global.Editor = original; }
   } finally {
     await new Promise(resolve => legacyServer.close(resolve));
@@ -66,7 +66,7 @@ it('concurrent processes preserve all editor endpoints and ownership; late clean
 });
 
 it('invalid registry is preserved rather than overwritten by publication', async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-broken-registry-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-broken-registry-'));
   const configPath = path.join(dir, 'config.json');
   const original = global.Editor;
   global.Editor = { Profile: { setConfig: async () => {} } };
@@ -76,7 +76,7 @@ it('invalid registry is preserved rather than overwritten by publication', async
     await manager.setConfigPath(configPath);
     await assert.rejects(manager.ensureCocosEditorTemplate(42100, 'b'.repeat(32)));
     assert.equal(fs.readFileSync(configPath, 'utf8'), '{broken');
-    assert.equal(fs.existsSync(configPath + '.ccb-lock'), false);
+    assert.equal(fs.existsSync(configPath + '.ccp-lock'), false);
   } finally { global.Editor = original; fs.rmSync(dir, { recursive: true, force: true }); }
 });
 

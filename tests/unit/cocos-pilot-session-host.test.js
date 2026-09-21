@@ -3,7 +3,7 @@ const { it } = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const { SessionLifecycleHost } = require('../../scripts/session-presence/host');
-const ompFactory = require('../../.omp/extensions/ccb-session').default;
+const ompFactory = require('../../.omp/extensions/ccp-session').default;
 const project = path.resolve('session-project');
 
 function deferred() {
@@ -166,7 +166,7 @@ it('OMP uses session lifecycle rather than agent idle, and branches close before
   assert.notEqual(app.fake.entries[1].options.session, first);
   assert.deepEqual(app.fake.operations.map(([operation]) => operation), ['open', 'closing', 'close', 'open']);
   assert.equal(app.fake.entries[1].options.project, project);
-  assert.ok(app.ui.some(({ text }) => text === 'CCB Active: HTTP_HELPER_HEARTBEAT_ACCEPTED'));
+  assert.ok(app.ui.some(({ text }) => text === 'Cocos Pilot Active: HTTP_HELPER_HEARTBEAT_ACCEPTED'));
   await app.fire('session_shutdown', ctx);
   await app.fire('session_switch', app.context('late'));
   assert.equal(app.fake.live.size, 0);
@@ -175,19 +175,19 @@ it('OMP uses session lifecycle rather than agent idle, and branches close before
 
 it('OMP honors explicit target and registry, supports headless status, and fails closed on invalid target', async () => {
   const target = path.resolve('configured-project'), registry = path.resolve('custom-registry.json');
-  const app = ompHarness({ CCB_SESSION_PROJECT: target, CCB_SESSION_REGISTRY: registry, CCB_SESSION_NAMESPACE: 'ccb3x_3000' });
+  const app = ompHarness({ CCP_SESSION_PROJECT: target, CCP_SESSION_REGISTRY: registry, CCP_SESSION_NAMESPACE: 'ccp3x_3000' });
   const ctx = app.context('a', path.resolve('other-workspace'), false);
   await app.fire('session_start', ctx);
   assert.equal(app.fake.entries[0].options.project, target);
   assert.equal(app.fake.entries[0].options.registryPath, registry);
   app.fake.entries[0].options.emit({ state: 'Closed', reason: 'HTTP_HELPER_CLOSE_UNCONFIRMED' });
-  assert.equal(app.log.at(-1), 'CCB Closed: HTTP_HELPER_CLOSE_UNCONFIRMED');
-  assert.equal(app.fake.entries[0].options.namespace, 'ccb3x_3000');
-  assert.ok(app.log.includes('CCB Active: HTTP_HELPER_HEARTBEAT_ACCEPTED'));
+  assert.equal(app.log.at(-1), 'Cocos Pilot Closed: HTTP_HELPER_CLOSE_UNCONFIRMED');
+  assert.equal(app.fake.entries[0].options.namespace, 'ccp3x_3000');
+  assert.ok(app.log.includes('Cocos Pilot Active: HTTP_HELPER_HEARTBEAT_ACCEPTED'));
   await app.fire('session_shutdown', ctx);
-  const invalidApp = ompHarness({ CCB_SESSION_PROJECT: 'relative' });
+  const invalidApp = ompHarness({ CCP_SESSION_PROJECT: 'relative' });
   await invalidApp.fire('session_start', invalidApp.context('a'));
   assert.equal(invalidApp.fake.entries.length, 0);
-  assert.equal(invalidApp.ui.at(-1).text, 'CCB Error: INVALID_PROJECT');
+  assert.equal(invalidApp.ui.at(-1).text, 'Cocos Pilot Error: INVALID_PROJECT');
   await invalidApp.fire('session_shutdown', invalidApp.context('a'));
 });

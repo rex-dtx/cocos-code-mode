@@ -14,7 +14,7 @@ it('all extension entrypoints and compiled modules pass Creator loader gate', ()
 });
 
 it('gate rejects a dual-package ESM sibling hidden behind a valid CommonJS entry', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-loader-regression-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-loader-regression-'));
   try {
     fs.mkdirSync(path.join(dir, 'dist'));
     fs.mkdirSync(path.join(dir, 'node_modules/dual'), { recursive: true });

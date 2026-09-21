@@ -11,7 +11,7 @@ describe('live: particle playback qualification', () => {
   it('controls a real runtime particle component through a verified session', { timeout: 180_000 }, async (t) => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
     await repeatTestcase('PARTICLE-PLAYBACK-01', async ({ iteration }) => {
-      const name = `__ccb3x_particle_playback_${process.pid}_${iteration}__`;
+      const name = `__ccp3x_particle_playback_${process.pid}_${iteration}__`;
       const before = await postTool('runtimePreviewControl', { operation: 'state' });
       assert.equal(before.status, 200, JSON.stringify(before.body));
       const started = await postTool('runtimeSessionLifecycle', { operation: 'start', targetKind: 'game-view' });

@@ -4,7 +4,7 @@
   "scope": {
     "competitors": [
       "ALX 163-tool catalog",
-      "CCB2 96-tool manifest"
+      "Cocos Pilot 2x 96-tool manifest"
     ],
     "qualificationTarget": {
       "creator": "3.7.3",
@@ -13,33 +13,33 @@
       "artifactClass": "local-operator",
       "sourceBranch": "cc-3x7"
     },
-    "ccbBuild": {
+    "pilotBuild": {
       "commit": "3c24c78",
-      "branch": "feat/ccb3x-api-capability-expansion",
+      "branch": "feat/ccp3x-api-capability-expansion",
       "dirty": true,
       "builtAt": "2026-09-12T16:28:16.834Z"
     }
   },
   "rules": [
     "Every source catalog row is represented exactly once.",
-    "Rows mapped to the same bounded CCB contract are consolidated at the CCB surface; raw competitor names are retained for traceability.",
-    "covered-contract means a current bounded CCB source contract exists; it does not imply live qualification.",
+    "Rows mapped to the same bounded Cocos Pilot contract are consolidated at the Cocos Pilot surface; raw competitor names are retained for traceability.",
+    "covered-contract means a current bounded Cocos Pilot source contract exists; it does not imply live qualification.",
     "probe-required and unsupported-creator rows receive no behavioral parity credit.",
     "intentional-exclusion rows are accounted design decisions, not missing registrations.",
     "liveWitnessFiles records witness source presence only; runtime qualification remains governed by evidence artifacts and portfolio state."
   ],
   "inputHashes": {
     "G:/alx-tool-api.txt": "5ef0a2bdc70b3a00f705dbc943b5bacb62dae7d618800f9a55155195ceea9ef4",
-    "G:/_ws/_helpers/cc-code-mode-cst-2x/parity/cc-bridge-2x.manifest.json": "6f2038812771060fecf070a17b1531e088e4e0058b052005d71a156f65447926",
+    "G:/_ws/_helpers/cc-code-mode-cst-2x/parity/cocos-pilot-2x.manifest.json": "6f2038812771060fecf070a17b1531e088e4e0058b052005d71a156f65447926",
     "docs/alx-capability-comparison.md": "7a3075e5163c429156b48ee62430becbe0d62304a4993257ca5eba0bc531e109",
-    "docs/independent-ccb-strategy.md": "b14ed38e9c76ef1f35279dd2fe50389906d3c5ad9d9f24e195c317671eb472e3",
     "docs/parity-v2-v3.md": "289577513a2d1b1124ff93accb948dcbc63a98df21e7d1075e8147862c218705",
-    "docs/tool-portfolio-candidates.json": "2a60825f9259174c4d5a9b0c7e22a4d5c54f67d516221220b5412f635ce5d40b"
+    "docs/tool-portfolio-candidates.json": "2a60825f9259174c4d5a9b0c7e22a4d5c54f67d516221220b5412f635ce5d40b",
+    "docs/independent-cocos-pilot-strategy.md": "b14ed38e9c76ef1f35279dd2fe50389906d3c5ad9d9f24e195c317671eb472e3"
   },
   "denominator": {
     "sourceCatalogTools": {
       "ALX": 163,
-      "CCB2": 96
+      "Cocos Pilot 2x": 96
     },
     "rawUnionRows": 259,
     "accountedRows": 259,
@@ -212,7 +212,7 @@
       "intentionalExclusion": 3,
       "rowsWithLiveWitnessSource": 0
     },
-    "CCB2:ccb2-surface": {
+    "Cocos Pilot 2x:ccb2-surface": {
       "total": 96,
       "accounted": 96,
       "coveredContract": 88,
@@ -243,7 +243,7 @@
         "read-only-tools.test.js",
         "ui-layout-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -266,7 +266,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -284,7 +284,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -302,7 +302,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -341,7 +341,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -359,7 +359,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -379,7 +379,7 @@
         "manual.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -397,7 +397,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -415,7 +415,7 @@
       "liveWitnessFiles": [
         "candidate-expansion-qualification.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -435,7 +435,7 @@
         "gap-closure.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -455,7 +455,7 @@
         "gap-closure.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -475,7 +475,7 @@
         "manual.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -494,7 +494,7 @@
         "ui-fallback.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -513,7 +513,7 @@
         "ui-fallback.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -535,7 +535,7 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -557,7 +557,7 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -579,7 +579,7 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -597,7 +597,7 @@
       "liveWitnessFiles": [
         "candidate-expansion-qualification.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -615,7 +615,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -633,7 +633,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -652,7 +652,7 @@
         "manual.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -670,7 +670,7 @@
       "liveWitnessFiles": [
         "candidate-expansion-qualification.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -689,7 +689,7 @@
         "ui-fallback.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -707,7 +707,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -725,7 +725,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -748,7 +748,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -767,7 +767,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -785,7 +785,7 @@
         "prefabInstantiate": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -807,7 +807,7 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -825,7 +825,7 @@
         "prefabApplyOverrides": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -843,7 +843,7 @@
         "prefabRevertOverrides": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -861,7 +861,7 @@
         "prefabOverrideDiff": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -879,7 +879,7 @@
         "prefabReferenceAudit": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -897,7 +897,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -915,7 +915,7 @@
         "prefabRevertOverrides": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -933,7 +933,7 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -952,7 +952,7 @@
         "candidate-expansion-qualification.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -991,7 +991,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1011,7 +1011,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1029,7 +1029,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1072,7 +1072,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1091,7 +1091,7 @@
         "candidate-expansion-qualification.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1110,7 +1110,7 @@
         "candidate-expansion-qualification.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "CCB exposes build lifecycle operations without requiring panel focus."
+      "rationale": "Cocos Pilot exposes build lifecycle operations without requiring panel focus."
     },
     {
       "sourceCatalog": "ALX",
@@ -1151,7 +1151,7 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1169,7 +1169,7 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1187,7 +1187,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1207,7 +1207,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1227,7 +1227,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1247,7 +1247,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1265,7 +1265,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1285,7 +1285,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1304,7 +1304,7 @@
         "cocos-graph.test.js",
         "gap-closure.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1323,7 +1323,7 @@
         "cocos-graph.test.js",
         "gap-closure.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1342,7 +1342,7 @@
         "cocos-graph.test.js",
         "gap-closure.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1365,7 +1365,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1384,7 +1384,7 @@
         "asset-import-settings-qualification.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1402,7 +1402,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1414,7 +1414,7 @@
       "ccbSourceFiles": [],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "CCB keeps console clearing out of the agent surface; log reading is bounded and non-destructive."
+      "rationale": "Cocos Pilot keeps console clearing out of the agent surface; log reading is bounded and non-destructive."
     },
     {
       "sourceCatalog": "ALX",
@@ -1440,7 +1440,7 @@
         "ui-layout-inspect.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1460,7 +1460,7 @@
         "manual.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1478,7 +1478,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1519,7 +1519,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1537,7 +1537,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1555,7 +1555,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1573,7 +1573,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1603,7 +1603,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1621,7 +1621,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1639,7 +1639,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1717,7 +1717,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1736,7 +1736,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1755,7 +1755,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "CCB reports the active editor endpoint and provenance; generic network probing is excluded."
+      "rationale": "Cocos Pilot reports the active editor endpoint and provenance; generic network probing is excluded."
     },
     {
       "sourceCatalog": "ALX",
@@ -1783,7 +1783,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1799,7 +1799,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1815,7 +1815,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1831,7 +1831,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1847,7 +1847,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1865,7 +1865,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1883,7 +1883,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1901,7 +1901,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1919,7 +1919,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1937,7 +1937,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1955,7 +1955,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1973,7 +1973,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -1991,7 +1991,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2009,7 +2009,7 @@
         "prefabRevertOverrides": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2027,7 +2027,7 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2053,7 +2053,7 @@
         "ui-layout-inspect.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "CCB exposes guarded executeJavascript rather than arbitrary scene-script handler dispatch."
+      "rationale": "Cocos Pilot exposes guarded executeJavascript rather than arbitrary scene-script handler dispatch."
     },
     {
       "sourceCatalog": "ALX",
@@ -2071,7 +2071,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2099,7 +2099,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2115,7 +2115,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2131,7 +2131,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2149,7 +2149,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2165,7 +2165,7 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2185,7 +2185,7 @@
         "read-only-tools.test.js",
         "ui-layout-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2203,7 +2203,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2221,7 +2221,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2239,7 +2239,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2257,7 +2257,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2275,7 +2275,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2293,7 +2293,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2311,7 +2311,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2329,7 +2329,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2347,7 +2347,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2365,7 +2365,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2383,7 +2383,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2401,7 +2401,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2419,7 +2419,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2437,7 +2437,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2455,7 +2455,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2473,7 +2473,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2491,7 +2491,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2509,7 +2509,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2527,7 +2527,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2545,7 +2545,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2563,7 +2563,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2581,7 +2581,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2599,7 +2599,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2617,7 +2617,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2635,7 +2635,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2653,7 +2653,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2671,7 +2671,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2689,7 +2689,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2707,7 +2707,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2725,7 +2725,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2743,7 +2743,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2761,7 +2761,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2779,7 +2779,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2797,7 +2797,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2815,7 +2815,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2833,7 +2833,7 @@
         "referenceImageManage": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
+      "rationale": "A bounded Cocos Pilot contract exists, but Creator 3.7.3 positive runtime qualification is not proven."
     },
     {
       "sourceCatalog": "ALX",
@@ -2853,7 +2853,7 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2871,7 +2871,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2889,7 +2889,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2907,7 +2907,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2925,7 +2925,7 @@
         "assetBatchImport": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2943,7 +2943,7 @@
         "assetBatchOperate": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2961,7 +2961,7 @@
         "assetMissingReferenceAudit": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2979,7 +2979,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -2997,7 +2997,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3017,7 +3017,7 @@
       "liveWitnessFiles": [
         "asset-import-settings-qualification.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3035,7 +3035,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3089,7 +3089,7 @@
       "liveWitnessFiles": [
         "alx-inspired-editor-qualification.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3107,7 +3107,7 @@
       "liveWitnessFiles": [
         "alx-inspired-editor-qualification.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3126,7 +3126,7 @@
         "cocos-graph.test.js",
         "gap-closure.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3145,7 +3145,7 @@
         "cocos-graph.test.js",
         "gap-closure.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
       "sourceCatalog": "ALX",
@@ -3157,7 +3157,7 @@
       "ccbSourceFiles": [],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "Vendor-specific template cloning is intentionally excluded; CCB owns independent studio workflows."
+      "rationale": "Vendor-specific template cloning is intentionally excluded; Cocos Pilot owns independent studio workflows."
     },
     {
       "sourceCatalog": "ALX",
@@ -3179,10 +3179,10 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "A bounded CCB contract represents the same agent-facing workflow."
+      "rationale": "A bounded Cocos Pilot contract represents the same agent-facing workflow."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "animationEdit",
       "description": "",
@@ -3197,10 +3197,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "animationQuery",
       "description": "",
@@ -3215,10 +3215,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetBatchQuery",
       "description": "",
@@ -3233,10 +3233,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetCopy",
       "description": "",
@@ -3253,10 +3253,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetCreate",
       "description": "",
@@ -3271,10 +3271,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetCreateFolder",
       "description": "",
@@ -3289,10 +3289,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetDelete",
       "description": "",
@@ -3309,10 +3309,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetExchangeUuid",
       "description": "",
@@ -3324,7 +3324,7 @@
       "rationale": "Creator 3.7.3 exposes no exchange-uuid message."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetGetAvailableUrl",
       "description": "",
@@ -3339,10 +3339,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetGetPreview",
       "description": "",
@@ -3357,10 +3357,10 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetImport",
       "description": "",
@@ -3375,10 +3375,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetMove",
       "description": "",
@@ -3395,10 +3395,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetQuery",
       "description": "",
@@ -3418,10 +3418,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetReadContent",
       "description": "",
@@ -3436,10 +3436,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetRefresh",
       "description": "",
@@ -3456,10 +3456,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetResolve",
       "description": "",
@@ -3475,10 +3475,10 @@
         "cocos-graph.test.js",
         "gap-closure.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetSaveMeta",
       "description": "",
@@ -3495,10 +3495,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "assetWriteContent",
       "description": "",
@@ -3513,10 +3513,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "batchSetProperties",
       "description": "",
@@ -3531,10 +3531,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "bindButtonClickEvent",
       "description": "",
@@ -3549,10 +3549,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "callComponentMethod",
       "description": "",
@@ -3567,10 +3567,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "captureEditorScreenshot",
       "description": "",
@@ -3585,10 +3585,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "componentQuery",
       "description": "",
@@ -3607,10 +3607,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow is covered by a bounded CCB3 composition."
+      "rationale": "The v2 workflow is covered by a bounded Cocos Pilot3 composition."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "createButton",
       "description": "",
@@ -3625,10 +3625,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "createLabel",
       "description": "",
@@ -3643,10 +3643,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "createSprite",
       "description": "",
@@ -3661,10 +3661,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "createUiNode",
       "description": "",
@@ -3682,10 +3682,10 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "duplicatePrefab",
       "description": "",
@@ -3700,10 +3700,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editPrefabJson",
       "description": "",
@@ -3718,10 +3718,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorEnvInfo",
       "description": "",
@@ -3737,10 +3737,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorGetLogs",
       "description": "",
@@ -3755,10 +3755,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorGetScenePreview",
       "description": "",
@@ -3773,10 +3773,10 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorListTypes",
       "description": "",
@@ -3791,10 +3791,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorOperate",
       "description": "",
@@ -3813,10 +3813,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow is covered by a bounded CCB3 composition."
+      "rationale": "The v2 workflow is covered by a bounded Cocos Pilot3 composition."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorSelect",
       "description": "",
@@ -3831,10 +3831,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "editorUndo",
       "description": "",
@@ -3849,10 +3849,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "executeJavascript",
       "description": "",
@@ -3875,10 +3875,10 @@
         "ui-layout-inspect.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "findNodes",
       "description": "",
@@ -3895,10 +3895,10 @@
         "gap-closure.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "findNodesByAsset",
       "description": "",
@@ -3913,10 +3913,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "findNodesWithMissingAssets",
       "description": "",
@@ -3931,10 +3931,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "getEditorPreference",
       "description": "",
@@ -3949,10 +3949,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "getPerformanceSnapshot",
       "description": "",
@@ -3967,10 +3967,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "getScriptDiagnosticContext",
       "description": "",
@@ -3985,10 +3985,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "listComponentMethods",
       "description": "",
@@ -4003,10 +4003,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "listEditorWindows",
       "description": "",
@@ -4021,10 +4021,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeClipboard",
       "description": "",
@@ -4039,10 +4039,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeComponentManage",
       "description": "",
@@ -4057,10 +4057,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeCreate",
       "description": "",
@@ -4075,10 +4075,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeCreatePrimitive",
       "description": "",
@@ -4093,10 +4093,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeDuplicate",
       "description": "",
@@ -4115,10 +4115,10 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeMove",
       "description": "",
@@ -4137,10 +4137,10 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeQuery",
       "description": "",
@@ -4160,10 +4160,10 @@
         "manual.test.js",
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow is covered by a bounded CCB3 composition."
+      "rationale": "The v2 workflow is covered by a bounded Cocos Pilot3 composition."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeRemove",
       "description": "",
@@ -4182,10 +4182,10 @@
         "ui-layout-report.test.js",
         "ui-safe-area-inspect.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeReset",
       "description": "",
@@ -4200,10 +4200,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeSetProperty",
       "description": "",
@@ -4219,10 +4219,10 @@
         "ui-fallback.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "nodeSetPropertyUndo",
       "description": "",
@@ -4238,10 +4238,10 @@
         "ui-fallback.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "prefabSync",
       "description": "",
@@ -4256,10 +4256,10 @@
         "prefabApplyOverrides": "qualified"
       },
       "liveWitnessFiles": [],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "previewGetUrl",
       "description": "",
@@ -4274,10 +4274,10 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "previewOpenInBrowser",
       "description": "",
@@ -4292,10 +4292,10 @@
       "liveWitnessFiles": [
         "manual.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "probeSceneIpc",
       "description": "",
@@ -4307,7 +4307,7 @@
       "rationale": "Version-specific bridge diagnostics are intentionally not part of the Creator 3.x authoring surface."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "programGetInfo",
       "description": "",
@@ -4322,10 +4322,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "programOpen",
       "description": "",
@@ -4340,10 +4340,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectFileExists",
       "description": "",
@@ -4358,10 +4358,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectGetConfig",
       "description": "",
@@ -4376,10 +4376,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectListDirectory",
       "description": "",
@@ -4394,10 +4394,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectReadFile",
       "description": "",
@@ -4412,10 +4412,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectReplaceInFile",
       "description": "",
@@ -4430,10 +4430,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectSaveConfig",
       "description": "",
@@ -4451,7 +4451,7 @@
       "rationale": "Creator 3.7.3 exposes no project:set-config message; projectManage fails closed with typed 422."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectSearchFiles",
       "description": "",
@@ -4466,10 +4466,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "projectWriteFile",
       "description": "",
@@ -4484,10 +4484,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "propertyArrayElement",
       "description": "",
@@ -4502,10 +4502,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "readPrefabJson",
       "description": "",
@@ -4521,10 +4521,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "readProjectInstruction",
       "description": "",
@@ -4539,10 +4539,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "runScriptDiagnostics",
       "description": "",
@@ -4557,10 +4557,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "runtimeGetState",
       "description": "",
@@ -4575,10 +4575,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "runtimePause",
       "description": "",
@@ -4593,10 +4593,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "runtimeResume",
       "description": "",
@@ -4611,10 +4611,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "runtimeSetTimeScale",
       "description": "",
@@ -4629,10 +4629,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneBatchGet",
       "description": "",
@@ -4647,10 +4647,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneClose",
       "description": "",
@@ -4665,10 +4665,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneCreateNodeHL",
       "description": "",
@@ -4683,10 +4683,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneInfo",
       "description": "",
@@ -4703,10 +4703,10 @@
         "read-only-tools.test.js",
         "ui-layout-inspect.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneNew",
       "description": "",
@@ -4724,10 +4724,10 @@
         "read-only-tools.test.js",
         "ui-fallback.test.js"
       ],
-      "rationale": "Creator 3.7.3 exposes no new-scene message; CCB uses assetCreate plus sceneManage open."
+      "rationale": "Creator 3.7.3 exposes no new-scene message; Cocos Pilot uses assetCreate plus sceneManage open."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneOpen",
       "description": "",
@@ -4742,10 +4742,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneScript",
       "description": "",
@@ -4768,10 +4768,10 @@
         "ui-layout-inspect.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "CCB exposes guarded executeJavascript rather than arbitrary scene-script handler dispatch."
+      "rationale": "Cocos Pilot exposes guarded executeJavascript rather than arbitrary scene-script handler dispatch."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneSetPropertyHL",
       "description": "",
@@ -4787,10 +4787,10 @@
         "ui-fallback.test.js",
         "ui-layout-report.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "sceneSnapshot",
       "description": "",
@@ -4805,10 +4805,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "setEditorPreference",
       "description": "",
@@ -4823,10 +4823,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "simulateButtonClick",
       "description": "",
@@ -4841,10 +4841,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "simulateKeyCombo",
       "description": "",
@@ -4859,10 +4859,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "simulateKeyPress",
       "description": "",
@@ -4877,10 +4877,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "simulateMouseClick",
       "description": "",
@@ -4895,10 +4895,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "simulateMouseDrag",
       "description": "",
@@ -4913,10 +4913,10 @@
       "liveWitnessFiles": [
         "ui-fallback.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "urlOpen",
       "description": "",
@@ -4931,10 +4931,10 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "validateScene",
       "description": "",
@@ -4947,10 +4947,10 @@
       ],
       "candidateStates": {},
       "liveWitnessFiles": [],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     },
     {
-      "sourceCatalog": "CCB2",
+      "sourceCatalog": "Cocos Pilot 2x",
       "competitorCategory": "ccb2-surface",
       "competitorTool": "writeProjectInstruction",
       "description": "",
@@ -4965,7 +4965,7 @@
       "liveWitnessFiles": [
         "read-only-tools.test.js"
       ],
-      "rationale": "The v2 workflow has a current CCB3 contract."
+      "rationale": "The v2 workflow has a current Cocos Pilot3 contract."
     }
   ]
 }

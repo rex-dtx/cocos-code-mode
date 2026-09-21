@@ -3,7 +3,7 @@
   "tool": "skeletalAnimationConfigure",
   "creator": "3.8.8",
   "buildCommit": "6463c65",
-  "artifact": "cc-bridge-3x-v200-260913-161146.zip",
+  "artifact": "cocos-pilot-3x-v210-260913-161146.zip",
   "positiveWitness": "tests/live/candidate-expansion-qualification.test.js created cc.SkeletalAnimation and round-tripped playOnLoad true/false",
   "negativeWitness": "test skips when Creator does not expose component creation; no false success",
   "persistence": "serialized component configure response verified true on both mutation and restore",

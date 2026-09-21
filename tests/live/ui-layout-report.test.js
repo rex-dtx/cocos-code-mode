@@ -17,12 +17,12 @@ describe('live: uiLayoutReport', () => {
 
     const canvas = await getCanvasReference();
     if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
-    const rootResult = await postTool('createUiNode', { uiType: 'Widget', parentReference: canvas, name: '__ccb3x_layout_report_root__' });
+    const rootResult = await postTool('createUiNode', { uiType: 'Widget', parentReference: canvas, name: '__ccp3x_layout_report_root__' });
     assert.equal(rootResult.ok, true, JSON.stringify(rootResult.body));
     const root = rootResult.body.reference;
     let child;
     try {
-      const childResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccb3x_layout_report_child__', parentReference: root });
+      const childResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccp3x_layout_report_child__', parentReference: root });
       assert.equal(childResult.ok, true, JSON.stringify(childResult.body));
       child = childResult.body.reference;
       const rootTransform = await postTool('inspectorSet', { target: 'instance', reference: root, propertyPath: 'scale', value: { x: 1.5, y: 0.75, z: 1 } });
@@ -75,7 +75,7 @@ describe('live: uiLayoutReport', () => {
 
       const sceneStateScript = `const target = ${JSON.stringify(root.id)}; const walk = (node) => { if (node.uuid === target) return { uuid: node.uuid, name: node.name, active: node.active, position: { x: node.position.x, y: node.position.y, z: node.position.z }, scale: { x: node.scale.x, y: node.scale.y, z: node.scale.z }, rotation: { x: node.rotation.x, y: node.rotation.y, z: node.rotation.z, w: node.rotation.w } }; for (const child of node.children || []) { const hit = walk(child); if (hit) return hit; } return null; }; return walk(cc.director.getScene());`;
       const sceneBefore = await postTool('executeJavascript', { context: 'scene', code: sceneStateScript });
-      const domBefore = await postTool('executeJavascript', { context: 'scene', code: "return document.querySelectorAll('[data-ccb3x-ui-layout-overlay]').length;" });
+      const domBefore = await postTool('executeJavascript', { context: 'scene', code: "return document.querySelectorAll('[data-ccp3x-ui-layout-overlay]').length;" });
       assert.equal(sceneBefore.status, 200, JSON.stringify(sceneBefore.body));
       assert.equal(domBefore.status, 200, JSON.stringify(domBefore.body));
       const overlay = await postTool('uiLayoutReport', {
@@ -99,11 +99,11 @@ describe('live: uiLayoutReport', () => {
       assert.ok(overlay.body.overlay.responseBytes <= overlay.body.overlay.maxResponseBytes);
       assert.equal(overlay.body.overlay.dirtyPreserved, true);
       const sceneAfter = await postTool('executeJavascript', { context: 'scene', code: sceneStateScript });
-      const domAfter = await postTool('executeJavascript', { context: 'scene', code: "return document.querySelectorAll('[data-ccb3x-ui-layout-overlay]').length;" });
+      const domAfter = await postTool('executeJavascript', { context: 'scene', code: "return document.querySelectorAll('[data-ccp3x-ui-layout-overlay]').length;" });
       assert.deepEqual(sceneAfter.body.result, sceneBefore.body.result);
       assert.equal(domAfter.body.result, domBefore.body.result);
       const missing = await postTool('uiLayoutReport', {
-        root: { id: '__ccb3x_missing_layout_report__', type: 'cc.Node' },
+        root: { id: '__ccp3x_missing_layout_report__', type: 'cc.Node' },
         designResolution: { width: 800, height: 600 },
         viewport: { width: 1600, height: 900 },
       });

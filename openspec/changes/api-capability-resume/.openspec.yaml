@@ -3,7 +3,7 @@ created: 2026-09-21
 status: pending
 freeze:
   commit: bacd213
-  branch: feat/ccb3x-api-capability-expansion
+  branch: feat/ccp3x-api-capability-expansion
   registered: 321
   qualified: 154
   portfolio_qualified: 68

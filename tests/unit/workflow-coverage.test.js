@@ -8,7 +8,7 @@ const { generate, INPUTS } = require('../../scripts/generate-workflow-coverage')
 const { audit } = require('../../scripts/audit-workflow-coverage');
 const root = path.resolve(__dirname, '../..');
 function fixture(t) {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-workflow-'));
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-workflow-'));
   t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
   for (const file of INPUTS) { fs.mkdirSync(path.dirname(path.join(temp, file)), { recursive: true }); fs.copyFileSync(path.join(root, file), path.join(temp, file)); }
   fs.mkdirSync(path.join(temp, 'docs'), { recursive: true });

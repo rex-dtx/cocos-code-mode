@@ -68,7 +68,7 @@ function atomicWriteVerified(filePath: string, content: string): number {
     }
     const tempPath = path.join(
         path.dirname(filePath),
-        `.${path.basename(filePath)}.ccb3x-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}.tmp`,
+        `.${path.basename(filePath)}.ccp3x-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}.tmp`,
     );
     try {
         fs.writeFileSync(tempPath, content, 'utf8');

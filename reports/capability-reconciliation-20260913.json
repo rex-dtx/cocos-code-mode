@@ -1,7 +1,7 @@
 {
   "artifact": "current dirty worktree",
   "creator": "3.7.3",
-  "build": { "commit": "6463c65-dirty", "build": "passed", "package": "cc-bridge-3x-v200-260913-144256.zip", "packageBytes": 35358837 },
+  "build": { "commit": "6463c65-dirty", "build": "passed", "package": "cocos-pilot-3x-v210-260913-144256.zip", "packageBytes": 35358837 },
   "registration": { "baseline": 86, "registered": 191, "expansions": 105, "minimumRegistration": 157, "registrationMargin": 34 },
   "portfolio": { "primaryCandidates": 80, "reserveCandidates": 20, "replacements": 6, "qualifiedOrApproved": 56, "requiredApprovals": 82, "approvalGap": 26, "readyForBulkImplementation": false },
   "verification": {

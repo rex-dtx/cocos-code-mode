@@ -28,7 +28,7 @@ describe('live: editor handshake and identity consistency', () => {
       assert.equal(handshake.body.probe.status, 'responsive');
       assert.equal(typeof handshake.body.probe.sceneReady, 'boolean');
       assert.equal(handshake.body.probe.code, null);
-      assert.equal(handshake.body.build.branch, 'feat/ccb3x-api-capability-expansion');
+      assert.equal(handshake.body.build.branch, 'feat/ccp3x-api-capability-expansion');
       assert.match(handshake.body.build.commit, /^[a-f0-9]{7,}$/);
       assert.ok(handshake.body.elapsedMs >= 0);
       if (stableInstanceId === undefined) stableInstanceId = handshake.body.instanceId;

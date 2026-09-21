@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "date": "2026-09-20",
-  "scope": "CCB3x API capability expansion only",
+  "scope": "Cocos Pilot 3x API capability expansion only",
   "coverage": { "authoring": "223/247", "percent": 90.28, "deficit": 0, "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6" },
   "qualifiedRecent": ["assetOpen", "editorListenersInspect", "animationStop", "prefabInstantiate", "prefabRestore", "prefabRevertOverrides", "referenceImageManage.switch", "referenceImageManage.refresh"],
   "remainingApiBlockers": [

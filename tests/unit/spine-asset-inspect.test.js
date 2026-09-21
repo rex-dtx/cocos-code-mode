@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe('Spine asset inspection', () => {
   it('returns bounded animations, durations, events, slots, skins, and sockets', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-${Date.now()}.json`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-${Date.now()}.json`);
     fs.writeFileSync(tempFile, JSON.stringify({
       skeleton: { hash: 'hash', spine: '4.1' },
       bones: [{ name: 'root' }, { name: 'hand', parent: 'root' }],
@@ -33,7 +33,7 @@ describe('Spine asset inspection', () => {
       sockets: [{ name: 'weaponSocket', bone: 'hand' }],
       animations: { attack: { bones: { hand: { rotate: [{ time: 0.75, value: 20 }] } }, events: [{ name: 'hit', time: 0.5 }] } }
     }));
-    tempAtlas = path.join(os.tmpdir(), `ccb-spine-${Date.now()}.atlas`);
+    tempAtlas = path.join(os.tmpdir(), `ccp-spine-${Date.now()}.atlas`);
     fs.writeFileSync(tempAtlas, 'hero.png\nsize: 1024,1024\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\n\nsword\n  rotate: false\n  xy: 10, 20\n  size: 32, 64\n  orig: 32, 64\n  offset: 0, 0\n  index: -1\n\nhero2.png\nsize: 512,512\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\n\nshield\n  rotate: false\n  xy: 4, 8\n  size: 16, 16\n  orig: 16, 16\n  offset: 0, 0\n  index: -1\n');
     previousEditor = global.Editor;
     global.Editor = { Message: { request: async (_service, message) => {
@@ -67,8 +67,8 @@ describe('Spine asset inspection', () => {
     assert.deepEqual(result.sockets, [{ name: 'weaponSocket', bone: 'hand' }]);
   });
   it('returns a focused bounded Spine atlas inventory', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-atlas-${Date.now()}.json`);
-    tempAtlas = path.join(os.tmpdir(), `ccb-spine-atlas-${Date.now()}.atlas`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-atlas-${Date.now()}.json`);
+    tempAtlas = path.join(os.tmpdir(), `ccp-spine-atlas-${Date.now()}.atlas`);
     fs.writeFileSync(tempFile, JSON.stringify({ bones: [{ name: 'root' }], animations: {} }));
     fs.writeFileSync(tempAtlas, 'hero.png\nsize: 32,32\n\nbody\n  size: 16, 16\n');
     previousEditor = global.Editor;
@@ -79,7 +79,7 @@ describe('Spine asset inspection', () => {
     assert.equal(result.truncated, false);
   });
   it('returns focused Spine skin and attachment metadata', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-attachments-${Date.now()}.json`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-attachments-${Date.now()}.json`);
     fs.writeFileSync(tempFile, JSON.stringify({ bones: [{ name: 'root' }], skins: { default: { body: { hero: { type: 'region', path: 'hero' } } } }, animations: {} }));
     previousEditor = global.Editor;
     global.Editor = { Message: { request: async () => ({ uuid: 'spine-attachments', type: 'sp.SkeletonData', importer: 'spine-data', file: tempFile, subAssets: {} }) } };
@@ -122,7 +122,7 @@ describe('Spine asset inspection', () => {
   });
 
   it('reports broken bone, attachment, event, and atlas relationships with bounded issues', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-invalid-${Date.now()}.json`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-invalid-${Date.now()}.json`);
     fs.writeFileSync(tempFile, JSON.stringify({
       bones: [{ name: 'root' }],
       slots: [{ name: 'weapon', bone: 'missingBone', attachment: 'missingAttachment' }],
@@ -131,7 +131,7 @@ describe('Spine asset inspection', () => {
       sockets: [{ name: 'socket', bone: 'missingBone' }],
       animations: { attack: { events: [{ name: 'missingEvent', time: 0.1 }] } }
     }));
-    tempAtlas = path.join(os.tmpdir(), `ccb-spine-invalid-${Date.now()}.atlas`);
+    tempAtlas = path.join(os.tmpdir(), `ccp-spine-invalid-${Date.now()}.atlas`);
     fs.writeFileSync(tempAtlas, 'hero.png\nsize: 32,32\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\n\nsword\n  rotate: false\n  xy: 0, 0\n  size: 16, 16\n');
     previousEditor = global.Editor;
     global.Editor = { Message: { request: async () => ({ uuid: 'invalid-spine', type: 'sp.SkeletonData', importer: 'spine-data', file: tempFile, subAssets: { atlas: { file: tempAtlas, type: 'sp.SpineAtlas' } } }) } };
@@ -143,7 +143,7 @@ describe('Spine asset inspection', () => {
   });
 
   it('reports duplicate bones and slots plus missing bone parents', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-hierarchy-${Date.now()}.json`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-hierarchy-${Date.now()}.json`);
     fs.writeFileSync(tempFile, JSON.stringify({
       bones: [{ name: 'root' }, { name: 'root' }, { name: 'child', parent: 'missingParent' }, { name: 'cycleA', parent: 'cycleB' }, { name: 'cycleB', parent: 'cycleA' }],
       slots: [{ name: 'weapon', bone: 'root' }, { name: 'weapon', bone: 'root' }],
@@ -171,7 +171,7 @@ describe('Spine asset inspection', () => {
   });
 
   it('uses Creator importer metadata for binary Spine sources', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-${Date.now()}.skel`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-${Date.now()}.skel`);
     fs.writeFileSync(tempFile, Buffer.from([0, 1, 2, 3]));
     previousEditor = global.Editor;
     global.Editor = { Message: { request: async (_service, message) => {
@@ -187,7 +187,7 @@ describe('Spine asset inspection', () => {
   });
 
   it('uses asset-db data when importer metadata is stored there', async () => {
-    tempFile = path.join(os.tmpdir(), `ccb-spine-data-${Date.now()}.skel`);
+    tempFile = path.join(os.tmpdir(), `ccp-spine-data-${Date.now()}.skel`);
     fs.writeFileSync(tempFile, Buffer.from([4, 5, 6, 7]));
     previousEditor = global.Editor;
     global.Editor = { Message: { request: async (_service, message) => {

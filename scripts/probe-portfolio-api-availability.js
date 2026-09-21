@@ -36,7 +36,7 @@ const probe = async (label, context, code) => {
   // 3. particle-schema: does the component expose serialized fields, and do writes persist?
   await probe('particle-schema', 'scene', `
     const scene = cc.director.getScene();
-    const node = new cc.Node('__ccb_probe__');
+    const node = new cc.Node('__ccp_probe__');
     node.parent = scene;
     const cls = cc.js.getClassByName('cc.ParticleSystem');
     const comp = node.addComponent(cls);

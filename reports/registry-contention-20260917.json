@@ -1740,35 +1740,35 @@
           "total": 5016.9391000000005,
           "wait": null,
           "ok": false,
-          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccp-lock. Close registry writers before removing an abandoned lock."
         },
         {
           "id": "writer-1",
           "total": 5025.5169000000005,
           "wait": null,
           "ok": false,
-          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccp-lock. Close registry writers before removing an abandoned lock."
         },
         {
           "id": "writer-2",
           "total": 5017.0659,
           "wait": null,
           "ok": false,
-          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccp-lock. Close registry writers before removing an abandoned lock."
         },
         {
           "id": "writer-3",
           "total": 5013.5122,
           "wait": null,
           "ok": false,
-          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccp-lock. Close registry writers before removing an abandoned lock."
         },
         {
           "id": "writer-4",
           "total": 5014.5221,
           "wait": null,
           "ok": false,
-          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccb-lock. Close registry writers before removing an abandoned lock."
+          "error": "UTCP registry locked: C:\\Users\\Admin\\AppData\\Local\\Temp/ccb-lock-bench-YS1p3L/fad0b7b6-12d9-4a58-bc88-29ec5bf293a1.json.ccp-lock. Close registry writers before removing an abandoned lock."
         }
       ],
       "badReads": 0,
@@ -1796,28 +1796,28 @@
         "total": 5016.6374,
         "wait": null,
         "ok": false,
-        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccp-lock. Close registry writers before removing an abandoned lock."
       },
       {
         "id": "writer-2",
         "total": 5011.0771,
         "wait": null,
         "ok": false,
-        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccp-lock. Close registry writers before removing an abandoned lock."
       },
       {
         "id": "writer-3",
         "total": 5025.4165,
         "wait": null,
         "ok": false,
-        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccp-lock. Close registry writers before removing an abandoned lock."
       },
       {
         "id": "writer-4",
         "total": 5009.6639,
         "wait": null,
         "ok": false,
-        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccb-lock. Close registry writers before removing an abandoned lock."
+        "error": "UTCP registry locked: G:\\_ws\\_helpers\\cc-code-mode-cst-3x7-worktrees\\api-capability-expansion-cc-3x7/_tmp_registry_bench-zT6Mtw/44a2a6fb-1ad4-49b1-8ddc-4ebe5a04e0d2.json.ccp-lock. Close registry writers before removing an abandoned lock."
       }
     ],
     "badReads": 0,

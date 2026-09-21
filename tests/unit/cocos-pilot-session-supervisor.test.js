@@ -30,7 +30,7 @@ async function eventually(predicate, message, ms = 3500) {
 }
 
 function harness(t) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-supervisor-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-supervisor-'));
   const registryPath = path.join(directory, 'registry.json');
   const editors = [], supervisors = [];
   t.after(async () => {
@@ -97,7 +97,7 @@ function harness(t) {
         editor.listener.listen(0, '127.0.0.1', resolve);
       });
       editor.url = `http://127.0.0.1:${editor.listener.address().port}`;
-      editor.namespace = `ccb3x_${editor.listener.address().port}`;
+      editor.namespace = `ccp3x_${editor.listener.address().port}`;
       return editor;
     },
   };

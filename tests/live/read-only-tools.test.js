@@ -101,39 +101,39 @@ describe('live: read-only endpoint qualification', () => {
 
   it('Creator 3.7 project file and instruction mutation round-trip', async (t) => {
     if (skipIfDown(t)) return;
-    const assetPath = 'assets/__ccb3x_project_write_qualification__.txt';
-    const instructionPath = '__ccb3x_instruction_qualification__.md';
+    const assetPath = 'assets/__ccp3x_project_write_qualification__.txt';
+    const instructionPath = '__ccp3x_instruction_qualification__.md';
     let assetReference;
     try {
       const written = await postTool('projectWriteFile', {
         filePath: assetPath,
-        content: 'ccb3x-marker-A\nccb3x-marker-A\n',
+        content: 'ccp3x-marker-A\nccp3x-marker-A\n',
       });
       assert.equal(written.status, 200, JSON.stringify(written.body));
       assert.equal(written.body.success, true);
-      assert.equal(written.body.bytesWritten, Buffer.byteLength('ccb3x-marker-A\nccb3x-marker-A\n'));
+      assert.equal(written.body.bytesWritten, Buffer.byteLength('ccp3x-marker-A\nccp3x-marker-A\n'));
 
       const replaced = await postTool('projectReplaceInFile', {
         filePath: assetPath,
-        search: 'ccb3x-marker-A',
-        replace: 'ccb3x-marker-B',
+        search: 'ccp3x-marker-A',
+        replace: 'ccp3x-marker-B',
       });
       assert.equal(replaced.status, 200, JSON.stringify(replaced.body));
       assert.deepEqual(replaced.body, { success: true, replacements: 2 });
 
       const read = await getJson(`/tools/projectReadFile?filePath=${encodeURIComponent(assetPath)}`);
       assert.equal(read.status, 200);
-      assert.equal(read.body.content, 'ccb3x-marker-B\nccb3x-marker-B\n');
+      assert.equal(read.body.content, 'ccp3x-marker-B\nccp3x-marker-B\n');
 
       const instruction = await postTool('writeProjectInstruction', {
         filePath: instructionPath,
-        content: '# ccb3x qualification\n',
+        content: '# ccp3x qualification\n',
       });
       assert.equal(instruction.status, 200, JSON.stringify(instruction.body));
       assert.equal(instruction.body.success, true);
       const readInstruction = await getJson(`/tools/readProjectInstruction?filePath=${encodeURIComponent(instructionPath)}`);
       assert.equal(readInstruction.status, 200);
-      assert.equal(readInstruction.body.content, '# ccb3x qualification\n');
+      assert.equal(readInstruction.body.content, '# ccp3x qualification\n');
 
       const asset = await getJson(`/tools/assetGetAtPath?assetPath=${encodeURIComponent(`db://${assetPath}`)}`);
       assert.equal(asset.status, 200, JSON.stringify(asset.body));
@@ -172,7 +172,7 @@ describe('live: read-only endpoint qualification', () => {
 
     const invalid = await postTool('programManage', {
       operation: 'get_info',
-      programName: '__ccb3x_missing_program__',
+      programName: '__ccp3x_missing_program__',
     });
     assert.equal(invalid.status, 500);
   });
@@ -202,7 +202,7 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(after.status, 200);
     assert.equal(after.body.dirty, false);
 
-    const invalid = await postTool('sceneManage', { operation: '__ccb3x_invalid__' });
+    const invalid = await postTool('sceneManage', { operation: '__ccp3x_invalid__' });
     assert.equal(invalid.status, 400);
   });
 
@@ -234,7 +234,7 @@ describe('live: read-only endpoint qualification', () => {
     assert.equal(selected.status, 200, JSON.stringify(selected.body));
     assert.equal(selected.body.success, true);
 
-    const invalid = await postTool('animationEdit', { operation: '__ccb3x_invalid__' });
+    const invalid = await postTool('animationEdit', { operation: '__ccp3x_invalid__' });
     assert.equal(invalid.status, 400);
   });
 

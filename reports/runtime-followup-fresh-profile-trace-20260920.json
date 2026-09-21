@@ -3,7 +3,7 @@
   "date": "2026-09-20",
   "launch": {
     "project": "G:\\_ws\\_helpers\\cc-3x-test",
-    "userDataDir": "C:\\Users\\hry\\AppData\\Local\\Temp\\ccb3x-creator-profile",
+    "userDataDir": "C:\\Users\\hry\\AppData\\Local\\Temp\\ccp3x-creator-profile",
     "flags": ["--enable-logging", "--v=1", "--can-show-upgrade-dialog=false"]
   },
   "nativeTrace": [

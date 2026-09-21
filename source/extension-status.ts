@@ -58,7 +58,7 @@ export async function inspectExtensionStatus(server: ServerIdentity | null, regi
         checkedAt: Date.now(), build: getBuildInfo(), projectPath,
         editorVersion: typeof Editor.App?.version === 'string' ? Editor.App.version : null,
         server: { running, port: running ? server!.port : 0, instanceId: running ? server!.instanceId : null,
-            namespace: running ? `ccb3x_${server!.port}` : null,
+            namespace: running ? `ccp3x_${server!.port}` : null,
             url: running ? `http://localhost:${server!.port}/utcp` : null, debug: server?.debug ?? false },
         registry: { path: registryPath, status: 'not-running', detail: null as string | null },
         http: { status: 'not-running', detail: null as string | null },
@@ -68,7 +68,7 @@ export async function inspectExtensionStatus(server: ServerIdentity | null, regi
     try {
         const config = readRegistry(registryPath);
         const entry = config.manual_call_templates.find(t => t.name === result.server.namespace);
-        const owns = config.variables?.[`CCB3X_OWNER_${server.port}`] === server.instanceId;
+        const owns = config.variables?.[`CCP3X_OWNER_${server.port}`] === server.instanceId;
         let endpointMatches = false;
         if (entry?.url) {
             const url = new URL(entry.url);

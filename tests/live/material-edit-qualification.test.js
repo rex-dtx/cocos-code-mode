@@ -18,7 +18,7 @@ describe('live: material edit qualification', () => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
 
     await repeatTestcase('MATERIAL-EDIT-01', async ({ iteration }) => {
-      const assetPath = `db://assets/__ccb3x_material_${process.pid}_${iteration}__.mtl`;
+      const assetPath = `db://assets/__ccp3x_material_${process.pid}_${iteration}__.mtl`;
       let reference;
       try {
         const created = await postTool('assetCreate', { assetPath, preset: 'material' });

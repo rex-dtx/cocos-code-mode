@@ -133,7 +133,7 @@ describe('remaining P3 capability contracts', () => {
     );
   });
   it('reads imported gltf-skeleton subasset JSON when model metadata exposes the file', async () => {
-    const skeletonFile = path.join(os.tmpdir(), `ccb-skeleton-${process.pid}-${Date.now()}.json`);
+    const skeletonFile = path.join(os.tmpdir(), `ccp-skeleton-${process.pid}-${Date.now()}.json`);
     fs.writeFileSync(skeletonFile, JSON.stringify({ __type__: 'cc.Skeleton', _joints: ['root', 'hip', 'hand'] }));
     install(async (_service, message, id) => {
       if (message !== 'query-asset-info') throw new Error('unexpected request');
@@ -154,7 +154,7 @@ describe('remaining P3 capability contracts', () => {
     }
   });
   it('reads imported gltf-skeleton JSON through the library map when Creator leaves file empty', async () => {
-    const skeletonFile = path.join(os.tmpdir(), `ccb-skeleton-lib-${process.pid}-${Date.now()}.json`);
+    const skeletonFile = path.join(os.tmpdir(), `ccp-skeleton-lib-${process.pid}-${Date.now()}.json`);
     fs.writeFileSync(skeletonFile, JSON.stringify({ __type__: 'cc.Skeleton', _joints: ['Armature/boneA', 'Armature/boneA/boneB'] }));
     install(async (_service, message, id) => {
       if (message !== 'query-asset-info') throw new Error('unexpected request');
@@ -286,12 +286,12 @@ describe('remaining P3 capability contracts', () => {
     install(async (service, message, id) => {
       calls.push({ service, message, id });
       if (message === 'query-asset-info') return { uuid: id, type: 'cc.Asset', url: 'db://assets/__bundle__' };
-      if (message === 'query-asset-meta') return { userData: { isBundle: true, bundleName: 'ccb3x-qualification', priority: 10, compressionType: { web: 'merge_dep' }, isRemoteBundle: { web: false } } };
+      if (message === 'query-asset-meta') return { userData: { isBundle: true, bundleName: 'ccp3x-qualification', priority: 10, compressionType: { web: 'merge_dep' }, isRemoteBundle: { web: false } } };
       throw new Error(`unexpected ${service}:${message}`);
     });
-    const result = await new PortfolioValidationTools().assetBundleValidate({ reference: { id: 'bundle-folder', type: 'cc.Asset' }, expectedBundle: 'ccb3x-qualification' });
+    const result = await new PortfolioValidationTools().assetBundleValidate({ reference: { id: 'bundle-folder', type: 'cc.Asset' }, expectedBundle: 'ccp3x-qualification' });
     assert.equal(result.valid, true);
-    assert.deepEqual(result.bundle, { name: 'ccb3x-qualification', priority: 10, compressionType: { web: 'merge_dep' }, remote: { web: false } });
+    assert.deepEqual(result.bundle, { name: 'ccp3x-qualification', priority: 10, compressionType: { web: 'merge_dep' }, remote: { web: false } });
     assert.deepEqual(calls.map((call) => call.message), ['query-asset-info', 'query-asset-meta']);
   });
 });

@@ -29,7 +29,7 @@ describe('live: terrain creation qualification', () => {
       } else {
         const createdRoot = await postTool('createUiNode', {
           uiType: 'Widget',
-          name: `__ccb3x_terrain_canvas_${process.pid}_${iteration}__`,
+          name: `__ccp3x_terrain_canvas_${process.pid}_${iteration}__`,
         });
         assert.equal(createdRoot.status, 200, JSON.stringify(createdRoot.body));
         parentReference = createdRoot.body.reference;
@@ -42,7 +42,7 @@ describe('live: terrain creation qualification', () => {
         createdCanvas = true;
       }
       const suffix = `${process.pid}_${iteration}`;
-      const name = `__ccb3x_terrain_qualification_${suffix}__`;
+      const name = `__ccp3x_terrain_qualification_${suffix}__`;
       const assetPath = `db://assets/${name}.terrain`;
       let assetReference;
       let nodeReference;

@@ -41,7 +41,7 @@ function buildSkinnedGltf(jointNames) {
   nodes.push({ name: 'Mesh', mesh: 0, skin: 0 });
 
   return {
-    asset: { version: '2.0', generator: 'ccb3x-retarget-witness' },
+    asset: { version: '2.0', generator: 'ccp3x-retarget-witness' },
     scene: 0,
     scenes: [{ nodes: [0, jointCount + 1] }],
     nodes,
@@ -129,7 +129,7 @@ describe('live: P2/P3 remaining candidate qualification witnesses', () => {
       if (preset.status !== 200 || preset.body.total < 1) {
         return { status: 'SKIP', reason: 'Creator does not expose the native animation graph preset fixture.' };
       }
-      const assetPath = `db://assets/__ccb3x_graph_edit_${process.pid}_${iteration}__`;
+      const assetPath = `db://assets/__ccp3x_graph_edit_${process.pid}_${iteration}__`;
       let reference;
       try {
         const created = await postTool('animationGraphCreate', { assetPath });
@@ -185,7 +185,7 @@ describe('live: P2/P3 remaining candidate qualification witnesses', () => {
   it('reverts and applies prefab instance overrides with source and instance read-back', async (t) => {
     if (skipIfDown(t)) return;
     await repeatTestcase('P23-V02', async ({ iteration }) => {
-      const label = `__ccb3x_override_fixture_${process.pid}_${iteration}__`;
+      const label = `__ccp3x_override_fixture_${process.pid}_${iteration}__`;
       const cloneLabel = `${label}_clone`;
       const assetPath = `db://assets/${label}.prefab`;
       let nodeReference;
@@ -264,9 +264,9 @@ describe('live: P2/P3 remaining candidate qualification witnesses', () => {
   it('compares skeleton and clip metadata for retarget inputs', async (t) => {
     if (skipIfDown(t)) return;
     await repeatTestcase('P23-V03', async ({ iteration }) => {
-      const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-retarget-'));
-      const labelA = `__ccb3x_retarget_a_${process.pid}_${iteration}__`;
-      const labelB = `__ccb3x_retarget_b_${process.pid}_${iteration}__`;
+      const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-retarget-'));
+      const labelA = `__ccp3x_retarget_a_${process.pid}_${iteration}__`;
+      const labelB = `__ccp3x_retarget_b_${process.pid}_${iteration}__`;
       const fileA = path.join(root, `${labelA}.gltf`);
       const fileB = path.join(root, `${labelB}.gltf`);
       fs.writeFileSync(fileA, JSON.stringify(buildSkinnedGltf(['boneA', 'boneB'])), 'utf8');

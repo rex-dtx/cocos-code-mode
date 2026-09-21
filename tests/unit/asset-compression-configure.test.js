@@ -16,7 +16,7 @@ function installEditor(request, getProject) {
 
 describe('assetCompressionConfigure', () => {
   it('validates an effective platform preset, persists it, and hashes generated importer outputs', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-compress-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-compress-'));
     const source = path.join(root, 'image.png');
     const generated = path.join(root, 'image.json');
     fs.writeFileSync(source, 'source-image');

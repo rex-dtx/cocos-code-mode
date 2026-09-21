@@ -50,7 +50,7 @@ async function serve(input, output, options = {}) {
 module.exports = { serve };
 if (require.main === module) {
   serve(process.stdin, process.stdout, {
-    ...(process.env.CCB_SESSION_REGISTRY ? {registryPath:process.env.CCB_SESSION_REGISTRY} : {}),
+    ...(process.env.CCP_SESSION_REGISTRY ? {registryPath:process.env.CCP_SESSION_REGISTRY} : {}),
     label:'Agent host',
   }).catch(error => {
     process.stderr.write((/^[A-Z_]{1,80}$/.test(error.code || '') ? error.code : 'HOST_FAILED') + '\n');

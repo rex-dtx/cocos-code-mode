@@ -55,7 +55,7 @@
     "build": "CREATOR_LOAD_OK",
     "portfolioAudit": "ok — approved 68, potential 87, registered 321, baseline 86",
     "auditUnitTest": "2/2 pass",
-    "deploy": "npm run package produced cc-bridge-3x-v200-260920-224034.zip (version 2.0.0-dev.ca37c04); extracted over G:/_ws/cc-fws/cc30-new-all-in-one/extensions/cc-bridge-3x and reloaded in Creator. Pre-deploy install backed up to .ccb-install-backup-20260920-224124 (dist + package.json).",
+    "deploy": "npm run package produced cocos-pilot-3x-v210-260920-224034.zip (version 2.0.0-dev.ca37c04); extracted over G:/_ws/cc-fws/cc30-new-all-in-one/extensions/cocos-pilot-3x and reloaded in Creator. Pre-deploy install backed up to .ccp-install-backup-20260920-224124 (dist + package.json).",
     "live": {
       "artifact": { "version": "2.0.0-dev.ca37c04", "commit": "ca37c04", "dirty": false, "toolCount": 321 },
       "endpoint": "http://localhost:64516",

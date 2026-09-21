@@ -7,7 +7,7 @@
     "os": "windows-x64",
     "backend": "Cocos Creator editor extension HTTP bridge",
     "commit": "3c24c78",
-    "branch": "feat/ccb3x-api-capability-expansion",
+    "branch": "feat/ccp3x-api-capability-expansion",
     "dirty": true,
     "builtAt": "2026-09-12T16:31:02.421Z",
     "endpoint": "http://localhost:49650"
@@ -30,7 +30,7 @@
     "finalLiveSmoke": {
       "buildInfoMatched": true,
       "broadcastObserve": {
-        "topic": "cc-bridge-3x:probe",
+        "topic": "cocos-pilot-3x:probe",
         "supported": true,
         "observed": true,
         "lifecycle": ["registered", "observed", "disposed"],
@@ -48,7 +48,7 @@
   "liveEvidence": [
     {
       "candidate": "tilemapInspect",
-      "fixture": "db://assets/__ccb3x_tilemap_fixture.tmx",
+      "fixture": "db://assets/__ccp3x_tilemap_fixture.tmx",
       "result": "typed TMX map, one layer, one object group and one object read after import"
     },
     {

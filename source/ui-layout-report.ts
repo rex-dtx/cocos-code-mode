@@ -345,7 +345,7 @@ function renderOverlay(report: LayoutReport): Omit<LayoutOverlayStatus, 'request
         canvas = documentObject.createElement('canvas');
         canvas.width = raster.width;
         canvas.height = raster.height;
-        canvas.setAttribute?.('data-ccb3x-ui-layout-overlay', 'true');
+        canvas.setAttribute?.('data-ccp3x-ui-layout-overlay', 'true');
         const context = canvas.getContext?.('2d');
         if (!context) {
             result.error = overlayError('OVERLAY_CONTEXT_UNAVAILABLE', 'A 2D canvas context is unavailable');

@@ -5,10 +5,10 @@ const { SessionLifecycleHost } = require('./host');
 module.exports = function ccbSession(pi, { env = process.env, supervisorFactory } = {}) {
   let context;
   const display = status => {
-    const text = `CCB ${status.state}: ${status.reason}`;
+    const text = `Cocos Pilot ${status.state}: ${status.reason}`;
     try {
       if (context?.hasUI && typeof context.ui?.setStatus === 'function') {
-        context.ui.setStatus('ccb-session', text);
+        context.ui.setStatus('ccp-session', text);
       } else {
         pi.logger?.info(text);
       }
@@ -16,9 +16,9 @@ module.exports = function ccbSession(pi, { env = process.env, supervisorFactory 
   };
   const host = new SessionLifecycleHost({
     label: 'OMP',
-    ...(env.CCB_SESSION_REGISTRY ? { registryPath: env.CCB_SESSION_REGISTRY } : {}),
+    ...(env.CCP_SESSION_REGISTRY ? { registryPath: env.CCP_SESSION_REGISTRY } : {}),
     // Without a namespace the supervisor refuses multiple editors matching one project.
-    ...(env.CCB_SESSION_NAMESPACE ? { namespace: env.CCB_SESSION_NAMESPACE } : {}),
+    ...(env.CCP_SESSION_NAMESPACE ? { namespace: env.CCP_SESSION_NAMESPACE } : {}),
     ...(supervisorFactory ? { supervisorFactory } : {}),
     emit: display,
   });
@@ -27,7 +27,7 @@ module.exports = function ccbSession(pi, { env = process.env, supervisorFactory 
     try {
       await host.switchSession({
         sessionId: ctx.sessionManager.getSessionId(),
-        project: env.CCB_SESSION_PROJECT || ctx.cwd,
+        project: env.CCP_SESSION_PROJECT || ctx.cwd,
       });
     } catch (error) {
       // No endpoint/project/error text enters the UI or the model context.

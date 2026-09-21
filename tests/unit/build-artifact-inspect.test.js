@@ -12,7 +12,7 @@ const { ExpansionTools } = requireDist('utcp/tools/expansion-tools.js');
 const tempProjects = [];
 
 function makeProject() {
-  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-artifact-inspect-'));
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-artifact-inspect-'));
   tempProjects.push(project);
   return project;
 }
@@ -100,7 +100,7 @@ describe('buildArtifactInspect', () => {
 
   it('rejects symlink targets that resolve outside the project', async (t) => {
     const project = makeProject();
-    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-artifact-outside-'));
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-artifact-outside-'));
     tempProjects.push(outside);
     fs.writeFileSync(path.join(outside, 'secret.bin'), 'secret');
     try {

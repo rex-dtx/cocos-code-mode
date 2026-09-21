@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-draft",
+  "denominatorVersion": "ccp3x-creator-3.7.3-windows-v1-draft",
   "status": "provisional-until-denominator-accepted",
   "draftDeficitTo90": 26,
   "draftDeficitToMargin": 30,

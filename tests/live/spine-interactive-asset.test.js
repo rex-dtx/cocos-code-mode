@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { getJson, postTool, repeatTestcase, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
 /** Live integration qualification: public Spine controls against a real loaded asset; the fixture is cloned to avoid mutating the source node. */
-const selectionPasses = Math.min(10, Math.max(1, Number(process.env.CCB_SELECTION_PASSES || 5) || 5));
+const selectionPasses = Math.min(10, Math.max(1, Number(process.env.CCP_SELECTION_PASSES || 5) || 5));
 
 async function selectNodeRepeatedly(reference) {
   for (let pass = 1; pass <= selectionPasses; pass++) {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "date": "2026-09-18",
-  "disposableEndpoint": { "port": 51009, "project": "G:/_ws/_helpers/cc-3x-test", "buildCommit": "bc5f27f", "runtimeState": { "status": 422, "code": "UNSUPPORTED_RUNTIME_TRANSPORT", "message": "Creator game-view host shape differs from the 3.7.3 adapter." }, "windows": ["Blank", "Worker - Assets", "Programming DevTools", "__ccb3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3", "Packages"] },
+  "disposableEndpoint": { "port": 51009, "project": "G:/_ws/_helpers/cc-3x-test", "buildCommit": "bc5f27f", "runtimeState": { "status": 422, "code": "UNSUPPORTED_RUNTIME_TRANSPORT", "message": "Creator game-view host shape differs from the 3.7.3 adapter." }, "windows": ["Blank", "Worker - Assets", "Programming DevTools", "__ccp3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3", "Packages"] },
   "mainEndpoint": { "port": 55609, "buildCommit": "bc5f27f", "runtimeState": { "status": 200, "state": "stop", "enabled": false, "ready": false, "platform": "gameView" } },
   "unitVerification": { "gameViewTransport": "2/2", "runtimeSession": "13/13" },
   "decision": "No compatible host patch inferred. Keep bounded transport fail-closed until Creator exposes an observed Game View DOM host; do not implement generic DOM heuristics or bypass edit/runtime renderer separation.",

@@ -12,7 +12,7 @@ const SCRIPT = path.join(ROOT, 'scripts', 'audit-tool-portfolio.js');
 const PORTFOLIO_PATH = path.join(ROOT, 'docs', 'tool-portfolio-candidates.json');
 
 function runMutatedPortfolio(mutate) {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-portfolio-'));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-portfolio-'));
   try {
     const portfolio = JSON.parse(fs.readFileSync(PORTFOLIO_PATH, 'utf8'));
     mutate(portfolio);

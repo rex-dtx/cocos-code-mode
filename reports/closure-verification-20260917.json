@@ -69,7 +69,7 @@
   "releaseQualified": false,
   "finalLocalBuild": {
     "commit": "6bf0be8",
-    "branch": "feat/ccb3x-api-capability-expansion",
+    "branch": "feat/ccp3x-api-capability-expansion",
     "dirty": true,
     "builtAt": "2026-09-17T05:08:21.919Z"
   },
@@ -142,7 +142,7 @@
   },
   "controlledRecovery": {
     "approved": true,
-    "sceneDiskBackup": "C:/Temp/ccb3x-closure-scene-002-20260917.scene.backup",
+    "sceneDiskBackup": "C:/Temp/ccp3x-closure-scene-002-20260917.scene.backup",
     "note": "Target Creator exited before unsaved scene export; unrelated Creator instance untouched. Restarted exact project with loopback CDP and verified matching bridge."
   },
   "finalSource": {
@@ -175,7 +175,7 @@
     "skipped": 0,
     "total": 458,
     "percent": 99.78,
-    "failedArea": "out-of-scope session-helper migration suites; scripts/cc-bridge-session.js deleted while tests still import it",
+    "failedArea": "out-of-scope session-helper migration suites; scripts/cocos-pilot-session.js deleted while tests still import it",
     "output": "artifact://135"
   }
 }

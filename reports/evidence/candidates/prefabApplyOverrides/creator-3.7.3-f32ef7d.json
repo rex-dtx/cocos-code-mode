@@ -3,7 +3,7 @@
   "tool": "prefabApplyOverrides",
   "creator": "3.7.3",
   "buildCommit": "f32ef7d",
-  "artifact": "extensions/cc-bridge-3x dist (clean build of f32ef7d)",
+  "artifact": "extensions/cocos-pilot-3x dist (clean build of f32ef7d)",
   "positiveWitness": {
     "test": "tests/live/p2-p3-remaining-qualification.test.js#P23-V02",
     "iterations": 5,

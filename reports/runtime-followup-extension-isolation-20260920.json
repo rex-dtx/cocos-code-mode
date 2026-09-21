@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "date": "2026-09-20",
   "project": "G:\\_ws\\_helpers\\cc-3x-test",
-  "isolation": "Renamed extensions/cc-bridge-3x out of discovery path, launched Creator 3.7.3 with native logging.",
+  "isolation": "Renamed extensions/cocos-pilot-3x out of discovery path, launched Creator 3.7.3 with native logging.",
   "result": {
     "creatorWindowBootstrap": true,
     "rendererAskWin": true,
@@ -10,5 +10,5 @@
     "assetDbReady": false,
     "utcpExpected": false
   },
-  "decision": "The same pre-project initialization stall occurs with CC Bridge disabled. CC Bridge package activation is not the root cause; the blocker is Creator project initialization/environment."
+  "decision": "The same pre-project initialization stall occurs with Cocos Pilot disabled. Cocos Pilot package activation is not the root cause; the blocker is Creator project initialization/environment."
 }

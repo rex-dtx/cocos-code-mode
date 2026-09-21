@@ -3,7 +3,7 @@
   "tool": "bitmapFontImportSettingsAudit",
   "creator": "3.7.3",
   "buildCommit": "f7f790d",
-  "artifact": "extensions/cc-bridge-3x dist (clean build of f7f790d)",
+  "artifact": "extensions/cocos-pilot-3x dist (clean build of f7f790d)",
   "positiveWitness": {
     "test": "tests/live/asset-import-settings-qualification.test.js",
     "iterations": 1,

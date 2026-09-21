@@ -7,7 +7,7 @@ const crypto = require('node:crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const PARENT_FULL_DENOMINATOR_HASH = '9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286';
-const VERSION = 'ccb3x-creator-3.7.3-windows-v1-authoring-first';
+const VERSION = 'ccp3x-creator-3.7.3-windows-v1-authoring-first';
 const INPUTS = [
   'docs/workflow-inventory.json',
   'docs/workflow-source-mapping.json',

@@ -16,5 +16,5 @@
     }
   ],
   "qualified": false,
-  "decision": "CC Bridge activation and project-generated state are not the cause. Creator 3.7.3 installation/runtime stalls before project initialization for the isolated project."
+  "decision": "Cocos Pilot activation and project-generated state are not the cause. Creator 3.7.3 installation/runtime stalls before project initialization for the isolated project."
 }

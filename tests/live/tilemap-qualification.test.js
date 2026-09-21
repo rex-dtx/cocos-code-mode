@@ -19,12 +19,12 @@ describe('live: tilemap candidate qualification witnesses', () => {
 
   it('imports, inspects, validates, and round-trips bounded TMX edits', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const source = path.join(os.tmpdir(), `ccb3x-tilemap-${process.pid}.tmx`);
+    const source = path.join(os.tmpdir(), `ccp3x-tilemap-${process.pid}.tmx`);
     fs.writeFileSync(source, TMX, 'utf8');
     let reference;
     try {
       const imported = await postTool('assetBatchImport', {
-        items: [{ sourceFilesystemPath: source, targetAssetPath: 'db://assets/__ccb3x_candidate_tilemap__.tmx' }],
+        items: [{ sourceFilesystemPath: source, targetAssetPath: 'db://assets/__ccp3x_candidate_tilemap__.tmx' }],
       });
       assert.equal(imported.status, 200, JSON.stringify(imported.body));
       assert.equal(imported.body.succeeded, 1);

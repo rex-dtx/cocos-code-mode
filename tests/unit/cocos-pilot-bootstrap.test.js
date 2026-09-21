@@ -69,23 +69,23 @@ describe('bootstrap handshake evidence', () => {
         'http://localhost:11111/build-info': LIVE_BUILD,
         'http://localhost:11111/tools/editorHandshake?timeoutMs=1000': response,
       }) });
-      assert.equal(cache.manuals.ccp3x.handshake.status, status);
-      assert.equal(cache.manuals.ccp3x.live, true, 'manual discovery is independent of IPC readiness');
-      if (status === 'responsive') assert.equal(cache.manuals.ccp3x.handshake.result.probe.sceneReady, false);
+      assert.equal(cache.manuals.ccp3x_11111.handshake.status, status);
+      assert.equal(cache.manuals.ccp3x_11111.live, true, 'manual discovery is independent of IPC readiness');
+      if (status === 'responsive') assert.equal(cache.manuals.ccp3x_11111.handshake.result.probe.sceneReady, false);
     }
     const old = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(), fetchJson: mockFetch({
       'http://localhost:11111/utcp': LIVE_MANUAL, 'http://localhost:11111/build-info': LIVE_BUILD,
     }) });
-    assert.equal(old.manuals.ccp3x.handshake.status, 'unsupported');
+    assert.equal(old.manuals.ccp3x_11111.handshake.status, 'unsupported');
   });
 
   it('never reuses cached handshake success after failed or omitted probes', async () => {
     const priorCache = { manuals: { ccp3x: makePriorEntry({ handshake: { status: 'responsive', result: { instanceId: 'old' } } }) } };
     for (const entries of [[{ name: 'ccp3x', port: 11111 }], []]) {
       const cache = await buildCache({ utcpConfig: utcpConfigFor(entries), priorCache, now: new Date(), fetchJson: async () => null });
-      assert.notEqual(cache.manuals.ccp3x.handshake.status, 'responsive');
-      assert.equal(cache.manuals.ccp3x.handshake.result, null);
-      assert.equal(cache.manuals.ccp3x.toolCount, 42);
+      assert.notEqual(cache.manuals.ccp3x_11111.handshake.status, 'responsive');
+      assert.equal(cache.manuals.ccp3x_11111.handshake.result, null);
+      assert.equal(cache.manuals.ccp3x_11111.toolCount, 42);
     }
   });
 });
@@ -169,12 +169,12 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       now,
     });
     // Must retain the good entry, not clobber with 0
-    assert.equal(result.manuals.ccp3x.toolCount, 50, 'good entry must be retained');
-    assert.equal(result.manuals.ccp3x.authoritative, true);
-    assert.equal(result.manuals.ccp3x.live, false);
-    assert.equal(result.manuals.ccp3x.stale, true);
-    assert.equal(result.manuals.ccp3x.staleReason, 'probe_failed');
-    assert.ok(typeof result.manuals.ccp3x.age_ms === 'number' && result.manuals.ccp3x.age_ms >= 0);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50, 'good entry must be retained');
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.staleReason, 'probe_failed');
+    assert.ok(typeof result.manuals.ccp3x_11111.age_ms === 'number' && result.manuals.ccp3x_11111.age_ms >= 0);
   });
 
   it('dead fetch that returns empty tools array also retains good cache', async () => {
@@ -189,9 +189,9 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccp3x.toolCount, 30);
-    assert.equal(result.manuals.ccp3x.stale, true);
-    assert.equal(result.manuals.ccp3x.live, false);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 30);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
   });
 
   it('first-run dead fetch does not create an authoritative 0 entry (tombstone)', async () => {
@@ -206,12 +206,12 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       now: new Date(),
     });
     // The key exists as a tombstone but is NOT authoritative
-    assert.ok(result.manuals.ccp3x, 'tombstone should be present for diagnostics');
-    assert.equal(result.manuals.ccp3x.toolCount, 0);
-    assert.equal(result.manuals.ccp3x.authoritative, false, 'first-run dead fetch must not be authoritative');
-    assert.equal(result.manuals.ccp3x.live, false);
-    assert.equal(result.manuals.ccp3x.stale, true);
-    assert.equal(result.manuals.ccp3x.staleReason, 'probe_failed');
+    assert.ok(result.manuals.ccp3x_11111, 'tombstone should be present for diagnostics');
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 0);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, false, 'first-run dead fetch must not be authoritative');
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.staleReason, 'probe_failed');
   });
 
   it('first-run dead fetch with empty-tools response also creates tombstone', async () => {
@@ -225,8 +225,8 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccp3x.authoritative, false);
-    assert.equal(result.manuals.ccp3x.toolCount, 0);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, false);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 0);
   });
 
   it('live probe writes authoritative entry with age_ms:0 and fetchedAt', async () => {
@@ -241,13 +241,13 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now,
     });
-    assert.equal(result.manuals.ccp3x.toolCount, 3);
-    assert.equal(result.manuals.ccp3x.authoritative, true);
-    assert.equal(result.manuals.ccp3x.live, true);
-    assert.equal(result.manuals.ccp3x.stale, false);
-    assert.equal(result.manuals.ccp3x.age_ms, 0);
-    assert.equal(result.manuals.ccp3x.fetchedAt, now.toISOString());
-    assert.deepEqual(result.manuals.ccp3x.buildInfo, LIVE_BUILD);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 3);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.live, true);
+    assert.equal(result.manuals.ccp3x_11111.stale, false);
+    assert.equal(result.manuals.ccp3x_11111.age_ms, 0);
+    assert.equal(result.manuals.ccp3x_11111.fetchedAt, now.toISOString());
+    assert.deepEqual(result.manuals.ccp3x_11111.buildInfo, LIVE_BUILD);
   });
 
   it('live probe overwrites a stale prior (recovery)', async () => {
@@ -264,10 +264,10 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now,
     });
-    assert.equal(result.manuals.ccp3x.toolCount, 2);
-    assert.equal(result.manuals.ccp3x.authoritative, true);
-    assert.equal(result.manuals.ccp3x.live, true);
-    assert.equal(result.manuals.ccp3x.stale, false);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 2);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.live, true);
+    assert.equal(result.manuals.ccp3x_11111.stale, false);
   });
 
   it('ccp3x and ccp2x are independent — dead ccp3x does not clobber live ccp2x', async () => {
@@ -291,9 +291,9 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       now: new Date(),
     });
     // ccp3x retained
-    assert.equal(result.manuals.ccp3x.toolCount, 50);
-    assert.equal(result.manuals.ccp3x.live, false);
-    assert.equal(result.manuals.ccp3x.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
     // ccp2x freshly written
     assert.equal(result.manuals.ccp2x.toolCount, 3);
     assert.equal(result.manuals.ccp2x.live, true);
@@ -314,8 +314,8 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccp3x.authoritative, true);
-    assert.equal(result.manuals.ccp3x.toolCount, 3);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 3);
     assert.equal(result.manuals.ccp2x.authoritative, false);
     assert.equal(result.manuals.ccp2x.toolCount, 0);
   });
@@ -359,12 +359,12 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccp3x.toolCount, 50, 'count must be retained');
-    assert.equal(result.manuals.ccp3x.stale, true);
-    assert.equal(result.manuals.ccp3x.staleReason, 'max_age');
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50, 'count must be retained');
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.staleReason, 'max_age');
   });
 
-  it('per-port keys (ccp3x_49650) are independent of canonical ccp3x', async () => {
+  it('legacy and per-port entries identify separate endpoints, not a latest pointer', async () => {
     const prior = {
       updatedAt: new Date().toISOString(),
       manuals: {
@@ -389,14 +389,14 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    // Canonical retained stale, per-port refreshed live
-    assert.equal(result.manuals.ccp3x.toolCount, 50);
-    assert.equal(result.manuals.ccp3x.live, false);
+    // Legacy endpoint migrates to its port while the other editor stays independent.
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
     assert.equal(result.manuals['ccp3x_49650'].toolCount, 3);
     assert.equal(result.manuals['ccp3x_49650'].live, true);
   });
 
-  it('dedup by URL: same editor as canonical + per-port alias keeps one probe (prefer canonical name)', async () => {
+  it('deduplicates legacy and per-port templates under the endpoint namespace', async () => {
     // Same base URL appears twice (canonical + per-port alias) — dedup should fetch once
     let fetchCount = 0;
     const cfg = {
@@ -412,8 +412,8 @@ describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
       return null;
     };
     const result = await buildCache({ utcpConfig: cfg, priorCache: null, fetchJson: countingFetch, now: new Date() });
-    // Prefer canonical name ccp3x over per-port for same URL
-    assert.ok(result.manuals.ccp3x, 'canonical key wins dedup');
+    // Only the stable per-port namespace survives discovery.
+    assert.deepEqual(Object.keys(result.manuals), ['ccp3x_49650']);
     assert.equal(fetchCount, 1, 'should fetch /utcp once per unique URL');
   });
 });
@@ -435,12 +435,132 @@ describe('cocos-pilot-bootstrap — regression: reverting the guard must fail', 
     });
     // If the guard were reverted to the old logic, this would be { toolCount:0, authoritative: true/undefined }
     // The regression test asserts the new invariant: a 0 entry is never authoritative
-    const entry = result.manuals.ccp3x;
+    const entry = result.manuals.ccp3x_11111;
     assert.ok(entry, 'dead first run should still write a tombstone (or be absent) — never silent success');
     assert.notEqual(entry.authoritative, true, 'tombstone must not be authoritative; revert would make this true/undefined');
     assert.equal(entry.stale, true);
     // Consumers key off authoritative to decide "ready"; a revert would make toolCount:0 look ready
     const isReady = entry.authoritative === true && entry.toolCount > 0;
     assert.equal(isReady, false, 'dead first-run entry must not be considered ready');
+  });
+});
+
+describe('bootstrap stable editor identity', () => {
+  it('never carries legacy alias evidence to a different editor port', async () => {
+    const priorCache = { manuals: { ccp3x: makePriorEntry({
+      handshake: { status: 'responsive', result: { instanceId: 'editor-a' } },
+    }) } };
+    const cache = await buildCache({
+      utcpConfig: utcpConfigFor([{ name: 'ccp3x', port: 22222 }]),
+      priorCache, now: new Date(), fetchJson: async () => null,
+    });
+    assert.equal(cache.manuals.ccp3x, undefined);
+    assert.equal(cache.manuals.ccp3x_22222.authoritative, false);
+    assert.equal(cache.manuals.ccp3x_22222.toolCount, 0);
+    assert.equal(cache.manuals.ccp3x_22222.handshake.result, null);
+    assert.equal(cache.manuals.ccp3x_11111.toolCount, 42);
+    assert.equal(cache.manuals.ccp3x_11111.live, false);
+    assert.equal(cache.manuals.ccp3x_11111.handshake.result, null);
+  });
+
+  it('migrates cached aliases once and favors the explicit port entry in either order', async () => {
+    const entries = [
+      ['ccp3x', makePriorEntry({ toolCount: 99, aliasOf: 'ccp3x_11111' })],
+      ['ccp3x_11111', makePriorEntry({ toolCount: 7 })],
+    ];
+    for (const ordered of [entries, [...entries].reverse()]) {
+      const cache = await buildCache({ utcpConfig: null, priorCache: { manuals: Object.fromEntries(ordered) },
+        now: new Date(), fetchJson: async () => null });
+      assert.deepEqual(Object.keys(cache.manuals), ['ccp3x_11111']);
+      assert.equal(cache.manuals.ccp3x_11111.toolCount, 7);
+      assert.equal(cache.manuals.ccp3x_11111.aliasOf, undefined);
+      assert.equal(cache.manuals.ccp3x_11111.live, false);
+    }
+  });
+
+  it('deduplicates loopback spellings without retaining a stale alias', async () => {
+    const templates = utcpConfigFor([{ name: 'ccp3x', port: 11111 }, { name: 'ccp3x_11111', port: 11111 }]);
+    templates.manual_call_templates[0].url = 'http://127.0.0.1:11111/utcp/';
+    const urls = [];
+    const cache = await buildCache({ utcpConfig: templates,
+      priorCache: { manuals: { ccp3x: makePriorEntry() } }, now: new Date(),
+      fetchJson: async (url) => { urls.push(url); return url.endsWith('/utcp') ? LIVE_MANUAL : LIVE_BUILD; },
+    });
+    assert.deepEqual(Object.keys(cache.manuals), ['ccp3x_11111']);
+    assert.equal(cache.manuals.ccp3x_11111.url, 'http://localhost:11111/utcp');
+    assert.equal(urls.filter((url) => url.endsWith('/utcp')).length, 1);
+  });
+  it('rejects names that disagree with endpoint ports and ambiguous same-port hosts', async () => {
+    const config = utcpConfigFor([{ name: 'ccp3x_22222', port: 11111 },
+      { name: 'ccp3x_33333', port: 33333 }, { name: 'ccp3x', port: 33333 }]);
+    config.manual_call_templates[2].url = 'http://other-host:33333/utcp';
+    let calls = 0;
+    const cache = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(),
+      fetchJson: async () => { calls++; return LIVE_MANUAL; },
+    });
+    assert.equal(calls, 0, 'invalid or ambiguous endpoints must not be selected');
+    assert.deepEqual(cache.manuals, {});
+  });
+
+  it('does not reuse same-port metadata from another host', async () => {
+    const cache = await buildCache({ utcpConfig: utcpConfigFor([{ name: 'ccp3x_11111', port: 11111 }]),
+      priorCache: { manuals: { ccp3x_11111: makePriorEntry({ url: 'http://other-host:11111/utcp' }) } },
+      now: new Date(), fetchJson: async () => null,
+    });
+    assert.equal(cache.manuals.ccp3x_11111.authoritative, false);
+    assert.equal(cache.manuals.ccp3x_11111.url, 'http://localhost:11111/utcp');
+    assert.equal(cache.manuals.ccp3x_11111.toolCount, 0);
+  });
+
+  it('keeps separate live handshake identities for two editors', async () => {
+    const cache = await buildCache({
+      utcpConfig: utcpConfigFor([{ name: 'ccp3x', port: 11111 }, { name: 'ccp3x', port: 22222 }]),
+      priorCache: null, now: new Date(), fetchJson: async (url) => {
+        if (url.endsWith('/utcp')) return { ...LIVE_MANUAL, tools: [{ name: 'editorHandshake' }] };
+        if (url.endsWith('/build-info')) return LIVE_BUILD;
+        return { instanceId: new URL(url).port, probe: { status: 'responsive', sceneReady: true } };
+      },
+    });
+    assert.deepEqual(Object.keys(cache.manuals).sort(), ['ccp3x_11111', 'ccp3x_22222']);
+    assert.equal(cache.manuals.ccp3x_11111.handshake.result.instanceId, '11111');
+    assert.equal(cache.manuals.ccp3x_22222.handshake.result.instanceId, '22222');
+  });
+
+  it('probes editors concurrently with no more than eight HTTP requests in flight', async () => {
+    let active = 0;
+    let peak = 0;
+    const cache = await buildCache({
+      utcpConfig: utcpConfigFor(Array.from({ length: 10 }, (_, i) => ({ name: 'ccp3x', port: 11000 + i }))),
+      priorCache: null, now: new Date(), fetchJson: async () => {
+        peak = Math.max(peak, ++active);
+        await new Promise((resolve) => setImmediate(resolve));
+        active--;
+        return null;
+      },
+    });
+    assert.ok(peak > 2 && peak <= 8, `bounded parallel discovery, peak=${peak}`);
+    assert.equal(Object.keys(cache.manuals).length, 10);
+  });
+});
+
+describe('bootstrap HTTP deadline', () => {
+  it('rejects HTTP errors and terminates a trickling body at the absolute deadline', async () => {
+    const http = require('http');
+    const server = http.createServer((req, res) => {
+      if (req.url === '/error') { res.writeHead(503); res.end(JSON.stringify(LIVE_MANUAL)); return; }
+      res.writeHead(200);
+      const timer = setInterval(() => res.write(' '), 5);
+      res.on('close', () => clearInterval(timer));
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    try {
+      const base = `http://127.0.0.1:${server.address().port}`;
+      assert.equal(await bootstrap.fetchJson(`${base}/error`, 1000), null);
+      const started = Date.now();
+      assert.equal(await bootstrap.fetchJson(`${base}/trickle`, 80), null);
+      assert.ok(Date.now() - started < 1500, 'trickling data must not extend the request deadline');
+    } finally {
+      await new Promise((resolve) => server.close(resolve));
+    }
   });
 });

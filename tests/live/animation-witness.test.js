@@ -71,10 +71,10 @@ describe('live: animation candidate witnesses (non-qualifying)', () => {
           context: 'scene',
           code: `const cc = require('cc');
 const scene = cc.director.getScene();
-const node = new cc.Node('__ccb_animation_state_witness__');
+const node = new cc.Node('__ccp_animation_state_witness__');
 const animation = node.addComponent(cc.Animation);
 const clip = new cc.AnimationClip();
-clip.name = '__ccb_animation_state_clip__';
+clip.name = '__ccp_animation_state_clip__';
 clip.duration = 2;
 animation.addClip(clip);
 scene.addChild(node);
@@ -86,7 +86,7 @@ return { id: node.uuid };`,
         const controlled = await postTool('animationRuntimeControl', {
           nodeReference: { id: nodeId, type: 'cc.Node' },
           operation: 'set_state',
-          clipName: '__ccb_animation_state_clip__',
+          clipName: '__ccp_animation_state_clip__',
           speed: 1.25,
           time: 0.4,
           repeatCount: 2,

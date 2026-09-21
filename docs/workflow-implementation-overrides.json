@@ -239,7 +239,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-all-preferences",
       "state": "complete",
-      "reason": "getEditorPreference omitting key returns the complete bounded set of cc-bridge-3x Editor.Profile preferences with explicit nulls for unset keys.",
+      "reason": "getEditorPreference omitting key returns the complete bounded set of cocos-pilot-3x Editor.Profile preferences with explicit nulls for unset keys.",
       "routes": [
         {
           "tool": "getEditorPreference",
@@ -251,7 +251,7 @@
         "reports/p0-baseline-ledger-20260908.json"
       ],
       "limitations": [
-        "Bounded to the cc-bridge-3x known preference keys; arbitrary third-party package profiles are not claimed.",
+        "Bounded to the cocos-pilot-3x known preference keys; arbitrary third-party package profiles are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },
@@ -3972,7 +3972,7 @@
     {
       "workflowId": "editor.cocos-mcp-get-active-listeners",
       "state": "complete",
-      "reason": "editorListenersInspect returns a bounded CC Bridge-owned listener inventory and explicitly refuses to claim arbitrary Creator listener enumeration.",
+      "reason": "editorListenersInspect returns a bounded Cocos Pilot-owned listener inventory and explicitly refuses to claim arbitrary Creator listener enumeration.",
       "routes": [{ "tool": "editorListenersInspect", "file": "source/utcp/tools/advanced-capability-tools.ts" }],
       "evidenceArtifacts": ["tests/unit/advanced-capability-tools.test.js", "reports/authoring-editor-ui-wave-20260920.json"],
       "limitations": ["Creator 3.7.3 does not expose arbitrary listener enumeration; returned inventory is intentionally bounded and empty."]

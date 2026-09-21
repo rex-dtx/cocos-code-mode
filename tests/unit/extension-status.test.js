@@ -11,7 +11,7 @@ const { UtcpServerManager, setServerProfile } = requireDist('utcp/utcp-server.js
 it('status verifies actual HTTP identity, registry ownership and scene readiness independently', async () => {
   const original = global.Editor;
   global.Editor = { Project: { path: process.cwd() }, App: { version: '3.7.3' }, Message: { request: async () => false } };
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-status-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-status-'));
   const registry = path.join(dir, 'registry.json');
   const server = new UtcpServerManager();
   try {
@@ -20,8 +20,8 @@ it('status verifies actual HTTP identity, registry ownership and scene readiness
     assert.equal(stopped.http.status, 'not-running');
     const port = await server.start();
     const identity = { port, instanceId: server.instanceId, debug: false };
-    fs.writeFileSync(registry, JSON.stringify({ variables: { ['CCB3X_OWNER_' + port]: server.instanceId }, manual_call_templates: [
-      { name: 'ccb3x_' + port, url: `http://localhost:${port}/utcp` },
+    fs.writeFileSync(registry, JSON.stringify({ variables: { ['CCP3X_OWNER_' + port]: server.instanceId }, manual_call_templates: [
+      { name: 'ccp3x_' + port, url: `http://localhost:${port}/utcp` },
     ] }));
     for (const envelope of [false, true]) {
       setServerProfile('full', [], [], envelope);

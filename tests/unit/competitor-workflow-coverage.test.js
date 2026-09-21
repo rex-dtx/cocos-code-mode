@@ -22,7 +22,7 @@ function registeredTools() {
 
 describe('frozen competitor workflow coverage ledger', () => {
   it('accounts for every competitor source row exactly once', () => {
-    assert.deepEqual(report.denominator.sourceCatalogTools, { ALX: 163, CCB2: 96 });
+    assert.deepEqual(report.denominator.sourceCatalogTools, { ALX: 163, 'Cocos Pilot 2x': 96 });
     assert.equal(report.denominator.rawUnionRows, 259);
     assert.equal(report.denominator.accountedRows, 259);
     assert.equal(report.denominator.allRowsAccounted, true);
@@ -30,7 +30,7 @@ describe('frozen competitor workflow coverage ledger', () => {
     assert.equal(report.denominator.consolidatedCcbContractSignatures, 106);
   });
 
-  it('references only current CCB tools and source files', () => {
+  it('references only current Cocos Pilot tools and source files', () => {
     const registered = registeredTools();
     for (const row of report.rows) {
       for (const tool of row.ccbTools) assert.ok(registered.has(tool), `${row.competitorTool}: missing ${tool}`);

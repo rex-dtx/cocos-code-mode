@@ -16,7 +16,7 @@ function repeatedIt(name, callback) {
   return nativeIt(name, async (t) => repeatTestcase(testId, async () => callback(t)));
 }
 
-const fixtureName = (suffix) => `__ccb3x_ui_expansion_${suffix}_${process.pid}__`;
+const fixtureName = (suffix) => `__ccp3x_ui_expansion_${suffix}_${process.pid}__`;
 
 async function deleteNode(reference) {
   if (!reference?.id) return;

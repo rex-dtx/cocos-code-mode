@@ -29,7 +29,7 @@ describe('live: build target launch and smoke qualification', () => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
 
     await repeatTestcase('BUILD-TARGET-01', async ({ iteration }) => {
-      const relativePath = `temp/__ccb3x_build_target_${process.pid}_${iteration}__`;
+      const relativePath = `temp/__ccp3x_build_target_${process.pid}_${iteration}__`;
       const absolutePath = path.join(projectPath, relativePath);
       const expected = `target-${process.pid}-${iteration}`;
       let serverId;

@@ -7,7 +7,7 @@
   "endpoint": "http://127.0.0.1:51009/utcp",
   "unit": { "advancedCapabilityTools": "15/15 pass", "sceneAuthoringContracts": "27/27 pass", "creatorLoad": "pass" },
   "live": {
-    "fixturePolicy": "Discover deterministic db://internal/default_prefab/Camera.prefab, then 2d Camera, then any cc.Prefab; CCB_PREFAB_INSTANTIATE_UUID may override.",
+    "fixturePolicy": "Discover deterministic db://internal/default_prefab/Camera.prefab, then 2d Camera, then any cc.Prefab; Cocos Pilot_PREFAB_INSTANTIATE_UUID may override.",
     "prefabReferenceAudit": "skipped only because historical marker fixture is absent",
     "prefabInstantiate": "pass",
     "sourceIdentity": "pass",

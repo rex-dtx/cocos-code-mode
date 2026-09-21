@@ -14,7 +14,7 @@
     "ccBridgeEnabled": true,
     "utcpListening": true,
     "utcpUrl": "http://127.0.0.1:51009/utcp",
-    "packageEnabled": "cc-bridge-3x@2.0.0"
+    "packageEnabled": "cocos-pilot-3x@2.0.0"
   },
   "sessionLifecycle": {
     "discovery": "passed",

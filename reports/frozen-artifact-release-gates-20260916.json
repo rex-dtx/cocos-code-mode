@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "recordedAt": "2026-09-16",
   "artifact": {
-    "file": "cc-bridge-3x-v200-260916-172316.zip",
+    "file": "cocos-pilot-3x-v210-260916-172316.zip",
     "bytes": 35503113,
     "sha256": "988bb38170c0f8605146ab57460e2fe13478923e8dc31b65246e69579dffd209",
     "version": "2.0.0-dev.89b2ee2",
     "build": {
       "commit": "89b2ee2",
-      "branch": "feat/ccb3x-api-capability-expansion",
+      "branch": "feat/ccp3x-api-capability-expansion",
       "dirty": false,
       "builtAt": "2026-09-16T10:23:16.091Z"
     }

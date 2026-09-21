@@ -76,8 +76,8 @@ export function shouldLogToolError(error: unknown): boolean {
 }
 
 export function expectedTestWitnessId(headers: Record<string, unknown>): string | undefined {
-    if (headers['x-ccb-expected-error'] !== 'true') return undefined;
-    const id = headers['x-ccb-test-id'];
+    if (headers['x-ccp-expected-error'] !== 'true') return undefined;
+    const id = headers['x-ccp-test-id'];
     return typeof id === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(id) ? id : undefined;
 }
 

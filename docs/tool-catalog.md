@@ -1,4 +1,4 @@
-# CCB tool catalog — generated 2026-09-21 from live /utcp (bacd213, 321 tools)
+# Cocos Pilot tool catalog — generated 2026-09-21 from live /utcp (bacd213, 321 tools)
 
 Source: `http://127.0.0.1:64516/utcp` on `G:\_ws\cc-fws\cc30-new-all-in-one` (Creator 3.7.3). Status joins `docs/tool-portfolio-candidates.json` (80+22=102 tracked) + baseline/expansion (remaining 219). Legend: **stable** = live + smoke/integration passing (baseline/expansion or portfolio qualified); **experimental** = implemented-unverified / pending verify; **pending** = candidate (probe chưa pass); **disabled** = rejected (typed 422, probe đã chứng minh unsupported / owner-disable); **deprecated** = replace (không có native asset — cần redesign).
 

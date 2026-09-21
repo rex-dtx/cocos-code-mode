@@ -3,7 +3,7 @@
   "tool": "animationGraphCreate",
   "creator": "3.8.8",
   "buildCommit": "6463c65",
-  "artifact": "cc-bridge-3x-v200-260913-155932.zip",
+  "artifact": "cocos-pilot-3x-v210-260913-155932.zip",
   "positiveWitness": {
     "test": "tests/live/validation-graph-qualification.test.js",
     "result": "created native .animgraph, verified stable UUID, inspected read-back"

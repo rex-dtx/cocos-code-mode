@@ -10,11 +10,11 @@ describe('live: uiLayoutInspect', () => {
     const canvas = await getCanvasReference();
     if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     await repeatTestcase('UI-LAYOUT-I01', async () => {
-      const created = await postTool('createUiNode', { uiType: 'Widget', parentReference: canvas, name: `__ccb_layout_inspect_regression_${Date.now()}__` });
+      const created = await postTool('createUiNode', { uiType: 'Widget', parentReference: canvas, name: `__ccp_layout_inspect_regression_${Date.now()}__` });
       assert.equal(created.ok, true, JSON.stringify(created.body));
       const root = created.body.reference;
       try {
-        const childResult = await postTool('createUiNode', { uiType: 'Widget', parentReference: root, name: '__ccb_layout_inspect_child__' });
+        const childResult = await postTool('createUiNode', { uiType: 'Widget', parentReference: root, name: '__ccp_layout_inspect_child__' });
         assert.equal(childResult.ok, true, JSON.stringify(childResult.body));
         const child = childResult.body.reference;
         const fixture = await postTool('executeJavascript', { context: 'scene', code: `

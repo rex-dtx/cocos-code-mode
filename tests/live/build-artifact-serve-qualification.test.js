@@ -30,7 +30,7 @@ describe('live: build artifact server qualification', () => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
 
     await repeatTestcase('BUILD-ARTIFACT-SERVE-01', async ({ iteration }) => {
-      const relativePath = `temp/__ccb3x_artifact_qualification_${process.pid}_${iteration}__`;
+      const relativePath = `temp/__ccp3x_artifact_qualification_${process.pid}_${iteration}__`;
       const absolutePath = path.join(projectPath, relativePath);
       const expected = `artifact-${process.pid}-${iteration}`;
       let serverId;

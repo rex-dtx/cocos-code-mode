@@ -3,7 +3,7 @@
   "recordedAt": "2026-09-17",
   "purpose": "Owner-approved implementation closure; not exhaustive release qualification",
   "target": { "creator": "3.7.3", "platform": "windows-x64", "project": "G:/_ws/cc-fws/cc30-new-all-in-one" },
-  "implementationGate": { "minimumPercent": 90, "denominatorStatus": "unresolved", "reason": "Plan requires deduplicated frozen Creator workflows; no row-level workflow inventory located. Original competitor inputs are Funplay105+cocos-mcp-server157; existing259-row report instead maps ALX163+CCB2 96. Candidate94 pool is not an approved workflow denominator." },
+  "implementationGate": { "minimumPercent": 90, "denominatorStatus": "unresolved", "reason": "Plan requires deduplicated frozen Creator workflows; no row-level workflow inventory located. Original competitor inputs are Funplay105+cocos-mcp-server157; existing259-row report instead maps ALX163+Cocos Pilot 2x 96. Candidate94 pool is not an approved workflow denominator." },
   "verificationGate": { "minimumPassPercent": 95, "formula": "passed / (passed + failed + skipped + cancelled)", "separateGroups": ["unit", "closure-live"], "criticalFailuresAllowed": 0, "pendingRule": "Every skipped, failed or cancelled case remains visible; no cross-group averaging or post-result scope reduction." },
   "unitCommand": "npm run test:unit",
   "closureLiveFiles": [

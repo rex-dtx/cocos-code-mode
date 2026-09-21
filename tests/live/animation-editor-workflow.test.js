@@ -4,8 +4,8 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const { getJson, postTool, repeatTestcase } = require('../helpers/utcp-client');
 
-const fixtureName = `__ccb3x_animation_editor_${process.pid}__`;
-const selectionPasses = Math.min(10, Math.max(1, Number(process.env.CCB_SELECTION_PASSES || 5) || 5)); // Override with CCB_SELECTION_PASSES=3, etc.
+const fixtureName = `__ccp3x_animation_editor_${process.pid}__`;
+const selectionPasses = Math.min(10, Math.max(1, Number(process.env.CCP_SELECTION_PASSES || 5) || 5)); // Override with CCP_SELECTION_PASSES=3, etc.
 
 async function selectNodeRepeatedly(reference) {
   for (let pass = 1; pass <= selectionPasses; pass++) {

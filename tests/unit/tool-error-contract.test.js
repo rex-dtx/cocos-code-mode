@@ -44,16 +44,16 @@ describe('typed UTCP tool errors', () => {
   });
   it('accepts only safe explicit witness markers', () => {
     assert.equal(expectedTestWitnessId({
-      'x-ccb-expected-error': 'true',
-      'x-ccb-test-id': 'candidate.assetImporterAudit.negative.v1',
+      'x-ccp-expected-error': 'true',
+      'x-ccp-test-id': 'candidate.assetImporterAudit.negative.v1',
     }), 'candidate.assetImporterAudit.negative.v1');
     assert.equal(expectedTestWitnessId({
-      'x-ccb-expected-error': 'false',
-      'x-ccb-test-id': 'candidate.assetImporterAudit.negative.v1',
+      'x-ccp-expected-error': 'false',
+      'x-ccp-test-id': 'candidate.assetImporterAudit.negative.v1',
     }), undefined);
     assert.equal(expectedTestWitnessId({
-      'x-ccb-expected-error': 'true',
-      'x-ccb-test-id': 'contains spaces',
+      'x-ccp-expected-error': 'true',
+      'x-ccp-test-id': 'contains spaces',
     }), undefined);
   });
   it('preserves diagnostic lines and redacts nested secrets without changing params', () => {

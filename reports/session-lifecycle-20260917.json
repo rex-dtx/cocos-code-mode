@@ -10,12 +10,12 @@
     "scripts/session-presence/cli.js": "9df1a1e830634ff42b499d4bd2703191dcbfbf469d36b8ff5046d2e18323ef3d",
     "scripts/session-presence/stdio.js": "3a2dd139bdad138398aab29d2316f3df92bc49d43eab5fdfbfde78344b0b492a",
     "scripts/session-presence/omp-adapter.js": "16d6c0229c11b569c91de9128a07fefac2bbb48bf7247853166b62e59d6f8a80",
-    ".omp/extensions/ccb-session.js": "9feb71d79f9deaf3606fcba6b905e45e81e1ad0744988b44c24a3cebf2608e2a",
-    "tests/unit/cc-bridge-session.test.js": "c14b6d495746f5a2a62d9fd96a5c81d85386d772e895bcfd454c014b5c62455d",
-    "tests/unit/cc-bridge-session-host.test.js": "c3c97cc66c7712331b4c8b9821eb6aeea02dd5256e5079dfd0b14ea4e79ee9c2",
-    "tests/unit/cc-bridge-session-manager.test.js": "5b3bfd657d9ebe1854786faa238d1ccc8bc9203012ea70063ed304f48da94266",
-    "tests/unit/cc-bridge-session-supervisor.test.js": "64cdcb4864cb2994b92f7525fcb4c47639f7ab7c735704e99a06f286eb77e00d",
-    "scripts/cc-bridge-watchdog.js": "95c2846269158f4030b613028ac57ac56905ad590a7c2e1de6f0b0ce410dcdbf",
+    ".omp/extensions/ccp-session.js": "9feb71d79f9deaf3606fcba6b905e45e81e1ad0744988b44c24a3cebf2608e2a",
+    "tests/unit/cocos-pilot-session.test.js": "c14b6d495746f5a2a62d9fd96a5c81d85386d772e895bcfd454c014b5c62455d",
+    "tests/unit/cocos-pilot-session-host.test.js": "c3c97cc66c7712331b4c8b9821eb6aeea02dd5256e5079dfd0b14ea4e79ee9c2",
+    "tests/unit/cocos-pilot-session-manager.test.js": "5b3bfd657d9ebe1854786faa238d1ccc8bc9203012ea70063ed304f48da94266",
+    "tests/unit/cocos-pilot-session-supervisor.test.js": "64cdcb4864cb2994b92f7525fcb4c47639f7ab7c735704e99a06f286eb77e00d",
+    "scripts/cocos-pilot-watchdog.js": "95c2846269158f4030b613028ac57ac56905ad590a7c2e1de6f0b0ce410dcdbf",
     "source/utcp/config-manager.ts": "3563c97207c1fa039dff3435d00fbc19a71354344a5fd6f044416292b5aa0171",
     "tests/unit/stable-auto-port.test.js": "f7a8f0ebc8e59aaa8ddf9fba114e6c8806e190e34189cf74275b79c5100b7265"
   },
@@ -41,7 +41,7 @@
   },
   "live": {
     "editor": {
-      "name": "ccb3x_63908",
+      "name": "ccp3x_63908",
       "url": "http://127.0.0.1:63908",
       "status": 200,
       "project": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
@@ -49,7 +49,7 @@
       "build": {
         "version": "2.0.0",
         "commit": "0c8dc56",
-        "branch": "feat/ccb3x-api-capability-expansion",
+        "branch": "feat/ccp3x-api-capability-expansion",
         "dirty": false,
         "builtAt": "2026-09-16T10:41:14.664Z"
       }

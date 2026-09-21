@@ -3,7 +3,7 @@
   "tool": "modelImportConfigure",
   "creator": "3.8.8",
   "buildCommit": "6463c65",
-  "artifact": "cc-bridge-3x-v200-260913-161146.zip",
+  "artifact": "cocos-pilot-3x-v210-260913-161146.zip",
   "positiveWitness": "tests/live/candidate-expansion-qualification.test.js round-tripped FBX addVertexColor and restored original value",
   "negativeWitness": "missing model references remain typed validation failures",
   "persistence": "asset importer settings read-back after mutation and restore",

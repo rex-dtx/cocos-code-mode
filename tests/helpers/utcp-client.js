@@ -87,7 +87,7 @@ async function getJson(urlPath, init) {
   let r;
   let text;
   try {
-    r = await fetch(url, { ...init, signal: init?.signal || AbortSignal.timeout(Math.min(120000, Math.max(1000, Number(process.env.CCB_REQUEST_TIMEOUT_MS || 30000) || 30000))) });
+    r = await fetch(url, { ...init, signal: init?.signal || AbortSignal.timeout(Math.min(120000, Math.max(1000, Number(process.env.CCP_REQUEST_TIMEOUT_MS || 30000) || 30000))) });
     text = await r.text();
   } catch (error) {
     if (trace && urlPath !== '/tools/editorLog') {
@@ -117,20 +117,20 @@ async function getExpectedErrorJson(urlPath, testId, init = {}) {
     ...init,
     headers: {
       ...init.headers,
-      'x-ccb-expected-error': 'true',
-      'x-ccb-test-id': testId,
+      'x-ccp-expected-error': 'true',
+      'x-ccp-test-id': testId,
     },
   });
 }
 
 async function fetchTargetUrl(url, init = {}) {
   if (typeof url !== 'string' || !/^http:\/\/127\.0\.0\.1:\d+\//.test(url)) {
-    throw new Error('Target URL must be a loopback HTTP URL returned by a CC Bridge tool.');
+    throw new Error('Target URL must be a loopback HTTP URL returned by a Cocos Pilot tool.');
   }
   return fetch(url, { ...init, signal: init.signal || AbortSignal.timeout(5000) });
 }
 
-const actionDelayMs = Math.min(5000, Math.max(0, Number(process.env.CCB_ACTION_DELAY_MS || 5) || 0));
+const actionDelayMs = Math.min(5000, Math.max(0, Number(process.env.CCP_ACTION_DELAY_MS || 5) || 0));
 
 async function delayAfterAction() {
   if (actionDelayMs > 0) await new Promise((resolve) => setTimeout(resolve, actionDelayMs));
@@ -155,7 +155,7 @@ async function logTestIteration(testId, iteration, total, status, reason) {
     return null;
   }
 }
-const defaultTestIterations = Math.min(100, Math.max(5, Number(process.env.CCB_TEST_ITERATIONS || 5) || 5));
+const defaultTestIterations = Math.min(100, Math.max(5, Number(process.env.CCP_TEST_ITERATIONS || 5) || 5));
 
 async function repeatTestcase(testId, fn, total = defaultTestIterations) {
   for (let iteration = 1; iteration <= total; iteration++) {
@@ -189,8 +189,8 @@ async function postExpectedErrorTool(toolPath, body, testId) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-ccb-expected-error': 'true',
-      'x-ccb-test-id': testId,
+      'x-ccp-expected-error': 'true',
+      'x-ccp-test-id': testId,
     },
     body: JSON.stringify(body),
   });

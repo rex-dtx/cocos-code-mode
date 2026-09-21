@@ -18,8 +18,8 @@ describe('live: read-only candidate qualification witnesses', () => {
 
   it('audits prefab references and computes a bounded override diff', async (t) => {
     if (skipIfDown(t)) return;
-    const marker = process.env.CCB_PREFAB_FIXTURE_UUID || 'f8befe54-5f06-4454-b61b-eb99915fc8f8';
-    const dialog = process.env.CCB_PREFAB_BASELINE_UUID || '9c561266-65f5-4f20-9947-ecd2353c2111';
+    const marker = process.env.CCP_PREFAB_FIXTURE_UUID || 'f8befe54-5f06-4454-b61b-eb99915fc8f8';
+    const dialog = process.env.CCP_PREFAB_BASELINE_UUID || '9c561266-65f5-4f20-9947-ecd2353c2111';
     const audit = await getJson(`/tools/prefabReferenceAudit?reference%5Bid%5D=${marker}`);
     if (audit.status === 404) { t.skip(`Prefab fixture ${marker} is absent in active project`); return; }
     assert.equal(audit.status, 200, JSON.stringify(audit.body));
@@ -66,13 +66,13 @@ describe('live: read-only candidate qualification witnesses', () => {
   });
 
   it('audits serialized scene references and missing asset dependencies', async (t) => {
-    const scene = process.env.CCB_SCENE_REFERENCE_UUID || '80dddede-15e3-4d8e-8f37-0f1263a0867c';
+    const scene = process.env.CCP_SCENE_REFERENCE_UUID || '80dddede-15e3-4d8e-8f37-0f1263a0867c';
     const references = await getJson(`/tools/sceneReferenceValidate?reference%5Bid%5D=${scene}&maxReferences=20`);
     if (references.status === 404) { t.skip(`Scene fixture ${scene} is absent in active project`); return; }
     assert.equal(references.status, 200, JSON.stringify(references.body));
     assert.ok(Array.isArray(references.body.references));
     assert.ok(references.body.source.reopened);
-    const missingPath = process.env.CCB_MISSING_REFERENCE_SCENE;
+    const missingPath = process.env.CCP_MISSING_REFERENCE_SCENE;
     if (missingPath) {
       const missing = await getJson(`/tools/assetMissingReferenceAudit?assetPath=${encodeURIComponent(missingPath)}&maxScenes=4&maxReferences=20`);
       assert.equal(missing.status, 200, JSON.stringify(missing.body));
@@ -97,19 +97,19 @@ describe('live: read-only candidate qualification witnesses', () => {
 
   it('imports one bounded asset and records a typed missing-source outcome', async (t) => {
     if (skipIfDown(t)) return;
-    const source = path.join(os.tmpdir(), `ccb3x-import-${process.pid}.txt`);
-    fs.writeFileSync(source, 'ccb3x asset batch import witness\n', 'utf8');
+    const source = path.join(os.tmpdir(), `ccp3x-import-${process.pid}.txt`);
+    fs.writeFileSync(source, 'ccp3x asset batch import witness\n', 'utf8');
     let imported;
     try {
       const result = await postTool('assetBatchImport', {
-        items: [{ sourceFilesystemPath: source, targetAssetPath: 'db://assets/__ccb3x_candidate_import__.txt' }],
+        items: [{ sourceFilesystemPath: source, targetAssetPath: 'db://assets/__ccp3x_candidate_import__.txt' }],
       });
       assert.equal(result.status, 200, JSON.stringify(result.body));
       assert.equal(result.body.succeeded, 1);
       assert.equal(result.body.failed, 0);
       imported = result.body.outcomes[0].reference;
       const missing = await postTool('assetBatchImport', {
-        items: [{ sourceFilesystemPath: `${source}.missing`, targetAssetPath: 'db://assets/__ccb3x_candidate_missing__.txt' }],
+        items: [{ sourceFilesystemPath: `${source}.missing`, targetAssetPath: 'db://assets/__ccp3x_candidate_missing__.txt' }],
       });
       assert.equal(missing.status, 200);
       assert.equal(missing.body.succeeded, 0);
@@ -127,13 +127,13 @@ describe('live: read-only candidate qualification witnesses', () => {
 
   it('instantiates a typed prefab with stable source and scene read-back', async (t) => {
     if (skipIfDown(t)) return;
-    const name = '__ccb3x_candidate_prefab__';
+    const name = '__ccp3x_candidate_prefab__';
     const inventory = await getJson('/tools/assetQuery?importer=prefab&limit=50');
     if (inventory.status !== 200 || !Array.isArray(inventory.body?.assets) || inventory.body.assets.length === 0) { t.skip('No prefab asset fixture is available in the active project'); return; }
     const preferred = inventory.body.assets.find((asset) => asset.url === 'db://internal/default_prefab/Camera.prefab')
       ?? inventory.body.assets.find((asset) => asset.url === 'db://internal/default_prefab/2d/Camera.prefab')
       ?? inventory.body.assets.find((asset) => asset.type === 'cc.Prefab');
-    const fixture = process.env.CCB_PREFAB_INSTANTIATE_UUID || preferred?.uuid;
+    const fixture = process.env.CCP_PREFAB_INSTANTIATE_UUID || preferred?.uuid;
     assert.equal(typeof fixture, 'string', 'discovered prefab fixture uuid');
     try {
       const created = await postTool('prefabInstantiate', {
@@ -174,7 +174,7 @@ describe('live: read-only candidate qualification witnesses', () => {
       assert.equal(valid.body.checkedPaths, 0);
       assert.deepEqual(valid.body.issues, []);
 
-      const missingPath = '__ccb3x_missing_setting__';
+      const missingPath = '__ccp3x_missing_setting__';
       const invalid = await getJson(`/tools/projectSettingsValidate?target=web-desktop&requiredPaths%5B0%5D=${missingPath}`);
       assert.equal(invalid.status, 200, JSON.stringify(invalid.body));
       assert.equal(invalid.body.valid, false);

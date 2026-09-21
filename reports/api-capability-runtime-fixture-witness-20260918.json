@@ -7,7 +7,7 @@
   "fixtures": {
     "physics2d": { "nodeId": "e4vV3MrCJIILEGKwVSvyMz", "components": ["cc.RigidBody2D", "cc.BoxCollider2D"] },
     "physics3d": { "nodeId": "9b7pj1oMxBwrsyfshsrQAJ", "components": ["cc.RigidBody", "cc.BoxCollider"] },
-    "bundle": { "uuid": "1dc9707e-6a38-4f28-be56-8912710b7ee5", "name": "ccb3x-runtime" }
+    "bundle": { "uuid": "1dc9707e-6a38-4f28-be56-8912710b7ee5", "name": "ccp3x-runtime" }
   },
   "witnesses": {
     "physics2dQuery": { "valid": true, "checkedNodes": 1, "topologyOnly": true, "runtimeRaycastContactOverlap": false },

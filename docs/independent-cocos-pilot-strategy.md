@@ -1,4 +1,4 @@
-# Independent CCB Strategy
+# Independent Cocos Pilot Strategy
 
 **Status:** Active direction
 **Updated:** 2026-09-11
@@ -6,7 +6,7 @@
 
 ## Strategic position
 
-CCB is an independent in-house tool for Cocos Creator. External tools, demos, API inventories, and black-box builds may provide ideas, but they are not runtime dependencies or architectural authorities.
+Cocos Pilot is an independent in-house tool for Cocos Creator. External tools, demos, API inventories, and black-box builds may provide ideas, but they are not runtime dependencies or architectural authorities.
 
 The goal is not to reproduce another vendor's tool count. The goal is to provide a safer, more capable, and more useful agent interface for the studio's Creator and slot-game workflows.
 
@@ -14,7 +14,7 @@ The goal is not to reproduce another vendor's tool count. The goal is to provide
 
 ### Independent implementation
 
-CCB must remain buildable, testable, and deployable without:
+Cocos Pilot must remain buildable, testable, and deployable without:
 
 - ALX source code;
 - ALX binaries;
@@ -44,7 +44,7 @@ A tool should return evidence that a consumer can act on, not only a boolean fro
 
 ### Fail closed
 
-Unsupported Creator messages, missing scene state, malformed references, partial writes, and failed read-backs must produce typed errors or explicit incomplete results. CCB must never turn an unavailable API into fabricated success.
+Unsupported Creator messages, missing scene state, malformed references, partial writes, and failed read-backs must produce typed errors or explicit incomplete results. Cocos Pilot must never turn an unavailable API into fabricated success.
 
 ### Bounded by default
 
@@ -55,7 +55,7 @@ Every response-heavy operation needs limits for nodes, assets, lines, events, by
 ```text
 Agent
   ↓
-CCB consolidated UTCP tools
+Cocos Pilot consolidated UTCP tools
   ↓
 Preflight / safety / transaction / read-back layer
   ↓
@@ -183,10 +183,10 @@ These capabilities form the strongest long-term moat because they encode studio 
 
 Do not implement:
 
-1. A compatibility layer that forwards CCB calls to ALX.
+1. A compatibility layer that forwards Cocos Pilot calls to ALX.
 2. A 163-tool mirror solely for parity metrics.
 3. An unrestricted listener or script-execution surface to close gaps quickly.
-4. A vendor-specific abstraction that makes CCB unable to run independently.
+4. A vendor-specific abstraction that makes Cocos Pilot unable to run independently.
 5. High-level slot workflows that silently depend on undocumented external templates.
 
 ## Qualification policy
@@ -219,11 +219,11 @@ Track capability quality using these measures rather than tool count:
 
 ## Ownership rule
 
-CCB owns the contract, safety policy, qualification evidence, and domain workflows. Creator owns the underlying editor/runtime behavior. External implementations are references only and must never become hidden dependencies.
+Cocos Pilot owns the contract, safety policy, qualification evidence, and domain workflows. Creator owns the underlying editor/runtime behavior. External implementations are references only and must never become hidden dependencies.
 
 ## Related documents
 
 - [ALX capability comparison](./alx-capability-comparison.md)
-- [CCB usage](./cc-bridge-code-mode-usage.md)
-- [CCB API parity](./parity-v2-v3.md)
+- [Cocos Pilot usage](./cocos-pilot-code-mode-usage.md)
+- [Cocos Pilot API parity](./parity-v2-v3.md)
 - [Tool portfolio candidates](./tool-portfolio-candidates.json)

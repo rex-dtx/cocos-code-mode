@@ -4,7 +4,7 @@
   "remediation": {
     "windowBackup": "C:/Users/hry/.CocosCreator/editor/window.json.backup-20260920-ccbridge-panel",
     "layoutBackup": "C:/Users/hry/.CocosCreator/editor/layout.json.backup-20260920-ccbridge-panel",
-    "removedPanelReferences": ["cc-bridge-3x.status"]
+    "removedPanelReferences": ["cocos-pilot-3x.status"]
   },
   "result": {
     "creatorVersion": "3.7.3",
@@ -13,5 +13,5 @@
     "utcpListening": false,
     "lifecycleQualified": false
   },
-  "decision": "Removing the persisted CC Bridge panel reference did not change the pre-Asset-DB stall. Restore the backed-up layout if needed; no live qualification claim."
+  "decision": "Removing the persisted Cocos Pilot panel reference did not change the pre-Asset-DB stall. Restore the backed-up layout if needed; no live qualification claim."
 }

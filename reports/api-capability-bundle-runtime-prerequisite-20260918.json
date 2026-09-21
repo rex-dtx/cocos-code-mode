@@ -5,10 +5,10 @@
   "endpoint": "http://localhost:51009",
   "buildCommit": "bc5f27f",
   "uiEvidence": {
-    "window": "__ccb3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3",
+    "window": "__ccp3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3",
     "screenshot": "captureEditorScreenshot",
     "toolbarAction": { "x": 902, "y": 24, "result": "success" },
-    "windowsAfterAction": ["Blank", "Worker - Assets", "Programming DevTools", "__ccb3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3", "Packages"]
+    "windowsAfterAction": ["Blank", "Worker - Assets", "Programming DevTools", "__ccp3x_qualification__.scene* - cc-3x-test - Cocos Creator 3.7.3", "Packages"]
   },
   "runtimeEvidence": {
     "editorState": { "sceneReady": true, "sceneDirty": true, "busy": false },

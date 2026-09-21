@@ -31,7 +31,7 @@ async function invoke(request, args) {
 
 describe('assetManifestExport', () => {
   it('normalizes the path, sorts assets deterministically, hashes sources, and enforces the asset bound', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-manifest-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-manifest-'));
     const rows = ['z', 'a', 'm'].map((uuid) => {
       const file = path.join(root, `${uuid}.txt`);
       fs.writeFileSync(file, uuid);
@@ -92,7 +92,7 @@ describe('assetManifestExport', () => {
   });
 
   it('includes bounded dependencies and explicit source exclusions', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-manifest-deps-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-manifest-deps-'));
     const source = path.join(root, 'with-deps.json');
     fs.writeFileSync(source, '{}');
     const dependencies = Array.from({ length: 140 }, (_, index) => `dep-${String(140 - index).padStart(3, '0')}`);

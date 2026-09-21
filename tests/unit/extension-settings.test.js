@@ -8,7 +8,7 @@ const { requireDist } = require('../helpers/require-dist');
 
 it('settings validates before mutation and moves only this editor between registry paths', async () => {
   const previous = global.Editor;
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb-settings-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp-settings-'));
   const first = path.join(dir, 'first.json');
   const second = path.join(dir, 'second.json');
   const values = { utcpConfigPath: first, fixedServerPort: 0 };
