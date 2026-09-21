@@ -14,7 +14,7 @@ describe('live: typed asset importer settings', () => {
     const source = assets.body.assets?.[0];
     assert.equal(typeof source?.uuid, 'string');
     const extension = /(\.[A-Za-z0-9]+)$/.exec(source.url)?.[1] ?? '.png';
-    const assetPath = `db://assets/__ccb3x_import_settings_${Date.now()}${extension}`;
+    const assetPath = `db://assets/__ccp3x_import_settings_${Date.now()}${extension}`;
     let reference;
     try {
       const copied = await postTool('assetOperate', {
@@ -70,7 +70,7 @@ describe('live: typed asset importer settings', () => {
     assert.equal(assets.ok, true, JSON.stringify(assets.body));
     const source = assets.body.assets?.[0];
     assert.equal(typeof source?.uuid, 'string', 'a bitmap font fixture is available');
-    const assetPath = `db://assets/__ccb3x_bitmap_font_settings_${Date.now()}.fnt`;
+    const assetPath = `db://assets/__ccp3x_bitmap_font_settings_${Date.now()}.fnt`;
     let reference;
     try {
       const copied = await postTool('assetOperate', {

@@ -27,7 +27,7 @@ async function invoke(request, args) {
 
 describe('assetUsageAnalyze', () => {
   it('builds graph-v4 reachability from serialized scene roots and reports project-unreachable assets', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-usage-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-usage-'));
     const scene = path.join(root, 'main.scene');
     fs.writeFileSync(scene, JSON.stringify({ __uuid__: '11111111-1111-1111-1111-111111111111' }));
     const rows = [
@@ -54,7 +54,7 @@ describe('assetUsageAnalyze', () => {
   });
 
   it('supports explicit roots and bounded graph traversal', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-usage-roots-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-usage-roots-'));
     const source = path.join(root, 'prefab.prefab');
     fs.writeFileSync(source, JSON.stringify({ __uuid__: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' }));
     const rows = [

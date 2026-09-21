@@ -224,6 +224,6 @@ CCB owns the contract, safety policy, qualification evidence, and domain workflo
 ## Related documents
 
 - [ALX capability comparison](./alx-capability-comparison.md)
-- [CCB usage](./cc-bridge-code-mode-usage.md)
+- [CCB usage](./cocos-pilot-code-mode-usage.md)
 - [CCB API parity](./parity-v2-v3.md)
 - [Tool portfolio candidates](./tool-portfolio-candidates.json)

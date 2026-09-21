@@ -351,11 +351,11 @@ export class AdvancedCapabilityTools {
             const current = await Editor.Message.request('scene', 'query-current-scene').catch(() => null) as unknown;
             const sceneId = args.reference?.id ?? (typeof current === 'string' ? current : current && typeof current === 'object' && ('uuid' in current || 'id' in current) ? String('uuid' in current ? current.uuid : current.id) : undefined);
             if (args.operation !== 'list' && !sceneId) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'No active scene is available for reference-image storage.' });
-            const stored = await profile.getProject('cc-bridge-3x', 'referenceImages', 'project').catch(() => ({})) as Record<string, unknown> | null;
+            const stored = await profile.getProject('cocos-pilot-3x', 'referenceImages', 'project').catch(() => ({})) as Record<string, unknown> | null;
             const records = stored && typeof stored === 'object' && !Array.isArray(stored) ? { ...stored } : {};
-            if (writesImage) { const asset = await resolveAsset(undefined, args.imagePath); records[sceneId as string] = { id: asset.uuid, url: asset.url, file: asset.file ?? null }; await profile.setProject('cc-bridge-3x', 'referenceImages', records, 'project'); }
-            else if (args.operation === 'clear') { delete records[sceneId as string]; await profile.setProject('cc-bridge-3x', 'referenceImages', records, 'project'); }
-            const readBack = await profile.getProject('cc-bridge-3x', 'referenceImages', 'project').catch(() => ({})) as Record<string, unknown> | null;
+            if (writesImage) { const asset = await resolveAsset(undefined, args.imagePath); records[sceneId as string] = { id: asset.uuid, url: asset.url, file: asset.file ?? null }; await profile.setProject('cocos-pilot-3x', 'referenceImages', records, 'project'); }
+            else if (args.operation === 'clear') { delete records[sceneId as string]; await profile.setProject('cocos-pilot-3x', 'referenceImages', records, 'project'); }
+            const readBack = await profile.getProject('cocos-pilot-3x', 'referenceImages', 'project').catch(() => ({})) as Record<string, unknown> | null;
             const record = sceneId && readBack && typeof readBack === 'object' ? readBack[sceneId] : null;
             if (args.operation === 'refresh' && !record) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'No persisted reference image is available to refresh.' });
             const images = Object.entries(readBack && typeof readBack === 'object' && !Array.isArray(readBack) ? readBack : {}).map(([id, value]) => ({ id, value }));
@@ -416,7 +416,7 @@ export class AdvancedCapabilityTools {
         if (!/^db:\/\/assets\/.+\.prefab$/.test(args.assetPath) || args.assetPath.includes('..')) invalid('assetPath must be a db://assets .prefab path without traversal.');
         const node = await Editor.Message.request('scene', 'query-node', args.reference.id) as unknown;
         if (!node) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Node ${args.reference.id} was not found.` });
-        const created = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'createPrefabFromNode', args: [args.reference.id, args.assetPath] });
+        const created = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cocos-pilot-3x', method: 'createPrefabFromNode', args: [args.reference.id, args.assetPath] });
         if (typeof created !== 'string' || !created) throw new ToolError({ code: 'PREFAB_CREATE_FAILED', status: 502, message: 'Creator did not return the created prefab asset identity.' });
         const asset = await Editor.Message.request('asset-db', 'query-asset-info', created) as { uuid?: string, type?: string, url?: string } | null;
         if (!asset || asset.uuid !== created || asset.type !== 'cc.Prefab') throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: 'Created prefab asset could not be verified.', details: { expectedUuid: created, actual: asset ?? null } });
@@ -457,7 +457,7 @@ export class AdvancedCapabilityTools {
             const sourceBefore = await readAsset(source);
             let result: unknown;
             if (operation === 'apply') {
-                result = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'applyPrefabByNode', args: [reference.id] });
+                result = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cocos-pilot-3x', method: 'applyPrefabByNode', args: [reference.id] });
                 if (result !== null && result !== undefined) throw new Error(String(result));
                 await new Promise((resolve) => setTimeout(resolve, 50));
             } else {
@@ -589,7 +589,7 @@ export class AdvancedCapabilityTools {
         if (!root) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `UI node not found: ${args.reference?.id}` });
         const ids = typeof root.uuid === 'string' ? [root.uuid] : [];
         if (ids.length === 0) throw new ToolError({ code: 'UI_LAYOUT_QUERY_FAILED', status: 502, message: 'No UI node identities were available for responsive comparison.' });
-        const geometry = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cc-bridge-3x', method: 'uiLayoutInspectGeometry', args: [{ nodeIds: ids }] }) as { nodes?: unknown[] } | null;
+        const geometry = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cocos-pilot-3x', method: 'uiLayoutInspectGeometry', args: [{ nodeIds: ids }] }) as { nodes?: unknown[] } | null;
         const entries = Array.isArray(geometry?.nodes) ? geometry.nodes.filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === 'object' && !Array.isArray(entry)) : [];
         if (entries.length === 0) throw new ToolError({ code: 'UI_LAYOUT_QUERY_FAILED', status: 502, message: 'Responsive comparison received no measurable UI geometry.' });
         const base = args.resolutions[0];
@@ -613,7 +613,7 @@ export class AdvancedCapabilityTools {
     @utcpTool('editorUndoTransactionProbe', 'Probe snapshot, undo, redo, and snapshot-abort lifecycle boundaries without leaving a pending transaction.', { type: 'object', properties: {} }, { type: 'object', properties: { supported: { type: 'boolean' }, boundaries: { type: 'array' }, clean: { type: 'boolean' } }, required: ['supported', 'boundaries', 'clean'] }, 'POST', ['editor', 'undo', 'transaction', 'probe'])
     async editorUndoTransactionProbe(): Promise<Record<string, unknown>> { const boundaries: string[] = []; try { await Editor.Message.request('scene', 'snapshot'); boundaries.push('snapshot'); await Editor.Message.request('scene', 'snapshot-abort'); boundaries.push('snapshot-abort'); return { supported: true, boundaries, clean: true }; } catch (error) { throw new ToolError({ code: 'UNDO_PROBE_FAILED', status: 422, message: 'Creator undo transaction lifecycle is unavailable.', details: { cause: error instanceof Error ? error.message : String(error) } }); } }
 
-    @utcpTool('broadcastObserve', 'Observe one allowlisted Creator broadcast through a byte-bounded register, observe, and dispose lifecycle.', { type: 'object', additionalProperties: false, properties: { topic: { type: 'string', enum: ['cc-bridge-3x:probe', 'scene:change', 'asset-db:change'] } }, required: ['topic'] }, { type: 'object', properties: { topic: { type: 'string' }, supported: { type: 'boolean' }, observed: { type: 'boolean' }, lifecycle: { type: 'array' }, eventBytes: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['topic', 'supported', 'observed', 'lifecycle', 'eventBytes', 'truncated'] }, 'GET', ['broadcast', 'event', 'observe'])
+    @utcpTool('broadcastObserve', 'Observe one allowlisted Creator broadcast through a byte-bounded register, observe, and dispose lifecycle.', { type: 'object', additionalProperties: false, properties: { topic: { type: 'string', enum: ['cocos-pilot-3x:probe', 'scene:change', 'asset-db:change'] } }, required: ['topic'] }, { type: 'object', properties: { topic: { type: 'string' }, supported: { type: 'boolean' }, observed: { type: 'boolean' }, lifecycle: { type: 'array' }, eventBytes: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['topic', 'supported', 'observed', 'lifecycle', 'eventBytes', 'truncated'] }, 'GET', ['broadcast', 'event', 'observe'])
     async broadcastObserve(args: { topic: string }): Promise<Record<string, unknown>> {
         const messages = Editor.Message as unknown as {
             addBroadcastListener?: (topic: string, handler: (...payload: unknown[]) => void) => void,
@@ -621,13 +621,13 @@ export class AdvancedCapabilityTools {
             broadcast: (topic: string, ...payload: unknown[]) => void,
         };
         if (typeof messages.addBroadcastListener !== 'function' || typeof messages.removeBroadcastListener !== 'function') throw new ToolError({ code: 'UNSUPPORTED_BROADCAST_IPC', status: 422, message: 'Creator broadcast listener lifecycle is unavailable.' });
-        const marker = `ccb3x-${Date.now()}`;
+        const marker = `ccp3x-${Date.now()}`;
         let observed: unknown[] | null = null;
         const handler = (...payload: unknown[]) => { observed = payload; };
         const lifecycle = ['registered'];
         messages.addBroadcastListener(args.topic, handler);
         try {
-            if (args.topic === 'cc-bridge-3x:probe') messages.broadcast(args.topic, marker);
+            if (args.topic === 'cocos-pilot-3x:probe') messages.broadcast(args.topic, marker);
             await new Promise((resolve) => setTimeout(resolve, 50));
             if (observed !== null) lifecycle.push('observed');
         } finally {
@@ -641,8 +641,8 @@ export class AdvancedCapabilityTools {
         return { topic: args.topic, supported: true, observed: observed !== null, lifecycle, event, eventBytes, truncated, retainedListener: false };
     }
 
-    @utcpTool('editorListenersInspect', 'Inspect the bounded CC Bridge listener lifecycle surface; never claims arbitrary Creator listener enumeration.', { type: 'object', properties: {} }, { type: 'object', properties: { supported: { type: 'boolean' }, listeners: { type: 'array' }, limitation: { type: 'string' } }, required: ['supported', 'listeners', 'limitation'] }, 'GET', ['editor', 'listeners', 'inspect'])
+    @utcpTool('editorListenersInspect', 'Inspect the bounded Cocos Pilot listener lifecycle surface; never claims arbitrary Creator listener enumeration.', { type: 'object', properties: {} }, { type: 'object', properties: { supported: { type: 'boolean' }, listeners: { type: 'array' }, limitation: { type: 'string' } }, required: ['supported', 'listeners', 'limitation'] }, 'GET', ['editor', 'listeners', 'inspect'])
     async editorListenersInspect(): Promise<Record<string, unknown>> {
-        return { supported: true, listeners: [], limitation: 'Creator 3.7.3 does not expose arbitrary listener enumeration; only CC Bridge-owned broadcast lifecycles are observable.' };
+        return { supported: true, listeners: [], limitation: 'Creator 3.7.3 does not expose arbitrary listener enumeration; only Cocos Pilot-owned broadcast lifecycles are observable.' };
     }
 }

@@ -15,5 +15,5 @@
     "mainWindowReady": true,
     "utcp": "not configured in minimal fixture"
   },
-  "conclusion": "The failure is Creator 3.7.3 installation/runtime-specific, not project content or CC Bridge activation. Creator 3.8.8 initializes the same class of minimal project successfully."
+  "conclusion": "The failure is Creator 3.7.3 installation/runtime-specific, not project content or Cocos Pilot activation. Creator 3.8.8 initializes the same class of minimal project successfully."
 }

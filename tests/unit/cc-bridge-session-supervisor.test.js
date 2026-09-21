@@ -97,7 +97,7 @@ function harness(t) {
         editor.listener.listen(0, '127.0.0.1', resolve);
       });
       editor.url = `http://127.0.0.1:${editor.listener.address().port}`;
-      editor.namespace = `ccb3x_${editor.listener.address().port}`;
+      editor.namespace = `ccp3x_${editor.listener.address().port}`;
       return editor;
     },
   };

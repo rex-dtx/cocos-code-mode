@@ -74,11 +74,11 @@
     },
     {
       "workflowId": "asset.cocos-mcp-query-preferences-config",
-      "reason": "Existing preference routes are scoped to cc-bridge-3x keys; arbitrary package preference access is not an exact bounded adapter."
+      "reason": "Existing preference routes are scoped to cocos-pilot-3x keys; arbitrary package preference access is not an exact bounded adapter."
     },
     {
       "workflowId": "asset.cocos-mcp-set-preferences-config",
-      "reason": "Existing preference routes are scoped to cc-bridge-3x keys and do not claim arbitrary package persistence."
+      "reason": "Existing preference routes are scoped to cocos-pilot-3x keys and do not claim arbitrary package persistence."
     }
   ],
   "tests": [

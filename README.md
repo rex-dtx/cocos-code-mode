@@ -1,6 +1,6 @@
-# CC Bridge 3x — Cocos Creator 3.7 bridge (UTCP)
+# Cocos Pilot 3x — Cocos Creator 3.7 bridge (UTCP)
 
-**CC Bridge 3x** (formerly `cocos-code-mode-3x7`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene manipulation, asset management, and property inspection as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents build, inspect, and modify Cocos Creator projects the same way a developer would through the UI.
+**Cocos Pilot 3x** (formerly `cocos-code-mode-3x7`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene manipulation, asset management, and property inspection as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents build, inspect, and modify Cocos Creator projects the same way a developer would through the UI.
 These tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) environment to achieve maximum performance and token efficiency for AI agents, letting them call the tools in isolated JS sandbox.
 
 ## Quickstart
@@ -88,19 +88,19 @@ This extension architecture follows a **discover, then act** pattern. AI agents 
 
 ### Example
 
-Examples use the explicitly selected namespace `ccb3x_49650`; replace it with your editor's actual `ccb3x_<port>` namespace after registration and a successful project/instance handshake. Never fall back to another editor when the bound endpoint is unavailable.
+Examples use the explicitly selected namespace `ccp3x_49650`; replace it with your editor's actual `ccp3x_<port>` namespace after registration and a successful project/instance handshake. Never fall back to another editor when the bound endpoint is unavailable.
 
 ```typescript
 // Preferred (consolidated): discover → set in one session
-const tree = await ccb3x_49650.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
+const tree = await ccp3x_49650.nodeGetTree({ maxDepth: 2, fields: ['name', 'active'] });
 const ref = tree.children[0].reference;
 
 // Single-class definition instead of full dump
-const { definition } = await ccb3x_49650.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
+const { definition } = await ccp3x_49650.inspectorGetDefinition({ target: 'instance', reference: ref, section: 'UITransform' });
 
 // Unified get/set — no need to pick inspector*Instance vs inspector*Settings
-const { dump } = await ccb3x_49650.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
-await ccb3x_49650.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
+const { dump } = await ccp3x_49650.inspectorGet({ target: 'instance', reference: ref, fields: ['position'] });
+await ccp3x_49650.inspectorSet({ target: 'instance', reference: ref, propertyPaths: ['position.x'], values: [120] });
 
 // 2.0.0: legacy removed — use consolidated names above.
 ```
@@ -110,9 +110,9 @@ await ccb3x_49650.inspectorSet({ target: 'instance', reference: ref, propertyPat
 Use the read-only scan first. It walks the open scene/prefab, compares each serialized component class against the editor's currently registered component classes, and returns the exact node path, component UUID, and class ID. Repair is deliberately explicit: pass the affected node plus component reference (or expected class ID), then provide either the replacement class ID or a script asset reference. The bridge verifies the replacement is registered, removes only the selected component, adds the replacement, snapshots for undo, and reads back the created component. A missing source script cannot be recreated automatically; restore the script asset or choose an existing registered replacement.
 
 ```typescript
-const report = await ccb3x_49650.sceneScriptHealthScan({ limit: 200 });
+const report = await ccp3x_49650.sceneScriptHealthScan({ limit: 200 });
 const finding = report.findings[0];
-await ccb3x_49650.sceneScriptRepair({
+await ccp3x_49650.sceneScriptRepair({
   nodeReference: finding.nodeReference,
   componentReference: finding.componentReference,
   expectedClassId: finding.classId,
@@ -210,7 +210,7 @@ cd cocos-code-mode
 npm i
 npm run package
 ```
-4. If everything builds fine, `cc-bridge-3x.zip` file should appear in repository root.
+4. If everything builds fine, `cocos-pilot-3x.zip` file should appear in repository root.
 5. Install it in Cocos Creator with **Extension Manager**.
 
 ### Development testing
@@ -221,7 +221,7 @@ For rapid iteration, link the project extension directory directly to this repos
 npm run link:project -- "G:\path\to\cocos-project"
 ```
 
-If the project already has an imported `cc-bridge-3x`, preserve it as a timestamped backup while replacing it:
+If the project already has an imported `cocos-pilot-3x`, preserve it as a timestamped backup while replacing it:
 
 ```powershell
 npm run link:project -- "G:\path\to\cocos-project" --replace
@@ -269,16 +269,16 @@ Register the class by importing it in `utcp-server.ts`. Tools are served automat
 
 The menu provides direct **Restart Server**, **Toggle Debug Logging**, and **Open Logs** actions alongside Status and Settings. Restart acts immediately; Clear Logs stays inside Status with confirmation.
 
-**CC Bridge 3x → Status** shows server/handshake health and provides Restart Server, debug ON/OFF and log actions. Build and registry identifiers are under Technical details. **Settings** contains copy-ready AI client configuration; fixed port and registry path are under Advanced with one Apply & Restart action. Registry templates are managed automatically, not through a raw JSON editor.
+**Cocos Pilot 3x → Status** shows server/handshake health and provides Restart Server, debug ON/OFF and log actions. Build and registry identifiers are under Technical details. **Settings** contains copy-ready AI client configuration; fixed port and registry path are under Advanced with one Apply & Restart action. Registry templates are managed automatically, not through a raw JSON editor.
 
-The extension publishes one `ccb3x_<actual-port>` entry per running editor in `~/.utcp_config.json`. There is no `ccb3x` latest-editor pointer: each agent explicitly selects an endpoint and binds its namespace, project path, and handshake `instanceId`. Legacy `ccb3x` discovery entries migrate to their URL port without retaining the alias. Keep one template per endpoint, with a namespace matching the URL port. Re-handshake after reconnect or restart; never silently switch editors. The `ccb2x` naming behavior is unchanged.
+The extension publishes one `ccp3x_<actual-port>` entry per running editor in `~/.utcp_config.json`. There is no `ccp3x` latest-editor pointer: each agent explicitly selects an endpoint and binds its namespace, project path, and handshake `instanceId`. Legacy `ccp3x` discovery entries migrate to their URL port without retaining the alias. Keep one template per endpoint, with a namespace matching the URL port. Re-handshake after reconnect or restart; never silently switch editors. The `ccp2x` naming behavior is unchanged.
 
 ## Agent Prompt Guidance
 
-Use the copy-ready instruction and mandatory `register_manual` bootstrap in the [CC Bridge with Code Mode MCP guide](docs/cc-bridge-code-mode-usage.md). The output rules below further reduce raw tree dumps by 50-80% while retaining useful references.
+Use the copy-ready instruction and mandatory `register_manual` bootstrap in the [Cocos Pilot with Code Mode MCP guide](docs/cocos-pilot-code-mode-usage.md). The output rules below further reduce raw tree dumps by 50-80% while retaining useful references.
 
 ```text
-When returning data from the explicitly selected CCB 3.x manual (for example `ccb3x_49650`):
+When returning data from the explicitly selected CCB 3.x manual (for example `ccp3x_49650`):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.
@@ -289,18 +289,18 @@ When returning data from the explicitly selected CCB 3.x manual (for example `cc
 Full failure-mode analysis and trade-offs: [`docs/prompt-guidance-risks.md`](docs/prompt-guidance-risks.md).
 Migration for consolidated tools (A1 shims → 45): [`docs/consolidated-migration.md`](docs/consolidated-migration.md).
 
-See [CC Bridge with Code Mode MCP](docs/cc-bridge-code-mode-usage.md) for connection setup, manual registration, workflows, and troubleshooting.
+See [Cocos Pilot with Code Mode MCP](docs/cocos-pilot-code-mode-usage.md) for connection setup, manual registration, workflows, and troubleshooting.
 
 ## Code Mode MCP Integration
 
-CC Bridge exposes its Cocos Creator tools through a UTCP manual. The [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) registers that manual for an AI client. Configure the bridge, then have the agent call `register_manual` and verify with `list_tools`.
+Cocos Pilot exposes its Cocos Creator tools through a UTCP manual. The [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) registers that manual for an AI client. Configure the bridge, then have the agent call `register_manual` and verify with `list_tools`.
 
 ### MCP Server Config
 
 ```json
 {
   "mcpServers": {
-    "cc-bridge": {
+    "cocos-pilot": {
       "command": "npx",
       "args": ["@utcp/code-mode-mcp"],
       "env": {
@@ -317,10 +317,10 @@ To register Code Mode MCP for a Claude Code agent, open your project and run:
 
 Linux/MacOS:
 ``` bash
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- cc-bridge npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="~/.utcp_config.json" -- cocos-pilot npx @utcp/code-mode-mcp
 ```
 
 Windows:
 ``` powershell
-claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- cc-bridge cmd /c npx @utcp/code-mode-mcp
+claude mcp add --transport stdio --env UTCP_CONFIG_FILE="%userprofile%/.utcp_config.json" -- cocos-pilot cmd /c npx @utcp/code-mode-mcp
 ```

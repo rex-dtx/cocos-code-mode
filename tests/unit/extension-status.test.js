@@ -20,8 +20,8 @@ it('status verifies actual HTTP identity, registry ownership and scene readiness
     assert.equal(stopped.http.status, 'not-running');
     const port = await server.start();
     const identity = { port, instanceId: server.instanceId, debug: false };
-    fs.writeFileSync(registry, JSON.stringify({ variables: { ['CCB3X_OWNER_' + port]: server.instanceId }, manual_call_templates: [
-      { name: 'ccb3x_' + port, url: `http://localhost:${port}/utcp` },
+    fs.writeFileSync(registry, JSON.stringify({ variables: { ['CCP3X_OWNER_' + port]: server.instanceId }, manual_call_templates: [
+      { name: 'ccp3x_' + port, url: `http://localhost:${port}/utcp` },
     ] }));
     for (const envelope of [false, true]) {
       setServerProfile('full', [], [], envelope);

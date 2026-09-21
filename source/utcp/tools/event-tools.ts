@@ -3,7 +3,7 @@
 // runtime node graph + EventHandler are live.
 import { utcpTool } from '../decorators';
 import { InstanceReferenceSchema, IInstanceReference } from '../schemas';
-const EVENT_PACKAGE = 'cc-bridge-3x';
+const EVENT_PACKAGE = 'cocos-pilot-3x';
 
 export class EventTools {
 

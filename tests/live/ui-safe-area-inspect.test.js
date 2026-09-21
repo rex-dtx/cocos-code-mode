@@ -16,14 +16,14 @@ describe('live: uiSafeAreaInspect', () => {
     const canvas = await getCanvasReference();
     if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     await repeatTestcase('UI-SAFEAREA-I01', async () => {
-      const rootResult = await postTool('createUiNode', { uiType: 'Label', parentReference: canvas, name: `__ccb3x_safe_area_root_${Date.now()}__` });
+      const rootResult = await postTool('createUiNode', { uiType: 'Label', parentReference: canvas, name: `__ccp3x_safe_area_root_${Date.now()}__` });
       assert.equal(rootResult.ok, true, JSON.stringify(rootResult.body));
       const root = rootResult.body.reference;
       let inside;
       let outside;
       try {
-        const insideResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccb3x_safe_area_inside__', parentReference: root });
-        const outsideResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccb3x_safe_area_outside__', parentReference: root });
+        const insideResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccp3x_safe_area_inside__', parentReference: root });
+        const outsideResult = await postTool('createUiNode', { uiType: 'Label', name: '__ccp3x_safe_area_outside__', parentReference: root });
         assert.equal(insideResult.ok, true, JSON.stringify(insideResult.body));
         assert.equal(outsideResult.ok, true, JSON.stringify(outsideResult.body));
         inside = insideResult.body.reference;
@@ -46,7 +46,7 @@ describe('live: uiSafeAreaInspect', () => {
         const invalid = await postTool('uiSafeAreaInspect', { root, safeArea: { rect: { x: 0, y: 0, width: 0, height: 100 } } });
         assert.equal(invalid.ok, true, JSON.stringify(invalid.body));
         assert.equal(invalid.body.error.code, 'UI_SAFE_AREA_INVALID_INPUT');
-        const missing = await postTool('uiSafeAreaInspect', { root: { id: '__ccb3x_missing_safe_area__', type: 'cc.Node' }, safeArea: { rect: { x: 0, y: 0, width: 100, height: 100 } } });
+        const missing = await postTool('uiSafeAreaInspect', { root: { id: '__ccp3x_missing_safe_area__', type: 'cc.Node' }, safeArea: { rect: { x: 0, y: 0, width: 100, height: 100 } } });
         assert.equal(missing.ok, true, JSON.stringify(missing.body));
         assert.equal(missing.body.error.code, 'UI_SAFE_AREA_ROOT_NOT_FOUND');
       } finally {

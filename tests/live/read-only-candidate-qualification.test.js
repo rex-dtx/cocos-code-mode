@@ -97,19 +97,19 @@ describe('live: read-only candidate qualification witnesses', () => {
 
   it('imports one bounded asset and records a typed missing-source outcome', async (t) => {
     if (skipIfDown(t)) return;
-    const source = path.join(os.tmpdir(), `ccb3x-import-${process.pid}.txt`);
-    fs.writeFileSync(source, 'ccb3x asset batch import witness\n', 'utf8');
+    const source = path.join(os.tmpdir(), `ccp3x-import-${process.pid}.txt`);
+    fs.writeFileSync(source, 'ccp3x asset batch import witness\n', 'utf8');
     let imported;
     try {
       const result = await postTool('assetBatchImport', {
-        items: [{ sourceFilesystemPath: source, targetAssetPath: 'db://assets/__ccb3x_candidate_import__.txt' }],
+        items: [{ sourceFilesystemPath: source, targetAssetPath: 'db://assets/__ccp3x_candidate_import__.txt' }],
       });
       assert.equal(result.status, 200, JSON.stringify(result.body));
       assert.equal(result.body.succeeded, 1);
       assert.equal(result.body.failed, 0);
       imported = result.body.outcomes[0].reference;
       const missing = await postTool('assetBatchImport', {
-        items: [{ sourceFilesystemPath: `${source}.missing`, targetAssetPath: 'db://assets/__ccb3x_candidate_missing__.txt' }],
+        items: [{ sourceFilesystemPath: `${source}.missing`, targetAssetPath: 'db://assets/__ccp3x_candidate_missing__.txt' }],
       });
       assert.equal(missing.status, 200);
       assert.equal(missing.body.succeeded, 0);
@@ -127,7 +127,7 @@ describe('live: read-only candidate qualification witnesses', () => {
 
   it('instantiates a typed prefab with stable source and scene read-back', async (t) => {
     if (skipIfDown(t)) return;
-    const name = '__ccb3x_candidate_prefab__';
+    const name = '__ccp3x_candidate_prefab__';
     const inventory = await getJson('/tools/assetQuery?importer=prefab&limit=50');
     if (inventory.status !== 200 || !Array.isArray(inventory.body?.assets) || inventory.body.assets.length === 0) { t.skip('No prefab asset fixture is available in the active project'); return; }
     const preferred = inventory.body.assets.find((asset) => asset.url === 'db://internal/default_prefab/Camera.prefab')
@@ -174,7 +174,7 @@ describe('live: read-only candidate qualification witnesses', () => {
       assert.equal(valid.body.checkedPaths, 0);
       assert.deepEqual(valid.body.issues, []);
 
-      const missingPath = '__ccb3x_missing_setting__';
+      const missingPath = '__ccp3x_missing_setting__';
       const invalid = await getJson(`/tools/projectSettingsValidate?target=web-desktop&requiredPaths%5B0%5D=${missingPath}`);
       assert.equal(invalid.status, 200, JSON.stringify(invalid.body));
       assert.equal(invalid.body.valid, false);

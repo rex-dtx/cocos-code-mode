@@ -15,7 +15,7 @@
     "outputContract": "spineAssetInspect output schema now declares source format/bytes, animation and event totals/truncation flags, socket support, and all returned metadata fields.",
     "endpointIsolationGuard": "audit-live-qualification supports UTCP_EXPECT_SCENE_UUID and rejects healthy bridge endpoints whose current scene UUID does not match the requested project; unit regression coverage passes wrong-scene rejection and matching-scene acceptance.",
     "fixtureLocated": "9664_character fixture located under db://assets/cc-release-slot/cc30-fortune-goat-9664/data/9664-Animation/9664_Spine/9664_character; serialized asset is a binary .skel with atlas and three texture dependencies. Scene target: g9664L.scene UUID 80dddede-15e3-4d8e-8f37-0f1263a0867c, node MascotPlaceholder9664 UUID 71FkO7m89EKKi8UzKl8txI, Skeleton component UUID 07evNNUgJE94nxgFSqiaO6, SkeletonData UUID c0d0c055-fc34-4bca-8bc2-ed93d5536060.",
-    "package": "npm pack --dry-run passed: cc-bridge-3x-2.0.0.tgz"
+    "package": "npm pack --dry-run passed: cocos-pilot-3x-2.0.0.tgz"
   },
   "contract": {
     "assetInput": "Spine asset reference with bounded maxAnimations, maxEvents, maxSlots, maxTracks",
@@ -49,7 +49,7 @@
   "liveVerification": {
     "result": "production-live-qualified",
     "fixture": "Imported production Spine asset at db://assets/cc-release-slot/cc30-fortune-goat-9664/data/9664-Animation/9664_Spine/9664_character; scene target g9664L.scene UUID 80dddede-15e3-4d8e-8f37-0f1263a0867c, node MascotPlaceholder9664 UUID 71FkO7m89EKKi8UzKl8txI.",
-    "finding": "After reversible backup and regeneration of the production library/temp caches, Creator 3.7.3 reached project package activation and exposed CC Bridge on port 49650. The production extension install matches the worktree build exactly (commit 6463c65, builtAt 2026-09-13T14:55:07.561Z).",
+    "finding": "After reversible backup and regeneration of the production library/temp caches, Creator 3.7.3 reached project package activation and exposed Cocos Pilot on port 49650. The production extension install matches the worktree build exactly (commit 6463c65, builtAt 2026-09-13T14:55:07.561Z).",
     "productionLiveVerification": "sceneManage opened scene UUID 80dddede-15e3-4d8e-8f37-0f1263a0867c; sceneGetInfo confirmed the same currentScene UUID; spineSceneInspect returned node 71FkO7m89EKKi8UzKl8txI named MascotPlaceholder9664 with component Skeleton, 26 animations, hasSkeletonData=true, total=1, truncated=false, and no sockets.",
     "binaryLiveVerification": "The exact SkeletonData UUID c0d0c055-fc34-4bca-8bc2-ed93d5536060 resolved in production and spineAssetInspect correctly returned HTTP 422 SOURCE_UNSUPPORTED because Creator exposed no importer metadata for the binary .skel source; its recovery directs callers to spineSceneInspect, which returned the live runtime evidence.",
     "cacheRecovery": "Renamed production library to library.backup-20260913-224314 and temp to temp.backup-20260913-224314 before Creator regeneration; original caches remain available for rollback.",

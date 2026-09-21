@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
+  "denominatorVersion": "ccp3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "sourceCounts": {
     "competitor": 262,
@@ -4836,7 +4836,7 @@
       "workflowId": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
       "status": "contract-reviewed",
       "detailStatus": "documented",
-      "originalContract": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+      "originalContract": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cocos-pilot-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
       "contractSource": "reports/original-lane-requirements-20260917.json#2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md",
       "proposal": null
     },

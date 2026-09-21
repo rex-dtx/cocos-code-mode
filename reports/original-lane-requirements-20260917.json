@@ -434,7 +434,7 @@
     },
     {
       "name": "localizationValidate",
-      "requirement": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.",
+      "requirement": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cocos-pilot-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.",
       "source": "2-todo-260908__tbd-child-p6-localization-runtime-build/plan.md"
     },
     {

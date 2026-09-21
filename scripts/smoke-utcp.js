@@ -11,11 +11,11 @@ async function discoverBase() {
         const cfgPath = process.env.UTCP_CONFIG_FILE || join(homedir(), '.utcp_config.json');
         const raw = readFileSync(cfgPath, 'utf8');
         const cfg = JSON.parse(raw);
-        const templates = (cfg.manual_call_templates || []).filter(t => /^ccb3x_\d+$/.test(t.name));
+        const templates = (cfg.manual_call_templates || []).filter(t => /^ccp3x_\d+$/.test(t.name));
         if (templates.length === 1) return new URL(templates[0].url).origin;
         if (templates.length > 1) throw new Error('Multiple editors found; pass the intended editor port explicitly.');
     } catch (error) { throw new Error(`Cannot select UTCP endpoint: ${error.message}`); }
-    throw new Error('Cannot discover UTCP port: is cc-bridge-3x running? Pass port as arg.');
+    throw new Error('Cannot discover UTCP port: is cocos-pilot-3x running? Pass port as arg.');
 }
 
 async function getJson(url) {
@@ -46,7 +46,7 @@ async function main() {
         assert.equal(new Set(m.tools.map((tool) => tool.name)).size, n, 'manual tool names are unique');
         assert.ok(m.tools.every((tool) => !Object.hasOwn(tool, 'annotations')), 'manual tools must not expose annotations');
         ok(`manual valid: ${n} tools, keys ${keys.join(',')}`);
-        // check ccb3x template present (bare or per-port) + no duplicate URL among
+        // check ccp3x template present (bare or per-port) + no duplicate URL among
         // new-format ccb* names — dup URL is what caused double tool registration.
         // Legacy names are purged by ConfigManager on read, so they never appear here.
         try {
@@ -55,13 +55,13 @@ async function main() {
             const cfg = JSON.parse(raw);
             const templates = cfg.manual_call_templates || [];
             const names = templates.map(t => t.name);
-            const has3x = names.some(n => /^ccb3x(_\d+)?$/.test(n));
-            assert.ok(has3x, `ccb3x template present, found ${names.join(',')}`);
+            const has3x = names.some(n => /^ccp3x(_\d+)?$/.test(n));
+            assert.ok(has3x, `ccp3x template present, found ${names.join(',')}`);
             const isCcb = (n) => /^ccb[23]x(_\d+)?$/.test(n);
             const urls = templates.filter(t => isCcb(t.name)).map(t => (t.url || '').replace(/\/utcp\/?$/, ''));
             assert.equal(new Set(urls).size, urls.length, `ccb* dup URL, got ${urls.join(',')}`);
-            ok('config has ccb3x template, no dup URL');
-        } catch (e) { skipped('config ccb3x check', e.message); }
+            ok('config has ccp3x template, no dup URL');
+        } catch (e) { skipped('config ccp3x check', e.message); }
     } catch (e) { bad('manual', e.message); }
 
     // 2 — build-info matches HEAD (catches stale dist)

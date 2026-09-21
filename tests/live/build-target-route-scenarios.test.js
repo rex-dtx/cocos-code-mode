@@ -25,7 +25,7 @@ describe('live: build target HTTP route scenarios', () => {
   it('serves nested files and reports route-level missing and traversal outcomes', { timeout: 120_000 }, async (t) => {
     if (!health?.ok) { t.skip(health?.reason || 'bridge unavailable'); return; }
     await repeatTestcase('BUILD-TARGET-E01', async ({ iteration }) => {
-      const relativePath = `temp/__ccb3x_route_${process.pid}_${iteration}__`;
+      const relativePath = `temp/__ccp3x_route_${process.pid}_${iteration}__`;
       const root = path.join(projectPath, relativePath);
       const expected = `route-${process.pid}-${iteration}`;
       let serverId;

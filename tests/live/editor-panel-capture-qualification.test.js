@@ -42,7 +42,7 @@ describe('live: editor panel capture qualification', () => {
       assert.ok(captured.body.data.length > 100);
 
       const missing = await postExpectedErrorTool('editorPanelCapture', {
-        panelTitle: '__ccb3x_missing_panel__',
+        panelTitle: '__ccp3x_missing_panel__',
         bounds: { x: 0, y: 0, width: 64, height: 64 },
       }, 'candidate.editorPanelCapture.negative.v1');
       assert.equal(missing.status, 500, JSON.stringify(missing.body));

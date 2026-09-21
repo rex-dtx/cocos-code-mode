@@ -14,14 +14,14 @@ function discoverBase() {
     const raw = fs.readFileSync(utcpPath, 'utf8');
     const cfg = JSON.parse(raw);
     const tpls = cfg.manual_call_templates || [];
-    // Prefer ccb3x (3.7) over ccb2x; these tests target the 3.7 bridge.
-    const canon = tpls.find(t => /^ccb3x/.test(t.name))
-      || tpls.find(t => /^ccb2x$/.test(t.name))
+    // Prefer ccp3x (3.7) over ccp2x; these tests target the 3.7 bridge.
+    const canon = tpls.find(t => /^ccp3x/.test(t.name))
+      || tpls.find(t => /^ccp2x$/.test(t.name))
       || tpls[0];
     const m = String(canon && canon.url || '').match(/localhost:(\d+)/);
     if (m) { base = `http://localhost:${m[1]}`; return base; }
   } catch {}
-  throw new Error('Cannot discover UTCP port: is cc-bridge-3x running? Set UTCP_BASE or pass --utcp-port=49650.');
+  throw new Error('Cannot discover UTCP port: is cocos-pilot-3x running? Set UTCP_BASE or pass --utcp-port=49650.');
 }
 async function emitCreatorTrace(baseUrl, level, message, data) {
   try {
@@ -125,7 +125,7 @@ async function getExpectedErrorJson(urlPath, testId, init = {}) {
 
 async function fetchTargetUrl(url, init = {}) {
   if (typeof url !== 'string' || !/^http:\/\/127\.0\.0\.1:\d+\//.test(url)) {
-    throw new Error('Target URL must be a loopback HTTP URL returned by a CC Bridge tool.');
+    throw new Error('Target URL must be a loopback HTTP URL returned by a Cocos Pilot tool.');
   }
   return fetch(url, { ...init, signal: init.signal || AbortSignal.timeout(5000) });
 }

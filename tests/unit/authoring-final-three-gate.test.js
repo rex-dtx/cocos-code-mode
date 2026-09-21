@@ -28,7 +28,7 @@ describe('authoring final three gate evidence', () => {
   });
 
   it('proves scene asset-usage-analyze graph-v4 reachability, bounds, and dynamic caveat', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-final-usage-')); const scene = path.join(root, 'main.scene');
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-final-usage-')); const scene = path.join(root, 'main.scene');
     fs.writeFileSync(scene, JSON.stringify({ __uuid__: '11111111-1111-1111-1111-111111111111' }));
     const rows = [
       { uuid: '00000000-0000-0000-0000-000000000001', url: 'db://assets/main.scene', type: 'cc.SceneAsset', file: scene, isDirectory: false },

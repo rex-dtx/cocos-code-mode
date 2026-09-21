@@ -11,7 +11,7 @@ const { ToolRegistry } = requireDist('utcp/decorators.js');
 
 describe('advanced capability tools', () => {
   it('returns stable prefab override identities from serialized source', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-diff-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-diff-'));
     const baseline = path.join(root, 'baseline.prefab');
     const current = path.join(root, 'current.prefab');
     fs.writeFileSync(baseline, JSON.stringify({ nodes: [{ name: 'Root', value: 1 }] }));
@@ -33,7 +33,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('inspects serialized prefab structure with bounded component and UUID summaries', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-inspect-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-inspect-'));
     const file = path.join(root, 'fixture.prefab');
     fs.writeFileSync(file, JSON.stringify({ __type__: 'cc.Node', child: { __type__: 'cc.Sprite', asset: '11111111-1111-1111-1111-111111111111@sub' } }));
     const previous = global.Editor;
@@ -54,7 +54,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('inspects and edits imported TMX layers and objects with source read-back', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-tmx-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-tmx-'));
     const file = path.join(root, 'fixture.tmx');
     fs.writeFileSync(file, [
       '<?xml version="1.0" encoding="UTF-8"?>',
@@ -92,7 +92,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('validates TMX gid ranges and layer dimensions alongside UUID references', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-tmx-validate-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-tmx-validate-'));
     const goodFile = path.join(root, 'good.tmx');
     const badFile = path.join(root, 'bad.tmx');
     fs.writeFileSync(goodFile, [
@@ -154,7 +154,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('resolves external .tsx tileset ranges and flags unresolvable ones', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-tmx-ext-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-tmx-ext-'));
     const tmx = path.join(root, 'map.tmx');
     const tsx = path.join(root, 'tiles.tsx');
     fs.writeFileSync(tsx, '<?xml version="1.0"?><tileset tilecount="2" tilewidth="32" tileheight="32"><tile id="0"/></tileset>');
@@ -195,7 +195,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('rejects non-scene assets and reports reference truncation for scenes', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-scene-ref-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-scene-ref-'));
     const sceneFile = path.join(root, 'level.scene');
     const prefabFile = path.join(root, 'thing.prefab');
     const uuidA = '11111111-1111-1111-1111-111111111111';
@@ -227,7 +227,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('reports prefab reference audit truncation and nested prefabs', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-ref-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-ref-'));
     const file = path.join(root, 'root.prefab');
     const nestedUuid = '44444444-4444-4444-4444-444444444444';
     const missingUuid = '99999999-9999-9999-9999-999999999999';
@@ -257,7 +257,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('returns prefab source hashes after a successful override apply', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-apply-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-apply-'));
     const file = path.join(root, 'fixture.prefab');
     fs.writeFileSync(file, '{"position":0}');
     const previous = global.Editor;
@@ -282,7 +282,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('instantiates prefab with linked identity and cleans failed read-back', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-instantiate-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-instantiate-'));
     const file = path.join(root, 'fixture.prefab');
     fs.writeFileSync(file, '{}');
     const previous = global.Editor;
@@ -310,7 +310,7 @@ describe('advanced capability tools', () => {
   });
 
   it('accepts Creator 3.7 query-node prefab identity fields', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-3x7-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-3x7-'));
     const file = path.join(root, 'fixture.prefab');
     fs.writeFileSync(file, '{}');
     const previous = global.Editor;
@@ -425,7 +425,7 @@ describe('advanced capability tools', () => {
     }
   });
 
-  it('returns bounded CC Bridge listener inspection without inventing arbitrary listeners', async () => {
+  it('returns bounded Cocos Pilot listener inspection without inventing arbitrary listeners', async () => {
     const result = await new AdvancedCapabilityTools().editorListenersInspect();
     assert.equal(result.supported, true);
     assert.deepEqual(result.listeners, []);
@@ -498,7 +498,7 @@ describe('advanced capability tools', () => {
     }
   });
   it('returns prefab info and validates serialized dependencies with read-back', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-prefab-validate-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-prefab-validate-'));
     const file = path.join(root, 'fixture.prefab');
     fs.writeFileSync(file, JSON.stringify({ __type__: 'cc.Node', child: { __type__: 'cc.Sprite', asset: '11111111-1111-1111-1111-111111111111@sub' } }));
     const previous = global.Editor;

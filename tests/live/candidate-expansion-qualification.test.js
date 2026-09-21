@@ -426,7 +426,7 @@ return out;`,
     assert.equal(assets.status, 200, JSON.stringify(assets.body));
     const source = assets.body.assets?.[0];
     if (!source) { t.skip('No FBX importer fixture is present in the active Creator project.'); return; }
-    const assetPath = `db://assets/__ccb3x_model_import_${Date.now()}.fbx`;
+    const assetPath = `db://assets/__ccp3x_model_import_${Date.now()}.fbx`;
     let model = source;
     let copied;
     try {
@@ -473,7 +473,7 @@ return out;`,
 
   it('round-trips SkeletalAnimation serialized fields when the component is supported', async (t) => {
     if (skipIfDown(t)) return;
-    const created = await postTool('nodeCreate', { name: '__ccb3x_skeletal_config_qualification__' });
+    const created = await postTool('nodeCreate', { name: '__ccp3x_skeletal_config_qualification__' });
     assert.equal(created.status, 200, JSON.stringify(created.body));
     const reference = created.body.reference;
     try {

@@ -26,7 +26,7 @@ function configuredBases() {
     const configPath = process.env.UTCP_CONFIG_FILE || path.join(home, '.utcp_config.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     return [...new Set((config.manual_call_templates || [])
-      .filter((template) => /^ccb3x/.test(String(template.name)))
+      .filter((template) => /^ccp3x/.test(String(template.name)))
       .map((template) => String(template.url || '').replace(/\/utcp\/?$/, '').replace(/\/$/, ''))
       .filter(Boolean))];
   } catch {
@@ -121,14 +121,14 @@ function transportAudit(files) {
     const source = fs.readFileSync(file, 'utf8');
     const relative = path.relative(root, file).replaceAll(path.sep, '/');
     if (!/require\(['"](?:\.\.\/|\.\/)+helpers\/utcp-client['"]\)/.test(source)) {
-      violations.push(`${relative}: must use the shared CC Bridge client`);
+      violations.push(`${relative}: must use the shared Cocos Pilot client`);
     }
     if (!/\b(?:getJson|postTool|healthCheck|liveWitness)\s*\(/.test(source)) {
-      violations.push(`${relative}: has no observable CC Bridge call`);
+      violations.push(`${relative}: has no observable Cocos Pilot call`);
     }
     if (/\bfetch\s*\(|\bhttps?\.request\s*\(|\baxios\b/.test(source)
         && !/\bfetchTargetUrl\s*\(/.test(source)) {
-      violations.push(`${relative}: bypasses the shared CC Bridge client`);
+      violations.push(`${relative}: bypasses the shared Cocos Pilot client`);
     }
   }
   return { ok: violations.length === 0, checkedFiles: files.length, violations };
@@ -241,7 +241,7 @@ async function main() {
   if (staticAuditResult.ok === false) console.error(`portfolio audit: FAILED — ${staticAuditResult.error}`);
   else console.log(`portfolio: ${staticAuditResult.registeredToolCount} registered, ${staticAuditResult.approvedCount} approved/implemented, ready=${staticAuditResult.readyForBulkImplementation}`);
   if (!transportAuditResult.ok) console.error(`live transport audit: FAILED — ${transportAuditResult.violations.join('; ')}`);
-  else console.log(`live transport audit: ${transportAuditResult.checkedFiles} files use traced CC Bridge calls`);
+  else console.log(`live transport audit: ${transportAuditResult.checkedFiles} files use traced Cocos Pilot calls`);
   console.log(`live suite: ${summary.pass} pass, ${summary.fail} fail, ${summary.skipped} skipped`);
   if (staticAuditResult.ok === false || !transportAuditResult.ok || runs.some((run) => run.code !== 0)) process.exitCode = 1;
 }

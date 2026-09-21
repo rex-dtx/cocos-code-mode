@@ -6,7 +6,7 @@ const { getJson, postTool, repeatTestcase, healthCheck, getCanvasReference } = r
 
 const SPRITE_FRAME = '20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941';
 
-/** Live integration qualification: public CC Bridge APIs against Creator state. */
+/** Live integration qualification: public Cocos Pilot APIs against Creator state. */
 describe('live: Sprite interactive asset workflow', { concurrency: false }, () => {
   let health;
   before(async () => { health = await healthCheck(); });
@@ -18,7 +18,7 @@ describe('live: Sprite interactive asset workflow', { concurrency: false }, () =
 
     await repeatTestcase('SPRITE-C01', async () => {
       const created = await postTool('createSprite', {
-        name: `__ccb3x_sprite_interactive_${Date.now()}__`,
+        name: `__ccp3x_sprite_interactive_${Date.now()}__`,
         spriteFrameUuid: SPRITE_FRAME,
         parentReference: canvas,
       });

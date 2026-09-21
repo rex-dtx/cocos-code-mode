@@ -16,7 +16,7 @@ function restoreEditor(previous) {
 
 describe('final asset/import authoring wave', () => {
   it('returns a bounded project-file snippet and rejects paths outside the project', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-snippet-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-snippet-'));
     const previous = global.Editor;
     global.Editor = { Project: { path: root } };
     fs.writeFileSync(path.join(root, 'script.ts'), 'one\ntwo\nthree\nfour\nfive\n');
@@ -30,7 +30,7 @@ describe('final asset/import authoring wave', () => {
     }
   });
   it('atomically writes and replaces bounded project files with read-back', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-file-write-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-file-write-'));
     const previous = global.Editor;
     global.Editor = { Project: { path: root }, Message: { request: async () => true } };
     try {

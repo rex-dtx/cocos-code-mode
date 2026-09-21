@@ -223,7 +223,7 @@ export async function load() {
             console.log(
                 `[cx3][lifecycle] Ready: UTCP server listening at ${url}\n` +
                 `[cx3][config] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-                `[cx3][lifecycle] New AI sessions discover ccb3x_${actualPort}; reconnect an existing Code Mode MCP session to refresh it.`
+                `[cx3][lifecycle] New AI sessions discover ccp3x_${actualPort}; reconnect an existing Code Mode MCP session to refresh it.`
             );
         } catch (err) {
             console.error('[cx3][api] Failed to start UTCP Server:', err);

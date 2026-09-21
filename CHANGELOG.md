@@ -1,32 +1,8 @@
 # Changelog
 
-## Unreleased
-
-- Reserve bounded session-bound audio playback/observation contracts and implement the finite scene adapter, but fail public calls closed on Creator 3.7.3 because extension scene scripts are routed to the edit renderer rather than active Game View. No runtime audio support or count credit is claimed.
-- Consolidate Creator 3.7.3 Game View lifecycle around a finite Electron host adapter that identifies the actual visible ENGINE-VIEW/webview, reads the runtime scene and metrics there, and never substitutes the edit renderer. Browser/Simulator lifecycle remains unsupported; live cold-start stability in the large qualification project remains pending Fixbug.
-- Fix prefab apply false failures on Creator 3.7.3: native apply returns false even on success, so verify linked identity and remaining non-reserved overrides instead. Disposable live source-hash/serialized-state proof passes.
-- Add an agent-neutral session supervisor, reusable non-CLI host lifecycle adapter, foreground CLI with parent-pipe shutdown, and optional OMP event adapter. Project-bound registry discovery rejects ambiguity and rebinds after server identity changes; logical-session switches serialize close-before-open. No global agent configuration or model-context heartbeat calls.
-- Add instance-bound session heartbeat presence and Status session snapshots (Active/Stale/Expired), with a token-free external HTTP helper. Transport labels are caller-reported; helper presence never claims model activity or verified Code Mode connectivity. Session lifecycle supervision remains explicit.
-- Document and stress-check cooperative UTCP registry serialization: inter-process lock, read-after-lock merge, fsynced temporary file and atomic rename preserve endpoints under five simultaneous extension writers. Waiters poll every 25ms with a 5-second fail-closed deadline; abandoned crash locks remain an explicit operator-cleanup edge case.
-- Reuse the last successfully published automatic CCB port per project; fall back to a new OS port only when the reusable port is occupied. Registry publication prunes definitively closed stale CCB endpoints with an ownership recheck under the existing inter-process lock, while preserving responsive/timed-out editors and strict fixed-port failure.
-- Add endpoint/project/instance-bound external health watchdog with independent HTTP deadlines, serial polling, shared IPC evidence and conservative recovery/read-back guidance. No automatic mutation retries, editor fallback or process restart.
-- Keep quick menu actions for Status, Restart Server, Toggle Debug Logging, Open Logs and Settings. Status also provides confirmed log operations and collapsed technical details; Settings focuses on AI setup with advanced port/path controls and serialized main-process apply.
-- Restore the verbose logging control in Settings with immediate ON/OFF state, refresh, bounded timeout feedback and serialized pending-write protection across panel reopen.
-- Gate builds and direct packaging on Creator 3.7 CommonJS-loader checks across all declared entrypoints, compiled modules and deferred literal dependencies; add a negative dual-package regression that ordinary Node loading misses.
-- Fix Creator 3.7 extension loading: remove new runtime Zod imports from registry/status validation because Creator's CommonJS loader prefers sibling ESM `.js` files over `.cjs`. Retain boundary validation and add a loader regression covering main and Status panel.
-- Replace the Agent Inbox menu entry with a read-only Status panel and on-demand Check Status button: build/project identity, server endpoint, registry ownership, HTTP handshake and scene readiness. Inbox APIs and explicit panel opening remain available.
-- Default each Creator launch to an OS-assigned port; explicit fixed ports use `fixedServerPort` (0 = auto). Publish stable `ccb3x_<port>` namespaces, not a latest alias. Registry updates use a cross-process lock and atomic replacement; instance-owned cleanup cannot delete a replacement editor. Agent discovery binds endpoint, project and instance with no cross-editor fallback.
-- Announce `editorHandshake` in SessionStart bootstrap with separate HTTP probe evidence and required Code Mode verification guidance. Clear stale IPC probe slots on CCB server start and guard against late responses from the previous lifecycle; no automatic timeout retry.
-- Add always-exposed, read-only `editorHandshake` with per-server identity, build/project identity, optional expected-project matching, and a bounded scene IPC probe that distinguishes not-ready, timeout, invalid response and IPC failure without accumulating hung requests.
-- Add `editorLog` for agent messages in the Creator editor console/project log, with `debug/info/warn/error`, optional JSON data, and bounded input validation. `debug` maps to `console.log` with a `[debug]` prefix.
-- Add `editorAsk` and `editorPrompt` through a bounded, nonmodal **Agent Inbox** with choice buttons and text/select/confirm fields. Defaults only log/quietly notify, never open or focus a panel; the user opens it from the menu. Panel opening and modal native dialogs require explicit opt-in. Creator 3.7 native dialogs use `Dialog.info/warn/error`, with deterministic timeout but manual dismissal.
-- Correct `uiLayoutInspect` world rectangles using live node world matrices and each node's own UITransform corners; preserve bounded traversal and legacy Apply/Align/Validate read-back. Missing geometry fails explicitly.
-- Bound the entire successful `buildLogInspect` UTF-8 JSON response, including task metadata; reject invalid limits before IPC and fail explicitly when mandatory identity/state cannot fit.
-- Preserve nested required output fields using the complete schema during HTTP response trimming, while keeping the discovery manual compact; accept Creator's wrapped node UUID dump values during UI inspection.
-
 ## 2.2.0 — 2026-09-05 — Cocos Graph v4 + Typed Recovery Errors + 3x Baseline Consolidation
 
-Hợp nhất toàn bộ các nhánh `feat/ccb3x-consolidated`, `feat/ccb3x-fail-loud-smoke`, và `feat/ccb3x-scene-graph-index` vào `cc-3x7` (commit `53589bb`). 159 unit tests pass, 31 graph tests pass.
+Hợp nhất toàn bộ các nhánh `feat/ccp3x-consolidated`, `feat/ccp3x-fail-loud-smoke`, và `feat/ccp3x-scene-graph-index` vào `cc-3x7` (commit `53589bb`). 159 unit tests pass, 31 graph tests pass.
 
 - **Cocos Graph v4 (`tools/cocos-graph`):**
   - CLI điều hướng cấu trúc scene/project offline với các lệnh `build`, `query`, `resolve`, `navigate`, `refs`, `session-record`, `validate`.
@@ -49,31 +25,32 @@ Hợp nhất toàn bộ các nhánh `feat/ccb3x-consolidated`, `feat/ccb3x-fail-
   - Port bổ sung 3 tool Lane C với strict schema và kiểm thử IPC: `materialQuery`, `assetDbQuery`, và `editorQuery:has_script`.
 - **Strict UTCP Schemas & Packaging:**
   - Làm sạch UTCP manual: loại bỏ toàn bộ annotations nội bộ thừa, kích hoạt `slimOutputsSchema` thu gọn output schema.
-  - Sửa script đóng gói `npm run package` hỗ trợ đa nền tảng bằng `archiver` v8 streaming, tạo gói cài đặt zip hoàn chỉnh `cc-bridge-3x-v200-*.zip` (33MB).
+  - Sửa script đóng gói `npm run package` hỗ trợ đa nền tảng bằng `archiver` v8 streaming, tạo gói cài đặt zip hoàn chỉnh `cocos-pilot-3x-v210-*.zip` (33MB).
   - Bổ sung Ma trận điều phối Tool (Tool Selection Matrix) vào `SKILL.md` và `docs/agent-tool-failure-modes.md` hướng dẫn agent phân định giữa scene đang mở, file scene trên disk, và prefab đóng.
 
 ## 2.1.1 — 2026-08-23 — clean break + asset meta parity
 
-- **Clean break:** bỏ hết compat `cc3x7`/`cc2x4` khỏi bootstrap/skill/smoke; `~/.utcp_config.json` chỉ nhận `cc-bridge-3x`/`ccb3x` + `cc-bridge-2x`/`ccb2x`. Xoá shim `scripts/code-mode-bootstrap.js`.
+- **Clean break:** bỏ hết compat `cc3x7`/`cc2x4` khỏi bootstrap/skill/smoke; `~/.utcp_config.json` chỉ nhận `cocos-pilot-3x`/`ccp3x` + `cocos-pilot-2x`/`ccp2x`. Xoá shim `scripts/code-mode-bootstrap.js`.
 - **Parity gap #1 đóng:** `assetOperate` +`save_meta` (`save-asset-meta`) và `assetDbQuery` +`meta` (`query-asset-meta`) — cặp read-modify-write, ngang `assetSaveMeta` của 2x. Vẫn **46 tools** (chỉ thêm op).
-- **Dọn tên sót:** `source/scene.ts` log tag, error message của `smoke-utcp.js`/`bench-utcp-tools.js`, README title/zip name → `cc-bridge-3x`.
+- **Dọn tên sót:** `source/scene.ts` log tag, error message của `smoke-utcp.js`/`bench-utcp-tools.js`, README title/zip name → `cocos-pilot-3x`.
 
-## 2.1.0 — 2026-08-21 — game-complete enrich (CC Bridge 3x)
+## 2.1.0 — 2026-09-21 — Cocos Pilot hard cut + game-complete enrich (BREAKING)
 
+- **Hard cut `cc-bridge` → `cocos-pilot`, `ccb3x/ccb2x` → `ccp3x/ccp2x`**: package `cc-bridge-3x` → `cocos-pilot-3x` (menu `Cocos Pilot 3x`, i18n key `cocos-pilot-3x.*`, d.ts `cocos-pilot-3x.d.ts` / namespace `cocos_pilot_3x` + alias `ccp3x`), MCP server key `cc-bridge` → `cocos-pilot` (`mcpServers.cocos-pilot`), manual namespace `ccb3x_<port>` → `ccp3x_<port>`, skill `.claude/skills/cocos-pilot`, cache `.claude/cocos-pilot-cache.json`, bootstrap `scripts/cocos-pilot-bootstrap.js`, response `callId` prefix `ccb_` → `ccp_`, docs `cocos-pilot-code-mode-usage.md`. No `ccb*` alias retained — legacy `ccb*`/`cc-bridge*` entries are purged on `~/.utcp_config.json` read.
+- **Confusion fixed**: MCP server key (`cocos-pilot`) and Cocos manual namespace (`ccp3x_<port>`) are now intentionally distinct — key is the Code Mode adapter transport, namespace is the Pilot instance. Config stays `~/.utcp_config.json` (`UTCP_CONFIG_FILE` unchanged) but template names are `ccp3x*`.
+- **Identity glossary**: `docs/architecture-identity.md` with 12 locked IDs (`cce`/`ccbe`/`ccbi:ccp3x_<port>`/`ccbr`/`ccbt`/`cm`/`cmm`/`bd`/`prs`/`exs`) and contracts C1-C4 — `ccb` family prefix removed.
 - **Enrich 46:** `assetResolvePath` -> accepts `reference` OR `assetPath`, returns `exists`/`isDirectory`/`type`/`importer` alongside `filesystemPath`/`url`/`uuid` (verified `query-path`/`query-url`/`query-asset-info`/`query-uuid`).
 - **New +1:** `assetReadContent` (text read by uuid or db:// path, 512KB cap + binary guard, `maxBytes` override) -> 45 -> **46** (additive).
 - **Enrich:** `editorSelect` +`hover`/`update` (`hover(type,uuid?)` null=hover-out, `update(type,uuid[])`) port verified from 2x `Editor.Selection` surface (`update`/`hover` exist on 3.7.3 `editor.d.ts`).
 - **Enrich:** `materialQuery` +`physics_material` (`query-physics-material`, facade + registry), `assetDbQuery` +`db_info` (`query-db-info dbName`).
-- **Rename 3x:** `cocos-code-mode-3x7` -> `cc-bridge-3x`, manual `cc3x7` -> `cc-bridge-3x` + alias `ccb3x` (JS `cc_bridge_3x`/`ccb3x`, compat `ccb-3x`/`ccb_3x`), package menu `CC Bridge 3x`, d.ts `cc-bridge-3x.d.ts`, bootstrap `cc-bridge-bootstrap.js`, skills `.claude/skills/cc-bridge-3x`, removed legacy `cc-code-mode` shim + `code-mode-references.d.ts`.
 
-## 2.0.0 — 2026-08-19 — CC Bridge 3x (formerly Code Mode for Cocos Creator)
+## 2.0.0 — 2026-08-19 — Cocos Pilot 3x (formerly Code Mode for Cocos Creator)
 
 **Breaking:** consolidate 68 legacy+A1 tools -> **45** via 10 consolidated dispatchers. 26 legacy names removed from `/utcp`; consolidated surface is now the only one. Legacy method bodies kept (not registered) for `consolidated-tools.ts` delegation (`new LegacyTool().method()`).
-
 - **A1 shims (68)** — `bacb693`: added 7 consolidated tools alongside 61 legacy (`deprecated` tag), both names coexisted.
 - **2.0.0 (68->51)** — `d1975d9`: strip 17 legacy `@utcpTool` (`inspectorGet/Set*`, `inspectorGet*Definition`, `nodeComponentAdd/Remove`, `sceneOpen`+`editorOperate`, `build*` 5).
 - **2.0.x (51->45)** — `df6a1c2`: add 3 consolidated (`previewManage` 4->1, `programManage` 3->1, `projectManage` 2->1), strip 9 legacy (`previewGetUrl`/`previewOpenInBrowser`/`assetGetPreview`/`editorGetScenePreview` + `programGetInfo`/`programOpen`/`urlOpen` + `projectGetConfig`/`projectSetConfig`). Net `68 - 26 = 45 = 35 standalone + 10 consolidated`.
-- **Docs/decl** — `README` 45, `cc-bridge-3x.d.ts` +1 decorator, `docs/consolidated-migration.md` codemod 26 legacy, `scripts/smoke-utcp.js` expects 45 (consolidated `inspectorGetDefinition` + `previewManage`).
+- **Docs/decl** — `README` 45, `cocos-pilot-3x.d.ts` +1 decorator, `docs/consolidated-migration.md` codemod 26 legacy, `scripts/smoke-utcp.js` expects 45 (consolidated `inspectorGetDefinition` + `previewManage`).
 - **Perf already in this line** — `maxDepth`/`maxNodes`/`fields[]` tree budgets, `section` definition pagination, `fields[]` selective dump, `response-trimmer`, desc avg ~76 chars (see `docs/prompt-guidance-risks.md`, `a769a46` bench).
 
 **Migration:** `docs/consolidated-migration.md` — one-line codemod `inspectorGetInstanceProperties`->`inspectorGet` etc., `sceneOpen`->`sceneManage`, `preview*/assetGetPreview`->`previewManage`, `program*/urlOpen`->`programManage`, `project*`->`projectManage`.

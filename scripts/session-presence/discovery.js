@@ -1,9 +1,9 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { requestHandshake } = require('../cc-bridge-watchdog');
+const { requestHandshake } = require('../cocos-pilot-watchdog');
 const { parseArgs } = require('./heartbeat');
-const PER_PORT_NAMESPACE = /^ccb3x_([1-9]\d{0,4})$/;
+const PER_PORT_NAMESPACE = /^ccp3x_([1-9]\d{0,4})$/;
 const INSTANCE_ID = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,255}$/;
 
 class SessionLifecycleError extends Error {
@@ -44,7 +44,7 @@ function readEndpoints(registryPath, namespace) {
     if (typeof template?.name !== 'string' || !PER_PORT_NAMESPACE.test(template.name) || (namespace && template.name !== namespace)) continue;
     const endpoint = parseEndpoint(template);
     if (!endpoint) throw new SessionLifecycleError('BINDING_INVALID', 'Invalid CCB namespace endpoint.');
-    const owner = registry.variables?.[`CCB3X_OWNER_${Number(new URL(endpoint.url).port || 80)}`];
+    const owner = registry.variables?.[`CCP3X_OWNER_${Number(new URL(endpoint.url).port || 80)}`];
     if (owner !== undefined && (typeof owner !== 'string' || !INSTANCE_ID.test(owner))) throw new SessionLifecycleError('BINDING_INVALID', 'Invalid registry owner.');
     endpoint.owner = owner;
     const existing = byNamespace.get(endpoint.namespace);
@@ -63,7 +63,7 @@ function validateBinding(binding, project) {
   let parsed;
   try { parsed = parseArgs(['--url', binding.url, '--project', project, '--instance', binding.instance, '--session', 'validation']); }
   catch { throw new SessionLifecycleError('BINDING_INVALID', 'Invalid loopback binding.'); }
-  const namespace = `ccb3x_${Number(new URL(parsed.url).port || 80)}`;
+  const namespace = `ccp3x_${Number(new URL(parsed.url).port || 80)}`;
   if (binding.namespace !== undefined && binding.namespace !== namespace) throw new SessionLifecycleError('BINDING_INVALID', 'Namespace port mismatch.');
   return { url: parsed.url, instance: parsed.instance, project, namespace };
 }

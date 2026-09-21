@@ -6,7 +6,7 @@ const crypto = require('node:crypto');
 const ROOT = path.resolve(__dirname, '..');
 const INPUTS = ['reports/original-competitor-intake-20260917.json', 'reports/original-lane-requirements-20260917.json', 'docs/tool-portfolio-candidates.json', 'docs/workflow-mapping-decisions.json', 'docs/workflow-contract-reviews.json'];
 const IMPLEMENTATION_OVERRIDES = 'docs/workflow-implementation-overrides.json';
-const VERSION = 'ccb3x-creator-3.7.3-windows-v1-review';
+const VERSION = 'ccp3x-creator-3.7.3-windows-v1-review';
 const IMPLEMENTATION_STATES = new Set(['complete', 'test-pending', 'partial', 'missing', 'unsupported', 'external', 'unreviewed', 'excluded']);
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 const slug = value => String(value).replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

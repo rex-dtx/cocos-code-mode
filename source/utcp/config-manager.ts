@@ -38,8 +38,8 @@ export class UtcpConfigManager {
             const templates = new Map<string, Registry['manual_call_templates'][number]>();
             const others: Registry['manual_call_templates'] = [];
             for (const template of config.manual_call_templates) {
-                if (['cc-bridge-3x', 'cc3x7', 'ccb-3x', 'ccb_3x'].includes(template.name)) continue;
-                if (template.name === 'ccb3x' || /^ccb3x_\d+$/.test(template.name)) {
+                if (['cocos-pilot-3x', 'cc3x7', 'ccp-3x', 'ccp_3x'].includes(template.name)) continue;
+                if (template.name === 'ccp3x' || /^ccp3x_\d+$/.test(template.name)) {
                     const url = new URL(template.url ?? '');
                     const endpointPort = Number(url.port);
                     if (!['localhost', '127.0.0.1'].includes(url.hostname) || url.protocol !== 'http:' || endpointPort < 1) {
@@ -47,30 +47,30 @@ export class UtcpConfigManager {
                     }
                     const observedOwner = closed.get(endpointPort);
                     if (endpointPort !== port && closed.has(endpointPort)
-                        && config.variables?.['CCB3X_OWNER_' + endpointPort] === observedOwner) {
-                        delete config.variables?.['CCB3X_OWNER_' + endpointPort];
-                        delete config.variables?.['CCB3X_PROJECT_' + endpointPort];
+                        && config.variables?.['CCP3X_OWNER_' + endpointPort] === observedOwner) {
+                        delete config.variables?.['CCP3X_OWNER_' + endpointPort];
+                        delete config.variables?.['CCP3X_PROJECT_' + endpointPort];
                         continue;
                     }
-                    const name = 'ccb3x_' + endpointPort;
+                    const name = 'ccp3x_' + endpointPort;
                     templates.set(name, { ...template, name });
                 } else others.push(template);
             }
-            const name = 'ccb3x_' + port;
+            const name = 'ccp3x_' + port;
             templates.set(name, {
                 name, call_template_type: 'http', url: 'http://localhost:' + port + '/utcp',
                 http_method: 'GET', content_type: 'application/json',
             });
             config.manual_call_templates = [...others, ...templates.values()];
-            config.variables = { ...config.variables, ['CCB3X_OWNER_' + port]: instanceId };
-            if (project) config.variables['CCB3X_PROJECT_' + port] = project;
+            config.variables = { ...config.variables, ['CCP3X_OWNER_' + port]: instanceId };
+            if (project) config.variables['CCP3X_PROJECT_' + port] = project;
         });
     }
     private async findClosedCcbPorts(): Promise<Map<number, string | undefined>> {
         const config = this.readConfig();
         const candidates = new Map<number, string>();
         for (const template of config.manual_call_templates) {
-            const match = /^ccb3x_(\d+)$/.exec(template.name);
+            const match = /^ccp3x_(\d+)$/.exec(template.name);
             if (!match || typeof template.url !== 'string') continue;
             try {
                 const url = new URL(template.url);
@@ -81,7 +81,7 @@ export class UtcpConfigManager {
             } catch { /* Invalid endpoints are rejected by the locked mutation. */ }
         }
         const results = await Promise.all([...candidates].map(async ([port, host]) => ({
-            port, closed: await this.isLoopbackPortClosed(host, port), owner: config.variables?.['CCB3X_OWNER_' + port],
+            port, closed: await this.isLoopbackPortClosed(host, port), owner: config.variables?.['CCP3X_OWNER_' + port],
         })));
         return new Map(results.filter(result => result.closed).map(result => [result.port, result.owner]));
     }
@@ -103,11 +103,11 @@ export class UtcpConfigManager {
     }
     async removeCocosEditorTemplate(port: number, instanceId: string, configPath = this.getConfigPath()): Promise<boolean> {
         return mutateRegistry(configPath, config => {
-            const key = 'CCB3X_OWNER_' + port;
+            const key = 'CCP3X_OWNER_' + port;
             if (!instanceId || config.variables?.[key] !== instanceId) return;
-            config.manual_call_templates = config.manual_call_templates.filter(t => t.name !== 'ccb3x_' + port);
+            config.manual_call_templates = config.manual_call_templates.filter(t => t.name !== 'ccp3x_' + port);
             delete config.variables[key];
-            delete config.variables?.['CCB3X_PROJECT_' + port];
+            delete config.variables?.['CCP3X_PROJECT_' + port];
         });
     }
     async getCurrentPort(): Promise<number> {

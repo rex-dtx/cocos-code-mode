@@ -7,7 +7,7 @@ interface SettingsPanel { $: { app: HTMLElement } }
 const cleanup = new WeakMap<SettingsPanel, () => void>();
 // A panel close must not permit another restart while the original RPC is unresolved.
 let pendingSave: Promise<unknown> | null = null;
-const instruction = 'Select this editor\'s ccb3x_<port> namespace and project path from Status. Call that namespace\'s editorHandshake with expectedProjectPath; verify projectMatches and bind its instanceId before mutations. Stay bound to that namespace, project path and instanceId. Re-handshake after reconnect or restart; if unavailable or identity changes, stop and ask rather than switching editors.';
+const instruction = 'Select this editor\'s ccp3x_<port> namespace and project path from Status. Call that namespace\'s editorHandshake with expectedProjectPath; verify projectMatches and bind its instanceId before mutations. Stay bound to that namespace, project path and instanceId. Re-handshake after reconnect or restart; if unavailable or identity changes, stop and ask rather than switching editors.';
 
 function parseSettings(value: unknown): Settings {
     if (!value || typeof value !== 'object' || !('fixedPort' in value) || !('configPath' in value)
@@ -63,7 +63,7 @@ module.exports = Editor.Panel.define({
         const show = (settings: Settings) => {
             port.value = String(settings.fixedPort);
             path.value = settings.configPath;
-            mcp.value = JSON.stringify({ mcpServers: { 'cc-bridge': {
+            mcp.value = JSON.stringify({ mcpServers: { 'cocos-pilot': {
                 command: 'npx', args: ['-y', '@utcp/code-mode-mcp'], env: { UTCP_CONFIG_FILE: settings.configPath },
             } } }, null, 2);
             loaded = true;

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-authoring-first",
+  "denominatorVersion": "ccp3x-creator-3.7.3-windows-v1-authoring-first",
   "denominatorHash": "0c5a2efbb78ac590f1b69731822f19f51e20de206148844bdaaa593cc1a3e9e6",
   "parentFullDenominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "sourceInventoryHash": "e744a7acb91821654f3872025ae504ca7143a82f943162d0f89cb31cd505d2e1",
@@ -419,9 +419,9 @@
         "cocos-mcp:get_all_preferences"
       ],
       "implementationState": "complete",
-      "implementationReason": "getEditorPreference omitting key returns the complete bounded set of cc-bridge-3x Editor.Profile preferences with explicit nulls for unset keys.",
+      "implementationReason": "getEditorPreference omitting key returns the complete bounded set of cocos-pilot-3x Editor.Profile preferences with explicit nulls for unset keys.",
       "limitations": [
-        "Bounded to the cc-bridge-3x known preference keys; arbitrary third-party package profiles are not claimed.",
+        "Bounded to the cocos-pilot-3x known preference keys; arbitrary third-party package profiles are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "authoringDisposition": "included",
@@ -3176,7 +3176,7 @@
       "id": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
       "domain": "localization",
       "title": "localizationValidate",
-      "observableOutcome": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+      "observableOutcome": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cocos-pilot-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
       "executionContext": "editor",
       "sourceIds": [
         "lane:2-todo-260908__tbd-child-p6-localization-runtime-build:localizationValidate"

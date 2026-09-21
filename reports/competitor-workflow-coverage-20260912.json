@@ -15,7 +15,7 @@
     },
     "ccbBuild": {
       "commit": "3c24c78",
-      "branch": "feat/ccb3x-api-capability-expansion",
+      "branch": "feat/ccp3x-api-capability-expansion",
       "dirty": true,
       "builtAt": "2026-09-12T16:28:16.834Z"
     }
@@ -30,7 +30,7 @@
   ],
   "inputHashes": {
     "G:/alx-tool-api.txt": "5ef0a2bdc70b3a00f705dbc943b5bacb62dae7d618800f9a55155195ceea9ef4",
-    "G:/_ws/_helpers/cc-code-mode-cst-2x/parity/cc-bridge-2x.manifest.json": "6f2038812771060fecf070a17b1531e088e4e0058b052005d71a156f65447926",
+    "G:/_ws/_helpers/cc-code-mode-cst-2x/parity/cocos-pilot-2x.manifest.json": "6f2038812771060fecf070a17b1531e088e4e0058b052005d71a156f65447926",
     "docs/alx-capability-comparison.md": "7a3075e5163c429156b48ee62430becbe0d62304a4993257ca5eba0bc531e109",
     "docs/independent-ccb-strategy.md": "b14ed38e9c76ef1f35279dd2fe50389906d3c5ad9d9f24e195c317671eb472e3",
     "docs/parity-v2-v3.md": "289577513a2d1b1124ff93accb948dcbc63a98df21e7d1075e8147862c218705",

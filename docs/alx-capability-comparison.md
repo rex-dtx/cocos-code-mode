@@ -147,6 +147,6 @@ Use ALX as a **black-box feature catalog and workflow reference**. Reimplement o
 ## Related documents
 
 - [Independent CCB strategy](./independent-ccb-strategy.md)
-- [CCB usage](./cc-bridge-code-mode-usage.md)
+- [CCB usage](./cocos-pilot-code-mode-usage.md)
 - [v2/v3 parity](./parity-v2-v3.md)
 - [Tool portfolio candidates](./tool-portfolio-candidates.json)

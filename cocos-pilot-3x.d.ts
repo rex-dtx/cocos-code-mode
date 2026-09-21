@@ -1,7 +1,7 @@
 // Instance reference should newer be kept in memory
 // Agent-facing tool surface for Cocos Creator 3.7.x.
-// Manual: cc-bridge-3x (UTCP, hyphen). JS: cc_bridge_3x (underscore).
-// Short: ccb3x (compat: ccb-3x / ccb_3x). Recommended: ccb3x.
+// Manual: cocos-pilot-3x (UTCP, hyphen). JS: cocos_pilot_3x (underscore).
+// Short: ccp3x (compat: ccp-3x / ccp_3x). Recommended: ccp3x.
 // STATIC hand-written. See source/utcp/tools/*.ts for impl.
 
 type InstanceReference = { id: string; type: string };
@@ -89,9 +89,9 @@ type Size = { width: number, height: number };
 type Gradient = { colorKeys: Array<{ color: Array<number>, time: number }>, alphaKeys: Array<{ alpha: number, time: number }>, mode: number }
 
 /**
- * CC Bridge 3x — 322 tools (Creator 3.7.3) via ccb3x.<tool>() — see docs/tool-catalog.md for full catalog with status (stable/experimental/pending/disabled/deprecated) and groups.
+ * Cocos Pilot 3x — 322 tools (Creator 3.7.3) via ccp3x.<tool>() — see docs/tool-catalog.md for full catalog with status (stable/experimental/pending/disabled/deprecated) and groups.
  */
-declare namespace cc_bridge_3x {
+declare namespace cocos_pilot_3x {
     /** Preview start scene (editor profile profiles/v2/packages/preview.json general.start_scene). get: read current preview start scene and resolve db:// URL. set: filesystem-backed experimental — validates scene asset, writes profile with snapshot/rollback and verifies read-back. Use for preview launch target. */
     function previewStartSceneManage(args: { operation: "get" } | { operation: "set", sceneUuid: string }): { sceneUuid: string, url: string, file: string, previous?: string, _experimental?: string };
     /** Remove or reorder ONE element of an array-valued property by index. Use instead of inspectorSet, which replaces the whole array and loses object references. */
@@ -332,7 +332,7 @@ declare namespace cc_bridge_3x {
     /** Rejects with UNSUPPORTED_PREVIEW_IPC on Creator 3.7.3 because preview:set-resolution is not exposed. */
     function previewResolutionSet(args: { width: number, height: number }): { width: number, height: number, persisted: boolean, supported: boolean, readBack?: unknown };
     function editorUndoTransactionProbe(): { supported: boolean, boundaries: string[], clean: boolean };
-    function broadcastObserve(args: { topic: "cc-bridge-3x:probe" | "scene:change" | "asset-db:change" }): { topic: string, supported: boolean, observed: boolean, lifecycle: string[], event: unknown, eventBytes: number, truncated: boolean, retainedListener: false };
+    function broadcastObserve(args: { topic: "cocos-pilot-3x:probe" | "scene:change" | "asset-db:change" }): { topic: string, supported: boolean, observed: boolean, lifecycle: string[], event: unknown, eventBytes: number, truncated: boolean, retainedListener: false };
 
     /** Get list of globally available component types. */
     function nodeGetAvailableComponentTypes(args: {
@@ -658,7 +658,7 @@ declare namespace cc_bridge_3x {
         unavailable: string[]
     };
 
-    /** Nonmodal Agent Inbox question by default, without opening/focusing the panel. User opens CC Bridge 3x > Agent Inbox. Native dialogs require explicit presentation:"native"; openPanel:true permits panel activation. Default buttons OK/Cancel, cancelId last button. Deadline 1-300000ms, default 60000. Native timeout does not dismiss the native window. */
+    /** Nonmodal Agent Inbox question by default, without opening/focusing the panel. User opens Cocos Pilot 3x > Agent Inbox. Native dialogs require explicit presentation:"native"; openPanel:true permits panel activation. Default buttons OK/Cancel, cancelId last button. Deadline 1-300000ms, default 60000. Native timeout does not dismiss the native window. */
     function editorAsk(args: {
         title: string,
         message: string,
@@ -985,7 +985,7 @@ declare namespace cc_bridge_3x {
         }>
     };
 
-    /** Candidate: validate 1-256 unique localization keys (each at most 256 characters) in the current Creator language through the fixed cc-bridge-3x package scene seam. Unsupported localization packages return supported=false; this call never changes language or restarts Creator. */
+    /** Candidate: validate 1-256 unique localization keys (each at most 256 characters) in the current Creator language through the fixed cocos-pilot-3x package scene seam. Unsupported localization packages return supported=false; this call never changes language or restarts Creator. */
     function localizationValidate(args: { keys: string[] }): {
         supported: true,
         language: string | null,
@@ -1097,6 +1097,6 @@ declare namespace cc_bridge_3x {
     function buildManage(args: { operation: "panel_open" | "tasks_info" | "get_task" | "trigger" | "control", panel?: string, taskId?: string, options?: any, control?: "break" | "remove" | "recompile" }): any;
 }
 
-// Aliases: ccb3x is recommended short (no hyphen/underscore). ccb_3x / ccb-3x kept for compat.
-import ccb3x = cc_bridge_3x;
-import ccb_3x = cc_bridge_3x;
+// Aliases: ccp3x is recommended short (no hyphen/underscore). ccp_3x / ccp-3x kept for compat.
+import ccp3x = cocos_pilot_3x;
+import ccp_3x = cocos_pilot_3x;

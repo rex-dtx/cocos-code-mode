@@ -29,11 +29,11 @@ describe('live: validation and graph qualification', () => {
   it('proves JSON graph inspection and semantic validation', async (t) => {
     if (!health?.ok) { t.skip(health.reason); return; }
     await repeatTestcase('GRAPH-V02', async ({ iteration }) => {
-      const source = path.join(os.tmpdir(), `ccb3x-graph-${process.pid}-${iteration}.json`);
+      const source = path.join(os.tmpdir(), `ccp3x-graph-${process.pid}-${iteration}.json`);
       fs.writeFileSync(source, JSON.stringify({ nodes: [{ id: 'idle' }, { id: 'run' }], transitions: [{ from: 'idle', to: 'run' }] }), 'utf8');
       let reference;
       try {
-        const imported = await postTool('assetBatchImport', { items: [{ sourceFilesystemPath: source, targetAssetPath: `db://assets/__ccb3x_graph_${process.pid}_${iteration}__.json` }] });
+        const imported = await postTool('assetBatchImport', { items: [{ sourceFilesystemPath: source, targetAssetPath: `db://assets/__ccp3x_graph_${process.pid}_${iteration}__.json` }] });
         assert.equal(imported.status, 200); reference = imported.body.outcomes[0].reference;
         const inspect = await getJson(`/tools/animationGraphInspect?reference%5Bid%5D=${reference.id}`); assert.equal(inspect.status, 200); assert.equal(inspect.body.nodeCount, 2);
         const valid = await getJson(`/tools/animationGraphValidate?reference%5Bid%5D=${reference.id}`); assert.equal(valid.status, 200); assert.equal(valid.body.valid, true);
@@ -48,14 +48,14 @@ describe('live: validation and graph qualification', () => {
       if (preset.status !== 200 || preset.body.total < 1) {
         return { status: 'SKIP', reason: 'Creator does not expose the native animation graph preset fixture.' };
       }
-      const assetPath = `db://assets/__ccb3x_native_graph_qualification_${process.pid}_${iteration}__`;
+      const assetPath = `db://assets/__ccp3x_native_graph_qualification_${process.pid}_${iteration}__`;
       let reference;
       try {
         const created = await postTool('animationGraphCreate', { assetPath });
         assert.equal(created.status, 200, JSON.stringify(created.body));
         assert.equal(created.body.verified, true);
         assert.equal(typeof created.body.reference.id, 'string');
-        assert.match(created.body.assetPath, /__ccb3x_native_graph_qualification_.*\.animgraph$/);
+        assert.match(created.body.assetPath, /__ccp3x_native_graph_qualification_.*\.animgraph$/);
         reference = created.body.reference;
         const inspected = await getJson(`/tools/animationGraphInspect?reference%5Bid%5D=${encodeURIComponent(reference.id)}`);
         assert.equal(inspected.status, 200, JSON.stringify(inspected.body));

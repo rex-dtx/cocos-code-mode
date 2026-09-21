@@ -71,7 +71,7 @@ describe('asset batch and missing-reference tools', () => {
   });
 
   it('audits scene UUIDs against the project asset graph with line evidence', async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccb3x-missing-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-missing-'));
     const scene = path.join(root, 'broken.scene');
     fs.writeFileSync(scene, '{"ok":"11111111-1111-1111-1111-111111111111",\n"missing":"22222222-2222-2222-2222-222222222222"}');
     const rows = [

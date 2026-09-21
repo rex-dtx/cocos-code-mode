@@ -4,7 +4,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const { getJson, postTool, repeatTestcase, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
-const fixtureName = `__ccb3x_core_entity_${process.pid}__`;
+const fixtureName = `__ccp3x_core_entity_${process.pid}__`;
 
 describe('live: core entity feature workflow', { concurrency: false }, () => {
   it('creates, transforms, toggles, reads, and cleans a Canvas-owned entity', async (t) => {

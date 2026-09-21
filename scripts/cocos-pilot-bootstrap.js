@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-// cc-bridge-bootstrap — SessionStart hook: fetch live cc-bridge manuals from
-// ~/.utcp_config.json and cache tool metadata to .claude/cc-bridge-cache.json.
+// cocos-pilot-bootstrap — SessionStart hook: fetch live cocos-pilot manuals from
+// ~/.utcp_config.json and cache tool metadata to .claude/cocos-pilot-cache.json.
 // It never registers manuals in the Code Mode MCP process; agents do that per session.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const http = require('http');
 
-const CANON_3X = 'ccb3x';
-const CANON_2X = 'ccb2x';
-const PERPORT_3X = /^ccb3x_\d+$/;
-const PERPORT_2X = /^ccb2x_\d+$/;
+const CANON_3X = 'ccp3x';
+const CANON_2X = 'ccp2x';
+const PERPORT_3X = /^ccp3x_\d+$/;
+const PERPORT_2X = /^ccp2x_\d+$/;
 
 // Max age before a cached entry that has not been re-probed live is marked stale.
 // Mirrors runbook §3 readiness: age_ms = now - fetchedAt; is_stale = age_ms > threshold.
@@ -56,7 +56,7 @@ function endpoint3x(m) {
     if (url.protocol !== 'http:' || !/^\/utcp\/?$/.test(url.pathname)
       || url.username || url.password || url.search || url.hash) return null;
     const port = Number(url.port || 80);
-    const name = `ccb3x_${port}`;
+    const name = `ccp3x_${port}`;
     if (port < 1 || (m.name !== CANON_3X && m.name !== name)) return null;
     url.pathname = '/utcp';
     const normalizedUrl = url.href;
@@ -98,7 +98,7 @@ function cacheKeyFor(m) {
 
 /**
  * Pure core: merge prior disk cache with this run's probes.
- * - Per-endpoint independence: legacy ccb3x aliases migrate to their actual port.
+ * - Per-endpoint independence: legacy ccp3x aliases migrate to their actual port.
  * - Live probe → write authoritative entry with fetchedAt/age_ms:0.
  * - Dead probe + prior authoritative entry → retain prior, update age_ms + stale marker, never clobber count.
  * - Dead probe + no prior → tombstone (authoritative:false), never an authoritative 0 entry.
@@ -287,7 +287,7 @@ async function main() {
 
   const projectRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   const claudeDir = path.join(projectRoot, '.claude');
-  const cachePath = path.join(claudeDir, 'cc-bridge-cache.json');
+  const cachePath = path.join(claudeDir, 'cocos-pilot-cache.json');
   const priorCache = readJson(cachePath);
   if (manuals.length === 0 && !priorCache) return;
   const now = new Date();
@@ -312,16 +312,16 @@ async function main() {
     .filter((v) => v.authoritative !== false && v.live !== false)
     .reduce((s, v) => s + (v.toolCount || 0), 0);
   const staleNote = Object.values(cache.manuals).some((v) => v.stale) ? ' (stale)' : '';
-  console.log(`[cc-bridge-bootstrap] cached ${names} (${liveTotal} live tools) → .claude/cc-bridge-cache.json${staleNote}`);
+  console.log(`[cocos-pilot-bootstrap] cached ${names} (${liveTotal} live tools) → .claude/cocos-pilot-cache.json${staleNote}`);
   for (const [name, info] of Object.entries(cache.manuals)) {
     if (info.handshake?.status === 'unsupported') {
-      console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake not advertised by this build; discovery is not IPC readiness. Update CCB to use handshake.`);
+      console.log(`[cocos-pilot-bootstrap] ${name}: editorHandshake not advertised by this build; discovery is not IPC readiness. Update CCB to use handshake.`);
     } else {
-      console.log(`[cc-bridge-bootstrap] ${name}: editorHandshake HTTP probe=${info.handshake?.status ?? 'unverified'}. Select one namespace and endpoint (${info.url}), then register_manual + list_tools and call ${name}.editorHandshake({timeoutMs:1000, expectedProjectPath:"<absolute Creator project path>"}) through call_tool_chain. Bind namespace + endpoint + projectPath + instanceId. Require projectMatches:true and a responsive probe before mutations; sceneReady:false means connected but scene not ready. Re-handshake after reconnect/restart and discard old references if instanceId changes. Never fall back to another editor or a latest alias. Cache/HTTP probe does not verify the Code Mode route. Do not loop on timeout; restart/reload CCB to renew probes if IPC stays stuck.`);
+      console.log(`[cocos-pilot-bootstrap] ${name}: editorHandshake HTTP probe=${info.handshake?.status ?? 'unverified'}. Select one namespace and endpoint (${info.url}), then register_manual + list_tools and call ${name}.editorHandshake({timeoutMs:1000, expectedProjectPath:"<absolute Creator project path>"}) through call_tool_chain. Bind namespace + endpoint + projectPath + instanceId. Require projectMatches:true and a responsive probe before mutations; sceneReady:false means connected but scene not ready. Re-handshake after reconnect/restart and discard old references if instanceId changes. Never fall back to another editor or a latest alias. Cache/HTTP probe does not verify the Code Mode route. Do not loop on timeout; restart/reload CCB to renew probes if IPC stays stuck.`);
     }
   }
-  console.log('[cc-bridge-bootstrap] During active work, optionally run node scripts/cc-bridge-watchdog.js --url <selected endpoint> --project <absolute Creator project path> --instance <verified handshake instanceId> outside Creator. Stop mutations on unhealthy/stale observations; never retry a timed-out mutation blindly. Recovery requires read-back and a fresh Code Mode handshake. Monitoring does not enforce a server-side write lock or predict every freeze.');
-  console.log('[cc-bridge-bootstrap] Status can show session presence via editorSessionHeartbeat. A session harness may supervise node scripts/session-presence/heartbeat.js --url <bound endpoint> --project <project> --instance <verified ID> --session <unique session ID>. Helper beats use no LLM calls and are labeled http-helper, not verified Code Mode connectivity. Terminate the helper with its chat session; never feed routine beats into model context.');
+  console.log('[cocos-pilot-bootstrap] During active work, optionally run node scripts/cocos-pilot-watchdog.js --url <selected endpoint> --project <absolute Creator project path> --instance <verified handshake instanceId> outside Creator. Stop mutations on unhealthy/stale observations; never retry a timed-out mutation blindly. Recovery requires read-back and a fresh Code Mode handshake. Monitoring does not enforce a server-side write lock or predict every freeze.');
+  console.log('[cocos-pilot-bootstrap] Status can show session presence via editorSessionHeartbeat. A session harness may supervise node scripts/session-presence/heartbeat.js --url <bound endpoint> --project <project> --instance <verified ID> --session <unique session ID>. Helper beats use no LLM calls and are labeled http-helper, not verified Code Mode connectivity. Terminate the helper with its chat session; never feed routine beats into model context.');
 }
 
 // Test seam: pure helpers + core. main() path stays fs/http-coupled as before.

@@ -8,7 +8,7 @@
   "build": {
     "version": "2.0.0",
     "commit": "ac76884",
-    "branch": "feat/ccb3x-api-capability-expansion",
+    "branch": "feat/ccp3x-api-capability-expansion",
     "dirty": true,
     "builtAt": "2026-09-14T07:08:46.365Z"
   },
@@ -17,7 +17,7 @@
     "sha256": "53ac8ec04705ef846dabff0ae141e4c51449510372f39d4280e5e249396a06a4"
   },
   "package": {
-    "file": "cc-bridge-3x-v200-260914-141447.zip",
+    "file": "cocos-pilot-3x-v210-260914-141447.zip",
     "sha256": "146782e619852d8b4596c8e33161cad9a9ff45d4c99d7ef204c92650a053c054"
   },
   "qualification": {

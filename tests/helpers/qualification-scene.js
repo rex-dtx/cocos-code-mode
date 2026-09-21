@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { getJson, postTool } = require('./utcp-client');
 
-const DEFAULT_MANIFEST = path.resolve('G:/_ws/_helpers/cc-3x-test/assets/__ccb3x_qualification__.json');
+const DEFAULT_MANIFEST = path.resolve('G:/_ws/_helpers/cc-3x-test/assets/__ccp3x_qualification__.json');
 
 function readQualificationManifest(manifestPath = process.env.CCB_QUALIFICATION_MANIFEST || DEFAULT_MANIFEST) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));

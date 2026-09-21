@@ -8,7 +8,7 @@ module.exports = function ccbSession(pi, { env = process.env, supervisorFactory 
     const text = `CCB ${status.state}: ${status.reason}`;
     try {
       if (context?.hasUI && typeof context.ui?.setStatus === 'function') {
-        context.ui.setStatus('ccb-session', text);
+        context.ui.setStatus('ccp-session', text);
       } else {
         pi.logger?.info(text);
       }

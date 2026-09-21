@@ -32,7 +32,7 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('Creator 3.7 node lifecycle, component, inspector, reset, and lock APIs round-trip', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const created = await postTool('nodeCreate', { name: '__ccb3x_qualification_node__' });
+    const created = await postTool('nodeCreate', { name: '__ccp3x_qualification_node__' });
     assert.equal(created.ok, true, JSON.stringify(created.body));
     const reference = created.body.reference;
     assert.equal(typeof reference?.id, 'string');
@@ -95,7 +95,7 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('Creator 3.7 primitive creation and node clipboard round-trip', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const created = await postTool('nodeCreate', { name: '__ccb3x_clipboard_source__' });
+    const created = await postTool('nodeCreate', { name: '__ccp3x_clipboard_source__' });
     assert.equal(created.ok, true, JSON.stringify(created.body));
     const source = created.body.reference;
     let pasted;
@@ -121,7 +121,7 @@ describe('live: CC373 native UI creation fallback', () => {
       assert.equal(typeof pasted?.id, 'string');
 
       const primitiveResult = await postTool('nodeCreatePrimitive', {
-        name: '__ccb3x_primitive__',
+        name: '__ccp3x_primitive__',
         primitiveType: 'Cube',
       });
       assert.equal(primitiveResult.ok, true);
@@ -138,7 +138,7 @@ describe('live: CC373 native UI creation fallback', () => {
     });
     assert.equal(invalidClipboard.status, 400);
     const invalidPrimitive = await postTool('nodeCreatePrimitive', {
-      name: '__ccb3x_invalid_primitive__',
+      name: '__ccp3x_invalid_primitive__',
       primitiveType: 'Unknown',
     });
     assert.equal(invalidPrimitive.status, 400);
@@ -165,7 +165,7 @@ describe('live: CC373 native UI creation fallback', () => {
     if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
     const created = await postTool('createUiNode', {
       uiType: 'Label',
-      name: '__ccb3x_direct_ui_node__',
+      name: '__ccp3x_direct_ui_node__',
       parentReference: canvas,
     });
     assert.equal(created.ok, true, JSON.stringify(created.body));
@@ -185,8 +185,8 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('Creator 3.7 asset create, import, content save, and delete round-trip', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const assetPath = 'db://assets/__ccb3x_qualification__.ts';
-    const importedPath = 'db://assets/__ccb3x_import__.json';
+    const assetPath = 'db://assets/__ccp3x_qualification__.ts';
+    const importedPath = 'db://assets/__ccp3x_import__.json';
     let reference;
     let importedReference;
     try {
@@ -200,7 +200,7 @@ describe('live: CC373 native UI creation fallback', () => {
 
       const saved = await postTool('assetSaveContent', {
         reference,
-        content: 'export const ccb3xQualification = 1;\n',
+        content: 'export const ccp3xQualification = 1;\n',
       });
       assert.equal(saved.ok, true, JSON.stringify(saved.body));
       assert.equal(typeof saved.body.reference?.id, 'string');
@@ -248,7 +248,7 @@ describe('live: CC373 native UI creation fallback', () => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
     const canvas = await getCanvasReference();
     if (!canvas) { t.skip('active scene has no Canvas fixture'); return; }
-    const created = await postTool('createLabel', { name: '__ccb3x_method_node__', parentReference: canvas });
+    const created = await postTool('createLabel', { name: '__ccp3x_method_node__', parentReference: canvas });
     const node = created.body.reference;
     try {
       const components = await getJson(`/tools/nodeComponentsGet?reference%5Bid%5D=${encodeURIComponent(node.id)}`);
@@ -276,7 +276,7 @@ describe('live: CC373 native UI creation fallback', () => {
     assert.equal(assets.ok, true, JSON.stringify(assets.body));
     const source = assets.body.assets?.[0];
     assert.equal(typeof source?.uuid, 'string');
-    const targetAssetPath = 'db://assets/__ccb3x_prefab_qualification__.prefab';
+    const targetAssetPath = 'db://assets/__ccp3x_prefab_qualification__.prefab';
     let duplicate;
     try {
       const copied = await postTool('duplicatePrefab', {
@@ -308,12 +308,12 @@ describe('live: CC373 native UI creation fallback', () => {
 
   it('Creator 3.7 property array API reorders node children and validates input', async (t) => {
     if (!health?.ok) { t.skip(`editor not running: ${health?.reason ?? 'unknown'}`); return; }
-    const parentResult = await postTool('nodeCreate', { name: '__ccb3x_array_parent__' });
+    const parentResult = await postTool('nodeCreate', { name: '__ccp3x_array_parent__' });
     assert.equal(parentResult.ok, true, JSON.stringify(parentResult.body));
     const parent = parentResult.body.reference;
     const children = [];
     try {
-      for (const name of ['__ccb3x_array_a__', '__ccb3x_array_b__']) {
+      for (const name of ['__ccp3x_array_a__', '__ccp3x_array_b__']) {
         const created = await postTool('nodeCreate', { name, parentReference: parent });
         assert.equal(created.ok, true, JSON.stringify(created.body));
         children.push(created.body.reference);
@@ -392,9 +392,9 @@ describe('live: CC373 native UI creation fallback', () => {
       code: `const cc = require('cc');
 const scene = cc.director.getScene();
 const canvas = scene.getChildByName('Canvas');
-const old = canvas.getChildByName('__ccb3x_event_button__');
+const old = canvas.getChildByName('__ccp3x_event_button__');
 if (old) { old.removeFromParent(); old.destroy(); }
-const node = new cc.Node('__ccb3x_event_button__');
+const node = new cc.Node('__ccp3x_event_button__');
 canvas.addChild(node);
 node.addComponent(cc.Button);
 return { reference: { id: node.uuid, type: 'cc.Node' } };`,
@@ -409,7 +409,7 @@ return { reference: { id: node.uuid, type: 'cc.Node' } };`,
       await postTool('executeJavascript', {
         context: 'scene',
         code: `const canvas = cc.director.getScene().getChildByName('Canvas');
-const node = canvas && canvas.getChildByName('__ccb3x_event_button__');
+const node = canvas && canvas.getChildByName('__ccp3x_event_button__');
 if (node) { node.removeFromParent(); node.destroy(); }
 return true;`,
       });
@@ -428,9 +428,9 @@ return true;`,
       code: `const cc = require('cc');
 const scene = cc.director.getScene();
 const canvas = scene.getChildByName('Canvas');
-const old = canvas.getChildByName('__ccb3x_bind_button__');
+const old = canvas.getChildByName('__ccp3x_bind_button__');
 if (old) { old.removeFromParent(); old.destroy(); }
-const node = new cc.Node('__ccb3x_bind_button__');
+const node = new cc.Node('__ccp3x_bind_button__');
 canvas.addChild(node);
 node.addComponent(cc.Button);
 node.addComponent(cc.Label);
@@ -462,7 +462,7 @@ return { reference: { id: node.uuid, type: 'cc.Node' } };`,
       await postTool('executeJavascript', {
         context: 'scene',
         code: `const canvas = cc.director.getScene().getChildByName('Canvas');
-const node = canvas && canvas.getChildByName('__ccb3x_bind_button__');
+const node = canvas && canvas.getChildByName('__ccp3x_bind_button__');
 if (node) { node.removeFromParent(); node.destroy(); }
 return true;`,
       });
@@ -500,7 +500,7 @@ return true;`,
       assert.equal(valid.body.valid, true);
 
       const scroll = await postTool('uiCreateScrollView', {
-        name: '__ccb3x_scroll_probe__',
+        name: '__ccp3x_scroll_probe__',
         parentReference: canvas,
       });
       assert.equal(scroll.ok, true, JSON.stringify(scroll.body));
@@ -508,7 +508,7 @@ return true;`,
       assert.ok(scroll.body.viewport?.id && scroll.body.content?.id);
 
       const missing = await postTool('uiLayoutApply', {
-        reference: { id: '__ccb3x_missing_layout__', type: 'cc.Node' },
+        reference: { id: '__ccp3x_missing_layout__', type: 'cc.Node' },
         size: { width: 1, height: 1 },
       });
       assert.equal(missing.status, 404);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
+  "denominatorVersion": "ccp3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "status": "frozen-v1",
   "qualificationProfile": {
@@ -759,7 +759,7 @@
       ],
       "portfolioNames": [],
       "implementationState": "complete",
-      "implementationReason": "getEditorPreference omitting key returns the complete bounded set of cc-bridge-3x Editor.Profile preferences with explicit nulls for unset keys.",
+      "implementationReason": "getEditorPreference omitting key returns the complete bounded set of cocos-pilot-3x Editor.Profile preferences with explicit nulls for unset keys.",
       "implementationRoute": [
         {
           "tool": "getEditorPreference",
@@ -771,7 +771,7 @@
         "reports/p0-baseline-ledger-20260908.json"
       ],
       "limitations": [
-        "Bounded to the cc-bridge-3x known preference keys; arbitrary third-party package profiles are not claimed.",
+        "Bounded to the cocos-pilot-3x known preference keys; arbitrary third-party package profiles are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ],
       "reviewed": true,
@@ -6631,7 +6631,7 @@
       "id": "localization.lane-2-todo-260908-tbd-child-p6-localization-runtime-build-localization-validate",
       "domain": "localization",
       "title": "localizationValidate",
-      "observableOutcome": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cc-bridge-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
+      "observableOutcome": "Original requirement: missing keys, fallback gaps, glyph/font and layout risks in compiled resources. Current `4e523f7` validates bounded keys in the current language only through fixed `cocos-pilot-3x/validateLocalization` (5 focused tests passed). Cross-language/fallback/font/layout coverage and live package evidence remain open; no accepted scope reduction.\nDetect missing keys, fallback gaps, glyph/font and layout risks in compiled resources.",
       "creatorVersion": "3.7.3",
       "platform": "windows-x64",
       "executionContext": "editor",

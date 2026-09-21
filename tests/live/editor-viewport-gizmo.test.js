@@ -4,7 +4,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const { getJson, postTool, repeatTestcase, healthCheck, getCanvasReference } = require('../helpers/utcp-client');
 
-const fixtureName = `__ccb3x_gizmo_${process.pid}__`;
+const fixtureName = `__ccp3x_gizmo_${process.pid}__`;
 const selectionPasses = Math.min(10, Math.max(1, Number(process.env.CCB_SELECTION_PASSES || 5) || 5));
 
 async function selectNodeRepeatedly(reference) {

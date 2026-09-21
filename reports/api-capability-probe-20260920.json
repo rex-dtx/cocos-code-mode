@@ -3,7 +3,7 @@
   "date": "2026-09-20",
   "scope": "API-availability probes for the seven non-runtime probe-required portfolio rows",
   "creator": "3.7.3",
-  "artifact": "extensions/cc-bridge-3x dist, clean build of f32ef7d",
+  "artifact": "extensions/cocos-pilot-3x dist, clean build of f32ef7d",
   "method": "executeJavascript probes against the live editor/scene contexts plus the @cocos/creator-types message declarations shipped with Creator 3.7.3",
   "environment": {
     "platform": "windows-x64",

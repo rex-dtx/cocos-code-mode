@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "denominatorVersion": "ccb3x-creator-3.7.3-windows-v1-review",
+  "denominatorVersion": "ccp3x-creator-3.7.3-windows-v1-review",
   "denominatorHash": "9dd249158a8826bff1ba4021147302a7f34a60a84430344a5b4330053d517286",
   "implementationOverrideSource": "docs/workflow-implementation-overrides.json",
   "rows": [
@@ -340,7 +340,7 @@
     {
       "workflowId": "asset.cocos-mcp-get-all-preferences",
       "state": "complete",
-      "reason": "getEditorPreference omitting key returns the complete bounded set of cc-bridge-3x Editor.Profile preferences with explicit nulls for unset keys.",
+      "reason": "getEditorPreference omitting key returns the complete bounded set of cocos-pilot-3x Editor.Profile preferences with explicit nulls for unset keys.",
       "routes": [
         {
           "tool": "getEditorPreference",
@@ -352,7 +352,7 @@
         "reports/p0-baseline-ledger-20260908.json"
       ],
       "limitations": [
-        "Bounded to the cc-bridge-3x known preference keys; arbitrary third-party package profiles are not claimed.",
+        "Bounded to the cocos-pilot-3x known preference keys; arbitrary third-party package profiles are not claimed.",
         "Editor-side bounded evidence only; no Game View/runtime credit."
       ]
     },

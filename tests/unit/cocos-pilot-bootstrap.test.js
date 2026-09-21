@@ -5,7 +5,7 @@ const path = require('path');
 
 // Require the bootstrap module for its exported pure core.
 // Do not trigger main() — it only runs when require.main === module.
-const bootstrap = require(path.join(__dirname, '..', '..', 'scripts', 'cc-bridge-bootstrap.js'));
+const bootstrap = require(path.join(__dirname, '..', '..', 'scripts', 'cocos-pilot-bootstrap.js'));
 const { buildCache, isLiveProbe, computeAgeMs } = bootstrap;
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ const DEAD_MANUAL_EMPTY = { utcp_version: '1.0.1', manual_version: '1.0.0', tool
 
 describe('bootstrap handshake evidence', () => {
   it('distinguishes responsive not-ready, timeout, malformed response and old builds without poisoning discovery', async () => {
-    const config = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const config = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const payload = { instanceId: 'instance', probe: { status: 'responsive', sceneReady: false, code: null } };
     for (const [response, status] of [
       [payload, 'responsive'],
@@ -69,30 +69,30 @@ describe('bootstrap handshake evidence', () => {
         'http://localhost:11111/build-info': LIVE_BUILD,
         'http://localhost:11111/tools/editorHandshake?timeoutMs=1000': response,
       }) });
-      assert.equal(cache.manuals.ccb3x_11111.handshake.status, status);
-      assert.equal(cache.manuals.ccb3x_11111.live, true, 'manual discovery is independent of IPC readiness');
-      if (status === 'responsive') assert.equal(cache.manuals.ccb3x_11111.handshake.result.probe.sceneReady, false);
+      assert.equal(cache.manuals.ccp3x_11111.handshake.status, status);
+      assert.equal(cache.manuals.ccp3x_11111.live, true, 'manual discovery is independent of IPC readiness');
+      if (status === 'responsive') assert.equal(cache.manuals.ccp3x_11111.handshake.result.probe.sceneReady, false);
     }
     const old = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(), fetchJson: mockFetch({
       'http://localhost:11111/utcp': LIVE_MANUAL, 'http://localhost:11111/build-info': LIVE_BUILD,
     }) });
-    assert.equal(old.manuals.ccb3x_11111.handshake.status, 'unsupported');
+    assert.equal(old.manuals.ccp3x_11111.handshake.status, 'unsupported');
   });
 
   it('never reuses cached handshake success after failed or omitted probes', async () => {
-    const priorCache = { manuals: { ccb3x: makePriorEntry({ handshake: { status: 'responsive', result: { instanceId: 'old' } } }) } };
-    for (const entries of [[{ name: 'ccb3x', port: 11111 }], []]) {
+    const priorCache = { manuals: { ccp3x: makePriorEntry({ handshake: { status: 'responsive', result: { instanceId: 'old' } } }) } };
+    for (const entries of [[{ name: 'ccp3x', port: 11111 }], []]) {
       const cache = await buildCache({ utcpConfig: utcpConfigFor(entries), priorCache, now: new Date(), fetchJson: async () => null });
-      assert.notEqual(cache.manuals.ccb3x_11111.handshake.status, 'responsive');
-      assert.equal(cache.manuals.ccb3x_11111.handshake.result, null);
-      assert.equal(cache.manuals.ccb3x_11111.toolCount, 42);
+      assert.notEqual(cache.manuals.ccp3x_11111.handshake.status, 'responsive');
+      assert.equal(cache.manuals.ccp3x_11111.handshake.result, null);
+      assert.equal(cache.manuals.ccp3x_11111.toolCount, 42);
     }
   });
 });
 
 // ── isLiveProbe unit ─────────────────────────────────────────────────────
 
-describe('cc-bridge-bootstrap — isLiveProbe liveness gate', () => {
+describe('cocos-pilot-bootstrap — isLiveProbe liveness gate', () => {
   it('live when fetch succeeded, toolCount>0, provenance present', () => {
     assert.equal(isLiveProbe(LIVE_MANUAL, LIVE_BUILD, LIVE_MANUAL.tools.length), true);
   });
@@ -133,7 +133,7 @@ describe('cc-bridge-bootstrap — isLiveProbe liveness gate', () => {
   });
 });
 
-describe('cc-bridge-bootstrap — computeAgeMs', () => {
+describe('cocos-pilot-bootstrap — computeAgeMs', () => {
   it('computes age_ms = now - fetchedAt', () => {
     const fetchedAt = new Date('2026-09-03T00:00:00.000Z').toISOString();
     const nowMs = Date.parse('2026-09-03T01:00:00.000Z');
@@ -154,10 +154,10 @@ describe('cc-bridge-bootstrap — computeAgeMs', () => {
 
 // ── buildCache — the regression suite ────────────────────────────────────
 
-describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
+describe('cocos-pilot-bootstrap — buildCache probe gate (regression)', () => {
   it('dead-editor fetch never overwrites good cache (retains prior, marks stale)', async () => {
-    const prior = { updatedAt: new Date().toISOString(), manuals: { ccb3x: makePriorEntry({ toolCount: 50 }) } };
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const prior = { updatedAt: new Date().toISOString(), manuals: { ccp3x: makePriorEntry({ toolCount: 50 }) } };
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const now = new Date();
     const result = await buildCache({
       utcpConfig: cfg,
@@ -169,17 +169,17 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       now,
     });
     // Must retain the good entry, not clobber with 0
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 50, 'good entry must be retained');
-    assert.equal(result.manuals.ccb3x_11111.authoritative, true);
-    assert.equal(result.manuals.ccb3x_11111.live, false);
-    assert.equal(result.manuals.ccb3x_11111.stale, true);
-    assert.equal(result.manuals.ccb3x_11111.staleReason, 'probe_failed');
-    assert.ok(typeof result.manuals.ccb3x_11111.age_ms === 'number' && result.manuals.ccb3x_11111.age_ms >= 0);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50, 'good entry must be retained');
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.staleReason, 'probe_failed');
+    assert.ok(typeof result.manuals.ccp3x_11111.age_ms === 'number' && result.manuals.ccp3x_11111.age_ms >= 0);
   });
 
   it('dead fetch that returns empty tools array also retains good cache', async () => {
-    const prior = { updatedAt: new Date().toISOString(), manuals: { ccb3x: makePriorEntry({ toolCount: 30 }) } };
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const prior = { updatedAt: new Date().toISOString(), manuals: { ccp3x: makePriorEntry({ toolCount: 30 }) } };
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: prior,
@@ -189,13 +189,13 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 30);
-    assert.equal(result.manuals.ccb3x_11111.stale, true);
-    assert.equal(result.manuals.ccb3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 30);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
   });
 
   it('first-run dead fetch does not create an authoritative 0 entry (tombstone)', async () => {
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: null, // no prior file — first run
@@ -206,16 +206,16 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       now: new Date(),
     });
     // The key exists as a tombstone but is NOT authoritative
-    assert.ok(result.manuals.ccb3x_11111, 'tombstone should be present for diagnostics');
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 0);
-    assert.equal(result.manuals.ccb3x_11111.authoritative, false, 'first-run dead fetch must not be authoritative');
-    assert.equal(result.manuals.ccb3x_11111.live, false);
-    assert.equal(result.manuals.ccb3x_11111.stale, true);
-    assert.equal(result.manuals.ccb3x_11111.staleReason, 'probe_failed');
+    assert.ok(result.manuals.ccp3x_11111, 'tombstone should be present for diagnostics');
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 0);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, false, 'first-run dead fetch must not be authoritative');
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.staleReason, 'probe_failed');
   });
 
   it('first-run dead fetch with empty-tools response also creates tombstone', async () => {
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: { updatedAt: new Date().toISOString(), manuals: {} }, // empty prior
@@ -225,12 +225,12 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccb3x_11111.authoritative, false);
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 0);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, false);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 0);
   });
 
   it('live probe writes authoritative entry with age_ms:0 and fetchedAt', async () => {
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const now = new Date('2026-09-03T12:00:00.000Z');
     const result = await buildCache({
       utcpConfig: cfg,
@@ -241,19 +241,19 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now,
     });
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 3);
-    assert.equal(result.manuals.ccb3x_11111.authoritative, true);
-    assert.equal(result.manuals.ccb3x_11111.live, true);
-    assert.equal(result.manuals.ccb3x_11111.stale, false);
-    assert.equal(result.manuals.ccb3x_11111.age_ms, 0);
-    assert.equal(result.manuals.ccb3x_11111.fetchedAt, now.toISOString());
-    assert.deepEqual(result.manuals.ccb3x_11111.buildInfo, LIVE_BUILD);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 3);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.live, true);
+    assert.equal(result.manuals.ccp3x_11111.stale, false);
+    assert.equal(result.manuals.ccp3x_11111.age_ms, 0);
+    assert.equal(result.manuals.ccp3x_11111.fetchedAt, now.toISOString());
+    assert.deepEqual(result.manuals.ccp3x_11111.buildInfo, LIVE_BUILD);
   });
 
   it('live probe overwrites a stale prior (recovery)', async () => {
     const stalePrior = makePriorEntry({ toolCount: 5, fetchedAt: new Date(Date.now() - 10000).toISOString(), stale: true, live: false, age_ms: 10000 });
-    const prior = { updatedAt: new Date().toISOString(), manuals: { ccb3x: stalePrior } };
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const prior = { updatedAt: new Date().toISOString(), manuals: { ccp3x: stalePrior } };
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const now = new Date();
     const result = await buildCache({
       utcpConfig: cfg,
@@ -264,70 +264,70 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now,
     });
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 2);
-    assert.equal(result.manuals.ccb3x_11111.authoritative, true);
-    assert.equal(result.manuals.ccb3x_11111.live, true);
-    assert.equal(result.manuals.ccb3x_11111.stale, false);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 2);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.live, true);
+    assert.equal(result.manuals.ccp3x_11111.stale, false);
   });
 
-  it('ccb3x and ccb2x are independent — dead ccb3x does not clobber live ccb2x', async () => {
+  it('ccp3x and ccp2x are independent — dead ccp3x does not clobber live ccp2x', async () => {
     const prior = {
       updatedAt: new Date().toISOString(),
       manuals: {
-        ccb3x: makePriorEntry({ url: 'http://localhost:11111/utcp', toolCount: 50 }),
-        ccb2x: makePriorEntry({ url: 'http://localhost:22222/utcp', toolCount: 30 }),
+        ccp3x: makePriorEntry({ url: 'http://localhost:11111/utcp', toolCount: 50 }),
+        ccp2x: makePriorEntry({ url: 'http://localhost:22222/utcp', toolCount: 30 }),
       },
     };
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }, { name: 'ccb2x', port: 22222 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }, { name: 'ccp2x', port: 22222 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: prior,
       fetchJson: mockFetch({
-        'http://localhost:11111/utcp': null, // ccb3x dead
+        'http://localhost:11111/utcp': null, // ccp3x dead
         'http://localhost:11111/build-info': null,
-        'http://localhost:22222/utcp': LIVE_MANUAL, // ccb2x live
+        'http://localhost:22222/utcp': LIVE_MANUAL, // ccp2x live
         'http://localhost:22222/build-info': LIVE_BUILD,
       }),
       now: new Date(),
     });
-    // ccb3x retained
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 50);
-    assert.equal(result.manuals.ccb3x_11111.live, false);
-    assert.equal(result.manuals.ccb3x_11111.stale, true);
-    // ccb2x freshly written
-    assert.equal(result.manuals.ccb2x.toolCount, 3);
-    assert.equal(result.manuals.ccb2x.live, true);
-    assert.equal(result.manuals.ccb2x.authoritative, true);
+    // ccp3x retained
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    // ccp2x freshly written
+    assert.equal(result.manuals.ccp2x.toolCount, 3);
+    assert.equal(result.manuals.ccp2x.live, true);
+    assert.equal(result.manuals.ccp2x.authoritative, true);
   });
 
-  it('ccb3x live does not resurrect a dead ccb2x tombstone into authoritative', async () => {
+  it('ccp3x live does not resurrect a dead ccp2x tombstone into authoritative', async () => {
     const prior = null;
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }, { name: 'ccb2x', port: 22222 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }, { name: 'ccp2x', port: 22222 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: prior,
       fetchJson: mockFetch({
         'http://localhost:11111/utcp': LIVE_MANUAL,
         'http://localhost:11111/build-info': LIVE_BUILD,
-        'http://localhost:22222/utcp': null, // ccb2x dead
+        'http://localhost:22222/utcp': null, // ccp2x dead
         'http://localhost:22222/build-info': null,
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccb3x_11111.authoritative, true);
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 3);
-    assert.equal(result.manuals.ccb2x.authoritative, false);
-    assert.equal(result.manuals.ccb2x.toolCount, 0);
+    assert.equal(result.manuals.ccp3x_11111.authoritative, true);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 3);
+    assert.equal(result.manuals.ccp2x.authoritative, false);
+    assert.equal(result.manuals.ccp2x.toolCount, 0);
   });
 
   it('prior key not probed this run is retained with refreshed age_ms', async () => {
     const fetchedAt = new Date(Date.now() - 5000).toISOString();
     const prior = {
       updatedAt: new Date().toISOString(),
-      manuals: { ccb2x: makePriorEntry({ url: 'http://localhost:22222/utcp', toolCount: 30, fetchedAt, age_ms: 0 }) },
+      manuals: { ccp2x: makePriorEntry({ url: 'http://localhost:22222/utcp', toolCount: 30, fetchedAt, age_ms: 0 }) },
     };
-    // This run only has ccb3x in the config; ccb2x absent
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    // This run only has ccp3x in the config; ccp2x absent
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const now = new Date();
     const result = await buildCache({
       utcpConfig: cfg,
@@ -338,18 +338,18 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now,
     });
-    assert.ok(result.manuals.ccb2x, 'unprobed prior key must be retained');
-    assert.equal(result.manuals.ccb2x.toolCount, 30);
-    assert.ok(result.manuals.ccb2x.age_ms >= 4000, `age_ms should reflect ~5s elapsed, got ${result.manuals.ccb2x.age_ms}`);
+    assert.ok(result.manuals.ccp2x, 'unprobed prior key must be retained');
+    assert.equal(result.manuals.ccp2x.toolCount, 30);
+    assert.ok(result.manuals.ccp2x.age_ms >= 4000, `age_ms should reflect ~5s elapsed, got ${result.manuals.ccp2x.age_ms}`);
   });
 
   it('max-age: prior older than 24h without successful probe is marked stale (max_age)', async () => {
     const longAgo = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString(); // 25h ago
     const prior = {
       updatedAt: longAgo,
-      manuals: { ccb3x: makePriorEntry({ toolCount: 50, fetchedAt: longAgo, age_ms: 0, stale: false, live: true }) },
+      manuals: { ccp3x: makePriorEntry({ toolCount: 50, fetchedAt: longAgo, age_ms: 0, stale: false, live: true }) },
     };
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: prior,
@@ -359,23 +359,23 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       }),
       now: new Date(),
     });
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 50, 'count must be retained');
-    assert.equal(result.manuals.ccb3x_11111.stale, true);
-    assert.equal(result.manuals.ccb3x_11111.staleReason, 'max_age');
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50, 'count must be retained');
+    assert.equal(result.manuals.ccp3x_11111.stale, true);
+    assert.equal(result.manuals.ccp3x_11111.staleReason, 'max_age');
   });
 
   it('legacy and per-port entries identify separate endpoints, not a latest pointer', async () => {
     const prior = {
       updatedAt: new Date().toISOString(),
       manuals: {
-        ccb3x: makePriorEntry({ url: 'http://localhost:11111/utcp', toolCount: 50 }),
-        ccb3x_49650: makePriorEntry({ url: 'http://localhost:49650/utcp', toolCount: 40 }),
+        ccp3x: makePriorEntry({ url: 'http://localhost:11111/utcp', toolCount: 50 }),
+        ccp3x_49650: makePriorEntry({ url: 'http://localhost:49650/utcp', toolCount: 40 }),
       },
     };
     const cfg = {
       manual_call_templates: [
-        { name: 'ccb3x', call_template_type: 'http', url: 'http://localhost:11111/utcp', http_method: 'GET', content_type: 'application/json' },
-        { name: 'ccb3x_49650', call_template_type: 'http', url: 'http://localhost:49650/utcp', http_method: 'GET', content_type: 'application/json' },
+        { name: 'ccp3x', call_template_type: 'http', url: 'http://localhost:11111/utcp', http_method: 'GET', content_type: 'application/json' },
+        { name: 'ccp3x_49650', call_template_type: 'http', url: 'http://localhost:49650/utcp', http_method: 'GET', content_type: 'application/json' },
       ],
     };
     const result = await buildCache({
@@ -390,10 +390,10 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
       now: new Date(),
     });
     // Legacy endpoint migrates to its port while the other editor stays independent.
-    assert.equal(result.manuals.ccb3x_11111.toolCount, 50);
-    assert.equal(result.manuals.ccb3x_11111.live, false);
-    assert.equal(result.manuals['ccb3x_49650'].toolCount, 3);
-    assert.equal(result.manuals['ccb3x_49650'].live, true);
+    assert.equal(result.manuals.ccp3x_11111.toolCount, 50);
+    assert.equal(result.manuals.ccp3x_11111.live, false);
+    assert.equal(result.manuals['ccp3x_49650'].toolCount, 3);
+    assert.equal(result.manuals['ccp3x_49650'].live, true);
   });
 
   it('deduplicates legacy and per-port templates under the endpoint namespace', async () => {
@@ -401,8 +401,8 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
     let fetchCount = 0;
     const cfg = {
       manual_call_templates: [
-        { name: 'ccb3x_49650', call_template_type: 'http', url: 'http://localhost:49650/utcp', http_method: 'GET', content_type: 'application/json' },
-        { name: 'ccb3x', call_template_type: 'http', url: 'http://localhost:49650/utcp', http_method: 'GET', content_type: 'application/json' },
+        { name: 'ccp3x_49650', call_template_type: 'http', url: 'http://localhost:49650/utcp', http_method: 'GET', content_type: 'application/json' },
+        { name: 'ccp3x', call_template_type: 'http', url: 'http://localhost:49650/utcp', http_method: 'GET', content_type: 'application/json' },
       ],
     };
     const countingFetch = async (url) => {
@@ -413,12 +413,12 @@ describe('cc-bridge-bootstrap — buildCache probe gate (regression)', () => {
     };
     const result = await buildCache({ utcpConfig: cfg, priorCache: null, fetchJson: countingFetch, now: new Date() });
     // Only the stable per-port namespace survives discovery.
-    assert.deepEqual(Object.keys(result.manuals), ['ccb3x_49650']);
+    assert.deepEqual(Object.keys(result.manuals), ['ccp3x_49650']);
     assert.equal(fetchCount, 1, 'should fetch /utcp once per unique URL');
   });
 });
 
-describe('cc-bridge-bootstrap — regression: reverting the guard must fail', () => {
+describe('cocos-pilot-bootstrap — regression: reverting the guard must fail', () => {
   it('the old buggy guard (existing.toolCount>0 only when prior exists) would let first-run 0 persist; new code must not', async () => {
     // This is the exact scenario the original bug report describes: first run,
     // no prior file on disk, editor dead → old code did:
@@ -426,7 +426,7 @@ describe('cc-bridge-bootstrap — regression: reverting the guard must fail', ()
     //   existing = cache.manuals[cacheKey] // undefined
     //   if (existing && existing.toolCount>0 ...) continue; // never fires
     //   cache.manuals[cacheKey] = { toolCount: 0, ... } // authoritative 0 persists forever
-    const cfg = utcpConfigFor([{ name: 'ccb3x', port: 11111 }]);
+    const cfg = utcpConfigFor([{ name: 'ccp3x', port: 11111 }]);
     const result = await buildCache({
       utcpConfig: cfg,
       priorCache: null,
@@ -435,7 +435,7 @@ describe('cc-bridge-bootstrap — regression: reverting the guard must fail', ()
     });
     // If the guard were reverted to the old logic, this would be { toolCount:0, authoritative: true/undefined }
     // The regression test asserts the new invariant: a 0 entry is never authoritative
-    const entry = result.manuals.ccb3x_11111;
+    const entry = result.manuals.ccp3x_11111;
     assert.ok(entry, 'dead first run should still write a tombstone (or be absent) — never silent success');
     assert.notEqual(entry.authoritative, true, 'tombstone must not be authoritative; revert would make this true/undefined');
     assert.equal(entry.stale, true);
@@ -447,52 +447,52 @@ describe('cc-bridge-bootstrap — regression: reverting the guard must fail', ()
 
 describe('bootstrap stable editor identity', () => {
   it('never carries legacy alias evidence to a different editor port', async () => {
-    const priorCache = { manuals: { ccb3x: makePriorEntry({
+    const priorCache = { manuals: { ccp3x: makePriorEntry({
       handshake: { status: 'responsive', result: { instanceId: 'editor-a' } },
     }) } };
     const cache = await buildCache({
-      utcpConfig: utcpConfigFor([{ name: 'ccb3x', port: 22222 }]),
+      utcpConfig: utcpConfigFor([{ name: 'ccp3x', port: 22222 }]),
       priorCache, now: new Date(), fetchJson: async () => null,
     });
-    assert.equal(cache.manuals.ccb3x, undefined);
-    assert.equal(cache.manuals.ccb3x_22222.authoritative, false);
-    assert.equal(cache.manuals.ccb3x_22222.toolCount, 0);
-    assert.equal(cache.manuals.ccb3x_22222.handshake.result, null);
-    assert.equal(cache.manuals.ccb3x_11111.toolCount, 42);
-    assert.equal(cache.manuals.ccb3x_11111.live, false);
-    assert.equal(cache.manuals.ccb3x_11111.handshake.result, null);
+    assert.equal(cache.manuals.ccp3x, undefined);
+    assert.equal(cache.manuals.ccp3x_22222.authoritative, false);
+    assert.equal(cache.manuals.ccp3x_22222.toolCount, 0);
+    assert.equal(cache.manuals.ccp3x_22222.handshake.result, null);
+    assert.equal(cache.manuals.ccp3x_11111.toolCount, 42);
+    assert.equal(cache.manuals.ccp3x_11111.live, false);
+    assert.equal(cache.manuals.ccp3x_11111.handshake.result, null);
   });
 
   it('migrates cached aliases once and favors the explicit port entry in either order', async () => {
     const entries = [
-      ['ccb3x', makePriorEntry({ toolCount: 99, aliasOf: 'ccb3x_11111' })],
-      ['ccb3x_11111', makePriorEntry({ toolCount: 7 })],
+      ['ccp3x', makePriorEntry({ toolCount: 99, aliasOf: 'ccp3x_11111' })],
+      ['ccp3x_11111', makePriorEntry({ toolCount: 7 })],
     ];
     for (const ordered of [entries, [...entries].reverse()]) {
       const cache = await buildCache({ utcpConfig: null, priorCache: { manuals: Object.fromEntries(ordered) },
         now: new Date(), fetchJson: async () => null });
-      assert.deepEqual(Object.keys(cache.manuals), ['ccb3x_11111']);
-      assert.equal(cache.manuals.ccb3x_11111.toolCount, 7);
-      assert.equal(cache.manuals.ccb3x_11111.aliasOf, undefined);
-      assert.equal(cache.manuals.ccb3x_11111.live, false);
+      assert.deepEqual(Object.keys(cache.manuals), ['ccp3x_11111']);
+      assert.equal(cache.manuals.ccp3x_11111.toolCount, 7);
+      assert.equal(cache.manuals.ccp3x_11111.aliasOf, undefined);
+      assert.equal(cache.manuals.ccp3x_11111.live, false);
     }
   });
 
   it('deduplicates loopback spellings without retaining a stale alias', async () => {
-    const templates = utcpConfigFor([{ name: 'ccb3x', port: 11111 }, { name: 'ccb3x_11111', port: 11111 }]);
+    const templates = utcpConfigFor([{ name: 'ccp3x', port: 11111 }, { name: 'ccp3x_11111', port: 11111 }]);
     templates.manual_call_templates[0].url = 'http://127.0.0.1:11111/utcp/';
     const urls = [];
     const cache = await buildCache({ utcpConfig: templates,
-      priorCache: { manuals: { ccb3x: makePriorEntry() } }, now: new Date(),
+      priorCache: { manuals: { ccp3x: makePriorEntry() } }, now: new Date(),
       fetchJson: async (url) => { urls.push(url); return url.endsWith('/utcp') ? LIVE_MANUAL : LIVE_BUILD; },
     });
-    assert.deepEqual(Object.keys(cache.manuals), ['ccb3x_11111']);
-    assert.equal(cache.manuals.ccb3x_11111.url, 'http://localhost:11111/utcp');
+    assert.deepEqual(Object.keys(cache.manuals), ['ccp3x_11111']);
+    assert.equal(cache.manuals.ccp3x_11111.url, 'http://localhost:11111/utcp');
     assert.equal(urls.filter((url) => url.endsWith('/utcp')).length, 1);
   });
   it('rejects names that disagree with endpoint ports and ambiguous same-port hosts', async () => {
-    const config = utcpConfigFor([{ name: 'ccb3x_22222', port: 11111 },
-      { name: 'ccb3x_33333', port: 33333 }, { name: 'ccb3x', port: 33333 }]);
+    const config = utcpConfigFor([{ name: 'ccp3x_22222', port: 11111 },
+      { name: 'ccp3x_33333', port: 33333 }, { name: 'ccp3x', port: 33333 }]);
     config.manual_call_templates[2].url = 'http://other-host:33333/utcp';
     let calls = 0;
     const cache = await buildCache({ utcpConfig: config, priorCache: null, now: new Date(),
@@ -503,34 +503,34 @@ describe('bootstrap stable editor identity', () => {
   });
 
   it('does not reuse same-port metadata from another host', async () => {
-    const cache = await buildCache({ utcpConfig: utcpConfigFor([{ name: 'ccb3x_11111', port: 11111 }]),
-      priorCache: { manuals: { ccb3x_11111: makePriorEntry({ url: 'http://other-host:11111/utcp' }) } },
+    const cache = await buildCache({ utcpConfig: utcpConfigFor([{ name: 'ccp3x_11111', port: 11111 }]),
+      priorCache: { manuals: { ccp3x_11111: makePriorEntry({ url: 'http://other-host:11111/utcp' }) } },
       now: new Date(), fetchJson: async () => null,
     });
-    assert.equal(cache.manuals.ccb3x_11111.authoritative, false);
-    assert.equal(cache.manuals.ccb3x_11111.url, 'http://localhost:11111/utcp');
-    assert.equal(cache.manuals.ccb3x_11111.toolCount, 0);
+    assert.equal(cache.manuals.ccp3x_11111.authoritative, false);
+    assert.equal(cache.manuals.ccp3x_11111.url, 'http://localhost:11111/utcp');
+    assert.equal(cache.manuals.ccp3x_11111.toolCount, 0);
   });
 
   it('keeps separate live handshake identities for two editors', async () => {
     const cache = await buildCache({
-      utcpConfig: utcpConfigFor([{ name: 'ccb3x', port: 11111 }, { name: 'ccb3x', port: 22222 }]),
+      utcpConfig: utcpConfigFor([{ name: 'ccp3x', port: 11111 }, { name: 'ccp3x', port: 22222 }]),
       priorCache: null, now: new Date(), fetchJson: async (url) => {
         if (url.endsWith('/utcp')) return { ...LIVE_MANUAL, tools: [{ name: 'editorHandshake' }] };
         if (url.endsWith('/build-info')) return LIVE_BUILD;
         return { instanceId: new URL(url).port, probe: { status: 'responsive', sceneReady: true } };
       },
     });
-    assert.deepEqual(Object.keys(cache.manuals).sort(), ['ccb3x_11111', 'ccb3x_22222']);
-    assert.equal(cache.manuals.ccb3x_11111.handshake.result.instanceId, '11111');
-    assert.equal(cache.manuals.ccb3x_22222.handshake.result.instanceId, '22222');
+    assert.deepEqual(Object.keys(cache.manuals).sort(), ['ccp3x_11111', 'ccp3x_22222']);
+    assert.equal(cache.manuals.ccp3x_11111.handshake.result.instanceId, '11111');
+    assert.equal(cache.manuals.ccp3x_22222.handshake.result.instanceId, '22222');
   });
 
   it('probes editors concurrently with no more than eight HTTP requests in flight', async () => {
     let active = 0;
     let peak = 0;
     const cache = await buildCache({
-      utcpConfig: utcpConfigFor(Array.from({ length: 10 }, (_, i) => ({ name: 'ccb3x', port: 11000 + i }))),
+      utcpConfig: utcpConfigFor(Array.from({ length: 10 }, (_, i) => ({ name: 'ccp3x', port: 11000 + i }))),
       priorCache: null, now: new Date(), fetchJson: async () => {
         peak = Math.max(peak, ++active);
         await new Promise((resolve) => setImmediate(resolve));
