@@ -331,7 +331,7 @@ declare namespace cocos_pilot_3x {
     /** Rejects with UNSUPPORTED_PREVIEW_IPC on Creator 3.7.3 because preview:set-resolution is not exposed. */
     function previewResolutionSet(args: { width: number, height: number }): { width: number, height: number, persisted: boolean, supported: boolean, readBack?: unknown };
     function editorUndoTransactionProbe(): { supported: boolean, boundaries: string[], clean: boolean };
-    function broadcastObserve(args: { topic: "cc-bridge-3x:probe" | "scene:change" | "asset-db:change" }): { topic: string, supported: boolean, observed: boolean, lifecycle: string[], event: unknown, eventBytes: number, truncated: boolean, retainedListener: false };
+    function broadcastObserve(args: { topic: "cocos-pilot-3x:probe" | "scene:change" | "asset-db:change" }): { topic: string, supported: boolean, observed: boolean, lifecycle: string[], event: unknown, eventBytes: number, truncated: boolean, retainedListener: false };
 
     /** Get list of globally available component types. */
     function nodeGetAvailableComponentTypes(args: {
@@ -657,7 +657,7 @@ declare namespace cocos_pilot_3x {
         unavailable: string[]
     };
 
-    /** Nonmodal Agent Inbox question by default, without opening/focusing the panel. User opens CC Bridge 3x > Agent Inbox. Native dialogs require explicit presentation:"native"; openPanel:true permits panel activation. Default buttons OK/Cancel, cancelId last button. Deadline 1-300000ms, default 60000. Native timeout does not dismiss the native window. */
+    /** Nonmodal Agent Inbox question by default, without opening/focusing the panel. User opens Cocos Pilot 3x > Agent Inbox. Native dialogs require explicit presentation:"native"; openPanel:true permits panel activation. Default buttons OK/Cancel, cancelId last button. Deadline 1-300000ms, default 60000. Native timeout does not dismiss the native window. */
     function editorAsk(args: {
         title: string,
         message: string,
@@ -984,7 +984,7 @@ declare namespace cocos_pilot_3x {
         }>
     };
 
-    /** Candidate: validate 1-256 unique localization keys (each at most 256 characters) in the current Creator language through the fixed cc-bridge-3x package scene seam. Unsupported localization packages return supported=false; this call never changes language or restarts Creator. */
+    /** Candidate: validate 1-256 unique localization keys (each at most 256 characters) in the current Creator language through the fixed cocos-pilot-3x package scene seam. Unsupported localization packages return supported=false; this call never changes language or restarts Creator. */
     function localizationValidate(args: { keys: string[] }): {
         supported: true,
         language: string | null,

@@ -6,6 +6,7 @@
   "policy": {
     "unsupportedOn373": "Do not implement or qualify in the 3.7.x delivery. Preserve typed fail-closed behavior and revisit on Creator 3.8+.",
     "unverifiedOn373": "Not evidence of version incompatibility. May continue on 3.7.3 when the required fixture or transport becomes available.",
+    "experimentalFilesystemFallback": "Allowed for editor profile owners (profiles/v2) when IPC is not exposed: guarded with snapshot/rollback + read-back and marked _experimental. Not for settings/v2 project config.",
     "requirePositiveAndNegativeLiveEvidence": true,
     "requireBuildArtifactBinding": true,
     "noFilesystemFallbackForEditorOwnedState": true
