@@ -43,10 +43,13 @@
   ],
   "unverifiedOrFixtureBlockedOnCreator373": [
     {
-      "tool": "particlePlayback",
-      "blocker": "No verified runtime game-view session transport; unknown session returns SESSION_NOT_FOUND",
-      "currentBehavior": "Fail-closed; no editor-scene playback claim",
-      "resumeCondition": "A verified named runtime session plus disposable particle fixture is available."
+      "tool": "bitmapFontImportSettingsConfigure",
+      "importer": "bitmap-font",
+      "source": "derived",
+      "evidence": "Live 3.7.3 f7f790d: write fontSize 22 via save-asset-meta accepted then reverted to 20 on reimport (502 READBACK_MISMATCH); every published field derived from _fntConfig. See reports/evidence/candidates/bitmapFontImportSettingsAudit/creator-3.7.3-f7f790d.json.",
+      "currentBehavior": "Read-only audit (readonly:true on fontSize/textureUuid/glyphCount); setProperty returns false → typed 400/422/502 refusal. No 3.7.3 writable path.",
+      "resumeCondition": "Re-probe on Creator 3.8+: if importer exposes a writable fontSize (or other input), re-enable a gated write path with bounded validation (1..512 int), reimport, read-back, and rollback on mismatch; otherwise keep read-only.",
+      "nextUpdate": "On 3.8 project: retry assetImporterAudit write probe for bitmap-font; if a field survives reimport, enable per-field gated setProperty with atomic rollback, add live positive/negative witnesses under tests/live/asset-import-settings-qualification.test.js, and flip docs/tool-portfolio-candidates.json bitmapFontImportSettingsConfigure from rejected → candidate → qualified."
     },
     {
       "tool": "localizationInspect",
