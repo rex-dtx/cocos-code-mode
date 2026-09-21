@@ -1,0 +1,19 @@
+schema: spec-driven
+created: 2026-09-21
+status: pending
+freeze:
+  commit: bacd213
+  branch: feat/ccb3x-api-capability-expansion
+  registered: 321
+  qualified: 154
+  portfolio_qualified: 68
+  pending_count: 11
+  rejected_revisit_count: 23
+resume_requires:
+  creator: ">=3.8.0"
+  probes:
+    - project/set-config read-back
+    - _globals read-back channel
+    - preview-lifecycle re-enable
+    - preview-resolution IPC
+    - light-bake / Terrain API
