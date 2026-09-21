@@ -49,9 +49,12 @@ function getSceneExecuteGlobals(): Record<string, any> {
     // Inject scene-renderer globals explicitly — new Function has no closure access.
     // `cc`/`cce`/`document` are reliably present in the editor scene; `require` is
     // guarded because fs may be unavailable in some scene sub-contexts.
+    // `sp` is the Spine namespace (sp.Skeleton) — not on cc, must be injected.
+    const g = globalThis as any;
     return {
-        cc: (globalThis as any)['cc'],
-        cce: (globalThis as any)['cce'],
+        cc: g['cc'],
+        cce: g['cce'],
+        sp: g['sp'] ?? g.cc?.['sp'] ?? undefined,
         document,
         require: typeof require === 'function' ? require : undefined,
     };
@@ -983,61 +986,87 @@ export const methods = {
     },
 
     async simulateButtonClick(nodeUuid: string): Promise<{ handlersFired: number, method: string }> {
-        const cc = (globalThis as any)['cc'];
+        const cc = (globalThis as Record<string, unknown>)['cc'] as { Button?: unknown } | undefined;
         const node = await methods.findRuntimeNodeUuid(nodeUuid);
         if (!node) {
             throw new Error(`Runtime node ${nodeUuid} not found in the live scene`);
         }
-        const button = node.getComponent?.(cc.Button);
+        const button = (node as { getComponent?: (ctor: unknown) => unknown }).getComponent?.((cc as Record<string, unknown>)?.['Button']);
         if (!button) {
             throw new Error(`Node ${nodeUuid} has no cc.Button component`);
         }
 
         // Fire every editor-bound click handler (the same ones the UI would run).
         let handlersFired = 0;
-        for (const ev of button.clickEvents || []) {
+        const events = (button as { clickEvents?: unknown[] }).clickEvents ?? [];
+        for (const ev of events) {
             try {
-                ev.emit([button]);
+                (ev as { emit?: (args: unknown[]) => void })?.emit?.([button]);
                 handlersFired++;
-            } catch (e: any) {
-                console.warn(`[cx3][scene] simulateButtonClick handler failed: ${e?.message || e}`);
+            } catch (e) {
+                const msg = e instanceof Error ? e.message : String(e);
+                console.warn(`[cx3][scene] simulateButtonClick handler failed: ${msg}`);
             }
         }
         return { handlersFired, method: 'clickEvents' };
     },
 
     async bindButtonClickEvent(nodeUuid: string, componentType: string, handlerName: string, customEventData?: string): Promise<{ handlerCount: number }> {
-        const cc = (globalThis as any)['cc'];
+        const cc = (globalThis as Record<string, unknown>)['cc'] as { Button?: unknown; Component?: { EventHandler?: new () => { target: unknown; component: string; handler: string; customEventData: string } } } | undefined;
         const node = await methods.findRuntimeNodeUuid(nodeUuid);
         if (!node) {
             throw new Error(`Runtime node ${nodeUuid} not found in the live scene`);
         }
-        const button = node.getComponent?.(cc.Button);
+        const button = (node as { getComponent?: (ctor: unknown) => unknown }).getComponent?.((cc as Record<string, unknown>)?.['Button']);
         if (!button) {
             throw new Error(`Node ${nodeUuid} has no cc.Button component`);
         }
 
         // Resolve the target component on the same node (or its children) by type name.
-        const candidates = [
-            node.getComponent?.(componentType),
-            ...(node.getComponentsInChildren?.(componentType) || []),
-        ].filter(Boolean);
-        const target = candidates[0];
+        // node.getComponent(string) throws Type must be non-nil when given a plain string
+        // (it expects a constructor) — resolve via constructor lookup instead.
+        const resolveByName = (name: string): unknown => {
+            const byCc = (cc as Record<string, unknown>)[name];
+            const byGlobal = (globalThis as Record<string, unknown>)[name];
+            const getByName = (cc as { js?: { getClassByName?: (n: string) => unknown } })?.js?.getClassByName;
+            const ctor = byCc ?? byGlobal ?? getByName?.(name) ?? getByName?.(name.replace(/^cc\./, '')) ?? null;
+            if (ctor) {
+                const found = (node as { getComponent?: (c: unknown) => unknown }).getComponent?.(ctor);
+                if (found) return found;
+                const inChildren = (node as { getComponentsInChildren?: (c: unknown) => unknown[] }).getComponentsInChildren?.(ctor);
+                if (Array.isArray(inChildren) && inChildren.length > 0) return inChildren[0];
+            }
+            const all: unknown[] = [
+                ...((node as { components?: unknown[] }).components ?? []),
+                ...(((node as { getComponentsInChildren?: (c: unknown) => unknown[] }).getComponentsInChildren?.(Object as unknown as string) as unknown[] | undefined) ?? []),
+            ];
+            const found = all.find((c) => {
+                if (!c || typeof c !== 'object' || !('constructor' in c)) return false;
+                const ctorName = String((c as { constructor?: { name?: string } }).constructor?.name ?? '');
+                return ctorName === name || ctorName === name.replace(/^cc\./, '') || ctorName === `cc.${name}`;
+            });
+            return found ?? null;
+        };
+        const target = resolveByName(componentType) as Record<string, unknown> | null;
         if (!target) {
             throw new Error(`No component of type '${componentType}' found on node ${nodeUuid} or its children`);
         }
-        if (typeof target[handlerName] !== 'function') {
+        const handlerFn = target[handlerName];
+        if (typeof handlerFn !== 'function') {
             throw new Error(`Component '${componentType}' has no method '${handlerName}'`);
         }
 
-        const handler = new cc.Component.EventHandler();
+        const EventHandlerCtor = cc?.Component?.EventHandler as (new () => { target: unknown; component: string; handler: string; customEventData: string }) | undefined;
+        if (!EventHandlerCtor) throw new Error('cc.Component.EventHandler is unavailable');
+        const handler = new EventHandlerCtor();
         handler.target = node;
         handler.component = componentType.replace(/^cc\./, '');
         handler.handler = handlerName;
-        handler.customEventData = customEventData || '';
-        button.clickEvents = button.clickEvents || [];
-        button.clickEvents.push(handler);
-        return { handlerCount: button.clickEvents.length };
+        handler.customEventData = customEventData ?? '';
+        const btn = button as { clickEvents?: unknown[] };
+        btn.clickEvents = btn.clickEvents ?? [];
+        (btn.clickEvents as unknown[]).push(handler);
+        return { handlerCount: (btn.clickEvents as unknown[]).length };
     },
 
     async listButtonClickEvents(nodeUuid: string): Promise<Array<{ targetUuid: string | null, componentName: string | null, handler: string | null, customEventData: string }>> {
