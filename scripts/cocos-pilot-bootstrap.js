@@ -281,13 +281,17 @@ async function buildCache({ utcpConfig, priorCache, fetchJson: doFetch, now }) {
 async function main() {
   const home = os.homedir();
   const utcpPath = path.join(home, '.utcp_config.json');
+  const projectRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  const claudeDir = path.join(projectRoot, '.claude');
+  // Official Cocos Pilot cutover: remove caches from pre-Pilot hooks even when
+  // the current registry is empty or no editor is running.
+  for (const legacyCacheName of ['cc-bridge-cache.json', 'cc-code-mode-cache.json']) {
+    try { fs.rmSync(path.join(claudeDir, legacyCacheName), { force: true }); } catch {}
+  }
+  const cachePath = path.join(claudeDir, 'cocos-pilot-cache.json');
   const utcp = readJson(utcpPath);
   const manuals = Array.isArray(utcp?.manual_call_templates)
     ? utcp.manual_call_templates.filter((m) => is3x(m) || is2x(m)) : [];
-
-  const projectRoot = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-  const claudeDir = path.join(projectRoot, '.claude');
-  const cachePath = path.join(claudeDir, 'cocos-pilot-cache.json');
   const priorCache = readJson(cachePath);
   if (manuals.length === 0 && !priorCache) return;
   const now = new Date();

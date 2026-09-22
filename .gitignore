@@ -5,7 +5,6 @@
 !.claude/skills/**
 !.claude/settings.json
 .claude/cocos-pilot-cache.json
-.claude/cc-code-mode-cache.json
 .cursor/
 .aider*
 .copilot/
