@@ -2,7 +2,7 @@ import { get } from 'http';
 import { getBuildInfo } from './build-info';
 import { readRegistry } from './utcp/config-transaction';
 
-interface ServerIdentity { port: number; instanceId: string; debug: boolean }
+interface ServerIdentity { port: number; instanceId: string; debug: boolean; scene?: 'enabled' | 'disabled' | 'unavailable' | 'error' | 'unknown'; logDirectory?: string | null; logFile?: string | null }
 interface StatusHandshake {
     instanceId: string;
     projectPath: string | null;
@@ -57,9 +57,20 @@ export async function inspectExtensionStatus(server: ServerIdentity | null, regi
     const result = {
         checkedAt: Date.now(), build: getBuildInfo(), projectPath,
         editorVersion: typeof Editor.App?.version === 'string' ? Editor.App.version : null,
-        server: { running, port: running ? server!.port : 0, instanceId: running ? server!.instanceId : null,
+        server: {
+            running,
+            port: running ? server!.port : 0,
+            instanceId: running ? server!.instanceId : null,
             namespace: running ? `ccp3x_${server!.port}` : null,
-            url: running ? `http://localhost:${server!.port}/utcp` : null, debug: server?.debug ?? false },
+            url: running ? `http://localhost:${server!.port}/utcp` : null,
+            debug: server?.debug ?? false,
+            logging: {
+                server: server?.debug ?? false,
+                scene: server?.scene ?? 'unknown',
+                logDirectory: server?.logDirectory ?? null,
+                logFile: server?.logFile ?? null,
+            },
+        },
         registry: { path: registryPath, status: 'not-running', detail: null as string | null },
         http: { status: 'not-running', detail: null as string | null },
         probe: null as StatusHandshake['probe'] | null,

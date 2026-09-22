@@ -54,9 +54,9 @@ async function checkStatus(panel: StatusPanel): Promise<void> {
         state.fresh = true;
         renderStatus(panel.$.groups, response);
         panel.$.checked.textContent = `Last checked: ${new Date(response.checkedAt).toLocaleString()}`;
-        const hasError = response.registry.status === 'error' || response.registry.status === 'mismatch' || response.registry.status === 'missing' || response.http.status === 'error';
-        panel.$.state.dataset.kind = hasError ? 'warning' : 'checked';
-        panel.$.state.textContent = !response.server.running ? 'Check complete — server stopped.' : hasError ? 'Check complete — issues reported below (including Technical details).' : 'Check complete. See each check below.';
+        panel.$.debugLabel.textContent = `Debug logging: ${state.snapshot ? (state.snapshot.server.logging.server ? 'ON' : 'warnings/errors only') : 'Unavailable'}${state.snapshot && !state.fresh ? ' — last checked' : ''}`;
+        panel.$.action.textContent = actionMessage;
+        panel.$.action.dataset.kind = actionKind;
     } catch (error: unknown) {
         if (state.closed || state.generation !== generation) return;
         state.fresh = false;
@@ -114,7 +114,7 @@ export const statusPanelDefinition = {
             <h2>Operations</h2>
             <div class="controls"><button id="restart" type="button">Restart Server</button>
                 <label><input id="debug" type="checkbox" disabled><span id="debug-label">Debug logging: Unavailable</span></label>
-                <button id="open" type="button">Open Logs</button><button id="clear" type="button">Clear Logs</button></div>
+                <button id="open" type="button">Open This Editor's Logs</button><button id="clear" type="button">Clear This Editor's Logs</button></div>
             <p id="action" role="status" aria-live="polite"></p>
         </section>
     </main>`,
@@ -141,8 +141,8 @@ export const statusPanelDefinition = {
         renderStatus(panel.$.groups, null);
         panel.$.check.onclick = () => { void checkStatus(panel); };
         panel.$.restart.onclick = () => { void performAction(panel, 'Restart Server', 'restart-server', [], 'Restart the server? Connected agents will be disconnected and may need to reconnect.'); };
-        panel.$.open.onclick = () => { void performAction(panel, 'Open Logs', 'open-debug-folder'); };
-        panel.$.clear.onclick = () => { void performAction(panel, 'Clear Logs', 'clear-debug-logs', [], 'Permanently clear all editor debug logs in the shared logs folder? This cannot be undone.'); };
+        panel.$.open.onclick = () => { void performAction(panel, 'Open this editor’s logs', 'open-debug-folder'); };
+        panel.$.clear.onclick = () => { void performAction(panel, 'Clear this editor’s logs', 'clear-debug-logs', [], 'Permanently clear logs for this editor instance only? This cannot be undone.'); };
         panel.$.debug.onchange = () => {
             const enabled = panel.$.debug.checked;
             updateControls();

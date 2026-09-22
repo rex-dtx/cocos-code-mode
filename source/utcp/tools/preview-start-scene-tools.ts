@@ -44,15 +44,15 @@ async function writePreviewProfileStartScene(sceneUuid: string): Promise<Record<
   const tmp = `${file}.tmp-${Date.now()}`;
   fs.writeFileSync(tmp, nextText, 'utf8');
   fs.renameSync(tmp, file);
-  // best-effort refresh asset-db so editor picks up profile change without restart
-  try { await Editor.Message.request('asset-db', 'refresh'); } catch {}
+  // Refresh is advisory: file read-back below is the authoritative postcondition.
+  try { await Editor.Message.request('asset-db', 'refresh'); } catch { /* Creator may not expose asset-db refresh. */ }
   // verify read-back
   const fresh = JSON.parse(fs.readFileSync(file, 'utf8')) as Record<string, unknown>;
   const freshGeneral = (fresh.general ?? fresh) as Record<string, unknown>;
   if (String(freshGeneral.start_scene ?? fresh.start_scene) !== sceneUuid) {
     // rollback
     if (prevText !== null) { fs.writeFileSync(file, prevText, 'utf8'); }
-    else { try { fs.unlinkSync(file); } catch {} }
+    else { try { fs.unlinkSync(file); } catch { /* Nothing was created or it was already removed. */ } }
     throw new ToolError({ code: 'READBACK_MISMATCH', status: 502, message: 'Preview start scene write did not survive read-back', details: { file, expected: sceneUuid } });
   }
   return freshGeneral as Record<string, unknown>;
@@ -90,10 +90,10 @@ export class PreviewStartSceneTools {
       const uuid = String(data.start_scene ?? data.startScene ?? '');
       if (!uuid) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'Preview start scene is not configured', details: { file } });
       let url = '';
-      try { url = String((await Editor.Message.request('asset-db', 'query-url', uuid)) ?? ''); } catch {}
+      try { url = String((await Editor.Message.request('asset-db', 'query-url', uuid)) ?? ''); } catch { /* Query-path fallback below handles unavailable URL lookup. */ }
       if (!url) {
         // fallback resolve via library
-        try { url = String((await Editor.Message.request('asset-db', 'query-path', uuid)) ?? ''); } catch {}
+        try { url = String((await Editor.Message.request('asset-db', 'query-path', uuid)) ?? ''); } catch { /* URL remains unavailable. */ }
       }
       return { sceneUuid: uuid, url, file };
     }
@@ -102,7 +102,7 @@ export class PreviewStartSceneTools {
       if (!uuid) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'set requires sceneUuid (scene asset UUID)' });
       // validate scene asset exists and is a scene
       let assetUrl = '';
-      try { assetUrl = String((await Editor.Message.request('asset-db', 'query-url', uuid)) ?? ''); } catch {}
+      try { assetUrl = String((await Editor.Message.request('asset-db', 'query-url', uuid)) ?? ''); } catch { /* Target-not-found below is the typed outcome. */ }
       if (!assetUrl) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: 'Scene asset not found for uuid', details: { sceneUuid: uuid } });
       // scene .meta url ends with .scene; reject non-scene
       if (!assetUrl.includes('.scene')) {

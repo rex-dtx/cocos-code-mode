@@ -61,12 +61,12 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.equal(slimmed.properties.reference.description, undefined, 'nested description must be stripped');
   });
 
-  it('restart semantics are socket-close-safe (no reload-menu)', () => {
+  it('restart lifecycle closes the prior socket before publishing a fresh manager', () => {
     const mainSrc = readSource('main.ts');
-    assert.match(mainSrc, /await previousServer\.stop\(\)/, 'restartServer must await previousServer.stop()');
-    assert.match(mainSrc, /const nextServer = new UtcpServerManager\(\)/, 'restartServer must create a fresh manager');
-    assert.match(mainSrc, /utcpServer = nextServer/, 'restartServer must reassign utcpServer to the fresh manager');
-    assert.match(mainSrc, /await getConfigManager\(\)\.updatePort\(actualPort\)/, 'restartServer must update config after start');
+    assert.match(mainSrc, /await stopPublishedServer\(previousServer\)/, 'restartServer must await prior server shutdown');
+    assert.match(mainSrc, /const server = new UtcpServerManager\(\)/, 'published startup must create a fresh manager');
+    assert.match(mainSrc, /utcpServer = server/, 'published startup must publish the fresh manager');
+    assert.match(mainSrc, /await config\.updatePort\(actualPort, server\.instanceId\)/, 'published startup must update config after start');
     const serverSrc = readSource('utcp/utcp-server.ts');
     assert.match(serverSrc, /server\.close\(/, 'stop() must call server.close with callback');
     assert.match(serverSrc, /this\.port = 0/, 'stop() must clear port');
@@ -75,18 +75,12 @@ describe('manual strict schema — no annotations in UTCP tools', () => {
     assert.equal(labels.some((l) => /reload/i.test(l)), false, 'menu must not contain Reload Extension');
   });
 
-  it('ccp3x bootstrap has strict dedup (no duplicate template/URL)', () => {
+  it('ccp3x bootstrap strictly deduplicates normalized endpoint identity', () => {
     const src = fs.readFileSync(path.resolve(__dirname, '..', '..', 'scripts', 'cocos-pilot-bootstrap.js'), 'utf8');
-    assert.match(src, /byUrl\.get\(base\)/, 'bootstrap must dedup by URL');
-    // Consolidated bootstrap keeps the same invariant (dedup by URL, canonical
-    // wins for same base) but phrases the comment as buildCache liveness.
-    // Accept either wording; assert the underlying canonical-preference logic.
-    assert.equal(
-      src.includes('Prefer the bare canonical') || src.includes('prefer a') || src.includes('per-port'),
-      true,
-      'bootstrap must prefer bare canonical / live probe over stale alias'
-    );
-    assert.match(src, /CANON_3X = 'ccp3x'/, 'bootstrap must use strict ccp3x canonical');
-    assert.equal(/m\.name === canon/.test(src) || /cacheKeyFor/.test(src), true, 'bootstrap must prefer canonical name for same URL');
+    assert.match(src, /const byEndpoint = new Map\(\)/, 'bootstrap must dedup endpoint identity');
+    assert.match(src, /const key = `\$\{is3x\(m\) \? '3x' : '2x'\}:\$\{identity\}`/, 'dedup key must include generation and normalized identity');
+    assert.match(src, /CANON_3X = 'ccp3x'/, 'bootstrap must recognize strict ccp3x canonical');
+    assert.match(src, /const name = `ccp3x_\$\{port\}`/, '3.x editor identity must remain per-port');
+    assert.match(src, /m\.name === name/, 'per-port identity wins over a legacy alias for the same endpoint');
   });
 });

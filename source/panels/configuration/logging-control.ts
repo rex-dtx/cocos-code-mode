@@ -18,6 +18,11 @@ export function attachLoggingControl(root: HTMLElement): () => void {
         toggle.textContent = enabled === null ? 'Verbose logs: unavailable' : `Turn verbose logs ${enabled ? 'OFF' : 'ON'}`;
         toggle.setAttribute('aria-pressed', String(enabled === true));
     };
+    const describe = (value: unknown): { enabled: boolean; scene: string; logFile: string | null } | null => {
+        if (!value || typeof value !== 'object' || !('enabled' in value) || typeof value.enabled !== 'boolean') return null;
+        const record = value as Record<string, unknown>;
+        return { enabled: value.enabled, scene: typeof record.scene === 'string' ? record.scene : 'unknown', logFile: typeof record.logFile === 'string' ? record.logFile : null };
+    };
     const observe = async (request: Promise<unknown>, writing: boolean) => {
         busy = true;
         render();
@@ -37,12 +42,12 @@ export function attachLoggingControl(root: HTMLElement): () => void {
         timers.add(timer);
         try {
             const value = await request;
-            if (closed || (expired && !writing)) return;
-            if (!value || typeof value !== 'object' || !('enabled' in value) || typeof value.enabled !== 'boolean') {
-                throw new Error('Invalid logging state response.');
-            }
-            enabled = value.enabled;
-            feedback.textContent = `Verbose logs ${enabled ? 'ON' : 'OFF'}. Applies immediately; no server restart required.`;
+            const state = describe(value);
+            if (!state) throw new Error('Invalid logging state response.');
+            enabled = state.enabled;
+            const scene = state.scene === 'enabled' ? ' Scene console capture is ON.' : state.scene === 'disabled' ? ' Scene console capture is OFF.' : ` Scene console capture: ${state.scene}.`;
+            const file = state.logFile ? ` Log file: ${state.logFile}` : '';
+            feedback.textContent = `Verbose logs ${enabled ? 'ON' : 'OFF'}.${scene}${file}`;
         } catch {
             if (!closed && !(expired && !writing)) {
                 enabled = null;

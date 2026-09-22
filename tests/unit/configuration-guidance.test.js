@@ -10,10 +10,11 @@ const panel = fs.readFileSync(path.join(root, 'source/panels/configuration/index
 
 describe('configuration guidance', () => {
   it('identifies the MCP server as Cocos Pilot and exposes an agent instruction', () => {
-    assert.match(template, /Cocos Pilot MCP Integration/);
-    assert.match(template, /id="agent-instruction-code"/);
-    assert.match(template, /discover.*act/i);
-    assert.match(panel, /"cocos-pilot":/);
-    assert.doesNotMatch(panel, /"code-mode":/);
+    assert.match(template, /Cocos Pilot/);
+    assert.match(template, /id="agent-instruction"/);
+    assert.match(template, /MCP configuration/i);
+    assert.match(panel, /['"]cc-pilot['"]/);
+    assert.doesNotMatch(panel, /['"]cocos-pilot['"]/);
+    assert.doesNotMatch(panel, /['"]code-mode['"]/);
   });
 });

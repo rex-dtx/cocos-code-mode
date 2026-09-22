@@ -14,7 +14,7 @@ afterEach(() => {
 });
 
 describe('openDebugFolder', () => {
-  it('creates the debug directory before opening it', async () => {
+  it('opens only the current editor log scope', async () => {
     const calls = { mkdir: [], exec: [] };
     fs.mkdirSync = (directory, options) => calls.mkdir.push({ directory, options });
     childProcess.exec = (command, callback) => {
@@ -26,7 +26,7 @@ describe('openDebugFolder', () => {
     await methods.openDebugFolder();
 
     assert.equal(calls.mkdir.length, 1);
-    assert.match(calls.mkdir[0].directory, /\.utcp-debug$/);
+    assert.match(calls.mkdir[0].directory, /\.utcp-debug[\\/]instance-unscoped$/);
     assert.deepEqual(calls.mkdir[0].options, { recursive: true });
     assert.equal(calls.exec.length, 1);
   });

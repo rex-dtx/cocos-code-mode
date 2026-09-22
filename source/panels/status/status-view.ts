@@ -20,6 +20,7 @@ export interface Status {
     server: {
         running: boolean; port: number; instanceId: string | null;
         namespace: string | null; url: string | null; debug: boolean;
+        logging: { server: boolean; scene: 'enabled' | 'disabled' | 'unavailable' | 'error' | 'unknown'; logDirectory: string | null; logFile: string | null };
     };
     registry: { path: string; status: 'matched' | 'missing' | 'mismatch' | 'error' | 'not-running'; detail: string | null };
     http: { status: 'ok' | 'error' | 'not-running'; detail: string | null };
@@ -59,10 +60,12 @@ export function isStatus(value: unknown): value is Status {
     return typeof checkedAt === 'number' && Number.isInteger(checkedAt) && checkedAt > 0 && checkedAt <= 8640000000000000
         && isRecord(build) && typeof build.version === 'string' && typeof build.commit === 'string'
         && typeof build.branch === 'string' && typeof build.dirty === 'boolean' && typeof build.builtAt === 'string'
-        && isNullableText(value.projectPath) && isNullableText(value.editorVersion)
         && isRecord(server) && typeof server.running === 'boolean'
         && typeof server.port === 'number' && Number.isInteger(server.port) && server.port >= 0 && server.port <= 65535
         && isNullableText(server.instanceId) && isNullableText(server.namespace) && isNullableText(server.url) && typeof server.debug === 'boolean'
+        && isRecord(server.logging) && typeof server.logging.server === 'boolean'
+        && (server.logging.scene === 'enabled' || server.logging.scene === 'disabled' || server.logging.scene === 'unavailable' || server.logging.scene === 'error' || server.logging.scene === 'unknown')
+        && isNullableText(server.logging.logDirectory) && isNullableText(server.logging.logFile)
         && isRecord(registry) && typeof registry.path === 'string' && isNullableText(registry.detail)
         && (registry.status === 'matched' || registry.status === 'missing' || registry.status === 'mismatch' || registry.status === 'error' || registry.status === 'not-running')
         && isRecord(http) && (http.status === 'ok' || http.status === 'error' || http.status === 'not-running') && isNullableText(http.detail)
@@ -107,6 +110,11 @@ export function renderStatus(container: HTMLElement, snapshot: Status | null): v
         ['Server', [
             ['State', server ? (server.running ? 'Running' : 'Stopped') : null],
             ['Port', server ? String(server.port) : null], ['URL', server?.url],
+        ]],
+        ['Logging', [
+            ['Interaction log', server?.logging.server ? 'Verbose logging ON' : 'Warnings/errors only'],
+            ['Scene console', server?.logging.scene === 'enabled' ? 'Captured' : server?.logging.scene === 'disabled' ? 'Disabled' : server?.logging.scene === 'unknown' ? 'Not checked' : `Unavailable (${server?.logging.scene})`],
+            ['Log file', server?.logging.logFile],
         ]],
         ['Project & editor', [['Project path', snapshot?.projectPath], ['Creator version', snapshot?.editorVersion]]],
         ['HTTP handshake', [['State', snapshot ? httpLabels[snapshot.http.status] : null], ['Detail', snapshot?.http.detail]]],

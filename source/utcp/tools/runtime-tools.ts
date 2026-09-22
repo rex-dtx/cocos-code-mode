@@ -1,4 +1,6 @@
 import { utcpTool } from '../decorators';
+import { ToolError } from '../tool-error';
+import { GAME_VIEW_PREVIEW_DISABLED } from './runtime-session-tools';
 
 // Runtime control tools — pause/resume game loop, adjust time scale, query state.
 // Delegates to scene.ts handlers via execute-scene-script for actual cc.* access.
@@ -122,6 +124,14 @@ export class RuntimeTools {
         operation: string,
         state?: { paused: boolean, timeScale: number, frameCount: number },
     }> {
+        if (GAME_VIEW_PREVIEW_DISABLED && args.operation !== 'state') {
+            throw new ToolError({
+                code: 'PREVIEW_FEATURE_DISABLED',
+                status: 422,
+                message: 'Creator game-view preview is disabled for this bridge.',
+                recovery: 'Use editor-authoring routes until preview lifecycle is explicitly re-enabled.',
+            });
+        }
         switch (args.operation) {
             case 'start':
                 await Editor.Message.request('scene', 'editor-preview-set-play', true);

@@ -20,7 +20,13 @@ it('settings validates before mutation and moves only this editor between regist
     await assert.rejects(methods.saveExtensionSettings({ fixedPort: -1, configPath: first }));
     assert.equal(fs.existsSync(first), false);
     await methods.saveExtensionSettings({ fixedPort: 0, configPath: first });
+    const loggingOn = await methods.setDebugLogging(true);
+    assert.equal(loggingOn.enabled, true);
+    assert.equal(loggingOn.scene, 'enabled');
+    assert.equal((await methods.getDebugLogging()).scene, 'enabled');
     const before = await methods.getExtensionStatus();
+    assert.equal(before.server.logging.server, true);
+    assert.equal(before.server.logging.scene, 'enabled');
     assert.equal(before.http.status, 'ok');
     await assert.rejects(methods.saveExtensionSettings({ fixedPort: 0, configPath: 'relative.json' }));
     assert.equal((await methods.getExtensionStatus()).server.instanceId, before.server.instanceId);
@@ -30,6 +36,8 @@ it('settings validates before mutation and moves only this editor between regist
     assert.notEqual(after.server.instanceId, before.server.instanceId);
     assert.equal(JSON.parse(fs.readFileSync(first)).manual_call_templates.length, 0);
     assert.equal(JSON.parse(fs.readFileSync(second)).manual_call_templates[0].name, after.server.namespace);
+    const loggingOff = await methods.setDebugLogging(false);
+    assert.equal(loggingOff.scene, 'disabled');
     assert.deepEqual(await methods.getExtensionSettings(), { fixedPort: 0, configPath: second });
   } finally { await unload(); global.Editor = previous; fs.rmSync(dir, { recursive: true, force: true }); }
 });

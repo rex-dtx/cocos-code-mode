@@ -1,16 +1,16 @@
 ## 1. Freeze and evidence
 
-- [ ] Ghi snapshot `docs/tool-portfolio-candidates.json` (80+22=102, qualified 68) + `reports/api-capability-probe-20260920.json` + `reports/api-capability-preview-disabled-reconciliation-20260920.json` vào change này (verify: 3 file hash khớp HEAD bacd213).
-- [ ] Đóng `api-capability-resume` ở `status: pending` — không chạy `audit-tool-portfolio` fail, không tính vào publish gate (verify: `node scripts/audit-tool-portfolio.js` vẫn `potentiallyQualifiable 73` trên lane publish, change này không đụng threshold).
-- [ ] Tag `bacd213` đã smoke `10/10 pass` ngày 2026-09-21 (build-info bacd213, scene open, handshake responsive) — attach evidence vào `reports/expansion-qualification-20260910.json` преемник.
+- [x] Ghi snapshot hash-reference trong `freeze-evidence.json`: `docs/tool-portfolio-candidates.json` (80+22=102, qualified 68) + `reports/api-capability-probe-20260920.json` + `reports/api-capability-preview-disabled-reconciliation-20260920.json` + backlog, tất cả bind với commit `bacd213`.
+- [x] Giữ `api-capability-resume` ở `status: pending`; `node scripts/audit-tool-portfolio.js` hiện pass với `potentiallyQualifiable 73`, `approvedCount 70`, `requiredApprovalCount 82`, `marginEroded:true`. Change không sửa threshold hay portfolio state; `--require-ready` vẫn phải fail cho publish gate.
+- [x] Trace smoke freeze `bacd213` ngày 2026-09-21: commit tồn tại; claim `10/10 pass`, scene open, handshake responsive được giữ trong `proposal.md`, `design.md`, `docs/tool-catalog.md`, và `freeze-evidence.json`. Không có transcript live độc lập để nâng thành witness mới.
 
 ## 2. Resume lanes (mở khi a quay lại — mỗi lane là một spec riêng)
 
-- [ ] **Lane R1 — Runtime preview re-enable** (candidate 2 + rejected 10): yêu cầu owner bật lại `GAME_VIEW_PREVIEW_DISABLED`, live probe `preview-lifecycle + runtime-transport` trên fixture game-view không flaky. Rows: `previewSessionStart/Stop` (candidate), `runtimeSessionLifecycle/StateObserve/ScenarioRun/Assert`, `previewSessionInspect`, `runtimeWaitForState`, `animationGraphPreview`, `skeletalAnimationPlay/Events`, `audioPlaybackControl/Observe`, `particlePlayback`, `renderDiagnosticsCollect`, `localizationPreview`.
-- [ ] **Lane R2 — Project/Scene globals** (candidate 1 + rejected 4): yêu cầu Creator 3.8 `project/set-config` + kênh read-back `_globals`. Rows: `renderConfigurationApply` (candidate, _globals read-back hiện `unsupported-read-back`), `physics2dConfigure/3dConfigure` (project/set-config), `bitmapFontImportSettingsConfigure` (derived fnt, cần 3.8 writer).
-- [ ] **Lane R3 — Verification bundles** (implemented-unverified 2): chỉ cần live witness `positive/negative` trên fixture hiện có. Rows: `assetBundleValidate` (runtime-session), `localizationValidate` (resource-contract). Không cần 3.8.
-- [ ] **Lane R4 — Replace redesign** (replace 6): yêu cầu thiết kế mới trước khi code. Rows: `prefabVariantCreate` (không có native variant), `tilemapCreate` (TMX import-only), `tweenSequenceCreate/Inspect/Control/Validate` (không có native tween asset — cân nhắc code-gen TypeScript hay runtime adapter).
-- [ ] **Lane R5 — Engine features 3.8** (rejected 4): yêu cầu API mới. Rows: `lightBakeManage` (no bake message), `terrainEdit` (no cc.Terrain), `particleConfigure` (no surviving write), `physics topology` đã qualified nên chỉ còn configure.
+- [ ] **Lane R1 — Runtime preview re-enable** — blocked: owner phải bật `GAME_VIEW_PREVIEW_DISABLED`; cần live probe `preview-lifecycle + runtime-transport` trên fixture game-view không flaky. Rows: `previewSessionStart/Stop`, `runtimeSessionLifecycle/StateObserve/ScenarioRun/Assert`, `previewSessionInspect`, `runtimeWaitForState`, `animationGraphPreview`, `skeletalAnimationPlay/Events`, `audioPlaybackControl/Observe`, `particlePlayback`, `renderDiagnosticsCollect`, `localizationPreview`.
+- [ ] **Lane R2 — Project/Scene globals** — blocked: Creator ≥3.8 với `project/set-config` và `_globals` read-back. Rows: `renderConfigurationApply`, `physics2dConfigure/3dConfigure`, `bitmapFontImportSettingsConfigure`.
+- [ ] **Lane R3 — Verification bundles** — blocked: fresh positive/negative live witnesses on fixtures. Rows: `assetBundleValidate`, `localizationValidate`; không cần 3.8.
+- [ ] **Lane R4 — Replace redesign** — blocked: design proposal trước code. Rows: `prefabVariantCreate`, `tilemapCreate`, `tweenSequenceCreate/Inspect/Control/Validate`.
+- [ ] **Lane R5 — Engine features 3.8** — blocked: Creator ≥3.8 API witness. Rows: `lightBakeManage`, `terrainEdit`, `particleConfigure`; physics topology đã qualified nên chỉ còn configure.
 
 ## 3. Re-entry checklist (khi a bảo "back lại")
 

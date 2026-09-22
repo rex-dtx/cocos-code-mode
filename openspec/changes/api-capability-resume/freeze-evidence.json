@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-22",
+  "freezeCommit": "bacd21327a2fd19c00d6f3473db1024bb15dcdec",
+  "freezeBranch": "feat/ccp3x-api-capability-expansion",
+  "hashAlgorithm": "sha256",
+  "evidenceFilesAtFreeze": {
+    "docs/tool-portfolio-candidates.json": "2adf79f597d0491b58bee5a5e4aff07026806ba8a42803dae415b5cd02199cfb",
+    "reports/api-capability-probe-20260920.json": "3562c239a7189d240e124ba3d3804835a34fb9c371355c8756b55374abdfb5d0",
+    "reports/api-capability-preview-disabled-reconciliation-20260920.json": "be797eb88ca989906dfedea83d1be95d1875c1bb0ec592ad65d8eadd0df8aa46",
+    "docs/next-update-3x8-capability-backlog.json": "e76246272d8a38672363bf8006cd4878e81d2d8148afec738a9aea993a8b63f0"
+  },
+  "portfolioAtFreeze": {
+    "primaryCount": 80,
+    "reserveCount": 22,
+    "stateCounts": {
+      "qualified": 68,
+      "replace": 6,
+      "implemented-unverified": 2,
+      "rejected": 23,
+      "candidate": 3
+    }
+  },
+  "smokeReference": {
+    "date": "2026-09-21",
+    "claim": "10/10 pass; scene open and responsive handshake",
+    "sourceReferences": [
+      "openspec/changes/api-capability-resume/design.md",
+      "openspec/changes/api-capability-resume/proposal.md",
+      "docs/tool-catalog.md"
+    ],
+    "note": "The original live smoke transcript is not stored as a standalone report in this repository. This record preserves the already-documented claim and does not upgrade it into a new qualification witness."
+  },
+  "currentStateNote": "These hashes bind the freeze commit, not the mutable current working files. Any later hash difference is expected and is not evidence that the frozen snapshot changed."
+}

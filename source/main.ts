@@ -4,17 +4,17 @@ import { closeArtifactServers } from './utcp/tools/artifact-server-tools';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo } from './build-info';
 import { exec } from 'child_process';
-import { homedir } from 'os';
-import { join, isAbsolute } from 'path';
-import { mkdirSync, readdirSync, unlinkSync } from 'fs';
+import { isAbsolute } from 'path';
+import { mkdirSync } from 'fs';
+import { clearDebugLogFiles, getDebugLogDirectory } from './utcp/log-path';
 import { cancelEditorAsk } from './utcp/editor-ask';
 import { cancelEditorPrompt, getEditorPrompt, respondEditorPrompt } from './utcp/editor-prompt';
 import { cancelEditorTask, disposeEditorControl, getEditorControl } from './utcp/editor-control-plane';
 import { inspectExtensionStatus } from './extension-status';
 
 let utcpServer: UtcpServerManager | null = null;
-const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 let lifecycle: Promise<unknown> = Promise.resolve();
+let sceneLogging: 'enabled' | 'disabled' | 'unavailable' | 'error' | 'unknown' = 'unknown';
 const registryPaths = new WeakMap<UtcpServerManager, string>();
 
 function runLifecycle<T>(operation: () => Promise<T>): Promise<T> {
@@ -29,6 +29,19 @@ async function stopPublishedServer(server: UtcpServerManager): Promise<void> {
         await server.stop();
     } finally {
         if (port > 0) await getConfigManager().removeCocosEditorTemplate(port, instanceId, registryPaths.get(server));
+    }
+}
+async function syncSceneLogging(enabled: boolean, instanceId: string | null): Promise<'enabled' | 'disabled' | 'unavailable' | 'error'> {
+    try {
+        const result = await Editor.Message.request('scene', 'execute-scene-script', {
+            name: packageJSON.name,
+            method: enabled ? 'startCatchAll' : 'stopCatchAll',
+            args: enabled && instanceId ? [instanceId] : [],
+        });
+        return enabled ? (result === true ? 'enabled' : 'unavailable') : 'disabled';
+    } catch (error: unknown) {
+        console.warn(`[cx3][scene] Console capture not toggled: ${error instanceof Error ? error.message : String(error)}`);
+        return enabled ? 'error' : 'disabled';
     }
 }
 
@@ -46,6 +59,7 @@ async function startPublishedServer(port: number, debugLogging: boolean): Promis
             await config.updatePort(actualPort, server.instanceId);
             if (port === 0) await config.setLastAutoPort(actualPort);
             utcpServer = server;
+            sceneLogging = await syncSceneLogging(debugLogging, server.instanceId);
             return actualPort;
         } catch (error) {
             lastError = error;
@@ -74,6 +88,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
         const server = utcpServer;
         const snapshot = await inspectExtensionStatus(server ? {
             port: server.port, instanceId: server.instanceId, debug: server.getDebugEnabled(),
+            scene: sceneLogging, logDirectory: server.getLogDirectory(), logFile: server.getLogFile(),
         } : null, (server && registryPaths.get(server)) || getConfigManager().getConfigPath());
         if (server !== utcpServer || (server && server.instanceId !== snapshot.server.instanceId)) {
             snapshot.http = { status: 'error', detail: 'Server changed during this check. Check status again.' };
@@ -161,44 +176,37 @@ export const methods: { [key: string]: (...any: any) => any } = {
     },
 
     async getDebugLogging() {
-        const enabled = Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
-        return { enabled };
+        const server = utcpServer;
+        const enabled = server?.getDebugEnabled() ?? Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
+        return { enabled, scene: sceneLogging, logDirectory: server?.getLogDirectory() ?? null, logFile: server?.getLogFile() ?? null };
     },
     async setDebugLogging(enabled: boolean) {
         if (typeof enabled !== 'boolean') throw new Error('setDebugLogging requires boolean enabled');
         await Editor.Profile.setConfig(packageJSON.name, 'debugLogging', enabled);
         const applied = utcpServer?.setDebugEnabled(enabled) ?? enabled;
-        const method = applied ? 'startCatchAll' : 'stopCatchAll';
-        Editor.Message.request('scene', 'execute-scene-script',
-            { name: packageJSON.name, method, args: [] })
-            .catch((err: any) => console.warn(`[cx3][scene] Scene console capture not toggled: ${err?.message || err}`));
-        console.info(`[cx3][lifecycle] Verbose interaction logging ${applied ? 'ON' : 'OFF'}`);
-        return { enabled: applied };
+        const scene = await syncSceneLogging(enabled, utcpServer?.instanceId ?? null);
+        sceneLogging = scene;
+        console.info(`[cx3][lifecycle] Verbose interaction logging ${applied ? 'ON' : 'OFF'}; scene capture ${scene}`);
+        return { enabled: applied, scene, logDirectory: utcpServer?.getLogDirectory() ?? null, logFile: utcpServer?.getLogFile() ?? null };
     },
 
 
-    // The folder may not exist until debug logging is first enabled.
     openDebugFolder() {
-        mkdirSync(DEBUG_LOG_DIR, { recursive: true });
-        // ponytail: cross-platform open — works on Windows/macOS/Linux
+        const directory = utcpServer?.getLogDirectory() ?? getDebugLogDirectory('unscoped');
+        mkdirSync(directory, { recursive: true });
         const cmd = process.platform === 'win32'
-            ? `start "" "${DEBUG_LOG_DIR}"`
-            : process.platform === 'darwin'
-                ? `open "${DEBUG_LOG_DIR}"`
-                : `xdg-open "${DEBUG_LOG_DIR}"`;
+            ? `start "" "${directory}"`
+            : process.platform === 'darwin' ? `open "${directory}"` : `xdg-open "${directory}"`;
         return new Promise<void>((resolve, reject) => {
             exec(cmd, err => err ? reject(err) : resolve());
         });
     },
 
     clearDebugLogs() {
-        try {
-            const files = readdirSync(DEBUG_LOG_DIR).filter((f) => f.endsWith('.jsonl'));
-            files.forEach((f) => unlinkSync(join(DEBUG_LOG_DIR, f)));
-            console.log(`[cx3][lifecycle] Cleared ${files.length} debug log file(s) from ${DEBUG_LOG_DIR}`);
-        } catch (err: unknown) {
-            if (!(err instanceof Error) || !('code' in err) || err.code !== 'ENOENT') throw err;
-        }
+        const directory = utcpServer?.getLogDirectory() ?? getDebugLogDirectory('unscoped');
+        const removed = clearDebugLogFiles(directory);
+        console.log(`[cx3][lifecycle] Cleared ${removed} log file(s) from the current editor scope.`);
+        return { removed, directory };
     },
 
 };

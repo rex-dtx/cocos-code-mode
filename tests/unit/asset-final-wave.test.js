@@ -46,7 +46,7 @@ describe('final asset/import authoring wave', () => {
     }
   });
 
-  it('reads and writes bounded arbitrary package preferences with authoritative read-back', async () => {
+  it('keeps Pilot preferences scoped and reads/writes arbitrary package preferences through preferences IPC', async () => {
     const previous = global.Editor;
     const values = new Map();
     global.Editor = {
@@ -64,12 +64,12 @@ describe('final asset/import authoring wave', () => {
     };
     try {
       const tools = new PreferenceTools();
-      assert.deepEqual(await tools.getEditorPreference({ packageName: 'pkg.third-party', key: 'enabled/path' }), { packageName: 'pkg.third-party', key: 'enabled/path', value: null });
-      assert.deepEqual(await tools.setEditorPreference({ packageName: 'pkg.third-party', key: 'enabled/path', value: true }), { success: true, packageName: 'pkg.third-party', key: 'enabled/path', value: true });
-      await assert.rejects(() => tools.getEditorPreference({ packageName: 'pkg.third-party' }), /key is required/);
-      await assert.rejects(() => tools.setEditorPreference({ packageName: '../outside', key: 'x', value: true }), /bounded preference package/);
-      assert.deepEqual(await tools.queryPreferencesConfig({ packageName: 'pkg.test', key: 'enabled' }), { value: null });
-      assert.deepEqual(await tools.setPreferencesConfig({ packageName: 'pkg.test', key: 'enabled', value: true }), { updated: true, value: true });
+      assert.deepEqual(await tools.getEditorPreference({ key: 'toolProfile' }), { key: 'toolProfile', value: null });
+      assert.deepEqual(await tools.setEditorPreference({ key: 'toolProfile', value: 'full' }), { success: true, key: 'toolProfile', value: 'full' });
+      assert.deepEqual(await tools.queryPreferencesConfig({ packageName: 'pkg.third-party', key: 'enabled/path' }), { value: null });
+      assert.deepEqual(await tools.setPreferencesConfig({ packageName: 'pkg.third-party', key: 'enabled/path', value: true }), { updated: true, value: true });
+      await assert.rejects(() => tools.queryPreferencesConfig({ packageName: '../outside', key: 'x' }), /bounded preference identifiers/);
+      assert.ok('all' in await tools.getEditorPreference({}));
     } finally {
       restoreEditor(previous);
     }

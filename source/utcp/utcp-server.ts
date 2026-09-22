@@ -50,10 +50,9 @@ import { trimResponse } from './utils/response-trimmer';
 import { JsonSchema, Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
 import { getBuildInfo } from '../build-info';
-import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
-import { join } from 'path';
-import { homedir } from 'os';
+import { readFileSync } from 'fs';
 import { isToolExposed, ToolProfile } from './tool-profiles';
+import { appendJsonl, createDebugLogFile, getDebugLogDirectory, listDebugLogFiles } from './log-path';
 import { createResultEnvelope } from './response-envelope';
 import { ToolError, toToolErrorResponse } from './tool-error';
 import { renderInteraction, snapshotInteraction } from './interaction-log';
@@ -271,12 +270,14 @@ export function findMissingRequiredInputs(schema: JsonSchema, args: Record<strin
 }
 
 // Console output is intentionally concise; JSONL keeps the complete structured event.
-const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
-let debugLogFile = join(DEBUG_LOG_DIR, `utcp-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
+let debugLogFile: string | null = null;
 
-if (debugEnabled) {
-    try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-    console.log(`[cx3][lifecycle] Debug mode ON → ${debugLogFile}`);
+function activateDebugLog(instanceId: string): string | null {
+    try {
+        return createDebugLogFile(getDebugLogDirectory(instanceId), 'utcp', instanceId);
+    } catch {
+        return null;
+    }
 }
 
 
@@ -305,23 +306,22 @@ function interactionLog(entry: Record<string, unknown>): void {
     const phase = entry.phase;
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
     const safe = snapshotInteraction({ ...entry, ts: new Date().toISOString() });
-    try {
-        mkdirSync(DEBUG_LOG_DIR, { recursive: true });
-        appendFileSync(debugLogFile, JSON.stringify({ type: 'interaction', ...safe }) + '\n');
-        safe.detailFile = debugLogFile;
-    } catch {
+    if (debugLogFile) {
+        try {
+            appendJsonl(debugLogFile, { type: 'interaction', ...safe });
+            safe.detailFile = debugLogFile;
+        } catch {
+            safe.recovery = `${safe.recovery ?? ''}\nLog detail file unavailable; check filesystem permissions.`;
+        }
+    } else {
         safe.recovery = `${safe.recovery ?? ''}\nLog detail file unavailable; check filesystem permissions.`;
     }
     creatorInteractionLog(safe);
 }
 
 function debugLog(entry: Record<string, unknown>): void {
-    if (!debugEnabled) return;
-    try {
-        try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
-        const safe = snapshotInteraction({ ts: new Date().toISOString(), ...entry });
-        appendFileSync(debugLogFile, JSON.stringify(safe) + '\n');
-    } catch {}
+    if (!debugEnabled || !debugLogFile) return;
+    try { appendJsonl(debugLogFile, snapshotInteraction({ ts: new Date().toISOString(), ...entry })); } catch {}
 }
 
 
@@ -347,6 +347,8 @@ export function setServerProfile(profile: ToolProfile, enabled: string[] = [], d
 export class UtcpServerManager {
     private app: express.Application;
     private server: any;
+    private logDirectory: string | null = null;
+    private logFile: string | null = null;
     // Resolved port after start(); used by unload to GC the config entry.
     public port: number = 0;
     public instanceId: string = '';
@@ -365,6 +367,9 @@ export class UtcpServerManager {
         if (this.server) throw new Error('UTCP Server is already started. Stop it before starting again.');
         this.app = express();
         this.instanceId = randomBytes(16).toString('hex');
+        this.logDirectory = getDebugLogDirectory(this.instanceId);
+        this.logFile = activateDebugLog(this.instanceId);
+        debugLogFile = this.logFile;
         this.sessionPresence = new SessionPresenceStore(this.instanceId);
         this.requestActivity.clear();
         // PHAI set TRUOC moi app.use(): express bind 'query parser fn' luc lazyrouter
@@ -635,36 +640,31 @@ export class UtcpServerManager {
             res.json(getBuildInfo());
         });
 
-        // ponytail: debug log viewer — GET /debug-logs returns all log entries as JSON array
-        // GET /debug-logs?tool=X filters by tool name; ?last=N returns last N entries
+        // Debug logs are scoped to this editor instance and bounded by the logger helper.
         this.app.get('/debug-logs', (req, res) => {
             if (!debugEnabled) {
                 res.status(404).json({ error: 'Debug mode not enabled. Toggle via menu or set UTCP_DEBUG=1.' });
                 return;
             }
             try {
-                const files = readdirSync(DEBUG_LOG_DIR)
-                    .filter(f => f.endsWith('.jsonl'))
-                    .sort()
-                    .reverse();
-                if (files.length === 0) {
-                    res.json([]);
-                    return;
+                const files = listDebugLogFiles(this.logDirectory ?? getDebugLogDirectory(this.instanceId));
+                const toolFilter = typeof req.query.tool === 'string' ? req.query.tool : undefined;
+                const requested = Number(req.query.last);
+                const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 500) : 200;
+                const collected: Record<string, unknown>[] = [];
+                for (const file of files.slice().reverse()) {
+                    if (collected.length >= limit) break;
+                    const lines = readFileSync(file, 'utf8').split('\n').filter(Boolean);
+                    for (const line of lines) {
+                        try {
+                            const entry = JSON.parse(line) as Record<string, unknown>;
+                            if (!toolFilter || entry.tool === toolFilter) collected.push(entry);
+                        } catch {}
+                    }
                 }
-                const content = readFileSync(join(DEBUG_LOG_DIR, files[0]), 'utf-8');
-                let entries = content.trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
-
-                const toolFilter = req.query.tool as string | undefined;
-                if (toolFilter) {
-                    entries = entries.filter(e => e.tool === toolFilter);
-                }
-                const lastN = Number(req.query.last);
-                if (lastN > 0) {
-                    entries = entries.slice(-lastN);
-                }
-                res.json(entries);
+                res.json(collected.slice(-limit));
             } catch (err: any) {
-                res.status(500).json({ error: err.message });
+                res.status(500).json({ error: err?.message ?? String(err) });
             }
         });
     }
@@ -682,6 +682,9 @@ export class UtcpServerManager {
             });
         });
         this.requestActivity.clear();
+        if (debugLogFile === this.logFile) debugLogFile = null;
+        this.logFile = null;
+        this.logDirectory = null;
         const message = '[cx3][lifecycle] DISCONNECTED <- UTCP Server stopped';
         console.log(message);
         const editor = (globalThis as any).Editor;
@@ -692,13 +695,22 @@ export class UtcpServerManager {
         return debugEnabled;
     }
 
+    getLogDirectory(): string | null {
+        return this.logDirectory;
+    }
+
+    getLogFile(): string | null {
+        return this.logFile;
+    }
+
     setDebugEnabled(enabled: boolean): boolean {
         setDebugLogging(enabled);
-        if (enabled) {
-            try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {}
+        if (enabled && !this.logFile && this.instanceId) {
+            this.logDirectory = getDebugLogDirectory(this.instanceId);
+            this.logFile = activateDebugLog(this.instanceId);
+            debugLogFile = this.logFile;
         }
         return debugEnabled;
     }
-
 
 }

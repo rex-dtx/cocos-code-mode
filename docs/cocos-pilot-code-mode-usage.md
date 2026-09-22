@@ -16,7 +16,7 @@ Cocos Pilot is the Cocos Creator 3.x extension. It serves a UTCP manual from the
 
 ## 1. Configure MCP (`mcp` → `cmm` → `ccbr`)
 
-Add `cmm` (`@utcp/code-mode-mcp`) to the AI client. `cocos-pilot` is the **MCP server key** (client-facing name for the `cmm` adapter); `@utcp/code-mode-mcp` remains the adapter package that implements the adapter. `UTCP_CONFIG_FILE` points to `ccbr`.
+Add `cmm` (`@utcp/code-mode-mcp`) to the AI client. `cc-pilot` is the **MCP server key** (client-facing name for the `cmm` adapter); `@utcp/code-mode-mcp` remains the adapter package. `UTCP_CONFIG_FILE` points to `ccbr`.
 
 ```json
 {

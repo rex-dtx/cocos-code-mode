@@ -4,10 +4,10 @@ const assert = require('node:assert/strict');
 const { readSource } = require('../helpers/require-dist');
 
 describe('extension startup status', () => {
-  it('logs a concise ready message with the live UTCP URL and usage guidance', () => {
+  it('logs a concise ready message with the live UTCP URL and per-port binding guidance', () => {
     const source = readSource('main.ts');
     assert.match(source, /Ready: UTCP server listening at \$\{url\}/);
-    assert.match(source, /New AI sessions discover ccp3x automatically; reconnect an existing Code Mode MCP session to refresh it\./);
-    assert.match(source, /===========Loaded cocos-pilot-3x===========/);
+    assert.match(source, /New AI sessions discover ccp3x_\$\{actualPort\}; reconnect an existing Code Mode MCP session to refresh it\./);
+    assert.match(source, /\[cx3\]\[lifecycle\] Loaded/);
   });
 });

@@ -69,14 +69,14 @@
       }
     },
     "configuration": {
-      "title": "Configuration",
+      "title": "Settings",
       "type": "dockable",
       "main": "dist/panels/configuration",
       "size": {
         "min-width": 400,
         "min-height": 300,
-        "width": 1024,
-        "height": 600
+        "width": 560,
+        "height": 680
       }
     },
     "preview": {
@@ -103,11 +103,6 @@
       },
       {
         "path": "Cocos Pilot 3x",
-        "label": "i18n:cocos-pilot-3x.open_panel",
-        "message": "open-panel"
-      },
-      {
-        "path": "Cocos Pilot 3x",
         "label": "Restart Server",
         "message": "restart-server"
       },
@@ -117,19 +112,14 @@
         "message": "toggle-debug"
       },
       {
-        "path": "Cocos Pilot 3x/Debug Logs",
-        "label": "Open Debug Folder",
+        "path": "Cocos Pilot 3x",
+        "label": "Open Logs",
         "message": "open-debug-folder"
       },
       {
-        "path": "Cocos Pilot 3x/Debug Logs",
-        "label": "Clear Debug Logs",
-        "message": "clear-debug-logs"
-      },
-      {
         "path": "Cocos Pilot 3x",
-        "label": "About",
-        "message": "show-build-info"
+        "label": "Settings",
+        "message": "open-panel"
       }
     ],
     "messages": {
@@ -191,7 +181,7 @@
       },
       "toggle-debug": {
         "methods": [
-          "toggleDebug"
+          "toggleDebugLogging"
         ]
       },
       "open-debug-folder": {
@@ -204,14 +194,14 @@
           "clearDebugLogs"
         ]
       },
-      "show-build-info": {
+      "extension-settings": {
         "methods": [
-          "showBuildInfo"
+          "getExtensionSettings"
         ]
       },
-      "show-info": {
+      "save-extension-settings": {
         "methods": [
-          "showInfo"
+          "saveExtensionSettings"
         ]
       }
     }

@@ -20,28 +20,50 @@ interface PreviewEngineGlobals {
 }
 
 export function load() { }
-export function unload() { }
+export function unload() { void methods.stopCatchAll(); }
 let _originalConsoleError: (...data: unknown[]) => void = () => { };
 let _caughtLogs: string[] = [];
 
-// ponytail: debug console capture for scene process — writes JSONL to
-// ~/.utcp-debug/scene-console-*.jsonl. Uses dynamic require('fs') because
-// this file runs in the editor's scene renderer where node builtins are available.
+// Scene-console capture is opt-in and writes bounded JSONL in the current editor scope.
 let _catchAllActive = false;
 let _origLog: typeof console.log | null = null;
 let _origWarn: typeof console.warn | null = null;
 let _origErr: typeof console.error | null = null;
 let _sceneLogFile: string | null = null;
+const _sceneLogMaxBytes = 4 * 1024 * 1024;
+const _sceneLogRetention = 4;
+
+function _rotateSceneLog(fs: any): void {
+    if (!_sceneLogFile) return;
+    const base = _sceneLogFile.replace(/\.jsonl$/i, '');
+    for (let index = _sceneLogRetention - 1; index >= 1; index -= 1) {
+        const source = `${base}-${index}.jsonl`;
+        const target = `${base}-${index + 1}.jsonl`;
+        try { if (fs.existsSync(source)) { if (fs.existsSync(target)) fs.unlinkSync(target); fs.renameSync(source, target); } } catch {}
+    }
+    try { if (fs.existsSync(`${base}-1.jsonl`)) fs.unlinkSync(`${base}-1.jsonl`); fs.renameSync(_sceneLogFile, `${base}-1.jsonl`); } catch {}
+}
+
+function _serializeSceneValue(value: unknown): string {
+    if (value instanceof Error) return `${value.message}\n${value.stack ?? ''}`;
+    if (typeof value === 'string') return value;
+    try {
+        return JSON.stringify(value, (key, nested) => {
+            const normalized = key.replace(/[^a-z0-9]/gi, '');
+            if (/^(?:.*(?:password|passwd|passphrase|secret|token|credential|authorization|cookie|privatekey|apikey)|pwd|auth|sessionid)$/i.test(normalized)) return '[REDACTED]';
+            return typeof nested === 'bigint' ? String(nested) : nested;
+        }) ?? String(value);
+    } catch { return '[unserializable value]'; }
+}
 
 function _writeSceneLog(level: 'log' | 'warn' | 'error', data: unknown[]): void {
     if (!_sceneLogFile) return;
-    const msg = data.map(a => a instanceof Error ? `${a.message}\n${a.stack ?? ''}` : String(a)).join(' ');
+    const msg = data.map(_serializeSceneValue).join(' ').slice(0, 32768);
     const line = JSON.stringify({ ts: new Date().toISOString(), level, msg }) + '\n';
     try {
-        // ponytail: appendFileSync per entry — debug mode is opt-in and volume low.
-        // Accepts slight sync overhead over buffering+flush for simplicity.
         const fs = require('fs');
-        fs.appendFileSync(_sceneLogFile, line);
+        if (fs.existsSync(_sceneLogFile) && fs.statSync(_sceneLogFile).size + Buffer.byteLength(line, 'utf8') > _sceneLogMaxBytes) _rotateSceneLog(fs);
+        fs.appendFileSync(_sceneLogFile, line, 'utf8');
     } catch {}
 }
 
@@ -79,18 +101,18 @@ export const methods = {
         return _caughtLogs;
     },
 
-    async startCatchAll(): Promise<boolean> {
+    async startCatchAll(instanceId?: unknown): Promise<boolean> {
         if (_catchAllActive) return true;
         let fs: any;
         try { fs = require('fs'); } catch {
-            console.warn('[cocos-pilot-3x] startCatchAll: fs unavailable in scene context');
             return false;
         }
         const path = require('path');
         const os = require('os');
-        const dir = path.join(os.homedir(), '.utcp-debug');
-        try { fs.mkdirSync(dir, { recursive: true }); } catch {}
-        _sceneLogFile = path.join(dir, `scene-console-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
+        const safe = String(instanceId ?? '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 96) || 'unscoped';
+        const dir = path.join(os.homedir(), '.utcp-debug', `instance-${safe}`);
+        try { fs.mkdirSync(dir, { recursive: true }); } catch { return false; }
+        _sceneLogFile = path.join(dir, `scene-console-${Date.now()}-${process.pid}.jsonl`);
         _catchAllActive = true;
         _origLog = console.log;
         _origWarn = console.warn;
