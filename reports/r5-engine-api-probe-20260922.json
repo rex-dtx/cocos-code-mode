@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-22",
+  "purpose": "R5 clean-artifact read-only engine capability probe.",
+  "endpoint": "http://127.0.0.1:51912",
+  "artifact": { "commit": "cdc2de2", "dirty": false, "creator": "3.7.3" },
+  "sceneSymbols": {
+    "cc.Terrain": "undefined",
+    "cc.ParticleSystem": "undefined",
+    "cc.LightProbeInfo": "undefined"
+  },
+  "conclusion": "Creator 3.7.3 scene runtime does not expose the probed R5 engine symbols. No mutation was attempted. R5 remains blocked on Creator >=3.8 engine APIs and fresh witnesses."
+}

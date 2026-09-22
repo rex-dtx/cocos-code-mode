@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-22",
+  "purpose": "R1 clean-artifact fail-closed verification; no preview lifecycle mutation was allowed.",
+  "endpoint": "http://127.0.0.1:51912",
+  "binding": {
+    "namespace": "ccp3x_51912",
+    "instanceId": "7c0a35862be8ac67a20d8f5f1f854310",
+    "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+    "projectMatches": true,
+    "sceneProbe": "responsive",
+    "sceneReady": true
+  },
+  "artifact": {
+    "commit": "cdc2de2",
+    "dirty": false,
+    "creator": "3.7.3"
+  },
+  "observations": [
+    {
+      "tool": "runtimePreviewControl",
+      "input": { "operation": "start" },
+      "httpStatus": 422,
+      "code": "PREVIEW_FEATURE_DISABLED",
+      "result": "No preview lifecycle mutation was dispatched."
+    },
+    {
+      "tool": "runtimeSessionLifecycle",
+      "input": { "operation": "start", "targetKind": "game-view" },
+      "httpStatus": 422,
+      "code": "PREVIEW_FEATURE_DISABLED",
+      "result": "No preview lifecycle mutation was dispatched."
+    }
+  ],
+  "conclusion": "Owner gate remains active on clean artifact. R1 cannot produce positive lifecycle witnesses until the owner explicitly re-enables preview and provides a non-flaky Game View fixture."
+}

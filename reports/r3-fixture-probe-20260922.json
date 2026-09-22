@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-22",
+  "purpose": "R3 live-fixture availability probe; records why implemented-unverified rows cannot be promoted.",
+  "endpoint": "http://127.0.0.1:51912",
+  "binding": {
+    "namespace": "ccp3x_51912",
+    "instanceId": "7c0a35862be8ac67a20d8f5f1f854310",
+    "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+    "projectMatches": true,
+    "sceneProbe": "responsive",
+    "sceneReady": true
+  },
+  "artifact": {
+    "commit": "cdc2de2",
+    "branch": "feat/cocos-pilot-api-capability-expansion",
+    "dirty": false,
+    "creator": "3.7.3"
+  },
+  "rows": {
+    "assetBundleValidate": {
+      "positiveFixtureDiscovery": { "bundleAssets": 0, "result": "blocked-no-bundle-fixture" },
+      "negativeWitness": { "reference": "missing-r3-bundle-fixture", "httpStatus": 404, "code": "TARGET_NOT_FOUND" },
+      "promotion": "blocked"
+    },
+    "localizationValidate": {
+      "localizationInspect": { "supported": false, "reason": "db://localization-editor/l10n is unavailable in this Creator/project" },
+      "negativeWitness": { "keys": ["__r3_missing_localization_key__"], "supported": false, "checkedKeys": 0 },
+      "promotion": "blocked"
+    }
+  },
+  "conclusion": "The artifact is clean and the negative boundaries were observed, but neither row has a positive live fixture. Do not promote either row."
+}

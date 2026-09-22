@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-22",
+  "purpose": "R2 clean-artifact prerequisite probe; no project setting was mutated.",
+  "endpoint": "http://127.0.0.1:51912",
+  "binding": {
+    "namespace": "ccp3x_51912",
+    "instanceId": "7c0a35862be8ac67a20d8f5f1f854310",
+    "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+    "projectMatches": true
+  },
+  "artifact": { "commit": "cdc2de2", "dirty": false, "creator": "3.7.3" },
+  "observations": {
+    "projectSetConfig": {
+      "request": "Editor.Message.request('project','set-config','project','physics.gravity',null)",
+      "result": "Message does not exist: project - set-config",
+      "mutation": "none"
+    },
+    "globalsReadBack": {
+      "context": "scene",
+      "expression": "typeof _globals",
+      "result": "undefined",
+      "available": false
+    }
+  },
+  "conclusion": "R2 remains blocked on Creator 3.7.3. A Creator >=3.8 project settings writer and an authoritative _globals read-back channel are required before any promotion."
+}
