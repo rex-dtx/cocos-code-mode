@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import { utcpTool } from '../decorators';
+import { readElectronWindowSnapshot } from '../electron-window-snapshot';
 
 const MAX_SCREENSHOT_DIMENSION = 4096;
 const MAX_SCREENSHOT_PIXELS = MAX_SCREENSHOT_DIMENSION * MAX_SCREENSHOT_DIMENSION;
@@ -276,27 +277,11 @@ export class ScreenshotTools {
         ['window', 'list', 'editor', 'electron', 'screenshot', 'target']
     )
     async listEditorWindows(): Promise<{ windows: Array<{ id: number, title: string, focused: boolean }> }> {
-        let BrowserWindow: any;
-        try {
-            const electron = require('electron');
-            BrowserWindow = electron.BrowserWindow;
-        } catch (e: any) {
-            throw new Error(`Electron BrowserWindow not available: ${e.message}`);
-        }
-
-        if (!BrowserWindow) {
-            throw new Error('BrowserWindow API not available in this context');
-        }
-
-        const allWindows = BrowserWindow.getAllWindows();
-        const focusedWindow = BrowserWindow.getFocusedWindow();
-
+        const snapshot = readElectronWindowSnapshot();
         return {
-            windows: allWindows.map((w: any) => ({
-                id: w.id,
-                title: w.getTitle(),
-                focused: w === focusedWindow,
-            })),
+            windows: snapshot.windows
+                .filter(window => window.numericId !== null)
+                .map(window => ({ id: window.numericId!, title: window.title, focused: window.focused === true })),
         };
     }
 }

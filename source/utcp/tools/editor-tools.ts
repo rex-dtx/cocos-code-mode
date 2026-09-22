@@ -10,8 +10,10 @@ import { askEditor } from '../editor-ask';
 import { promptEditor } from '../editor-prompt';
 import { EditorAskArgs, EditorAskResult, EditorPromptArgs, EditorPromptResult, EditorAskInputSchema, EditorAskOutputSchema, EditorPromptInputSchema, EditorPromptOutputSchema } from '../editor-interaction-contracts';
 import { notifyEditor, progressEditor, listEditorTasks, cancelEditorTask } from '../editor-control-plane';
-import { getEditorState } from '../editor-state';
 import { EditorNotifyArgs, EditorProgressArgs, EditorTaskListArgs, EditorStateArgs, EditorNotifyInputSchema, EditorNotifyOutputSchema, EditorProgressInputSchema, EditorTaskSchema, EditorTaskListInputSchema, EditorTaskListOutputSchema, EditorTaskCancelInputSchema, EditorTaskCancelOutputSchema, EditorStateInputSchema, EditorStateOutputSchema } from '../editor-control-contracts';
+import { getEditorState } from '../editor-state';
+import { EditorPopupInspectArgs, EditorPopupInspectInputSchema, EditorPopupInspectOutputSchema } from '../editor-popup-contracts';
+import { inspectEditorPopups } from '../editor-popup-observer';
 
 export class EditorTools {
 
@@ -51,6 +53,8 @@ export class EditorTools {
 
     @utcpTool('editorState', 'Read bounded project path, current scene identity/readiness/dirty state, task counts and pending inbox metadata. No scene tree or prompt values. Deadline default 1s, max 5s; unavailable fields are null and listed. busy.scene means scene not ready, not a global editor lock. Read-only and never focuses panels.', EditorStateInputSchema, EditorStateOutputSchema, 'GET', ['editor', 'state', 'task', 'inbox'])
     editorState(args: EditorStateArgs = {}) { return getEditorState(args); }
+    @utcpTool('editorPopupInspect', 'Inspect bounded Creator popup evidence without clicking, dismissing, focusing, capturing screenshots or reading dialog body text. Returns Creator information/has-dialog state plus Electron BrowserWindow ownership, modal, visibility and classification metadata. IDs are ephemeral and never authorize a later action; incomplete adapter coverage is reported explicitly.', EditorPopupInspectInputSchema, EditorPopupInspectOutputSchema, 'GET', ['editor', 'popup', 'dialog', 'state', 'observe'])
+    editorPopupInspect(args: EditorPopupInspectArgs = {}) { return inspectEditorPopups(args); }
 
     @utcpTool(
         'editorEnvInfo',
