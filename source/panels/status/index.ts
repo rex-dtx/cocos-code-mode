@@ -3,7 +3,7 @@ import { isStatus, renderStatus, Status } from './status-view';
 
 interface StatusPanel {
     $: {
-        check: HTMLButtonElement; restart: HTMLButtonElement; open: HTMLButtonElement; clear: HTMLButtonElement;
+        check: HTMLButtonElement; restart: HTMLButtonElement; recover: HTMLButtonElement; open: HTMLButtonElement; clear: HTMLButtonElement;
         debug: HTMLInputElement; debugLabel: HTMLElement; action: HTMLElement;
         state: HTMLElement; checked: HTMLElement; groups: HTMLElement; root: HTMLElement;
     };
@@ -21,7 +21,9 @@ let actionKind = '';
 function updateControls(): void {
     for (const [panel, state] of states) {
         const busy = state.pending || operation !== null;
-        for (const control of [panel.$.check, panel.$.restart, panel.$.open, panel.$.clear]) control.disabled = busy;
+        for (const control of [panel.$.check, panel.$.restart, panel.$.recover, panel.$.open, panel.$.clear]) control.disabled = busy;
+        panel.$.recover.hidden = state.snapshot?.startupFailure?.recoverable !== true;
+        panel.$.recover.disabled = busy || state.snapshot?.startupFailure?.recoverable !== true;
         panel.$.debug.disabled = busy || !state.fresh;
         panel.$.debug.checked = state.snapshot?.server.debug ?? false;
         panel.$.debug.indeterminate = state.snapshot === null;
@@ -113,6 +115,7 @@ export const statusPanelDefinition = {
         <section class="operations" aria-label="Server operations">
             <h2>Operations</h2>
             <div class="controls"><button id="restart" type="button">Restart Server</button>
+                <button id="recover" type="button" hidden>Recover Port</button>
                 <label><input id="debug" type="checkbox" disabled><span id="debug-label">Debug logging: Unavailable</span></label>
                 <button id="open" type="button">Open This Editor's Logs</button><button id="clear" type="button">Clear This Editor's Logs</button></div>
             <p id="action" role="status" aria-live="polite"></p>
@@ -134,13 +137,14 @@ export const statusPanelDefinition = {
         dt { color: #aeb4c0; } dd { margin: 0; color: #e1e3e8; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; }
         .controls { padding: 11px; justify-content: flex-start; } label { display: inline-flex; align-items: center; gap: 6px; }
         #action:not(:empty) { padding: 0 11px 11px; }`,
-    $: { check: '#check', restart: '#restart', open: '#open', clear: '#clear', debug: '#debug', debugLabel: '#debug-label', action: '#action', state: '#state', checked: '#checked', groups: '#groups', root: '#status-root' },
+    $: { check: '#check', restart: '#restart', recover: '#recover', open: '#open', clear: '#clear', debug: '#debug', debugLabel: '#debug-label', action: '#action', state: '#state', checked: '#checked', groups: '#groups', root: '#status-root' },
     ready() {
         const panel = this as unknown as StatusPanel;
         states.set(panel, { closed: false, pending: false, fresh: false, generation: 0, snapshot: null });
         renderStatus(panel.$.groups, null);
         panel.$.check.onclick = () => { void checkStatus(panel); };
         panel.$.restart.onclick = () => { void performAction(panel, 'Restart Server', 'restart-server', [], 'Restart the server? Connected agents will be disconnected and may need to reconnect.'); };
+        panel.$.recover.onclick = () => { void performAction(panel, 'Recover Port', 'recover-server-port', [], 'Switch this editor from its occupied fixed port to automatic port selection? The process owning the old port will not be stopped.'); };
         panel.$.open.onclick = () => { void performAction(panel, 'Open this editor’s logs', 'open-debug-folder'); };
         panel.$.clear.onclick = () => { void performAction(panel, 'Clear this editor’s logs', 'clear-debug-logs', [], 'Permanently clear logs for this editor instance only? This cannot be undone.'); };
         panel.$.debug.onchange = () => {
@@ -164,7 +168,7 @@ export const statusPanelDefinition = {
             state.refreshTimer = undefined;
             states.delete(panel);
         }
-        for (const control of [panel.$.check, panel.$.restart, panel.$.open, panel.$.clear]) control.onclick = null;
+        for (const control of [panel.$.check, panel.$.restart, panel.$.recover, panel.$.open, panel.$.clear]) control.onclick = null;
         panel.$.debug.onchange = null;
     },
 };

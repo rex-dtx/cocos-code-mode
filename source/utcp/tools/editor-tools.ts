@@ -33,8 +33,12 @@ export class EditorTools {
         return promptEditor(args);
     }
 
-    @utcpTool('editorNotify', 'Post a bounded info/warning/error notification quietly to Agent Inbox state and the editor log. Never opens or focuses a panel. Retained up to 5min, newest 50 notices.', EditorNotifyInputSchema, EditorNotifyOutputSchema, 'POST', ['editor', 'notification'])
-    editorNotify(args: EditorNotifyArgs) { return notifyEditor(args); }
+    @utcpTool('editorNotify', 'Post a bounded info/warning/error notification to Agent Inbox state and the editor log. Default is quiet. openPanel:true explicitly opens/focuses Agent Inbox so users can see a client-side Code Mode/call_tool_chain failure. Retained up to 5min, newest 50 notices.', EditorNotifyInputSchema, EditorNotifyOutputSchema, 'POST', ['editor', 'notification'])
+    async editorNotify(args: EditorNotifyArgs) {
+        const notification = notifyEditor(args);
+        if (args.openPanel === true) await Editor.Panel.open(`${packageJSON.name}.prompt`);
+        return notification;
+    }
 
     @utcpTool('editorProgress', 'Track cooperative long work without blocking Creator. Start returns taskId; update renews its inactivity deadline (default 60s, max 5min). Finish explicitly declares completed/failed/cancelled. Progress 0-100. Expiry marks timedOut, not interruption. Poll cancelRequested and acknowledge cancellation only after work stops. Never opens/focuses panels. At most 100 retained tasks, terminal retention 5min.', EditorProgressInputSchema, EditorTaskSchema, 'POST', ['editor', 'task', 'progress'])
     editorProgress(args: EditorProgressArgs) { return progressEditor(args); }

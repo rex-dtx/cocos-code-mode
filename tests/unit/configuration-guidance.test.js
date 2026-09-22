@@ -18,3 +18,8 @@ describe('configuration guidance', () => {
     assert.doesNotMatch(panel, /['"]code-mode['"]/);
   });
 });
+
+it('publishes the explicit occupied-port recovery route', () => {
+  const pkg = require('../../package.json');
+  assert.deepEqual(pkg.contributions.messages['recover-server-port'], { methods: ['recoverServerPort'] });
+});

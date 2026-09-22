@@ -141,3 +141,43 @@ it('falls back from an occupied reusable auto port without changing fixed-port s
     global.Editor = original;
   }
 });
+
+it('recovers a confirmed fixed-port collision without stopping the owning process', async () => {
+  const net = require('node:net');
+  const blocker = net.createServer();
+  await new Promise((resolve, reject) => { blocker.once('error', reject); blocker.listen(0, '127.0.0.1', resolve); });
+  const occupiedPort = blocker.address().port;
+  const original = global.Editor;
+  const values = new Map([['fixedServerPort', occupiedPort]]);
+  global.Editor = {
+    Project: { path: process.cwd() }, App: { version: '3.7.3' },
+    Profile: { getConfig: async (_package, key) => values.get(key), setConfig: async (_package, key, value) => values.set(key, value) },
+    Message: { request: async () => true, broadcast() {} },
+  };
+  const config = requireDist('utcp/config-manager.js').getConfigManager();
+  const originalUpdate = config.updatePort, originalRemove = config.removeCocosEditorTemplate;
+  config.updatePort = async () => true;
+  config.removeCocosEditorTemplate = async () => true;
+  const main = requireDist('main.js');
+  try {
+    await main.load();
+    const failed = await main.methods.getExtensionStatus();
+    assert.equal(failed.server.running, false);
+    assert.deepEqual({ code: failed.startupFailure.code, requestedPort: failed.startupFailure.requestedPort, recoverable: failed.startupFailure.recoverable },
+      { code: 'EADDRINUSE', requestedPort: occupiedPort, recoverable: true });
+    const recovered = await main.methods.recoverServerPort();
+    assert.equal(recovered.recovered, true);
+    assert.equal(recovered.previousPort, occupiedPort);
+    assert.notEqual(recovered.port, occupiedPort);
+    assert.equal(values.get('fixedServerPort'), 0);
+    assert.equal(blocker.listening, true, 'recovery must not stop the process owning the old port');
+    const healthy = await main.methods.getExtensionStatus();
+    assert.equal(healthy.server.running, true);
+    assert.equal(healthy.startupFailure, null);
+  } finally {
+    await main.unload();
+    await new Promise(resolve => blocker.close(resolve));
+    config.updatePort = originalUpdate; config.removeCocosEditorTemplate = originalRemove;
+    global.Editor = original;
+  }
+});

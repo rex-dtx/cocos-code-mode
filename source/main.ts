@@ -16,6 +16,22 @@ let utcpServer: UtcpServerManager | null = null;
 let lifecycle: Promise<unknown> = Promise.resolve();
 let sceneLogging: 'enabled' | 'disabled' | 'unavailable' | 'error' | 'unknown' = 'unknown';
 const registryPaths = new WeakMap<UtcpServerManager, string>();
+type ServerStartupFailure = {
+    code: string;
+    message: string;
+    requestedPort: number;
+    recoverable: boolean;
+    occurredAt: number;
+};
+let serverStartupFailure: ServerStartupFailure | null = null;
+
+function captureStartupFailure(error: unknown, requestedPort: number): ServerStartupFailure {
+    const code = error instanceof Error && 'code' in error && typeof error.code === 'string' ? error.code : 'SERVER_START_FAILED';
+    const message = error instanceof Error ? error.message : String(error);
+    const failure = { code, message: message.slice(0, 512), requestedPort, recoverable: code === 'EADDRINUSE' && requestedPort > 0, occurredAt: Date.now() };
+    serverStartupFailure = failure;
+    return failure;
+}
 
 function runLifecycle<T>(operation: () => Promise<T>): Promise<T> {
     const result = lifecycle.then(operation);
@@ -59,6 +75,7 @@ async function startPublishedServer(port: number, debugLogging: boolean): Promis
             await config.updatePort(actualPort, server.instanceId);
             if (port === 0) await config.setLastAutoPort(actualPort);
             utcpServer = server;
+            serverStartupFailure = null;
             sceneLogging = await syncSceneLogging(debugLogging, server.instanceId);
             return actualPort;
         } catch (error) {
@@ -97,6 +114,7 @@ export const methods: { [key: string]: (...any: any) => any } = {
         const current = server === utcpServer && server?.port ? server : null;
         return {
             ...snapshot,
+            startupFailure: serverStartupFailure,
             sessions: current ? current.sessionPresence.snapshot() : [],
             activity: current ? current.requestActivity.snapshot() : { activeCount: 0, active: [], overflowCount: 0, lastFinished: null },
         };
@@ -162,9 +180,28 @@ export const methods: { [key: string]: (...any: any) => any } = {
                 console.log(`[cx3][api] UTCP Server restarted on port ${actualPort}`);
                 return actualPort;
             } catch (err) {
+                captureStartupFailure(err, port);
                 console.error('[cx3][api] Failed to restart UTCP Server:', err);
                 throw err;
             }
+        });
+    },
+    async recoverServerPort() {
+        return runLifecycle(async () => {
+            const failure = serverStartupFailure;
+            if (!failure?.recoverable || failure.code !== 'EADDRINUSE') {
+                throw new Error('Port recovery is available only after a confirmed EADDRINUSE startup failure.');
+            }
+            const config = getConfigManager();
+            const debugLogging = utcpServer?.getDebugEnabled()
+                ?? (await Editor.Profile.getConfig(packageJSON.name, 'debugLogging') === true);
+            const previousServer = utcpServer;
+            if (previousServer) await stopPublishedServer(previousServer);
+            utcpServer = null;
+            await config.setConfiguredPort(0);
+            const actualPort = await startPublishedServer(0, debugLogging);
+            console.info(`[cx3][api] Recovered from occupied port ${failure.requestedPort}; server listening on ${actualPort}.`);
+            return { recovered: true, previousPort: failure.requestedPort, port: actualPort, namespace: `ccp3x_${actualPort}` };
         });
     },
     toggleDebugLogging() {
@@ -224,8 +261,8 @@ export async function load() {
         if (profile !== 'core' && profile !== 'full' && profile !== 'custom') throw new Error('Invalid tool profile.');
         setServerProfile(profile, profileConfig.enabled, profileConfig.disabled, profileConfig.envelope);
 
+        const port = await configManager.getCurrentPort();
         try {
-            const port = await configManager.getCurrentPort();
             const actualPort = await startPublishedServer(port, debugLogging);
             const url = `http://localhost:${actualPort}/utcp`;
             console.log(
@@ -234,6 +271,7 @@ export async function load() {
                 `[cx3][lifecycle] New AI sessions discover ccp3x_${actualPort}; reconnect an existing Code Mode MCP session to refresh it.`
             );
         } catch (err) {
+            captureStartupFailure(err, port);
             console.error('[cx3][api] Failed to start UTCP Server:', err);
         }
     });

@@ -27,6 +27,7 @@ export interface Status {
     probe: { status: string; sceneReady: boolean | null; code: string | null } | null;
     sessions: StatusSession[];
     activity: StatusActivity;
+    startupFailure: { code: string; message: string; requestedPort: number; recoverable: boolean; occurredAt: number } | null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -56,7 +57,7 @@ function isStatusActivity(value: unknown): value is StatusActivity {
 
 export function isStatus(value: unknown): value is Status {
     if (!isRecord(value)) return false;
-    const { checkedAt, build, server, registry, http, probe, sessions, activity } = value;
+    const { checkedAt, build, server, registry, http, probe, sessions, activity, startupFailure } = value;
     return typeof checkedAt === 'number' && Number.isInteger(checkedAt) && checkedAt > 0 && checkedAt <= 8640000000000000
         && isRecord(build) && typeof build.version === 'string' && typeof build.commit === 'string'
         && typeof build.branch === 'string' && typeof build.dirty === 'boolean' && typeof build.builtAt === 'string'
@@ -78,6 +79,12 @@ export function isStatus(value: unknown): value is Status {
             && typeof session.lastSeen === 'number' && Number.isFinite(session.lastSeen)
             && typeof session.ageMs === 'number' && Number.isFinite(session.ageMs) && session.ageMs >= 0
             && (session.status === 'Active' || session.status === 'Stale' || session.status === 'Expired'))
+        && (startupFailure === null || (isRecord(startupFailure)
+            && typeof startupFailure.code === 'string' && startupFailure.code.length > 0 && startupFailure.code.length <= 64
+            && typeof startupFailure.message === 'string' && startupFailure.message.length > 0 && startupFailure.message.length <= 512
+            && typeof startupFailure.requestedPort === 'number' && Number.isInteger(startupFailure.requestedPort) && startupFailure.requestedPort >= 0 && startupFailure.requestedPort <= 65535
+            && typeof startupFailure.recoverable === 'boolean'
+            && typeof startupFailure.occurredAt === 'number' && Number.isInteger(startupFailure.occurredAt) && startupFailure.occurredAt > 0))
         && isStatusActivity(activity);
 }
 const registryLabels = { matched: 'Matched this instance', missing: 'Missing', mismatch: 'Mismatch', error: 'Error', 'not-running': 'Not checked — server stopped' };
@@ -104,12 +111,19 @@ export function renderStatus(container: HTMLElement, snapshot: Status | null): v
         const last = snapshot.activity.lastFinished;
         activityRows.push(['Last request', `${last.tool} · ${last.outcome} · ${last.durationMs}ms`]);
     }
+    const startup = snapshot?.startupFailure;
     const groups: Array<[string, Array<[string, string | null | undefined]>]> = [
         ['Operational status', activityRows],
         ['Session connections', sessionRows],
         ['Server', [
             ['State', server ? (server.running ? 'Running' : 'Stopped') : null],
             ['Port', server ? String(server.port) : null], ['URL', server?.url],
+        ]],
+        ['Startup recovery', [
+            ['State', startup ? (startup.recoverable ? 'Action available' : 'Manual investigation required') : 'No startup failure'],
+            ['Code', startup?.code],
+            ['Requested port', startup ? String(startup.requestedPort) : null],
+            ['Detail', startup?.message],
         ]],
         ['Logging', [
             ['Interaction log', server?.logging.server ? 'Verbose logging ON' : 'Warnings/errors only'],

@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import packageJSON from '../../package.json';
 import { EditorControlSnapshot, EditorNotification, EditorNotifyArgs, EditorProgressArgs, EditorTask, EditorTaskCancelResult, EditorTaskListArgs, EditorTaskListResult } from './editor-control-contracts';
-import { controlEnum, controlNumber, controlObject, controlTaskId, controlText } from './editor-control-validation';
+import { controlEnum, controlNumber, controlObject, controlTaskId, controlText, invalidControl } from './editor-control-validation';
 import { ToolError } from './tool-error';
 
 const RETENTION_MS = 300000;
@@ -50,10 +50,11 @@ function lookup(taskId: string): { task: EditorTask; timeoutMs: number } {
     return entry;
 }
 export function notifyEditor(input: EditorNotifyArgs): EditorNotification {
-    const args = controlObject(input, ['title', 'message', 'level']);
+    const args = controlObject(input, ['title', 'message', 'level', 'openPanel']);
     const title = controlText(args.title, 'title', 256, true);
     const message = controlText(args.message, 'message', 4096, true);
     const level = args.level === undefined ? 'info' : controlEnum(args.level, 'level', ['info', 'warning', 'error'] as const);
+    if (args.openPanel !== undefined && typeof args.openPanel !== 'boolean') invalidControl('openPanel must be boolean.');
     sweep();
     const notification: EditorNotification = { id: randomBytes(16).toString('hex'), title, message, level, createdAt: Date.now() };
     if (notifications.length === MAX_NOTIFICATIONS) notifications.shift();

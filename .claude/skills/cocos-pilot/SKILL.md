@@ -31,7 +31,7 @@ Auto khi prompt chua mot trong: `code mode`, `ccp3x`/`ccp3x_<port>`, `ccp2x`/`cc
 
 Never infer registration from `CK_CODE_MODE`, `.claude/cocos-pilot-cache.json`, or a tool list from an earlier MCP session. Sau reconnect/restart/`ccbe` reload phải re-handshake; không fallback sang `ccbi` khác.
 
-### Retry
+### Retry and Creator-visible failures
 
 On `manual not found` or `tool not found`:
 
@@ -39,7 +39,9 @@ On `manual not found` or `tool not found`:
 2. Re-register `ccbi:ccp3x_<port>` hiện tại và confirm bằng `list_tools`.
 3. Retry `call_tool_chain` 1 lần.
 
-If it still fails, report the error and call `editorGetLogs`; do not retry in a loop.
+If a `cc-pilot/call_tool_chain` result has `success:true` but its `logs` contain `[ERROR] Code execution failed` (or the chain otherwise fails client-side), treat the command as failed. When the bound `ccbi` is still reachable, make one best-effort follow-up chain that calls `editorNotify({ level:'error', title:'Cocos Pilot command failed', message:<bounded summary>, openPanel:true })`; this writes the Creator log and opens Agent Inbox so the user sees the failure. Do not include secrets, transport URLs, or full raw payloads. If notification fails, report both failures to the user; never retry the original mutation blindly.
+
+For a server/tool error already visible in Creator logs, call `editorGetLogs` for bounded evidence and avoid duplicate notification loops.
 
 ## Scene preview (chup layout scene)
 

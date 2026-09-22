@@ -112,6 +112,27 @@ describe('editorAsk', () => {
   });
 });
 
+describe('editorNotify', () => {
+  it('is quiet by default and can explicitly open Agent Inbox for a failed Code Mode chain', async t => {
+    const api = editor(t);
+    let opened = 0;
+    api.Panel.open = async name => { opened += 1; assert.match(name, /\.prompt$/); return true; };
+    const tool = new EditorTools();
+    const quiet = await tool.editorNotify({ level: 'error', title: 'Cocos Pilot command failed', message: 'Code execution failed.' });
+    assert.equal(quiet.level, 'error');
+    assert.equal(opened, 0);
+    const visible = await tool.editorNotify({ level: 'error', title: 'Cocos Pilot command failed', message: 'Code execution failed.', openPanel: true });
+    assert.equal(visible.level, 'error');
+    assert.equal(opened, 1);
+  });
+
+  it('rejects unsupported notification arguments before opening Agent Inbox', async t => {
+    const api = editor(t);
+    api.Panel.open = () => { assert.fail('Invalid notification must not open a panel'); };
+    await assert.rejects(new EditorTools().editorNotify({ title: 'Failure', message: 'Bad', openPanel: 'yes' }), invalid);
+  });
+});
+
 describe('editorPrompt', () => {
   it('submits typed values once and prevents stale responses from cancelling the next form', async t => {
     const api = editor(t);

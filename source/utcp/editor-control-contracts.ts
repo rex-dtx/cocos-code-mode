@@ -8,7 +8,7 @@ export interface EditorTask {
     taskId: string; title: string; message: string; progress: number | null; status: EditorTaskStatus;
     cancelRequested: boolean; createdAt: number; updatedAt: number; expiresAt: number; finishedAt: number | null;
 }
-export type EditorNotifyArgs = Pick<EditorNotification, 'title' | 'message'> & { level?: EditorNotification['level'] };
+export type EditorNotifyArgs = Pick<EditorNotification, 'title' | 'message'> & { level?: EditorNotification['level']; openPanel?: boolean };
 export type EditorProgressArgs =
     | { operation: 'start'; title: string; message?: string; progress?: number; timeoutMs?: number }
     | { operation: 'update'; taskId: string; message?: string; progress?: number }
@@ -41,7 +41,7 @@ const terminal: JsonSchema = { type: 'string', enum: ['completed', 'failed', 'ca
 const timeoutMs: JsonSchema = { type: 'integer', minimum: 1, maximum: 300000, description: 'Inactivity deadline; default 60000ms. Each update renews it. Expiry marks timedOut, never interrupts work.' };
 export const EditorTaskSchema = object({ taskId, title, message, progress: nullable(progress), status, cancelRequested: boolean,
     createdAt: timestamp, updatedAt: timestamp, expiresAt: timestamp, finishedAt: nullable(timestamp) });
-export const EditorNotifyInputSchema = object({ title, message: text(4096, 1), level: { type: 'string', enum: ['info', 'warning', 'error'] } }, ['title', 'message']);
+export const EditorNotifyInputSchema = object({ title, message: text(4096, 1), level: { type: 'string', enum: ['info', 'warning', 'error'] }, openPanel: boolean }, ['title', 'message']);
 export const EditorNotifyOutputSchema = object({ id: taskId, title, message: text(4096, 1), level: { type: 'string', enum: ['info', 'warning', 'error'] }, createdAt: timestamp });
 export const EditorProgressInputSchema: JsonSchema = {
     type: 'object', additionalProperties: false,

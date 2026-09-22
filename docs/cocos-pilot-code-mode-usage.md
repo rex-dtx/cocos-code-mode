@@ -79,6 +79,23 @@ return {
 
 Keep returned `reference` handles for the next mutation (valid only for current `bd.iid`). Prefer `sceneBatchGet`, `assetBatchQuery`, and `nodeBatchSet` for independent operations. Use `executeJavascript` only when no dedicated `ccbt` tool represents the required editor action.
 
+### Surface Code Mode failures in Creator
+
+`cc-pilot/call_tool_chain` is an MCP adapter call. The MCP envelope may report `success:true` even when the code sandbox reports `[ERROR] Code execution failed` in `logs`; that means the requested Cocos operation failed.
+
+When the bound `ccpi` remains reachable, issue one best-effort follow-up chain:
+
+```typescript
+return await ccp3x_49650.editorNotify({
+  level: 'error',
+  title: 'Cocos Pilot command failed',
+  message: 'Instantiate MineEffect prefab failed: <bounded reason>',
+  openPanel: true,
+});
+```
+
+This writes an error entry to Creator and explicitly opens **Agent Inbox**, where the notification is retained. Keep the message bounded and redact secrets, transport URLs and raw payloads. Do not repeat a timed-out or failed mutation automatically. If `editorNotify` also fails, report both failures in chat; if the original failure was already a Cocos tool/server error, prefer bounded `editorGetLogs` evidence and avoid notification loops.
+
 ## Copy-ready agent instruction
 ```text
 Cocos Pilot controls Cocos Creator 3.x through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project/build/preview, diagnostics, files, runtime input, and screenshots. Identity: cce=Creator Editor, ccbe=Extension, ccbi:ccp3x_<port>=Instance, ccbr=Registry ~/.utcp_config.json, ccbt=Toolset 321, cm=Code Mode paradigm, cmm=@utcp/code-mode-mcp adapter, bd=Binding {ccbi+project+iid}, prs=Presence. At session start select the intended ccbi:ccp3x_<port> from Status/ccbr, register_manual that exact ccbi, verify with list_tools, then ccbi.editorHandshake({expectedProjectPath}) → bd; require bd.projectMatches:true && probe.status:responsive before mutations. Discover first (search_tools → tool_info → ccbi.<tool> via call_tool_chain), retain references per bd.iid, use batch ops, and use executeJavascript only when no ccbt tool fits. Re-handshake after reconnect/restart; never fallback to another ccbi.
