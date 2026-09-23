@@ -15,7 +15,7 @@ The `api-capability-resume` change SHOULD remain `status: pending` with `freeze.
 
 ### Requirement: Lane decomposition for re-entry
 
-Deferred capabilities SHOULD be grouped into lanes R1–R5 as defined in `tasks.md` (R1 preview runtime, R2 project/globals, R3 bundle verification, R4 replace redesign, R5 engine features). Each lane SHOULD become its own proposal/spec when reopened, carrying its rows' `witnessContractIds`, `positiveTestID/negativeTestID`, and `fixtureID`.
+Deferred capabilities SHOULD be grouped into lanes R1–R6 as defined in `tasks.md` (R1 preview runtime, R2 project/globals, R3 bundle verification, R4 replace redesign, R5 engine features, R6 Creator popup observability). Each implementation lane SHOULD become its own proposal/spec when reopened, carrying its rows' evidence contracts; R6 follows its dedicated vault plan and does not change the frozen portfolio denominator until separately proposed.
 
 #### Scenario: Reopening a lane
 

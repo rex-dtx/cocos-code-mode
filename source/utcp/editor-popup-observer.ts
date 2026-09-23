@@ -2,6 +2,7 @@ import { isMessageNotExposed } from './utils/editor-message-error';
 import { queryEditorMessage } from './editor-state';
 import { classifyPopupWindows } from './editor-popup-classifier';
 import { readElectronWindowSnapshot } from './electron-window-snapshot';
+import { observeWindowsPopups } from './windows-popup-observer';
 import {
     CreatorDialogSignal,
     EditorPopupInspectArgs,
@@ -61,6 +62,7 @@ function readElectronWindows(includeHidden: boolean): ElectronObservation {
                 ...(devtools ? ['devtools-type-or-url'] : []),
                 ...(worker ? ['worker-type-or-url'] : []),
             ],
+            actions: [],
             classificationEvidence: { creatorMain: creatorMainWindow, devtools, worker },
         };
     });
@@ -115,11 +117,16 @@ function validateArgs(input: EditorPopupInspectArgs): { includeNative: boolean, 
     return { includeNative: args.includeNative === true, includeHidden: args.includeHidden === true, maxItems };
 }
 
-function nativeCoverage(includeNative: boolean): { unavailable: EditorPopupInspectResult['unavailable'], complete: boolean } {
-    if (!includeNative) return { unavailable: [], complete: true };
-    // Native HWND enumeration remains deliberately gated until the live
-    // Scene Not Response reproduction proves the Electron layers insufficient.
-    return { unavailable: ['windows-native'], complete: process.platform !== 'win32' };
+async function readNativeWindows(includeNative: boolean, includeHidden: boolean, maxItems: number, electron: ElectronObservation): Promise<{ observations: PopupWindowObservation[], complete: boolean }> {
+    if (!includeNative || process.platform !== 'win32') return { observations: [], complete: true };
+    const creatorMain = electron.observations.find(window => window.classificationEvidence.creatorMain === true);
+    return observeWindowsPopups({
+        processId: process.pid,
+        creatorMainBounds: creatorMain?.bounds ?? null,
+        creatorMainTitle: creatorMain?.title ?? '',
+        includeHidden,
+        maxItems,
+    });
 }
 
 export async function inspectEditorPopups(input: EditorPopupInspectArgs = {}): Promise<EditorPopupInspectResult> {
@@ -148,6 +155,18 @@ export async function inspectEditorPopups(input: EditorPopupInspectArgs = {}): P
         complete = false;
     }
 
+    let nativeObservations: PopupWindowObservation[] = [];
+    try {
+        const native = await readNativeWindows(args.includeNative, args.includeHidden, args.maxItems, electron);
+        nativeObservations = native.observations;
+        complete = complete && native.complete;
+    } catch {
+        if (args.includeNative && process.platform === 'win32') {
+            unavailable.push('windows-native');
+            complete = false;
+        }
+    }
+
     const secondDialog = await readCreatorDialog();
     const latestDialog = secondDialog.signal.available || !creatorDialog.available ? secondDialog.signal : creatorDialog;
     if (secondDialog.failed && creatorDialog.available) {
@@ -156,11 +175,8 @@ export async function inspectEditorPopups(input: EditorPopupInspectArgs = {}): P
     }
     const raceDetected = electron.raceDetected || (creatorDialog.available && secondDialog.signal.available && creatorDialog.open !== secondDialog.signal.open);
 
-    const native = nativeCoverage(args.includeNative);
-    unavailable.push(...native.unavailable);
-    complete = complete && native.complete;
 
-    const result = classifyPopupWindows(latestDialog, electron.observations, {
+    const result = classifyPopupWindows(latestDialog, [...electron.observations, ...nativeObservations], {
         maxItems: args.maxItems,
         complete,
         unavailable,

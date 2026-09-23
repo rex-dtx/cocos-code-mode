@@ -6,6 +6,7 @@ const { requireDist } = require('../helpers/require-dist');
 
 const { classifyPopupWindows } = requireDist('utcp/editor-popup-classifier.js');
 const { inspectEditorPopups } = requireDist('utcp/editor-popup-observer.js');
+const { classifyNativeWindows } = requireDist('utcp/windows-popup-observer.js');
 const { resetEditorMessageProbes } = requireDist('utcp/editor-state.js');
 const { ToolRegistry } = requireDist('utcp/decorators.js');
 requireDist('utcp/tools/editor-tools.js');
@@ -32,6 +33,7 @@ function observation(overrides = {}) {
     ownerVerified: false,
     bounds: { x: 0, y: 0, width: 800, height: 600 },
     signals: [],
+    actions: [],
     classificationEvidence: {},
     ...overrides,
   };
@@ -126,6 +128,45 @@ describe('editor popup classifier', () => {
   });
 });
 
+describe('Windows native popup classifier', () => {
+  it('identifies the Creator main HWND and its visible owned dialog structurally', () => {
+    const rows = [
+      { hwnd: '0x20', pid: 1234, visible: true, title: 'Creator', className: 'Chrome_WidgetWin_1', ownerHwnd: null, rootOwnerHwnd: '0x20', bounds: { x: 0, y: 0, width: 1000, height: 800 }, actions: [] },
+      { hwnd: '0x30', pid: 1234, visible: true, title: 'Warning', className: '#32770', ownerHwnd: '0x20', rootOwnerHwnd: '0x20', bounds: { x: 300, y: 300, width: 300, height: 100 }, actions: [{ hwnd: '0x31', label: 'OK', enabled: true }] },
+    ];
+    const result = classifyNativeWindows(rows, { processId: 1234, creatorMainBounds: rows[0].bounds, creatorMainTitle: 'Creator', includeHidden: false, maxItems: 16 });
+    const dialog = result.find(row => row.title === 'Warning');
+    assert.equal(dialog.ownerVerified, true);
+    assert.equal(dialog.parentId, 'native:1234:0x20');
+    assert.equal(dialog.actions[0].label, 'OK');
+  });
+
+  it('prefers the verified Creator main class over a same-bounds dialog', () => {
+    const rows = [
+      { hwnd: '0x30', pid: 1234, visible: true, title: 'CCP3X Action Qualification nonce', className: '#32770', ownerHwnd: '0x20', rootOwnerHwnd: '0x20', bounds: { x: 0, y: 0, width: 1000, height: 800 }, actions: [{ hwnd: '0x31', label: 'Cancel', enabled: true }, { hwnd: '0x32', label: 'Continue', enabled: true }] },
+      { hwnd: '0x20', pid: 1234, visible: true, title: 'Creator', className: 'Chrome_WidgetWin_1', ownerHwnd: null, rootOwnerHwnd: '0x20', bounds: { x: 0, y: 0, width: 1000, height: 800 }, actions: [] },
+    ];
+    const result = classifyNativeWindows(rows, { processId: 1234, creatorMainBounds: rows[1].bounds, creatorMainTitle: 'Creator', includeHidden: false, maxItems: 16 });
+    const main = result.find(row => row.id === 'native:1234:0x20');
+    const popup = result.find(row => row.id === 'native:1234:0x30');
+    assert.equal(main.classificationEvidence.creatorMain, true);
+    assert.equal(popup.parentId, 'native:1234:0x20');
+  });
+
+  it('keeps unowned Creator DirectUI dialogs non-actionable', () => {
+    const rows = [{ hwnd: '0x30', pid: 1234, visible: true, title: 'Warn', className: '#32770', ownerHwnd: null, rootOwnerHwnd: '0x30', bounds: { x: 10, y: 10, width: 300, height: 100 }, actions: [{ hwnd: '0x31', label: 'Confirm', enabled: true }] }];
+    const result = classifyNativeWindows(rows, { processId: 1234, creatorMainBounds: null, creatorMainTitle: '', includeHidden: false, maxItems: 16 });
+    assert.equal(result[0].ownerVerified, false);
+    assert.equal(result[0].actions.length, 0);
+  });
+
+  it('does not return hidden records', () => {
+    const rows = [{ hwnd: '0x21', pid: 1234, visible: false, title: 'Hidden', className: '#32770', ownerHwnd: null, rootOwnerHwnd: '0x21', bounds: null, actions: [] }];
+    const result = classifyNativeWindows(rows, { processId: 1234, creatorMainBounds: null, creatorMainTitle: '', includeHidden: false, maxItems: 16 });
+    assert.deepEqual(result.map(row => row.id), []);
+  });
+});
+
 describe('editorPopupInspect', () => {
   it('returns a complete no-popup snapshot and excludes hidden worker windows by default', async () => {
     const main = electronWindow({ id: 1, title: 'Creator', url: 'file:///C:/Creator/@editor/creator/static/windows/main.html#project', focused: true });
@@ -155,14 +196,14 @@ describe('editorPopupInspect', () => {
     assert.equal(changed, false);
   });
 
-  it('reports typed incomplete coverage when native inspection is requested before its live gate', async () => {
+  it('completes native coverage when the bounded Windows scan succeeds', async () => {
     const main = electronWindow({ id: 1, title: 'Creator', url: 'file:///C:/Creator/@editor/creator/static/windows/main.html#project' });
     installEditorAndElectron({ windows: [main] });
     const result = await inspectEditorPopups({ includeNative: true });
-    assert.equal(result.complete, false);
-    assert.ok(result.unavailable.includes('windows-native'));
+    assert.equal(result.complete, true);
+    assert.equal(result.unavailable.includes('windows-native'), false);
     assert.equal(result.detected, false);
-    assert.equal(result.blocking, null);
+    assert.equal(result.blocking, false);
   });
 
   it('rejects malformed bounded input before probing Creator', async () => {

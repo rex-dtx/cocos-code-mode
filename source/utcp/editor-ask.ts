@@ -8,7 +8,7 @@ let cancelPending: (() => void) | undefined;
 
 export function cancelEditorAsk(): void { cancelPending?.(); }
 
-export function askEditor(input: EditorAskArgs): Promise<EditorAskResult> {
+export function askEditor(input: EditorAskArgs, onNativeSettled?: () => void): Promise<EditorAskResult> {
     const args = validateAsk(input);
     if (args.presentation !== 'native') return promptEditorQuestion(args);
     // Creator 3.7.3 exposes the native message box through info/warn/error,
@@ -30,12 +30,17 @@ export function askEditor(input: EditorAskArgs): Promise<EditorAskResult> {
             cancelPending = undefined;
             if (result) resolve(result); else reject(error);
         };
+        const notifyNativeSettled = () => {
+            try { onNativeSettled?.(); }
+            catch (error) { console.warn('[cx3][popup] native settlement callback failed:', error); }
+        };
         const timer = setTimeout(() => finish({ buttonIndex: null, buttonLabel: null, cancelled: false, timedOut: true }), args.timeoutMs);
         cancelPending = () => finish({ buttonIndex: null, buttonLabel: null, cancelled: true, timedOut: false });
         Promise.resolve().then(() => Editor.Dialog[method](args.message, {
             title: args.title, detail: args.detail, buttons: args.buttons, default: 0, cancel: args.cancelId,
         })).then(result => {
             nativePending = false;
+            notifyNativeSettled();
             if (settled) return;
             const index = result?.response;
             if (!Number.isInteger(index) || index < 0 || index >= args.buttons.length) {
@@ -45,6 +50,7 @@ export function askEditor(input: EditorAskArgs): Promise<EditorAskResult> {
             finish({ buttonIndex: index, buttonLabel: args.buttons[index], cancelled: index === args.cancelId, timedOut: false });
         }, error => {
             nativePending = false;
+            notifyNativeSettled();
             finish(undefined, error);
         });
     });

@@ -88,6 +88,32 @@ describe('editorAsk', () => {
     assert.equal(result.timedOut, true);
     assert.equal(result.buttonIndex, null);
   });
+  it('keeps an expired fixture busy until its native dialog actually settles', async t => {
+    const api = editor(t);
+    const { startTrackedPopupFixture, getTrackedPopupFixture } = requireDist('utcp/editor-popup-fixture.js');
+    const previousSetTimeout = global.setTimeout;
+    const previousNow = Date.now;
+    let expire;
+    let dismiss;
+    api.Dialog.warn = () => new Promise(resolve => { dismiss = resolve; });
+    global.setTimeout = (callback, delay, ...args) => {
+      if (delay === 300000) { expire = () => callback(...args); return { unref() {} }; }
+      return previousSetTimeout(callback, delay, ...args);
+    };
+    t.after(() => { global.setTimeout = previousSetTimeout; Date.now = previousNow; });
+    const fixture = startTrackedPopupFixture();
+    await Promise.resolve();
+    assert.equal(getTrackedPopupFixture().title, fixture.title);
+    Date.now = () => fixture.expiresAt;
+    expire();
+    await Promise.resolve();
+    assert.equal(getTrackedPopupFixture().title, fixture.title);
+    assert.throws(() => startTrackedPopupFixture(), error => error.code === 'POPUP_FIXTURE_BUSY');
+    dismiss({ response: 1 });
+    await new Promise(resolve => setImmediate(resolve));
+    Date.now = previousNow;
+    assert.equal(getTrackedPopupFixture(), null);
+  });
 
   it('releases the native guard on errors and rejects malformed native responses', async t => {
     const api = editor(t);

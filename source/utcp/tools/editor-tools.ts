@@ -12,8 +12,10 @@ import { EditorAskArgs, EditorAskResult, EditorPromptArgs, EditorPromptResult, E
 import { notifyEditor, progressEditor, listEditorTasks, cancelEditorTask } from '../editor-control-plane';
 import { EditorNotifyArgs, EditorProgressArgs, EditorTaskListArgs, EditorStateArgs, EditorNotifyInputSchema, EditorNotifyOutputSchema, EditorProgressInputSchema, EditorTaskSchema, EditorTaskListInputSchema, EditorTaskListOutputSchema, EditorTaskCancelInputSchema, EditorTaskCancelOutputSchema, EditorStateInputSchema, EditorStateOutputSchema } from '../editor-control-contracts';
 import { getEditorState } from '../editor-state';
-import { EditorPopupInspectArgs, EditorPopupInspectInputSchema, EditorPopupInspectOutputSchema } from '../editor-popup-contracts';
+import { EditorPopupInspectArgs, EditorPopupInspectInputSchema, EditorPopupInspectOutputSchema, EditorPopupActionArgs, EditorPopupActionInputSchema, EditorPopupActionOutputSchema } from '../editor-popup-contracts';
 import { inspectEditorPopups } from '../editor-popup-observer';
+import { actOnEditorPopup } from '../editor-popup-action';
+import { startTrackedPopupFixture } from '../editor-popup-fixture';
 
 export class EditorTools {
 
@@ -55,6 +57,12 @@ export class EditorTools {
     editorState(args: EditorStateArgs = {}) { return getEditorState(args); }
     @utcpTool('editorPopupInspect', 'Inspect bounded Creator popup evidence without clicking, dismissing, focusing, capturing screenshots or reading dialog body text. Returns Creator information/has-dialog state plus Electron BrowserWindow ownership, modal, visibility and classification metadata. IDs are ephemeral and never authorize a later action; incomplete adapter coverage is reported explicitly.', EditorPopupInspectInputSchema, EditorPopupInspectOutputSchema, 'GET', ['editor', 'popup', 'dialog', 'state', 'observe'])
     editorPopupInspect(args: EditorPopupInspectArgs = {}) { return inspectEditorPopups(args); }
+
+    @utcpTool('editorPopupAction', 'Remind the operator or request explicit activation of one verified native Creator Button. Activation requires exact popup/action IDs and labels, confirm:true, authorization:user-explicit, a fresh Agent Inbox approval, and a bounded Python Win32 read-back + exact popup closure proof. Unknown or stale controls fail closed. No coordinate click.', EditorPopupActionInputSchema, EditorPopupActionOutputSchema, 'POST', ['editor', 'popup', 'dialog', 'operator', 'action'])
+    editorPopupAction(args: EditorPopupActionArgs) { return actOnEditorPopup(args); }
+
+    @utcpTool('editorPopupFixture', 'Open one disposable Creator-owned native popup for action qualification; no scene or file mutation. Returns a random title nonce and does not await the dialog. Only one fixture may be pending.', { type: 'object', additionalProperties: false, properties: {}, required: [] }, { type: 'object', additionalProperties: false, properties: { title: { type: 'string' }, expiresAt: { type: 'integer' } }, required: ['title', 'expiresAt'] }, 'POST', ['editor', 'popup', 'fixture', 'qualification'])
+    editorPopupFixture() { return startTrackedPopupFixture(); }
 
     @utcpTool(
         'editorEnvInfo',

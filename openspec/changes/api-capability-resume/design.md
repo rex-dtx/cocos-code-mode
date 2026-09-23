@@ -20,6 +20,7 @@
 2. **5 lane R1–R5** theo `prerequisites/witnessContractIds`, không theo domain thuần túy — vì điều kiện resume là theo IPC/fixture, không phải theo folder.
 3. **Freeze commit `bacd213`** (không phải `61bd383`) làm mốc — vì `bacd213` đã fix `sp` + `getComponent(string)` và smoke 10/10 sau khi mở `db://assets/scene.scene`.
 4. **Status `pending` trong `.openspec.yaml`** — tooling hiện tại không có state pending, nên dùng trường `status: pending` tự định nghĩa và `.gitignore` không ảnh hưởng; khi resume sẽ đổi thành spec-driven và tạo proposal con.
+5. **Popup observability tách thành lane R6 / plan riêng** — `notes/plans/cc-code-mode-cst/2-todo-260922__tbd-creator-popup-detection/plan.md`. Detection read-only thuộc P1 editor observability; Creator private IPC chỉ là signal, Electron là adapter chính, Win32 HWND là fallback có live-gate. Không gộp popup dismissal vào API resume.
 
 ## Risks / Trade-offs
 

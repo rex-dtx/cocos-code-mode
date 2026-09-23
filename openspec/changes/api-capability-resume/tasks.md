@@ -11,6 +11,7 @@
 - [ ] **Lane R3 — Verification bundles** — blocked after clean artifact probe `reports/r3-fixture-probe-20260922.json` (`cdc2de2`, Creator 3.7.3, bound handshake): negative boundaries observed, but project has zero bundle assets and localization module/resource unavailable. Fresh positive/negative witnesses remain required for `assetBundleValidate` and `localizationValidate`; no promotion.
 - [x] **Lane R4 — Replace redesign** — owner decision 2026-09-22: **Keep deferred**. Do not introduce replacements for `prefabVariantCreate`, `tilemapCreate`, or `tweenSequenceCreate/Inspect/Control/Validate`; retain fail-closed state and require a new explicit proposal before reopening.
 - [ ] **Lane R5 — Engine features 3.8** — blocked after clean read-only probe `reports/r5-engine-api-probe-20260922.json` (`cdc2de2`, Creator 3.7.3): `cc.Terrain`, `cc.ParticleSystem`, and `cc.LightProbeInfo` are `undefined`; no mutation attempted. Creator ≥3.8 engine APIs and fresh witnesses required for `lightBakeManage`, `terrainEdit`, `particleConfigure`; physics topology remains qualified.
+- [ ] **Lane R6 — Creator popup observability** — dedicated tracked plan: `notes/plans/cc-code-mode-cst/2-todo-260922__tbd-creator-popup-detection/plan.md`. Scope: bounded read-only `editorPopupInspect` via Creator `information/has-dialog`, Electron window metadata, and Windows-native HWND fallback only when live reproduction proves it necessary. Detection only; dismissal is out of scope.
 
 ## 3. Re-entry checklist (khi a bảo "back lại")
 

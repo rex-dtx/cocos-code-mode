@@ -14,6 +14,7 @@ Plan này là **tủ pending** cho lần quay lại: gom toàn bộ candidate/re
 - Ghi nhận 23 hàng **rejected chờ revisit 3.8+** (23 trong 102, gồm 4 reserve): `animationGraphPreview`, `skeletalAnimationPlay/Events`, `audioPlaybackControl/Observe`, `physics2dConfigure/3dConfigure`, `particleConfigure/Playback`, `renderDiagnosticsCollect`, `lightBakeManage`, `terrainEdit`, `localizationInspect/TableEdit/Preview`, `runtimeSessionLifecycle/StateObserve/ScenarioRun/Assert`, `previewSessionInspect/ResolutionSet`, `runtimeWaitForState`, `bitmapFontImportSettingsConfigure`.
 - Ghi nhận backlog `docs/next-update-3x8-capability-backlog.json`: 3 `unsupportedOnCreator373` (projectManage set, physics2d/3dConfigure) + 9 `unverifiedOrFixtureBlocked` cần fixture/transport mới.
 - Định nghĩa **điều kiện resume**: Creator 3.8+ IPC (`project/set-config`, `_globals` read-back, preview resolution), fixture game-view không còn owner-disable, và thiết kế mới cho tween/prefabVariant/tilemapCreate.
+- Ghi riêng lane **R6 — Creator popup observability** qua tracked plan `notes/plans/cc-code-mode-cst/2-todo-260922__tbd-creator-popup-detection/plan.md`: read-only blocking-dialog detection, không dismissal, không tính vào frozen portfolio denominator cho tới khi có proposal/candidate decision riêng.
 - Không đụng tới 68 qualified hiện tại; không hạ gate lén — mọi thay đổi `requiredApprovalCount` phải có decision ghi file.
 
 ## Capabilities

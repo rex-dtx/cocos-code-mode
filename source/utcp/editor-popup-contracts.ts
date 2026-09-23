@@ -20,6 +20,31 @@ export interface PopupBounds {
     width: number;
     height: number;
 }
+export interface PopupActionRecord {
+    id: string;
+    label: string;
+    enabled: boolean;
+}
+
+export interface EditorPopupActionArgs {
+    operation: 'remind' | 'activate';
+    popupId: string;
+    popupTitle: string;
+    actionId?: string;
+    actionLabel?: string;
+    confirm?: boolean;
+    authorization?: 'user-explicit';
+}
+
+export interface EditorPopupActionResult {
+    operation: 'remind' | 'activate';
+    popupId: string;
+    actionId: string | null;
+    actionLabel: string | null;
+    activated: boolean;
+    closed: boolean;
+    reminderId: string | null;
+}
 
 export interface EditorPopupInspectArgs {
     includeNative?: boolean;
@@ -45,6 +70,7 @@ export interface PopupWindowRecord {
     bounds: PopupBounds | null;
     classification: PopupClassification;
     signals: string[];
+    actions: PopupActionRecord[];
 }
 
 export interface PopupWindowObservation extends Omit<PopupWindowRecord, 'classification'> {
@@ -84,6 +110,12 @@ const creatorDialogSchema = object({
     open: nullable(boolean),
     source: nullable({ type: 'string', enum: ['information/has-dialog'] }),
 });
+const popupActionSchema = object({
+    id: text(192, 1),
+    label: text(256),
+    enabled: boolean,
+});
+
 const popupWindowSchema = object({
     source: { type: 'string', enum: [...popupWindowSources] },
     id: text(128, 1),
@@ -96,6 +128,7 @@ const popupWindowSchema = object({
     bounds: nullable(boundsSchema),
     classification: { type: 'string', enum: [...popupClassifications] },
     signals: { type: 'array', maxItems: 16, items: text(128) },
+    actions: { type: 'array', maxItems: 16, items: popupActionSchema },
 });
 
 export const EditorPopupInspectInputSchema: JsonSchema = {
@@ -120,4 +153,23 @@ export const EditorPopupInspectOutputSchema: JsonSchema = object({
     truncated: boolean,
     complete: boolean,
     unavailable: { type: 'array', maxItems: popupUnavailableAdapters.length, uniqueItems: true, items: { type: 'string', enum: [...popupUnavailableAdapters] } },
+});
+
+
+export const EditorPopupActionInputSchema: JsonSchema = {
+    type: 'object', additionalProperties: false,
+    properties: {
+        operation: { type: 'string', enum: ['remind', 'activate'] },
+        popupId: text(128, 1), popupTitle: text(256),
+        actionId: text(192, 1), actionLabel: text(256), confirm: boolean,
+        authorization: { type: 'string', enum: ['user-explicit'] },
+    },
+    required: ['operation', 'popupId', 'popupTitle'],
+    allOf: [{ if: { properties: { operation: { const: 'activate' } }, required: ['operation'] }, then: { required: ['actionId', 'actionLabel', 'confirm', 'authorization'] } }],
+};
+
+export const EditorPopupActionOutputSchema: JsonSchema = object({
+    operation: { type: 'string', enum: ['remind', 'activate'] },
+    popupId: text(128, 1), actionId: nullable(text(192, 1)), actionLabel: nullable(text(256)),
+    activated: boolean, closed: boolean, reminderId: nullable(text(64, 1)),
 });
