@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-09-24",
+  "endpoint": "http://localhost:51912",
+  "creatorVersion": "3.7.3",
+  "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+  "build": {
+    "version": "2.1.0",
+    "commit": "01340bb",
+    "branch": "feat/cocos-pilot-api-capability-expansion",
+    "dirty": false,
+    "builtAt": "2026-09-24T07:46:12.088Z"
+  },
+  "instanceId": "0ff3375ca975046e047685d500d42dbf",
+  "smoke": [
+    { "name": "editorHandshake", "status": 200, "probe": "responsive", "sceneReady": true },
+    { "name": "nodeGetTree", "status": 200, "rootSceneReady": true, "maxDepth": 1, "maxNodes": 10 },
+    { "name": "editorPopupInspect", "status": 200, "complete": true, "detected": false, "blocking": false, "unavailable": [] },
+    { "name": "editorLog", "status": 200, "level": "info", "message": "[P4] clean artifact logging smoke" }
+  ],
+  "policy": {
+    "implementation": "01340bb",
+    "expectedDefault": {
+      "tier": "summary",
+      "groups": { "protocol": false, "read": true, "behavior": true, "lifecycle": true }
+    },
+    "uiToggleMatrix": "not directly observed from the terminal smoke"
+  },
+  "limitations": [
+    "Terminal smoke verifies clean build identity and API behavior, not Creator Console pixel output.",
+    "Configuration panel toggle matrix still requires direct Creator UI observation."
+  ]
+}

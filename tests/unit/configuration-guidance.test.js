@@ -7,7 +7,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
 const template = fs.readFileSync(path.join(root, 'static/template/configuration/index.html'), 'utf8');
 const panel = fs.readFileSync(path.join(root, 'source/panels/configuration/index.ts'), 'utf8');
-
+const loggingControl = fs.readFileSync(path.join(root, 'source/panels/configuration/logging-control.ts'), 'utf8');
 describe('configuration guidance', () => {
   it('identifies the MCP server as Cocos Pilot and exposes an agent instruction', () => {
     assert.match(template, /Cocos Pilot/);
@@ -27,6 +27,8 @@ it('exposes verbose logging policy controls and always-visible warning guidance'
   }
   assert.match(template, /Warnings and errors are always visible/);
   assert.match(template, /without restarting the server/);
+  assert.match(loggingControl, /Log file: available\./);
+  assert.doesNotMatch(loggingControl, /boundedText\(next\.logFile/);
 });
 
 it('publishes the explicit occupied-port recovery route', () => {

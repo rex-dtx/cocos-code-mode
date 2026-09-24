@@ -72,9 +72,9 @@ export function attachLoggingControl(root: HTMLElement): () => void {
     const describeFeedback = (next: LoggingState): string => {
         const enabled = next.enabled ? 'ON' : 'OFF';
         const groups = groupNames.filter(group => next.groups[group]).join(', ') || 'none';
-        const scene = next.scene === 'enabled' ? ' Scene console capture is ON.' : next.scene === 'disabled' ? ' Scene console capture is OFF.' : ` Scene console capture: ${next.scene}.`;
-        const file = next.logFile ? ` Log file: ${boundedText(next.logFile, 180)}.` : '';
-        return boundedText(`Verbose logs ${enabled}. Tier: ${next.tier}. Groups: ${groups}.${scene}${file} Warnings and errors are always visible.`);
+        const scene = next.scene === 'enabled' ? ' Scene capture: ON.' : next.scene === 'disabled' ? ' Scene capture: OFF.' : ` Scene capture: ${next.scene}.`;
+        const file = next.logFile ? ' Log file: available.' : '';
+        return boundedText(`Verbose logs ${enabled}. Tier: ${next.tier}. Groups: ${groups}.${scene}${file} Warnings/errors always visible.`);
     };
     const observe = async (request: Promise<unknown>, writing: boolean) => {
         busy = true;
