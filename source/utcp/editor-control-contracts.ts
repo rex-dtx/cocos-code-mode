@@ -22,6 +22,7 @@ export interface EditorStateResult {
     capturedAt: number; projectPath: string | null; engineVersion: string | null;
     scene: { ready: boolean | null; dirty: boolean | null; current: { uuid: string | null; url: string | null; name: string | null } | null };
     busy: { scene: boolean | null; assetImport: boolean | null; build: boolean | null; tasks: boolean; inbox: boolean };
+    popup: { detected: boolean | null; blocking: boolean | null; complete: boolean; count: number; raceDetected: boolean };
     tasks: { running: number; cancellationRequested: number; retained: number };
     inbox: { pending: boolean; requestId: string | null; kind: 'form' | 'question' | null; expiresAt: number | null };
     unavailable: string[];
@@ -62,7 +63,9 @@ export const EditorStateOutputSchema = object({
     capturedAt: timestamp, projectPath: nullable(text(4096)), engineVersion: nullable(text(256)),
     scene: object({ ready: nullable(boolean), dirty: nullable(boolean), current: nullable(object({ uuid: nullable(text(256)), url: nullable(text(4096)), name: nullable(text(256)) })) }),
     busy: object({ scene: nullable(boolean), assetImport: nullable(boolean), build: nullable(boolean), tasks: boolean, inbox: boolean }),
+    popup: object({ detected: nullable(boolean), blocking: nullable(boolean), complete: boolean, count: { type: 'integer', minimum: 0, maximum: 32 }, raceDetected: boolean }),
     tasks: object({ running: { type: 'integer', minimum: 0, maximum: 100 }, cancellationRequested: { type: 'integer', minimum: 0, maximum: 100 }, retained: { type: 'integer', minimum: 0, maximum: 100 } }),
     inbox: object({ pending: boolean, requestId: nullable(taskId), kind: nullable({ type: 'string', enum: ['form', 'question'] }), expiresAt: nullable(timestamp) }),
     unavailable: { type: 'array', maxItems: 8, items: { type: 'string', enum: ['projectPath', 'engineVersion', 'scene.ready', 'scene.dirty', 'scene.current', 'busy.assetImport', 'busy.build'] } },
 });
+

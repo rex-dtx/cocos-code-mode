@@ -2,6 +2,8 @@ import { EditorStateArgs, EditorStateResult } from './editor-control-contracts';
 import { controlNumber, controlObject } from './editor-control-validation';
 import { listEditorTasks } from './editor-control-plane';
 import { getEditorPrompt } from './editor-prompt';
+import { inspectEditorPopups } from './editor-popup-observer';
+import { EditorPopupInspectResult } from './editor-popup-contracts';
 import { randomBytes } from 'crypto';
 import { performance } from 'perf_hooks';
 
@@ -53,11 +55,14 @@ export async function getEditorState(input: EditorStateArgs = {}): Promise<Edito
     const result: EditorStateResult = {
         capturedAt: 0, projectPath: boundedText(Editor.Project?.path, 4096), engineVersion: null,
         scene: { ready: null, dirty: null, current: null }, busy: { scene: null, assetImport: null, build: null, tasks: false, inbox: false },
+        popup: { detected: null, blocking: null, complete: false, count: 0, raceDetected: false },
         tasks: { running: 0, cancellationRequested: 0, retained: 0 },
         inbox: { pending: false, requestId: null, kind: null, expiresAt: null }, unavailable: [],
     };
     const available = new Set<string>();
     let finished = false;
+    let popupSnapshot: EditorPopupInspectResult | null = null;
+    const popupRead = inspectEditorPopups({ maxItems: 1 }).then(value => { if (!finished) popupSnapshot = value; }, () => {});
     const queries = [
         ['scene.ready', 'scene', 'query-is-ready'], ['scene.dirty', 'scene', 'query-dirty'], ['scene.current', 'scene', 'query-current-scene'],
         ['busy.assetImport', 'asset-db', 'is-busy'], ['busy.build', 'builder', 'query-tasks-info'], ['engineVersion', 'engine', 'query-info'],
@@ -89,10 +94,18 @@ export async function getEditorState(input: EditorStateArgs = {}): Promise<Edito
     }, () => {}));
     let timer: NodeJS.Timeout | undefined;
     try {
-        await Promise.race([Promise.all(reads), new Promise<void>(resolve => { timer = setTimeout(resolve, timeoutMs); })]);
+        await Promise.race([Promise.all([...reads, popupRead]), new Promise<void>(resolve => { timer = setTimeout(resolve, timeoutMs); })]);
     } finally { finished = true; clearTimeout(timer); }
     if (result.projectPath === null) result.unavailable.push('projectPath');
     for (const [key] of queries) if (!available.has(key)) result.unavailable.push(key);
+    const snapshot = popupSnapshot as EditorPopupInspectResult | null;
+    if (snapshot !== null) result.popup = {
+        detected: snapshot.complete ? snapshot.detected : null,
+        blocking: snapshot.complete ? snapshot.blocking : null,
+        complete: snapshot.complete,
+        count: Math.min(snapshot.total, 32),
+        raceDetected: snapshot.raceDetected,
+    };
     const listed = listEditorTasks({ limit: 100 });
     result.tasks = {
         running: listed.tasks.filter(task => task.status === 'running').length,

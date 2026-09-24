@@ -1,0 +1,15 @@
+schema: spec-driven
+created: 2026-09-24
+status: pending
+lane: R4
+source_change: api-capability-resume
+scope: documentation-only
+portfolio_state_policy: do-not-edit
+creator_baseline: 3.7.3
+replacement_rows:
+  - prefabVariantCreate
+  - tilemapCreate
+  - tweenSequenceCreate
+  - tweenSequenceInspect
+  - tweenSequenceControl
+  - tweenSequenceValidate

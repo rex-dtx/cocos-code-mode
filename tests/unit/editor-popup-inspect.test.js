@@ -167,6 +167,28 @@ describe('Windows native popup classifier', () => {
   });
 });
 
+describe('editorState popup summary', () => {
+  it('exposes bounded popup status without changing busy.scene semantics', async () => {
+    const { getEditorState } = requireDist('utcp/editor-state.js');
+    const main = electronWindow({ id: 1, title: 'Creator', url: 'file:///C:/Creator/@editor/creator/static/windows/main.html#project', focused: true });
+    const dialog = electronWindow({ id: 2, title: 'Localized warning', url: 'file:///C:/Creator/dialog.html', modal: true, parent: main });
+    installEditorAndElectron({ windows: [main, dialog] });
+    global.Editor.Message.request = async (channel, message) => {
+      if (channel === 'information' && message === 'has-dialog') return false;
+      if (channel === 'scene' && message === 'query-is-ready') return true;
+      if (channel === 'scene' && message === 'query-dirty') return false;
+      if (channel === 'scene' && message === 'query-current-scene') return null;
+      if (channel === 'asset-db' && message === 'is-busy') return false;
+      if (channel === 'builder' && message === 'query-tasks-info') return { free: true };
+      if (channel === 'engine' && message === 'query-info') return { version: '3.7.3' };
+      throw new Error(`unexpected query ${channel}/${message}`);
+    };
+    const result = await getEditorState({ timeoutMs: 1000 });
+    assert.deepEqual(result.popup, { detected: true, blocking: true, complete: true, count: 2, raceDetected: false });
+    assert.equal(result.busy.scene, false);
+  });
+});
+
 describe('editorPopupInspect', () => {
   it('returns a complete no-popup snapshot and excludes hidden worker windows by default', async () => {
     const main = electronWindow({ id: 1, title: 'Creator', url: 'file:///C:/Creator/@editor/creator/static/windows/main.html#project', focused: true });
@@ -220,5 +242,9 @@ describe('editorPopupInspect', () => {
     assert.equal(metadata.tool.inputs.additionalProperties, false);
     assert.deepEqual(metadata.tool.inputs.required, []);
     assert.deepEqual(metadata.tool.outputs.required, ['capturedAt', 'detected', 'blocking', 'raceDetected', 'creatorDialog', 'windows', 'total', 'truncated', 'complete', 'unavailable']);
+    const state = ToolRegistry.getTools().find(({ tool }) => tool.name === 'editorState');
+    assert.ok(state);
+    assert.deepEqual(state.tool.outputs.properties.popup.required, ['detected', 'blocking', 'complete', 'count', 'raceDetected']);
+    assert.equal(state.tool.outputs.properties.busy.properties.scene.anyOf[1].type, 'null');
   });
 });

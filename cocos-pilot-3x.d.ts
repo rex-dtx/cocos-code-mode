@@ -624,11 +624,12 @@ declare namespace cocos_pilot_3x {
         message: string;
         createdAt: number;
     }
-    /** Bounded read-only snapshot. */
+    /** Bounded read-only snapshot with detection-only popup summary. */
     function editorState(args?: { timeoutMs?: number }): {
         capturedAt: number, projectPath: string | null, engineVersion: string | null,
         scene: { ready: boolean | null, dirty: boolean | null, current: { uuid: string | null, url: string | null, name: string | null } | null },
         busy: { scene: boolean | null, assetImport: boolean | null, build: boolean | null, tasks: boolean, inbox: boolean },
+        popup: { detected: boolean | null, blocking: boolean | null, complete: boolean, count: number, raceDetected: boolean },
         tasks: { running: number, cancellationRequested: number, retained: number },
         inbox: { pending: boolean, requestId: string | null, kind: "form" | "question" | null, expiresAt: number | null },
         unavailable: string[]
@@ -646,12 +647,14 @@ declare namespace cocos_pilot_3x {
     /** Flag only, never interrupts work. requested:true while running (including repeated requests); false when already terminal. Worker must stop safely then finish cancelled. */
     function editorTaskCancel(args: { taskId: string }): { task: EditorTask, requested: boolean, interrupted: false };
 
-    /** Bounded read-only snapshot. Default deadline 1000ms, maximum 5000ms; null + unavailable means unsupported, failed, malformed or timed-out API. busy.scene means not ready, not a global busy lock. No scene tree, prompt values or native-dialog state. */
+    /** Bounded read-only snapshot. Default deadline 1000ms, maximum 5000ms; null + incomplete popup status means adapter uncertainty. busy.scene means not ready, not a global busy lock. Popup status is detection-only; no scene tree, prompt values, popup detail records, or dialog actions. */
     function editorState(args?: { timeoutMs?: number }): {
         capturedAt: number,
         projectPath: string | null,
+        engineVersion: string | null,
         scene: { ready: boolean | null, dirty: boolean | null, current: { uuid: string | null, url: string | null, name: string | null } | null },
-        busy: { scene: boolean | null, tasks: boolean, inbox: boolean },
+        busy: { scene: boolean | null, assetImport: boolean | null, build: boolean | null, tasks: boolean, inbox: boolean },
+        popup: { detected: boolean | null, blocking: boolean | null, complete: boolean, count: number, raceDetected: boolean },
         tasks: { running: number, cancellationRequested: number, retained: number },
         inbox: { pending: boolean, requestId: string | null, kind: "form" | "question" | null, expiresAt: number | null },
         unavailable: string[]
