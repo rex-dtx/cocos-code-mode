@@ -25,7 +25,7 @@ export class SessionTools {
             transport: { type: 'string', enum: ['http-helper', 'code-mode'] },
             operation: { type: 'string', enum: ['beat', 'close'] },
         }, required: ['sessionId', 'expectedInstanceId', 'transport'],
-    }, snapshotSchema, 'POST', ['session', 'presence', 'heartbeat'], { profile: 'core' })
+    }, snapshotSchema, 'POST', ['session', 'presence', 'heartbeat'], { profile: 'core', logGroup: 'protocol' })
     editorSessionHeartbeat(input: SessionPresenceInput = {}) {
         try {
             return this.store.heartbeat(input);

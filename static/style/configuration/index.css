@@ -15,7 +15,7 @@ h1 { margin: 0 0 14px; font-size: 20px; }
 h2 { margin: 0 0 8px; font-size: 16px; }
 p { margin: 8px 0; }
 label { display: block; margin: 14px 0 5px; font-weight: 600; }
-textarea, input, button {
+textarea, input, select, button {
     box-sizing: border-box;
     color: inherit;
     background: var(--color-normal-fill-calmer, #252525);
@@ -23,16 +23,23 @@ textarea, input, button {
     border-radius: 4px;
     font: inherit;
 }
-textarea, input { width: 100%; padding: 8px; }
+textarea, input, select { width: 100%; padding: 8px; }
 textarea { resize: vertical; font-family: monospace; line-height: 1.5; }
 textarea[readonly] { user-select: text; }
 button { padding: 6px 12px; cursor: pointer; }
-button:disabled, input:disabled { opacity: 0.55; cursor: default; }
-button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible {
+button:disabled, input:disabled, select:disabled { opacity: 0.55; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
     outline: 2px solid var(--color-focus-fill, #75baff);
     outline-offset: 2px;
 }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+fieldset { margin: 14px 0 0; padding: 10px 12px 12px; border: 1px solid var(--color-normal-border, #666); border-radius: 4px; }
+fieldset:disabled { opacity: 0.65; }
+legend { padding: 0 4px; font-weight: 600; }
+.control-help { color: var(--color-text-secondary, #aaa); }
+.checkboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px 12px; margin-top: 10px; }
+.checkboxes label { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 400; }
+.checkboxes input { width: auto; padding: 0; }
 details { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--color-normal-border, #666); }
 summary { cursor: pointer; font-weight: 600; }
 #apply-settings { margin-top: 10px; }

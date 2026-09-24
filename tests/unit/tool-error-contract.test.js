@@ -76,20 +76,41 @@ describe('typed UTCP tool errors', () => {
     assert.ok(output.includes('truncated'));
   });
 
-  it('emits lifecycle summaries once through the Creator console without raw JSON', () => {
+  it('writes lifecycle summaries to the standard console and Creator editor logger', () => {
     const prior = global.Editor;
     const calls = [];
+    const consoleInfo = console.info;
     global.Editor = {
-      info: (message) => calls.push(['info', message]),
-      warn: (message) => calls.push(['warn', message]),
-      error: (message) => calls.push(['error', message]),
+      info: (message) => calls.push(['editor', 'info', message]),
+      warn: (message) => calls.push(['editor', 'warn', message]),
+      error: (message) => calls.push(['editor', 'error', message]),
     };
+    console.info = (message) => calls.push(['console', 'info', message]);
     try {
       creatorInteractionLog({ phase: 'complete', requestId: 'abcdef0123456789', tool: 'editorState', status: 200, durationMs: 4 });
-      assert.deepEqual(calls, [['info', '[cx3][api][abcdef01] SUCCESS editorState 200 · 4ms']]);
-      assert.equal(calls[0][1].includes('|'), false);
-      assert.equal(calls[0][1].includes('"requestId"'), false);
+      assert.deepEqual(calls, [
+        ['console', 'info', '[cx3][api][abcdef01] SUCCESS editorState 200 · 4ms'],
+        ['editor', 'info', '[cx3][api][abcdef01] SUCCESS editorState 200 · 4ms'],
+      ]);
     } finally {
+      console.info = consoleInfo;
+      global.Editor = prior;
+    }
+  });
+
+  it('does not expose raw request metadata when mirroring verbose output', () => {
+    const prior = global.Editor;
+    const calls = [];
+    const consoleInfo = console.info;
+    global.Editor = { info: (message) => calls.push(message) };
+    console.info = (message) => calls.push(message);
+    try {
+      creatorInteractionLog({ phase: 'complete', requestId: 'abcdef0123456789', tool: 'editorState', status: 200, durationMs: 4, args: { token: 'secret' } });
+      assert.equal(calls.length, 2);
+      assert.ok(calls.every(message => !message.includes('secret')));
+      assert.ok(calls.every(message => !message.includes('"requestId"')));
+    } finally {
+      console.info = consoleInfo;
       global.Editor = prior;
     }
   });

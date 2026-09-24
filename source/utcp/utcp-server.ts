@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { debugEnabled, setDebugLogging } from './logging-policy';
+import { debugEnabled, isCreatorLogVisible, setDebugLogging, CreatorLogGroup } from './logging-policy';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { ToolRegistry } from './decorators';
@@ -284,6 +284,7 @@ function activateDebugLog(instanceId: string): string | null {
 
 export function formatInteractionSummary(entry: Record<string, unknown>): string {
     const safe = snapshotInteraction(entry);
+    if (safe.phase === 'complete' && safe.tier === 'summary') delete safe.result;
     const rendered = renderInteraction(safe);
     return rendered.text + (rendered.truncated ? '\n[truncated: display budget; additional detail may also be bounded]' : '')
         + (typeof entry.detailFile === 'string' ? `\nDetails file: ${entry.detailFile}` : '');
@@ -291,18 +292,24 @@ export function formatInteractionSummary(entry: Record<string, unknown>): string
 
 export function creatorInteractionLog(entry: Record<string, unknown>): void {
     const phase = entry.phase;
-    const editor = (globalThis as {
-        Editor?: Partial<Record<'info' | 'warn' | 'error', (message: string) => void>>
-    }).Editor;
-    const level = phase === 'error' ? 'error' : phase === 'warning' ? 'warn' : 'info';
+    const message = formatInteractionSummary(entry);
+    const consoleWriter = console[phase === 'error' ? 'error' : phase === 'warning' ? 'warn' : 'info'];
     try {
-        if (editor && typeof editor[level] === 'function') editor[level](formatInteractionSummary(entry));
+        // Write through the standard console so Creator's Console panel renders the
+        // verbose lifecycle line, and retain Editor.info/warn/error for versions that
+        // route extension messages through the editor logger.
+        if (typeof consoleWriter === 'function') consoleWriter(message);
+        const editor = (globalThis as {
+            Editor?: Partial<Record<'info' | 'warn' | 'error', (message: string) => void>>
+        }).Editor;
+        const level = phase === 'error' ? 'error' : phase === 'warning' ? 'warn' : 'info';
+        if (editor && typeof editor[level] === 'function') editor[level](message);
     } catch {
         // Creator logging must never change the HTTP result or tool lifecycle.
     }
 }
 
-function interactionLog(entry: Record<string, unknown>): void {
+function interactionLog(entry: Record<string, unknown>, group: CreatorLogGroup = 'read'): void {
     const phase = entry.phase;
     if (!debugEnabled && phase !== 'warning' && phase !== 'error') return;
     const safe = snapshotInteraction({ ...entry, ts: new Date().toISOString() });
@@ -316,7 +323,7 @@ function interactionLog(entry: Record<string, unknown>): void {
     } else {
         safe.recovery = `${safe.recovery ?? ''}\nLog detail file unavailable; check filesystem permissions.`;
     }
-    creatorInteractionLog(safe);
+    if (isCreatorLogVisible(phase, group)) creatorInteractionLog({ ...safe, tier: phase === 'complete' && isCreatorLogVisible('trace', group) ? 'trace' : 'summary' });
 }
 
 function debugLog(entry: Record<string, unknown>): void {
@@ -421,7 +428,7 @@ export class UtcpServerManager {
                 if (addr && typeof addr === 'object') {
                     currentPort = addr.port;
                 }
-                console.info(`[cx3][api] LISTENING <- http://localhost:${currentPort}/utcp`);
+                if (isCreatorLogVisible('complete', 'lifecycle')) console.info(`[cx3][api] LISTENING <- http://localhost:${currentPort}/utcp`);
                 // Now register tools with the correct port
                 this.port = currentPort;
                 resetEditorMessageProbes();
@@ -433,9 +440,11 @@ export class UtcpServerManager {
                 }
 
                 const message = `[cx3][lifecycle] CONNECTED <- http://localhost:${currentPort}/utcp`;
-                console.info(message);
-                const editor = (globalThis as any).Editor;
-                try { if (editor && typeof editor.info === 'function') editor.info(message); } catch {}
+                if (isCreatorLogVisible('complete', 'lifecycle')) {
+                    console.info(message);
+                    const editor = (globalThis as { Editor?: { info?: (message: string) => void } }).Editor;
+                    try { editor?.info?.(message); } catch {}
+                }
                 resolve(currentPort);
             });
             this.server.on('error', (err: any) => {
@@ -494,13 +503,13 @@ export class UtcpServerManager {
                 const finishActivity = (outcome: 'completed' | 'failed', status: number) => {
                     if (activityStarted) this.requestActivity.finish(requestId, toolDef.name, outcome, status, t0);
                 };
-                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, args });
+                interactionLog({ phase: 'start', requestId, tool: toolDef.name, method: req.method, path: req.path, args }, toolMeta.logGroup);
                 try {
                     // Check profile exposure
                     if (!isToolExposed(toolDef.name, activeProfile, enabledTools, disabledTools)) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
                         res.setHeader('X-Duration-Ms', String(ms));
-                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, args, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED', message: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, args, status: 404, durationMs: ms, code: 'TOOL_NOT_EXPOSED', message: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` }, toolMeta.logGroup);
                         res.status(404).json({ error: `Tool '${toolDef.name}' is not exposed by the current profile '${activeProfile}'.` });
                         finishActivity('failed', 404);
                         return;
@@ -519,7 +528,7 @@ export class UtcpServerManager {
                         const errorMessage = missingInputs.length > 0
                             ? `Missing required input${plural}: ${missingInputs.join(', ')}`
                             : 'Invalid tool input.';
-                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT', message: errorMessage, args });
+                        interactionLog({ phase: 'error', requestId, tool: toolDef.name, status: 400, durationMs: ms, code: 'INVALID_TOOL_INPUT', message: errorMessage, args }, toolMeta.logGroup);
                         res.status(400).json({
                             error: errorMessage,
                             ...(missingInputs.length > 0 ? { missingInputs } : {}),
@@ -542,7 +551,7 @@ export class UtcpServerManager {
 
                     if (result === undefined || result === null) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
-                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: null });
+                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: null }, toolMeta.logGroup);
                         debugLog({ type: 'response', requestId, tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
                         finishActivity('completed', 200);
@@ -556,7 +565,7 @@ export class UtcpServerManager {
                         : trimmed ?? null;
                     res.json(payload);
                     const ms = Date.now() - t0;
-                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: payload });
+                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: payload }, toolMeta.logGroup);
                     debugLog({ type: 'response', requestId, tool: toolDef.name, result: payload, durationMs: ms });
                     finishActivity('completed', 200);
 
@@ -582,7 +591,7 @@ export class UtcpServerManager {
                         args,
                         stack: err instanceof Error ? err.stack : undefined,
                         expectedTest: Boolean(testId && err instanceof ToolError && err.status < 500),
-                    });
+                    }, toolMeta.logGroup);
                     debugLog({
                         type: 'error',
                         requestId,
@@ -686,9 +695,11 @@ export class UtcpServerManager {
         this.logFile = null;
         this.logDirectory = null;
         const message = '[cx3][lifecycle] DISCONNECTED <- UTCP Server stopped';
-        console.log(message);
-        const editor = (globalThis as any).Editor;
-        try { if (editor && typeof editor.info === 'function') editor.info(message); } catch {}
+        if (isCreatorLogVisible('complete', 'lifecycle')) {
+            console.log(message);
+            const editor = (globalThis as { Editor?: { info?: (message: string) => void } }).Editor;
+            try { editor?.info?.(message); } catch {}
+        }
     }
 
     getDebugEnabled(): boolean {

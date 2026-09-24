@@ -1,5 +1,6 @@
 import packageJSON from '../package.json';
 import { UtcpServerManager, setServerProfile } from './utcp/utcp-server';
+import { getCreatorLogPolicy, parseCreatorLogPolicy, setCreatorLogPolicy } from './utcp/logging-policy';
 import { closeArtifactServers } from './utcp/tools/artifact-server-tools';
 import { getConfigManager } from './utcp/config-manager';
 import { formatBuildInfo } from './build-info';
@@ -214,17 +215,33 @@ export const methods: { [key: string]: (...any: any) => any } = {
 
     async getDebugLogging() {
         const server = utcpServer;
+        const stored = await Editor.Profile.getConfig(packageJSON.name, 'creatorLogPolicy');
+        const policy = setCreatorLogPolicy(parseCreatorLogPolicy(stored));
+        await Editor.Profile.setConfig(packageJSON.name, 'creatorLogPolicy', policy);
         const enabled = server?.getDebugEnabled() ?? Boolean(await Editor.Profile.getConfig(packageJSON.name, 'debugLogging'));
-        return { enabled, scene: sceneLogging, logDirectory: server?.getLogDirectory() ?? null, logFile: server?.getLogFile() ?? null };
+        return { enabled, policy, tier: policy.tier, groups: policy.groups, scene: sceneLogging, logDirectory: server?.getLogDirectory() ?? null, logFile: server?.getLogFile() ?? null };
     },
-    async setDebugLogging(enabled: boolean) {
-        if (typeof enabled !== 'boolean') throw new Error('setDebugLogging requires boolean enabled');
-        await Editor.Profile.setConfig(packageJSON.name, 'debugLogging', enabled);
-        const applied = utcpServer?.setDebugEnabled(enabled) ?? enabled;
-        const scene = await syncSceneLogging(enabled, utcpServer?.instanceId ?? null);
+    async setDebugLogging(input: unknown) {
+        const candidate = typeof input === 'boolean' ? { enabled: input } : input && typeof input === 'object' && !Array.isArray(input) ? input as Record<string, unknown> : null;
+        if (!candidate || typeof candidate.enabled !== 'boolean') throw new Error('setDebugLogging requires boolean enabled');
+        const policyValue = 'policy' in candidate ? candidate.policy : { tier: candidate.tier, groups: candidate.groups };
+        const policy = setCreatorLogPolicy(parseCreatorLogPolicy(policyValue));
+        await Editor.Profile.setConfig(packageJSON.name, 'creatorLogPolicy', policy);
+        await Editor.Profile.setConfig(packageJSON.name, 'debugLogging', candidate.enabled);
+        const applied = utcpServer?.setDebugEnabled(candidate.enabled) ?? candidate.enabled;
+        const scene = await syncSceneLogging(candidate.enabled, utcpServer?.instanceId ?? null);
         sceneLogging = scene;
-        console.info(`[cx3][lifecycle] Verbose interaction logging ${applied ? 'ON' : 'OFF'}; scene capture ${scene}`);
-        return { enabled: applied, scene, logDirectory: utcpServer?.getLogDirectory() ?? null, logFile: utcpServer?.getLogFile() ?? null };
+        return { enabled: applied, policy, tier: policy.tier, groups: policy.groups, scene, logDirectory: utcpServer?.getLogDirectory() ?? null, logFile: utcpServer?.getLogFile() ?? null };
+    },
+    async getLoggingPolicy() {
+        const stored = await Editor.Profile.getConfig(packageJSON.name, 'creatorLogPolicy');
+        return setCreatorLogPolicy(parseCreatorLogPolicy(stored));
+    },
+    async setLoggingPolicy(input: unknown) {
+        const candidate = input && typeof input === 'object' && !Array.isArray(input) ? input as Record<string, unknown> : {};
+        const policy = setCreatorLogPolicy(parseCreatorLogPolicy('policy' in candidate ? candidate.policy : input));
+        await Editor.Profile.setConfig(packageJSON.name, 'creatorLogPolicy', policy);
+        return policy;
     },
 
 
@@ -255,6 +272,8 @@ export async function load() {
 
         const configManager = getConfigManager();
         await configManager.initialize();
+        const storedPolicy = await Editor.Profile.getConfig(packageJSON.name, 'creatorLogPolicy');
+        setCreatorLogPolicy(parseCreatorLogPolicy(storedPolicy));
         const debugLogging = await Editor.Profile.getConfig(packageJSON.name, 'debugLogging') === true;
         const profileConfig = await configManager.getToolProfileConfig();
         const profile = profileConfig.profile;

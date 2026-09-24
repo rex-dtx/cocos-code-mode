@@ -36,7 +36,7 @@ export class EditorHandshakeTools {
             capturedAt: { type: 'integer' }, elapsedMs: { type: 'integer' },
         },
         required: ['instanceId', 'projectPath', 'editorVersion', 'projectMatches', 'build', 'probe', 'capturedAt', 'elapsedMs'],
-    }, 'GET', ['editor', 'handshake', 'connection', 'health'], { profile: 'core' })
+    }, 'GET', ['editor', 'handshake', 'connection', 'health'], { profile: 'core', logGroup: 'protocol' })
     async editorHandshake(input: HandshakeArgs = {}) {
         const args = controlObject(input, ['timeoutMs', 'expectedProjectPath']);
         const timeoutMs = args.timeoutMs === undefined ? 1000 : controlNumber(args.timeoutMs, 'timeoutMs', 1, 5000);

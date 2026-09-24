@@ -19,6 +19,16 @@ describe('configuration guidance', () => {
   });
 });
 
+it('exposes verbose logging policy controls and always-visible warning guidance', () => {
+  assert.match(template, /id="verbose-policy-controls"/);
+  assert.match(template, /id="verbose-tier"/);
+  for (const group of ['protocol', 'read', 'behavior', 'lifecycle']) {
+    assert.match(template, new RegExp(`id="verbose-group-${group}"`));
+  }
+  assert.match(template, /Warnings and errors are always visible/);
+  assert.match(template, /without restarting the server/);
+});
+
 it('publishes the explicit occupied-port recovery route', () => {
   const pkg = require('../../package.json');
   assert.deepEqual(pkg.contributions.messages['recover-server-port'], { methods: ['recoverServerPort'] });

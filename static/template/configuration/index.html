@@ -2,11 +2,26 @@
     <h1>Settings</h1>
     <section aria-labelledby="logging-heading">
         <h2 id="logging-heading">Verbose logging</h2>
-        <p>Enable detailed extension interaction logs for troubleshooting. Warnings and errors remain recorded while verbose logging is off. Each editor writes an isolated, bounded log set; changes apply immediately without restarting the server.</p>
+        <p>Enable detailed extension interaction logs for troubleshooting. Warnings and errors are always visible; group filters affect only successful, trace, info, and debug output. Each editor writes an isolated, bounded log set; changes apply immediately without restarting the server.</p>
         <div class="actions">
             <button id="verbose-toggle" type="button" aria-pressed="false" disabled>Verbose logs: unavailable</button>
             <button id="verbose-refresh" type="button">Refresh logging state</button>
         </div>
+        <fieldset id="verbose-policy-controls" disabled>
+            <legend>Verbose output policy</legend>
+            <label for="verbose-tier">Detail tier</label>
+            <select id="verbose-tier">
+                <option value="summary">Summary — no request-start lines</option>
+                <option value="trace">Trace — include request-start and detail output</option>
+            </select>
+            <p class="control-help">Summary omits request-start lines. Trace includes allowed request-start and detail output.</p>
+            <div class="checkboxes" aria-label="Logging groups">
+                <label><input id="verbose-group-protocol" type="checkbox"> Protocol</label>
+                <label><input id="verbose-group-read" type="checkbox"> Read</label>
+                <label><input id="verbose-group-behavior" type="checkbox"> Behavior</label>
+                <label><input id="verbose-group-lifecycle" type="checkbox"> Lifecycle</label>
+            </div>
+        </fieldset>
         <p id="verbose-feedback" class="feedback" role="status" aria-live="polite">Reading logging state…</p>
     </section>
     <section aria-labelledby="client-heading">

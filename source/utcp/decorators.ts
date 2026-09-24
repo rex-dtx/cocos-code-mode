@@ -3,10 +3,12 @@ import { JsonSchema, Tool } from '@utcp/sdk';
 import { inferAnnotations, registerToolProfile } from './tool-profiles';
 import { expansionIntegrationGuidance } from './integration-guidance';
 
+import { CreatorLogGroup } from './logging-policy';
 export interface ToolMetadata {
     method: Function;
     target: any;
     tool: Tool;
+    logGroup: CreatorLogGroup;
 }
 
 export class ToolRegistry {
@@ -20,7 +22,7 @@ export class ToolRegistry {
         return Array.from(this.tools.values());
     }
 }
-export function utcpTool(name: string, description: string, inputs: JsonSchema, outputs: JsonSchema, httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', tags: string[] = [], options: { profile?: 'core' | 'full' } = {}) {
+export function utcpTool(name: string, description: string, inputs: JsonSchema, outputs: JsonSchema, httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', tags: string[] = [], options: { profile?: 'core' | 'full'; logGroup?: CreatorLogGroup } = {}) {
     const integrationDescription = expansionIntegrationGuidance[name];
     const agentDescription = integrationDescription
         ? `${description} Integration guidance — ${integrationDescription}`
@@ -31,6 +33,7 @@ export function utcpTool(name: string, description: string, inputs: JsonSchema, 
         ToolRegistry.register({
             method: descriptor.value,
             target,
+            logGroup: options.logGroup ?? (httpMethod === 'GET' ? 'read' : 'behavior'),
             tool: {
                 name,
                 description: agentDescription,
