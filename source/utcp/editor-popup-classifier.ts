@@ -69,6 +69,7 @@ function classify(observation: PopupWindowObservation): PopupWindowRecord {
         bounds: normalizeBounds(observation.bounds),
         classification,
         signals,
+        content: observation.content ?? { text: null, source: null, truncated: false },
         actions: Array.isArray(observation.actions) ? observation.actions.slice(0, 16) : [],
     };
 }

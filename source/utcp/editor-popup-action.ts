@@ -2,7 +2,6 @@ import { EditorPopupActionArgs, EditorPopupActionResult, EditorPopupInspectResul
 import { inspectEditorPopups } from './editor-popup-observer';
 import { activateWindowsPopupAction } from './windows-popup-observer';
 import { notifyEditor } from './editor-control-plane';
-import { promptEditorQuestion } from './editor-prompt';
 import { ToolError } from './tool-error';
 import { controlObject } from './editor-control-validation';
 
@@ -12,14 +11,12 @@ function refuse(code: string, message: string): never {
 
 export interface PopupActionDependencies {
     inspect: typeof inspectEditorPopups;
-    approve: typeof promptEditorQuestion;
     activate: typeof activateWindowsPopupAction;
     notify: typeof notifyEditor;
 }
 
 const defaultDependencies: PopupActionDependencies = {
     inspect: inspectEditorPopups,
-    approve: promptEditorQuestion,
     activate: activateWindowsPopupAction,
     notify: notifyEditor,
 };
@@ -35,15 +32,14 @@ export async function actOnEditorPopup(input: EditorPopupActionArgs, dependencie
         const notice = dependencies.notify({ title: 'Creator popup needs review', message: `Popup ${popup.title || '(untitled)'} is blocking the editor. Available buttons: ${labels.join(', ') || 'unavailable'}. Review in Creator; no button was activated.`, level: 'warning' });
         return { operation: 'remind', popupId: popup.id, actionId: null, actionLabel: null, activated: false, closed: false, reminderId: notice.id };
     }
+    if (args.confirm !== true || args.authorization !== 'user-explicit') refuse('POPUP_ACTION_UNAUTHORIZED', 'Explicit confirmation and authorization are required for the exact popup action.');
     const action = popup.actions.find(item => item.id === args.actionId && item.label === args.actionLabel && item.enabled);
     const owner = snapshot.windows.find(window => window.id === popup.parentId && window.classification === 'creator-main' && window.ownerVerified && window.visible && window.signals.includes('native-class:Chrome_WidgetWin_1'));
     const trackedFixture = popup.signals.includes('tracked-creator-fixture');
     if (!action || !owner || !popup.signals.includes('native-owner') || (trackedFixture && action.label !== 'Cancel')) refuse('POPUP_ACTION_STALE', 'The requested popup button is missing, disabled or ownership is unverified.');
-    const answer = await dependencies.approve({ title: 'Approve Creator popup action', message: `Activate ${action.label} on ${popup.title || '(untitled)'}?`, buttons: ['Do not activate', 'Activate'], cancelId: 0, timeoutMs: 60000, openPanel: false });
-    if (answer.buttonIndex !== 1 || answer.cancelled || answer.timedOut) refuse('POPUP_ACTION_UNAUTHORIZED', 'The operator did not approve this exact popup action.');
     let activated: { activated: boolean, closed: boolean };
     try {
-        activated = await dependencies.activate(popup.id, action.id, popup.title, action.label, owner.id, owner.title, 'Chrome_WidgetWin_1');
+        activated = await dependencies.activate(popup.id, action.id, popup.title, action.label, owner.id, owner.title, 'Chrome_WidgetWin_1', popup.content);
     } catch {
         refuse('POPUP_ACTION_UNCONFIRMED', 'Native action failed or popup identity changed; no successful action is claimed.');
     }

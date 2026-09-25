@@ -62,6 +62,7 @@ function readElectronWindows(includeHidden: boolean): ElectronObservation {
                 ...(devtools ? ['devtools-type-or-url'] : []),
                 ...(worker ? ['worker-type-or-url'] : []),
             ],
+            content: { text: null, source: null, truncated: false },
             actions: [],
             classificationEvidence: { creatorMain: creatorMainWindow, devtools, worker },
         };

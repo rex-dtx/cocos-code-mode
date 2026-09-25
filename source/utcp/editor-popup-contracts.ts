@@ -32,8 +32,8 @@ export interface EditorPopupActionArgs {
     popupTitle: string;
     actionId?: string;
     actionLabel?: string;
-    confirm?: boolean;
-    authorization?: 'user-explicit';
+    confirm?: boolean; // Must be true after an explicit caller decision for this exact popup and button.
+    authorization?: 'user-explicit'; // Not a second Agent Inbox approval; never inferred from popup text.
 }
 
 export interface EditorPopupActionResult {
@@ -58,6 +58,12 @@ export interface CreatorDialogSignal {
     source: 'information/has-dialog' | null;
 }
 
+export interface PopupContent {
+    text: string | null;
+    source: 'native-control' | null;
+    truncated: boolean;
+}
+
 export interface PopupWindowRecord {
     source: PopupWindowSource;
     id: string;
@@ -70,6 +76,7 @@ export interface PopupWindowRecord {
     bounds: PopupBounds | null;
     classification: PopupClassification;
     signals: string[];
+    content: PopupContent;
     actions: PopupActionRecord[];
 }
 
@@ -115,7 +122,11 @@ const popupActionSchema = object({
     label: text(256),
     enabled: boolean,
 });
-
+const popupContentSchema = object({
+    text: nullable(text(4096)),
+    source: nullable({ type: 'string', enum: ['native-control'] }),
+    truncated: boolean,
+});
 const popupWindowSchema = object({
     source: { type: 'string', enum: [...popupWindowSources] },
     id: text(128, 1),
@@ -128,6 +139,7 @@ const popupWindowSchema = object({
     bounds: nullable(boundsSchema),
     classification: { type: 'string', enum: [...popupClassifications] },
     signals: { type: 'array', maxItems: 16, items: text(128) },
+    content: popupContentSchema,
     actions: { type: 'array', maxItems: 16, items: popupActionSchema },
 });
 
