@@ -123,6 +123,15 @@ Cocos Pilot controls Cocos Creator 3.x through tools for scenes, nodes, componen
 - Use runtime, screenshot, preview, or input-simulation tools for the requested surface.
 - Confirm editor build provenance through `/build-info` when a result looks stale.
 
+### Inspect a blocking native Creator popup
+
+1. Bind the exact Creator project and instance with `editorHandshake({expectedProjectPath})`. Do not continue scene mutations while `editorPopupInspect({includeNative:true,maxItems:32})` reports `blocking:true`.
+2. Read each **visible, owner-verified** native dialog's `title`, bounded `content.text`, `content.truncated`, and enabled `actions[]`. On Windows, `#32770` message text comes from UI Automation `ControlType.Text`; `content.text:null` means unavailable, not a blank message. Never infer Save/Don't save/Confirm from a title or button order. With stacked dialogs, do not assume `windows[0]` is the foreground decision.
+3. When the caller explicitly chooses one current button, call `editorPopupAction({operation:'activate',popupId,popupTitle,actionId,actionLabel,confirm:true,authorization:'user-explicit'})` with the exact inspected identities. The tool independently re-reads owner, HWND, title, enabled button and content before bounded native dispatch; changed/truncated content, missing ownership or stale identity fails closed. No Agent Inbox approval wait or coordinate click.
+4. Re-inspect and confirm the **same** popup ID is gone. Another popup may remain or appear; handle it as a new decision. `activated:true,closed:true` proves closure of the selected dialog, not successful completion of a blocked `sceneManage(open)` call.
+
+Verified on Creator 3.7.3 with a disposable unsaved node: switching scenes raised `Warning` with `Scene data has been modified.\nDo you want to save data to the file.?`. Exact **Cancel** closed the warning; the original scene stayed active and dirty. The disposable node was removed without saving, but the scene remained `dirty:true`. Selecting **Don't save** instead discards the current scene's unsaved changes and must be an explicit owner decision. Current witness used a dirty artifact; clean-artifact release qualification remains open.
+
 ## Skills integration
 
 A project skill that operates Cocos should treat registration as a session bootstrap, not an assumption:
