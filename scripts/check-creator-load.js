@@ -19,6 +19,53 @@ function checkCreatorLoad(root = path.resolve(__dirname, '..')) {
     loaded.add(selected);
     module._compile(source, selected);
   }
+  function checkGraphRuntime() {
+    const graphDirectory = path.join(root, 'dist', 'cocos-graph');
+    const sourceDirectory = path.join(root, 'tools', 'cocos-graph', 'src');
+    const copiedSourceDirectory = path.join(graphDirectory, 'src');
+    const graphSourceExists = fs.existsSync(sourceDirectory);
+    const graphCopyExists = fs.existsSync(copiedSourceDirectory);
+    if (!graphSourceExists && !graphCopyExists) return 0;
+    if (!graphSourceExists || !graphCopyExists) throw new Error('Cocos Graph runtime source and copied package must be present together.');
+    const ts = require('typescript');
+    const sourceModules = fs.readdirSync(sourceDirectory, { withFileTypes: true })
+      .filter(entry => entry.isFile() && entry.name.endsWith('.mjs'))
+      .map(entry => entry.name)
+      .sort();
+    const copiedModules = fs.readdirSync(copiedSourceDirectory, { withFileTypes: true })
+      .filter(entry => entry.isFile() && entry.name.endsWith('.mjs'))
+      .map(entry => entry.name)
+      .sort();
+    if (JSON.stringify(sourceModules) !== JSON.stringify(copiedModules)) {
+      throw new Error('Copied cocos-graph core module set does not match tools/cocos-graph/src/*.mjs');
+    }
+    const files = [
+      ...sourceModules.map(name => path.join(copiedSourceDirectory, name)),
+      path.join(graphDirectory, 'runtime-worker.mjs'),
+    ];
+    for (const file of files) {
+      if (!fs.statSync(file).isFile()) throw new Error(`Missing copied cocos-graph module: ${file}`);
+      const checked = require('node:child_process').spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
+      if (checked.error) throw checked.error;
+      if (checked.status !== 0) throw new Error(`Creator-compatible ESM parse failed for ${file}: ${checked.stderr || checked.stdout}`);
+      const sourceFile = file.startsWith(copiedSourceDirectory)
+        ? path.join(sourceDirectory, path.basename(file))
+        : path.join(root, 'tools', 'cocos-graph', path.basename(file));
+      if (!fs.existsSync(sourceFile) || fs.readFileSync(sourceFile, 'utf8') !== fs.readFileSync(file, 'utf8')) {
+        throw new Error(`Copied cocos-graph module differs from source: ${file}`);
+      }
+      const module = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+      for (const statement of module.statements) {
+        const specifier = statement.moduleSpecifier;
+        if (!specifier || !ts.isStringLiteral(specifier) || !specifier.text.startsWith('.')) continue;
+        const target = path.resolve(path.dirname(file), specifier.text);
+        if (!fs.existsSync(target) || !fs.statSync(target).isFile()) {
+          throw new Error(`Unresolved cocos-graph ESM import ${specifier.text} from ${file}`);
+        }
+      }
+    }
+    return files.length;
+  }
   function walk(directory) {
     return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
       const file = path.join(directory, entry.name);
@@ -26,6 +73,7 @@ function checkCreatorLoad(root = path.resolve(__dirname, '..')) {
     });
   }
   try {
+    const graphModules = checkGraphRuntime();
     Module._extensions['.js'] = creatorCompile;
     Module._extensions['.cjs'] = creatorCompile;
     // Import only: never invoke load/ready or mutate Creator/project state.
@@ -60,7 +108,7 @@ function checkCreatorLoad(root = path.resolve(__dirname, '..')) {
       }
       visit(source);
     }
-    return { entries: entries.length, modules: modules.length, loadedFiles: loaded.size, literalRequires: deferred.size, unverified: [...unverified] };
+    return { entries: entries.length, modules: modules.length, graphModules, loadedFiles: loaded.size, literalRequires: deferred.size, unverified: [...unverified] };
   } finally {
     Module._extensions['.js'] = previousJs;
     if (previousCjs) Module._extensions['.cjs'] = previousCjs;

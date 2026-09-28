@@ -14,19 +14,17 @@ Offline structural navigation for saved Cocos assets. The graph answers **where/
 - T2 mutable values: transforms, active state, component values. Never indexed.
 - T3 runtime/editor state: selection, viewport, undo, runtime instances. Never indexed.
 
-Node UUIDs and prefab `fileId` values are file-local. Never pass a composite handle directly to Cocos. Resolve its `uuid`, then confirm the exact live scene/target through Cocos Pilot.
+Node UUIDs and prefab `fileId` values are file-local. Never pass a composite handle (`<file>#<uuid>`) as a live mutation handle. Resolve its engine UUID, then confirm the exact live scene/target through the same bound Cocos Pilot endpoint and project. T0 identity and T1 structure are advisory navigation evidence only, never mutation permission.
 
 ## Cache layout
 
-All generated data lives below one ignored root:
+The graph cache is project-scoped and lives under the Creator project:
 
 ```text
-<project>/.cocos-graph/<namespace>/
-  _manifest.json
-  <bundle>/graph-<semantic-hash>.json
+<project>/.cocos-graph/cocos-pilot/
 ```
 
-`--isolate` or `CC_GRAPH_ISOLATE=1` selects a branch/worktree namespace. `CC_GRAPH_SLUG` overrides its slug. `--out` wins over `CC_GRAPH_OUT`, which wins over isolation defaults. Builds use a bounded namespace lock and atomic generation publication.
+For CLI use, `--isolate` or `CC_GRAPH_ISOLATE=1` selects a branch/worktree namespace; `CC_GRAPH_SLUG` overrides its slug. `--out` wins over `CC_GRAPH_OUT`, which wins over isolation defaults. Builds use a bounded namespace lock and atomic generation publication.
 
 ## Commands
 
@@ -58,13 +56,17 @@ Parser schema is v4. v3 or older manifests fail with an explicit rebuild action.
 
 ## Required mutation workflow
 
-1. Search offline and keep `handle`, `uuid`, `file`, `source`, and `bundle`.
-2. Reject/adapt when `stale.advisory=true`, `dirty` is `true` or `unknown`, `prefabOpaque=true`, or resolution is ambiguous.
-3. Call `ccp3x.sceneGetInfo()` and verify the intended scene is open.
-4. Resolve/read the exact engine UUID live with `nodeGetTree` or `inspectorGet`.
-5. Perform the write through the narrow Cocos Pilot tool.
-6. Read the changed target live and verify the observable result.
-7. Only then record session continuity:
+When the graph capability is available on the bound endpoint:
+
+1. Use `ccbi:ccp3x_<port>.graphManage(query/resolve)` to find a candidate and resolve its composite `<file>#<uuid>` to a bare engine UUID. Keep file/source/bundle provenance for verification.
+2. Treat T0 identity and T1 structure as advisory only. They do not authorize a write; stale, dirty/unknown, opaque, ambiguous, or mismatched results require stopping or fresh investigation.
+3. On that same `ccbi` and project, confirm the binding's `bd.iid` is still current. Use `sceneGetInfo` to verify the intended scene, then `nodeGetTree` or inspector to verify the exact target live.
+4. Pass only the bare engine UUID—not `<file>#<uuid>`—to the narrow live mutation tool. Make only the requested bounded change.
+5. Read the target back live through the same endpoint and verify the observable result before reporting success.
+
+The agent workflow above is an instruction for the capability when exposed; it is not evidence that a release is registered or qualified live. See the CLI commands below for offline graph operations.
+
+For CLI-driven session continuity, record only after the live read-back above:
 
 ```bash
 node tools/cocos-graph/bin/cocos-graph.mjs session-record \

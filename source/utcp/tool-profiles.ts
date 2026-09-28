@@ -70,6 +70,7 @@ export const CORE_TOOLS = new Set([
     'createUiNode',
     // Diagnostics
     'runScriptDiagnostics',
+    'graphManage',
 ]);
 
 export function isToolExposed(toolName: string, activeProfile: ToolProfile, enabledTools?: Set<string>, disabledTools?: Set<string>): boolean {

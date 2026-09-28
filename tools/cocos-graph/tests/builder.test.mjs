@@ -254,6 +254,7 @@ describe('builder schema v4 integrity', () => {
         cwd: project, env: {}, session: { project, bundle: 'bundle-a', sceneUuid: 'live-scene-uuid' },
       });
       assert.equal(result.stale, true);
+      assert.match(result.banner[0], /stale or unreadable/);
     } finally { rmSync(project, { recursive: true, force: true }); }
   });
 });

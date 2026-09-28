@@ -54,19 +54,35 @@ function stableId(arr, entry) {
   return typeof entry?._id === 'string' && entry._id ? entry._id : prefabFileId(arr, entry);
 }
 
-function collectUuidRefs(value, prop, out, depth = 0) {
-  if (!value || typeof value !== 'object' || depth > 6) return;
-  if (Array.isArray(value)) {
-    for (const item of value) collectUuidRefs(item, prop, out, depth + 1);
-    return;
-  }
-  if (typeof value.__uuid__ === 'string') {
-    out.push({ uuid: decodeUuid(value.__uuid__), prop });
-    return;
-  }
-  for (const [key, child] of Object.entries(value)) {
-    if (key === '__type__' || key === '__id__') continue;
-    collectUuidRefs(child, prop ? `${prop}.${key}` : key, out, depth + 1);
+function collectUuidRefs(value, prop, out) {
+  const stack = [{ value, prop, exit: false }];
+  const ancestors = new Set();
+  while (stack.length > 0) {
+    const frame = stack.pop();
+    const current = frame.value;
+    if (frame.exit) {
+      ancestors.delete(current);
+      continue;
+    }
+    if (!current || typeof current !== 'object' || ancestors.has(current)) continue;
+    if (!Array.isArray(current) && typeof current.__uuid__ === 'string') {
+      out.push({ uuid: decodeUuid(current.__uuid__), prop: frame.prop });
+      continue;
+    }
+    ancestors.add(current);
+    stack.push({ value: current, prop: frame.prop, exit: true });
+    if (Array.isArray(current)) {
+      for (let i = current.length - 1; i >= 0; i--) {
+        stack.push({ value: current[i], prop: frame.prop, exit: false });
+      }
+      continue;
+    }
+    const entries = Object.entries(current);
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const [key, child] = entries[i];
+      if (key === '__type__' || key === '__id__') continue;
+      stack.push({ value: child, prop: frame.prop ? `${frame.prop}.${key}` : key, exit: false });
+    }
   }
 }
 
@@ -79,10 +95,10 @@ export function parseEntries(arr, { file = 'unknown', source = 'disk' } = {}) {
   for (let index = 0; index < arr.length; index++) {
     const entry = arr[index];
     if (!entry || (entry.__type__ !== 'cc.Node' && entry.__type__ !== 'cc.Scene')) continue;
+    if (entry._prefab && typeof entry._prefab.__id__ === 'number') prefabOpaque = true;
     const uuid = stableId(arr, entry);
     if (!uuid) continue; // unexpanded prefab instance: only the live editor can resolve it
     byIndex.set(index, { entry, uuid, handle: makeHandle(normalizedFile, uuid) });
-    if (entry._prefab && typeof entry._prefab.__id__ === 'number') prefabOpaque = true;
   }
 
   const pathOf = (start) => {

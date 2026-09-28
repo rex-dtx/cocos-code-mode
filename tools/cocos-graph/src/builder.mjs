@@ -5,7 +5,6 @@ import { parseSceneText } from './parser.mjs';
 import { treeToGraph, unwrapLiveSnapshot, validateLiveGraph } from './live.mjs';
 import { PARSER_VERSION, makeManifest } from './manifest.mjs';
 import { acquireNamespaceLock, readJson, removeUnreferencedGraphs, writeJsonAtomic } from './storage.mjs';
-
 import { assertBundleName, resolveInside } from './path-safety.mjs';
 export function semanticHash(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
@@ -174,7 +173,7 @@ export function buildAll({ project, outDir, liveJsonByBundle, bundleFilter, lock
     for (const item of built) writeJsonAtomic(join(outDir, item.record.graphFile), item.graph);
     const manifest = makeManifest(built.map((item) => item.record), previous);
     writeJsonAtomic(manifestPath, manifest);
-    removeUnreferencedGraphs(outDir, manifest, { graceMs: 0 });
+    removeUnreferencedGraphs(outDir, manifest);
     return manifest;
   } finally {
     release();

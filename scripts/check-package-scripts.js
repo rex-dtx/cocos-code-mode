@@ -19,8 +19,15 @@ if (!pkg.scripts?.['gen:catalog']) {
   console.error('[check:package-scripts] missing scripts["gen:catalog"]');
   ok = false;
 }
-if (!pkg.scripts?.build?.includes('generate-build-info')) {
-  console.error('[check:package-scripts] scripts.build must chain generate-build-info -> tsc -> check-creator-load');
+const expectedBuild = [
+  'node ./scripts/check-package-scripts.js',
+  'node ./scripts/generate-build-info.js',
+  'npx tsc',
+  'node ./scripts/copy-cocos-graph-runtime.js',
+  'node scripts/check-creator-load.js',
+].join(' && ');
+if (pkg.scripts?.build !== expectedBuild) {
+  console.error(`[check:package-scripts] scripts.build must exactly match: ${expectedBuild}`);
   ok = false;
 }
 if (!ok) process.exit(1);

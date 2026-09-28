@@ -31,6 +31,12 @@ Auto khi prompt chua mot trong: `code mode`, `ccp3x`/`ccp3x_<port>`, `ccp2x`/`cc
 
 Never infer registration from `CK_CODE_MODE`, `.claude/cocos-pilot-cache.json`, or a tool list from an earlier MCP session. Sau reconnect/restart/`ccbe` reload phải re-handshake; không fallback sang `ccbi` khác.
 
+## Graph-assisted scene workflow
+
+When graph lookup is available on the bound endpoint, use `ccbi:ccp3x_<port>.graphManage(query/resolve)` only to find candidates and resolve `<file>#<uuid>` to a bare engine UUID. T0 identity/T1 structure and provenance are advisory navigation evidence, never permission to mutate. The graph cache is project-scoped at `<project>/.cocos-graph/cocos-pilot/`.
+
+Before any write, confirm the same bound `ccbi` and project and that `bd.iid` is still current; verify the intended scene with `sceneGetInfo`, then verify the exact candidate live with `nodeGetTree` or inspector. Pass only the bare engine UUID (never the composite `<file>#<uuid>`) to a narrow live mutation tool, make the requested bounded change, and read it back through that endpoint. These instructions describe the workflow when exposed; they do not claim registered graph tools or live release qualification.
+
 ### Retry and Creator-visible failures
 
 On `manual not found` or `tool not found`:

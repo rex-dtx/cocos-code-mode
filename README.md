@@ -295,6 +295,10 @@ Migration for consolidated tools (A1 shims → 45): [`docs/consolidated-migratio
 
 See [Cocos Pilot with Code Mode MCP](docs/cocos-pilot-code-mode-usage.md) for connection setup, manual registration, workflows, and troubleshooting.
 
+### Graph-assisted scene changes
+
+When available on the selected `ccbi:ccp3x_<port>`, use `graphManage(query/resolve)` for bounded T0/T1 lookup, then verify the candidate against that same endpoint/project and current `bd.iid` using `sceneGetInfo` plus `nodeGetTree` or inspector. The graph is advisory, never write authority. Resolve `<file>#<uuid>` to a bare engine UUID; never pass the composite handle to a live mutation tool. Make a narrow change with the live tool and read it back through the same endpoint. Cache is project-scoped at `<project>/.cocos-graph/cocos-pilot/`. This is workflow guidance, not evidence of registered tools or live release qualification; retain the `cmm` registration and handshake bootstrap above.
+
 ## Code Mode MCP Integration
 
 Cocos Pilot exposes its Cocos Creator tools through a UTCP manual. The [Code Mode MCP server](https://github.com/universal-tool-calling-protocol/code-mode/?tab=readme-ov-file#even-easier-ready-to-use-mcp-server) registers that manual for an AI client. Configure Cocos Pilot, then have the agent call `register_manual` and verify with `list_tools`.

@@ -21,6 +21,8 @@ describe('live snapshot graph conversion', () => {
     validateLiveGraph(graph);
     assert.equal(graph.nodes[0].source, 'live');
     assert.equal(graph.nodes[1].parent, 'assets/demo/main.scene#root-id');
+    assert.equal(graph.comps[0].uuid, 'component-id');
+    assert.equal(graph.comps[0].handle, 'assets/demo/main.scene#component:component-id');
     assert.equal(graph.comps[0].node, 'assets/demo/main.scene#root-id');
     assert.equal(graph.comps[0].type, 'cc.Sprite');
   });
@@ -60,11 +62,16 @@ describe('live snapshot graph conversion', () => {
     assert.deepEqual(graph.nodes.map((node) => node.uuid), ['root']);
   });
 
+  it('accepts live leaf nodes with no children field', () => {
+    const graph = treeToGraph({ children: [{ reference: { id: 'leaf' }, name: 'Leaf' }] }, { file: 'assets/demo/main.scene' });
+    assert.deepEqual(graph.nodes.map((node) => node.uuid), ['leaf']);
+  });
+
   it('rejects producer truncation reasons even when the omission count is absent', () => {
-    for (const truncated of ['maxDepth', 'nodeLimit']) {
+    for (const truncated of [true, 'maxDepth', 'nodeLimit']) {
       assert.throws(() => treeToGraph({
         children: [{ reference: { id: 'root' }, truncated, children: [] }],
-      }, { file: 'assets/demo/main.scene' }), /truncat|omitted/i, truncated);
+      }, { file: 'assets/demo/main.scene' }), /truncat|omitted/i, String(truncated));
     }
   });
 
