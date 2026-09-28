@@ -1097,6 +1097,15 @@ declare namespace cocos_pilot_3x {
     function projectManage(args: { operation: "get" | "set", type?: string, key?: string, path?: string, value?: any }): any;
     /** Consolidated: build panel/tasks/trigger/control. */
     function buildManage(args: { operation: "panel_open" | "tasks_info" | "get_task" | "trigger" | "control", panel?: string, taskId?: string, options?: any, control?: "break" | "remove" | "recompile" }): any;
+    /** T0/T1 graph lookup. Verify a bare UUID through live tools before mutation; never mutate through a composite graph handle. */
+    function graphManage(args: {
+        operation: 'status' | 'build' | 'query' | 'resolve' | 'navigate' | 'refs' | 'validate';
+        bundle?: string; refresh?: boolean; source?: 'disk' | 'auto'; text?: string;
+        byComponent?: string; byScript?: string; componentUuid?: string; pathGlob?: string;
+        explain?: boolean; handle?: string; uuid?: string;
+        relation?: 'ancestors' | 'children' | 'descendants'; depth?: number;
+        assetUuid?: string; limit?: number; cursor?: number;
+    }): any;
 }
 
 // Aliases: ccp3x is recommended short (no hyphen/underscore). ccp_3x / ccp-3x kept for compat.

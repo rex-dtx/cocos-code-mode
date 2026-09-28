@@ -10,8 +10,8 @@ const MAX_STDOUT_BYTES = 64 * 1024;
 
 interface NativeActionRow { hwnd: string; label: string; enabled: boolean }
 interface NativeContent { text: string | null; source: 'native-control' | null; truncated: boolean }
-interface NativeWindowRow { hwnd: string; pid: number; visible: boolean; title: string; className: string; ownerHwnd: string | null; rootOwnerHwnd: string | null; bounds: PopupBounds | null; actions: NativeActionRow[]; content: NativeContent }
-interface NativeProbeOutput { windows: NativeWindowRow[] }
+interface NativeWindowRow { hwnd: string; pid: number; visible: boolean; title: string; className: string; ownerHwnd: string | null; rootOwnerHwnd: string | null; bounds: PopupBounds | null; foreground: boolean; zOrderRank: number | null; ownerGroupRank: number | null; topCandidate: boolean; lastActivePopup: boolean; enabledPopup: boolean; actions: NativeActionRow[]; content: NativeContent }
+interface NativeProbeOutput { windows: NativeWindowRow[]; orderComplete?: boolean }
 export interface NativeWindowContext { processId: number; creatorMainBounds: PopupBounds | null; creatorMainTitle: string; includeHidden: boolean; maxItems: number }
 export interface NativeWindowObservationResult { observations: PopupWindowObservation[]; complete: boolean }
 
@@ -42,7 +42,7 @@ function normalizedRows(value: unknown, processId: number): NativeWindowRow[] {
             const childHwnd = boundedHwnd(action?.hwnd);
             return childHwnd && typeof action?.enabled === 'boolean' ? [{ hwnd: childHwnd, label: boundedText(action.label, 256), enabled: action.enabled }] : [];
         }) : [];
-        return [{ hwnd, pid: processId, visible: row.visible, title: boundedText(row.title, 256), className: boundedText(row.className, 256), ownerHwnd: boundedHwnd(row.ownerHwnd), rootOwnerHwnd: boundedHwnd(row.rootOwnerHwnd), bounds: boundedBounds(row.bounds), actions, content: boundedContent(row.content) }];
+        return [{ hwnd, pid: processId, visible: row.visible, title: boundedText(row.title, 256), className: boundedText(row.className, 256), ownerHwnd: boundedHwnd(row.ownerHwnd), rootOwnerHwnd: boundedHwnd(row.rootOwnerHwnd), bounds: boundedBounds(row.bounds), foreground: row.foreground === true, zOrderRank: Number.isInteger(row.zOrderRank) ? row.zOrderRank : null, ownerGroupRank: Number.isInteger(row.ownerGroupRank) ? row.ownerGroupRank : null, topCandidate: row.topCandidate === true, lastActivePopup: row.lastActivePopup === true, enabledPopup: row.enabledPopup === true, actions, content: boundedContent(row.content) }];
     });
 }
 export function classifyNativeWindows(rows: NativeWindowRow[], context: NativeWindowContext): PopupWindowObservation[] {
@@ -59,7 +59,10 @@ export function classifyNativeWindows(rows: NativeWindowRow[], context: NativeWi
         const ownerVerified = creatorMain || (mainHwnd !== null && (row.ownerHwnd === mainHwnd || row.rootOwnerHwnd === mainHwnd)) || trackedFixture;
         const actions: PopupActionRecord[] = row.visible && ownerVerified && dialogClass ? row.actions.map(action => ({ id: `native:${row.pid}:${action.hwnd}`, label: action.label, enabled: action.enabled })) : [];
         const content = row.visible && ownerVerified && dialogClass ? row.content : { text: null, source: null, truncated: false };
-        return { source: 'native' as const, id: `native:${row.pid}:${row.hwnd}`, title: row.title, visible: row.visible, focused: null, modal: creatorMain ? false : ownerVerified || (dialogClass && row.visible), parentId: trackedFixture ? `native:${row.pid}:${mainHwnd}` : row.ownerHwnd ? `native:${row.pid}:${row.ownerHwnd}` : null, ownerVerified, bounds: row.bounds, signals: [...(creatorMain ? ['creator-main-bounds'] : []), ...(ownerVerified && !creatorMain ? ['native-owner'] : []), ...(trackedFixture ? ['tracked-creator-fixture'] : []), ...(dialogClass ? ['native-dialog-class'] : []), `native-class:${row.className}`], content, actions, classificationEvidence: { creatorMain } };
+        const groupRank = typeof row.ownerGroupRank === 'number' && Number.isInteger(row.ownerGroupRank) ? row.ownerGroupRank : null;
+        const provenTop = row.topCandidate === true && groupRank === 0;
+        const zOrder: PopupWindowObservation['zOrder'] = row.visible && ownerVerified && dialogClass ? { foreground: row.foreground === true, rank: groupRank, activePopup: provenTop, confidence: provenTop && (row.lastActivePopup === true || row.enabledPopup === true) ? 'high' : groupRank !== null ? 'medium' : 'unknown', source: provenTop && row.lastActivePopup === true ? 'last-active-popup' : provenTop && row.enabledPopup === true ? 'enabled-popup' : groupRank !== null ? 'owner-group-order' : null } : { foreground: null, rank: null, activePopup: null, confidence: 'unknown', source: null };
+        return { source: 'native' as const, id: `native:${row.pid}:${row.hwnd}`, title: row.title, visible: row.visible, focused: null, modal: creatorMain ? false : ownerVerified || (dialogClass && row.visible), parentId: trackedFixture ? `native:${row.pid}:${mainHwnd}` : row.ownerHwnd ? `native:${row.pid}:${row.ownerHwnd}` : null, ownerVerified, bounds: row.bounds, signals: [...(creatorMain ? ['creator-main-bounds'] : []), ...(ownerVerified && !creatorMain ? ['native-owner'] : []), ...(trackedFixture ? ['tracked-creator-fixture'] : []), ...(dialogClass ? ['native-dialog-class'] : []), `native-class:${row.className}`], content, zOrder, actions, classificationEvidence: { creatorMain } };
     });
 }
 function probePath(): string { return path.resolve(__dirname, '../../static/native-popup-probe.py'); }

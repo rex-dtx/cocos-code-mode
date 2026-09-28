@@ -70,6 +70,7 @@ function classify(observation: PopupWindowObservation): PopupWindowRecord {
         classification,
         signals,
         content: observation.content ?? { text: null, source: null, truncated: false },
+        zOrder: observation.zOrder ?? { foreground: null, rank: null, activePopup: null, confidence: 'unknown', source: null },
         actions: Array.isArray(observation.actions) ? observation.actions.slice(0, 16) : [],
     };
 }

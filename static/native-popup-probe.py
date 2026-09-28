@@ -22,8 +22,18 @@ user32.GetParent.argtypes = [wintypes.HWND]
 user32.GetParent.restype = wintypes.HWND
 user32.GetWindow.argtypes = [wintypes.HWND, wintypes.UINT]
 user32.GetWindow.restype = wintypes.HWND
+user32.GetDesktopWindow.restype = wintypes.HWND
+GW_HWNDFIRST = 0
+GW_HWNDNEXT = 2
+GW_HWNDPREV = 3
+GW_OWNER = 4
+GW_ENABLEDPOPUP = 6
+user32.GetForegroundWindow.restype = wintypes.HWND
+user32.GetLastActivePopup.argtypes = [wintypes.HWND]
+user32.GetLastActivePopup.restype = wintypes.HWND
+user32.IsWindowEnabled.argtypes = [wintypes.HWND]
+user32.IsWindowEnabled.restype = wintypes.BOOL
 user32.GetWindowRect.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.RECT)]
-
 user32.SendMessageTimeoutW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM, wintypes.UINT, wintypes.UINT, ctypes.POINTER(ctypes.c_size_t)]
 user32.SendMessageTimeoutW.restype = wintypes.LPARAM
 BM_CLICK = 0x00F5
@@ -90,33 +100,79 @@ def button_actions(dialog):
     user32.EnumChildWindows(dialog, visit, 0)
     return result
 
+def ordered_top_level_windows():
+    rows = []
+    seen = set()
+    @EnumWindowsProc
+    def visit(hwnd, _):
+        if int(hwnd) in seen:
+            return False
+        seen.add(int(hwnd))
+        rows.append(hwnd)
+        return len(rows) < 4096
+    complete = bool(user32.EnumWindows(visit, 0))
+    return rows, complete
+
 def inspect(pid):
     rows = []
+    foreground = user32.GetForegroundWindow()
+    desktop_order, order_complete = ordered_top_level_windows()
+    z_rank = {int(hwnd): index for index, hwnd in enumerate(desktop_order)} if order_complete else {}
     @EnumWindowsProc
     def visit(hwnd, _):
         if pid_of(hwnd) != pid:
             return True
         class_name = text(hwnd, user32.GetClassNameW)
-        owner = user32.GetWindow(hwnd, 4)
+        owner = user32.GetWindow(hwnd, GW_OWNER)
         root_owner = user32.GetAncestor(hwnd, 3)
-        rows.append({'hwnd': hwnd_string(hwnd), 'pid': pid, 'visible': bool(user32.IsWindowVisible(hwnd)), 'title': text(hwnd, user32.GetWindowTextW), 'className': class_name, 'ownerHwnd': hwnd_string(owner) if owner else None, 'rootOwnerHwnd': hwnd_string(root_owner) if root_owner else None, 'bounds': bounds(hwnd), 'actions': button_actions(hwnd) if class_name == '#32770' else [], 'content': content_text(hwnd) if class_name == '#32770' else {'text': None, 'source': None, 'truncated': False}})
+        rows.append({'hwnd': hwnd_string(hwnd), 'pid': pid, 'visible': bool(user32.IsWindowVisible(hwnd)), 'title': text(hwnd, user32.GetWindowTextW), 'className': class_name, 'ownerHwnd': hwnd_string(owner) if owner else None, 'rootOwnerHwnd': hwnd_string(root_owner) if root_owner else None, 'bounds': bounds(hwnd), 'foreground': int(hwnd) == int(foreground) if foreground else False, 'zOrderRank': z_rank.get(int(hwnd)), 'actions': button_actions(hwnd) if class_name == '#32770' else [], 'content': content_text(hwnd) if class_name == '#32770' else {'text': None, 'source': None, 'truncated': False}})
         return len(rows) < MAX_ITEMS
-    user32.EnumWindows(visit, 0)
-    return {'windows': rows}
-
+    row_scan_complete = bool(user32.EnumWindows(visit, 0))
+    order_complete = order_complete and row_scan_complete
+    if not order_complete:
+        for row in rows:
+            row['zOrderRank'] = None
+    owners = [row for row in rows if row['ownerHwnd'] is None and row['zOrderRank'] is not None and row['className'] != '#32770']
+    for main in owners:
+        main_id = main['hwnd']
+        main_hwnd = parse_hwnd(main_id)
+        group = [row for row in rows if row['visible'] and row['className'] == '#32770' and (row['ownerHwnd'] == main_id or row['rootOwnerHwnd'] == main_id)]
+        ranked = sorted((row for row in group if row['zOrderRank'] is not None), key=lambda row: row['zOrderRank'])
+        if not ranked or len(ranked) != len(group):
+            continue
+        active = user32.GetLastActivePopup(main_hwnd)
+        enabled = user32.GetWindow(main_hwnd, GW_ENABLEDPOPUP)
+        unique_top = ranked[0]['hwnd'] if len(ranked) == 1 or ranked[0]['zOrderRank'] < ranked[1]['zOrderRank'] else None
+        group_ids = {row['hwnd'].upper() for row in ranked}
+        if unique_top and ((active and hwnd_string(active).upper() in group_ids and hwnd_string(active).upper() != unique_top.upper()) or (enabled and hwnd_string(enabled).upper() in group_ids and hwnd_string(enabled).upper() != unique_top.upper())):
+            unique_top = None
+        for index, row in enumerate(ranked):
+            row['ownerGroupRank'] = index
+            row['topCandidate'] = row['hwnd'] == unique_top
+            row['lastActivePopup'] = bool(row['topCandidate'] and active and row['hwnd'].upper() == hwnd_string(active).upper())
+            row['enabledPopup'] = bool(row['topCandidate'] and enabled and row['hwnd'].upper() == hwnd_string(enabled).upper())
+    for row in rows:
+        row.setdefault('ownerGroupRank', None)
+        row.setdefault('topCandidate', False)
+        row.setdefault('lastActivePopup', False)
+        row.setdefault('enabledPopup', False)
+    return {'windows': rows, 'foregroundHwnd': hwnd_string(foreground) if foreground else None, 'orderComplete': order_complete}
 def activate(pid, popup_value, action_value, title, label, owner_value, owner_title, owner_class, expected_content):
     popup = parse_hwnd(popup_value)
     action = parse_hwnd(action_value)
     owner = parse_hwnd(owner_value)
-    rows = inspect(pid)['windows']
+    scan = inspect(pid)
+    rows = scan['windows']
     row = next((item for item in rows if item['hwnd'].upper() == popup_value.upper()), None)
     main = next((item for item in rows if item['hwnd'].upper() == owner_value.upper()), None)
     if not row or not main or not row['visible'] or row['className'] != '#32770' or row['title'] != title:
         raise ValueError('popup identity is stale')
+    if not scan['orderComplete'] or not row['topCandidate'] or row['ownerGroupRank'] != 0:
+        raise ValueError(f"popup top order is not verified (complete={scan['orderComplete']}, rank={row['zOrderRank']}, ownerGroupRank={row['ownerGroupRank']}, owner={row['ownerHwnd']}, main={main['hwnd']}, mainRank={main['zOrderRank']}, mainClass={main['className']}, mainVisible={main['visible']})")
+    if row['content'] != expected_content or expected_content['truncated']:
+        raise ValueError('popup content changed or is truncated')
     owner_linked = row['ownerHwnd'] is not None and row['ownerHwnd'].upper() == owner_value.upper()
     tracked_fixture = (row['ownerHwnd'] is None and row['rootOwnerHwnd'] is not None and row['rootOwnerHwnd'].upper() == popup_value.upper() and title.startswith('CCP3X Action Qualification ') and len(title) == len('CCP3X Action Qualification ') + 32 and label == 'Cancel' and sorted(item['label'] for item in row['actions']) == ['Cancel', 'Continue'] and all(item['enabled'] for item in row['actions']))
-    if row['content'] != expected_content or row['content']['truncated']:
-        raise ValueError('popup content changed or is incomplete')
     if not main['title'] == owner_title or main['className'] != owner_class or pid_of(owner) != pid or not (owner_linked or tracked_fixture):
         raise ValueError('popup owner is not verified')
     children = [item for item in row['actions'] if item['hwnd'].upper() == action_value.upper() and item['label'] == label and item['enabled']]

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "candidate": "editorPopupInspect",
+  "recordedAt": "2026-09-28",
+  "qualification": "diagnostic-only; dirty artifact; not canonical clean candidate promotion",
+  "creatorVersion": "3.7.3",
+  "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+  "instanceId": "5101fb537b8cd7ac34991150cd039381",
+  "artifact": { "commit": "97e705a", "dirty": true, "builtAt": "2026-09-25T11:25:56.584Z" },
+  "inspection": {
+    "complete": true,
+    "unavailable": [],
+    "blocking": true,
+    "dialogs": [
+      { "id": "native:33600:0X12138C", "title": "Warn", "content": "Warning\nScene Not Response", "rank": 58, "ownerGroupRank": 0, "activePopup": true, "confidence": "high", "source": "last-active-popup" },
+      { "id": "native:33600:0XF13B0", "title": "Warning", "content": "Scene data has been modified.\nDo you want to save data to the file.?", "rank": 59, "ownerGroupRank": 1, "activePopup": false, "confidence": "medium", "source": "owner-group-order" }
+    ]
+  },
+  "postcondition": "read-only inspection; no popup button activated or dialog dismissed",
+  "limitations": [
+    "The artifact is dirty; clean positive/negative and cleanup qualification remain open.",
+    "Desktop rank may shift between probes; relative owner-group order and exact HWND identity were verified in the same scan."
+  ]
+}

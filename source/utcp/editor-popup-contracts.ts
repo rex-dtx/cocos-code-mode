@@ -63,6 +63,13 @@ export interface PopupContent {
     source: 'native-control' | null;
     truncated: boolean;
 }
+export interface PopupZOrder {
+    foreground: boolean | null;
+    rank: number | null;
+    activePopup: boolean | null;
+    confidence: 'high' | 'medium' | 'unknown';
+    source: 'last-active-popup' | 'enabled-popup' | 'owner-group-order' | null;
+}
 
 export interface PopupWindowRecord {
     source: PopupWindowSource;
@@ -77,6 +84,7 @@ export interface PopupWindowRecord {
     classification: PopupClassification;
     signals: string[];
     content: PopupContent;
+    zOrder: PopupZOrder;
     actions: PopupActionRecord[];
 }
 
@@ -127,6 +135,7 @@ const popupContentSchema = object({
     source: nullable({ type: 'string', enum: ['native-control'] }),
     truncated: boolean,
 });
+const popupZOrderSchema = object({ foreground: nullable(boolean), rank: nullable(integer(0)), activePopup: nullable(boolean), confidence: { type: 'string', enum: ['high', 'medium', 'unknown'] }, source: nullable({ type: 'string', enum: ['last-active-popup', 'enabled-popup', 'owner-group-order'] }) });
 const popupWindowSchema = object({
     source: { type: 'string', enum: [...popupWindowSources] },
     id: text(128, 1),
@@ -140,9 +149,9 @@ const popupWindowSchema = object({
     classification: { type: 'string', enum: [...popupClassifications] },
     signals: { type: 'array', maxItems: 16, items: text(128) },
     content: popupContentSchema,
+    zOrder: popupZOrderSchema,
     actions: { type: 'array', maxItems: 16, items: popupActionSchema },
 });
-
 export const EditorPopupInspectInputSchema: JsonSchema = {
     type: 'object',
     additionalProperties: false,

@@ -37,6 +37,7 @@ export async function actOnEditorPopup(input: EditorPopupActionArgs, dependencie
     const owner = snapshot.windows.find(window => window.id === popup.parentId && window.classification === 'creator-main' && window.ownerVerified && window.visible && window.signals.includes('native-class:Chrome_WidgetWin_1'));
     const trackedFixture = popup.signals.includes('tracked-creator-fixture');
     if (!action || !owner || !popup.signals.includes('native-owner') || (trackedFixture && action.label !== 'Cancel')) refuse('POPUP_ACTION_STALE', 'The requested popup button is missing, disabled or ownership is unverified.');
+    if (!trackedFixture && (popup.zOrder?.activePopup !== true || popup.zOrder?.rank !== 0 || popup.zOrder?.confidence === 'unknown')) refuse('POPUP_ACTION_STALE', 'The popup is not proven to be the top Creator dialog.');
     let activated: { activated: boolean, closed: boolean };
     try {
         activated = await dependencies.activate(popup.id, action.id, popup.title, action.label, owner.id, owner.title, 'Chrome_WidgetWin_1', popup.content);

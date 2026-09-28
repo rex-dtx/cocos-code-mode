@@ -30,8 +30,8 @@ function mockCreator() {
 }
 
 function actionFixture() {
-  const owner = { id: 'native:1234:0X100', title: 'Creator', visible: true, ownerVerified: true, classification: 'creator-main', signals: ['native-class:Chrome_WidgetWin_1'], content: { text: null, source: null, truncated: false }, actions: [] };
-  const popup = { id: popupId, title: 'Warn', visible: true, ownerVerified: true, classification: 'dialog', parentId: owner.id, signals: ['native-dialog-class', 'native-owner'], content: { text: null, source: null, truncated: false }, actions: [{ id: 'native:1234:0XDEF', label: 'Confirm', enabled: true }] };
+  const owner = { id: 'native:1234:0X100', title: 'Creator', visible: true, ownerVerified: true, classification: 'creator-main', signals: ['native-class:Chrome_WidgetWin_1'], zOrder: { foreground: null, rank: null, activePopup: null, confidence: 'unknown', source: null }, content: { text: null, source: null, truncated: false }, actions: [] };
+  const popup = { id: popupId, title: 'Warn', visible: true, ownerVerified: true, classification: 'dialog', parentId: owner.id, signals: ['native-dialog-class', 'native-owner'], zOrder: { foreground: true, rank: 0, activePopup: true, confidence: 'high', source: 'last-active-popup' }, content: { text: null, source: null, truncated: false }, actions: [{ id: 'native:1234:0XDEF', label: 'Confirm', enabled: true }] };
   const snapshot = { complete: true, windows: [owner, popup] };
   return { snapshot, popup };
 }
@@ -71,6 +71,15 @@ describe('editorPopupAction', () => {
     assert.equal(result.activated, true);
     assert.equal(result.closed, true);
     assert.equal(dispatched, 1);
+  });
+
+  it('refuses a lower stacked Creator dialog even with explicit authorization', async () => {
+    const { snapshot, popup } = actionFixture();
+    let dispatched = 0;
+    popup.zOrder = { foreground: false, rank: 1, activePopup: false, confidence: 'medium', source: 'owner-group-order' };
+    const dependencies = { inspect: async () => snapshot, activate: async () => { dispatched++; return { activated: true, closed: true }; }, notify: () => ({ id: 'notice' }) };
+    await assert.rejects(() => actOnEditorPopup({ operation: 'activate', popupId, popupTitle: 'Warn', actionId: 'native:1234:0XDEF', actionLabel: 'Confirm', confirm: true, authorization: 'user-explicit' }, dependencies), error => error.code === 'POPUP_ACTION_STALE' && error.status === 409);
+    assert.equal(dispatched, 0);
   });
 
   it('registers a direct exact-action POST with strict inputs and bounded outputs', () => {

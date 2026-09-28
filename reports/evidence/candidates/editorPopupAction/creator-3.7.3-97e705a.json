@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "candidate": "editorPopupAction",
+  "recordedAt": "2026-09-25",
+  "creatorVersion": "3.7.3",
+  "projectPath": "G:\\_ws\\cc-fws\\cc30-new-all-in-one",
+  "instanceId": "d54cb9aa1942048f4b9bf322b6f05a63",
+  "artifact": {
+    "commit": "97e705a",
+    "branch": "feat/cocos-pilot-api-capability-expansion",
+    "dirty": false,
+    "builtAt": "2026-09-25T05:23:42.207Z",
+    "version": "2.1.0"
+  },
+  "fixture": {
+    "title": "CCP3X Action Qualification 8357f8f9552651293605f9bcf079042f",
+    "popupId": "native:49740:0X29D035C",
+    "actionId": "native:49740:0X1970344",
+    "actionLabel": "Cancel",
+    "ownerVerified": true,
+    "message": "Disposable popup-action qualification. No scene or file changes.",
+    "contentSource": "native-control",
+    "contentTruncated": false
+  },
+  "positiveTestID": "popup.exact-cancel.positive.v1",
+  "positive": {
+    "httpStatus": 200,
+    "activated": true,
+    "closed": true,
+    "samePopupVisibleAfter": false,
+    "detectedAfter": false,
+    "blockingAfter": false,
+    "nativeCoverageComplete": true
+  },
+  "negativeTestID": "popup.content-mismatch.negative.v1",
+  "negative": {
+    "expectedContentChanged": true,
+    "nativeProcessExitCode": 1,
+    "error": "popup content changed or is incomplete",
+    "samePopupVisibleAfter": true,
+    "actionDispatched": false
+  },
+  "projectCleanup": {
+    "sceneUuid": "be1f982e-d1dd-4a58-97fe-b060c13cd4e3",
+    "sceneReadyAfter": true,
+    "sceneDirtyAfter": false,
+    "projectPathMatched": true,
+    "popupDetectedAfter": false,
+    "popupCompleteAfter": true,
+    "sceneOrAssetMutationPerformed": false
+  },
+  "scope": "Clean-artifact disposable Creator-owned native popup action qualification only; does not qualify Scene Not Response handling or the popup detection plan."
+}
