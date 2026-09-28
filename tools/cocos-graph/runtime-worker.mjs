@@ -92,9 +92,8 @@ async function run() {
   assertBundleName(bundle);
   let manifest = readManifest(outDir);
   let shard = manifest?.shards?.find((item) => item.name === bundle);
-  const missing = !manifest || !shard;
   const stale = !manifest || manifest.parserVersion !== PARSER_VERSION || isStale(manifest) || !!shard?.dirty || !!shard?.prefabOpaque;
-  if ((operation === 'query' && missing) || (refresh && stale)) {
+  if (refresh && stale) {
     manifest = publishBuild({ project, outDir, bundle, source: 'disk', liveSnapshot: null });
     shard = manifest.shards.find((item) => item.name === bundle);
   }

@@ -43,3 +43,16 @@ it('CLI distinguishes empty queries, ambiguous identities, exact resolution, and
     rmSync(project, { recursive: true, force: true });
   }
 });
+it('does not auto-build a missing cache on query', () => {
+  const project = mkdtempSync(join(tmpdir(), 'cocos-graph-cli-missing-cache-'));
+  const cli = join(import.meta.dirname, '../bin/cocos-graph.mjs');
+  try {
+    mkdirSync(join(project, 'assets', 'demo'), { recursive: true });
+    writeFileSync(join(project, 'assets', 'demo', 'a.scene'), readFileSync(join(import.meta.dirname, 'fixtures/mini.scene.json')));
+    const result = spawnSync(process.execPath, [cli, 'query', '--bundle', 'demo', '--project', project, '--out', '.cocos-graph'], { encoding: 'utf8' });
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /not built|run graphManage build/i);
+  } finally {
+    rmSync(project, { recursive: true, force: true });
+  }
+});
