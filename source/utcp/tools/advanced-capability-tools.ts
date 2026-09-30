@@ -93,15 +93,19 @@ async function sceneTree(): Promise<any> {
     if (!tree) throw new ToolError({ code: 'NOT_FOUND', status: 404, message: 'No open scene or prefab hierarchy.' });
     return tree;
 }
-function walkNodes(root: any, limit = MAX_ITEMS): any[] {
-    const result: any[] = [];
-    const visit = (node: any) => {
-        if (!node || result.length >= limit) return;
-        result.push(node);
-        for (const child of node.children ?? []) visit(child);
-    };
-    visit(root);
-    return result;
+function findSceneNode(root: any, id: string): { node: any | null, limitReached: boolean } {
+    const pending = [root];
+    let visited = 0;
+    while (pending.length) {
+        if (visited >= 2000) return { node: null, limitReached: true };
+        const node = pending.pop();
+        if (!node) continue;
+        visited++;
+        if (node.uuid === id) return { node, limitReached: false };
+        const children = node.children;
+        if (Array.isArray(children)) for (let i = children.length - 1; i >= 0; i--) pending.push(children[i]);
+    }
+    return { node: null, limitReached: false };
 }
 
 async function sceneSourceEvidence(): Promise<{ url: string | null, sha256: string | null }> {
@@ -476,7 +480,7 @@ export class AdvancedCapabilityTools {
             throw new ToolError({ code: 'PREFAB_OVERRIDE_OPERATION_FAILED', status: 502, message: `${operation} prefab overrides failed or could not be read back.`, details: { cause: error instanceof Error ? error.message : String(error) } });
         }
     }
-    @utcpTool('prefabReferenceAudit', 'Audit nested prefab UUID references and missing serialized dependencies after reload-safe source read.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, nestedPrefabs: { type: 'array' }, missingReferences: { type: 'array' }, totalReferences: { type: 'integer' }, truncated: { type: 'boolean' }, source: { type: 'object' } }, required: ['valid', 'nestedPrefabs', 'missingReferences', 'totalReferences', 'truncated', 'source'] }, 'GET', ['prefab', 'reference', 'audit', 'nested'])
+    @utcpTool('prefabReferenceAudit', 'Audit nested prefab UUID references and missing serialized dependencies after reload-safe source read.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, nestedPrefabs: { type: 'array' }, missingReferences: { type: 'array' }, totalMissingReferences: { type: 'integer' }, totalReferences: { type: 'integer' }, truncated: { type: 'boolean' }, source: { type: 'object' } }, required: ['valid', 'nestedPrefabs', 'missingReferences', 'totalMissingReferences', 'totalReferences', 'truncated', 'source'] }, 'GET', ['prefab', 'reference', 'audit', 'nested'])
     async prefabReferenceAudit(args: { reference: IInstanceReference, maxReferences?: number }): Promise<Record<string, unknown>> {
         const maxReferences = bounded(args.maxReferences, 2000, 2000);
         const row = await resolveAsset(args.reference);
@@ -485,21 +489,24 @@ export class AdvancedCapabilityTools {
         const assets = await queryAssets();
         const known = new Set(assets.map((asset) => baseUuid(asset.uuid)));
         const allReferences = refs(source.content);
+        const allMissing = allReferences.filter((id) => !known.has(id));
         const ids = allReferences.slice(0, maxReferences);
         const nestedPrefabs = assets.filter((asset) => ids.includes(baseUuid(asset.uuid)) && asset.url.endsWith('.prefab')).map((asset) => ({ uuid: asset.uuid, url: asset.url }));
-        const missingReferences = ids.filter((id) => !known.has(id)).map((id) => ({ id }));
-        return { valid: missingReferences.length === 0, nestedPrefabs, missingReferences, totalReferences: allReferences.length, truncated: allReferences.length > ids.length, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reloaded: true } };
+        const missingReferences = allMissing.slice(0, maxReferences).map((id) => ({ id }));
+        return { valid: allMissing.length === 0, nestedPrefabs, missingReferences, totalMissingReferences: allMissing.length, totalReferences: allReferences.length, truncated: allReferences.length > ids.length || allMissing.length > missingReferences.length, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reloaded: true } };
     }
-    @utcpTool('sceneReferenceValidate', 'Validate serialized UUID references in a scene asset against the imported asset database.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, references: { type: 'array' }, missingReferences: { type: 'array' }, totalReferences: { type: 'integer' }, truncated: { type: 'boolean' }, source: { type: 'object' } }, required: ['valid', 'references', 'missingReferences', 'totalReferences', 'truncated', 'source'] }, 'GET', ['scene', 'reference', 'validate', 'serialized'])
+    @utcpTool('sceneReferenceValidate', 'Validate serialized UUID references in a scene asset against the imported asset database.', { type: 'object', properties: { reference: InstanceReferenceSchema, maxReferences: { type: 'integer', minimum: 1, maximum: 2000, default: 2000 } }, required: ['reference'] }, { type: 'object', properties: { valid: { type: 'boolean' }, references: { type: 'array' }, missingReferences: { type: 'array' }, totalMissingReferences: { type: 'integer' }, totalReferences: { type: 'integer' }, truncated: { type: 'boolean' }, source: { type: 'object' } }, required: ['valid', 'references', 'missingReferences', 'totalMissingReferences', 'totalReferences', 'truncated', 'source'] }, 'GET', ['scene', 'reference', 'validate', 'serialized'])
     async sceneReferenceValidate(args: { reference: IInstanceReference, maxReferences?: number }): Promise<Record<string, unknown>> {
         const row = await resolveAsset(args.reference);
         assertSceneAsset(row, 'sceneReferenceValidate');
         const source = await readAsset(row);
         const known = new Set((await queryAssets()).map((asset) => baseUuid(asset.uuid)));
         const allReferences = refs(source.content);
-        const references = allReferences.slice(0, bounded(args.maxReferences, 2000, 2000));
-        const missingReferences = references.filter((id) => !known.has(id));
-        return { valid: missingReferences.length === 0, references, missingReferences, totalReferences: allReferences.length, truncated: allReferences.length > references.length, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reopened: true } };
+        const limit = bounded(args.maxReferences, 2000, 2000);
+        const allMissing = allReferences.filter((id) => !known.has(id));
+        const references = allReferences.slice(0, limit);
+        const missingReferences = allMissing.slice(0, limit);
+        return { valid: allMissing.length === 0, references, missingReferences, totalMissingReferences: allMissing.length, totalReferences: allReferences.length, truncated: allReferences.length > references.length || allMissing.length > missingReferences.length, source: { uuid: row.uuid, url: row.url, sha256: source.hash, reopened: true } };
     }
 
     @utcpTool('prefabApplyOverrides', 'Apply prefab overrides through the scene IPC and verify typed source and instance read-back.', { type: 'object', properties: { reference: InstanceReferenceSchema }, required: ['reference'] }, { type: 'object', properties: { reference: { type: 'object' }, operation: { type: 'string' }, persisted: { type: 'boolean' }, readBack: { type: 'object' }, sourceReadBack: { type: 'object' } }, required: ['reference', 'operation', 'persisted', 'readBack', 'sourceReadBack'] }, 'POST', ['prefab', 'apply', 'overrides'])
@@ -584,9 +591,10 @@ export class AdvancedCapabilityTools {
     @utcpTool('uiResponsivePreview', 'Compare bounded UI geometry across requested resolutions using deterministic projection evidence.', { type: 'object', additionalProperties: false, properties: { resolutions: { type: 'array', minItems: 1, maxItems: 8, items: { type: 'object', additionalProperties: false, properties: { width: { type: 'number', minimum: 1 }, height: { type: 'number', minimum: 1 } }, required: ['width', 'height'] } }, reference: InstanceReferenceSchema }, required: ['resolutions'] }, { type: 'object', properties: { supported: { type: 'boolean' }, comparisons: { type: 'array' }, stable: { type: 'boolean' }, caveat: { type: 'string' } }, required: ['supported', 'comparisons', 'stable', 'caveat'] }, 'GET', ['ui', 'responsive', 'preview'])
     async uiResponsivePreview(args: { resolutions: Array<{ width: number, height: number }>, reference?: IInstanceReference }): Promise<Record<string, unknown>> {
         const tree = await sceneTree();
-        const nodes = walkNodes(tree);
-        const root = args.reference?.id ? nodes.find((node) => node.uuid === args.reference?.id) : tree;
-        if (!root) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `UI node not found: ${args.reference?.id}` });
+        const match = args.reference?.id ? findSceneNode(tree, args.reference.id) : { node: tree, limitReached: false };
+        if (match.limitReached) throw new ToolError({ code: 'SCENE_LOOKUP_LIMIT', status: 422, message: 'UI node lookup reached the 2000-node safety limit before resolving the reference.', details: { reference: args.reference, maxNodes: 2000 }, recovery: 'Use nodeGetTree with a smaller subtree or inspect the scene hierarchy; the node was not proven missing.' });
+        const root = match.node;
+        if (!root) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `UI node not found: ${args.reference?.id}`, details: { reference: args.reference }, recovery: 'Re-read nodeGetTree or nodeGetAtPath and retry with a current live node reference.' });
         const ids = typeof root.uuid === 'string' ? [root.uuid] : [];
         if (ids.length === 0) throw new ToolError({ code: 'UI_LAYOUT_QUERY_FAILED', status: 502, message: 'No UI node identities were available for responsive comparison.' });
         const geometry = await Editor.Message.request('scene', 'execute-scene-script', { name: 'cocos-pilot-3x', method: 'uiLayoutInspectGeometry', args: [{ nodeIds: ids }] }) as { nodes?: unknown[] } | null;

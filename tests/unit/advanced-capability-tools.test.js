@@ -217,12 +217,47 @@ describe('advanced capability tools', () => {
       const result = await tools.sceneReferenceValidate({ reference: { id: 'level' }, maxReferences: 2 });
       assert.equal(result.totalReferences, 3);
       assert.equal(result.truncated, true);
+      assert.equal(result.valid, false);
       assert.deepEqual(result.references, [uuidA, uuidB]);
-      assert.deepEqual(result.missingReferences, []);
+      assert.deepEqual(result.missingReferences, ['33333333-3333-3333-3333-333333333333']);
+      assert.equal(result.totalMissingReferences, 1);
       await assert.rejects(() => tools.sceneReferenceValidate({ reference: { id: 'thing' } }), (error) => error.code === 'TYPE_MISMATCH' && error.status === 422);
     } finally {
       if (previous === undefined) delete global.Editor;
       else global.Editor = previous;
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it('checks missing scene references beyond the 2000-item response cap', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccp3x-full-scene-audit-'));
+    const sceneFile = path.join(root, 'many.scene');
+    const ids = Array.from({ length: 2001 }, (_, index) => `00000000-0000-0000-0000-${index.toString(16).padStart(12, '0')}`);
+    fs.writeFileSync(sceneFile, JSON.stringify({ references: ids }));
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (_service, message) => {
+      if (message === 'query-asset-info') return { uuid: 'many', url: 'db://assets/many.scene', type: 'cc.SceneAsset', file: sceneFile };
+      if (message === 'query-assets') return ids.slice(0, -1).map((uuid) => ({ uuid, url: `db://assets/${uuid}.png` }));
+      throw new Error(`unexpected ${message}`);
+    } } };
+    try {
+      const result = await new AdvancedCapabilityTools().sceneReferenceValidate({ reference: { id: 'many' } });
+      assert.equal(result.valid, false);
+      assert.equal(result.totalReferences, 2001);
+      assert.equal(result.references.length, 2000);
+      assert.equal(result.totalMissingReferences, 1);
+      assert.deepEqual(result.missingReferences, [ids[2000]]);
+      assert.equal(result.truncated, true);
+      global.Editor.Message.request = async (_service, message) => {
+        if (message === 'query-asset-info') return { uuid: 'many', url: 'db://assets/many.scene', type: 'cc.SceneAsset', file: sceneFile };
+        if (message === 'query-assets') return ids.map((uuid) => ({ uuid, url: `db://assets/${uuid}.png` }));
+        throw new Error(`unexpected ${message}`);
+      };
+      const clean = await new AdvancedCapabilityTools().sceneReferenceValidate({ reference: { id: 'many' } });
+      assert.equal(clean.valid, true);
+      assert.equal(clean.truncated, true);
+      assert.equal(clean.totalMissingReferences, 0);
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
       fs.rmSync(root, { recursive: true, force: true });
     }
   });
@@ -243,7 +278,9 @@ describe('advanced capability tools', () => {
       const result = await new AdvancedCapabilityTools().prefabReferenceAudit({ reference: { id: 'root' }, maxReferences: 1 });
       assert.equal(result.totalReferences, 2);
       assert.equal(result.truncated, true);
-      assert.deepEqual(result.missingReferences, []);
+      assert.equal(result.valid, false);
+      assert.deepEqual(result.missingReferences, [{ id: missingUuid }]);
+      assert.equal(result.totalMissingReferences, 1);
       const full = await new AdvancedCapabilityTools().prefabReferenceAudit({ reference: { id: 'root' } });
       assert.equal(full.totalReferences, 2);
       assert.equal(full.truncated, false);
@@ -545,6 +582,45 @@ describe('advanced capability tools', () => {
     } finally {
       if (previous === undefined) delete global.Editor;
       else global.Editor = previous;
+    }
+  });
+  it('resolves a UI reference beyond 128 scene nodes and rejects a genuinely missing ID', async () => {
+    const previous = global.Editor;
+    const children = Array.from({ length: 211 }, (_, index) => ({ uuid: `sibling-${index}`, children: [] }));
+    children.push({ uuid: 'target-beyond-128', children: [] });
+    global.Editor = { Message: { request: async (service, message, payload) => {
+      if (service === 'scene' && message === 'query-node-tree') return { uuid: 'current-root', children };
+      if (service === 'scene' && message === 'execute-scene-script') {
+        assert.deepEqual(payload.args, [{ nodeIds: ['target-beyond-128'] }]);
+        return { nodes: [{ id: 'target-beyond-128', worldRect: { x: 0, y: 0, width: 64, height: 32 } }] };
+      }
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      const preview = await new AdvancedCapabilityTools().uiResponsivePreview({ reference: { id: 'target-beyond-128', type: 'cc.Node' }, resolutions: [{ width: 1280, height: 720 }] });
+      assert.equal(preview.supported, true);
+      assert.equal(preview.comparisons[0].projectedRects[0].id, 'target-beyond-128');
+      await assert.rejects(
+        () => new AdvancedCapabilityTools().uiResponsivePreview({ reference: { id: 'missing-node', type: 'cc.Node' }, resolutions: [{ width: 1280, height: 720 }] }),
+        error => error.code === 'TARGET_NOT_FOUND' && error.status === 404 && /nodeGetTree/.test(error.recovery),
+      );
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
+    }
+  });
+  it('does not claim a UI node is missing when the 2000-node search bound is reached', async () => {
+    const previous = global.Editor;
+    global.Editor = { Message: { request: async (service, message) => {
+      if (service === 'scene' && message === 'query-node-tree') return { uuid: 'root', children: Array.from({ length: 2000 }, (_, index) => ({ uuid: `node-${index}`, children: [] })) };
+      throw new Error(`unexpected ${service}:${message}`);
+    } } };
+    try {
+      await assert.rejects(
+        () => new AdvancedCapabilityTools().uiResponsivePreview({ reference: { id: 'outside-bound', type: 'cc.Node' }, resolutions: [{ width: 1280, height: 720 }] }),
+        error => error.code === 'SCENE_LOOKUP_LIMIT' && error.status === 422 && error.details.maxNodes === 2000,
+      );
+    } finally {
+      if (previous === undefined) delete global.Editor; else global.Editor = previous;
     }
   });
   it('publishes expansion integration guidance in agent-visible descriptions', () => {

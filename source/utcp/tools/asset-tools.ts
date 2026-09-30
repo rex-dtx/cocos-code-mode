@@ -646,50 +646,55 @@ export class AssetTools {
         ['asset', 'resolve', 'path', 'url', 'filesystem', 'uuid', 'exists']
     )
     async assetResolvePath(args: { reference?: IInstanceReference, assetPath?: string }): Promise<{ filesystemPath: string, url?: string, uuid?: string, exists: boolean, isDirectory?: boolean, type?: string, importer?: string, isSubAsset?: boolean, containsSubAssets?: boolean, relativePath?: string, backupPath?: string }> {
-        const id = args.reference?.id || (args.assetPath ? normalizePath(args.assetPath) : undefined);
+        const referenceId = args.reference?.id;
+        const assetPath = referenceId ? undefined : (args.assetPath ? normalizePath(args.assetPath) : undefined);
+        const id = referenceId || assetPath;
         if (!id) throw new Error('assetResolvePath requires reference.id or assetPath');
-        const asUuid = !id.startsWith('db://');
+        const fromReference = typeof referenceId === 'string' && referenceId.length > 0;
 
         let fp2: string | null = null;
         let url2: string | null = null;
-        let inf3: any = null;
+        let inf3: Record<string, unknown> | null = null;
 
-        if (asUuid) {
-            // M1: query-path and query-asset-info both key on id -> 1 round instead of 2
-            const [fp, inf] = await Promise.all([
-                Editor.Message.request('asset-db', 'query-path', id),
-                Editor.Message.request('asset-db', 'query-asset-info', id).catch(() => null),
-            ]) as [string | null, any];
-            fp2 = fp;
-            inf3 = inf;
-            if (!fp2) return { filesystemPath: '', url: undefined, uuid: id, exists: false };
-            url2 = await Editor.Message.request('asset-db', 'query-url', fp2).catch(() => null);
+        if (fromReference) {
+            // A reference id is an asset identity only after asset-db confirms it.
+            // Do not echo arbitrary node/unknown ids as asset UUIDs.
+            const queried = await Editor.Message.request('asset-db', 'query-asset-info', referenceId).catch(() => null) as unknown;
+            inf3 = isManifestRow(queried) ? queried : null;
+            const authoritativeUuid = typeof inf3?.uuid === 'string' && inf3.uuid.length > 0 ? inf3.uuid : undefined;
+            if (!authoritativeUuid) return { filesystemPath: '', exists: false };
+            fp2 = typeof inf3?.file === 'string' ? inf3.file : await Editor.Message.request('asset-db', 'query-path', authoritativeUuid).catch(() => null) as string | null;
+            if (!fp2) return { filesystemPath: '', url: typeof inf3?.url === 'string' ? inf3.url : undefined, uuid: authoritativeUuid, exists: false };
+            url2 = await Editor.Message.request('asset-db', 'query-url', fp2).catch(() => null) as string | null;
         } else {
-            const inf2: any = await Editor.Message.request('asset-db', 'query-asset-info', id).catch(() => null);
-            if (inf2?.file) fp2 = inf2.file;
-            else fp2 = await Editor.Message.request('asset-db', 'query-path', id).catch(() => null);
-            url2 = id;
+            const queried = await Editor.Message.request('asset-db', 'query-asset-info', id).catch(() => null) as unknown;
+            const inf2 = isManifestRow(queried) ? queried : null;
+            if (typeof inf2?.file === 'string') fp2 = inf2.file;
+            else fp2 = await Editor.Message.request('asset-db', 'query-path', id).catch(() => null) as string | null;
+            url2 = assetPath || null;
             inf3 = inf2; // same key -> reuse, avoids a 2nd identical lookup
         }
 
-        if (!fp2) return { filesystemPath: '', url: asUuid ? undefined : id, uuid: asUuid ? id : undefined, exists: false };
-        const uuidResolved = inf3?.uuid || (asUuid ? id : await Editor.Message.request('asset-db', 'query-uuid', id).catch(() => undefined) || undefined);
+        if (!fp2) return { filesystemPath: '', url: fromReference ? (typeof inf3?.url === 'string' ? inf3.url : undefined) : assetPath, uuid: fromReference ? undefined : (typeof inf3?.uuid === 'string' && inf3.uuid.length > 0 ? inf3.uuid : undefined), exists: false };
+        const uuidResolved = typeof inf3?.uuid === 'string' && inf3.uuid.length > 0 ? inf3.uuid : undefined;
         // G1 parity: isSubAsset/containsSubAssets from AssetInfo, relativePath/backupPath derived.
         // 3.7.3 asset-db exposes no dedicated message for these (registry 45 msgs), so derive — guard
         // every field because AssetInfo shape is version-dependent.
         const subAssets3 = inf3?.subAssets;
-        const containsSubAssets = subAssets3 ? (Array.isArray(subAssets3) ? subAssets3.length > 0 : Object.keys(subAssets3).length > 0) : false;
+        const containsSubAssets = Array.isArray(subAssets3)
+            ? subAssets3.length > 0
+            : isManifestRow(subAssets3) && Object.keys(subAssets3).length > 0;
         // relativePath only makes sense inside the project — internal/engine assets
         // resolve outside projectPath and path.relative would return the absolute path.
-        const projectPath3 = (Editor.Project as any)?.path;
+        const projectPath3 = (Editor.Project as { path?: unknown } | undefined)?.path;
         let relativePath: string | undefined;
-        if (projectPath3 && fp2) {
+        if (typeof projectPath3 === 'string' && fp2) {
             const rel = path.relative(projectPath3, fp2);
             if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) relativePath = rel;
         }
         const backupCandidate = fp2 + '.meta';
         const backupPath = fs.existsSync(backupCandidate) ? backupCandidate : undefined;
-        return { filesystemPath: fp2, url: url2 || inf3?.url || undefined, uuid: uuidResolved, exists: !!inf3, isDirectory: inf3?.isDirectory, type: inf3?.type, importer: inf3?.importer, isSubAsset: inf3?.isSubAsset ?? false, containsSubAssets, relativePath, backupPath };
+        return { filesystemPath: fp2, url: url2 || (typeof inf3?.url === 'string' ? inf3.url : undefined), uuid: uuidResolved, exists: !!uuidResolved, isDirectory: typeof inf3?.isDirectory === 'boolean' ? inf3.isDirectory : undefined, type: typeof inf3?.type === 'string' ? inf3.type : undefined, importer: typeof inf3?.importer === 'string' ? inf3.importer : undefined, isSubAsset: typeof inf3?.isSubAsset === 'boolean' ? inf3.isSubAsset : false, containsSubAssets, relativePath, backupPath };
     }
 
     @utcpTool(

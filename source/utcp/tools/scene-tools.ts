@@ -7,7 +7,7 @@ import { DEFAULT_TREE_MAX_DEPTH, DEFAULT_TREE_MAX_NODES, restorePrefabNode } fro
 import { VERBOSE_TREE_DEPTH, VERBOSE_TREE_NODES } from '../utils/verbose';
 
 const DEFAULT_LIST_LIMIT = 200;
-const MAX_LIST_LIMIT = 1000;
+const MAX_LIST_LIMIT = 2000;
 const ALLOWED_COMPONENT_METHODS: Record<string, true> = {
     onLoad: true, start: true, onEnable: true, onDisable: true, onDestroy: true,
     resetInEditor: true, onFocusInEditor: true, onLostFocusInEditor: true,
@@ -92,6 +92,39 @@ function findSceneTreeNode(root: SceneTreeNode, uuid: string): SceneTreeNode | n
         for (const child of node.children ?? []) stack.push(child);
     }
     return null;
+}
+
+function nodeUuidFromSceneUsage(value: unknown, message: string): string {
+    const uuid = typeof value === 'string' ? value :
+        value && typeof value === 'object' && !Array.isArray(value)
+            ? (value as Record<string, unknown>).uuid ?? (value as Record<string, unknown>).id : undefined;
+    if (typeof uuid !== 'string' || !uuid.trim()) {
+        throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: `Creator returned an invalid node identity from ${message}.` });
+    }
+    return uuid;
+}
+
+async function assetInfoForSceneUsage(id: string): Promise<Record<string, unknown>> {
+    let info: unknown;
+    try {
+        info = await Editor.Message.request('asset-db', 'query-asset-info', id);
+    } catch (error) {
+        throw new ToolError({ code: 'ASSET_QUERY_FAILED', status: 502, message: `Creator could not verify asset ${id}.`, details: { cause: error instanceof Error ? error.message : String(error) } });
+    }
+    if (info == null) throw new ToolError({ code: 'TARGET_NOT_FOUND', status: 404, message: `Asset ${id} was not found.` });
+    if (typeof info !== 'object' || Array.isArray(info) || (info as Record<string, unknown>).uuid !== id) {
+        throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: `Creator returned a mismatched asset identity for ${id}.` });
+    }
+    return info as Record<string, unknown>;
+}
+
+async function queryNodesForAsset(assetId: string, limit: number): Promise<{ references: IInstanceReference[], total: number, truncated: boolean }> {
+    const nodeUuids: unknown = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', assetId);
+    if (!Array.isArray(nodeUuids) || nodeUuids.some((uuid) => typeof uuid !== 'string' || !uuid.trim())) {
+        throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: `Creator returned an invalid node UUID list for asset ${assetId}.` });
+    }
+    const references: IInstanceReference[] = nodeUuids.slice(0, limit).map((id: string) => ({ id, type: 'cc.Node' }));
+    return { references, total: nodeUuids.length, truncated: nodeUuids.length > limit };
 }
 
 export class SceneTools {
@@ -403,25 +436,24 @@ export class SceneTools {
         { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['references', 'total', 'truncated'] }, "GET", ['scene', 'node', 'find', 'asset', 'reference', 'usage', 'impact']
     )
     async findNodesByAsset(args: { reference: IInstanceReference, limit?: number }): Promise<{ references: IInstanceReference[], total: number, truncated: boolean }> {
-        if (!args.reference || !args.reference.id) {
-            throw new Error('findNodesByAsset requires reference.id (asset uuid)');
+        const assetId = args.reference?.id;
+        if (typeof assetId !== 'string' || !assetId.trim()) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'findNodesByAsset requires reference.id (asset uuid).' });
         }
-        const nodeUuids = await Editor.Message.request('scene', 'query-nodes-by-asset-uuid', args.reference.id);
-        if (!Array.isArray(nodeUuids)) {
-            throw new Error(`Unexpected result querying nodes for asset ${args.reference.id}`);
-        }
-        const limit = boundedListLimit(args.limit);
-        return {
-            references: nodeUuids.slice(0, limit).map((uuid: string) => ({ id: uuid, type: 'cc.Node' })),
-            total: nodeUuids.length,
-            truncated: nodeUuids.length > limit
-        };
+        await assetInfoForSceneUsage(assetId);
+        return queryNodesForAsset(assetId, boundedListLimit(args.limit));
     }
 
     @utcpTool('spriteFrameUsageInspect', 'Inspect bounded scene nodes referencing one SpriteFrame asset.', { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, limit: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['reference'] }, { type: 'object', additionalProperties: false, properties: { reference: InstanceReferenceSchema, nodes: { type: 'array' }, total: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['reference', 'nodes', 'total', 'truncated'] }, 'GET', ['scene', 'sprite', 'frame', 'usage', 'inspect'])
     async spriteFrameUsageInspect(args: { reference: IInstanceReference, limit?: number }): Promise<Record<string, unknown>> {
-        const result = await this.findNodesByAsset(args);
-        return { reference: args.reference, nodes: result.references, total: result.total, truncated: result.truncated };
+        const id = args.reference?.id;
+        if (typeof id !== 'string' || !id.trim()) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'spriteFrameUsageInspect requires reference.id.' });
+        const info = await assetInfoForSceneUsage(id);
+        if (info.type !== 'cc.SpriteFrame' && info.importer !== 'sprite-frame') {
+            throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${id} is not a SpriteFrame.` });
+        }
+        const result = await queryNodesForAsset(id, boundedListLimit(args.limit));
+        return { reference: { id, type: 'cc.SpriteFrame' }, nodes: result.references, total: result.total, truncated: result.truncated };
     }
     @utcpTool('spriteFrameUsageBatchInspect', 'Inspect scene usage for a bounded batch of SpriteFrame assets with per-item errors.', { type: 'object', additionalProperties: false, properties: { references: { type: 'array', minItems: 1, maxItems: 64, items: InstanceReferenceSchema }, limitPerFrame: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['references'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['scene', 'sprite', 'frame', 'usage', 'batch'])
     async spriteFrameUsageBatchInspect(args: { references: IInstanceReference[], limitPerFrame?: number }): Promise<Record<string, unknown>> {
@@ -448,13 +480,18 @@ export class SceneTools {
         const maxFrames = args.maxFrames ?? 128;
         if (!Number.isInteger(maxFrames) || maxFrames < 1 || maxFrames > 256) throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'maxFrames must be an integer from 1 to 256.' });
         const limit = boundedListLimit(args.limitPerAsset);
-        const info = await Editor.Message.request('asset-db', 'query-asset-info', imageId) as any;
-        if (!info || (!['image', 'texture'].includes(String(info.importer ?? '')) && !['cc.ImageAsset', 'cc.Texture2D'].includes(String(info.type ?? '')))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${imageId} is not an imported image.` });
-        const frameReferences = Object.values(info.subAssets ?? {}).filter((frame: any) => frame?.importer === 'sprite-frame' || frame?.type === 'cc.SpriteFrame').slice(0, maxFrames).map((frame: any) => ({ id: frame.uuid, type: frame.type ?? 'cc.SpriteFrame' }));
-        const direct = await this.findNodesByAsset({ reference: args.imageReference, limit });
-        const spriteFrames = [];
-        for (const reference of frameReferences) spriteFrames.push(await this.spriteFrameUsageInspect({ reference, limit }));
-        return { imageReference: { id: info.uuid ?? imageId, type: info.type ?? args.imageReference.type ?? 'cc.ImageAsset' }, direct: { nodes: direct.references, total: direct.total, truncated: direct.truncated }, spriteFrames, totalSpriteFrames: Object.values(info.subAssets ?? {}).filter((frame: any) => frame?.importer === 'sprite-frame' || frame?.type === 'cc.SpriteFrame').length, truncated: direct.truncated || frameReferences.length >= maxFrames || spriteFrames.some((entry) => entry.truncated === true) };
+        const info = await assetInfoForSceneUsage(imageId);
+        if (!['image', 'texture'].includes(String(info.importer ?? '')) && !['cc.ImageAsset', 'cc.Texture2D'].includes(String(info.type ?? ''))) throw new ToolError({ code: 'TYPE_MISMATCH', status: 422, message: `Asset ${imageId} is not an imported image.` });
+        const frames = info.subAssets && typeof info.subAssets === 'object' && !Array.isArray(info.subAssets) ? Object.values(info.subAssets) : [];
+        const spriteFrames = frames.filter((frame): frame is Record<string, unknown> => !!frame && typeof frame === 'object' && ((frame as Record<string, unknown>).importer === 'sprite-frame' || (frame as Record<string, unknown>).type === 'cc.SpriteFrame'));
+        const frameReferences = spriteFrames.slice(0, maxFrames).map((frame) => {
+            if (typeof frame.uuid !== 'string' || !frame.uuid.trim()) throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: `Creator returned a SpriteFrame without an asset identity for ${imageId}.` });
+            return { id: frame.uuid, type: 'cc.SpriteFrame' };
+        });
+        const direct = await queryNodesForAsset(imageId, limit);
+        const frameUsages = [];
+        for (const reference of frameReferences) frameUsages.push(await this.spriteFrameUsageInspect({ reference, limit }));
+        return { imageReference: { id: imageId, type: typeof info.type === 'string' ? info.type : 'cc.ImageAsset' }, direct: { nodes: direct.references, total: direct.total, truncated: direct.truncated }, spriteFrames: frameUsages, totalSpriteFrames: spriteFrames.length, truncated: direct.truncated || spriteFrames.length > maxFrames || frameUsages.some((entry) => entry.truncated === true) };
     }
     @utcpTool('imageSceneUsageBatchInspect', 'Inspect scene usage for a bounded batch of imported image assets with per-item errors.', { type: 'object', additionalProperties: false, properties: { imageReferences: { type: 'array', minItems: 1, maxItems: 32, items: InstanceReferenceSchema }, maxFrames: { type: 'integer', minimum: 1, maximum: 256, default: 128 }, limitPerAsset: { type: 'integer', minimum: 1, maximum: MAX_LIST_LIMIT, default: DEFAULT_LIST_LIMIT } }, required: ['imageReferences'] }, { type: 'object', additionalProperties: false, properties: { items: { type: 'array' }, succeeded: { type: 'integer' }, failed: { type: 'integer' }, truncated: { type: 'boolean' } }, required: ['items', 'succeeded', 'failed', 'truncated'] }, 'GET', ['scene', 'image', 'sprite', 'usage', 'batch'])
     async imageSceneUsageBatchInspect(args: { imageReferences: IInstanceReference[], maxFrames?: number, limitPerAsset?: number }): Promise<Record<string, unknown>> {
@@ -480,21 +517,17 @@ export class SceneTools {
         { type: 'object', properties: { references: { type: 'array', items: InstanceReferenceSchema }, total: { type: 'number' }, truncated: { type: 'boolean' } }, required: ['references', 'total', 'truncated'] }, "GET", ['scene', 'node', 'missing', 'broken', 'asset', 'qa', 'health', 'integrity']
     )
     async findNodesWithMissingAssets(args: { limit?: number } = {}): Promise<{ references: IInstanceReference[], total: number, truncated: boolean }> {
-        const result = await Editor.Message.request('scene', 'query-nodes-miss-assets');
-        // Null payload is not "no missing assets": query-nodes-miss-assets is an
-        // untyped runtime message — absence must never read as a healthy scene.
-        if (result === null || result === undefined) {
-            throw new Error('findNodesWithMissingAssets: query-nodes-miss-assets returned no payload — is a scene open?');
-        }
+        const result: unknown = await Editor.Message.request('scene', 'query-nodes-miss-assets');
         if (!Array.isArray(result)) {
-            throw new Error('Unexpected result from query-nodes-miss-assets');
+            throw new ToolError({ code: 'INVALID_RESPONSE', status: 502, message: 'Creator returned no missing-assets node list.' });
         }
-        const references = result.map((item: any) => ({
-            id: typeof item === 'string' ? item : (item.uuid || item.id),
-            type: 'cc.Node'
-        })).filter((ref: IInstanceReference) => !!ref.id);
         const limit = boundedListLimit(args.limit);
-        return { references: references.slice(0, limit), total: references.length, truncated: references.length > limit };
+        const references: IInstanceReference[] = [];
+        for (const [index, value] of result.entries()) {
+            const id = nodeUuidFromSceneUsage(value, 'query-nodes-miss-assets');
+            if (index < limit) references.push({ id, type: 'cc.Node' });
+        }
+        return { references, total: result.length, truncated: result.length > limit };
     }
 
     @utcpTool(

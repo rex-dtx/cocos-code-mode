@@ -36,6 +36,19 @@ describe('exact asset authoring adapters', () => {
       assert.deepEqual(result.assets, [{ uuid: 'a', name: 'Hero', url: 'db://assets/Hero.prefab', type: 'cc.Prefab', importer: 'prefab', isDirectory: false }]);
     } finally { restore(); }
   });
+  it('does not echo unknown reference ids as asset identities', async () => {
+    const calls = [];
+    const restore = install(async (service, message, id) => {
+      calls.push([service, message, id]);
+      if (service === 'asset-db' && message === 'query-asset-info') return null;
+      throw new Error(`Unexpected ${service}.${message}:${id}`);
+    });
+    try {
+      const result = await new AssetTools().assetResolvePath({ reference: { id: 'scene-node-id' } });
+      assert.deepEqual(result, { filesystemPath: '', exists: false });
+      assert.deepEqual(calls, [['asset-db', 'query-asset-info', 'scene-node-id']]);
+    } finally { restore(); }
+  });
 
   it('returns asset identity, metadata, and bounded serialized data', async () => {
     const info = { uuid: 'asset-id', url: 'db://assets/config.json', type: 'cc.JsonAsset', file: 'C:/project/assets/config.json', importer: 'json', isDirectory: false };

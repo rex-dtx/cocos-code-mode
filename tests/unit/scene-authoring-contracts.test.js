@@ -395,3 +395,101 @@ describe('scene upgrade read-back contracts', () => {
     );
   });
 });
+
+describe('scene asset usage identity contracts', () => {
+  const frame = 'image-uuid@spriteFrame';
+  const image = 'image-uuid';
+
+  it('rejects a scene node UUID as an asset before querying usages', async () => {
+    const calls = [];
+    global.Editor = { Message: { request: async (service, message, id) => {
+      calls.push([service, message, id]);
+      if (message === 'query-asset-info') return null;
+      throw new Error(`unexpected ${message}`);
+    } } };
+    await assert.rejects(
+      new SceneTools().findNodesByAsset({ reference: { id: 'node-uuid', type: 'cc.Node' } }),
+      error => error.code === 'TARGET_NOT_FOUND' && error.status === 404,
+    );
+    assert.deepEqual(calls, [['asset-db', 'query-asset-info', 'node-uuid']]);
+  });
+
+  it('preserves exact sub-asset and node IDs and counts all valid results past the limit', async () => {
+    const calls = [];
+    global.Editor = { Message: { request: async (service, message, id) => {
+      calls.push([service, message, id]);
+      if (message === 'query-asset-info') return { uuid: id, type: 'cc.SpriteFrame', importer: 'sprite-frame' };
+      if (message === 'query-nodes-by-asset-uuid') return ['node-A', 'node-B', 'node-C'];
+      throw new Error(`unexpected ${message}`);
+    } } };
+    assert.deepEqual(await new SceneTools().spriteFrameUsageInspect({ reference: { id: frame }, limit: 1 }), {
+      reference: { id: frame, type: 'cc.SpriteFrame' }, nodes: [{ id: 'node-A', type: 'cc.Node' }], total: 3, truncated: true,
+    });
+    assert.deepEqual(calls.filter(([, message]) => message === 'query-nodes-by-asset-uuid'), [['scene', 'query-nodes-by-asset-uuid', frame]]);
+    assert.equal(calls.filter(([, message]) => message === 'query-node').length, 0);
+  });
+
+  it('rejects malformed scene IPC nodes, including those beyond the returned limit', async () => {
+    global.Editor = { Message: { request: async (_service, message, id) => {
+      if (message === 'query-asset-info') return { uuid: id, type: 'cc.ImageAsset' };
+      if (message === 'query-nodes-by-asset-uuid') return ['node-A', { uuid: '' }];
+      throw new Error(`unexpected ${message}`);
+    } } };
+    await assert.rejects(
+      new SceneTools().findNodesByAsset({ reference: { id: image }, limit: 1 }),
+      error => error.code === 'INVALID_RESPONSE' && error.status === 502,
+    );
+  });
+
+  it('rejects an asset-db response for a different UUID rather than silently querying it', async () => {
+    let sceneQueries = 0;
+    global.Editor = { Message: { request: async (_service, message) => {
+      if (message === 'query-asset-info') return { uuid: 'another-asset', type: 'cc.SpriteFrame' };
+      sceneQueries++;
+      return [];
+    } } };
+    await assert.rejects(
+      new SceneTools().findNodesByAsset({ reference: { id: frame } }),
+      error => error.code === 'INVALID_RESPONSE' && error.status === 502,
+    );
+    assert.equal(sceneQueries, 0);
+  });
+
+  it('isolates invalid SpriteFrame assets as per-item batch errors', async () => {
+    global.Editor = { Message: { request: async (_service, message, id) => {
+      if (message === 'query-asset-info') return id === frame ? { uuid: id, type: 'cc.SpriteFrame' } : null;
+      if (message === 'query-nodes-by-asset-uuid') return ['node-A', 'node-B'];
+      throw new Error(`unexpected ${message}`);
+    } } };
+    const result = await new SceneTools().spriteFrameUsageBatchInspect({ references: [{ id: 'node-uuid' }, { id: frame }], limitPerFrame: 1 });
+    assert.equal(result.succeeded, 1);
+    assert.equal(result.failed, 1);
+    assert.equal(result.truncated, true);
+    assert.equal(result.items[0].ok, false);
+    assert.deepEqual(result.items[1].result, { reference: { id: frame, type: 'cc.SpriteFrame' }, nodes: [{ id: 'node-A', type: 'cc.Node' }], total: 2, truncated: true });
+  });
+
+  it('reports complete image SpriteFrame traversal as non-truncated at the exact frame cap', async () => {
+    global.Editor = { Message: { request: async (_service, message, id) => {
+      if (message === 'query-asset-info') return id === image
+        ? { uuid: image, type: 'cc.ImageAsset', importer: 'image', subAssets: { spriteFrame: { uuid: frame, type: 'cc.SpriteFrame', importer: 'sprite-frame' } } }
+        : { uuid: frame, type: 'cc.SpriteFrame', importer: 'sprite-frame' };
+      if (message === 'query-nodes-by-asset-uuid') return id === frame ? ['sprite-node'] : [];
+      throw new Error(`unexpected ${message}`);
+    } } };
+    const result = await new SceneTools().imageSceneUsageInspect({ imageReference: { id: image }, maxFrames: 1 });
+    assert.equal(result.totalSpriteFrames, 1);
+    assert.equal(result.truncated, false);
+    assert.deepEqual(result.spriteFrames[0].nodes, [{ id: 'sprite-node', type: 'cc.Node' }]);
+  });
+});
+
+describe('missing asset node identity contracts', () => {
+  it('rejects malformed missing-assets IPC payloads instead of reporting a healthy scene', async () => {
+    global.Editor = { Message: { request: async () => ['valid-node', { uuid: '' }] } };
+    await assert.rejects(
+      new SceneTools().findNodesWithMissingAssets({ limit: 1 }),
+      error => error.code === 'INVALID_RESPONSE' && error.status === 502,
+    );
+  });
+});
