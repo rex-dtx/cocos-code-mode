@@ -1,8 +1,13 @@
 {
   "document": "Creator 3.8+ capability backlog",
-  "purpose": "Keep capabilities proven unsupported on Creator 3.7.3 separate from capabilities that merely lack qualification evidence.",
+  "purpose": "Keep capabilities proven unsupported on Creator 3.7.3 separate from capabilities that merely lack qualification evidence. This backlog is held for a later version; it is not part of the immediate Creator 3.7 release gate.",
   "sourceCreatorVersion": "3.7.3",
   "targetMinimumCreatorVersion": "3.8.0",
+  "releaseDecision": {
+    "immediateReleaseTarget": "Creator 3.7.x",
+    "status": "held-for-later-version",
+    "rule": "Complete build, security, qualification, publish and release gates for the supported 3.7 artifact before reopening this 3.8 backlog. Never mix 3.8 evidence into the 3.7 release gate."
+  },
   "policy": {
     "unsupportedOn373": "Do not implement or qualify in the 3.7.x delivery. Preserve typed fail-closed behavior and revisit on Creator 3.8+.",
     "unverifiedOn373": "Not evidence of version incompatibility. May continue on 3.7.3 when the required fixture or transport becomes available.",

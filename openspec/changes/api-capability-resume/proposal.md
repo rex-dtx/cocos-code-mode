@@ -1,11 +1,10 @@
 ## Why
 
-Creator 3.7.3 đã đạt **321 registered / 154 qualified (86 baseline + 68 portfolio) / 90.28% workflow** — đủ để agent thao tác component/editor "nhanh nhất có thể" (ui-layout, prefab, tilemap, assets/import, animation, skeletal, physics, audio, particles, rendering, terrain, build). Phần còn lại bị chặn bởi **preview-disable owner (GAME_VIEW_PREVIEW_DISABLED, c0459fd)**, **IPC 3.7.3 không tồn tại (project/set-config, _globals read-back, light-bake, Terrain)**, và **thiết kế thay thế (tween sequence, prefabVariant)**. Thay vì giữ worktree mở với gate vỡ `potentiallyQualifiable 73 < required 82`, chuyển_lane sang **build/security → publish** và đóng băng API ở mức "vừa đủ dùng".
+Creator 3.7.3 đã đạt **321 registered / 154 qualified (86 baseline + 68 portfolio) / 90.28% workflow** — đủ để agent thao tác component/editor "nhanh nhất có thể". Owner quyết định chốt Creator 3.7 làm release đầu tiên; mọi nội dung Creator 3.8 và API breadth sâu hơn chuyển sang một release train sau 3.7.
 
-Plan này là **tủ pending** cho lần quay lại: gom toàn bộ candidate/rejected/replace chưa xong, giữ nguyên evidence/probe, và ghi rõ điều kiện resume.
+Plan này là **tủ pending cho phiên bản sau**: không implement, qualify hoặc dùng làm điều kiện chặn build/security/publish/release của artifact 3.7. Giữ nguyên evidence/probe và tách riêng version-bound claims.
 
-## What Changes
-
+- **Deferred release boundary:** change này không thuộc Creator 3.7 release scope. Resume chỉ sau khi artifact 3.7 đóng build, security, clean qualification, publish và release gates.
 - Tạo change mới `api-capability-resume` ở trạng thái **pending** (không implement trong đợt publish). Toàn bộ scope dưới đây là deferred, không tính vào gate hiện tại.
 - Ghi nhận 11 hàng **treo trực tiếp** trên `docs/tool-portfolio-candidates.json` (2026-09-21, bacd213):
   - `candidate` (3): `renderConfigurationApply` (rendering-materials, read-back _globals thiếu), `previewSessionStart/Stop` (runtime-qa, preview-lifecycle).
@@ -14,7 +13,7 @@ Plan này là **tủ pending** cho lần quay lại: gom toàn bộ candidate/re
 - Ghi nhận 23 hàng **rejected chờ revisit 3.8+** (23 trong 102, gồm 4 reserve): `animationGraphPreview`, `skeletalAnimationPlay/Events`, `audioPlaybackControl/Observe`, `physics2dConfigure/3dConfigure`, `particleConfigure/Playback`, `renderDiagnosticsCollect`, `lightBakeManage`, `terrainEdit`, `localizationInspect/TableEdit/Preview`, `runtimeSessionLifecycle/StateObserve/ScenarioRun/Assert`, `previewSessionInspect/ResolutionSet`, `runtimeWaitForState`, `bitmapFontImportSettingsConfigure`.
 - Ghi nhận backlog `docs/next-update-3x8-capability-backlog.json`: 3 `unsupportedOnCreator373` (projectManage set, physics2d/3dConfigure) + 9 `unverifiedOrFixtureBlocked` cần fixture/transport mới.
 - Định nghĩa **điều kiện resume**: Creator 3.8+ IPC (`project/set-config`, `_globals` read-back, preview resolution), fixture game-view không còn owner-disable, và thiết kế mới cho tween/prefabVariant/tilemapCreate.
-- Ghi riêng lane **R6 — Creator popup observability** qua tracked plan `notes/plans/cc-code-mode-cst/2-todo-260922__tbd-creator-popup-detection/plan.md`: read-only blocking-dialog detection, không dismissal, không tính vào frozen portfolio denominator cho tới khi có proposal/candidate decision riêng.
+- Ghi riêng lane **R6 — Creator popup observability** qua tracked plan `notes/plans/cc-code-mode-cst/1-wip-260922__tbd-creator-popup-detection/plan.md`: read-only blocking-dialog detection, không dismissal, không tính vào frozen portfolio denominator cho tới khi có proposal/candidate decision riêng.
 - Không đụng tới 68 qualified hiện tại; không hạ gate lén — mọi thay đổi `requiredApprovalCount` phải có decision ghi file.
 
 ## Capabilities

@@ -1,3 +1,8 @@
+## Release boundary — Creator 3.7 first
+
+- [x] Owner decision recorded: complete build/security, clean qualification, packaging, publish and release for the supported Creator 3.7 artifact before reopening any 3.8/API-resume lane.
+- [x] Keep this change `status: pending`; do not use its 3.8 probes, forward-runtime evidence or pending candidates as Creator 3.7 release credit or blockers.
+
 ## 1. Freeze and evidence
 
 - [x] Ghi snapshot hash-reference trong `freeze-evidence.json`: `docs/tool-portfolio-candidates.json` (80+22=102, qualified 68) + `reports/api-capability-probe-20260920.json` + `reports/api-capability-preview-disabled-reconciliation-20260920.json` + backlog, tất cả bind với commit `bacd213`.
@@ -12,6 +17,10 @@
 - [x] **Lane R4 — Replace redesign** — owner decision 2026-09-22: **Keep deferred**. Do not introduce replacements for `prefabVariantCreate`, `tilemapCreate`, or `tweenSequenceCreate/Inspect/Control/Validate`; retain fail-closed state and require a new explicit proposal before reopening.
 - [ ] **Lane R5 — Engine features 3.8** — blocked after clean read-only probe `reports/r5-engine-api-probe-20260922.json` (`cdc2de2`, Creator 3.7.3): `cc.Terrain`, `cc.ParticleSystem`, and `cc.LightProbeInfo` are `undefined`; no mutation attempted. Creator ≥3.8 engine APIs and fresh witnesses required for `lightBakeManage`, `terrainEdit`, `particleConfigure`; physics topology remains qualified.
 - [ ] **Lane R6 — Creator popup observability/control** — action child `4-done-260923__260925-creator-popup-actions` is complete on clean Creator 3.7.3 artifact `97e705a`: bounded UI Automation body, exact direct action, stale-content refusal, same-HWND closure, positive/negative evidence. Detection child `1-wip-260922__tbd-creator-popup-detection` remains open for canonical clean `Scene Not Response` target evidence; R6 does not promote portfolio rows or close parent resume.
+
+## Deferred hierarchy browsing — owner idea, not a release gate
+
+- [ ] Sau release Creator 3.7, thiết kế bounded `nodeGetTree` browsing: giữ mặc định depth 4 / 200 nodes (không mở depth vô hạn); khi `truncated`, agent dùng `reference` để đọc tiếp nhánh cần thiết. Với cha rộng, cân nhắc `childOffset` + `pageSize`, trả `childrenCount` và `nextOffset`/end-of-page; giới hạn từng request và không auto-fetch toàn scene. Chốt thứ tự children và semantics khi scene đổi giữa các trang; chứng minh kết quả trên fixture sâu/rộng và đo payload/token trước khi implement. Không tính vào qualification hay publish gate hiện tại.
 
 ## 3. Re-entry checklist (khi a bảo "back lại")
 
