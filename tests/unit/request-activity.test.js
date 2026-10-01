@@ -13,6 +13,7 @@ it('tracks bounded business request activity without payloads', () => {
     activeCount: 1,
     active: [{ requestId: 'r1', tool: 'nodeGetTree', startedAt: 1000, ageMs: 250 }],
     overflowCount: 0,
+    lastReceived: { tool: 'nodeGetTree', receivedAt: 1000, ageMs: 250 },
     lastFinished: null,
   });
   now = 1400;
@@ -21,16 +22,22 @@ it('tracks bounded business request activity without payloads', () => {
     activeCount: 0,
     active: [],
     overflowCount: 0,
+    lastReceived: { tool: 'nodeGetTree', receivedAt: 1000, ageMs: 400 },
     lastFinished: { requestId: 'r1', tool: 'nodeGetTree', outcome: 'completed', status: 200, finishedAt: 1400, durationMs: 400 },
   });
 });
 
-it('excludes heartbeat and health traffic from Processing', () => {
-  const store = new RequestActivityStore(() => 1000);
+it('excludes heartbeat and health traffic from tool request idle age', () => {
+  let now = 1000;
+  const store = new RequestActivityStore(() => now);
   assert.equal(store.start('h1', 'editorHandshake'), false);
   assert.equal(store.start('h2', 'editorSessionHeartbeat'), false);
   store.finish('h1', 'editorHandshake', 'completed', 200, 1000);
-  assert.deepEqual(store.snapshot(), { activeCount: 0, active: [], overflowCount: 0, lastFinished: null });
+  assert.deepEqual(store.snapshot(), { activeCount: 0, active: [], overflowCount: 0, lastReceived: null, lastFinished: null });
+  store.start('r1', 'nodeGetTree');
+  now = 6000;
+  store.start('h3', 'editorHandshake');
+  assert.deepEqual(store.snapshot().lastReceived, { tool: 'nodeGetTree', receivedAt: 1000, ageMs: 5000 });
 });
 
 it('bounds visible requests while retaining the exact active count', () => {
@@ -43,5 +50,5 @@ it('bounds visible requests while retaining the exact active count', () => {
   store.finish('r24', 'tool24', 'failed', 500, 900);
   assert.equal(store.snapshot().activeCount, 24);
   store.clear();
-  assert.deepEqual(store.snapshot(), { activeCount: 0, active: [], overflowCount: 0, lastFinished: null });
+  assert.deepEqual(store.snapshot(), { activeCount: 0, active: [], overflowCount: 0, lastReceived: null, lastFinished: null });
 });

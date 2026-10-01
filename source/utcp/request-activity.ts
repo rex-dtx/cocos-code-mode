@@ -20,6 +20,7 @@ export interface RequestActivitySnapshot {
     activeCount: number;
     active: ActiveRequestActivity[];
     overflowCount: number;
+    lastReceived: { tool: string; receivedAt: number; ageMs: number } | null;
     lastFinished: FinishedRequestActivity | null;
 }
 
@@ -36,15 +37,18 @@ interface VisibleActive {
 export class RequestActivityStore {
     private activeCount = 0;
     private readonly visible = new Map<string, VisibleActive>();
+    private lastReceived: { tool: string; receivedAt: number } | null = null;
     private lastFinished: FinishedRequestActivity | null = null;
 
     constructor(private readonly now: () => number = Date.now) {}
 
     start(requestId: string, tool: string): boolean {
         if (EXCLUDED_TOOLS.has(tool)) return false;
+        const receivedAt = this.now();
+        this.lastReceived = { tool, receivedAt };
         this.activeCount += 1;
         if (this.visible.size < MAX_VISIBLE_ACTIVE) {
-            this.visible.set(requestId, { requestId, tool, startedAt: this.now() });
+            this.visible.set(requestId, { requestId, tool, startedAt: receivedAt });
         }
         return true;
     }
@@ -74,6 +78,7 @@ export class RequestActivityStore {
             activeCount: this.activeCount,
             active,
             overflowCount: Math.max(0, this.activeCount - active.length),
+            lastReceived: this.lastReceived ? { ...this.lastReceived, ageMs: Math.max(0, now - this.lastReceived.receivedAt) } : null,
             lastFinished: this.lastFinished ? { ...this.lastFinished } : null,
         };
     }
@@ -81,6 +86,7 @@ export class RequestActivityStore {
     clear(): void {
         this.activeCount = 0;
         this.visible.clear();
+        this.lastReceived = null;
         this.lastFinished = null;
     }
 }

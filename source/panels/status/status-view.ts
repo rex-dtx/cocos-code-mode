@@ -9,6 +9,7 @@ export interface StatusActivity {
     activeCount: number;
     active: Array<{ requestId: string; tool: string; startedAt: number; ageMs: number }>;
     overflowCount: number;
+    lastReceived: { tool: string; receivedAt: number; ageMs: number } | null;
     lastFinished: { requestId: string; tool: string; outcome: 'completed' | 'failed'; status: number; finishedAt: number; durationMs: number } | null;
 }
 
@@ -46,6 +47,10 @@ function isStatusActivity(value: unknown): value is StatusActivity {
             && typeof entry.startedAt === 'number' && Number.isInteger(entry.startedAt) && entry.startedAt > 0
             && typeof entry.ageMs === 'number' && Number.isFinite(entry.ageMs) && entry.ageMs >= 0)
         || typeof value.overflowCount !== 'number' || !Number.isInteger(value.overflowCount) || value.overflowCount < 0) return false;
+    if (value.lastReceived !== null && (!isRecord(value.lastReceived)
+        || typeof value.lastReceived.tool !== 'string' || value.lastReceived.tool.length < 1 || value.lastReceived.tool.length > 128
+        || typeof value.lastReceived.receivedAt !== 'number' || !Number.isInteger(value.lastReceived.receivedAt) || value.lastReceived.receivedAt <= 0
+        || typeof value.lastReceived.ageMs !== 'number' || !Number.isFinite(value.lastReceived.ageMs) || value.lastReceived.ageMs < 0)) return false;
     return value.lastFinished === null || (isRecord(value.lastFinished)
         && typeof value.lastFinished.requestId === 'string' && value.lastFinished.requestId.length > 0 && value.lastFinished.requestId.length <= 32
         && typeof value.lastFinished.tool === 'string' && value.lastFinished.tool.length > 0 && value.lastFinished.tool.length <= 128
@@ -106,6 +111,7 @@ export function renderStatus(container: HTMLElement, snapshot: Status | null): v
         ['State', snapshot.activity.activeCount > 0 ? `Processing — ${snapshot.activity.activeCount} request${snapshot.activity.activeCount === 1 ? '' : 's'}` : 'Ready · Idle'],
         ['Active requests', `${snapshot.activity.activeCount}${snapshot.activity.overflowCount ? ` (+${snapshot.activity.overflowCount} hidden)` : ''}`],
         ['Sessions', `${activeSessionCount} active · ${staleSessionCount} stale · ${expiredSessionCount} expired`],
+        ['Since last tool request', snapshot.activity.lastReceived ? `${Math.floor(snapshot.activity.lastReceived.ageMs / 1000)}s ago · ${snapshot.activity.lastReceived.tool}` : 'No tool request received'],
     ] : [['State', 'Unavailable']];
     if (snapshot?.activity.lastFinished) {
         const last = snapshot.activity.lastFinished;
