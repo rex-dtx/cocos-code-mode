@@ -55,8 +55,58 @@ export function snapshotInteraction(entry: Entry): Entry {
     return snapshot;
 }
 
+function compact(value: unknown, max = 96): string {
+    const string = String(value ?? '').replace(/[\r\n\t\u0000-\u001f\u007f]/g, ' ').trim();
+    return string.length > max ? `${string.slice(0, max - 1)}…` : string;
+}
+
+function nested(value: unknown, key: string): unknown {
+    return value && typeof value === 'object' ? (value as Entry)[key] : undefined;
+}
+
+function quoted(value: unknown): string {
+    return `“${compact(value, 72)}”`;
+}
+
+export function formatInteractionHeadline(entry: Entry): string {
+    const tool = compact(entry.tool, 80) || 'unknown tool';
+    const phase = entry.phase === 'start' ? 'REQUEST' : entry.phase === 'complete' ? 'SUCCESS' : entry.phase === 'error' ? 'FAILED' : 'WARNING';
+    const args = entry.args;
+    const result = entry.result;
+    let summary = phase === 'REQUEST' ? 'call' : phase === 'FAILED' ? compact(entry.code, 48) || compact(entry.message, 96) || 'request failed' : 'completed';
+    if (tool === 'editorHandshake') {
+        summary = phase === 'REQUEST' ? 'connectivity check' : (() => {
+            const probe = nested(result, 'probe');
+            const status = compact(nested(probe, 'status'), 32) || 'unknown';
+            return status === 'responsive' && nested(result, 'projectMatches') === false ? 'responsive · project mismatch' : status === 'responsive' ? 'responsive' : `degraded · ${status}`;
+        })();
+    } else if (tool === 'editorPopupInspect') {
+        const detected = nested(result, 'detected');
+        summary = phase === 'REQUEST' ? 'inspect popup' : detected === true ? `${nested(result, 'blocking') === true ? 'blocking popup' : 'popup detected'}${typeof nested(result, 'total') === 'number' ? ` · ${nested(result, 'total')} windows` : ''}` : detected === false ? 'no popup' : 'inspection incomplete';
+    } else if (tool === 'editorPopupAction') {
+        const label = nested(args, 'actionLabel') ?? nested(result, 'actionLabel');
+        summary = `${compact(nested(args, 'operation') ?? nested(result, 'operation') ?? 'popup action')}${label ? ` ${quoted(label)}` : ''}`;
+        if (phase === 'SUCCESS') summary += nested(result, 'closed') === true ? ' · activated, closed' : nested(result, 'activated') === true ? ' · activated' : '';
+    } else if (tool === 'nodeCreate') summary = phase === 'REQUEST' ? `create node ${quoted(nested(args, 'name'))}` : 'node created';
+    else if (tool === 'nodeGetTree') {
+        const reference = nested(args, 'reference');
+        const target = nested(reference, 'id');
+        const depth = nested(args, 'maxDepth');
+        const nodes = nested(args, 'maxNodes');
+        const params = [target ? `reference=${compact(target, 72)}` : null,
+            depth === undefined ? null : `maxDepth=${compact(depth, 16)}`,
+            nodes === undefined ? null : `maxNodes=${compact(nodes, 16)}`].filter(Boolean).join(' · ');
+        summary = `${phase === 'REQUEST' ? 'read node tree' : `${quoted(nested(result, 'name') || nested(result, 'path'))} · ${compact(nested(result, 'childrenCount') ?? '?')} children`}${params ? ` · ${params}` : ''}`;
+    }
+    else if (tool === 'sceneGetInfo') summary = phase === 'REQUEST' ? 'read scene info' : `${compact(nested(result, 'nodeCount') ?? '?')} nodes · dirty=${compact(nested(result, 'dirty'))}`;
+    else if (tool === 'assetResolvePath') summary = phase === 'REQUEST' ? `resolve asset ${quoted(nested(args, 'reference'))}` : nested(result, 'exists') === true ? `resolved · ${compact(nested(result, 'relativePath') || nested(result, 'url'), 72)}` : 'asset not found';
+    else if (tool === 'assetQuery') summary = phase === 'REQUEST' ? `query assets${nested(args, 'extname') ? ` · ${compact(nested(args, 'extname'))}` : ''}` : `${compact(nested(result, 'total') ?? '?')} assets`;
+    else if (tool === 'editorState') summary = phase === 'REQUEST' ? 'read editor state' : `scene ready=${compact(nested(nested(result, 'scene'), 'ready') ?? 'unknown')} · popup=${compact(nested(nested(result, 'popup'), 'detected') ?? 'unknown')}`;
+    return `[cx3][api]${typeof entry.requestId === 'string' ? `[${compact(entry.requestId.slice(0, 8), 8)}]` : ''} ${phase} ${tool} · ${summary}${entry.status === undefined ? '' : ` ${compact(entry.status, 16)}`}${entry.durationMs === undefined ? '' : ` · ${compact(entry.durationMs, 16)}ms`}`;
+}
+
 /** Plain text display has independent, stricter limits than its JSONL snapshot. */
-export function renderInteraction(entry: Entry): { text: string; truncated: boolean } {
+export function renderInteraction(entry: Entry, headline = formatInteractionHeadline(entry)): { text: string; truncated: boolean } {
     const lines: string[] = [];
     let chars = 0;
     let nodes = 0;
@@ -97,15 +147,13 @@ export function renderInteraction(entry: Entry): { text: string; truncated: bool
             } else add(`${indent}${key}: ${string === '' ? '""' : string.replace(/[\u0000-\u001f\u007f]/g, ' ')}`);
         } else add(`${indent}${key}: ${String(value)}`);
     };
-    const token = typeof entry.requestId === 'string' ? `[${text(entry.requestId.slice(0, 8))}]` : '';
-    const phase = entry.phase === 'start' ? 'REQUEST' : entry.phase === 'complete' ? 'SUCCESS' : entry.phase === 'error' ? 'FAILED' : 'WARNING';
-    const test = entry.testId ? ` [test:${text(entry.testId)}]${entry.expectedTest ? ' expected' : ''}` : '';
-    add(`[cx3][api]${token} ${phase} ${text(entry.tool)}${entry.status === undefined ? '' : ` ${text(entry.status)}`}${entry.durationMs === undefined ? '' : ` · ${text(entry.durationMs)}ms`}${test}`);
-    field('Timestamp', entry.ts);
+    add(headline + (entry.testId ? ` [test:${text(entry.testId)}]${entry.expectedTest ? ' expected' : ''}` : ''));
     if (entry.phase === 'start') {
         field('Params', entry.args);
-    } else if (entry.phase === 'complete') field('Result', entry.result);
-    else {
+    } else if (entry.phase === 'complete') {
+        if (entry.tool === 'nodeGetTree') field('Params', entry.args);
+        field('Result', entry.result);
+    } else {
         field('Code', entry.code);
         field('Message', entry.message);
         field('Params', entry.args);

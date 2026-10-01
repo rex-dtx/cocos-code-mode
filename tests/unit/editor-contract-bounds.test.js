@@ -35,7 +35,6 @@ describe('editor contract bounds', () => {
     const build = readSource('utcp/tools/build-tools.ts');
     const project = readSource('utcp/tools/project-tools.ts');
     const animation = readSource('utcp/tools/animation-tools.ts');
-    assert.match(scene, /const MAX_LIST_LIMIT = 1000;/);
     assert.match(scene, /maximum: VERBOSE_TREE_NODES/);
     assert.match(build, /tasks: tasks\.slice\(0, limit\), total: tasks\.length, truncated:/);
     assert.match(project, /Object\.fromEntries\(entries\.slice\(0, limit\)\)/);

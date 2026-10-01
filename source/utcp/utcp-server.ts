@@ -28,10 +28,10 @@ import './tools/ui-tools';
 import './tools/runtime-tools';
 import './tools/runtime-session-tools';
 import './tools/audio-playback-tools';
+import './tools/screenshot-tools';
 import './tools/batch-tools';
 import './tools/batch-read-tools';
 import './tools/validation-tools';
-import './tools/screenshot-tools';
 import './tools/scene-snapshot-tools';
 import './tools/event-tools';
 import './tools/prefab-json-tools';
@@ -56,7 +56,27 @@ import { isToolExposed, ToolProfile } from './tool-profiles';
 import { appendJsonl, createDebugLogFile, getDebugLogDirectory, listDebugLogFiles } from './log-path';
 import { createResultEnvelope } from './response-envelope';
 import { ToolError, toToolErrorResponse } from './tool-error';
-import { renderInteraction, snapshotInteraction } from './interaction-log';
+import { formatInteractionHeadline, renderInteraction, snapshotInteraction } from './interaction-log';
+const handshakeStates: Record<string, string> = Object.create(null);
+
+function handshakeState(entry: Record<string, unknown>): string | null {
+    if (entry.tool !== 'editorHandshake' || entry.phase !== 'complete') return null;
+    const result = entry.result && typeof entry.result === 'object' ? entry.result as Record<string, unknown> : null;
+    const probe = result?.probe && typeof result.probe === 'object' ? result.probe as Record<string, unknown> : null;
+    const status = typeof probe?.status === 'string' ? probe.status : 'unknown';
+    return status === 'responsive' && result?.projectMatches === false ? 'identity-mismatch' : status;
+}
+
+function shouldShowHandshake(entry: Record<string, unknown>): boolean {
+    const state = handshakeState(entry);
+    if (state === null) return true;
+    const result = entry.result as Record<string, unknown>;
+    const key = `${typeof result.instanceId === 'string' ? result.instanceId : 'unknown'}\u0000${typeof result.projectPath === 'string' ? result.projectPath : ''}`;
+    const previous = handshakeStates[key];
+    handshakeStates[key] = state;
+    return previous !== state;
+}
+
 
 export interface SchemaValidationError {
     path: string;
@@ -285,8 +305,9 @@ function activateDebugLog(instanceId: string): string | null {
 
 export function formatInteractionSummary(entry: Record<string, unknown>): string {
     const safe = snapshotInteraction(entry);
+    const headline = formatInteractionHeadline(safe);
     if (safe.phase === 'complete' && safe.tier === 'summary') delete safe.result;
-    const rendered = renderInteraction(safe);
+    const rendered = renderInteraction(safe, headline);
     return rendered.text + (rendered.truncated ? '\n[truncated: display budget; additional detail may also be bounded]' : '')
         + (typeof entry.detailFile === 'string' ? `\nDetails file: ${entry.detailFile}` : '');
 }
@@ -324,7 +345,7 @@ function interactionLog(entry: Record<string, unknown>, group: CreatorLogGroup =
     } else {
         safe.recovery = `${safe.recovery ?? ''}\nLog detail file unavailable; check filesystem permissions.`;
     }
-    if (isCreatorLogVisible(phase, group)) creatorInteractionLog({ ...safe, tier: phase === 'complete' && isCreatorLogVisible('trace', group) ? 'trace' : 'summary' });
+    if (isCreatorLogVisible(phase, group) && shouldShowHandshake(safe)) creatorInteractionLog({ ...safe, tier: phase === 'complete' && isCreatorLogVisible('trace', group) ? 'trace' : 'summary' });
 }
 
 function debugLog(entry: Record<string, unknown>): void {
@@ -552,7 +573,7 @@ export class UtcpServerManager {
 
                     if (result === undefined || result === null) {
                         const ms = Date.now() - ((req as any)._t0 ?? t0);
-                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: null }, toolMeta.logGroup);
+                        interactionLog({ phase: 'complete', requestId, tool: toolDef.name, args, status: 200, durationMs: ms, result: null }, toolMeta.logGroup);
                         debugLog({ type: 'response', requestId, tool: toolDef.name, result: null, size: 0, durationMs: ms });
                         res.json(null);
                         finishActivity('completed', 200);
@@ -566,7 +587,7 @@ export class UtcpServerManager {
                         : trimmed ?? null;
                     res.json(payload);
                     const ms = Date.now() - t0;
-                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, status: 200, durationMs: ms, result: payload }, toolMeta.logGroup);
+                    interactionLog({ phase: 'complete', requestId, tool: toolDef.name, args, status: 200, durationMs: ms, result: payload }, toolMeta.logGroup);
                     debugLog({ type: 'response', requestId, tool: toolDef.name, result: payload, durationMs: ms });
                     finishActivity('completed', 200);
 

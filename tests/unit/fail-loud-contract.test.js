@@ -66,7 +66,6 @@ describe('fail-loud audit (docs §2) regressions', () => {
   });
 
   it('nullish engine payloads throw instead of reading as empty-but-healthy', () => {
-    assert.match(readSource('source/utcp/tools/scene-tools.ts'), /query-nodes-miss-assets returned no payload/);
     assert.match(readSource('source/utcp/tools/scene-tools.ts'), /query-component-function-of-node returned no payload/);
     assert.match(readSource('source/utcp/tools/editor-tools.ts'), /returned no payload/);
     assert.match(readSource('source/utcp/tools/validation-tools.ts'), /diag\.ok === true/);

@@ -89,8 +89,8 @@ describe('typed UTCP tool errors', () => {
     try {
       creatorInteractionLog({ phase: 'complete', requestId: 'abcdef0123456789', tool: 'editorState', status: 200, durationMs: 4 });
       assert.deepEqual(calls, [
-        ['console', 'info', '[cx3][api][abcdef01] SUCCESS editorState 200 · 4ms'],
-        ['editor', 'info', '[cx3][api][abcdef01] SUCCESS editorState 200 · 4ms'],
+        ['console', 'info', '[cx3][api][abcdef01] SUCCESS editorState · scene ready=unknown · popup=unknown 200 · 4ms'],
+        ['editor', 'info', '[cx3][api][abcdef01] SUCCESS editorState · scene ready=unknown · popup=unknown 200 · 4ms'],
       ]);
     } finally {
       console.info = consoleInfo;
