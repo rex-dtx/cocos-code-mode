@@ -15,7 +15,7 @@ const packageName = packageJson.name;
 const projectRoot = path.join(__dirname, '..');
 
 // Zip name carries version + build timestamp so artifacts from different
-// sessions never silently collide: cc-bridge-2x-v<version>-YYMMDD-HHMMSS.zip.
+// sessions never silently collide: cocos-pilot-2x-v<version>-YYMMDD-HHMMSS.zip.
 // Timestamp comes from dist/build-info.json (stamped at build time) so the
 // name always matches the packaged build; falls back to now.
 function buildTimestamp() {
@@ -55,6 +55,8 @@ if (zipVersion !== packageJson.version) {
 const filesToInclude = [
     '@types',
     'dist',
+    'tools/cocos-graph/src',
+    'tools/cocos-graph/runtime-worker.mjs',
     'i18n',
     'panel',
     'node_modules',
@@ -66,18 +68,17 @@ const filesToInclude = [
 
 const outputPath = path.join(projectRoot, zipFileName);
 
-// Each package run supersedes the previous build (dist/ is overwritten anyway),
-// so drop any leftover cc-bridge-2x*.zip first — artifacts must not pile up.
-for (const old of fs.readdirSync(projectRoot)) {
-    if (old === zipFileName || !/^cc-bridge-2x.*\.zip$/.test(old)) continue;
-    fs.unlinkSync(path.join(projectRoot, old));
-    console.log(`Removed old package: ${old}`);
+if (fs.existsSync(outputPath)) {
+    throw new Error(`Archive already exists; refusing to overwrite ${outputPath}`);
 }
-
 console.log(`Packaging project into ${zipFileName}...`);
 
-const output = fs.createWriteStream(outputPath);
+const output = fs.createWriteStream(outputPath, { flags: 'wx' });
 const archive = archiver('zip', { zlib: { level: 9 } });
+output.on('error', (error) => {
+    console.error('Error creating package without overwriting existing archive:', error.message);
+    process.exitCode = 1;
+});
 
 output.on('close', () => {
     const sizeMb = (archive.pointer() / 1024 / 1024).toFixed(1);

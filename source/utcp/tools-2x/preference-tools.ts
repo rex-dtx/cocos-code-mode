@@ -11,7 +11,7 @@ export class PreferenceTools {
 
     @utcpTool(
         'getEditorPreference',
-        'Read one or all cc-bridge-2x persistent preferences (Editor.Profile). Omit key to list all known keys.',
+        'Read one or all cocos-pilot-2x persistent preferences (Editor.Profile). Omit key to list all known keys.',
         {
             type: 'object',
             properties: {
@@ -43,7 +43,7 @@ export class PreferenceTools {
 
     @utcpTool(
         'setEditorPreference',
-        'Write a cc-bridge-2x persistent preference (Editor.Profile). Known keys are type-validated.',
+        'Write a cocos-pilot-2x persistent preference (Editor.Profile). Known keys are type-validated.',
         {
             type: 'object',
             properties: {
@@ -88,7 +88,7 @@ export class PreferenceTools {
                 code: 'PROFILE_UNAVAILABLE',
                 status: 500,
                 message: 'Editor.Profile is not available; preference was not persisted.',
-                recovery: 'Open a project so profile://project/cc-bridge-2x.json can load.',
+                recovery: 'Open a project so profile://project/cocos-pilot-2x.json can load.',
             });
         }
         return { success: true, key: args.key, value: args.value };

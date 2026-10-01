@@ -1,6 +1,6 @@
 // Agent-facing tool surface cho Cocos Creator 2.4.x.
-// Manual: cc-bridge-2x (UTCP, hyphen). JS: cc_bridge_2x (underscore).
-// Short: ccb2x (compat: ccb-2x / ccb_2x). Recommended: ccb2x.
+// UTCP: ccp2x_<port>; select exact registry port for the intended Creator project.
+// Static declarations describe tools only; bind via editorHandshake(expectedProjectPath).
 // STATIC hand-written, KHONG generated, 0 code importer. Them tool thi sua tay.
 // Chi khai tool DA PASS gate — thay trong d.ts ma goi khong duoc con te hon khong co.
 // Doi chieu shape that: docs/cocos-2x-api-notes.md
@@ -50,7 +50,7 @@ interface IHierarchyNode2x {
     childrenOmitted?: number;
 }
 
-declare namespace cc_bridge_2x {
+declare namespace ccp2x {
 
     // --- Scene ---
 
@@ -330,6 +330,5 @@ declare namespace cc_bridge_2x {
     function executeJavascript(args: { context: 'scene'|'editor'; code: string; args?: Record<string, any>; safety_checks?: boolean; timeout_ms?: number }): { result: any };
 }
 
-// Aliases: ccb2x is recommended short (no hyphen/underscore). ccb_2x / ccb-2x kept for compat.
-import ccb2x = cc_bridge_2x;
-import ccb_2x = cc_bridge_2x;
+// Bind the selected live ccp2x_<port> manual; no bare or historical alias is active.
+// This namespace is the tool shape, not an editor identity.

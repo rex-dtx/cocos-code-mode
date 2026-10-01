@@ -29,8 +29,8 @@ function loadLinker() {
 describe('linkProjectExtension', () => {
     it('links the 2.x extension under a Creator 2.4 project packages directory', () => {
         const { linkProjectExtension } = loadLinker();
-        const project = temporaryDirectory('ccb2x-project-');
-        const source = temporaryDirectory('ccb2x-source-');
+        const project = temporaryDirectory('ccp2x-project-');
+        const source = temporaryDirectory('ccp2x-source-');
 
         const result = linkProjectExtension({ projectPath: project, sourcePath: source });
 
@@ -39,6 +39,6 @@ describe('linkProjectExtension', () => {
             fs.realpathSync(result.destination),
             fs.realpathSync(source),
         );
-        assert.equal(result.destination, path.join(project, 'packages', 'cc-bridge-2x'));
+        assert.equal(result.destination, path.join(project, 'packages', 'cocos-pilot-2x'));
     });
 });

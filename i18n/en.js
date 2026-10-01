@@ -1,1 +1,1 @@
-"use strict"; module.exports = { open_panel: "Configuration", description: "CC Bridge 2x — UTCP bridge for Cocos Creator 2.4.x" };
+"use strict"; module.exports = { open_panel: "Configuration", description: "Cocos Pilot 2x — UTCP bridge for Cocos Creator 2.4.x" };

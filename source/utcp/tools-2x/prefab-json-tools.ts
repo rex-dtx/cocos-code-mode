@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { existsSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { utcpTool } from '../decorators';
 import { ToolError } from '../tool-error';
@@ -5,6 +6,65 @@ import { cbToPromise } from '../utils/ipc-promise';
 
 const DEFAULT_CAP = 4 * 1024 * 1024;
 const VERBOSE_CAP = 10 * 1024 * 1024;
+const MAX_REFERENCES = 2000;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:@[A-Za-z0-9_-]+)?$/i;
+const COMPRESSED_PATTERN = /^(?:[0-9a-f]{2}[A-Za-z0-9+/]{20}|[0-9a-f]{5}[A-Za-z0-9+/]{18})(?:@[A-Za-z0-9_-]+)?$/i;
+const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function decodedUuid(value: string): string {
+    const at = value.indexOf('@');
+    const head = at < 0 ? value : value.slice(0, at);
+    const suffix = at < 0 ? '' : value.slice(at);
+    const prefix = head.length === 22 ? 2 : 5;
+    let hex = head.slice(0, prefix).toLowerCase();
+    for (let i = prefix; i < head.length; i += 2) {
+        const a = BASE64.indexOf(head[i]);
+        const b = BASE64.indexOf(head[i + 1]);
+        if (a < 0 || b < 0) throw new Error('Invalid compressed UUID');
+        hex += ((a >> 2) & 15).toString(16) + (((a & 3) << 2) | (b >> 4)).toString(16) + (b & 15).toString(16);
+    }
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}${suffix}`;
+}
+
+function serializedAssetReferences(content: string): string[] {
+    let entries: unknown;
+    try { entries = JSON.parse(content); } catch {
+        throw new ToolError({ code: 'INVALID_JSON', status: 422, message: 'Prefab source is not valid JSON.' });
+    }
+    const rows: unknown[] = Array.isArray(entries) ? entries : [];
+    const header = rows[0];
+    const prefab = header && typeof header === 'object' && !Array.isArray(header) ? header as Record<string, unknown> : null;
+    const data = prefab?.data;
+    const root = data && typeof data === 'object' && !Array.isArray(data) ? (data as Record<string, unknown>).__id__ : null;
+    const rootEntry = typeof root === 'number' ? rows[root] : null;
+    if (rows.length < 2 || prefab?.__type__ !== 'cc.Prefab'
+        || !Number.isInteger(root) || (root as number) < 1
+        || !rootEntry || typeof rootEntry !== 'object' || Array.isArray(rootEntry) || (rootEntry as Record<string, unknown>).__type__ !== 'cc.Node'
+        || rows.some((row) => !row || typeof row !== 'object' || Array.isArray(row) || typeof (row as Record<string, unknown>).__type__ !== 'string')) {
+        throw new ToolError({ code: 'UNSUPPORTED_PREFAB_SERIALIZATION', status: 422, message: 'Expected a Creator 2.4 flat cc.Prefab serialization with a local cc.Node root.' });
+    }
+    const refs = new Set<string>();
+    const stack: unknown[] = rows.slice();
+    while (stack.length) {
+        const value = stack.pop();
+        if (!value || typeof value !== 'object') continue;
+        if (Array.isArray(value)) { for (const child of value) stack.push(child); continue; }
+        const record = value as Record<string, unknown>;
+        if ('__uuid__' in record) {
+            const id = record.__uuid__;
+            if (typeof id !== 'string' || (!UUID_PATTERN.test(id) && !COMPRESSED_PATTERN.test(id)) || '__id__' in record) {
+                throw new ToolError({ code: 'UNSUPPORTED_PREFAB_SERIALIZATION', status: 422, message: 'Malformed serialized asset UUID reference.' });
+            }
+            refs.add(COMPRESSED_PATTERN.test(id) ? decodedUuid(id) : id.toLowerCase());
+            continue;
+        }
+        if ('__id__' in record && (!Number.isInteger(record.__id__) || (record.__id__ as number) < 0 || (record.__id__ as number) >= rows.length)) {
+            throw new ToolError({ code: 'UNSUPPORTED_PREFAB_SERIALIZATION', status: 422, message: 'Malformed local prefab object reference.' });
+        }
+        for (const child of Object.values(record)) stack.push(child);
+    }
+    return Array.from(refs).sort();
+}
 
 function normalizePrefabPath(p?: string): string {
     if (!p) return '';
@@ -74,6 +134,7 @@ export class PrefabJsonTools {
                 assetPath: { type: 'string', description: 'db:// path to the .prefab' },
                 verbose: { type: 'boolean', description: 'When true, lifts size cap to 10MB.' },
             },
+
         },
         {
             type: 'object',
@@ -127,6 +188,64 @@ export class PrefabJsonTools {
             });
         }
         return { content, url, uuid, filesystemPath: file };
+    }
+    @utcpTool(
+        'prefabReferenceAudit',
+        'Audit Creator 2.4 serialized asset UUID references in a prefab without modifying the asset or scene; truncated scans are not reported valid.',
+        {
+            type: 'object',
+            properties: {
+                uuid: { type: 'string', description: 'Prefab asset uuid' },
+                assetPath: { type: 'string', description: 'db:// path to the .prefab' },
+                maxReferences: { type: 'integer', minimum: 1, maximum: MAX_REFERENCES, default: MAX_REFERENCES },
+            },
+        },
+        {
+            type: 'object',
+            properties: {
+                valid: { type: 'boolean' },
+                nestedPrefabs: { type: 'array', items: { type: 'object', properties: { uuid: { type: 'string' }, url: { type: 'string' } } } },
+                missingReferences: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' } } } },
+                totalReferences: { type: 'integer' },
+                truncated: { type: 'boolean' },
+                source: { type: 'object', properties: { uuid: { type: 'string' }, url: { type: 'string' }, sha256: { type: 'string' }, reloaded: { type: 'boolean' } } },
+            },
+            required: ['valid', 'nestedPrefabs', 'missingReferences', 'totalReferences', 'truncated', 'source'],
+        },
+        'GET',
+        ['prefab', 'reference', 'audit', 'nested']
+    )
+    async prefabReferenceAudit(args: { uuid?: string, assetPath?: string, maxReferences?: number }): Promise<{
+        valid: boolean, nestedPrefabs: { uuid: string, url: string }[], missingReferences: { id: string }[],
+        totalReferences: number, truncated: boolean, source: { uuid: string, url: string, sha256: string, reloaded: boolean }
+    }> {
+        if (!args || typeof args !== 'object' || Array.isArray(args)
+            || (args.uuid !== undefined && (typeof args.uuid !== 'string' || !args.uuid))
+            || (args.assetPath !== undefined && (typeof args.assetPath !== 'string' || !args.assetPath))) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: 'Pass a prefab uuid or db:// assetPath.' });
+        }
+        const max = args.maxReferences === undefined ? MAX_REFERENCES : args.maxReferences;
+        if (!Number.isInteger(max) || max < 1 || max > MAX_REFERENCES) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400, message: `maxReferences must be an integer from 1 to ${MAX_REFERENCES}.` });
+        }
+        const { content, uuid, url } = await this.readPrefabJson({ uuid: args.uuid, assetPath: args.assetPath });
+        const references = serializedAssetReferences(content);
+        const nestedPrefabs: { uuid: string, url: string }[] = [];
+        const missingReferences: { id: string }[] = [];
+        for (const id of references.slice(0, max)) {
+            // A suffixed sub-asset is not present just because its parent asset exists.
+            const resolved = Editor.assetdb.uuidToUrl(id);
+            if (!resolved) {
+                missingReferences.push({ id });
+            } else if (resolved.toLowerCase().endsWith('.prefab')) {
+                nestedPrefabs.push({ uuid: id, url: resolved });
+            }
+        }
+        return {
+            valid: missingReferences.length === 0 && references.length <= max, nestedPrefabs, missingReferences,
+            totalReferences: references.length, truncated: references.length > max,
+            source: { uuid, url, sha256: createHash('sha256').update(content).digest('hex'), reloaded: false },
+        };
     }
 
     @utcpTool(

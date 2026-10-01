@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from 'fs';
 import { extname } from 'path';
 import { utcpTool } from '../decorators';
 import { cbToPromise, sceneScript } from '../utils/ipc-promise';
+import { ToolError } from '../tool-error';
 
 // Text extension cho phep doc. Ngoai list -> throw (dung do binary vao context agent).
 const READABLE_EXTENSIONS = ['.ts', '.js', '.json', '.fire', '.prefab', '.anim', '.effect', '.txt', '.md', '.yaml', '.yml', '.plist', '.atlas'];
@@ -9,6 +10,7 @@ const DEFAULT_MAX_BYTES = 512 * 1024;
 const DEFAULT_SEARCH_LIMIT = 200;
 const DEFAULT_TREE_DEPTH = 5;
 const DEFAULT_USED_BY_LIMIT = 200;
+const MAX_TEXTURE_META_BYTES = 64 * 1024;
 
 function requireUrl(args: { url?: string }): string {
     if (!args.url) { throw new Error('url is required for this operation'); }
@@ -288,6 +290,87 @@ export class AssetReadTools {
             default:
                 throw new Error(`Unknown operation: ${args.operation}`);
         }
+    }
+
+    @utcpTool(
+        'assetImporterAudit',
+        'Inspect observed settings in a Creator 2.4 top-level PNG sprite texture .meta (read-only, not a writable-path contract).',
+        {
+            type: 'object',
+            properties: {
+                url: { type: 'string', description: 'Top-level PNG asset URL' },
+                uuid: { type: 'string', description: 'Top-level PNG asset UUID (alternative to URL)' },
+            },
+        },
+        {
+            type: 'object',
+            properties: {
+                valid: { type: 'boolean' },
+                importer: { type: 'string' },
+                settings: { type: 'object' },
+                propertyPaths: { type: 'array', items: { type: 'string' }, description: 'Observed top-level .meta settings paths, not a write API' },
+                source: { type: 'object' },
+                derived: { type: 'object' },
+            },
+            required: ['valid', 'importer', 'settings', 'propertyPaths', 'source', 'derived'],
+        },
+        'GET', ['asset', 'importer', 'texture', 'audit', 'settings']
+    )
+    async assetImporterAudit(args: { url?: string, uuid?: string }): Promise<{
+        valid: boolean;
+        importer: string;
+        settings: { type: string; wrapMode: string; filterMode: string; premultiplyAlpha: boolean; genMipmaps: boolean; packable: boolean };
+        propertyPaths: string[];
+        derived: { width: number; height: number };
+        source: { uuid: string; url: string; fspath: string; metaPath: string; metaMtime: number };
+    }> {
+        if (!args || typeof args !== 'object' || Array.isArray(args)
+            || (args.url !== undefined && (typeof args.url !== 'string' || !args.url))
+            || (args.uuid !== undefined && (typeof args.uuid !== 'string' || !args.uuid))
+            || (!args.url && !args.uuid)) {
+            throw new ToolError({ code: 'INVALID_ASSET_REFERENCE', status: 400, message: 'A texture url or uuid is required.' });
+        }
+        const info = args.uuid ? Editor.assetdb.assetInfoByUuid(args.uuid) : Editor.assetdb.assetInfo(args.url!);
+        if (!info || info.isSubAsset || !info.uuid || !info.url ||
+            (args.url && args.url !== info.url) || (args.uuid && args.uuid !== info.uuid)) {
+            throw new ToolError({ code: 'INVALID_ASSET_REFERENCE', status: 422, message: 'Asset not found or reference is not a top-level asset.' });
+        }
+        const fspath = Editor.assetdb.uuidToFspath(info.uuid);
+        if (!fspath || info.path !== fspath || extname(fspath).toLowerCase() !== '.png' || !existsSync(fspath)) {
+            throw new ToolError({ code: 'UNSUPPORTED_IMPORTER', status: 422, message: 'Only source PNG texture assets are supported.' });
+        }
+        const metaPath = `${fspath}.meta`;
+        if (!existsSync(metaPath) || statSync(metaPath).size > MAX_TEXTURE_META_BYTES) {
+            throw new ToolError({ code: 'INVALID_IMPORTER_META', status: 422, message: 'Texture metadata missing or exceeds the 64 KiB limit.' });
+        }
+        let parsed: unknown;
+        try { parsed = JSON.parse(readFileSync(metaPath, 'utf8')); }
+        catch { throw new ToolError({ code: 'INVALID_IMPORTER_META', status: 422, message: 'Texture metadata is not valid JSON.' }); }
+        if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
+            throw new ToolError({ code: 'INVALID_IMPORTER_META', status: 422, message: 'Unsupported or malformed Creator 2.4 texture metadata.' });
+        }
+        const meta = parsed as Record<string, unknown>;
+        if (meta.uuid !== info.uuid || meta.importer !== 'texture' || meta.ver !== '2.3.7' || meta.type !== 'sprite' ||
+            typeof meta.wrapMode !== 'string' || !meta.wrapMode ||
+            typeof meta.filterMode !== 'string' || !meta.filterMode ||
+            typeof meta.premultiplyAlpha !== 'boolean' || typeof meta.genMipmaps !== 'boolean' ||
+            typeof meta.packable !== 'boolean' ||
+            typeof meta.width !== 'number' || !Number.isSafeInteger(meta.width) || meta.width <= 0 ||
+            typeof meta.height !== 'number' || !Number.isSafeInteger(meta.height) || meta.height <= 0) {
+            throw new ToolError({ code: 'INVALID_IMPORTER_META', status: 422, message: 'Unsupported or malformed Creator 2.4 texture metadata.' });
+        }
+        // These property paths are observed input-shaped metadata, not a guarantee of write support.
+        // Image dimensions are source-derived, so expose them separately from settings.
+        const propertyPaths = ['type', 'wrapMode', 'filterMode', 'premultiplyAlpha', 'genMipmaps', 'packable'];
+        const settings = {
+            type: meta.type, wrapMode: meta.wrapMode, filterMode: meta.filterMode,
+            premultiplyAlpha: meta.premultiplyAlpha, genMipmaps: meta.genMipmaps, packable: meta.packable,
+        };
+        return {
+            valid: true, importer: 'texture', settings, propertyPaths,
+            derived: { width: meta.width, height: meta.height },
+            source: { uuid: info.uuid, url: info.url, fspath, metaPath, metaMtime: statSync(metaPath).mtimeMs },
+        };
     }
 
     @utcpTool(

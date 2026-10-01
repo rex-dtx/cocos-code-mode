@@ -29,14 +29,18 @@ import './tools-2x/editor-extra-tools';
 import './tools-2x/program-tools';
 import './tools-2x/clipboard-tools';
 import './tools-2x/animation-tools';
+import './tools-2x/graph-tools';
+import { EditorHandshakeTools } from './tools-2x/editor-handshake-tools';
 import './execute/execute-tool';
 import { Tool, UtcpManual } from '@utcp/sdk';
 import { parse } from 'qs';
+import { randomBytes } from 'crypto';
 import { getBuildInfo } from '../build-info';
 import { trimResponse } from './utils/response-trimmer';
 import { slimOutputsSchema } from './utils/schema-slimmer';
 import { ToolError, toToolErrorResponse } from './tool-error';
 import { findMissingRequiredInputs, validateSchemaArguments } from './schema-validate';
+import { snapshotLog } from './log-snapshot';
 import './tools-2x/diagnostics-tools';
 import './tools-2x/file-tools';
 import './tools-2x/runtime-tools';
@@ -48,6 +52,8 @@ import './tools-2x/input-tools';
 import './tools-2x/preference-tools';
 import './tools-2x/instruction-tools';
 import './tools-2x/screenshot-tools';
+import { SessionPresenceStore } from './session-presence';
+import { SessionTools } from './tools-2x/session-tools';
 import './tools-2x/batch-asset-tools';
 import { appendFileSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
@@ -57,11 +63,14 @@ let debugEnabled = process.env.UTCP_DEBUG === '1' || process.env.UTCP_DEBUG === 
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 let debugLogFile = join(DEBUG_LOG_DIR, `utcp-${new Date().toISOString().replace(/[:.]/g, '-')}.jsonl`);
 if (debugEnabled) { try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {} console.log(`[UTCP] Debug mode ON -> ${debugLogFile}`); }
-function debugLog(entry: Record<string, any>): void { if (!debugEnabled) return; try { try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {} const line = JSON.stringify({ ts: new Date().toISOString(), ...entry }); appendFileSync(debugLogFile, line + '\n'); } catch {} }
+function debugLog(entry: Record<string, unknown>): void { if (!debugEnabled) return; try { try { mkdirSync(DEBUG_LOG_DIR, { recursive: true }); } catch {} const line = JSON.stringify(snapshotLog({ ts: new Date().toISOString(), ...entry })); appendFileSync(debugLogFile, line + '\n'); } catch {} }
 
 export class UtcpServerManager {
     private app: express.Application;
     private server: any;
+    readonly instanceId = randomBytes(16).toString('hex');
+    readonly sessionPresence = new SessionPresenceStore(this.instanceId);
+    port = 0;
 
     constructor() {
         this.app = express();
@@ -114,6 +123,7 @@ export class UtcpServerManager {
                 if (addr && typeof addr === 'object') {
                     currentPort = addr.port;
                 }
+                this.port = currentPort;
 
                 // Now register tools with the correct port
                 this.registerTools(currentPort, tools, toolInstances, utcpTools);
@@ -134,7 +144,8 @@ export class UtcpServerManager {
             const ToolClass = toolMeta.target.constructor;
             let instance = toolInstances.get(ToolClass);
             if (!instance) {
-                instance = new ToolClass();
+                instance = ToolClass === EditorHandshakeTools ? new EditorHandshakeTools(this.instanceId)
+                    : ToolClass === SessionTools ? new SessionTools(this.sessionPresence) : new ToolClass();
                 toolInstances.set(ToolClass, instance);
             }
 
@@ -160,7 +171,7 @@ export class UtcpServerManager {
                     const queryArgs = req.query as Record<string, any>;
                     const bodyArgs = (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) ? req.body : {};
                     const args = req.method === 'GET' ? queryArgs : { ...queryArgs, ...bodyArgs };
-                    debugLog({ type: 'request', tool: toolDef.name, method: req.method, url: req.originalUrl, args });
+                    debugLog({ type: 'request', tool: toolDef.name, method: req.method, url: req.path, args });
                     const validationErrors = validateSchemaArguments(toolDef.inputs, args);
                     if (validationErrors.length > 0) {
                         const missingInputs = findMissingRequiredInputs(toolDef.inputs, args);
@@ -175,7 +186,7 @@ export class UtcpServerManager {
                         });
                         const response = toToolErrorResponse(typed);
                         const ms = stamp();
-                        debugLog({ type: 'error', tool: toolDef.name, error: response.body.error, durationMs: ms });
+                        debugLog({ type: 'error', tool: toolDef.name, code: response.body.code, status: response.status, durationMs: ms });
                         res.status(response.status).json(response.body);
                         return;
                     }
@@ -187,14 +198,15 @@ export class UtcpServerManager {
                         return;
                     }
                     const ms = stamp();
-                    debugLog({ type: 'response', tool: toolDef.name, result, size: JSON.stringify(result).length, durationMs: ms });
-                    const trimmed = trimResponse(result);
+                    const trimmed = trimResponse(result, toolMeta.tool.outputs);
+                    debugLog({ type: 'response', tool: toolDef.name, result, durationMs: ms });
                     res.json(trimmed ?? null);
                 } catch (err: any) {
                     const response = toToolErrorResponse(err);
                     const ms = stamp();
-                    console.error(`Error in tool ${toolDef.name}:`, err);
-                    debugLog({ type: 'error', tool: toolDef.name, error: err && err.message, code: response.body.code, durationMs: ms });
+                    if (err instanceof ToolError && err.status < 500) console.error(`Tool ${toolDef.name} refused request (${err.code}, HTTP ${err.status}).`);
+                    else console.error(`Error in tool ${toolDef.name}:`, err);
+                    debugLog({ type: 'error', tool: toolDef.name, code: response.body.code, status: response.status, durationMs: ms });
                     res.status(response.status).json(response.body);
                 }
             };
@@ -265,6 +277,7 @@ export class UtcpServerManager {
                 else resolve();
             });
         });
+        this.port = 0;
         console.log("UTCP Server stopped");
     }
 }

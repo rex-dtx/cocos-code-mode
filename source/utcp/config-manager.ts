@@ -1,9 +1,11 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs-extra';
-import { join } from 'path';
+import { readFileSync, writeFileSync, existsSync, promises as fs } from 'fs';
+import { join, dirname, normalize, isAbsolute } from 'path';
 import { homedir } from 'os';
+import { randomBytes } from 'crypto';
 
-const PKG_NAME = 'cc-bridge-2x';
+const PKG_NAME = 'cocos-pilot-2x';
 const PROFILE_URL = `profile://project/${PKG_NAME}.json`;
+const LEGACY_PROFILE_URL = 'profile://project/cc-bridge-2x.json';
 const DEFAULT_FILENAME = '.utcp_config.json';
 
 interface IProfile2x {
@@ -12,6 +14,9 @@ interface IProfile2x {
     save(): void;
 }
 
+
+interface RegistryTemplate { name: string; url?: string; [key: string]: unknown }
+interface Registry { manual_call_templates: RegistryTemplate[]; variables?: Record<string, string>; [key: string]: unknown }
 
 export class UtcpConfigManager {
     private static instance: UtcpConfigManager;
@@ -38,30 +43,34 @@ export class UtcpConfigManager {
                     serverPort: 0,
                     utcpConfigPath: '',
                 });
-                // migrate legacy profile cocos-code-mode-2x.json if new one is empty
-                try {
-                    const cur = (this.profile as any).get('serverPort');
-                    if ((cur === undefined || cur === null || cur === 0)) {
-                        const legacyFiles = ['cocos-code-mode-2x.json'];
-                        let legacy: any = null;
-                        let legacyFile = '';
-                        for (const lf of legacyFiles) {
-                            try {
-                                const cand = Editor.Profile.load(`profile://project/${lf}` as any, { serverPort: 0, utcpConfigPath: '' } as any) as any;
-                                const cp = cand && typeof cand.get === 'function' ? cand.get('serverPort') : null;
-                                if (typeof cp === 'number' && cp > 0) { legacy = cand; legacyFile = lf; break; }
-                                if (!legacy) { legacy = cand; legacyFile = lf; }
-                            } catch {}
+                // Read the previous package profile only to migrate missing settings;
+                // subsequent reads and all writes use the new package identity.
+                const port = this.profile.get('serverPort');
+                const path = this.profile.get('utcpConfigPath');
+                if (!this.profile.get('legacyProfileMigrated')) {
+                    try {
+                        if (!Number.isInteger(port) || port <= 0 || !path) {
+                            const legacy = Editor.Profile.load(LEGACY_PROFILE_URL, { serverPort: 0, utcpConfigPath: '' });
+                            const legacyPort = legacy.get('serverPort');
+                            const legacyPath = legacy.get('utcpConfigPath');
+                            let migrated = false;
+                            if ((!Number.isInteger(port) || port <= 0) && Number.isInteger(legacyPort) && legacyPort > 0 && legacyPort <= 65535) {
+                                this.profile.set('serverPort', legacyPort);
+                                migrated = true;
+                            }
+                            if (!path && typeof legacyPath === 'string' && legacyPath && isAbsolute(legacyPath)) {
+                                this.profile.set('utcpConfigPath', legacyPath);
+                                migrated = true;
+                            }
+                            if (migrated) console.log(`[${PKG_NAME}] Migrated legacy profile cc-bridge-2x.json`);
                         }
-                        const lp = legacy && typeof legacy.get === 'function' ? legacy.get('serverPort') : null;
-                        const lu = legacy && typeof legacy.get === 'function' ? legacy.get('utcpConfigPath') : null;
-                        if (typeof lp === 'number' && lp > 0) { this.profile.set('serverPort', lp); (this.profile as any).save?.(); }
-                        if (typeof lu === 'string' && lu) { this.profile.set('utcpConfigPath', lu); (this.profile as any).save?.(); }
-                        if ((typeof lp === 'number' && lp > 0) || (typeof lu === 'string' && lu)) {
-                            console.log(`[${PKG_NAME}] Migrated legacy profile ${legacyFile}`);
-                        }
+                    } catch (error) {
+                        Editor.warn(`[${PKG_NAME}] Could not read legacy profile: ${error}`);
+                    } finally {
+                        this.profile.set('legacyProfileMigrated', true);
+                        this.profile.save();
                     }
-                } catch {}
+                }
             } catch (e) {
                 Editor.warn(`[${PKG_NAME}] Profile unavailable, settings will not persist: ${e}`);
             }
@@ -114,106 +123,170 @@ export class UtcpConfigManager {
     }
 
     async setConfigPath(path: string): Promise<void> {
+        if (typeof path !== 'string' || !isAbsolute(path)) throw new Error('UTCP config path must be absolute.');
         this.configPath = path;
         this.writeSetting('utcpConfigPath', path);
         console.log(`[UtcpConfigManager] Config path updated to: ${path}`);
     }
 
-    readConfig(): any {
+    readConfig(): Registry {
         const path = this.getConfigPath();
-        if (path && existsSync(path)) {
-            try {
-                const content = readFileSync(path, 'utf-8');
-                return JSON.parse(content);
-            } catch (e) {
-                console.error('[UtcpConfigManager] Failed to parse UTCP config:', e);
-                return { manual_call_templates: [] };
-            }
+        let value: unknown;
+        try { value = JSON.parse(readFileSync(path, 'utf8')); }
+        catch (error: unknown) {
+            if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return { manual_call_templates: [] };
+            throw error;
         }
-        return { manual_call_templates: [] };
+        if (!value || typeof value !== 'object' || Array.isArray(value)
+            || !('manual_call_templates' in value) || !Array.isArray(value.manual_call_templates)
+            || value.manual_call_templates.some((entry: unknown) => !entry || typeof entry !== 'object' || Array.isArray(entry)
+                || !('name' in entry) || typeof entry.name !== 'string' || ('url' in entry && typeof entry.url !== 'string'))
+            || ('variables' in value && (value.variables === null || typeof value.variables !== 'object' || Array.isArray(value.variables)
+                || Object.values(value.variables).some(item => typeof item !== 'string')))) {
+            throw new Error(`Invalid UTCP registry: ${path}`);
+        }
+        return value as Registry;
+    }
+    async writeConfig(config: unknown): Promise<void> {
+        if (!config || typeof config !== 'object' || !('manual_call_templates' in config)
+            || !Array.isArray(config.manual_call_templates)) {
+            throw new Error('Invalid UTCP config.');
+        }
+        const requested = config.manual_call_templates as RegistryTemplate[];
+        if (requested.some(entry => !entry || typeof entry.name !== 'string' || (entry.url !== undefined && typeof entry.url !== 'string'))) {
+            throw new Error('Invalid UTCP template.');
+        }
+        await this.mutateRegistry(this.getConfigPath(), current => {
+            for (const entry of requested) {
+                if (!/^(ccp2x|ccb2x)_\d+$/.test(entry.name) && !['ccp2x', 'ccb2x', 'cc-bridge-2x', 'ccb-2x', 'ccb_2x', 'cc_bridge_2x'].includes(entry.name)) continue;
+                const matching = current.manual_call_templates.filter(previous => previous.name === entry.name);
+                if (matching.length !== 1 || matching[0].url !== entry.url || requested.filter(other => other.name === entry.name).length !== 1) {
+                    throw new Error(`Cannot create or change reserved template ${entry.name} from the panel.`);
+                }
+            }
+            const protectedTemplates = current.manual_call_templates.filter(entry => /^(ccp2x|ccb2x)_\d+$/.test(entry.name));
+            const reservedNames = new Set(['ccp2x', 'ccb2x', 'cc-bridge-2x', 'ccb-2x', 'ccb_2x', 'cc_bridge_2x', ...protectedTemplates.map(entry => entry.name)]);
+            current.manual_call_templates = [...requested.filter(entry => !reservedNames.has(entry.name) && !/^(ccp2x|ccb2x)_\d+$/.test(entry.name)),
+                ...current.manual_call_templates.filter(entry => reservedNames.has(entry.name))];
+            const incoming = 'variables' in config && config.variables && typeof config.variables === 'object' && !Array.isArray(config.variables)
+                ? config.variables as Record<string, string> : {};
+            const variables = { ...incoming };
+            for (const key of Object.keys(variables)) {
+                if (/^(CCP2X|CCB2X)_(OWNER|PROJECT)_\d+$/.test(key)) delete variables[key];
+            }
+            const protectedVariables: Record<string, string> = {};
+            for (const [key, value] of Object.entries(current.variables ?? {})) {
+                if (/^(CCP2X|CCB2X)_(OWNER|PROJECT)_\d+$/.test(key)) protectedVariables[key] = value;
+            }
+            current.variables = { ...variables, ...protectedVariables };
+        });
     }
 
-    writeConfig(config: any): void {
-        const path = this.getConfigPath();
-        if (!path) {
-            console.error('[UtcpConfigManager] Config path is not set');
-            return;
+    private async mutateRegistry(path: string, mutate: (config: Registry) => void): Promise<boolean> {
+        // Share the 3x registry lock: two editors must never read the same old snapshot and overwrite each other.
+        const lock = `${path}.ccp-lock`;
+        await fs.mkdir(dirname(path), { recursive: true });
+        const deadline = Date.now() + 5000;
+        for (;;) {
+            try { await fs.mkdir(lock); break; }
+            catch (error: unknown) {
+                if (!(error instanceof Error) || !('code' in error) || error.code !== 'EEXIST') throw error;
+                if (Date.now() >= deadline) throw new Error(`UTCP registry locked: ${lock}`);
+                await new Promise(resolve => setTimeout(resolve, 25));
+            }
         }
+        const temporary = `${path}.${process.pid}.${randomBytes(8).toString('hex')}.tmp`;
         try {
-            writeFileSync(path, JSON.stringify(config, null, 2));
-            console.log(`[UtcpConfigManager] Saved UTCP config to ${path}`);
-        } catch (e) {
-            console.error('[UtcpConfigManager] Failed to write UTCP config:', e);
+            let value: unknown = { manual_call_templates: [] };
+            try { value = JSON.parse(await fs.readFile(path, 'utf8')); }
+            catch (error: unknown) { if (!(error instanceof Error) || !('code' in error) || error.code !== 'ENOENT') throw error; }
+            if (!value || typeof value !== 'object' || Array.isArray(value)
+                || !('manual_call_templates' in value) || !Array.isArray(value.manual_call_templates)
+                || value.manual_call_templates.some((entry: unknown) => !entry || typeof entry !== 'object' || Array.isArray(entry)
+                    || !('name' in entry) || typeof entry.name !== 'string'
+                    || ('url' in entry && typeof entry.url !== 'string'))
+                || ('variables' in value && (value.variables === null || typeof value.variables !== 'object' || Array.isArray(value.variables)
+                    || Object.values(value.variables).some(item => typeof item !== 'string')))) {
+                throw new Error(`Invalid UTCP registry: ${path}`);
+            }
+            // The validated JSON shape is the only writer-visible registry value.
+            const config = value as Registry;
+            const before = JSON.stringify(config);
+            mutate(config);
+            if (JSON.stringify(config) === before) return false;
+            const file = await fs.open(temporary, 'wx');
+            try { await file.writeFile(JSON.stringify(config, null, 2), 'utf8'); await file.sync(); }
+            finally { await file.close(); }
+            await fs.rename(temporary, path);
+            return true;
+        } finally {
+            try { await fs.unlink(temporary); } catch (error: unknown) { if (!(error instanceof Error) || !('code' in error) || error.code !== 'ENOENT') console.warn(`[${PKG_NAME}] Temporary registry cleanup failed: ${error}`); }
+            await fs.rmdir(lock);
         }
     }
 
-    async ensureCocosEditorTemplate(port: number): Promise<boolean> {
-        if (!port || port <= 0) {
-            console.warn('[UtcpConfigManager] Invalid port provided:', port);
-            return false;
+    async ensureCocosEditorTemplate(port: number, instanceId: string, projectPath: string): Promise<boolean> {
+        if (!Number.isInteger(port) || port < 1 || port > 65535 || !/^[a-f0-9]{32}$/.test(instanceId)
+            || typeof projectPath !== 'string' || !isAbsolute(projectPath)) {
+            throw new Error('Publishing ccp2x requires a bound port, instance identity, and absolute project path.');
         }
-
-        const expectedUrl = `http://localhost:${port}/utcp`;
-        const config = this.readConfig();
-
-        if (!config.manual_call_templates) {
-            config.manual_call_templates = [];
-        }
-
-        const templates = config.manual_call_templates;
-        const NAME = 'cc-bridge-2x';
-        const SHORT = 'ccb2x';
-        let idx = templates.findIndex((t: any) => t.name === NAME);
-
-        let changed = false;
-        if (idx === -1) {
-            templates.push({
-                name: NAME,
-                call_template_type: 'http',
-                url: expectedUrl,
-                http_method: 'GET',
-                content_type: 'application/json',
-            });
-            changed = true;
-            console.log(`[UtcpConfigManager] Created ${NAME} template with port ${port}`);
-        } else {
-            if (templates[idx].url !== expectedUrl) {
-                templates[idx].url = expectedUrl;
-                changed = true;
-                console.log(`[UtcpConfigManager] Updated ${NAME} template port to ${port}`);
+        return this.mutateRegistry(this.getConfigPath(), config => {
+            const templates = config.manual_call_templates;
+            const name = `ccp2x_${port}`;
+            const owner = `CCP2X_OWNER_${port}`;
+            const project = `CCP2X_PROJECT_${port}`;
+            if (config.variables?.[`CCB2X_OWNER_${port}`] !== undefined || config.variables?.[`CCB2X_PROJECT_${port}`] !== undefined
+                || templates.some(entry => entry.name === `ccb2x_${port}`)) {
+                throw new Error(`Legacy registration already claims port ${port}; refusing unowned takeover.`);
             }
-        }
-        // ensure short alias ccb2x mirrors canonical (also accept ccb-2x/ccb_2x for compat)
-        // migrate old short names (ccb-2x/ccb_2x) to ccb2x if present
-        for (const old of ['ccb-2x', 'ccb_2x']) {
-            const oi = templates.findIndex((t: any) => t.name === old);
-            if (oi !== -1 && !templates.some((t: any) => t.name === SHORT)) {
-                templates[oi].name = SHORT;
-                console.log(`[UtcpConfigManager] Migrated short alias ${old} -> ${SHORT}`);
+            const normalizedProject = normalize(projectPath).replace(/[\\/]+$/, '');
+            const compareProject = (value: string) => process.platform === 'win32' ? value.toLowerCase() : value;
+            // A foreign claim must not be overwritten, even if the process occupying its port changed.
+            if (config.variables?.[owner] && config.variables[owner] !== instanceId) {
+                throw new Error(`Registry port ${port} belongs to another editor instance; refusing takeover.`);
             }
-        }
-        let sIdx = templates.findIndex((t: any) => t.name === SHORT);
-        if (sIdx === -1) {
-            templates.push({
-                name: SHORT,
-                call_template_type: 'http',
-                url: expectedUrl,
-                http_method: 'GET',
-                content_type: 'application/json',
-            });
-            changed = true;
-            console.log(`[UtcpConfigManager] Created ${SHORT} alias with port ${port}`);
-        } else if (templates[sIdx].url !== expectedUrl) {
-            templates[sIdx].url = expectedUrl;
-            changed = true;
-            console.log(`[UtcpConfigManager] Updated ${SHORT} alias port to ${port}`);
-        }
+            if (config.variables?.[project] && compareProject(normalize(config.variables[project]).replace(/[\\/]+$/, '')) !== compareProject(normalizedProject)) {
+                throw new Error(`Registry port ${port} belongs to another project; refusing takeover.`);
+            }
+            if (config.variables?.[project] && !config.variables?.[owner]) {
+                throw new Error(`Registry port ${port} has a project claim without an instance owner; refusing takeover.`);
+            }
+            if (config.variables?.[owner] === instanceId && config.variables?.[project] === undefined) {
+                throw new Error(`Registry port ${port} lacks a verifiable project owner; refusing takeover.`);
+            }
+            if (templates.some(entry => entry.name === name) && !config.variables?.[owner]) {
+                throw new Error(`Registry namespace ${name} has no verifiable owner; refusing takeover.`);
+            }
+            if (config.variables?.[owner] === instanceId) {
+                const owned = templates.filter(entry => entry.name === name);
+                if (owned.length !== 1 || owned[0].url !== `http://localhost:${port}/utcp`) {
+                    throw new Error(`Registry namespace ${name} no longer points at this editor; refusing takeover.`);
+                }
+            }
+            if (templates.some(entry => ['cc-bridge-2x', 'ccb2x', 'ccb-2x', 'ccb_2x', 'cc_bridge_2x'].includes(entry.name)
+                && (entry.url === `http://localhost:${port}/utcp` || entry.url === `http://127.0.0.1:${port}/utcp`))) {
+                throw new Error(`Legacy alias already targets port ${port}; refusing unowned takeover.`);
+            }
+            const template = { name, call_template_type: 'http', url: `http://localhost:${port}/utcp`, http_method: 'GET', content_type: 'application/json' };
+            const index = templates.findIndex(entry => entry.name === name);
+            if (index < 0) templates.push(template);
+            else templates[index] = template;
+            config.variables = { ...config.variables, [owner]: instanceId, [project]: normalizedProject };
+            // Bare aliases are unowned; leave other editor registrations untouched.
+        });
+    }
 
-        if (changed) {
-            this.writeConfig(config);
-        }
-
-        return changed;
+    async removeCocosEditorTemplate(port: number, instanceId: string, configPath = this.getConfigPath()): Promise<boolean> {
+        if (!port || !instanceId) return false;
+        return this.mutateRegistry(configPath, config => {
+            const owner = `CCP2X_OWNER_${port}`;
+            if (config.variables?.[owner] !== instanceId) return;
+            const entries = config.manual_call_templates.filter(entry => entry.name === `ccp2x_${port}`);
+            if (entries.length !== 1 || entries[0].url !== `http://localhost:${port}/utcp`) return;
+            config.manual_call_templates = config.manual_call_templates.filter(entry => entry.name !== `ccp2x_${port}`);
+            delete config.variables[owner];
+            delete config.variables[`CCP2X_PROJECT_${port}`];
+        });
     }
 
     async getCurrentPort(): Promise<number> {
@@ -221,9 +294,9 @@ export class UtcpConfigManager {
         return typeof port === 'number' ? port : 0;
     }
 
-    async updatePort(port: number): Promise<void> {
+    async updatePort(port: number, instanceId: string, projectPath: string): Promise<void> {
+        await this.ensureCocosEditorTemplate(port, instanceId, projectPath);
         this.writeSetting('serverPort', port);
-        await this.ensureCocosEditorTemplate(port);
     }
 }
 

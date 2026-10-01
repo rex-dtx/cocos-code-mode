@@ -1,12 +1,25 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
+import { isAbsolute, join, relative } from 'node:path';
 import { parseSceneText } from './parser.mjs';
 import { treeToGraph, unwrapLiveSnapshot, validateLiveGraph } from './live.mjs';
 import { ENGINE_PROFILE, PARSER_VERSION, makeManifest } from './manifest.mjs';
 import { acquireNamespaceLock, readJson, removeUnreferencedGraphs, writeJsonAtomic } from './storage.mjs';
 
 import { assertBundleName, resolveInside } from './path-safety.mjs';
+
+function safeShardFile(outDir, graphFile) {
+  const file = resolveInside(outDir, graphFile, 'manifest graphFile');
+  const parent = join(file, '..');
+  if (existsSync(parent) && !contained(realpathSync(outDir), realpathSync(parent))) throw new Error('cocos-graph: shard directory escapes cache root');
+  if (existsSync(file) && !contained(realpathSync(outDir), realpathSync(file))) throw new Error('cocos-graph: shard file escapes cache root');
+  return file;
+}
+
+function contained(root, candidate) {
+  const rel = relative(root, candidate);
+  return rel === '' || (rel !== '..' && !rel.startsWith('../') && !rel.startsWith('..\\') && !isAbsolute(rel));
+}
 export function semanticHash(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 }
@@ -21,6 +34,7 @@ function listScenePrefab(root) {
   const walk = (dir) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);
+      if (entry.isSymbolicLink()) throw new Error(`cocos-graph: linked asset entry is unsupported: ${path}`);
       if (entry.isDirectory()) {
         if (!entry.name.startsWith('.') && !['library', 'temp', 'build', 'node_modules'].includes(entry.name)) walk(path);
       } else if (path.endsWith('.fire') || path.endsWith('.prefab')) files.push(path);
@@ -41,8 +55,9 @@ function recordsForFile(graph, file) {
 function previousGraph(outDir, manifest, bundle) {
   if (manifest?.parserVersion !== PARSER_VERSION || manifest?.engineProfile !== ENGINE_PROFILE) return null;
   const record = manifest.shards?.find((shard) => shard.name === bundle);
+  assertBundleName(bundle);
   if (!record?.graphFile || !record.sha256) return null;
-  const graph = readJson(resolveInside(outDir, record.graphFile, 'manifest graphFile'));
+  const graph = readJson(safeShardFile(outDir, record.graphFile));
   if (!graph || graph.version !== PARSER_VERSION || graph.engineProfile !== ENGINE_PROFILE || graph.bundle !== bundle) return null;
   const { builtAt: _builtAt, manifestBuiltAt: _manifestBuiltAt, ...stable } = graph;
   return semanticHash(stable) === record.sha256 ? graph : null;
@@ -180,12 +195,19 @@ export function buildAll({ project, outDir, liveJsonByBundle, bundleFilter, lock
   const assetsRoot = join(project, 'assets');
   if (bundleFilter) assertBundleName(bundleFilter);
   if (!existsSync(assetsRoot)) throw new Error(`assets/ not found under ${project}`);
+  const realAssets = realpathSync(assetsRoot);
+  if (!contained(realpathSync(project), realAssets)) throw new Error('cocos-graph: assets root escapes project');
   const release = acquireNamespaceLock(outDir, lockOptions);
   try {
     const manifestPath = join(outDir, '_manifest.json');
+    if (existsSync(manifestPath) && !contained(realpathSync(outDir), realpathSync(manifestPath))) throw new Error('cocos-graph: manifest escapes cache root');
     const oldManifest = readJson(manifestPath);
+    if (oldManifest?.shards) for (const shard of oldManifest.shards) assertBundleName(shard.name);
     const scanRoot = bundleFilter ? join(assetsRoot, bundleFilter) : assetsRoot;
     const allFiles = listScenePrefab(scanRoot);
+    for (const file of allFiles) {
+      if (!contained(realAssets, realpathSync(file))) throw new Error('cocos-graph: scene or prefab file escapes assets root');
+    }
     const byShard = new Map();
     for (const file of allFiles) {
       const bundle = bundleFilter ?? shardOf(assetsRoot, file);
@@ -212,7 +234,7 @@ export function buildAll({ project, outDir, liveJsonByBundle, bundleFilter, lock
     }
 
     const previous = bundleFilter && oldManifest?.parserVersion === PARSER_VERSION && oldManifest?.engineProfile === ENGINE_PROFILE ? oldManifest : null;
-    for (const item of built) writeJsonAtomic(join(outDir, item.record.graphFile), item.graph);
+    for (const item of built) writeJsonAtomic(safeShardFile(outDir, item.record.graphFile), item.graph);
     const manifest = makeManifest(built.map((item) => item.record), previous);
     writeJsonAtomic(manifestPath, manifest);
     removeUnreferencedGraphs(outDir, manifest, { graceMs: 0 });

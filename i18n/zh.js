@@ -1,1 +1,1 @@
-"use strict"; module.exports = { open_panel: "配置", description: "CC Bridge 2x — Cocos Creator 2.4.x 桥接 (UTCP)" };
+"use strict"; module.exports = { open_panel: "配置", description: "Cocos Pilot 2x — Cocos Creator 2.4.x 桥接 (UTCP)" };

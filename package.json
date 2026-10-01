@@ -1,52 +1,52 @@
 {
-  "name": "cc-bridge-2x",
+  "name": "cocos-pilot-2x",
   "version": "1.0.1",
-  "description": "i18n:cc-bridge-2x.description",
+  "description": "i18n:cocos-pilot-2x.description",
   "author": "cst by hzi for cc2.4",
   "main": "dist/main.js",
   "scene-script": "dist/scene-script.js",
   "main-menu": {
-    "CC Bridge 2x/Configuration": {
-      "message": "cc-bridge-2x:open-config"
+    "Cocos Pilot 2x/Configuration": {
+      "message": "cocos-pilot-2x:open-config"
     },
-    "CC Bridge 2x/Restart Server": {
-      "message": "cc-bridge-2x:restart-server"
+    "Cocos Pilot 2x/Restart Server": {
+      "message": "cocos-pilot-2x:restart-server"
     },
-    "CC Bridge 2x/Toggle Debug Logging": {
-      "message": "cc-bridge-2x:toggle-debug"
+    "Cocos Pilot 2x/Toggle Debug Logging": {
+      "message": "cocos-pilot-2x:toggle-debug"
     },
-    "CC Bridge 2x/Debug Logs/Open Debug Folder": {
-      "message": "cc-bridge-2x:open-debug-folder"
+    "Cocos Pilot 2x/Debug Logs/Open Debug Folder": {
+      "message": "cocos-pilot-2x:open-debug-folder"
     },
-    "CC Bridge 2x/Debug Logs/Clear Debug Logs": {
-      "message": "cc-bridge-2x:clear-debug-logs"
+    "Cocos Pilot 2x/Debug Logs/Clear Debug Logs": {
+      "message": "cocos-pilot-2x:clear-debug-logs"
     },
-    "CC Bridge 2x/About": {
-      "message": "cc-bridge-2x:show-build-info"
+    "Cocos Pilot 2x/About": {
+      "message": "cocos-pilot-2x:show-build-info"
     },
-    "Extension/CC Bridge 2x/Configuration": {
-      "message": "cc-bridge-2x:open-config"
+    "Extension/Cocos Pilot 2x/Configuration": {
+      "message": "cocos-pilot-2x:open-config"
     },
-    "Extension/CC Bridge 2x/Restart Server": {
-      "message": "cc-bridge-2x:restart-server"
+    "Extension/Cocos Pilot 2x/Restart Server": {
+      "message": "cocos-pilot-2x:restart-server"
     },
-    "Extension/CC Bridge 2x/Toggle Debug Logging": {
-      "message": "cc-bridge-2x:toggle-debug"
+    "Extension/Cocos Pilot 2x/Toggle Debug Logging": {
+      "message": "cocos-pilot-2x:toggle-debug"
     },
-    "Extension/CC Bridge 2x/Debug Logs/Open Debug Folder": {
-      "message": "cc-bridge-2x:open-debug-folder"
+    "Extension/Cocos Pilot 2x/Debug Logs/Open Debug Folder": {
+      "message": "cocos-pilot-2x:open-debug-folder"
     },
-    "Extension/CC Bridge 2x/Debug Logs/Clear Debug Logs": {
-      "message": "cc-bridge-2x:clear-debug-logs"
+    "Extension/Cocos Pilot 2x/Debug Logs/Clear Debug Logs": {
+      "message": "cocos-pilot-2x:clear-debug-logs"
     },
-    "Extension/CC Bridge 2x/About": {
-      "message": "cc-bridge-2x:show-build-info"
+    "Extension/Cocos Pilot 2x/About": {
+      "message": "cocos-pilot-2x:show-build-info"
     }
   },
   "panel": {
     "main": "panel/configuration.js",
     "type": "dockable",
-    "title": "CC Bridge 2x",
+    "title": "Cocos Pilot 2x",
     "width": 600,
     "height": 700
   },

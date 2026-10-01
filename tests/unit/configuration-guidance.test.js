@@ -10,11 +10,11 @@ const panel = fs.readFileSync(path.join(root, 'panel/configuration.js'), 'utf8')
 const main = fs.readFileSync(path.join(root, 'source/main.ts'), 'utf8');
 
 describe('configuration guidance', () => {
-  it('identifies the MCP server as CC Bridge and exposes an agent instruction', () => {
-    assert.match(template, /CC Bridge MCP Integration/);
+  it('identifies the MCP server as Cocos Pilot and exposes an agent instruction', () => {
+    assert.match(template, /Cocos Pilot 2x MCP Integration/);
     assert.match(template, /id="agent-instruction-code"/);
     assert.match(panel, /Discover first, then act/);
-    assert.match(panel, /"cc-bridge"|'cc-bridge'/);
+    assert.match(panel, /"cc-pilot"|'cc-pilot'/);
     assert.doesNotMatch(panel, /"code-mode":/);
   });
 

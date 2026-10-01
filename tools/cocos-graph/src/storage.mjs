@@ -3,7 +3,7 @@ import {
   readdirSync, renameSync, rmSync, statSync, unlinkSync, writeFileSync,
 } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 const SLEEP = new Int32Array(new SharedArrayBuffer(4));
 const sleep = (ms) => Atomics.wait(SLEEP, 0, 0, ms);
@@ -25,7 +25,7 @@ export function readJson(path) {
 
 export function writeJsonAtomic(path, value) {
   mkdirSync(dirname(path), { recursive: true });
-  const temp = `${path}.${process.pid}.${randomUUID()}.tmp`;
+  const temp = `${path}.${process.pid}.${randomBytes(16).toString('hex')}.tmp`;
   const fd = openSync(temp, 'wx');
   try {
     writeFileSync(fd, JSON.stringify(value, null, 2), 'utf8');
@@ -45,7 +45,7 @@ export function acquireNamespaceLock(outDir, { timeoutMs = 5000, staleMs = 30000
   const lockDir = join(outDir, '.build-lock');
   const ownerPath = join(lockDir, 'owner.json');
   const deadline = Date.now() + timeoutMs;
-  const token = `${process.pid}:${randomUUID()}`;
+  const token = `${process.pid}:${randomBytes(16).toString('hex')}`;
   while (true) {
     try {
       mkdirSync(lockDir);

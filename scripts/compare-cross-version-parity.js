@@ -50,7 +50,7 @@ const manifest = {
 };
 
 mkdirSync(join(ROOT, 'parity'), { recursive: true });
-writeFileSync(join(ROOT, 'parity', 'cc-bridge-2x.manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+writeFileSync(join(ROOT, 'parity', 'cocos-pilot-2x.manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 
 if (missing.length) {
     console.error(`parity: missing ${missing.length} required tools:\n  ${missing.join('\n  ')}`);

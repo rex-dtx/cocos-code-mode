@@ -151,6 +151,104 @@
             }
         },
 
+        'ui-layout-inspect': function (event: { reply: (error: Error | null, result?: unknown) => void }, opts: { uuid?: unknown, maxNodes?: unknown } | null) {
+            try {
+                const uuid = opts && opts.uuid;
+                const maxNodes = opts && opts.maxNodes;
+                if (typeof uuid !== 'string' || !uuid.trim() || uuid.length > 256
+                    || typeof maxNodes !== 'number' || !Number.isInteger(maxNodes) || maxNodes < 1 || maxNodes > 128) {
+                    return event.reply(new Error('ui-layout-inspect requires uuid and maxNodes (integer 1..128)'));
+                }
+                const scene = cc.director.getScene();
+                if (!scene) { return event.reply(new Error('no scene open')); }
+                const candidate = cc.engine && cc.engine.getInstanceById && cc.engine.getInstanceById(uuid);
+                let root: any = null;
+                // getInstanceById also resolves components and nodes from other scenes: verify ownership.
+                if (candidate && candidate.uuid === uuid && candidate.children && candidate !== scene) {
+                    let ancestor = candidate;
+                    const seen = new Set<object>();
+                    while (ancestor && !seen.has(ancestor)) {
+                        if (ancestor === scene) { root = candidate; break; }
+                        seen.add(ancestor);
+                        if (ancestor.parent === scene && isEditorNode(ancestor)) { break; }
+                        ancestor = ancestor.parent;
+                    }
+                }
+                if (!root) { return event.reply(null, null); }
+
+                function pair(x: unknown, y: unknown): { x: number, y: number } | null {
+                    return typeof x === 'number' && Number.isFinite(x) && typeof y === 'number' && Number.isFinite(y) ? { x: x, y: y } : null;
+                }
+                function nodePath(node: any): string {
+                    const parts: string[] = [];
+                    while (node && node !== scene) {
+                        const name = typeof node.name === 'string' ? node.name : '';
+                        const siblings = node.parent && node.parent.children;
+                        const duplicates = Array.isArray(siblings) ? siblings.filter((s: { name: string }) => s.name === name) : [];
+                        parts.push(name + (duplicates.length > 1 ? '[' + duplicates.indexOf(node) + ']' : ''));
+                        node = node.parent;
+                    }
+                    return parts.reverse().join('/');
+                }
+                const nodes: object[] = [];
+                let childrenOmitted = false;
+                const pending = [root];
+                while (pending.length && nodes.length < maxNodes) {
+                    const node = pending.pop();
+                    const sizeValue = typeof node.getContentSize === 'function' ? node.getContentSize() : null;
+                    const anchorValue = typeof node.getAnchorPoint === 'function' ? node.getAnchorPoint() : null;
+                    const size = sizeValue && Number.isFinite(sizeValue.width) && Number.isFinite(sizeValue.height)
+                        ? { width: sizeValue.width, height: sizeValue.height } : null;
+                    const anchor = anchorValue && pair(anchorValue.x, anchorValue.y);
+                    let worldPosition: { x: number, y: number } | null = null;
+                    let worldRect: { x: number, y: number, width: number, height: number } | null = null;
+                    if (node._is3DNode === false && typeof node.convertToWorldSpaceAR === 'function' && cc.v2) {
+                        try {
+                            const origin = node.convertToWorldSpaceAR(cc.v2(0, 0));
+                            worldPosition = origin && pair(origin.x, origin.y);
+                            if (size && anchor && size.width >= 0 && size.height >= 0) {
+                                const left = -anchor.x * size.width;
+                                const bottom = -anchor.y * size.height;
+                                const corners = [
+                                    cc.v2(left, bottom), cc.v2(left + size.width, bottom),
+                                    cc.v2(left, bottom + size.height), cc.v2(left + size.width, bottom + size.height),
+                                ].map((point: { x: number, y: number }) => node.convertToWorldSpaceAR(point));
+                                if (corners.every((point: { x: number, y: number }) => point && pair(point.x, point.y))) {
+                                    const xs = corners.map((point: { x: number }) => point.x);
+                                    const ys = corners.map((point: { y: number }) => point.y);
+                                    const x = Math.min.apply(null, xs); const y = Math.min.apply(null, ys);
+                                    worldRect = { x: x, y: y, width: Math.max.apply(null, xs) - x, height: Math.max.apply(null, ys) - y };
+                                }
+                            }
+                        } catch { worldPosition = null; worldRect = null; }
+                    }
+                    const widget = typeof node.getComponent === 'function' && cc.Widget ? node.getComponent(cc.Widget) : null;
+                    let constraints: Record<string, unknown> | null = null;
+                    if (widget) {
+                        constraints = { enabled: widget.enabled === true, targetUuid: widget.target ? widget.target.uuid || null : null,
+                            alignMode: Number.isFinite(widget.alignMode) ? widget.alignMode : null };
+                        for (const key of ['Top', 'Bottom', 'Left', 'Right', 'HorizontalCenter', 'VerticalCenter']) {
+                            const align = widget['isAlign' + key];
+                            const absolute = widget['isAbsolute' + key];
+                            constraints['isAlign' + key] = typeof align === 'boolean' ? align : null;
+                            constraints['isAbsolute' + key] = typeof absolute === 'boolean' ? absolute : null;
+                            const offset = key.charAt(0).toLowerCase() + key.slice(1);
+                            constraints[offset] = Number.isFinite(widget[offset]) ? widget[offset] : null;
+                        }
+                    }
+                    nodes.push({ uuid: node.uuid, path: nodePath(node), parentUuid: node.parent && node.parent !== scene ? node.parent.uuid : null,
+                        name: node.name, active: node.active === true, position: pair(node.x, node.y),
+                        size: size, anchor: anchor, worldPosition: worldPosition, worldRect: worldRect, widget: constraints });
+                    const children = node.children || [];
+                    const enqueue = Math.min(children.length, maxNodes - pending.length);
+                    if (enqueue < children.length) { childrenOmitted = true; }
+                    for (let i = enqueue - 1; i >= 0; i--) { pending.push(children[i]); }
+                }
+                event.reply(null, { rootUuid: root.uuid, nodes: nodes, maxNodes: maxNodes,
+                    truncated: childrenOmitted || pending.length > 0, incomplete: childrenOmitted || pending.length > 0 });
+            } catch (error: unknown) { event.reply(error instanceof Error ? error : new Error(String(error))); }
+        },
+
         'probe': function (event: any) {
             const out: any = { errors: [] };
 

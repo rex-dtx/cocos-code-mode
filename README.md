@@ -1,6 +1,6 @@
-# CC Bridge 2x — Cocos Creator 2.4.x remoter (UTCP)
+# Cocos Pilot 2x — Cocos Creator 2.4.x remoter (UTCP)
 
-**CC Bridge 2x** (formerly `cocos-code-mode-2x`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
+**Cocos Pilot 2x** (formerly `cc-bridge-2x` and `cocos-code-mode-2x`) turns the Cocos Creator Editor into an AI-controllable tool. It runs an HTTP server inside the editor that exposes scene inspection, asset management, and property editing as structured tool calls via [UTCP Protocol](https://www.utcp.io/) — letting AI agents inspect and modify Cocos Creator projects the same way a developer would through the UI. Tools are combined in [UTCP Code Mode](https://github.com/universal-tool-calling-protocol/code-mode/) to call them from isolated JS sandbox with maximum token efficiency.
 
 > **This is the 2.4.x port** of the 3.x extension, rebuilt against the Creator 2.4 editor API. The two generations share almost no extension surface: 3.x routes everything through `Editor.Message.request`, which does not exist in 2.4. See [Differences from the 3.x extension](#differences-from-the-3x-extension).
 >
@@ -10,10 +10,10 @@
 
 1. [Install the extension](#installation) in a Cocos Creator 2.4.x project
 2. [Integrate](#integration) it with the CodeMode MCP Server
-3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cc-bridge-2x.d.ts](cc-bridge-2x.d.ts)
+3. Design a system prompt for your agent or use the [upstream example](https://github.com/RomaRogov/cocos-code-mode/blob/main/prompt_example.md) — note it describes the 3.x tool set; for 2.4 see [cocos-pilot-2x.d.ts](cocos-pilot-2x.d.ts)
 4. Ask AI to help you and see how it learns!
 
-## What is CC Bridge 2x?
+## What is Cocos Pilot 2x?
 
 In contrast to rigid MCP tool definitions kept in LLM context, CodeMode lets AI call tools by writing JavaScript against TypeScript definitions. This keeps token consumption low, allows loops and chained calls, and reuses output from different servers in one JS execution context.
 
@@ -26,7 +26,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 
 ## Tools
 
-53 tools (13 files in `source/utcp/tools-2x/`). Most read tools take an `operation` argument instead of many endpoints — fewer definitions in agent context.
+The current source inventory is recorded in [parity/cocos-pilot-2x.manifest.json](parity/cocos-pilot-2x.manifest.json). Most read tools take an `operation` argument instead of many endpoints — fewer definitions in agent context.
 
 ### Read — scene & components (8 tools)
 
@@ -105,7 +105,7 @@ Read more: [Anthropic](https://www.anthropic.com/engineering/code-execution-with
 | `programOpen` | Launch registered program |
 | `urlOpen` | Open `http(s)` URL in system browser |
 
-Agent-facing TypeScript surface: [cc-bridge-2x.d.ts](cc-bridge-2x.d.ts) (hand-written, 53 entries).
+Agent-facing TypeScript surface: [cocos-pilot-2x.d.ts](cocos-pilot-2x.d.ts) (hand-written tool shapes; bind the exact `ccp2x_<port>` at runtime).
 
 ### Payload limits
 
@@ -131,7 +131,7 @@ Agent-facing TypeScript surface: [cc-bridge-2x.d.ts](cc-bridge-2x.d.ts) (hand-wr
 | Asset dep graph | `assetFindReferences` | No reference/dependency query API |
 | Console read | old `editorGetLogs` via IPC | `console:query-logs` does not exist — new impl reads `temp/logs/project.log` |
 
-Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runtime traps, probe3 gate), [docs/api-2x-reference.md](docs/api-2x-reference.md) (forum API 92605 mapped to verified runtime + actual tool surface), [docs/forum-92605-cocos-2x-api.md](docs/forum-92605-cocos-2x-api.md) (forum 92605 raw dump offline), [docs/cocos-2x-port-architecture.md](docs/cocos-2x-port-architecture.md) (delta 2.4 vs 3.x), and [docs/cc-bridge-code-mode-usage.md](docs/cc-bridge-code-mode-usage.md) (required Code Mode registration and agent workflow).
+Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runtime traps, probe3 gate), [docs/api-2x-reference.md](docs/api-2x-reference.md) (forum API 92605 mapped to verified runtime + actual tool surface), [docs/forum-92605-cocos-2x-api.md](docs/forum-92605-cocos-2x-api.md) (forum 92605 raw dump offline), [docs/cocos-2x-port-architecture.md](docs/cocos-2x-port-architecture.md) (delta 2.4 vs 3.x), and [docs/cocos-pilot-code-mode-usage.md](docs/cocos-pilot-code-mode-usage.md) (required Code Mode registration and recovery).
 
 ## How It Works
 
@@ -146,16 +146,19 @@ Details: [docs/cocos-2x-api-notes.md](docs/cocos-2x-api-notes.md) (6 doc-vs-runt
 ### Example
 
 ```typescript
+// Select ccp2x_53925 only after matching the registry's owner and project markers.
+const binding = await ccp2x_53925.editorHandshake({ expectedProjectPath: 'G:/projects/my-2x-game', timeoutMs: 1000 });
+if (!binding.projectMatches || binding.probe.status !== 'responsive') throw new Error('Wrong or unresponsive Creator project');
 // One call gets the whole scene
-const scene = ccb2x.sceneSnapshot({});
+const scene = ccp2x_53925.sceneSnapshot({});
 // → { name, uuid, designResolution: {width, height}, children: [...] }
 
 // Find every node with a Sprite — returns paths, not bare uuids
-const sprites = ccb2x.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
+const sprites = ccp2x_53925.componentQuery({ operation: 'find', componentType: 'cc.Sprite' });
 // → { result: [{ path: 'Canvas/bg', uuid: '...', name: 'bg' }], total: 1 }
 
 // Read that Sprite's actual property values
-const props = ccb2x.componentQuery({
+const props = ccp2x_53925.componentQuery({
   operation: 'props',
   path: 'Canvas/bg',
   componentType: 'cc.Sprite',
@@ -163,15 +166,15 @@ const props = ccb2x.componentQuery({
 // → { spriteFrame: { __ref: '<uuid>', __type: 'cc.SpriteFrame', __name: 'bg' }, ... }
 
 // Reverse: what uses this asset?
-const users = ccb2x.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
+const users = ccp2x_53925.assetQuery({ operation: 'used_by', url: 'db://assets/art/bg.png' });
 // → { nodes: [{ path: 'Canvas/bg', uuid: '...', name: 'bg',
 //               component: 'cc.Sprite', property: 'spriteFrame' }], total: 1 }
 
 // Mutate (write train — probe-verified)
-const node = ccb2x.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
-ccb2x.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
-ccb2x.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
-ccb2x.editorOperate({ operation: 'save_scene' });
+const node = ccp2x_53925.nodeCreate({ name: 'ScoreLabel', parentUuid: sprites.result[0].uuid });
+ccp2x_53925.nodeComponentManage({ operation: 'add', nodeUuid: node.uuid, compType: 'cc.Label' });
+ccp2x_53925.nodeSetProperty({ uuid: node.uuid, path: 'x', value: 120 });
+ccp2x_53925.editorOperate({ operation: 'save_scene' });
 ```
 
 `used_by` reports component + property, not just node. Array refs include index (`frames[1]`).
@@ -249,23 +252,24 @@ npm run package
 
 `npm run package` runs `npm run check` first — build plus the scene-script budget self-check (`scripts/check-node-budget.js`), which verifies tree-walk limits without Creator open. Run `npm run check` while developing.
 
-For development, link the extension into the project (legacy `cocos-code-mode-2x` still works):
+For development, link the extension into the project (legacy installed `cc-bridge-2x` packages are not modified by this linker):
 
 ```bash
 npm run link:project -- <path-to-cocos-project>
 ```
 
-This creates a junction at `<project>/packages/cc-bridge-2x`. If an imported extension already exists there, rerun with `--replace`; it is renamed to a timestamped backup rather than deleted. Reload the extension or restart Creator after rebuilding.
+This creates a junction at `<project>/packages/cocos-pilot-2x`. If an imported extension already exists there, rerun with `--replace`; it is renamed to a timestamped backup rather than deleted. Reload the extension or restart Creator after rebuilding.
 
 With Creator open, validate the live UTCP surface:
 
 ```bash
+# First set CCP2X_PROJECT to the absolute path of the intended Creator project.
 npm run smoke:utcp
-# or target a known running server
+# or narrow selection to a known owned port
 node scripts/smoke-utcp.js <port>
 ```
 
-The smoke test verifies the strict manual envelope, build provenance, and `editorEnvInfo`. It reads the live `ccb2x` template when no port is supplied.
+Set `CCP2X_PROJECT` to the intended absolute project path before either smoke command. Both select exactly one owned `ccp2x_<port>` template with matching `CCP2X_OWNER_<port>`/`CCP2X_PROJECT_<port>` and require the explicit project-bound `editorHandshake`; the optional port narrows this selection, never bypasses it. Bare historical aliases are not identity evidence.
 
 ## Adding Custom Tools
 
@@ -295,9 +299,9 @@ Register by importing the class in `utcp-server.ts`. Two things to know:
 
 ## UTCP Call Templates Configuration
 
-The extension registers itself in `~/.utcp_config.json` as a `cc-bridge-2x` entry (JS: `cc_bridge_2x`, short `ccb2x` (compat `ccb-2x`/`ccb_2x`)) pointing at the running server port, and rewrites the port when it changes.
+The extension publishes `ccp2x_<port>` in `~/.utcp_config.json` with `CCP2X_OWNER_<port>` and `CCP2X_PROJECT_<port>` markers. Select the exact owned port for your intended project, register its manual and require `editorHandshake({expectedProjectPath})` to return `projectMatches:true` and `probe.status:'responsive'` before mutation. Historical bare `ccb2x`/`cc-bridge-2x` entries are foreign/unowned collision or migration evidence, never active aliases. Restart changes `instanceId`; discard old references and bind again.
 
-> The **Configuration** panel from 3.x is not ported yet. The server starts automatically; to pin a port, set `serverPort` in `<project>/settings/cc-bridge-2x.json` (legacy `cocos-code-mode-2x.json` auto-migrated) (0 = auto-assign). Additional call templates must be added by hand for now.
+The Configuration panel can copy the live port, URL and template. To pin a port, set `serverPort` in `<project>/settings/cocos-pilot-2x.json` (old `cc-bridge-2x.json` may be read once to migrate missing preferences; `0` = auto-assign). A port reserved by another editor or an unowned legacy template is refused rather than taken over.
 
 Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-structure) · [HTTP](https://utcp.io/protocols/http#call-template-structure) · [CLI](https://utcp.io/protocols/cli#call-template-structure) · [Text](http://utcp.io/protocols/text#call-template-structure)
 
@@ -306,7 +310,7 @@ Call Template structures: [MCP](https://utcp.io/protocols/mcp#call-template-stru
 Add to the agent's system prompt — cuts 50-80% of response tokens:
 
 ```text
-When returning data from ccb2x tools (manual `cc-bridge-2x`, short `ccb2x`):
+When returning data from the selected ccp2x_<port> manual (after a successful project handshake):
 - Return stats/aggregates (counts, top-N) unless the question needs items.
 - User asks list/find/which/show → return capped list with .slice(0, N), not count.
 - Drop empty arrays/objects and deep subtrees a summary already answers.

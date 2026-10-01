@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { isAbsolute, join, relative } from 'node:path';
 import { assertBundleName, resolveInside } from './path-safety.mjs';
 import { ENGINE_PROFILE, PARSER_VERSION } from './manifest.mjs';
 
@@ -9,8 +9,21 @@ function readJson(path) {
   catch (error) { throw new Error(`cocos-graph: unreadable JSON ${path} (${error.message})`); }
 }
 
+function checkedShardPath(outDir, graphFile) {
+  const file = resolveInside(outDir, graphFile, 'manifest graphFile');
+  if (existsSync(file)) {
+    const rel = relative(realpathSync(outDir), realpathSync(file));
+    if (isAbsolute(rel) || rel === '..' || rel.startsWith('../') || rel.startsWith('..\\')) throw new Error('cocos-graph: manifest graphFile escapes cache root');
+  }
+  return file;
+}
+
 export function loadShard(outDir, bundle) {
   assertBundleName(bundle);
+  if (existsSync(join(outDir, '_manifest.json'))) {
+    const rel = relative(realpathSync(outDir), realpathSync(join(outDir, '_manifest.json')));
+    if (isAbsolute(rel) || rel === '..' || rel.startsWith('../') || rel.startsWith('..\\')) throw new Error('cocos-graph: manifest escapes cache root');
+  }
   const manifestPath = join(outDir, '_manifest.json');
   if (!existsSync(manifestPath)) throw new Error(`cocos-graph: shard not built for bundle "${bundle}" (run: cocos-graph build ...)`);
   const manifest = readJson(manifestPath);
@@ -22,7 +35,7 @@ export function loadShard(outDir, bundle) {
   }
   const record = manifest.shards?.find((shard) => shard.name === bundle);
   if (!record?.graphFile) throw new Error(`cocos-graph: shard not built for bundle "${bundle}" (run: cocos-graph build ...)`);
-  const graph = readJson(resolveInside(outDir, record.graphFile, 'manifest graphFile'));
+  const graph = readJson(checkedShardPath(outDir, record.graphFile));
   const { builtAt: _builtAt, manifestBuiltAt: _manifestBuiltAt, ...stable } = graph;
   const actualHash = createHash('sha256').update(JSON.stringify(stable)).digest('hex').slice(0, 16);
   if (graph.version !== PARSER_VERSION || graph.engineProfile !== ENGINE_PROFILE || graph.bundle !== bundle || record.sha256 !== actualHash) {

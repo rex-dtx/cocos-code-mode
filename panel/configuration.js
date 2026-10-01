@@ -4,10 +4,11 @@ const Fs = require('fs');
 const Path = require('path');
 const Os = require('os');
 
-const PKG = 'cc-bridge-2x';
+const PKG = 'cocos-pilot-2x';
 const AGENT_INSTRUCTION =
-    'CC Bridge controls Cocos Creator 2.4 through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project, and screenshots. Discover first, then act: inspect current state before mutations, retain returned references, and use batch operations where available.';
-const COCOS_TEMPLATE = /^(ccb2x(_\d+)?|ccb3x(_\d+)?|cc-bridge-2x|cc-bridge-3x|ccb-2x|cc_bridge_2x|ccb_2x)$/;
+    'Cocos Pilot 2x controls Cocos Creator 2.4 through tools for scenes, nodes, components, inspector properties, assets, prefabs, animation, editor/project, and screenshots. Discover first, then act: inspect current state before mutations, retain returned references, and use batch operations where available.';
+// Historical identities are protected as unowned registrations, never advertised as active aliases.
+const COCOS_TEMPLATE = /^(ccp2x(_\d+)?|ccb2x(_\d+)?|ccb3x(_\d+)?|cc-bridge-2x|cc-bridge-3x|ccb-2x|cc_bridge_2x|ccb_2x)$/;
 
 function getConfigPath() {
     try {
@@ -81,7 +82,7 @@ function utcpUrl(port) {
 function mcpConfigJson(configPath) {
     return JSON.stringify({
         mcpServers: {
-            'cc-bridge': {
+            'cc-pilot': {
                 command: 'npx',
                 args: ['-y', '@utcp/code-mode-mcp'],
                 env: { UTCP_CONFIG_FILE: configPath }
@@ -219,6 +220,10 @@ Editor.Panel.extend({
         if (!content) return;
         try {
             const tpl = JSON.parse(content);
+            if (COCOS_TEMPLATE.test(tpl.name)) {
+                Editor.warn('Reserved Cocos Pilot or historical namespace cannot be added from the panel.');
+                return;
+            }
             if (!tpl.name || !tpl.call_template_type) { Editor.warn('Must have name and call_template_type.'); return; }
             const cfg = readUtcpConfig();
             cfg.manual_call_templates = cfg.manual_call_templates || [];

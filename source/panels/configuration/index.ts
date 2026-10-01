@@ -106,7 +106,7 @@ module.exports = Editor.Panel.define({
             } else {
                 let html = '';
                 templates.forEach((t: any) => {
-                    const isCocos = ['cc-bridge-2x', 'ccb2x', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x'].includes(t.name);
+                    const isCocos = /^(ccp2x|ccb2x)_\d+$/.test(t.name) || ['ccp2x', 'ccb2x', 'cc-bridge-2x', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x'].includes(t.name);
                     const delBtn = isCocos
                         ? `` // No delete for Cocos
                         : `<ui-button slot="header" type="danger" class="remove-btn" tooltip="Remove Template">
@@ -137,7 +137,7 @@ module.exports = Editor.Panel.define({
             }
         },
 
-        addBridgeTemplate() {
+        async addBridgeTemplate() {
             const input = this.$.newTemplateJson as any;
             if (!input) return;
             const content = input.value.trim();
@@ -161,7 +161,7 @@ module.exports = Editor.Panel.define({
                 }
 
                 config.manual_call_templates.push(newTpl);
-                configManager.writeConfig(config);
+                await configManager.writeConfig(config);
                 input.value = '';
                 this.fetchBridgeList();
 
@@ -170,16 +170,20 @@ module.exports = Editor.Panel.define({
             }
         },
 
-        removeBridge(name: string) {
-            if (['cc-bridge-2x', 'ccb2x', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x'].includes(name)) return;
+        async removeBridge(name: string) {
+            if (/^(ccp2x|ccb2x)_\d+$/.test(name) || ['ccp2x', 'ccb2x', 'cc-bridge-2x', 'ccb-2x', 'cc_bridge_2x', 'ccb_2x'].includes(name)) return;
             if (!confirm(`Remove template ${name}?`)) return;
 
-            const configManager = getConfigManager();
-            const config = configManager.readConfig();
-            if (config.manual_call_templates) {
-                config.manual_call_templates = config.manual_call_templates.filter((t: any) => t.name !== name);
-                configManager.writeConfig(config);
-                this.fetchBridgeList();
+            try {
+                const configManager = getConfigManager();
+                const config = configManager.readConfig();
+                if (config.manual_call_templates) {
+                    config.manual_call_templates = config.manual_call_templates.filter((t: any) => t.name !== name);
+                    await configManager.writeConfig(config);
+                    this.fetchBridgeList();
+                }
+            } catch (error: unknown) {
+                alert('Could not remove template: ' + (error instanceof Error ? error.message : String(error)));
             }
         },
     },

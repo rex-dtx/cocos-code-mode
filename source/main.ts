@@ -8,9 +8,19 @@ import { mkdirSync, readdirSync, unlinkSync } from 'fs';
 
 const DEBUG_LOG_DIR = join(homedir(), '.utcp-debug');
 
-const PKG_NAME = 'cc-bridge-2x';
+const PKG_NAME = 'cocos-pilot-2x';
 
 let utcpServer: UtcpServerManager | null = null;
+const registryPaths = new WeakMap<UtcpServerManager, string>();
+async function stopPublishedServer(server: UtcpServerManager): Promise<void> {
+    const { port, instanceId } = server;
+    try { await server.stop(); }
+    finally {
+        if (port && registryPaths.has(server)) {
+            await getConfigManager().removeCocosEditorTemplate(port, instanceId, registryPaths.get(server));
+        }
+    }
+}
 
 // Entry point 2.x: module.exports = { load, unload, messages }.
 // Khac 3.x (export const methods + contributions.messages trong package.json).
@@ -22,35 +32,52 @@ module.exports = {
         const configManager = getConfigManager();
         await configManager.initialize();
 
-        utcpServer = new UtcpServerManager();
-
-        // port 0 = xin OS mot free port bat ky
-        const port = await configManager.getCurrentPort();
+        let server = new UtcpServerManager();
         try {
-            const actualPort = await utcpServer.start(port);
-            const url = `http://localhost:${actualPort}/utcp`;
-            await configManager.updatePort(actualPort);
-            Editor.log(
-                `[${PKG_NAME}] Ready: UTCP server listening at ${url}\n` +
-                `[${PKG_NAME}] Code Mode config updated: ${configManager.getConfigPath()}\n` +
-                `[${PKG_NAME}] New AI sessions discover ccb2x automatically; reconnect an existing Code Mode MCP session to refresh it.`
-            );
+            // Port preferences are shared by editors of the same project; an existing registry
+            // owner/legacy alias is not this fresh process, even if its endpoint is now closed.
+            if (typeof Editor.Project?.path !== 'string' || !Editor.Project.path) {
+                throw new Error('Editor.Project.path unavailable; refusing to publish an unbound endpoint.');
+            }
+            const savedPort = await configManager.getCurrentPort();
+            const registry = configManager.readConfig();
+            const reserved = savedPort > 0 && (Boolean(registry.variables?.[`CCP2X_OWNER_${savedPort}`]
+                || registry.variables?.[`CCP2X_PROJECT_${savedPort}`]
+                || registry.variables?.[`CCB2X_OWNER_${savedPort}`]
+                || registry.variables?.[`CCB2X_PROJECT_${savedPort}`])
+                || registry.manual_call_templates?.some((entry: { name: string; url?: string }) =>
+                    entry.name === `ccp2x_${savedPort}` || entry.name === `ccb2x_${savedPort}`
+                    || (['ccb2x', 'cc-bridge-2x', 'ccb-2x', 'ccb_2x', 'cc_bridge_2x'].includes(entry.name)
+                        && (entry.url === `http://localhost:${savedPort}/utcp` || entry.url === `http://127.0.0.1:${savedPort}/utcp`))));
+            let actualPort: number;
+            try { actualPort = await server.start(reserved ? 0 : savedPort); }
+            catch (error: unknown) {
+                if (savedPort === 0 || !error || typeof error !== 'object' || !('code' in error) || error.code !== 'EADDRINUSE') throw error;
+                server = new UtcpServerManager();
+                actualPort = await server.start(0);
+            }
+            registryPaths.set(server, configManager.getConfigPath());
+            await configManager.updatePort(actualPort, server.instanceId, Editor.Project.path);
+            utcpServer = server;
+            Editor.log(`[${PKG_NAME}] Ready: http://localhost:${actualPort}/utcp; namespace ccp2x_${actualPort}; project ${Editor.Project.path}; instance ${server.instanceId}. Re-handshake after reconnect or restart.`);
         } catch (err) {
+            await stopPublishedServer(server).catch((cleanupError: unknown) => Editor.warn(`[${PKG_NAME}] Startup cleanup failed: ${cleanupError}`));
             Editor.error(`[${PKG_NAME}] Failed to start UTCP Server: ${err}`);
         }
     },
 
     async unload() {
         if (utcpServer) {
-            Editor.log(`[${PKG_NAME}] Stopping UTCP Server...`);
-            await utcpServer.stop();
+            const server = utcpServer;
             utcpServer = null;
+            Editor.log(`[${PKG_NAME}] Stopping UTCP Server...`);
+            await stopPublishedServer(server);
         }
     },
 
-    // Short message (khong co ':') -> editor expand thanh 'cc-bridge-2x:restart-server'.
-    // Goi tu renderer: Editor.Ipc.sendToPackage('cc-bridge-2x', 'restart-server', port).
-    // Goi tu main-menu: click Extension -> CC Bridge 2x (khong co arg).
+    // Short messages expand to the current package's message namespace.
+    // Renderer: Editor.Ipc.sendToPackage('cocos-pilot-2x', 'restart-server', port).
+    // Main menu: Extension -> Cocos Pilot 2x (no port argument).
     messages: {
         'show-info'() {
             // ponytail: alias kept for compat, menu no longer exposes it — delegates to show-build-info
@@ -61,20 +88,43 @@ module.exports = {
                 Editor.warn(`[${PKG_NAME}] UTCP Server is not running.`);
                 return;
             }
+            const previousServer = utcpServer;
             // Menu click khong truyen port -> restart voi port hien tai (0 = auto)
             if (typeof newPort !== 'number' || !newPort) {
-                newPort = await getConfigManager().getCurrentPort();
+                newPort = previousServer.port;
             }
-            const previousServer = utcpServer;
+            utcpServer = null;
             try {
-                await previousServer.stop();
+                await stopPublishedServer(previousServer);
                 const nextServer = new UtcpServerManager();
-                const actualPort = await nextServer.start(newPort);
-                utcpServer = nextServer;
-                Editor.log(`[${PKG_NAME}] UTCP Server restarted on port ${actualPort}`);
-                await getConfigManager().updatePort(actualPort);
+                try {
+                    if (newPort !== previousServer.port && newPort > 0) {
+                        const registry = getConfigManager().readConfig();
+                        if (registry.variables?.[`CCP2X_OWNER_${newPort}`]
+                            || registry.variables?.[`CCP2X_PROJECT_${newPort}`]
+                            || registry.variables?.[`CCB2X_OWNER_${newPort}`]
+                            || registry.variables?.[`CCB2X_PROJECT_${newPort}`]
+                            || registry.manual_call_templates?.some((entry: { name: string; url?: string }) =>
+                                entry.name === `ccp2x_${newPort}` || entry.name === `ccb2x_${newPort}`
+                                || (['ccb2x', 'cc-bridge-2x', 'ccb-2x', 'ccb_2x', 'cc_bridge_2x'].includes(entry.name)
+                                    && (entry.url === `http://localhost:${newPort}/utcp` || entry.url === `http://127.0.0.1:${newPort}/utcp`)))) {
+                            throw new Error(`Port ${newPort} belongs to another registry owner.`);
+                        }
+                    }
+                    if (typeof Editor.Project?.path !== 'string' || !Editor.Project.path) {
+                        throw new Error('Editor.Project.path unavailable; refusing to publish an unbound endpoint.');
+                    }
+                    const actualPort = await nextServer.start(newPort);
+                    const config = getConfigManager();
+                    registryPaths.set(nextServer, config.getConfigPath());
+                    await config.updatePort(actualPort, nextServer.instanceId, Editor.Project.path);
+                    utcpServer = nextServer;
+                    Editor.log(`[${PKG_NAME}] UTCP Server restarted: ccp2x_${actualPort}, instance ${nextServer.instanceId}. Re-handshake before mutations.`);
+                } catch (error) {
+                    await stopPublishedServer(nextServer);
+                    throw error;
+                }
             } catch (err: unknown) {
-                utcpServer = null;
                 Editor.error(`[${PKG_NAME}] Failed to restart UTCP Server: ${err instanceof Error ? err.message : String(err)}`);
             }
         },
@@ -103,38 +153,34 @@ module.exports = {
             const b = getBuildInfo();
             const cm = getConfigManager();
             // ponytail: merged Server Info + About — single log has port/config/url + build info
-            const portP = cm.getCurrentPort().catch(() => 0);
-            // fire-and-log without blocking dialog; port resolves fast (profile read)
-            portP.then((port: number) => {
-                const configPath = cm.getConfigPath();
-                const isRunning = Boolean(port && utcpServer);
-                const statusIcon = isRunning ? '🟢' : '🔴';
-                const statusUrl = isRunning ? `http://localhost:${port}/utcp` : 'Server not running';
-                const commitStr = `${b.commit}${b.dirty ? '-dirty' : ''}`;
-                const versionTag = `v${b.version}@${commitStr}`;
-
-                const lines = [
-                    `[${PKG_NAME}] ${statusIcon} ${statusUrl} (${versionTag})`,
-                    `  Port:     ${port || '(not running)'}`,
-                    `  Config:   ${configPath}`,
-                    `  Branch:   ${b.branch}`,
-                    `  Built at: ${b.builtAt}`,
-                ];
-                Editor.log(lines.join('\n'));
-            });
+            const port = utcpServer?.port ?? 0;
+            const configPath = cm.getConfigPath();
+            const statusUrl = port ? `http://localhost:${port}/utcp` : 'Server not running';
+            const commitStr = `${b.commit}${b.dirty ? '-dirty' : ''}`;
+            Editor.log([
+                `[${PKG_NAME}] ${statusUrl} (v${b.version}@${commitStr})`,
+                `  Namespace: ${port ? `ccp2x_${port}` : '(not running)'}`,
+                `  Instance:  ${utcpServer?.instanceId ?? '(not running)'}`,
+                `  Project:   ${Editor.Project.path}`,
+                `  Config:    ${configPath}`,
+                `  Branch:    ${b.branch}`,
+                `  Built at:  ${b.builtAt}`,
+            ].join('\n'));
         },
         'open-config'() {
             Editor.Panel.open(PKG_NAME);
         },
         async 'query-status'(event: unknown) {
             const cm = getConfigManager();
-            const port = await cm.getCurrentPort().catch(() => 0);
+            const port = utcpServer?.port ?? 0;
             const configPath = cm.getConfigPath();
             const payload = {
-                port: port || 0,
-                configPath,
+                port, configPath,
                 url: port ? `http://localhost:${port}/utcp` : '',
-                running: Boolean(utcpServer && port),
+                namespace: port ? `ccp2x_${port}` : null,
+                instanceId: utcpServer?.instanceId ?? null,
+                projectPath: Editor.Project.path || null,
+                running: port > 0,
             };
             const ev = event as { reply?: (err: unknown, data?: unknown) => void };
             if (ev && typeof ev.reply === 'function') ev.reply(null, payload);

@@ -13,6 +13,6 @@
         "source/utcp/utils/texture-utils.ts",
         "source/utcp/utils/tools-utils.ts",
         "source/panels",
-        "source/scene.ts", "cc-bridge-2x.d.ts"
+        "source/scene.ts", "cocos-pilot-2x.d.ts"
     ]
 }

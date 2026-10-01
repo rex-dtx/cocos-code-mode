@@ -218,6 +218,54 @@ export class SceneReadTools {
     }
 
     @utcpTool(
+        'uiLayoutInspect',
+        'Read a bounded Creator 2.4 cc.Node subtree: observed node paths, content size, anchor, world-space bounds and cc.Widget constraints. Geometry is null when unavailable; no scene changes.',
+        {
+            type: 'object', additionalProperties: false,
+            properties: {
+                uuid: { type: 'string', minLength: 1, maxLength: 256, description: 'Selected cc.Node UUID from the active scene.' },
+                maxNodes: { type: 'integer', minimum: 1, maximum: 128, default: 64 },
+            },
+            required: ['uuid'],
+        },
+        {
+            type: 'object',
+            properties: {
+                rootUuid: { type: 'string' }, nodes: { type: 'array', items: { type: 'object' } },
+                maxNodes: { type: 'integer' }, truncated: { type: 'boolean' }, incomplete: { type: 'boolean' },
+            },
+            required: ['rootUuid', 'nodes', 'maxNodes', 'truncated', 'incomplete'],
+        },
+        'GET', ['ui', 'layout', 'inspect', 'geometry', 'widget', 'scene']
+    )
+    async uiLayoutInspect(args: { uuid: string, maxNodes?: number }): Promise<{
+        rootUuid: string, nodes: object[], maxNodes: number, truncated: boolean, incomplete: boolean
+    }> {
+        if (!args || typeof args !== 'object' || Array.isArray(args)
+            || Object.keys(args).some(key => key !== 'uuid' && key !== 'maxNodes')
+            || typeof args.uuid !== 'string' || !args.uuid.trim() || args.uuid.length > 256
+            || (args.maxNodes !== undefined && (!Number.isInteger(args.maxNodes) || args.maxNodes < 1 || args.maxNodes > 128))) {
+            throw new ToolError({ code: 'INVALID_ARGUMENT', status: 400,
+                message: 'uiLayoutInspect requires a non-empty uuid and optional integer maxNodes from 1 to 128.' });
+        }
+        const maxNodes = args.maxNodes === undefined ? 64 : args.maxNodes;
+        const result: unknown = await sceneScript('ui-layout-inspect', { uuid: args.uuid, maxNodes });
+        if (result === null) { nodeNotFound(args.uuid, 'uuid'); }
+        if (!result || typeof result !== 'object' || Array.isArray(result)
+            || !('rootUuid' in result) || result.rootUuid !== args.uuid
+            || !('nodes' in result) || !Array.isArray(result.nodes)
+            || result.nodes.length === 0 || result.nodes.length > maxNodes
+            || !('maxNodes' in result) || result.maxNodes !== maxNodes
+            || !('truncated' in result) || typeof result.truncated !== 'boolean'
+            || !('incomplete' in result) || typeof result.incomplete !== 'boolean'
+            || result.incomplete !== result.truncated) {
+            throw new ToolError({ code: 'UI_LAYOUT_INVALID_RESPONSE', status: 502,
+                message: 'Creator returned an incomplete or malformed UI layout inventory.' });
+        }
+        return result as { rootUuid: string, nodes: object[], maxNodes: number, truncated: boolean, incomplete: boolean };
+    }
+
+    @utcpTool(
         'findNodes',
         'Find nodes by name and/or component type. Walks scene:query-hierarchy; substring match on name, exact match on component class via scene:query-nodes-by-comp-name.',
         {

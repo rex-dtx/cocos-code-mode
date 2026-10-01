@@ -1,1 +1,1 @@
-require("./cc-bridge-bootstrap.js");
+require('./cocos-pilot-bootstrap.js');

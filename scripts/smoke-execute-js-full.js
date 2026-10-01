@@ -5,21 +5,35 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-function discoverBase() {
-  const arg = Number(process.argv[2]);
-  if (arg > 0) return `http://localhost:${arg}`;
-  if (process.env.UTCP_BASE) return process.env.UTCP_BASE.replace(/\/$/, '');
+async function discoverBase() {
+  const project = process.env.CCP2X_PROJECT;
+  if (!project || !path.isAbsolute(project)) throw new Error('Set CCP2X_PROJECT to the intended absolute Creator project path.');
+  const normalizedProject = path.normalize(project).replace(/[\\/]+$/, '');
+  const sameProject = (value) => typeof value === 'string' && (process.platform === 'win32'
+    ? path.normalize(value).replace(/[\\/]+$/, '').toLowerCase() === normalizedProject.toLowerCase()
+    : path.normalize(value).replace(/[\\/]+$/, '') === normalizedProject);
   const utcpPath = process.env.UTCP_CONFIG_FILE || path.join(os.homedir(), '.utcp_config.json');
   const cfg = JSON.parse(fs.readFileSync(utcpPath, 'utf8'));
-  const tpls = cfg.manual_call_templates || [];
-  const canon = tpls.find((t) => t && t.name === 'ccb2x') || tpls.find((t) => t && t.name === 'cc-bridge-2x');
-  const m = String((canon && canon.url) || '').match(/localhost:(\d+)/);
-  if (!m) throw new Error(`Cannot discover ccb2x URL from ${utcpPath}. Open Creator 2.4 or pass a port.`);
-  return `http://localhost:${m[1]}`;
+  const variables = cfg.variables || {};
+  const requestedPort = process.argv[2] || (process.env.UTCP_BASE && new URL(process.env.UTCP_BASE).port);
+  const owned = (cfg.manual_call_templates || []).filter((entry) => {
+    const match = /^ccp2x_(\d+)$/.exec(entry?.name || '');
+    return match && (!requestedPort || match[1] === requestedPort)
+      && entry.url === `http://localhost:${match[1]}/utcp`
+      && variables[`CCP2X_OWNER_${match[1]}`]
+      && sameProject(variables[`CCP2X_PROJECT_${match[1]}`]);
+  });
+  if (owned.length !== 1) throw new Error(`Expected exactly one owned ccp2x_<port> for CCP2X_PROJECT; found ${owned.length}.`);
+  const base = owned[0].url.replace(/\/utcp$/, '');
+  const response = await fetch(`${base}/tools/editorHandshake?expectedProjectPath=${encodeURIComponent(project)}&timeoutMs=1000`);
+  if (!response.ok) throw new Error(`Editor handshake failed: HTTP ${response.status}`);
+  const binding = await response.json();
+  if (binding.projectMatches !== true || binding.probe?.status !== 'responsive') throw new Error('Editor handshake did not confirm the intended project.');
+  return base;
 }
 
-const base = discoverBase();
-const TOOL = base + '/tools/executeJavascript';
+let base;
+let TOOL;
 
 let pass = 0, fail = 0;
 const results = [];
@@ -68,6 +82,8 @@ const S = (code, args, safety, timeout) => { const b = { context: 'scene', code 
 const CLEAN = 'const sc=cc.director.getScene();const M="__suite_tmp__";const kids=sc.children?sc.children.slice():[];for(const n of kids)if(n.name===M){n.removeFromParent();n.destroy();}';
 
 (async () => {
+  base = await discoverBase();
+  TOOL = base + '/tools/executeJavascript';
   console.log('=== executeJavascript FULL capability suite (2.4) @ ' + base + ' ===\n');
 
   await test('A core', 'A1 editor arithmetic', E('return 1+1'), 'ok', r => r === 2);

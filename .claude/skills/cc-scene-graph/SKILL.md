@@ -5,9 +5,9 @@ description: Use for Cocos scene/project structural search, composite node resol
 
 # cc-scene-graph
 
-Offline structural navigation for saved Creator 2.4 assets. The graph answers **where/what**; CC Bridge remains authoritative for unsaved state, runtime state, and every write.
+Offline structural navigation for saved Creator 2.4 assets. The graph answers **where/what**; Cocos Pilot 2x remains authoritative for unsaved state, runtime state and every write.
 
-This skill is a companion CLI. It is not a UTCP tool and is not loaded into the Creator process.
+The CLI is a companion. The new `graphManage` UTCP route exposes explicit disk-only build/query over the same graph; neither route loads T0/T1 disk evidence as live mutation authority.
 
 ## Authority model
 
@@ -47,12 +47,12 @@ node tools/cocos-graph/bin/cocos-graph.mjs validate --project <project> --bundle
 
 ## Required mutation workflow
 
-1. Search offline and keep `handle`, `uuid`, `file`, `source`, and `bundle`.
+1. Search offline or through `ccp2x_<port>.graphManage` and keep `handle`, `uuid`, `file`, `source`, and `bundle`.
 2. Reject/adapt when `stale.advisory=true`, `dirty` is `true` or `unknown`, `prefabOpaque=true`, or resolution is ambiguous.
-3. Call `ccb2x.sceneInfo()` and `ccb2x.assetResolve({operation:"url_from_uuid"})` to verify the intended `.fire` is open.
-4. Resolve/read the exact engine UUID live with `nodeQuery dump` or `componentQuery props`.
-5. Perform the write through the narrow CC Bridge tool.
-6. Read the changed target live and verify the observable result.
+3. Bind the exact Creator/project with `ccp2x_<port>.editorHandshake({expectedProjectPath})`; require responsive matching project and discard references on instance change.
+4. Call `ccp2x_<port>.sceneInfo()` and `assetResolve({operation:"url_from_uuid"})` to verify the intended `.fire` is open.
+5. Resolve/read the exact engine UUID live with `nodeQuery dump` or `componentQuery props`.
+6. Perform the write through the narrow Cocos Pilot tool; re-read the changed target to verify the observable result.
 7. Only then record session continuity:
 
 ```bash
