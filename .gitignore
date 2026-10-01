@@ -35,3 +35,4 @@ plans/
 .cocos-graph/
 *.imported-backup-*/
 cc-bridge-3x.imported-backup-20260921053949948/
+node_modules
